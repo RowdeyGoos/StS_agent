@@ -29,6 +29,8 @@
     <Compile Include="../runtime/CampaignContracts.cs" />
     <Compile Include="../runtime/CombatPotionContracts.cs" />
     <Compile Include="../native/NativeBridgeModule.cs" />
+    <Compile Include="../../../components/rooms/rest/native/RestRewardContinuation.cs" />
+    <Compile Include="../../../components/rooms/rest/native/RestInteractiveSession.cs" />
     <Compile Include="../native/ProductionBridgeRuntimeFactory.cs" />
     <Compile Include="../operator/BridgeOperatorFiles.cs" />
     <Compile Include="../runtime/BridgeProtocol.cs" />

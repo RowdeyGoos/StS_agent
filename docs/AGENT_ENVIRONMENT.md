@@ -442,8 +442,11 @@ The remaining implementation must provide full public native observations and
 semantic candidates across combat, potions, rewards, maps, shops, rests, events,
 Ancients and the ending; expose nested selections to the same policy callback;
 and retain exact parent/child ownership, version negotiation, reconciliation and
-public-only recording. The concrete rest gaps are native Smith/Cook cancellation
-and Dream Catcher/Tiny Mailbox reward continuation. The Dig pool audit found no
+public-only recording. Native Smith/Cook cancellation and Dream Catcher/Tiny
+Mailbox reward continuation now have an interactive room-module implementation
+and offline checks. Each native child is separately exposed to its callback;
+the controlled rest client is not yet connected to the full shared policy, and
+representative live validation remains open. The Dig pool audit found no
 normal-game pickup-screen caller among its Common/Uncommon/Rare relics; broader
 injected pickup screens remain a contract limit.
 These changes belong in the existing native modules, router and client. Completion

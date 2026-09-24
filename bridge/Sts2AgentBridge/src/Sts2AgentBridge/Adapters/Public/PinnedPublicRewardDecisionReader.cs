@@ -37,8 +37,13 @@ public sealed class PinnedPublicRewardDecisionReader : IPublicRewardDecisionRead
     private readonly Func<bool>? _nestedScope;
     private readonly NRewardsScreen? _nestedScreen;
     private readonly Func<bool>? _nestedClosed;
+    private readonly int _nestedDepth = 2;
     public PinnedPublicRewardDecisionReader(int maximumSessions = PublicRewardActionBudget.MaximumRewardSessionsPerProcess) { _session=new(maximumSessions); }
-    internal PinnedPublicRewardDecisionReader(NRewardsScreen screen,Func<bool> scope,Func<bool> closed) : this() {_nestedScreen=screen;_nestedScope=scope;_nestedClosed=closed;_session.ForceRewardOrdinals=true;}
+    internal PinnedPublicRewardDecisionReader(NRewardsScreen screen,Func<bool> scope,Func<bool> closed,int overlayDepth = 2) : this()
+    {
+        if (overlayDepth is < 1 or > 2) throw new ArgumentOutOfRangeException(nameof(overlayDepth));
+        _nestedDepth=overlayDepth;_nestedScreen=screen;_nestedScope=scope;_nestedClosed=closed;_session.ForceRewardOrdinals=true;
+    }
     internal PinnedPublicRewardInteractionSession InteractionSession => _session;
 
     public void Dispose()
@@ -135,7 +140,7 @@ public sealed class PinnedPublicRewardDecisionReader : IPublicRewardDecisionRead
         if(proceeding?.Kind==PublicRewardActionKind.Proceed && proceeding.UnclaimedPotions.Count>0 &&
             overlays is not null && overlays.ScreenCount>0 &&
             (overlays.ScreenCount!=1||!ReferenceEquals(overlays.Peek(),proceeding.ParentScreen)))return FailClosed();
-        if ((_session.Pending?.Item is not null || _session.Pending?.Gold is not null) && (overlays is null || overlays.ScreenCount != (_nestedScreen is null?1:2) ||
+        if ((_session.Pending?.Item is not null || _session.Pending?.Gold is not null) && (overlays is null || overlays.ScreenCount != (_nestedScreen is null?1:_nestedDepth) ||
             !ReferenceEquals(overlays.Peek(),_session.Pending.ParentScreen)))return FailClosed();
         if (overlays is null || !GodotObject.IsInstanceValid(overlays) || overlays.ScreenCount == 0)
         {

@@ -29,21 +29,36 @@ internal sealed class NativeBridgeModule : IBridgeModule
     private Func<BridgeRequest, ModuleReply>? _handle;
     private Action? _cleanup;
     private RoomFlowSelection _roomSelection;
-    private bool _initialized, _disposed;
+    private bool _initialized, _disposed, _restInteractive;
     private ReadStageTrace? _readTrace;
     public void SetReadTrace(ReadStageTrace? trace)=>_readTrace=trace;
     private void Stage(int value)=>_readTrace?.Mark(value);
     internal NativeBridgeModule(Capability capability, string nonce) { Capability = capability; _nonce = nonce; }
-    public bool Owns(BridgeRequest request) => request.Capability == Capability ||
+    public bool Owns(BridgeRequest request) => request.Capability == Capability &&
+        (!_initialized || Capability != Capability.Rooms || _restInteractive == request.Path.StartsWith("/probe/rest-v3/", StringComparison.Ordinal)) ||
         Capability == Capability.Rooms && _roomSelection == RoomFlowSelection.Event && request.Capability == Capability.Items;
     public ModuleReply Handle(BridgeRequest request)
     {
         if (_disposed) throw new InvalidOperationException("Module disposed.");
-        if (!_initialized) { _initialized = true; Initialize(); }
+        if (!_initialized) { _initialized = true; Initialize(request); }
         return (_handle ?? throw new InvalidOperationException("Native module unavailable."))(request);
     }
-    private void Initialize()
+    private void Initialize(BridgeRequest first)
     {
+        if (Capability == Capability.Rooms && first.Path == RestInteractiveSession.DecisionRoute)
+        {
+            if (!PinnedGenericEventHarmonyGuard.Verify()) throw new InvalidOperationException("Native dependency mismatch.");
+            _restInteractive = true;
+            var rest = new RestInteractiveSession(_nonce); _cleanup = rest.Dispose;
+            _handle = request =>
+            {
+                byte[] body = rest.Handle(request.IsPost, request.Decision, request.Action);
+                using var json = JsonDocument.Parse(body);
+                string? status = Text(json.RootElement, "status");
+                return new(body, Complete: status == "complete", Terminal: status is not ("ready" or "waiting" or "accepted" or "complete"));
+            };
+            return;
+        }
         switch (Capability)
         {
             case Capability.Events:

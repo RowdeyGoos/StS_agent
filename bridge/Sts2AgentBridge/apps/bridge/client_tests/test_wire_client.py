@@ -9,6 +9,20 @@ from run_live import core_summary, retain_read_diagnostic
 
 
 class ClientBoundaryTests(unittest.TestCase):
+    def test_interactive_rest_actions_are_bounded_and_route_scoped(self):
+        route = '/probe/rest-v3/public/action'
+        token = bytearray(b'a' * 64)
+        for action in ('option:heal', 'option:smith', 'option:cook', 'select:0', 'select:63', 'deselect:63',
+                       'confirm', 'cancel', 'reward:open:7', 'reward:collect:7', 'reward:choose:4', 'reward:skip_card', 'reward:dismiss'):
+            body = bytearray(json.dumps(dict(decision_id='b' * 64, action_id=action)).encode())
+            request = build_request('POST', route, body, token)
+            self.assertIn(('X-Sts2-Action-Id: ' + action + '\r\n').encode(), request)
+        for action in ('option:unknown', 'option:', 'select:64', 'select:00', 'deselect:-1', 'reward:open:8',
+                       'reward:choose:5', 'reward:discard:0', 'cook:0:1', 'end_turn', 'cancel\n'):
+            body = bytearray(json.dumps(dict(decision_id='b' * 64, action_id=action)).encode())
+            with self.assertRaises(ValueError): build_request('POST', route, body, token)
+        self.assertIn(b'GET /probe/rest-v3/public/decision ', build_request('GET', '/probe/rest-v3/public/decision', None, token))
+
     def test_waiting_boundary_does_not_become_a_later_failure_diagnostic(self):
         for ending in ('ready', 'complete', 'unsupported'):
             sent = []

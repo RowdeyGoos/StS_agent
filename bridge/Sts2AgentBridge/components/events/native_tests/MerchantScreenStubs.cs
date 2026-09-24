@@ -55,3 +55,11 @@ namespace MegaCrit.Sts2.Core.Nodes.Events.Custom {
         public void Initialize(MegaCrit.Sts2.Core.Models.Events.FakeMerchant model,MegaCrit.Sts2.Core.Nodes.CommonUi.NProceedButton proceed,Godot.Control blocker){_event=model;_proceedButton=proceed;_inputBlocker=blocker;Bind("%ProceedButton",proceed);Bind("%InputBlocker",blocker);}
     }
 }
+
+namespace MegaCrit.Sts2.Core.Nodes.Screens.ScreenContext {
+    public class ActiveScreenContext {
+        public static ActiveScreenContext Instance = new();
+        public object? Current, Blocker;
+        public object? GetCurrentScreen() => Blocker ?? Current;
+    }
+}

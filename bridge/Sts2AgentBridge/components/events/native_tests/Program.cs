@@ -364,6 +364,7 @@ internal static partial class Program
         if(args.SequenceEqual(new[]{"--card-offers"})){OfferTests();Console.WriteLine("card offer checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--event-surfaces"})){SurfaceTests();Console.WriteLine("event surface checks: "+_checks);return;}
 #if TERMINAL_REWARD_TESTS
+        if(args.SequenceEqual(new[]{"--rest-rewards"})){RestRewardCases();Console.WriteLine("rest reward checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--empty-rewards"})){EmptyTerminalRewardCases();Console.WriteLine("empty terminal reward checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--fake-mango"})){FakeMangoRewardCases();Console.WriteLine("Fake Mango checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--combat-items"})){CombatItemCases();Console.WriteLine("combat item checks: "+_checks);return;}
@@ -508,7 +509,7 @@ internal static partial class Program
         CardRewardSetTests();
         CombatHandoffCases();OwnershipDiagnosticCases();
 #if TERMINAL_REWARD_TESTS
-        EmbeddedCombatCases();SpecialCardCases();CombatItemCases();
+        EmbeddedCombatCases();SpecialCardCases();CombatItemCases();RestRewardCases();
 #endif
         CombatResumeCases();FinishedProceedCases();ResumeItemCases();
         Console.WriteLine("generic native checks: "+_checks);

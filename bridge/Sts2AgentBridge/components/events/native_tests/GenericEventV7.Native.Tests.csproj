@@ -7,6 +7,9 @@
     <Compile Include="ShopPotionFixtures.cs" />
     <Compile Include="ShopRelicFixtures.cs" />
     <Compile Include="ShopPickupFixtures.cs" />
+    <Compile Include="RestRewardFixtures.cs" />
+    <Compile Include="../../rooms/rest/native/RestRewardContinuation.cs" />
+    <Compile Include="../../rooms/rest/native/RestNativeState.cs" />
     <Compile Include="MerchantFightFixtures.cs" />
     <Compile Include="ShopRemovalFixtures.cs" />
     <Compile Include="../../rooms/shop/native/ShopPotionOwnership.cs" />

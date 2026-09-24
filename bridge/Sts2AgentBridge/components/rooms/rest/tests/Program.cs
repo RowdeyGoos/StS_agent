@@ -24,26 +24,35 @@ internal static partial class Program
         public readonly NRun Run = new();
         public NRestSiteRoom Room => Run.RestSiteRoom;
         public readonly RestV2Session Session;
+        public readonly PinnedRestV2NativeAdapter Native;
+        public bool HoldRestore;
+        public Task? Execution;
         public readonly RoomFlowWireService Wire;
         public readonly NRestSiteButton Button;
         public readonly string Action;
-        public Fixture(string action = "lift", int count = 0)
+        public Fixture(string action = "lift", int count = 0, bool interactive = false)
         {
-            Action = action; NRun.Instance = Run; NRestSiteRoom.Instance = Room;
+            Action = action; MegaCrit.Sts2.Core.Nodes.Screens.ScreenContext.ActiveScreenContext.Instance = new(); NRun.Instance = Run; NRestSiteRoom.Instance = Room;
             var player = Room.Characters[0].Player;
             player.GetRelic<Girya>()!.TimesLifted = count;
             player.GetRelic<PumpkinCandle>()!.KindleCount = count;
             RestSiteOption option = RestV2Session.Kind(action) switch {
                 "lift" => new LiftRestSiteOption(player), "kindle" => new KindleRestSiteOption(player), "dig" => new DigRestSiteOption(player),
-                "cook" => new CookRestSiteOption(player), "clone" => new CloneRestSiteOption(player), "hatch" => new HatchRestSiteOption(player),
+                "heal" => new HealRestSiteOption(player), "smith" => new SmithRestSiteOption(player), "cook" => new CookRestSiteOption(player), "clone" => new CloneRestSiteOption(player), "hatch" => new HatchRestSiteOption(player),
                 _ => throw new ArgumentException() };
             if (RestV2Session.Kind(action) == "cook") { AddCard(player); AddCard(player, removable: false); AddCard(player); }
+            if (action == "smith") { AddCard(player); AddCard(player); }
             if (action == "clone") { AddCard(player, clone: true); AddCard(player); AddCard(player, clone: true); }
             if (action == "hatch") { AddCard(player, egg: true); AddCard(player); AddCard(player, egg: true); }
-            async Task Execute() { if (await option.OnSelect()) Room.Continue(option); }
-            Button = new() { Option = option, Click = () => { _ = Execute(); } };
+            async Task Execute()
+            {
+                if (interactive) foreach (var b in Room.Buttons.Values) b.IsEnabled = false;
+                if (await option.OnSelect()) Room.Continue(option);
+                else if (!HoldRestore) foreach (var b in Room.Buttons.Values) b.IsEnabled = true;
+            }
+            Button = new() { Option = option, Click = () => { Execution = Execute(); } };
             Room.Options.Add(option); Room.Buttons.Add(option, Button);
-            Session = new(Nonce, new PinnedRestV2NativeAdapter()); Wire = new(Nonce, Session);
+            Native = new(interactive); Session = new(Nonce, Native); Wire = new(Nonce, Session);
         }
         public RestV2Observation Read() => (RestV2Observation)Session.Read();
         public void Begin()
@@ -51,14 +60,19 @@ internal static partial class Program
             var ready = Read(); Check(ready.Status == "ready", "ready");
             Check(Session.Apply(ready.DecisionId, Action) is RoomFlowDispatchReceipt, "accepted");
         }
-        public void Dispose() { Wire.Dispose(); Check(Harmony.GetPatchInfo(Target)?.Owners.Count is not > 0, "hook removed"); }
+        public void Dispose()
+        {
+            try { Wire.Dispose(); } catch (InvalidOperationException) { }
+            Check(Harmony.GetPatchInfo(Target)?.Owners.Count is not > 0, "hook removed even on unresolved disposal");
+        }
     }
     public static int Main(string[] args)
     {
         try
         {
             if (args.Length == 2 && args[0] == "--wire") return Serve(args[1]);
-            Extended();
+            if (args.Length == 2 && args[0] == "--interactive-wire") return ServeInteractive(args[1]);
+            Extended(); InteractiveRestCases(); InteractiveWireCases();
             foreach (var pair in new[] { ("lift", 0), ("lift", 2), ("kindle", 0), ("kindle", 9) })
             {
                 using var f = new Fixture(pair.Item1, pair.Item2); f.Begin();
@@ -122,7 +136,9 @@ internal static partial class Program
                 try { f.Session.Dispose(); } catch (InvalidOperationException) { cleanupFailed = true; }
                 Check(cleanupFailed, "foreign ownership prevents false cleanup success");
                 foreign.Unpatch(Target, HarmonyPatchType.All, "rest-test-reused-hook");
-                f.Session.Dispose();
+                cleanupFailed = false;
+                try { f.Session.Dispose(); } catch (InvalidOperationException) { cleanupFailed = true; }
+                Check(cleanupFailed, "cleanup failure remains sticky after foreign hook is removed");
             }
             using (var f = new Fixture())
             {

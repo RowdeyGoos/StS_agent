@@ -86,12 +86,19 @@ internal static class BridgeRequestParser
             core.HostState != ParsedHostState.Exact || core.HasOrigin || core.AuthorizationCount != 1 ||
             core.AuthorizationValueLength != 71 || !head.Slice(core.AuthorizationValueOffset, 7).SequenceEqual("Bearer "u8)) return false;
         bool action = core.RouteTarget is ParsedRouteTarget.PublicCombatAction or ParsedRouteTarget.PublicRewardAction or
-            ParsedRouteTarget.PublicMapAction or ParsedRouteTarget.PublicRoomAction or ParsedRouteTarget.CombatChoiceAction or ParsedRouteTarget.EventResumeItemAction or ParsedRouteTarget.AgentAction;
+            ParsedRouteTarget.PublicMapAction or ParsedRouteTarget.PublicRoomAction or ParsedRouteTarget.CombatChoiceAction or ParsedRouteTarget.EventResumeItemAction or ParsedRouteTarget.AgentAction or ParsedRouteTarget.RestAction;
         if (action ? !core.IsPost || core.DecisionIdCount != 1 || core.ActionIdCount != 1 :
             !core.IsGet || core.DecisionIdCount != 0 || core.ActionIdCount != 0) return false;
-        request = new(Capability.Core, path, action, core.AuthorizationValueOffset + 7, 64,
+        bool rest = core.RouteTarget is ParsedRouteTarget.RestDecision or ParsedRouteTarget.RestAction;
+        request = new(rest ? Capability.Rooms : Capability.Core, path, action, core.AuthorizationValueOffset + 7, 64,
             Text(head, core.DecisionIdValueOffset, core.DecisionIdValueLength),
             Text(head, core.ActionIdValueOffset, core.ActionIdValueLength));
+        if (rest && action)
+        {
+            string? value = request.Action;
+            return value is not null && value.Length <= 64 && System.Text.RegularExpressions.Regex.IsMatch(value,
+                @"\A(?:option:(?:heal|smith|lift|kindle|dig|cook|clone|hatch)|(?:de)?select:(?:[0-9]|[1-5][0-9]|6[0-3])|confirm|cancel|reward:(?:(?:open|collect):[0-7]|choose:[0-4]|skip_card|dismiss))\z");
+        }
         return !action || CoreBridgeModule.IsValidAction(request);
     }
     private static string? Text(ReadOnlySpan<byte> source, int start, int length) =>

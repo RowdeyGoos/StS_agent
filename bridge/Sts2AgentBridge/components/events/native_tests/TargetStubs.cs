@@ -292,7 +292,7 @@ namespace MegaCrit.Sts2.Core.Nodes.Cards.Holders
         public virtual CardModel CardModel=>CardNode.Model;
         public static class SignalName { public const string Pressed="Pressed"; }
         public Action? RewardPressed;
-        public Godot.Error EmitSignal(string name,NCardHolder holder){if(name!=SignalName.Pressed||!ReferenceEquals(holder,this))return Godot.Error.Failed;RewardPressed?.Invoke();return Godot.Error.Ok;}
+        public Godot.Error EmitSignal(string name,NCardHolder holder){if(name!=SignalName.Pressed||!ReferenceEquals(holder,this))return Godot.Error.Failed;if(this is NGridCardHolder grid)grid.Selected?.Invoke();RewardPressed?.Invoke();return Godot.Error.Ok;}
 
     }
     public class NPreviewCardHolder:NCardHolder { }
@@ -585,6 +585,9 @@ namespace MegaCrit.Sts2.Core.Rewards
     public class GoldReward:Reward {public int Amount {get;set;}}
     public class SpecialCardReward:Reward {private CardModel _card;public SpecialCardReward(CardModel card,Player player){_card=card;Player=player;RewardsSetIndex=4;} public void ReplaceCard(CardModel card)=>_card=card;}
     public class CardReward:Reward {
+        private MegaCrit.Sts2.Core.Nodes.Screens.CardSelection.NCardRewardSelectionScreen? _currentlyShownScreen;
+        public void BindMenu(MegaCrit.Sts2.Core.Nodes.Screens.CardSelection.NCardRewardSelectionScreen screen) => _currentlyShownScreen = screen;
+        public object? FixtureMenu => _currentlyShownScreen;
         private List<MegaCrit.Sts2.Core.Entities.Cards.CardCreationResult> _cards=new();
         public bool CanSkip {get;set;}=true;
         public override bool IsPopulated {get=>_cards.Count>0;set{}}
@@ -595,6 +598,9 @@ namespace MegaCrit.Sts2.Core.Rewards
     public sealed class RelicReward:Reward { public RelicModel Relic {get;set;}=null!;public RelicModel? ClaimedRelic {get;set;} }
     public class RewardsSet
     {
+        private object? _synchronizer;
+        public void BindSynchronizer(object synchronizer) => _synchronizer = synchronizer;
+        public object? FixtureSynchronizer => _synchronizer;
         public MegaCrit.Sts2.Core.Rooms.AbstractRoom? Room {get;set;}
         public Player Player {get;set;}=null!;
         public List<Reward> Rewards {get;set;}=new();
@@ -766,6 +772,7 @@ namespace MegaCrit.Sts2.Core.Combat {
  public sealed class CombatManager {public static CombatManager? Instance {get;set;}=new();public CombatState? State;public bool IsInProgress=true,IsOverOrEnding;public CombatState? DebugOnlyGetState()=>State;}
 }
 namespace MegaCrit.Sts2.Core.Runs {public sealed class RunManager {
+        public object RewardsSetSynchronizer {get;set;} = new();
         public MegaCrit.Sts2.Core.Multiplayer.Game.ActChangeSynchronizer ActChangeSynchronizer {get;}=new();
         public Func<Task>? WinHandler;
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]

@@ -308,7 +308,7 @@ namespace MegaCrit.Sts2.Core.Nodes.Cards.Holders
         public virtual CardModel CardModel=>CardNode.Model;
         public static class SignalName { public const string Pressed="Pressed"; }
         public Action? RewardPressed;
-        public Godot.Error EmitSignal(string name,NCardHolder holder){if(name!=SignalName.Pressed||!ReferenceEquals(holder,this))return Godot.Error.Failed;RewardPressed?.Invoke();return Godot.Error.Ok;}
+        public Godot.Error EmitSignal(string name,NCardHolder holder){if(name!=SignalName.Pressed||!ReferenceEquals(holder,this))return Godot.Error.Failed;if(this is NGridCardHolder grid)grid.Selected?.Invoke();RewardPressed?.Invoke();return Godot.Error.Ok;}
 
     }
     public class NPreviewCardHolder:NCardHolder { }

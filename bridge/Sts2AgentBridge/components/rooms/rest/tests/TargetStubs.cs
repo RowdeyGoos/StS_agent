@@ -29,7 +29,7 @@ namespace MegaCrit.Sts2.Core.Entities.Players
         public readonly List<RelicModel> Relics = new();
         public readonly List<PotionModel?> PotionSlots = new();
         public readonly Pile Deck = new();
-        public object RunState = new();
+        public object RunState = new MegaCrit.Sts2.Core.Runs.RunState();
         public readonly Creature Creature = new();
         public int Gold = 20;
         public Player() { foreach (var r in new RelicModel[] { new Girya(), new PumpkinCandle(), new Shovel(), new MeatCleaver(), new PaelsGrowth() }) { r.Owner = this; Relics.Add(r); } }
@@ -98,6 +98,20 @@ namespace MegaCrit.Sts2.Core.Entities.RestSite
             return true;
         }
     }
+    public class SmithRestSiteOption(Player player) : RestSiteOption(player)
+    {
+        public int SmithCount = 1;
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public override async Task<bool> OnSelect()
+        {
+            var screen = MegaCrit.Sts2.Core.Nodes.Screens.CardSelection.NDeckUpgradeSelectScreen.ShowScreen(Owner.Deck.Cards.Where(c => c.IsUpgradable).ToArray(),
+                new() { MinSelect = 1, MaxSelect = 1, Cancelable = true, RequireManualConfirmation = true }, (MegaCrit.Sts2.Core.Runs.IRunState)Owner.RunState);
+            var cards = (await screen.Selected.Task).ToArray();
+            if (cards.Length == 0) return false;
+            foreach (var card in cards) card.CurrentUpgradeLevel++;
+            return true;
+        }
+    }
     public class CookRestSiteOption(Player player) : RestSiteOption(player)
     {
         [MethodImpl(MethodImplOptions.NoInlining)]
@@ -146,5 +160,14 @@ namespace MegaCrit.Sts2.Core.Nodes.Rooms
         [MethodImpl(MethodImplOptions.NoInlining)]
         private Task AfterSelectingOptionAsync(RestSiteOption option) => Completion.Task;
         public void Continue(RestSiteOption option) { _ = AfterSelectingOptionAsync(option); }
+    }
+}
+
+namespace MegaCrit.Sts2.Core.Nodes.Screens.ScreenContext {
+    public class ActiveScreenContext {
+        public static ActiveScreenContext Instance = new();
+        public object? Blocker;
+        public object? GetCurrentScreen() => Blocker ?? (object?)MegaCrit.Sts2.Core.Nodes.NRun.Instance?.GlobalUi.Overlays.Peek() ?? MegaCrit.Sts2.Core.Nodes.NRun.Instance?.RestSiteRoom;
+        public bool IsCurrent(object value) => ReferenceEquals(GetCurrentScreen(), value);
     }
 }

@@ -7,6 +7,7 @@ import socket
 import time
 
 ROUTES = {
+    "/probe/rest-v3/public/decision": False, "/probe/rest-v3/public/action": True,
     "/probe/combat-potions-v1/public/decision": False, "/probe/combat-potions-v1/public/action": True,
     "/probe/campaign-v2/public/decision": False, "/probe/campaign-v2/public/action": True,
     "/probe/reward-v2/public/decision": False, "/probe/reward-v2/public/action": True,
@@ -46,7 +47,8 @@ def build_request(method: str, route: str, body: bytearray | None, token: bytear
             expected.add("child")
         require(type(value) is dict and set(value) == expected, "action_fields")
         require(type(value["decision_id"]) is str and re.fullmatch("[0-9a-f]{64}", value["decision_id"]), "decision")
-        require(type(value["action_id"]) is str and (route != "/probe/room-flows-v1/public/action" and re.fullmatch(r"[a-z_]+(?::[0-9]{1,3}){0,2}", value["action_id"]) or
+        require(type(value["action_id"]) is str and (route not in ("/probe/room-flows-v1/public/action", "/probe/rest-v3/public/action") and re.fullmatch(r"[a-z_]+(?::[0-9]{1,3}){0,2}", value["action_id"]) or
+                route == "/probe/rest-v3/public/action" and re.fullmatch(r"(?:option:(?:heal|smith|lift|kindle|dig|cook|clone|hatch)|(?:de)?select:(?:[0-9]|[1-5][0-9]|6[0-3])|confirm|cancel|reward:(?:(?:open|collect):[0-7]|choose:[0-4]|skip_card|dismiss))", value["action_id"]) or
                 route == "/probe/room-flows-v1/public/action" and re.fullmatch(r"(?:buy:(?:card|potion|relic):(?:[0-9]|[12][0-9]|3[01])|remove:(?:[0-9]|[1-9][0-9]|[1-4][0-9]{2}|50[0-9]|51[01])|discard:[0-7]|inventory:close|leave|choose:[0-7]|lift|kindle|dig|clone|hatch|cook:(?:[0-9]|[1-5][0-9]|6[0-3]):(?:[0-9]|[1-5][0-9]|6[0-3]))", value["action_id"]) or
                 event and type(value.get("child")) is dict and re.fullmatch(
                     r"(?:tool:(?:small|big)|reward:(?:(?:claim|collect|open):[0-7]|choose:[0-4]|skip_card))", value["action_id"])), "action")

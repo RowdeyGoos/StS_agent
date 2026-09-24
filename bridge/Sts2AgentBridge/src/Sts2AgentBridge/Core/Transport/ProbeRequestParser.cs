@@ -40,6 +40,8 @@ internal enum ParsedRouteTarget
     EventResumeItemAction = 17,
     AgentDecision = 18,
     AgentAction = 19,
+    RestDecision = 20,
+    RestAction = 21,
 }
 
 internal readonly record struct ParsedProbeRequest(
@@ -492,6 +494,10 @@ internal static class ProbeRequestParser
         {
             routeTarget = ParsedRouteTarget.CombatChoiceAction;
         }
+        else if (target.SequenceEqual("/probe/rest-v3/public/decision"u8))
+            routeTarget = ParsedRouteTarget.RestDecision;
+        else if (target.SequenceEqual("/probe/rest-v3/public/action"u8))
+            routeTarget = ParsedRouteTarget.RestAction;
         else if (target.SequenceEqual("/probe/agent-v1/public/decision"u8))
         { routeTarget = ParsedRouteTarget.AgentDecision; }
         else if (target.SequenceEqual("/probe/agent-v1/public/action"u8))

@@ -28,6 +28,7 @@ Start with [support and known limits](../../docs/STATUS.md). This guide owns
 | Campaign combat choices, including mandatory offered cards | `/probe/combat-choice-v3/public/decision` and `action`; same exclusive owner |
 | Potion/relic collection | `/probe/item-v1/public/item-decision` and `item-action` |
 | Shop, standard room flows and additional rest options | `/probe/room-flows-v1/public/decision` and `action` |
+| Interactive rest options, selectors and Heal rewards | `/probe/rest-v3/public/decision` and `action`; the same exclusive room module |
 | Standalone card selection | `/card-selection-v1/parent`, `parent/action`, `child`, `child/action` |
 | Generic events and their children | `/probe/generic-event-v7/public/decision` and `action` |
 
@@ -255,13 +256,15 @@ are implemented for the headless slice; this does not broaden live coverage.
 | `event-combat-map` | Event combat entry → combat → terminal rewards/map, or owned Resume callback → resumed event/map |
 | `cards`, `items`, `room-event` | Corresponding standalone bounded controller |
 | `shop` | Ordinary merchant inventory already open → policy → close/Leave |
+| `rest` | One additional rest option through the legacy precommitted controller; requires `--rest-option` |
+| `rest-interactive` | One rest option with a callback for every selector and reward decision; requires `--rest-option` |
 | `core` | Read one `--route`, or submit its advertised `--decision` and `--action` |
 
 A core accepted receipt is acceptance, not completion: reconcile through its
 decision route. `events` may end at `combat_handoff`, `combat_resume_handoff`,
 `map_handoff`, `run_abandoned` or `run_won`; entry alone is not combat victory.
-Architect admission has a fixture-tested correction; live acceptance remains open.
-See [status](../../docs/STATUS.md).
+Architect admission and the ending passed under the recorded controlled-campaign
+scope. See [status](../../docs/STATUS.md).
 The composite modes retain earlier stage counts/results if a later stage fails.
 Defeat prevents reward control. None of the `*-map` modes selects a map node.
 
@@ -276,6 +279,33 @@ have different opaque IDs. Clients echo the 64-character lowercase hex ID. Known
 no-mutation stale rejections allow bounded fresh observation; they do not permit
 replay of an uncertain action. Combat/choice bounds and contracts are in
 [combat choices](../../docs/COMBAT_CHOICES.md).
+
+### Interactive rest
+
+`--capability rest-interactive --rest-option smith` selects Smith, exposes its
+native eligible cards, then confirms the selected card. `--rest-selection-policy
+cancel` cancels immediately; `preview-cancel` selects the native required count
+and cancels from the preview. The same choices apply to Cook's two-card selector.
+Selection and deselection are individual protocol actions. Cancellation settles
+only after the unchanged deck/inventory and original enabled rest controls return.
+
+`--rest-option heal` retains ownership through the native healing task and its
+rewards, including Dream Catcher cards and Tiny Mailbox potions. The existing
+`--reward-policy first-card|skip-card` chooses the card behavior; an explicit
+reward dismissal returns to the rest site after Skip or when potions cannot be
+collected. Full-belt replacement is not exposed in this rest protocol.
+Unopened card offers remain hidden. Reward collection uses the shared reward
+reader with the exact rest-owned set, screen, menu and native continuation.
+
+The Python controller accepts `run_rest(request, provider)`; every ready option,
+selection or reward decision goes to that callback. The CLI's controlled chooser
+is for validation; it is not the full shared policy. Other options are Lift,
+Kindle, Dig, Clone and Hatch. Dig permits one owned deck/enchantment selector
+of at most three cards. Unknown enabled options or unsupported follow-up screens
+stop the session. Limits are 64 deck cards, 8 reward entries, 128 accepted inputs,
+4,096 reads and a 120-second client budget per option. Completion returns at the
+rest site without pressing its final Proceed. Parent completion, child results,
+and cancellation remain distinct; uncertain actions are never retried.
 
 ### Campaign traversal
 

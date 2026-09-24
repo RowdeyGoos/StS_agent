@@ -3,6 +3,9 @@
   <ItemGroup>
     <Compile Include="Program.cs" /><Compile Include="ExtendedTests.cs" /><Compile Include="EffectStubs.cs" /><Compile Include="../native/RestNativeState.cs" /><Compile Include="../native/RestNativeEffect.cs" /><Compile Include="TargetStubs.cs" />
     <Compile Include="../native/PinnedRestV2NativeAdapter.cs" />
+    <Compile Include="RewardStubs.cs" /><Compile Include="InteractiveWireTests.cs" />
+    <Compile Include="../native/RestInteractiveSession.cs" />
+    <Compile Include="../../../../src/Sts2AgentBridge/Core/Public/PublicRewardDecision.cs" />
     <ProjectReference Include="../../wire/Sts2AgentBridge.RoomFlowsV1.Wire.csproj" />
     <Reference Include="0Harmony"><HintPath>$(HarmonyPath)</HintPath><Private>true</Private></Reference>
   </ItemGroup>

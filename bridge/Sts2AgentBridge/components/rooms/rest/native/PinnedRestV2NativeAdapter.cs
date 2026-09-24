@@ -9,7 +9,10 @@ using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.RestSite;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Nodes.Screens.Overlays;
+using MegaCrit.Sts2.Core.Nodes.Screens.ScreenContext;
 using MegaCrit.Sts2.Core.Models.Relics;
+using MegaCrit.Sts2.Core.Models;
+using Sts2AgentBridge.Successors.RoomFlowsV1.Shop.Native;
 using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.RestSite;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
@@ -32,7 +35,16 @@ public sealed class PinnedRestV2NativeAdapter : IRestV2NativeAdapter
     private RestNativeEffect? _effect;
     private Player? _player;
     private object? _overlays, _character;
-    private bool _failed, _disposed;
+    private bool _failed, _disposed, _dispatched, _finished, _unresolvedDisposal;
+    private readonly bool _interactive;
+    private RestSiteOption[]? _options;
+    private NRestSiteButton[]? _buttons;
+    private bool[]? _enabled;
+    public PinnedRestV2NativeAdapter(bool interactive = false) => _interactive = interactive;
+    internal DeckChoiceView? ReadChoice() => _effect?.ReadChoice();
+    internal RestRewardContinuation? Rewards => _effect?.Rewards;
+    internal void ApplyChoice(string action, CardModel? card = null)
+    { Check(); Require(_interactive && _effect is not null); _effect!.ApplyChoice(action, card); }
     public static bool IsAvailable => Valid(NRun.Instance?.RestSiteRoom) && NRun.Instance!.RestSiteRoom!.IsVisibleInTree();
     private static bool Valid(GodotObject? value) => value is not null && GodotObject.IsInstanceValid(value);
     private static void Require(bool value) { if (!value) throw new InvalidOperationException("rest_native_boundary"); }
@@ -52,7 +64,8 @@ public sealed class PinnedRestV2NativeAdapter : IRestV2NativeAdapter
         Require(ReferenceEquals(overlays, _overlays) && ReferenceEquals(room!.Characters[0], _character));
         var player = room!.Characters[0].Player;
         Require(player is not null);
-        bool foreground = room.IsVisibleInTree() && !map!.IsOpen && !map.IsTraveling && overlays!.ScreenCount == 0;
+        bool foreground = room.IsVisibleInTree() && !map!.IsOpen && !map.IsTraveling && overlays!.ScreenCount == 0 &&
+            (!_interactive || ActiveScreenContext.Instance.IsCurrent(room));
         var options = new List<RestV2NativeOption>();
         RestV2Card[] cards = Array.Empty<RestV2Card>();
         if (_selected is null)
@@ -67,8 +80,11 @@ public sealed class PinnedRestV2NativeAdapter : IRestV2NativeAdapter
                     option.GetType() == typeof(DigRestSiteOption) ? "dig" :
                     option.GetType() == typeof(CookRestSiteOption) ? "cook" :
                     option.GetType() == typeof(CloneRestSiteOption) ? "clone" :
-                    option.GetType() == typeof(HatchRestSiteOption) ? "hatch" : null;
-                if (action is null) continue;
+                    option.GetType() == typeof(HatchRestSiteOption) ? "hatch" :
+                    _interactive && option.GetType() == typeof(SmithRestSiteOption) ? "smith" : null;
+                if (_interactive && option.GetType() == typeof(HealRestSiteOption)) action = "heal";
+                if (action is null) { Require(!_interactive || !option.IsEnabled); continue; }
+                if (action == "smith") Require(((SmithRestSiteOption)option).SmithCount == 1);
                 Require(ReferenceEquals(OptionOwner(option), player));
                 // Each egg can contribute the same Hatch option; either one
                 // hatches all eggs. Bind the first exact native controller.
@@ -91,10 +107,10 @@ public sealed class PinnedRestV2NativeAdapter : IRestV2NativeAdapter
     }
     private static object? Anchor(string action, Player player, RestNativeState? state) => action switch {
         "lift" => player.GetRelic<Girya>(), "kindle" => player.GetRelic<PumpkinCandle>(), "dig" => player.GetRelic<Shovel>(),
-        "cook" => player.GetRelic<MeatCleaver>(), "clone" => player.GetRelic<PaelsGrowth>(), "hatch" => state?.Eggs.FirstOrDefault()?.Model,
+        "smith" or "heal" => player, "cook" => player.GetRelic<MeatCleaver>(), "clone" => player.GetRelic<PaelsGrowth>(), "hatch" => state?.Eggs.FirstOrDefault()?.Model,
         _ => null };
     private static int Counter(string action, Player player, object relic) => action switch {
-        "lift" => ((Girya)relic).TimesLifted, "kindle" => ((PumpkinCandle)relic).KindleCount,
+        "heal" => player.Creature.CurrentHp, "smith" => player.Deck.Cards.Sum(c => c.CurrentUpgradeLevel), "lift" => ((Girya)relic).TimesLifted, "kindle" => ((PumpkinCandle)relic).KindleCount,
         "dig" or "hatch" => player.Relics.Count, "clone" => player.Deck.Cards.Count, "cook" => player.Creature.MaxHp,
         _ => throw new InvalidOperationException("rest_relic") };
     private static object? OptionOwner(RestSiteOption option) =>
@@ -106,8 +122,12 @@ public sealed class PinnedRestV2NativeAdapter : IRestV2NativeAdapter
         var surface = Capture();
         Require(surface.Foreground && surface.Options.Any(x => x.Public == option.Public &&
             x.Public.Enabled && ReferenceEquals(x.Option, option.Option) && ReferenceEquals(x.Relic, option.Relic) && ReferenceEquals(x.Button, option.Button) && Equals(x.Witness, option.Witness)));
-        Require(RestV2Session.Actions(surface.Options.Select(o => o.Public).ToArray(), surface.Cards).Contains(action));
+        Require(_interactive ? action == option.Public.ActionId : RestV2Session.Actions(surface.Options.Select(o => o.Public).ToArray(), surface.Cards).Contains(action));
         _selected = option; _room = (NRestSiteRoom)surface.Room; _player = (Player)surface.Player;
+        _options = _room.Options.ToArray();
+        _buttons = _options.Select(o => _room.GetButtonForOption(o)!).ToArray();
+        Require(_buttons.All(b => Valid(b)));
+        _enabled = _buttons.Select(b => b.IsEnabled).ToArray();
         _target = typeof(NRestSiteRoom).GetMethod("AfterSelectingOptionAsync", BindingFlags.Instance | BindingFlags.NonPublic,
             null, new[] { typeof(RestSiteOption) }, null);
         Require(_target is not null && _target.ReturnType == typeof(Task) && Harmony.GetPatchInfo(_target)?.Owners.Count is not > 0);
@@ -121,9 +141,12 @@ public sealed class PinnedRestV2NativeAdapter : IRestV2NativeAdapter
                 () => ReferenceEquals(NRun.Instance, run) && ReferenceEquals(run.RestSiteRoom, _room) && ReferenceEquals(NRestSiteRoom.Instance, _room) &&
                     Valid(_room) && _room!.IsVisibleInTree() && _room.Characters.Count == 1 && ReferenceEquals(_room.Characters[0], _character) &&
                     ReferenceEquals(_room.Characters[0].Player, _player) && ReferenceEquals(run.GlobalUi.MapScreen, surface.Map) &&
-                    !run.GlobalUi.MapScreen.IsOpen && !run.GlobalUi.MapScreen.IsTraveling && ReferenceEquals(run.GlobalUi.Overlays, _overlays));
+                    !run.GlobalUi.MapScreen.IsOpen && !run.GlobalUi.MapScreen.IsTraveling && ReferenceEquals(run.GlobalUi.Overlays, _overlays) &&
+                    (!_interactive || ReferenceEquals(ActiveScreenContext.Instance.GetCurrentScreen(),
+                        run.GlobalUi.Overlays.ScreenCount == 0 ? (object)_room : run.GlobalUi.Overlays.Peek())), _interactive);
             _effect.Install();
         }
+        _dispatched = true; // Reserve before native input; incomplete disposal is never a handoff.
         ((NRestSiteButton)option.Button).ForceClick();
         Check();
     }
@@ -146,11 +169,30 @@ public sealed class PinnedRestV2NativeAdapter : IRestV2NativeAdapter
     {
         Check(); Require(_selected is not null && ExactPatch());
         _effect?.Advance();
-        bool completed = _task?.Status == TaskStatus.RanToCompletion && (_effect is null || _effect.Completed);
+        bool cancelled = _effect?.Cancelled == true;
+        if (cancelled) Require(_task is null); // A canceled native option never enters AfterSelectingOptionAsync.
+        bool completed = cancelled ? CancellationRestored() : _task?.Status == TaskStatus.RanToCompletion && (_effect is null || _effect.Completed);
         if (completed) _effect?.Verify();
-        return new(completed, _task?.IsFaulted == true || _task?.IsCanceled == true, Counter(_selected!.Public.ActionId, _player!, _selected.Relic));
+        return new(completed, _task?.IsFaulted == true || _task?.IsCanceled == true, Counter(_selected!.Public.ActionId, _player!, _selected.Relic), cancelled);
     }
-    public void Finish() { Check(); Require(_task?.Status == TaskStatus.RanToCompletion && ExactPatch()); _effect?.Verify(); _effect?.Dispose(); RemoveHook(); }
+    private bool CancellationRestored()
+    {
+        Require(_interactive && _room is not null && _options is not null && _buttons is not null && _enabled is not null &&
+            _room.Options.Count == _options.Length && _room.Options.Zip(_options).All(p => ReferenceEquals(p.First, p.Second)));
+        if (!_effect!.Completed) return false;
+        for (int i = 0; i < _options!.Length; i++)
+        {
+            var button = _room!.GetButtonForOption(_options[i]);
+            Require(Valid(button) && ReferenceEquals(button, _buttons![i]) && ReferenceEquals(button!.Option, _options[i]));
+            if (button!.IsEnabled != _enabled![i]) return false;
+        }
+        return Capture().Foreground;
+    }
+    public void Finish()
+    {
+        Check(); Require(ExactPatch() && (_effect?.Cancelled == true ? _task is null && CancellationRestored() : _task?.Status == TaskStatus.RanToCompletion));
+        _effect?.Verify(); _effect?.Dispose(); RemoveHook(); _finished = true;
+    }
     private void RemoveHook()
     {
         if (!ReferenceEquals(_active, this)) return;
@@ -164,7 +206,13 @@ public sealed class PinnedRestV2NativeAdapter : IRestV2NativeAdapter
     public void Dispose()
     {
         Require(Environment.CurrentManagedThreadId == _thread);
-        if (_disposed) return;
-        _effect?.Dispose(); RemoveHook(); _disposed = true;
+        if (_disposed) { Require(!_unresolvedDisposal); return; }
+        _unresolvedDisposal |= _dispatched && !_finished;
+        bool cleanupFailed = false;
+        try { _effect?.Dispose(); } catch { cleanupFailed = true; }
+        try { RemoveHook(); } catch { cleanupFailed = true; }
+        if (cleanupFailed) { _unresolvedDisposal = true; throw new InvalidOperationException("rest_cleanup_unresolved"); }
+        _disposed = true;
+        Require(!_unresolvedDisposal);
     }
 }

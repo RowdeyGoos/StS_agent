@@ -176,7 +176,7 @@ def parse_args(argv=None):
     parser.add_argument('--release-manifest', type=Path, required=True)
     parser.add_argument('--release-sha256', required=True)
     parser.add_argument('--expected-state-sha256', required=True)
-    parser.add_argument('--capability', choices=['campaign', 'agent', 'events', 'event-map', 'event-combat-map', 'combat', 'combat-map', 'combat-choice', 'rewards', 'cards', 'items', 'shop', 'room-event', 'rest', 'core'], required=True)
+    parser.add_argument('--capability', choices=['campaign', 'agent', 'events', 'event-map', 'event-combat-map', 'combat', 'combat-map', 'combat-choice', 'rewards', 'cards', 'items', 'shop', 'room-event', 'rest', 'rest-interactive', 'core'], required=True)
     parser.add_argument('--campaign-setup', choices=('controlled_extra_hp','normal_hp'), help='Campaign: declare the manually prepared Ironclad A0 entry. No native reset or setup mutations are performed by the controller.')
     parser.add_argument('--campaign-entry', choices=('fresh', 'resume'), help='Campaign entry: fresh (default) requires the first-act event/map; resume attaches after native Continue and records only this segment, never full-campaign acceptance.')
     parser.add_argument('--agent-dispatch-map', action='store_true', help='Agent: dispatch one advertised map node and stop after native completion; otherwise stop at the actionable map.')
@@ -197,7 +197,8 @@ def parse_args(argv=None):
     parser.add_argument('--route', help='Core route to observe, or act on with --decision and --action.')
     parser.add_argument('--decision')
     parser.add_argument('--action')
-    parser.add_argument('--rest-option', choices=('lift', 'kindle', 'dig', 'cook', 'clone', 'hatch'), help='Required for rest: execute this option once and return at the rest site.')
+    parser.add_argument('--rest-option', choices=('heal', 'smith', 'lift', 'kindle', 'dig', 'cook', 'clone', 'hatch'), help='Required for rest: execute this option once and return at the rest site.')
+    parser.add_argument('--rest-selection-policy', choices=('choose', 'cancel', 'preview-cancel'), help='Interactive rest: choose and confirm, cancel immediately, or select then cancel from the preview.')
     parser.add_argument('--rest-cook-slots', type=int, nargs=2, metavar=('FIRST', 'SECOND'), help='Cook: two increasing original deck slots (0–63); default is the first two removable cards.')
     args = parser.parse_args(argv)
     if (args.capability == 'campaign') != (args.campaign_setup is not None):
@@ -206,8 +207,12 @@ def parse_args(argv=None):
         parser.error('--campaign-entry requires --capability campaign')
     if args.rest_cook_slots is not None and (args.capability != 'rest' or args.rest_option != 'cook' or not 0 <= args.rest_cook_slots[0] < args.rest_cook_slots[1] < 64):
         parser.error('--rest-cook-slots requires Cook and two increasing slots from 0 to 63')
-    if args.capability == 'rest' and args.rest_option is None:
-        parser.error('--rest-option is required for --capability rest')
+    if args.capability in ('rest', 'rest-interactive') and args.rest_option is None:
+        parser.error('--rest-option is required for rest capabilities')
+    if args.rest_selection_policy is not None and args.capability != 'rest-interactive':
+        parser.error('--rest-selection-policy requires --capability rest-interactive')
+    if args.capability == 'rest' and args.rest_option in ('heal', 'smith'):
+        parser.error('Heal and Smith require --capability rest-interactive')
     return args
 
 
@@ -264,6 +269,9 @@ def main():
         elif args.capability == 'cards':
             host = load('unified_card_host', 'components/cards/host/card_selection_host.py')
             result = host.run_card_selection(client.exchange)
+        elif args.capability == 'rest-interactive':
+            rooms = load('unified_interactive_rest_host', 'components/rooms/host/rest_interactive_host.py')
+            result = rooms.run_rest(client.exchange, rooms.controlled_policy(args.rest_option, args.rest_selection_policy or 'choose', args.reward_policy))
         elif args.capability == 'rest':
             rooms = load('unified_room_host', 'components/rooms/host/room_flow_host.py')
             result = rooms.run_rest(client.item_exchange, args.rest_option, cook_slots=args.rest_cook_slots)

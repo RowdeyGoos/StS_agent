@@ -344,6 +344,12 @@ internal static partial class Program
     }
     private static void Parser()
     {
+        const string restRead = "/probe/rest-v3/public/decision", restAction = "/probe/rest-v3/public/action";
+        Check(BridgeRequestParser.TryParse(Head(restRead), out var restV3) && restV3.Capability == Capability.Rooms, "interactive rest uses existing room module");
+        foreach (string action in new[] { "option:heal", "option:smith", "option:cook", "select:0", "select:63", "deselect:63", "confirm", "cancel", "reward:open:7", "reward:collect:7", "reward:choose:4", "reward:skip_card", "reward:dismiss" })
+            Check(BridgeRequestParser.TryParse(Head(restAction, action), out var parsedRest) && parsedRest.Capability == Capability.Rooms && parsedRest.Action == action, "interactive rest request grammar");
+        foreach (string action in new[] { "option:unknown", "option:", "select:64", "select:00", "deselect:-1", "reward:open:8", "reward:choose:5", "reward:discard:0", "cook:0:1", "end_turn" })
+            Check(!BridgeRequestParser.TryParse(Head(restAction, action), out _), "interactive rest invalid action before dispatch");
         Check(BridgeRequestParser.TryParse(Head(CombatCardChoiceService.DecisionRouteV3),out _),"offer chooser GET grammar");
         Check(BridgeRequestParser.TryParse(Head(CombatCardChoiceService.ActionRouteV3,"select:0"),out _),"offer chooser POST grammar");
         Check(!BridgeRequestParser.TryParse(Head(CombatCardChoiceService.ActionRouteV3,"end_turn"),out _),"offer chooser rejects combat input");
@@ -536,9 +542,14 @@ internal static partial class Program
         var modules = new List<FakeModule>();
         var (runtime, port) = Start((c,_) => { var m = new FakeModule(c); modules.Add(m); return m; });
         Check(Exchange(runtime, port, Head("/probe/generic-event-v7/public/decision", token: new string('c',64))) == "" && modules.Count == 0, "authentication precedes native creation");
-        foreach (var (capability, path) in new[] { (Capability.Events,"/probe/generic-event-v7/public/decision"), (Capability.Cards,"/card-selection-v1/parent"), (Capability.Rooms,"/probe/room-flows-v1/public/decision"), (Capability.Items,"/probe/item-v1/public/item-decision") })
+        foreach (var (capability, path) in new[] { (Capability.Events,"/probe/generic-event-v7/public/decision"), (Capability.Cards,"/card-selection-v1/parent"), (Capability.Rooms,"/probe/room-flows-v1/public/decision"), (Capability.Items,"/probe/item-v1/public/item-decision"), (Capability.Rooms,"/probe/rest-v3/public/decision") })
         {
             Check(Exchange(runtime, port, Head(path)).Contains("ready"), "module available on same listener " + capability);
+            if (path == "/probe/rest-v3/public/decision")
+            {
+                Check(Exchange(runtime, port, Head("/probe/rest-v3/public/action", "option:smith")).Contains("accepted") && modules[^1].Posts == 1,
+                    "interactive rest POST reaches exact room owner on shared listener");
+            }
             modules[^1].Complete = true;
             Check(Exchange(runtime, port, Head(path)).Contains("resolved") && modules[^1].Disposed && !runtime.IsTerminalOrStopping, "successful completion keeps host running");
         }

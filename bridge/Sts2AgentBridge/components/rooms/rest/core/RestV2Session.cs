@@ -16,7 +16,7 @@ public sealed record RestV2Surface(object Run, object Player, object Room, objec
 {
     public IReadOnlyList<RestV2Card> Cards { get; init; } = Array.Empty<RestV2Card>();
 }
-public readonly record struct RestV2Progress(bool Succeeded, bool Failed, int Counter);
+public readonly record struct RestV2Progress(bool Succeeded, bool Failed, int Counter, bool Cancelled = false);
 public interface IRestV2NativeAdapter : IDisposable
 {
     RestV2Surface Capture();
@@ -77,7 +77,7 @@ public sealed class RestV2Session : IRoomFlowSession
             {
                 Require(++_reads <= RoomFlowLimits.MaximumPendingReads);
                 RestV2Progress progress = _native.Poll();
-                Require(!progress.Failed);
+                Require(!progress.Failed && !progress.Cancelled);
                 if (!progress.Succeeded) return Fixed("waiting");
                 surface = Capture(); // Selector confirmation may complete during Poll.
                 Require(surface.Foreground && progress.Counter == checked(_selected.Public.Counter + Delta(_selected.Public.ActionId, _selected.Public.Amount)));
