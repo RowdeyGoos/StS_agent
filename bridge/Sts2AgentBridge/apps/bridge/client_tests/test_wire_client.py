@@ -9,6 +9,41 @@ from run_live import core_summary, retain_read_diagnostic
 
 
 class ClientBoundaryTests(unittest.TestCase):
+    def test_waiting_boundary_does_not_become_a_later_failure_diagnostic(self):
+        for ending in ('ready', 'complete', 'unsupported'):
+            sent = []
+            replies = [framed_error(dict(parent=dict(status='waiting'))).replace(
+                           b'not_captured', b'pending_selectorless_request'),
+                       framed_error(dict(parent=dict(status=ending))).replace(
+                           b'not_captured', b'pending_context')]
+            def connect():
+                sock = FakeSocket(sent); sock.response = replies.pop(0); return sock
+            client = BridgeClient(bytearray(b'a' * 64), connector=connect)
+            client.exchange('GET', '/probe/generic-event-v7/public/decision')
+            self.assertIsNone(client.native_diagnostic)
+            client.exchange('GET', '/probe/generic-event-v7/public/decision')
+            self.assertEqual(client.native_diagnostic, 'pending_context' if ending == 'unsupported' else None)
+            self.assertEqual(len(sent), 2)
+            client.close()
+
+    def test_pending_native_failure_is_retained_without_raw_data_or_retry(self):
+        for diagnostic in ('pending_selectorless_request', 'pending_binding_failed', 'pending_context',
+                           'pending_owner_patches', 'arbitrary_private_text'):
+            sent = []
+            def connect():
+                sock = FakeSocket(sent)
+                sock.response = framed_error(dict(status='unsupported')).replace(
+                    b'not_captured', diagnostic.encode())
+                return sock
+            client = BridgeClient(bytearray(b'a' * 64), connector=connect)
+            client.exchange('GET', '/probe/generic-event-v7/public/decision')
+            result = dict(status='failed', attempted=1, accepted=1, reconciled=0)
+            expected = result if diagnostic == 'arbitrary_private_text' else {**result, 'native_diagnostic': diagnostic}
+            self.assertEqual(retain_read_diagnostic(result, client), expected)
+            self.assertEqual(len(sent), 1)
+            self.assertTrue(all(not any(buffer) for buffer in sent))
+            client.close()
+
     def test_rest_actions_and_exact_cook_pair(self):
         route = '/probe/room-flows-v1/public/action'
         token = bytearray(b'a' * 64)

@@ -31,6 +31,8 @@ def run_rewards(request, *, policy='first-card', potion_policy='stop-on-full', c
     healing_schema = None
     max_hp_schema = None
     modified_gold_schema = None
+    expanded_schema = None
+    fake_mango_schema = None
     pending = None
     finished = set()
     offers = None
@@ -44,7 +46,7 @@ def run_rewards(request, *, policy='first-card', potion_policy='stop-on-full', c
         return (reward['kind'], reward['gold_amount'], tuple(reward['cards']), reward.get('item_key'), reward.get('potion_capacity_gain',0), reward.get('heal_amount',0), reward.get('max_hp_gain',0), reward.get('gold_gain',reward['gold_amount']))
 
     def validate_domain(state):
-        nonlocal offers, capacity_schema, healing_schema, max_hp_schema, modified_gold_schema
+        nonlocal offers, capacity_schema, healing_schema, max_hp_schema, modified_gold_schema, expanded_schema, fake_mango_schema
         if capacity_schema is None:capacity_schema=state.get('capacity_rewards',False)
         require(state.get('capacity_rewards',False)==capacity_schema,'reward_offer_changed')
         if healing_schema is None:healing_schema=state.get('healing_rewards',False)
@@ -53,6 +55,10 @@ def run_rewards(request, *, policy='first-card', potion_policy='stop-on-full', c
         require(state.get('max_hp_rewards',False)==max_hp_schema,'reward_offer_changed')
         if modified_gold_schema is None:modified_gold_schema=state.get('modified_gold_rewards',False)
         require(state.get('modified_gold_rewards',False)==modified_gold_schema,'reward_offer_changed')
+        if expanded_schema is None:expanded_schema=state.get('expanded_rewards',False)
+        require(state.get('expanded_rewards',False)==expanded_schema,'reward_offer_changed')
+        if fake_mango_schema is None:fake_mango_schema=state.get('fake_mango_rewards',False)
+        require(state.get('fake_mango_rewards',False)==fake_mango_schema,'reward_offer_changed')
         for slot, reward in enumerate(state['rewards']):
             require(type(reward['reward_slot']) is int and reward['reward_slot'] == slot)
             require(reward['kind'] != 'unsupported' or reward['successfully_selected'], 'unsupported_reward')
@@ -162,7 +168,8 @@ def run_rewards(request, *, policy='first-card', potion_policy='stop-on-full', c
             action = codec._choose_action(state, policy, potion_policy)
             if policy == 'skip-card' and action['kind'] == 'open_card':
                 require(state['rewards'][action['reward_slot']]['card_selection_can_skip'], 'card_reward_not_skippable')
-            require(accepted < 17 and attempted < 25, 'reward_action_limit')
+            limit = 65 if expanded_schema else 17
+            require(accepted < limit and attempted < limit + 8, 'reward_action_limit')
             decision, action_id = state['decision_id'], action['action_id']
             request_body = bytearray(json.dumps({'decision_id': decision, 'action_id': action_id}, separators=(',', ':')).encode())
             receipt = None

@@ -341,6 +341,7 @@ internal static partial class Program
     static void Check(bool okay,string name){_checks++;if(!okay)throw new Exception(name);}
     static void Main(string[] args)
     {
+        if(args.SequenceEqual(new[]{"--automatic-removal"})){AutomaticRemovalTests();Console.WriteLine("automatic removal checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--abandon-popup"})){AbandonPopupCases();Console.WriteLine("abandon popup checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--sphere"})){SphereCases();Console.WriteLine("sphere checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--shop-removal"})){ShopRemovalCases();Console.WriteLine("shop removal checks: "+_checks);return;}
@@ -364,6 +365,7 @@ internal static partial class Program
         if(args.SequenceEqual(new[]{"--event-surfaces"})){SurfaceTests();Console.WriteLine("event surface checks: "+_checks);return;}
 #if TERMINAL_REWARD_TESTS
         if(args.SequenceEqual(new[]{"--empty-rewards"})){EmptyTerminalRewardCases();Console.WriteLine("empty terminal reward checks: "+_checks);return;}
+        if(args.SequenceEqual(new[]{"--fake-mango"})){FakeMangoRewardCases();Console.WriteLine("Fake Mango checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--combat-items"})){CombatItemCases();Console.WriteLine("combat item checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--embedded-combat"})){EmbeddedCombatCases();SpecialCardCases();Console.WriteLine("embedded combat checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--special-card"})){SpecialCardCases();Console.WriteLine("special card checks: "+_checks);return;}
@@ -502,7 +504,7 @@ internal static partial class Program
         RemovalLayoutTests();
         MultiEnchantmentTests();
         ItemSetTests();EventCapacityCases(); ItemPolicyCases();MerchantScreenCases();ShopPotionOwnershipCases();ShopRelicCases();ShopPickupCases();MerchantFightCases();ShopRemovalCases();SphereCases();AbandonPopupCases();TerminalCases();
-        CardRewardTests();
+        AutomaticRemovalTests();CardRewardTests();
         CardRewardSetTests();
         CombatHandoffCases();OwnershipDiagnosticCases();
 #if TERMINAL_REWARD_TESTS
@@ -1088,6 +1090,45 @@ internal static partial class Program
             Check(f.Player.Deck.Cards.SequenceEqual(f.Cards),"rejected removal target leaves deck unchanged");
         }
     }
+    private static void AutomaticRemovalTests()
+    {
+        foreach(var shape in new[]{"awaited","forwarded","direct"})
+        foreach(var mode in new[]{"one","empty","delayed","request_delayed","foreign","duplicate","survivor","survivor_owner","foreign_append","extra_removed","missing_effect","manual","too_many","wrong_owner","duplicate_request","wrong_prompt"}) {
+            if(mode=="wrong_prompt"&&shape!="direct")continue;
+            using var f=new RemovalFixture("AUTOMATIC_REMOVE",1,1,mode=="empty"?0:mode is "survivor" or "survivor_owner" or "extra_removed" or "too_many"?2:1,delayedCompletion:mode=="delayed");
+            f.NativeAutomatic=true;
+            f.DirectGenericRemoval=shape=="direct";
+            if(shape=="forwarded")CardSelectCmd.RemovalHandler=(player,prefs,filter)=>CardSelectCmd.FromDeckGeneric(player,prefs,filter);
+            CardSelectCmd.GenericHandler=(player,prefs,filter)=>Task.FromResult<IEnumerable<CardModel>>(mode=="foreign"?new[]{new CardModel{Owner=player}}:
+                mode=="duplicate"?new[]{f.Cards[0],f.Cards[0]}:mode=="too_many"?f.Cards:f.Cards.Take(1));
+            var requestGate=new TaskCompletionSource<IEnumerable<CardModel>>();
+            if(mode=="request_delayed")CardSelectCmd.GenericHandler=(player,prefs,filter)=>requestGate.Task;
+            if(mode=="wrong_owner")f.WrongPlayer=true;
+            if(mode=="wrong_prompt")f.WrongRemovalPrompt=true;
+            if(mode=="duplicate_request")f.AfterEffect=()=>_=CardSelectCmd.FromDeckGeneric(f.Player,
+                new CardSelectorPrefs(1,1){Prompt=CardSelectorPrefs.RemoveSelectionPrompt});
+            if(mode=="manual")f.ManualAutomatic=true;
+            if(mode=="survivor")f.AfterEffect=()=>f.Cards[1].CurrentUpgradeLevel++;
+            if(mode=="survivor_owner")f.AfterEffect=()=>f.Cards[1].Owner=new Player();
+            if(mode=="foreign_append")f.AfterEffect=()=>f.Player.Deck.Cards.Add(new CardModel{Owner=new Player()});
+            if(mode=="extra_removed")f.AfterEffect=()=>f.Player.Deck.Cards.Clear();
+            if(mode=="missing_effect")f.IgnoreRequestForEffect=true;
+            var result=f.Start();
+            if(mode=="request_delayed") {
+                Check(result.Status=="waiting","automatic removal waits for captured request");
+                requestGate.SetResult(f.Cards);result=f.Session.Read();
+            }
+            if(mode=="delayed") {
+                Check(result.Status=="waiting","automatic removal waits for parent callback");
+                f.CompletionGate.SetResult();result=f.Session.Read();
+            }
+            if(mode is "one" or "empty" or "delayed" or "request_delayed") {
+                Check(result.Status=="ready"&&result.Phase=="proceed"&&result.Child is null,"automatic removal returns to parent without child input: "+shape+"/"+mode);
+                Check(f.SelectCalls==0&&f.ConfirmCalls==0&&f.OptionCalls==1,"no synthetic selector action or parent retry");
+                f.Session.Apply(result.DecisionId,"choose:0");Check(f.Session.Read().Status=="complete","automatic removal proceeds to map");
+            } else Check(result.Status=="unsupported","invalid automatic removal rejected: "+mode);
+        }
+    }
     private static void RemovalTests()
     {
         foreach(var spec in new[]{("FIRST_REMOVAL",2,2,new[]{1,0},false),("ANOTHER_REMOVAL",1,3,new[]{2,0},true),("HELD_OUT_REMOVAL",1,3,new[]{3,1,0},false),("MAX_REMOVAL",8,8,Enumerable.Range(0,8).Reverse().ToArray(),false)})
@@ -1167,7 +1208,7 @@ internal static partial class Program
         internal Func<IEnumerable<CardModel>,IEnumerable<CardModel>>? RequestResult,ScreenResult;
         internal bool IgnoreRequestForEffect=false;
         internal Action? BeforeCreate,AfterCreate,AfterEffect;
-        internal bool FaultRequest,FaultCallback,DuplicateCreate,WrongPlayer,ChangePrefs,Shortcut;
+        internal bool FaultRequest,FaultCallback,DuplicateCreate,WrongPlayer,ChangePrefs,Shortcut,NativeAutomatic,ManualAutomatic,DirectGenericRemoval,WrongRemovalPrompt;
         internal RemovalFixture(string name,int minSelect,int maxSelect,int domainCount=10,bool delayedCreation=false,bool delayedCompletion=false,bool enchant=false,int amount=1)
         {
             _enchant=enchant;_amount=amount;Enchantment.Id.Entry="STEADY";
@@ -1177,7 +1218,11 @@ internal static partial class Program
             Run.EventRoom=Room;Run.GlobalUi=new GlobalUiState{MapScreen=Map,Overlays=Overlays};NRun.Instance=Run;NEventRoom.Instance=Room;NMapScreen.Instance=Map;
             AddOption(new EventOption{TextKey=name+".OPTION",Callback=async()=>{
                 OptionCalls++;
-                var selected=enchant ? await CardSelectCmd.FromDeckForEnchantment(Cards,Enchantment,amount,new CardSelectorPrefs(minSelect,maxSelect)) : await CardSelectCmd.FromDeckForRemoval(WrongPlayer?new Player():Player,new CardSelectorPrefs(minSelect,maxSelect),null);
+                var prefs=new CardSelectorPrefs(minSelect,maxSelect){RequireManualConfirmation=ManualAutomatic,
+                    Prompt=WrongRemovalPrompt?new MegaCrit.Sts2.Core.Localization.LocString("card_selection","TO_UNKNOWN"):CardSelectorPrefs.RemoveSelectionPrompt};
+                var selected=enchant ? await CardSelectCmd.FromDeckForEnchantment(Cards,Enchantment,amount,new CardSelectorPrefs(minSelect,maxSelect)) : DirectGenericRemoval
+                    ? await CardSelectCmd.FromDeckGeneric(WrongPlayer?new Player():Player,prefs,null,null)
+                    : await CardSelectCmd.FromDeckForRemoval(WrongPlayer?new Player():Player,prefs,null);
                 foreach(var card in IgnoreRequestForEffect?Selected:selected)
                     if(enchant)Fixture.ApplyEnchantment(card,amount,"STEADY");else Player.Deck.Cards.Remove(card);
                 AfterEffect?.Invoke();
@@ -1189,6 +1234,7 @@ internal static partial class Program
             CardSelectCmd.RemovalHandler=async(player,prefs,filter)=>{
                 if(delayedCreation)await CreationGate.Task;
                 BeforeCreate?.Invoke();
+                if(NativeAutomatic)return await CardSelectCmd.FromDeckGeneric(player,prefs,filter,null);
                 if(Shortcut)return new[]{Cards[0]};
                 var originals=Cards.Where(c=>c.IsRemovable&&(filter?.Invoke(c)??true)).ToArray();
                 var screen=NDeckCardSelectScreen.Create(originals,ChangePrefs?prefs with{UnpoweredPreviews=true}:prefs);

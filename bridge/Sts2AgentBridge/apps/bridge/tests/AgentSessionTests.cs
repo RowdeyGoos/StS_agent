@@ -11,7 +11,8 @@ internal static class AgentSessionTests
         internal object Entity = new();
         internal int Hp = 80;
         internal bool Unsupported, FailDispose;
-        public string InitialFamily() => "combat";
+        internal string Family = "combat";
+        public string InitialFamily() => Family;
         public AgentCapture Capture(string family, JsonElement legacy, JsonArray history, string? source)
         {
             if (Unsupported) throw new AgentUnsupported();
@@ -69,6 +70,16 @@ internal static class AgentSessionTests
 
     internal static void Run(Action<bool, string> check)
     {
+        {
+            var native=new Native();bool expanded=false;
+            ModuleReply Legacy(BridgeRequest r)=>expanded&&!r.IsPost
+                ?new(JsonSerializer.SerializeToUtf8Bytes(new{schema_version=9,status="ready",decision_id=new string('e',64)}))
+                :native.Handle(r);
+            using var session=new AgentSession(new Reader{Family="reward"},Legacy,"nonce");
+            var before=Read(session);Act(session,before);expanded=true;
+            var after=Read(session);
+            check(after["status"]!.GetValue<string>()=="unsupported"&&after["accepted"]!.GetValue<int>()==1&&after["reconciled"]!.GetValue<int>()==0&&native.Posts==1,"agent v1 rejects expanded rewards before reconciliation");
+        }
         foreach(bool complete in new[]{false,true})
         {
             var native=new Native();bool infinity=false;

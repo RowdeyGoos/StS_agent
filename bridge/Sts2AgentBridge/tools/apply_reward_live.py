@@ -256,7 +256,7 @@ def _validate_action(raw_action: object, screen_kind: str, schema: int = 1) -> d
         if (
             type(reward_slot) is not int
             or reward_slot < 0
-            or reward_slot > 7
+            or reward_slot > (31 if schema >= 9 else 7)
             or action["card_slot"] is not None
             or action_id != prefix + str(reward_slot)
         ):
@@ -306,7 +306,7 @@ def _validate_ready(body: bytes) -> dict[str, object]:
         revision = root["decision_revision"]
         screen_kind = root["screen_kind"]
         if (
-            type(root["schema_version"]) is not int or root["schema_version"] not in (1, 2, 3, 4, 5, 6, 7, 8)
+            type(root["schema_version"]) is not int or root["schema_version"] not in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
             or root["status"] != "ready"
             or root["decision_kind"] != "reward"
             or root["actionable"] is not True
@@ -320,7 +320,7 @@ def _validate_ready(body: bytes) -> dict[str, object]:
         player = _validate_player(root["player"])
 
         raw_rewards = root["rewards"]
-        if not isinstance(raw_rewards, list) or len(raw_rewards) > 8:
+        if not isinstance(raw_rewards, list) or len(raw_rewards) > (32 if schema >= 9 else 8):
             raise ValueError("reward count")
         if screen_kind == "card_reward" and len(raw_rewards) != 1:
             raise ValueError("child reward count")
@@ -328,6 +328,8 @@ def _validate_ready(body: bytes) -> dict[str, object]:
         previous_index = -1
         for slot, raw_reward in enumerate(raw_rewards):
             reward = _validate_reward(raw_reward, slot, root["schema_version"])
+            if reward['kind']=='relic' and reward.get('item_key')=='FAKE_MANGO' and schema<10:
+                raise ValueError('Fake Mango effect schema')
             if int(reward["reward_index"]) <= previous_index:
                 raise ValueError("reward index order")
             if schema >= 8:
@@ -339,7 +341,7 @@ def _validate_ready(body: bytes) -> dict[str, object]:
                 elif gain is not None:raise ValueError("unexpected gold gain")
             if schema >= 7:
                 gain=reward["max_hp_gain"]
-                expected=7 if reward["kind"]=="relic" and reward["item_key"]=="STRAWBERRY" else 0
+                expected=({'STRAWBERRY':7,'FAKE_MANGO':3} if schema>=10 else {'STRAWBERRY':7}).get(reward['item_key'],0) if reward['kind']=='relic' else 0
                 if type(gain) is not int or gain!=expected:raise ValueError("max HP effect")
                 if gain and not reward['successfully_selected'] and not probe._is_bounded_nonnegative_integer(player['max_hp']+gain):
                     raise ValueError("max HP exceeds client range")
@@ -355,7 +357,7 @@ def _validate_ready(body: bytes) -> dict[str, object]:
             raise ValueError("reward schema")
 
         raw_actions = root["legal_actions"]
-        if not isinstance(raw_actions, list) or not 1 <= len(raw_actions) <= (17 if schema >= 4 else 9):
+        if not isinstance(raw_actions, list) or not 1 <= len(raw_actions) <= (41 if schema >= 9 else 17 if schema >= 4 else 9):
             raise ValueError("legal action count")
         actions = [_validate_action(action, str(screen_kind), schema) for action in raw_actions]
         action_ids = [str(action["action_id"]) for action in actions]
@@ -404,6 +406,8 @@ def _validate_ready(body: bytes) -> dict[str, object]:
         **({"healing_rewards": True} if schema >= 6 else {}),
         **({"max_hp_rewards": True} if schema >= 7 else {}),
         **({"modified_gold_rewards": True} if schema >= 8 else {}),
+        **({"expanded_rewards": True} if schema >= 9 else {}),
+        **({"fake_mango_rewards": True} if schema >= 10 else {}),
     }
 
 
@@ -606,6 +610,10 @@ def _validate_transition(
             fail(EXIT_MISMATCH, "item_claim_reconciliation_failed")
 
     complete = after["screen_kind"] in (("map", "act", "ending") if campaign else ("map",))
+    if before.get("fake_mango_rewards") and not complete and not after.get("fake_mango_rewards"):
+        fail(EXIT_MISMATCH,"reward_response_mismatch")
+    if before.get("expanded_rewards") and not complete and not after.get("expanded_rewards"):
+        fail(EXIT_MISMATCH,"reward_response_mismatch")
     if before.get("modified_gold_rewards") and not complete and not after.get("modified_gold_rewards"):
         fail(EXIT_MISMATCH,"reward_response_mismatch")
     if before.get("max_hp_rewards") and not complete and not after.get("max_hp_rewards"):
@@ -654,7 +662,7 @@ def _run_apply_reward(
         collected_items: list[dict[str, object]] = []
 
         while state["screen_kind"] != "map":
-            if len(applied) >= _MAXIMUM_ACCEPTED_ACTIONS:
+            if len(applied) >= (65 if state.get("expanded_rewards") else _MAXIMUM_ACCEPTED_ACTIONS):
                 fail(EXIT_MISMATCH, "reward_action_budget_exhausted")
             action = _choose_action(state, decision_provider)
             action_id = str(action["action_id"])

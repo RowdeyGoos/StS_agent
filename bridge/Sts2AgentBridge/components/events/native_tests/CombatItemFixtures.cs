@@ -24,7 +24,9 @@ internal static partial class Program
         PotionCapacityCases();
         HealingRewardCases();
         MaxHpRewardCases();
+        FakeMangoRewardCases();
         ModifiedGoldRewardCases();
+        ExpandedTerminalRewardCases();
         foreach(int count in new[]{1,2,3,8})foreach(bool compact in new[]{false,true}) {
             using var f=new CombatItemsFixture(count);
             var reader=f.Reader;var applier=f.Applier;
@@ -251,6 +253,40 @@ internal static partial class Program
             Check(f.Buttons.Single(b=>b.Reward is PotionReward).ForceClickCalls==0,"skipping sends no potion click");
         }
     }
+    private static void ExpandedTerminalRewardCases()
+    {
+        foreach(int count in new[]{10,32})foreach(bool compact in new[]{false,true}) {
+            // Populate the terminal screen directly: the event-entry extra-reward
+            // bound is a separate contract, not the terminal reader's bound.
+            using var f=new CombatItemsFixture(0);
+            for(int i=0;i<count;i++) {
+                var relic=new RelicModel();relic.Id.Entry="EXPANDED_"+i;
+                var reward=new RelicReward{Player=f.World.Player,RewardsSetIndex=3,IsPopulated=true,Relic=relic};
+                var button=new NRewardButton{Reward=reward};
+                button.Handler=()=>{reward.ClaimedRelic=relic;relic.Owner=f.World.Player;f.World.Player.Relics.Add(relic);reward.SuccessfullySelected=true;return Task.CompletedTask;};
+                f.Screen.Children.Add(button);f.Buttons.Add(button);
+            }
+            for(int claimed=0;claimed<count;claimed++) {
+                var ready=f.Reader.Read();
+                Check(ready.Status==PublicDecisionStatus.Ready&&ready.ExpandedRewards,"expanded terminal screen stays schema nine through compaction");
+                // Choose from the far end to exercise multi-digit slots.
+                string action=ready.LegalActions.Last(a=>a.StartsWith("collect:",StringComparison.Ordinal));
+                Check(PublicRewardActionRequest.TryCreate(ready.DecisionId,action,out var request)&&f.Applier.Apply(request).Outcome==PublicRewardActionApplyOutcome.Accepted,"expanded exact pickup accepted");
+                if(compact)f.Screen.Children.RemoveAll(n=>n is NRewardButton b&&b.Reward.SuccessfullySelected);
+                var after=f.Reader.Read();
+                Check(after.Status==PublicDecisionStatus.Ready&&after.DecisionRevision==claimed+1&&after.ExpandedRewards,"expanded pickup reconciles once");
+                Check(f.Applier.Apply(request).Outcome==PublicRewardActionApplyOutcome.AlreadyApplied,"expanded replay rejected");
+            }
+            var done=f.Reader.Read();PublicRewardActionRequest.TryCreate(done.DecisionId,"proceed",out var exit);
+            Check(f.Applier.Apply(exit).Outcome==PublicRewardActionApplyOutcome.Accepted&&f.Reader.Read().Status==PublicDecisionStatus.Complete,"expanded screen completes to map");
+            Check(f.Buttons.All(b=>b.ForceClickCalls==1),"every expanded target input once");
+        }
+        using(var f=new CombatItemsFixture(0)) {
+            for(int i=0;i<33;i++)f.Screen.Children.Add(new NRewardButton{Reward=new GoldReward{Player=f.World.Player,RewardsSetIndex=i,Amount=1}});
+            Check(f.Reader.Read().Status==PublicDecisionStatus.Unsupported,"thirty-three rewards rejected before input");
+        }
+    }
+
     private sealed class CombatItemsFixture : IDisposable
     {
         internal readonly Fixture World=new("COMBAT_ITEMS");

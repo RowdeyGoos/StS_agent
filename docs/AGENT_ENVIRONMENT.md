@@ -421,6 +421,33 @@ benchmarks under [TARGET](TARGET.md).
 
 ## Execution order and validation discipline
 
+### Full shared live interface follow-through — in progress
+
+The user requested the remaining shared interface and bridge gaps on 2026-09-24,
+after milestone 7 acceptance. Baseline work is committed as `1093aca`, `222dcb8`
+and `dbd7861`. The full headless profile is complete; the native campaign controller
+still uses its own choices and is not yet a producer of `full_run_v2`.
+
+The first bridge corrections extend terminal rewards to 32 entries under schema
+9 and accept the native selectorless removal continuation. Focused native/router
+and shared-client tests passed, including all 65 actions for 32 card rewards.
+Their representative live checks remain distinct from fixture evidence.
+
+The remaining implementation must provide full public native observations and
+semantic candidates across combat, potions, rewards, maps, shops, rests, events,
+Ancients and the ending; expose nested selections to the same policy callback;
+and retain exact parent/child ownership, version negotiation, reconciliation and
+public-only recording. The concrete rest gaps are native Smith/Cook cancellation
+and Dream Catcher/Tiny Mailbox reward continuation. The Dig pool audit found no
+normal-game pickup-screen caller among its Common/Uncommon/Rare relics; broader
+injected pickup screens remain a contract limit.
+These changes belong in the existing native modules, router and client. Completion
+requires a shared-policy native run through the affected decisions, appropriate
+paired/privacy/adversarial fixtures, one stable combined release and owned cleanup.
+
+This follow-through remains open. The accepted assisted campaign is not evidence
+that the full shared native profile already exists.
+
 The integration slice, fixed-space Gym consumer, full headless profile and
 operational delivery span the completed milestones **1 → 2 → 3 → 4 → 5 → 6**.
 Milestone 7's assisted live campaign is accepted separately. Broader native

@@ -156,3 +156,30 @@ does not establish resume-time card menus, multiple item offers or a relic choos
 these concrete interactions from unsupported shapes with no identified caller.
 The audit is static evidence of native behavior, not a live acceptance result.
 Original census artifacts and historical hashes remain unchanged.
+
+
+## Dig pool audit: September 24
+
+Source inspection of the same pinned v0.107.1 assembly narrows the earlier Dig
+follow-up gap. `DigRestSiteOption.OnSelect` calls the no-rarity
+`RelicFactory.PullNextRelicFromFront(Player)`, which rolls only Common, Uncommon
+or Rare (fallback Circlet). `RelicGrabBag.Populate` separates relics by their
+actual rarity; empty-pool fallback moves Common → Uncommon → Rare → Circlet,
+never to Shop or Ancient in single player. The test injector can override the draw, but that is controlled
+setup rather than a normal pool member.
+
+The inspected normal-rarity `AfterObtained` overrides are Mango, Old Coin, Pear,
+Potion Belt, Strawberry, War Paint and Whetstone. They apply direct HP, gold,
+capacity or automatic-upgrade effects; none opens a selector or reward screen.
+Gambling Chip's hand selector is a combat-start callback, not its pickup.
+`RelicCmd.Obtain` awaits the obtained relic's `AfterObtained` and returns the exact
+relic; it does not dispatch an additional general pickup hook.
+
+The previously named selectors/reward sets belong to Shop or Ancient relics:
+Dolly's Mirror, Gnarled Hammer, Kifuda, Punch Dagger, Royal Stamp, Cauldron and
+Orrery are Shop; Yummy Cookie, Astrolabe, Calling Bell and Pandora's Box are
+Ancient. Their existence does not establish a missing ordinary Dig continuation.
+The current helper's one-selector/three-card bounds remain explicit, without a
+confirmed necessary normal-Dig caller beyond them. This is a source-scope
+correction, not a new live Dig result. Smith/Cook cancellation and Dream
+Catcher/Tiny Mailbox heal rewards remain concrete rest-site interactions.

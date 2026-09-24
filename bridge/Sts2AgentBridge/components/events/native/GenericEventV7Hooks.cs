@@ -631,6 +631,11 @@ public sealed class GenericEventV7Hooks : IDisposable
         var expected=CardSelectorPrefs.TransformSelectionPrompt;
         return prefs.Prompt is {} prompt && prompt.LocTable==expected.LocTable && prompt.LocEntryKey==expected.LocEntryKey;
     }
+    private static bool RemovalPrompt(CardSelectorPrefs prefs)
+    {
+        var expected=CardSelectorPrefs.RemoveSelectionPrompt;
+        return prefs.Prompt is {} prompt && prompt.LocTable==expected.LocTable && prompt.LocEntryKey==expected.LocEntryKey;
+    }
     private static void GenericDeckPrefix(Player __0,CardSelectorPrefs __1,Func<CardModel,bool>? __2,Func<CardModel,int>? __3,out State __state)
     {
         __state=new State {Previous=Request.Value};var b=Parent.Value;
@@ -638,18 +643,27 @@ public sealed class GenericEventV7Hooks : IDisposable
         // ownership and its own completion task; do not admit a second child.
         if(b is not null&&ReferenceEquals(Request.Value,b)&&b.Operation==Sts2AgentBridge.Successors.CardSelectionV1.CardSelectionV1Operation.Remove)
         {
-            if(!Owns(b)||b.Closed||!ReferenceEquals(__0,b.Player)||!b.SamePrefs(__1)||b.ScreenSeen)b.Failed=true;
+            if(!Owns(b)||b.Closed||!ReferenceEquals(__0,b.Player)||!b.SamePrefs(__1)||b.ScreenSeen||b.GenericDeckRemoval)b.Failed=true;
+            else b.GenericDeckRemoval=true;
             return;
         }
         if(b is null){if(_armed is not null)_armed.Failed=true;return;}
         __state.Binding=b;
         try
         {
+            bool removal=RemovalPrompt(__1);
             if(!Owns(b)||b.Closed||b.RequestSeen||!ReferenceEquals(__0,b.Player)||!b.ContextValid(false)||!b.BindSelectionDeck()||
-                !TransformPrompt(__1)||__1.MinSelect!=1||__1.MaxSelect!=1||__1.Cancelable)
+                __1.Cancelable || (removal ? __1.MinSelect<1||__1.MinSelect>__1.MaxSelect||__1.MaxSelect>8 :
+                    !TransformPrompt(__1)||__1.MinSelect!=1||__1.MaxSelect!=1))
             {b.Failed=true;return;}
-            b.RequestSeen=true;b.Prefs=__1;b.GenericDeckTransform=true;
-            b.Operation=Sts2AgentBridge.Successors.CardSelectionV1.CardSelectionV1Operation.Transform;
+            // The synchronous FromDeckForRemoval wrapper can be inlined by the
+            // game runtime. Own the generic request itself in either case; its
+            // prompt classifies intent, and the exact result/deck delta still
+            // has to prove completion. Never invoke its filter a second time.
+            b.RequestSeen=true;b.Prefs=__1;b.GenericDeckTransform=!removal;b.GenericDeckRemoval=removal;
+            b.RemovalPredicate=removal?__2:null;
+            b.Operation=removal?Sts2AgentBridge.Successors.CardSelectionV1.CardSelectionV1Operation.Remove:
+                Sts2AgentBridge.Successors.CardSelectionV1.CardSelectionV1Operation.Transform;
             Request.Value=b;
         }
         catch{b.Failed=true;}

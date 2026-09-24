@@ -269,7 +269,7 @@ internal static partial class Program
         foreach(var fault in new[]{"prompt","table","null_prompt","count","cancel","duplicate","foreign","untransformable"})
         {
             using var f=new TransformFixture("GENERIC_BAD_"+fault,1,genericDeck:true);
-            if(fault=="prompt")f.GenericPrompt=new("card_selection","TO_REMOVE");
+            if(fault=="prompt")f.GenericPrompt=new("card_selection","TO_UNKNOWN");
             if(fault=="table")f.GenericPrompt=new("events","TO_TRANSFORM");
             if(fault=="null_prompt")f.GenericPrompt=null;
             if(fault=="count")f.MinimumOverride=0;
@@ -278,6 +278,18 @@ internal static partial class Program
             if(fault=="foreign")f.GenericDomain=cards=>cards.Take(2).Append(f.NewCard("FOREIGN"));
             if(fault=="untransformable")f.GenericDomain=cards=>cards.Take(2).Append(f.Cards[^1]);
             Check(f.Start().Status=="unsupported","generic rejects "+fault);Check(f.SelectCalls==0&&f.ConfirmCalls==0,"generic bad request no child input");
+        }
+        using(var f=new TransformFixture("GENERIC_MISLABELLED_REMOVAL",1,genericDeck:true))
+        {
+            f.GenericPrompt=CardSelectorPrefs.RemoveSelectionPrompt;
+            var child=f.Start();
+            Check(child.Status=="child"&&child.Child!.Operation=="remove"&&child.Child.ContractVersion=="card_remove_v2","removal prompt classifies removal only");
+            f.Act(child,"select:0");f.Act(child,"confirm");
+            // The removal contract certifies the exact selected removal and
+            // observes one append without certifying how it was generated.
+            Check(f.Child(child) is CardSelectionV1ResolvedResult {Operation:"remove"} result&&
+                result.SelectedCards.Count==1&&result.ParentAddedCards is [{Key:"Initial_Card_0"}],"removal plus separately observed parent grant");
+            Check(f.ConfirmCalls==1&&f.CompletionValid&&f.Session.Read().Phase=="proceed","removal delta does not claim a certified transform mapping");
         }
         foreach(var fault in new[]{"legality","preview","result","command","delta"})
         {

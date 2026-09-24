@@ -83,7 +83,8 @@ a combat rejection is not inferred to be an ownership failure.
 Process-wide limits are 131,072 reads, 8,192 action reservations and 64 feature
 sessions, with stricter limits inside individual controllers. The production core
 reward reader permits **64 terminal reward screens per game process**, at most
-eight entries and 17 accepted actions per screen. Starting another client resets
+eight entries and 17 accepted actions for schemas 1–8; schemas 9–10 admit 32 entries
+and 65 accepted actions. Starting another client resets
 none of these counters. Event-owned resume-item children use a separate path and
 do not consume this core reward counter.
 
@@ -398,7 +399,7 @@ cleanup must all succeed before another capability can take ownership.
 The campaign stops at 90 minutes, 320 stages, 8,192 POSTs or 131,072 reads. Each
 combat retains a 15-minute, 96-round, 512-accepted-action limit. Process budgets
 are persistent: 8,192 combat actions, 80 map actions, 160 room actions and 64
-terminal reward screens (eight entries and 17 accepted actions per screen), 1,024
+terminal reward screens (up to 32 entries and 65 accepted actions under schemas 9–10), 1,024
 v2/v3 combat-selector episodes (32 inputs each), plus
 the unchanged 64 feature-session limit. Starting another client resets none of
 these native counters. Ordinary bounded client modes keep their tighter limits.
@@ -551,7 +552,8 @@ Crystal Sphere's own full-inventory behavior.
 `--reward-policy first-card` (default) or `skip-card` governs ordinary terminal
 card menus. Both collect supported gold/items and direct special cards. Unsupported
 uncollected rewards stop the flow. Terminal reward bounds are 45 seconds, 512 reads,
-17 accepted/25 attempted actions and eight known no-mutation stale rejections,
+17 accepted/25 attempted actions for schemas 1–8, or 65 accepted/73 attempted
+actions for schemas 9–10, and eight known no-mutation stale rejections,
 subject to the process-wide limits above.
 
 Results retain verified collections, special cards, discarded potions, skipped
@@ -561,7 +563,9 @@ item identity, potion slots, capacity, exact Fake Lee’s Waffle healing and
 Strawberry’s +7 max HP/+7 HP, and Bowler Hat’s modified gold gain; waiting,
 completion and receipt schemas keep their own versioning. See the
 [terminal reward reference](../../docs/GENERIC_EVENTS.md#terminal-combat-rewards)
-for exact wire/effect semantics and the eight-entry limit.
+for exact wire/effect semantics and versioned entry limits. Expanded screens use
+the unified client, whose response bound is 64 KiB; the retired standalone probe
+transport retains its original 4 KiB bound.
 
 ## Cleanup
 

@@ -28,7 +28,7 @@ internal sealed class PinnedPublicItemRewardClaim
         return slots.Where(p=>p is not null).All(p=>ValidKey(Key(p))) && slots.Where(p=>p is not null).Distinct(ReferenceEqualityComparer.Instance).Count()==slots.Count(p=>p is not null);
     }
     internal static int CapacityGain(Reward reward)=>Sts2AgentBridge.Items.Native.PinnedPotionCapacity.Gain(Model(reward));
-    // Strawberry's pinned pickup grants exactly seven max HP and seven healing.
+    // These pinned pickups grant max HP and heal by exactly that gain.
     // Match the native type, key and variable; the public key is not authority.
     internal static int MaximumHpGain(Reward reward) {
         var model=Model(reward);
@@ -37,6 +37,12 @@ internal sealed class PinnedPublicItemRewardClaim
                 ((RelicModel)model).DynamicVars["MaxHp"].BaseValue!=7m)
                 throw new InvalidOperationException("Unsupported max HP relic effect.");
             return 7;
+        }
+        if(model is FakeMango || Key(model)=="FAKE_MANGO") {
+            if(model?.GetType()!=typeof(FakeMango)||Key(model)!="FAKE_MANGO"||
+                ((RelicModel)model).DynamicVars["MaxHp"].BaseValue!=3m)
+                throw new InvalidOperationException("Unsupported max HP relic effect.");
+            return 3;
         }
         return 0;
     }
@@ -81,7 +87,7 @@ internal sealed class PinnedPublicItemRewardClaim
         _model=Model(reward)??throw new InvalidOperationException("Item reward unpopulated.");
         _key=Key(_model)!;PotionCapacityGain=CapacityGain(reward);MaxHpGain=MaximumHpGain(reward);HealAmount=HealingAmount(reward);
         // The pinned game caps max HP at 999,999,999 and heals only the actual
-        // gain. This contract admits the exact-seven case, never a capped gain.
+        // gain. This contract admits exact gains, never a capped gain.
         if(MaxHpGain>0&&(long)_player.Creature.MaxHp+MaxHpGain>999999999)
             throw new InvalidOperationException("Max HP reward exceeds supported range.");
         if(_model is RelicModel {Owner:not null})throw new InvalidOperationException("Offered relic already owned.");

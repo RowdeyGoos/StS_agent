@@ -73,6 +73,8 @@ internal sealed class GenericEventV7Binding
     internal CardSelectionV1Operation Operation=CardSelectionV1Operation.Upgrade;
     internal Func<CardModel,bool>? RemovalPredicate;
     internal bool GenericDeckTransform;
+    internal bool GenericDeckRemoval;
+    internal bool AutomaticRemovalCompleted;
     internal EnchantmentModel? EnchantmentModel;
     internal CardSelectionV1Enchantment? Enchantment;
     internal GenericEventV7Admission? Admission;
@@ -233,6 +235,37 @@ internal sealed class GenericEventV7Binding
         return new(e,e.Id.Entry,e.Amount);
     }
     private CardModel[]? _requestResult;
+    // FromDeckGeneric returns all available cards without constructing a screen
+    // when manual confirmation is off and the domain is at most MinSelect.
+    // This is an automatic native continuation, not a fabricated policy choice.
+    internal bool VerifyAutomaticRemoval()
+    {
+        if(!GenericDeckRemoval || Operation!=CardSelectionV1Operation.Remove || Prefs.RequireManualConfirmation ||
+            Prefs.Cancelable || ScreenSeen || Screen is not null || Overlays.ScreenCount!=0 ||
+            !MatchesChildBinding() || ChosenTask?.IsCompletedSuccessfully!=true || RequestTask?.IsCompletedSuccessfully!=true)
+            return false;
+        try {
+            var selected=_requestResult ??= RequestTask.Result.Take(Prefs.MaxSelect+1).ToArray();
+            if(selected.Length>Prefs.MinSelect || selected.Length>Prefs.MaxSelect ||
+                selected.Distinct(ReferenceEqualityComparer.Instance).Count()!=selected.Length ||
+                selected.Any(c=>c is null || !SelectionDeck.Any(d=>ReferenceEquals(d.ModelIdentity,c))))return false;
+            var survivors=SelectionDeck.Where(d=>!selected.Any(c=>ReferenceEquals(d.ModelIdentity,c))).ToArray();
+            var after=CopyDeck(Player);
+            if(after.Any(c=>c.ModelIdentity is not CardModel card || !ReferenceEquals(card.Owner,Player) ||
+                !ReferenceEquals(card.RunState,RunState) ||
+                !SelectionDeck.Any(d=>ReferenceEquals(d.ModelIdentity,card)) &&
+                (ObservedPreviewClones.Contains(card) || ObservedUpgradeClones.Contains(card))))return false;
+            // Retain the existing removal-parent allowance for one appended grant.
+            if(after.Length<survivors.Length || after.Length>survivors.Length+1)return false;
+            for(int i=0;i<survivors.Length;i++) {
+                var old=survivors[i];var current=after[i];
+                if(!ReferenceEquals(old.ModelIdentity,current.ModelIdentity) || old.StableKey!=current.StableKey ||
+                    old.UpgradeLevel!=current.UpgradeLevel || !CardSelectionV1Enchantment.Same(old.Enchantment,current.Enchantment))return false;
+            }
+            if(after.Skip(survivors.Length).Any(c=>SelectionDeck.Any(d=>ReferenceEquals(d.ModelIdentity,c.ModelIdentity))))return false;
+            AutomaticRemovalCompleted=true;return true;
+        } catch {Failed=true;return false;}
+    }
     internal bool EffectCompleted(IReadOnlyList<object> selected)
     {
         if(!MatchesChildBinding() || ChosenTask?.IsCompletedSuccessfully!=true ||

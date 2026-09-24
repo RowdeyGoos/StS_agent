@@ -56,7 +56,9 @@ public readonly record struct PublicRewardDecisionSnapshot(
     bool CapacityRewards = false,
     bool HealingRewards = false,
     bool MaxHpRewards = false,
-    bool ModifiedGoldRewards = false)
+    bool ModifiedGoldRewards = false,
+    bool ExpandedRewards = false,
+    bool FakeMangoRewards = false)
 {
     public static PublicRewardDecisionSnapshot Waiting() => new(
         PublicDecisionStatus.Waiting,
@@ -98,6 +100,8 @@ public static class PublicRewardDecisionIdentity
         }
 
         var builder = new StringBuilder(512);
+        if(snapshot.FakeMangoRewards)Append(builder,"reward_v10");
+        if(snapshot.ExpandedRewards)Append(builder,"reward_v9");
         if(snapshot.PotionSlots is not null) {
             Append(builder,snapshot.ModifiedGoldRewards?"reward_v8":snapshot.MaxHpRewards?"reward_v7":snapshot.HealingRewards?"reward_v6":snapshot.CapacityRewards?"reward_v5":"reward_v4");Append(builder,snapshot.PotionSlots.Count);
             foreach(var potion in snapshot.PotionSlots)Append(builder,potion??string.Empty);

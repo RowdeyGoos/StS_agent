@@ -317,8 +317,8 @@ public static class CanonicalProbeEncoder
         bool child = snapshot.ScreenKind == "card_reward";
         if (snapshot.Status != PublicDecisionStatus.Ready || (!parent && !child) ||
             !PublicRewardDecisionIdentity.IsCanonical(snapshot.DecisionId) ||
-            snapshot.DecisionRevision < 0 || snapshot.Rewards.Count > 8 ||
-            parent && (snapshot.LegalActions.Count < 1 || snapshot.LegalActions.Count > (snapshot.PotionSlots is null ? 9 : 17)) ||
+            snapshot.DecisionRevision < 0 || snapshot.Rewards.Count > (snapshot.ExpandedRewards ? PublicRewardActionBudget.MaximumExpandedRewards : 8) ||
+            parent && (snapshot.LegalActions.Count < 1 || snapshot.LegalActions.Count > (snapshot.ExpandedRewards ? PublicRewardActionBudget.MaximumExpandedRewards + 9 : snapshot.PotionSlots is null ? 9 : 17)) ||
             child && (snapshot.Rewards.Count != 1 || snapshot.LegalActions.Count is < 1 or > 6))
         {
             throw new ArgumentException("Reward decision exceeds the bounded contract.", nameof(snapshot));
@@ -332,7 +332,9 @@ public static class CanonicalProbeEncoder
         if(snapshot.HealingRewards&&!snapshot.CapacityRewards)throw new ArgumentException("Healing schema needs capacity fields.",nameof(snapshot));
         if(snapshot.MaxHpRewards&&!snapshot.HealingRewards)throw new ArgumentException("Max HP schema needs healing fields.",nameof(snapshot));
         if(snapshot.ModifiedGoldRewards&&!snapshot.MaxHpRewards)throw new ArgumentException("Modified gold schema needs max HP fields.",nameof(snapshot));
-        builder.Append(snapshot.ModifiedGoldRewards ? "8" : snapshot.MaxHpRewards ? "7" : snapshot.HealingRewards ? "6" : snapshot.CapacityRewards ? "5" : snapshot.PotionSlots is not null ? "4" : items ? "3" : special ? "2" : "1");
+        if(snapshot.ExpandedRewards&&!snapshot.ModifiedGoldRewards)throw new ArgumentException("Expanded rewards need current effect fields.",nameof(snapshot));
+        if(snapshot.FakeMangoRewards&&!snapshot.ExpandedRewards)throw new ArgumentException("Fake Mango needs current reward fields.",nameof(snapshot));
+        builder.Append(snapshot.FakeMangoRewards ? "10" : snapshot.ExpandedRewards ? "9" : snapshot.ModifiedGoldRewards ? "8" : snapshot.MaxHpRewards ? "7" : snapshot.HealingRewards ? "6" : snapshot.CapacityRewards ? "5" : snapshot.PotionSlots is not null ? "4" : items ? "3" : special ? "2" : "1");
         builder.Append(",\"status\":\"ready\",\"decision_kind\":\"reward\",\"actionable\":true,\"decision_id\":\"");
         builder.Append(snapshot.DecisionId);
         builder.Append("\",\"decision_revision\":");
@@ -418,7 +420,9 @@ public static class CanonicalProbeEncoder
                 builder.Append(",\"item_key\":");
                 if(reward.ItemKey is null)builder.Append("null");else AppendJsonString(builder,reward.ItemKey);
             }
-            int expectedMaxHpGain=reward.Kind==PublicRewardKind.Relic&&reward.ItemKey=="STRAWBERRY"?7:0;
+            if(reward.Kind==PublicRewardKind.Relic&&reward.ItemKey=="FAKE_MANGO"&&!snapshot.FakeMangoRewards)
+                throw new ArgumentException("Fake Mango requires its effect schema.",nameof(snapshot));
+            int expectedMaxHpGain=reward.Kind==PublicRewardKind.Relic ? reward.ItemKey=="STRAWBERRY"?7:snapshot.FakeMangoRewards&&reward.ItemKey=="FAKE_MANGO"?3:0 : 0;
             if(reward.MaxHpGain!=0&&!snapshot.MaxHpRewards || snapshot.MaxHpRewards&&reward.MaxHpGain!=expectedMaxHpGain)
                 throw new ArgumentException("Unsupported reward max HP effect.",nameof(snapshot));
             if(reward.MaxHpGain>0&&!reward.SuccessfullySelected&&(long)snapshot.Player.MaxHp+reward.MaxHpGain>999999999)
@@ -448,7 +452,7 @@ public static class CanonicalProbeEncoder
             builder.Append('}');
         }
         builder.Append("],\"legal_actions\":[");
-        Span<bool> seenRewardSlots = stackalloc bool[8];
+        Span<bool> seenRewardSlots = stackalloc bool[snapshot.ExpandedRewards ? PublicRewardActionBudget.MaximumExpandedRewards : 8];
         Span<bool> seenCardSlots = stackalloc bool[5];
         bool seenSkip = false;
         bool seenProceed = false;
@@ -528,7 +532,7 @@ public static class CanonicalProbeEncoder
         }
 
         byte[] body = EncodeAscii(builder.ToString());
-        if (body.Length > LiveProbeLimits.MaximumResponseBodyBytes)
+        if (body.Length > (snapshot.ExpandedRewards ? PublicRewardActionBudget.MaximumExpandedResponseBytes : LiveProbeLimits.MaximumResponseBodyBytes))
         {
             throw new InvalidOperationException("Public reward decision exceeds the response limit.");
         }

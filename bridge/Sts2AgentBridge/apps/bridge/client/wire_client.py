@@ -183,10 +183,20 @@ class BridgeClient:
             event = route.startswith("/probe/generic-event-v7/")
             parsed = parse_response(response, event=event)
             if event:
-                # Retain only admission failure categories, never raw headers.
+                # Keep bounded ownership/completion failures as well as admission
+                # failures. A stopped parent must not lose its native boundary.
+                # Unknown header text never enters the result.
                 diagnostic = response[:response.find(b'\r\n\r\n')].split(b'\r\n')[5].split(b': ')[1]
-                if diagnostic in (b'parent_unavailable', b'parent_map', b'parent_overlay',
-                                  b'parent_layout', b'parent_travel', b'capture_exception'):
+                observation = json.loads(parsed)
+                parent = observation.get('parent') if type(observation) is dict else None
+                failed = any(type(node) is dict and node.get('status') in ('unsupported', 'failed')
+                             for node in (observation, parent))
+                if failed and diagnostic in (b'parent_unavailable', b'parent_map', b'parent_overlay',
+                                  b'parent_layout', b'parent_travel', b'capture_exception',
+                                  b'pending_binding_failed', b'pending_context', b'pending_task_failed',
+                                  b'pending_selectorless_request', b'pending_overlay', b'pending_deck',
+                                  b'pending_offers', b'pending_owner_binding', b'pending_owner_hooks',
+                                  b'pending_owner_thread', b'pending_owner_patches'):
                     self.native_diagnostic = diagnostic.decode('ascii')
             return parsed
         except BaseException:

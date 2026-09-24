@@ -22,7 +22,7 @@ namespace Sts2AgentBridge.Adapters.Public;
 public sealed class PinnedPublicRewardDecisionReader : IPublicRewardDecisionReader, IDisposable
 {
     private const int MaximumTraversedNodes = 2048;
-    private const int MaximumRewards = 8;
+    private const int MaximumRewards = PublicRewardActionBudget.MaximumExpandedRewards;
     private const int MaximumCardsPerReward = 5;
 
     private readonly PinnedPublicRewardInteractionSession _session;
@@ -419,7 +419,7 @@ public sealed class PinnedPublicRewardDecisionReader : IPublicRewardDecisionRead
             projectedPlayer,
             rewards,
             legalActions,
-            _session.DecisionRevision, _session.UsesItemIndices, PotionKeys(player), _session.CapacityRewards, _session.HealingRewards, _session.MaxHpRewards, _session.ModifiedGoldRewards);
+            _session.DecisionRevision, _session.UsesItemIndices, PotionKeys(player), _session.CapacityRewards, _session.HealingRewards, _session.MaxHpRewards, _session.ModifiedGoldRewards, _session.ExpandedRewards, _session.FakeMangoRewards);
         snapshot = snapshot with
         {
             DecisionId = PublicRewardDecisionIdentity.Compute(snapshot),
@@ -525,7 +525,7 @@ public sealed class PinnedPublicRewardDecisionReader : IPublicRewardDecisionRead
             projectedPlayer,
             new[] { parentTarget.Projection with { CardSelectionCanSkip = skipAvailable } },
             legalActions,
-            _session.DecisionRevision, _session.UsesItemIndices, PotionKeys(cardReward.Player), _session.CapacityRewards, _session.HealingRewards, _session.MaxHpRewards, _session.ModifiedGoldRewards);
+            _session.DecisionRevision, _session.UsesItemIndices, PotionKeys(cardReward.Player), _session.CapacityRewards, _session.HealingRewards, _session.MaxHpRewards, _session.ModifiedGoldRewards, _session.ExpandedRewards, _session.FakeMangoRewards);
         snapshot = snapshot with
         {
             DecisionId = PublicRewardDecisionIdentity.Compute(snapshot),

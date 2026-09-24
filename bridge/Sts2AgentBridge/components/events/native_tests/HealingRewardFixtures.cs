@@ -153,6 +153,53 @@ internal static partial class Program
         }
     }
 
+    private static void FakeMangoRewardCases()
+    {
+        foreach(var mode in new[]{"ok","compact","delayed","missing_hp","extra_hp","missing_max","extra_max","gold","deck","potion","model","owner","variable","spoof","wrong_key","cap","late_variable","late_cap"}) {
+            using var f=new CombatItemsFixture(1);var player=f.World.Player;
+            player.Creature.CurrentHp=18;player.Creature.MaxHp=80;
+            var reward=(RelicReward)f.Rewards[0];reward.Relic=new FakeMango();
+            var first=f.Reader.Read();
+            Check(first.FakeMangoRewards&&first.ExpandedRewards&&first.Rewards[0].MaxHpGain==3&&first.Rewards[0].HealAmount==3,"Fake Mango projects exact native effect");
+            Check(PublicRewardDecisionIdentity.Compute(first)!=PublicRewardDecisionIdentity.Compute(first with {FakeMangoRewards=false}),"Fake Mango schema binds identity");
+            var button=f.Buttons[0];var handler=button.Handler;
+            if(mode=="spoof"){reward.Relic=new RelicModel();reward.Relic.Id.Entry="FAKE_MANGO";}
+            if(mode=="wrong_key")reward.Relic.Id.Entry="STRAWBERRY";
+            if(mode is "variable" or "late_variable")reward.Relic.DynamicVars["MaxHp"].BaseValue=7m;
+            if(mode is "cap" or "late_cap")player.Creature.MaxHp=999999998;
+            if(mode is "spoof" or "wrong_key" or "variable" or "cap" or "late_variable" or "late_cap") {
+                bool failed=false;try {
+                    if(mode.StartsWith("late_",StringComparison.Ordinal)) {
+                        PublicRewardActionRequest.TryCreate(first.DecisionId,"collect:0",out var request);
+                        failed=f.Applier.Apply(request).Outcome!=PublicRewardActionApplyOutcome.Accepted;
+                    }else failed=f.Reader.Read().Status==PublicDecisionStatus.Unsupported;
+                }catch{failed=true;}
+                Check(failed&&button.ForceClickCalls==0,"Fake Mango identity rejects before input: "+mode);continue;
+            }
+            button.Handler=()=>{handler!();player.Creature.CurrentHp=mode=="missing_hp"?18:mode=="extra_hp"?22:21;
+                player.Creature.MaxHp=mode=="missing_max"?80:mode=="extra_max"?84:83;
+                if(mode=="gold")player.Gold++;
+                if(mode=="deck")player.Deck.Cards[0].CurrentUpgradeLevel++;
+                if(mode=="potion")player.PotionSlots[0]=new();
+                if(mode=="model")reward.Relic=new FakeMango();
+                if(mode=="owner")reward.Relic.Owner=new();
+                if(mode=="delayed")reward.SuccessfullySelected=false;
+                if(mode=="compact"){f.Screen.Children.Remove(button);button.InstanceValid=false;}
+                return Task.CompletedTask;};
+            PublicRewardActionRequest.TryCreate(first.DecisionId,"collect:0",out var action);
+            Check(f.Applier.Apply(action).Outcome==PublicRewardActionApplyOutcome.Accepted,"Fake Mango dispatches once");
+            var after=f.Reader.Read();
+            if(mode=="delayed"){Check(after.Status==PublicDecisionStatus.Waiting,"Fake Mango awaits native reward completion");reward.SuccessfullySelected=true;after=f.Reader.Read();}
+            if(mode is "ok" or "compact" or "delayed") {
+                Check(after.Status==PublicDecisionStatus.Ready&&after.FakeMangoRewards&&after.Player.Hp==21&&after.Player.MaxHp==83,"Fake Mango reconciles and retains schema");
+                PublicRewardActionRequest.TryCreate(after.DecisionId,"proceed",out var exit);
+                Check(f.Applier.Apply(exit).Outcome==PublicRewardActionApplyOutcome.Accepted&&f.Reader.Read().Status==PublicDecisionStatus.Complete,"Fake Mango exits normally");
+            }else Check(after.Status==PublicDecisionStatus.Unsupported,"Fake Mango rejects wrong effect: "+mode);
+            try{f.Applier.Apply(action);}catch{}
+            Check(button.ForceClickCalls==1,"Fake Mango never retries");
+        }
+    }
+
     private static void MaxHpRewardCases()
     {
         foreach(var (hp,max) in new[]{(33,80),(80,80),(1,9),(2056,2064),(999999985,999999992)})foreach(bool compact in new[]{false,true}) {

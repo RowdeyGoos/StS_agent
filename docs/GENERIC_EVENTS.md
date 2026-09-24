@@ -160,6 +160,18 @@ Existing selection counts, preview/confirm actions, task ownership, action bound
 and parent completion checks remain. Older generic clients reject the new child
 version rather than silently accepting broader semantics.
 
+An owned `FromDeckForRemoval` that forwards through `FromDeckGeneric`, or a direct
+generic request with the exact native removal prompt, may complete without a
+screen: native code returns zero eligible originals, or all originals
+when their count is at most the minimum and manual confirmation is disabled.
+The bridge now drains that automatic branch after both its exact request task and
+parent callback succeed. It verifies the returned original identities, their
+removal, unchanged ordered survivors, exact Player/RunState ownership, and at most
+one new appended grant; captured preview/upgrade clones cannot become that grant.
+No child decision or selection input is invented. Manual, cancelable, faulted,
+foreign-screen and mismatched-effect cases stop. This is offline-tested; Doors of
+Light and Dark/Dark with one eligible removable card is the pending live case.
+
 Removal uses native input on the exact allocated holder, so admission no longer
 requires computed whole-grid dimensions, full viewport containment or unchanged
 scroll position. It retains the exact grid and allocated holder domain, native
@@ -855,7 +867,8 @@ own collection order and capacity requirements.
 ## Terminal combat rewards
 
 These use the shared core reward adapter after combat, not the event-owned
-nonterminal reward contracts above. The full screen remains limited to eight entries.
+nonterminal reward contracts above. Schemas 1–8 admit eight entries; schema 9
+admits up to 32 under the [expanded terminal contract](#expanded-terminal-screens).
 
 ### Extra special-card reward
 
@@ -924,7 +937,7 @@ reward object; `reward_slot` remains the current visible slot used by actions.
 This permits repeated potion/relic entries with identical native indices and keys.
 Visible removal or reordering cannot rename an entry or introduce a new reward.
 Legacy sessions preserve their native indices and original decision digests.
-The complete reward-screen domain is still bounded to eight entries, including
+The schema 3/4 reward-screen domain is bounded to eight entries, including
 ordinary gold/card rewards; the combat lease’s extra-entry limit does not raise
 that screen limit.
 
@@ -942,7 +955,7 @@ that alter these baselines or open a selector remain unsupported.
 Both card policies collect items before special/ordinary cards and record only
 verified pickups in `rewards.collected_items` as kind, public key and reward index.
 Prior verified effects survive later stage failures. Potion Belt capacity and
-Fake Lee’s Waffle healing and Strawberry max-HP growth are the explicit effect exceptions below; arbitrary
+Fake Lee’s Waffle healing and Strawberry/Fake Mango max-HP growth are the explicit effect exceptions below; arbitrary
 relic pickup effects may reach the unsupported boundary.
 
 ### Terminal Potion Belt capacity pickup
@@ -1005,8 +1018,8 @@ reports successful selection, the reader verifies its exact claimed model and
 effects without dereferencing the freed button. Before completion, the original
 live button remains required. Parent overlay ownership and no-retry rules remain
 unchanged. This is a targeted terminal correction; it does not certify other
-healing relics, event/resume pickup effects or Merchant reward screens exceeding
-the eight-entry projection limit.
+healing relics or event/resume pickup effects. The historical live case used a
+reduced screen; expanded terminal support is specified separately below.
 
 ### Terminal Strawberry max-HP pickup
 
@@ -1034,6 +1047,48 @@ Fixture and real-socket coverage includes both pickup orders, delayed selection,
 compaction, card children and normal exit. A saved floor-8 native retest completed
 all five reward actions and reached the map; max HP rose from 2,064 to 2,071.
 This does not add arbitrary max-HP relics or widen event/resume item contracts.
+
+### Expanded terminal screens
+
+Ready **schema 9** retains schema 8's fields and effect semantics, and extends the
+visible terminal screen to **32 entries**. The concrete missing caller was Fake
+Merchant's ten-entry reward screen. `claim:N`, `open:N`, `take:N` and `collect:N`
+accept canonical decimal slots 0–31; leading zeros, signs and out-of-range values
+are rejected. Card choices remain 0–4, potion slots 0–7. Waiting, completion and
+receipts keep schema 1. This extension does not widen event-entry extra rewards,
+resume rewards or Crystal Sphere's separate action grammar.
+
+The reader chooses schema 9 when its initial screen exceeds eight entries and
+retains it through child card menus and compaction. Decision identity binds the
+version, exact native reward objects and their stable session ordinals; slots
+still address the current visible rows. Claims retain the existing exact target,
+task, effect and inventory checks. Accepted input is never retried. The bounds
+are 41 simultaneous legal actions (32 entries, eight potion discards and Proceed),
+65 accepted actions per screen (two per entry and Proceed), and a 64 KiB response.
+Schemas 1–8 retain their original limits. The unified reward client rejects a
+schema downgrade before reconciliation; the shared `agent_v1` slice rejects schema
+9 before reconciling a pending action.
+
+Offline native fixtures cover ten and 32 item pickups, compaction, replay rejection
+and 33-entry rejection. The real C#-to-Python socket fixture resolves 32 card menus
+through all 65 actions. The ten-entry live test read the full screen and reconciled
+seven pickups, then stopped at Fake Mango (8/8/7); the effect correction below
+still needs live validation. The older assisted seven-relic run is separate evidence.
+
+### Terminal Fake Mango max-HP pickup
+
+Ready **schema 10** retains schema 9's fields and bounds and adds exact native
+`FakeMango` / `FAKE_MANGO`, with `MaxHp.BaseValue` equal to 3. The pickup must grant
+exactly +3 maximum HP and +3 HP; native type, key, owner, reward completion,
+inventory retention and the uncapped native HP range are checked. Spoofed models,
+changed variables and extra or missing effects stop the session without retry.
+
+Schema 10 remains active through row compaction and child card menus. Older
+schemas cannot represent this known pickup, even by declaring zero effect.
+Client transitions reject a downgrade before crediting reconciliation. The live
+failure that exposed this omission is retained under its original release;
+118 focused native checks and client/protocol tests establish the correction
+offline, not a completed live pickup.
 
 ### Modified terminal gold rewards
 

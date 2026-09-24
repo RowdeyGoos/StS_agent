@@ -276,6 +276,9 @@ Coverage is deliberately explicit:
 - Owned potions, additional room/event decisions, unsupported selectors and
   item follow-ups stop explicitly. No legal candidate is silently removed to
   manufacture support. The reference chooser leaves optional potion drops.
+- Expanded terminal reward schemas 9–10 remain outside this v1 profile and is
+  rejected before pending-action reconciliation. Its larger native screen limit
+  does not silently expand the shared slice.
 
 [`LiveAdapter`](../bridge/Sts2AgentBridge/apps/bridge/client/agent_host.py) validates
 the envelope and shared contract, passes only immutable `PublicDecision` values

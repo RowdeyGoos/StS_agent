@@ -41,6 +41,7 @@ internal static partial class Program
             if (args.SequenceEqual(new[] { "--serve-combat-map" })) return Serve(true, true);
             if (args.SequenceEqual(new[] { "--serve-max-hp-relic" })) return Serve(true,true,itemRewards:true,maxHpRelic:true);
             if (args.SequenceEqual(new[] { "--serve-modified-gold" })) return Serve(true,true,modifiedGold:true);
+            if (args.SequenceEqual(new[] { "--serve-expanded-rewards" })) return Serve(true,true,expandedRewards:true);
             if (args.SequenceEqual(new[] { "--serve-healing-relic" })) return Serve(true,true,itemRewards:true,healingRelic:true);
             if (args.SequenceEqual(new[] { "--serve-capacity-potions" })) return Serve(true,true,capacityPotions:true);
             if (args.SequenceEqual(new[] { "--serve-replace-potions" })) return Serve(true,true,replacePotions:true);
@@ -49,17 +50,42 @@ internal static partial class Program
             if (args.SequenceEqual(new[] { "--serve-special-card" })) return Serve(true,true,specialCard:true);
             if (args.SequenceEqual(new[] { "--serve-resume-items" })) return Serve(eventResume:true,resumeItems:true);
             if (args.SequenceEqual(new[] { "--serve-event-resume" })) return Serve(eventResume:true);
-            CombatHealthDisplay(); CombatPotionOwnership(); AgentSessionTests.Run(Check); RestFlowTests.Run(Check); EventBoundaryTests.Run(Check); EventCombatTransfer(); EventCombatResume(); ResumeItemRouting(); Ownership(); CleanupFailure(); CoreHandoff(); CombatChoiceHandoff(); Parser(); ResumeDiagnostics(); ReadDispatchRecovery(); ReadDispatchFailures(); SocketHandoff(); StaleRecovery(); LostResponse(); DuplicatePost(); RepeatedCombatIdentities();
+            ExpandedRewardEncoding(); CombatHealthDisplay(); CombatPotionOwnership(); AgentSessionTests.Run(Check); RestFlowTests.Run(Check); EventBoundaryTests.Run(Check); EventCombatTransfer(); EventCombatResume(); ResumeItemRouting(); Ownership(); CleanupFailure(); CoreHandoff(); CombatChoiceHandoff(); Parser(); ResumeDiagnostics(); ReadDispatchRecovery(); ReadDispatchFailures(); SocketHandoff(); StaleRecovery(); LostResponse(); DuplicatePost(); RepeatedCombatIdentities();
             Console.WriteLine("{\"status\":\"passed\",\"suite\":\"unified_bridge\",\"checks\":" + _checks + "}");
             return 0;
         }
         catch (Exception error) { Console.Error.WriteLine(error); return 1; }
     }
-    private static int Serve(bool combat = false, bool rewards = false, bool eventResume=false,bool resumeItems=false,bool specialCard=false,bool itemRewards=false,bool fullPotions=false,bool replacePotions=false,bool capacityPotions=false,bool readTimeout=false,bool healingRelic=false,bool agent=false,bool campaign=false,bool drawChoice=false,bool maxHpRelic=false,bool modifiedGold=false,bool offerChoice=false,bool readRecovery=false,bool combatPotions=false,bool infiniteHealth=false)
+    private static void ExpandedRewardEncoding()
+    {
+        var rewards=Enumerable.Range(0,32).Select(i=>new PublicRewardItem(i,PublicRewardKind.Gold,false,1,Array.Empty<string>(),false)).ToArray();
+        var actions=Enumerable.Range(0,32).Select(PublicRewardActionRequest.ClaimGoldActionIdFor).Append("proceed").ToArray();
+        var ready=new PublicRewardDecisionSnapshot(PublicDecisionStatus.Ready,Decision,"rewards",new(80,80,99,10),rewards,actions,
+            PotionSlots:new string?[3],CapacityRewards:true,HealingRewards:true,MaxHpRewards:true,ModifiedGoldRewards:true,ExpandedRewards:true);
+        using var doc=JsonDocument.Parse(CanonicalProbeEncoder.EncodePublicRewardDecisionBody(ready));
+        Check(doc.RootElement.GetProperty("schema_version").GetInt32()==9&&doc.RootElement.GetProperty("legal_actions")[31].GetProperty("action_id").GetString()=="claim:31","schema nine encodes exact multi-digit action");
+        var mango=ready with{Rewards=new[]{new PublicRewardItem(0,PublicRewardKind.Relic,false,0,Array.Empty<string>(),false,"FAKE_MANGO",0,3,3)},LegalActions=new[]{"collect:0","proceed"},FakeMangoRewards=true};
+        using var mangoDoc=JsonDocument.Parse(CanonicalProbeEncoder.EncodePublicRewardDecisionBody(mango));
+        Check(mangoDoc.RootElement.GetProperty("schema_version").GetInt32()==10,"Fake Mango uses schema ten");
+        foreach(var bad in new[]{mango with{FakeMangoRewards=false},mango with{FakeMangoRewards=false,Rewards=new[]{mango.Rewards[0] with{MaxHpGain=0,HealAmount=0}}},mango with{ExpandedRewards=false},mango with{Rewards=new[]{mango.Rewards[0] with{MaxHpGain=7}}}}) {
+            bool rejected=false;try{CanonicalProbeEncoder.EncodePublicRewardDecisionBody(bad);}catch(ArgumentException){rejected=true;}
+            Check(rejected,"Fake Mango validates negotiated exact effect");
+        }
+        foreach(var bad in new[]{ready with{ExpandedRewards=false},ready with{ModifiedGoldRewards=false},ready with{Rewards=rewards.Append(rewards[31] with{RewardIndex=32}).ToArray()}}) {
+            bool rejected=false;try{CanonicalProbeEncoder.EncodePublicRewardDecisionBody(bad);}catch(ArgumentException){rejected=true;}
+            Check(rejected,"expanded reward version and bounds enforced");
+        }
+        var child=ready with{ScreenKind="card_reward",Rewards=new[]{new PublicRewardItem(31,PublicRewardKind.Card,false,0,new[]{"STRIKE_IRONCLAD"},true)},LegalActions=new[]{"choose:0","skip_card"}};
+        using var childDoc=JsonDocument.Parse(CanonicalProbeEncoder.EncodePublicRewardDecisionBody(child));
+        Check(childDoc.RootElement.GetProperty("schema_version").GetInt32()==9&&childDoc.RootElement.GetProperty("rewards")[0].GetProperty("reward_index").GetInt32()==31,"card child retains schema and original index");
+    }
+
+    private static int Serve(bool combat = false, bool rewards = false, bool eventResume=false,bool resumeItems=false,bool specialCard=false,bool itemRewards=false,bool fullPotions=false,bool replacePotions=false,bool capacityPotions=false,bool readTimeout=false,bool healingRelic=false,bool agent=false,bool campaign=false,bool drawChoice=false,bool maxHpRelic=false,bool modifiedGold=false,bool offerChoice=false,bool readRecovery=false,bool combatPotions=false,bool infiniteHealth=false,bool expandedRewards=false)
     {
         var fixture = eventResume?new CoreFixture{CombatReady=true,MapReady=true}:combat ? CombatScenario(drawChoice, offerChoice) : new CoreFixture { Reject = true, MapReady = true };
         if(combatPotions)fixture.Potions=new PotionFixture{Finish=true,Completed=()=>fixture.Stage=3};
         fixture.InfiniteHealthScenario=infiniteHealth;
+        fixture.ExpandedRewardScenario=expandedRewards;
         fixture.ModifiedGoldScenario=modifiedGold;fixture.MaxHpRelicScenario=maxHpRelic;fixture.HealingRelicScenario=healingRelic;fixture.RewardScenario = rewards;fixture.SpecialCardScenario=specialCard;fixture.ItemRewardScenario=itemRewards;fixture.FullPotionScenario=fullPotions;fixture.ReplacePotionScenario=replacePotions;fixture.CapacityPotionScenario=capacityPotions;
         if(campaign){fixture.Reject=false;fixture.Stage=3;fixture.RewardScenario=true;fixture.RewardDestination="act";}
         var (runtime, port) = Start((capability, _) => resumeItems?new ResumeItemModule(fixture):eventResume?new FakeModule(capability){Complete=true,CombatScope=()=>fixture.CombatAccepted==0,CombatResume=()=>fixture.CombatAccepted==0?"combat":"resumed",EventNonce=Nonce}:new FakeModule(capability) { AutoComplete = true }, fixture, agent, campaign);
@@ -613,6 +639,7 @@ internal static partial class Program
         IPublicRoomDecisionService, IPublicRoomActionService
     {
         internal PotionFixture? Potions;
+        internal bool ExpandedRewardScenario;
         internal string RewardDestination="map";
         internal CombatCardChoiceService? Choice; internal bool Scenario, InfiniteHealthScenario; internal int Stage;
         internal bool RewardScenario, RewardWaited, Skipped, SpecialCardScenario, ItemRewardScenario, FullPotionScenario, ReplacePotionScenario, CapacityPotionScenario, HealingRelicScenario, MaxHpRelicScenario, ModifiedGoldScenario; internal int RewardStep;
@@ -641,6 +668,16 @@ internal static partial class Program
         private PublicRewardDecisionSnapshot RewardSnapshot()
         {
             if (Stage != 3 || !RewardWaited) { RewardWaited = true; return PublicRewardDecisionSnapshot.Waiting(); }
+            if(ExpandedRewardScenario) {
+                var p=new PublicRewardPlayer(80,80,99,10+Math.Min(32,RewardStep/2));
+                if(RewardStep==65)return PublicRewardDecisionSnapshot.Complete(p,65);
+                bool child=RewardStep%2==1;int index=RewardStep/2;
+                var entries=Enumerable.Range(0,32).Select(i=>new PublicRewardItem(i,PublicRewardKind.Card,i<index,0,new[]{"STRIKE_IRONCLAD"},true)).ToArray();
+                return new(PublicDecisionStatus.Ready,(RewardStep+100).ToString("x64"),child?"card_reward":"rewards",p,
+                    child?new[]{entries[index]}:entries,
+                    child?new[]{"choose:0","skip_card"}:Enumerable.Range(index,32-index).Select(PublicRewardActionRequest.OpenCardActionIdFor).Append("proceed").ToArray(),
+                    RewardStep,true,new string?[3],true,true,true,true,true);
+            }
             if(CapacityPotionScenario) {
                 var p=new PublicRewardPlayer(80,80,RewardStep==0?99:113,RewardStep>=6&&!Skipped?11:10);
                 if(RewardStep==7)return PublicRewardDecisionSnapshot.Complete(p,7);

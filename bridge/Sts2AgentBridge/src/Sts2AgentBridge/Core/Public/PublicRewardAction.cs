@@ -1,10 +1,14 @@
 using System;
+using System.Globalization;
 
 namespace Sts2AgentBridge.Core.Public;
 
 public static class PublicRewardActionBudget
 {
     public const int MaximumAcceptedActionsPerSession = 17;
+    public const int MaximumExpandedRewards = 32;
+    public const int MaximumExpandedActions = 2 * MaximumExpandedRewards + 1;
+    public const int MaximumExpandedResponseBytes = 65536;
     public const int MaximumRewardSessionsPerProcess = 3;
     public const int MaximumAcceptedActionsPerProcess =
         MaximumAcceptedActionsPerSession * MaximumRewardSessionsPerProcess;
@@ -70,7 +74,7 @@ public readonly record struct PublicRewardActionRequest(
                 -1);
             return true;
         }
-        if (TryParseSlot(actionId, "claim:", 7, out int rewardSlot))
+        if (TryParseSlot(actionId, "claim:", MaximumRewardSlot, out int rewardSlot))
         {
             request = new PublicRewardActionRequest(
                 decisionId,
@@ -85,17 +89,17 @@ public readonly record struct PublicRewardActionRequest(
             request = new(decisionId, actionId, PublicRewardActionKind.DiscardPotion, -1, -1, potionSlot);
             return true;
         }
-        if (TryParseSlot(actionId, "collect:", 7, out rewardSlot))
+        if (TryParseSlot(actionId, "collect:", MaximumRewardSlot, out rewardSlot))
         {
             request = new(decisionId, actionId, PublicRewardActionKind.CollectItem, rewardSlot, -1);
             return true;
         }
-        if (TryParseSlot(actionId, "take:", 7, out rewardSlot))
+        if (TryParseSlot(actionId, "take:", MaximumRewardSlot, out rewardSlot))
         {
             request = new(decisionId, actionId, PublicRewardActionKind.ClaimSpecialCard, rewardSlot, -1);
             return true;
         }
-        if (TryParseSlot(actionId, "open:", 7, out rewardSlot))
+        if (TryParseSlot(actionId, "open:", MaximumRewardSlot, out rewardSlot))
         {
             request = new PublicRewardActionRequest(
                 decisionId,
@@ -119,17 +123,19 @@ public readonly record struct PublicRewardActionRequest(
         return false;
     }
 
+    private const int MaximumRewardSlot = PublicRewardActionBudget.MaximumExpandedRewards - 1;
+
     public static string ClaimGoldActionIdFor(int rewardSlot) =>
-        ActionIdFor("claim:", rewardSlot, 7, nameof(rewardSlot));
+        ActionIdFor("claim:", rewardSlot, MaximumRewardSlot, nameof(rewardSlot));
 
     public static string CollectItemActionIdFor(int rewardSlot) =>
-        ActionIdFor("collect:", rewardSlot, 7, nameof(rewardSlot));
+        ActionIdFor("collect:", rewardSlot, MaximumRewardSlot, nameof(rewardSlot));
 
     public static string ClaimSpecialCardActionIdFor(int rewardSlot) =>
-        ActionIdFor("take:", rewardSlot, 7, nameof(rewardSlot));
+        ActionIdFor("take:", rewardSlot, MaximumRewardSlot, nameof(rewardSlot));
 
     public static string OpenCardActionIdFor(int rewardSlot) =>
-        ActionIdFor("open:", rewardSlot, 7, nameof(rewardSlot));
+        ActionIdFor("open:", rewardSlot, MaximumRewardSlot, nameof(rewardSlot));
 
     public static string ChooseCardActionIdFor(int cardSlot) =>
         ActionIdFor("choose:", cardSlot, 4, nameof(cardSlot));
@@ -141,14 +147,15 @@ public readonly record struct PublicRewardActionRequest(
         out int slot)
     {
         slot = -1;
-        if (actionId.Length != prefix.Length + 1 ||
-            !actionId.AsSpan(0, prefix.Length).SequenceEqual(prefix))
+        if (!actionId.StartsWith(prefix, StringComparison.Ordinal))
         {
             return false;
         }
 
-        slot = actionId[prefix.Length] - '0';
-        return slot >= 0 && slot <= maximumSlot;
+        var digits = actionId.AsSpan(prefix.Length);
+        return digits.Length is >= 1 and <= 2 && (digits.Length == 1 || digits[0] != '0') &&
+            int.TryParse(digits, NumberStyles.None, CultureInfo.InvariantCulture, out slot) &&
+            slot >= 0 && slot <= maximumSlot;
     }
 
     private static string ActionIdFor(
@@ -161,7 +168,7 @@ public readonly record struct PublicRewardActionRequest(
         {
             throw new ArgumentOutOfRangeException(parameterName);
         }
-        return prefix + (char)('0' + slot);
+        return prefix + slot.ToString(CultureInfo.InvariantCulture);
     }
 }
 

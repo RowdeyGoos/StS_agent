@@ -118,12 +118,12 @@ extend standalone rest/shop contracts.
 | Modified terminal gold | Bowler Hat final integer gain, ready schema 8 in source | Saved floor-15 retest passed: printed 20 gold yielded and reconciled 25 gold (492 → 517), then reached the map |
 | Terminal reward potions | Stop-on-full, skip-full, skip-all, protected original-potion replacement | Skip-full, skip-all with full **and free** capacity, and replacement including distinct same-key potions demonstrated |
 | Potion Belt capacity | Exact +2 empty slots, retained prior inventory, at most eight slots; terminal, event and resume paths | Floor-31 terminal pickup increased capacity from three to five slots, retaining both original potions. Event/resume pickup and full-belt capacity-first behavior remain unverified |
-| Special/extra combat rewards | At most eight event extras, at most one special card; gold/card/potion/relic collection | Lantern Key special card and Punch Off potion/relic extras demonstrated. Complete terminal screen still limited to eight entries |
+| Special/extra combat rewards | At most eight event extras, at most one special card; gold/card/potion/relic collection | Lantern Key special card and Punch Off potion/relic extras demonstrated. Terminal schemas 9–10 support up to 32 total entries; event extras retain their eight-entry bound |
 | Non-resuming event combat | Exact entry ownership → combat → rewards → map | Dense Vegetation, Lantern Key, Punch Off and initial Fake Merchant fight demonstrated |
 | Resuming event combat | Exact original Resume callback/task → owned item reward if present → resumed event/Proceed/map | Dummy training expiry, Setting1 victory/potion and Setting2 victory demonstrated; consecutive matching combats also demonstrated. No recursive combat driver |
 | Resume-time item rewards | One owned Offer with singleton or 2–8 potion/relic entries | Setting1 potion collect/skip/replacement demonstrated. Relic/set reward screens are fixture-only with no concrete resume caller identified; Setting3 obtains its relic directly. Resume-time cards/selectors unsupported |
 | Fake Merchant inventory | Initially closed inventory → 0–6 supported relic purchases → close/Leave | Two-purchase visit demonstrated; zero/six purchase variants offline only; already-open entry unsupported |
-| Fake Merchant fight/healing | Initial owned Foul Potion starts combat; terminal Fake Lee’s Waffle verifies capped 10% max-HP healing | Assisted seven-relic collection, HP33→41 at max80, Proceed/map/next room demonstrated. Setup removed ordinary rewards before the first core read; **original ten-entry screen is not supported by the eight-entry reader**. Fight after shopping unsupported |
+| Fake Merchant fight/healing | Initial owned Foul Potion starts combat; terminal Fake Lee’s Waffle verifies capped 10% max-HP healing; terminal schemas 9–10 support 32 entries in source; schema 10 adds exact Fake Mango +3 max HP/+3 HP | Assisted seven-relic collection, HP33→41 at max80, Proceed/map/next room demonstrated. That setup removed ordinary rewards. The original ten-entry retest read the expanded screen and reconciled seven pickups, then stopped at Fake Mango (8/8/7); its effect correction is validated offline. Fight after shopping unsupported |
 | Crystal Sphere | Owned Uncover Future/Payment Plan entry, small/big tool, legal 11×11 fog reveals, earned rewards and exact native exit/overlay cleanup | Both entry paths demonstrated; Uncover Future gold/map verified. Other tool/reward variants offline only. Hidden items are not projected; already-open adoption and full-belt replacement unsupported |
 | Trial abandonment | Owned popup Cancel or explicit Confirm, exact native abandonment task | Both demonstrated; Cancel continued to rewards/map/next room, Confirm produced `run_abandoned` and native Defeat/HP0 |
 | Architect ending | Native vote/queued action/next-act/WinRun task chain, terminal `run_won`; exact owned victory event with its combat layout and retained map-travel flag | Empty final-boss reward Proceed and the Architect parent sequence reached `run_won`; native Victory observed in both controlled saved runs. The latest ending used three reconciled parent actions. Saved continuations report `continued_victory`, not full-campaign certification |
@@ -139,8 +139,9 @@ extend standalone rest/shop contracts.
   responses do not expose a retry count, so this does not prove recovery occurred
   or explain intermittent cold-start failures. The 500 ms per-submission deadline
   remains; POSTs and claimed callbacks cannot be retried.
-- **Campaign budgets in source:** terminal rewards allow eight entries and 17
-  accepted actions per screen, across at most 64 screens. Transport allows 131,072
+- **Campaign budgets in source:** terminal schemas 1–8 allow eight entries and
+  17 accepted actions; schemas 9–10 allow 32 entries and 65 accepted actions,
+  across at most 64 screens. Transport allows 131,072
   reads and 8,192 action reservations; the 64 feature-session cap is unchanged.
   A new client resets none of these process counters. Ordinary controllers retain
   tighter local bounds; see [campaign limits](../bridge/Sts2AgentBridge/README.md#campaign-traversal).
@@ -158,18 +159,9 @@ extend standalone rest/shop contracts.
 
 ### Confirmed game interactions outside current support
 
-- **Additional rest pickup follow-ups:** Dig supports one native deck/enchantment
-  selector of up to three cards. Other popup/reward/multiple-selector surfaces are
-  not supported. Mend belongs to multiplayer.
 - **Native selector cancellation at rest:** Smith and Cook explicitly allow it.
   The bridge does not expose cancel; this is a real optional interaction, not
   required to complete the ordinary successful Smith path.
-- **Oversized terminal reward screens:** Fake Merchant produced a ten-entry screen;
-  the bridge projects at most eight. Assisted seven-relic collection does not solve it.
-- **Selectorless automatic selection:** `FromDeckGeneric` can return all eligible
-  cards without opening a screen when no manual confirmation is requested and
-  count is at most the minimum. Doors of Light and Dark/Dark with one eligible
-  removable card is a source-backed case; runtime compatibility remains unaccepted.
 
 Rest-triggered rewards (Dream Catcher card reward,
 Tiny Mailbox’s two potion rewards) are also real; their continuation needs a compatibility
@@ -179,6 +171,12 @@ check before assigning a new adapter or claiming ordinary Heal covers them.
 
 These are **not an implementation queue or required live-test checklist**:
 
+- Dig popup/reward/multiple-selector follow-ups: the normal Common/Uncommon/Rare
+  draw has no identified pickup-screen caller beyond current support. The bounded
+  helper remains for injected setups. [Pool audit](EVENT_INTERACTION_MAP.md#dig-pool-audit-september-24).
+  Mend belongs to multiplayer.
+- Selectorless transform/add/enchantment variants retain their own contract limits;
+  the new automatic-removal path does not broaden them.
 - Multi-card Smith: no native count-changing caller found; removed as a feature gap.
 - Variable-count upgrades, enchantment stacking/replacement, and unallocated-card
   input: retained contract limits, without a concrete necessary caller/setup.
@@ -194,6 +192,13 @@ These are **not an implementation queue or required live-test checklist**:
 
 ### Implemented, but still needing representative live evidence
 
+- Expanded terminal schemas 9–10: ten/32-entry native fixtures and a 65-action
+  real socket card-reward sequence passed. The ten-entry screen was read live,
+  but its Fake Mango pickup stopped reconciliation; the exact +3 effect
+  correction remains the concrete live retest.
+- Selectorless removal: exact owned request and parent completion, unchanged
+  survivors and ownership checked offline. Doors of Light and Dark/Dark with one
+  eligible removable card remains the concrete live case.
 - Shop passive relic/Potion Belt purchases, all five pickup selectors, and remaining
   zero-buy/kind/gold-reserve variants.
 - Capacity-first Potion Belt collection in terminal, event and resume reward flows.
@@ -215,60 +220,36 @@ supplies dated source candidates rather than a current implementation checklist.
 
 ## Release and latest evidence
 
-The accepted [release manifest](../bridge/Sts2AgentBridge/releases/current/bridge.json)
-is **`96f48a88aed4dca0da4dcaf6a3530f565b6954f890219438a0cac5db38bcfe8f`**.
-It binds 416 exact source/test inputs from the working checkout based on
-`14182eb`. Campaign v6 handles the native infinity HP display without exposing
-hidden numeric health or changing numeric-only consumers. It passed offline
-validation and was installed at **17:53:47 UTC**; both overlays are exact and all
-429 base files unchanged. Manual Profile 3 launch and authenticated health passed.
-Native Continue restored the floor-17 fight at turn 1; the v6 continuation began
-near **18:14:01 UTC** with no new assistance. Waterfall Giant, both remaining
-bosses and the native ending passed: **643 attempted / accepted / reconciled
-actions**, **82 stages**, **9,456 reads**, **672.271 seconds**. No manual gameplay,
-controller replacement or potion action occurred in this segment. The result is
-`continued_victory`, with `full_campaign_verified: false`. Normal quit and owned
-cleanup completed at **18:27:26 UTC**: zero overlays and all 429 base files
-unchanged. The bridge is now absent.
+The current [release manifest](../bridge/Sts2AgentBridge/releases/current/bridge.json)
+is **`00280cad681d0e074ec174ca548b273e1c77edfd58e838b10c6426f6a7827fe8`**.
+It binds 416 exact source/test inputs across 51 projects from the checkout based
+on `dbd7861`. The release gate passed **83 groups in 306.807 seconds**, including
+12,647 native checks. Focused Fake Mango tests and independent review passed.
 
-The preceding fresh assisted potion run demonstrated **four potion uses** across
-Fire, Strength and Vulnerable potions, then stopped at Waterfall Giant's infinity
-phase: **200 attempted / 200 accepted / 199 reconciled actions**, 42 stages,
-2,347 reads and 168.564 seconds. No gameplay intervention occurred during that
-attempt. Native Save and Quit preserved the campaign; the original package was
-fully cleaned at **17:34:13 UTC**. The [M7 record](evidence/AGENT_CAMPAIGN_M7_2026_09_24.md)
-retains its original release identity, diagnostic evidence and cleanup.
+The previous candidate read Profile 3's original ten-entry Fake Merchant screen
+after an assisted fight (11/11/11 combat actions). Rewards stopped at **8 attempted /
+8 accepted / 7 reconciled** when Fake Mango applied its unrecognized +3 max HP/+3 HP.
+No pickup was retried. Exact cleanup completed by **19:56:46 UTC on 2026-09-24**.
+The earlier Dark Door failure retains its separate identity and unknown predicate.
 
-Across earlier controlled resumed Profile 3 segments, both act transitions,
-repeated Draw selectors, Potion Belt capacity growth, room handoffs, Test
-Subject's final victory and the Architect ending passed. The run used extra HP,
-approved damage cards, Eidolon removal and earlier manual assistance. Its ending
-reports `continued_victory`, with `full_campaign_verified: false`.
+The corrected candidate is **installed, awaiting manual Profile 3 launch**.
+Installation verified by **20:12:14 UTC**: two exact overlays and all 429 base files
+unchanged. It adds exact Fake Mango effect reconciliation and retains the direct
+generic automatic-removal correction. Both live retests remain pending;
+offline fixtures do not establish native live support.
 
-A subsequent fresh attempt used the agreed upfront 2,064 HP, four Breaks and two
-Flash of Steels. Saved continuations verified Strawberry's +7 max HP and Bowler
-Hat's printed 20 → actual 25 gold. The latest continuation, from floor 33 under
-the preceding read-recovery release (`8c3060…`), defeated Knowledge Demon with three reconciled offered-card
-choices, traversed Act 3, defeated its boss and reached the Architect ending and
-native Victory. All **481 attempted/accepted/reconciled actions** completed across
-44 stages and 7,477 reads in **507.729 seconds**, with no manual gameplay or new
-setup assistance. It reports `continued_victory`; earlier restarts mean that
-`full_campaign_verified` remains false.
-The [M7 record](evidence/AGENT_CAMPAIGN_M7_2026_09_24.md) retains assistance,
-failures, original package identities and cleanup.
+The pinned target remains **v0.107.1 / Steam 23811903 / macOS arm64**.
+The previous package completed an assisted campaign continuation with **643
+attempted / accepted / reconciled actions**, 82 stages and the native ending.
+The user accepted milestone 7 with the documented bridge-fix reload; a fresh
+repeat is not required. The original `continued_victory` result and
+`full_campaign_verified: false` marker remain unchanged. Its four earlier potion
+uses, assistance, original release identities and complete cleanup are preserved
+in the [M7 record](evidence/AGENT_CAMPAIGN_M7_2026_09_24.md).
+That campaign used the smoke policy, not the full shared policy.
 
-The pinned target is **v0.107.1 / Steam 23811903 / macOS arm64**. The current
-accepted gate passed **83 groups in 290.147 seconds**, including reproducible
-build, package and disposable owned installation/cleanup checks. Focused native,
-client and shared socket checks and independent semantic review preceded it.
-The preceding successful continuation's victory and **16:11:53 UTC** cleanup
-retain their original package identity. The user accepted milestone 7 on this
-campaign evidence, including the one bridge-fix reload, and removed the requirement
-for another fresh run. The original continuation result remains unchanged; see
-the [acceptance decision](evidence/AGENT_CAMPAIGN_M7_2026_09_24.md#milestone-acceptance).
-See the
-[release record](../bridge/Sts2AgentBridge/releases/current/README.md) and
-[validation](../bridge/Sts2AgentBridge/releases/current/validation.json).
+See the [current release record](../bridge/Sts2AgentBridge/releases/current/README.md)
+and [validation](../bridge/Sts2AgentBridge/releases/current/validation.json).
 
 The accepted M3 live session, under the previous M3 release, completed the controlled shared-policy combat, Neow's Fury
 two-card selection, gold/reward leave and separate map transition: **16 attempted,

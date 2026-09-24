@@ -17,20 +17,22 @@ internal static class RewardInteractionTestSuite
     {
         string decisionId = new('a', PublicRewardDecisionIdentity.EncodedCharacterCount);
         AssertAction(decisionId, "claim:7", PublicRewardActionKind.ClaimGold, 7, -1);
+        AssertAction(decisionId, "claim:31", PublicRewardActionKind.ClaimGold, 31, -1);
+        AssertAction(decisionId, "collect:10", PublicRewardActionKind.CollectItem, 10, -1);
         AssertAction(decisionId, "open:0", PublicRewardActionKind.OpenCard, 0, -1);
         AssertAction(decisionId, "choose:4", PublicRewardActionKind.ChooseCard, -1, 4);
         AssertAction(decisionId, "skip_card", PublicRewardActionKind.SkipCard, -1, -1);
         AssertAction(decisionId, "proceed", PublicRewardActionKind.Proceed, -1, -1);
 
         TestAssert.False(
-            PublicRewardActionRequest.TryCreate(decisionId, "claim:8", out _),
-            "reward slot above seven rejected");
+            PublicRewardActionRequest.TryCreate(decisionId, "claim:32", out _),
+            "reward slot above thirty-one rejected");
         TestAssert.False(
             PublicRewardActionRequest.TryCreate(decisionId, "choose:5", out _),
             "card slot above four rejected");
         TestAssert.False(
             PublicRewardActionRequest.TryCreate(decisionId, "claim:00", out _),
-            "multi-digit slot rejected");
+            "noncanonical leading zero rejected");
         TestAssert.False(
             PublicRewardActionRequest.TryCreate(decisionId, "Proceed", out _),
             "noncanonical action casing rejected");

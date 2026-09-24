@@ -149,7 +149,13 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
                 diagnostic=GenericEventDiagnosticCode.ChildReady;
                 return new GenericEventV7NativeCapture("child",false,Array.Empty<GenericEventV7NativeOption>(),item.Screen,b.Admission);
             }
-            if(b.RequestSeen)
+            if(b.RequestSeen && b.RequestTask?.IsCompletedSuccessfully==true && b.Screen is null)
+            {
+                diagnostic=GenericEventDiagnosticCode.PendingSelectorlessRequest;
+                if(b.ChosenTask?.IsCompletedSuccessfully!=true)return Fixed("waiting");
+                if(!b.VerifyAutomaticRemoval())return Fixed("unsupported");
+            }
+            if(b.RequestSeen && !b.AutomaticRemovalCompleted)
             {
                 diagnostic=GenericEventDiagnosticCode.PendingSelectorlessRequest;
                 if(b.RequestTask?.IsCompleted==true && b.Screen is null) return Fixed("unsupported");

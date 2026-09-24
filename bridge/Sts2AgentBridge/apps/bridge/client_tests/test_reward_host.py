@@ -540,6 +540,93 @@ if __name__ == '__main__':
     unittest.main()
 
 
+class ExpandedGoldWire:
+    def __init__(self, count=32, *, compact=True):
+        self.count, self.compact = count, compact
+        self.done, self.calls, self.buffers = set(), [], []
+        self.complete = False
+        self.corrupt = lambda value: value
+
+    def request(self, method, route, body=None):
+        if method == 'POST':
+            self.buffers.append(body)
+            request = json.loads(body)
+            self.calls.append(request['action_id'])
+            assert request['decision_id'] == format(len(self.done), '064x')
+            if request['action_id'] == 'proceed':
+                self.complete = True
+            else:
+                visible = [i for i in range(self.count) if not self.compact or i not in self.done]
+                index = visible[int(request['action_id'].split(':')[1])]
+                assert index not in self.done
+                self.done.add(index)
+            value = dict(schema_version=1, status='accepted', mutation_state='applied', **request, reason='accepted')
+        else:
+            value = dict(schema_version=1 if self.complete else 9,
+                         status='complete' if self.complete else 'ready', decision_kind='reward',
+                         actionable=not self.complete, decision_id=None if self.complete else format(len(self.done), '064x'),
+                         screen_kind='map' if self.complete else 'rewards', player=_player(), rewards=[], legal_actions=[])
+            value['player']['gold'] += len(self.done)
+            if not self.complete:
+                value.update(decision_revision=len(self.done), potion_slots=[None]*3)
+                value = {key: value[key] for key in ('schema_version', 'status', 'decision_kind', 'actionable', 'decision_id',
+                                                    'decision_revision', 'screen_kind', 'player', 'rewards', 'legal_actions', 'potion_slots')}
+                for i in range(self.count):
+                    if self.compact and i in self.done:
+                        continue
+                    slot = len(value['rewards'])
+                    value['rewards'].append(dict(reward_slot=slot, reward_index=i, kind='gold', successfully_selected=i in self.done,
+                                                 gold_amount=1, cards=[], card_selection_can_skip=False, item_key=None,
+                                                 potion_capacity_gain=0, heal_amount=0, max_hp_gain=0, gold_gain=1))
+                    if i not in self.done:
+                        value['legal_actions'].insert(0, dict(action_id=f'claim:{slot}', kind='claim_gold', reward_slot=slot, card_slot=None, potion_slot=None))
+                value['legal_actions'].append(dict(action_id='proceed', kind='proceed', reward_slot=None, card_slot=None, potion_slot=None))
+            value = self.corrupt(value)
+        result = encode(value)
+        self.buffers.append(result)
+        return result
+
+
+class ExpandedRewardTests(unittest.TestCase):
+    def run_wire(self, wire):
+        clock = Clock()
+        result = host.run_rewards(wire.request, clock=clock, sleep=clock.sleep)
+        self.assertTrue(all(not any(b) for b in wire.buffers))
+        return result
+
+    def test_ten_and_thirty_two_rewards_and_compaction(self):
+        for count in (10, 32):
+            for compact in (False, True):
+                wire = ExpandedGoldWire(count, compact=compact)
+                result = self.run_wire(wire)
+                self.assertEqual((result['status'], result['accepted'], result['reconciled'], result['claimed_gold']),
+                                 ('resolved', count+1, count+1, count), result)
+                self.assertEqual(wire.calls[0], f'claim:{count-1}')
+
+    def test_old_schema_and_overflow_rejected_before_post(self):
+        for count, schema in ((10, 8), (33, 9)):
+            wire = ExpandedGoldWire(count)
+            wire.corrupt = lambda value: dict(value, schema_version=schema)
+            self.assertEqual(self.run_wire(wire)['code'], 'reward_response_mismatch')
+            self.assertEqual(wire.calls, [])
+
+    def test_version_downgrade_after_compaction_stops(self):
+        wire = ExpandedGoldWire(10)
+        wire.corrupt = lambda value: dict(value, schema_version=8) if len(wire.done) == 2 else value
+        result = self.run_wire(wire)
+        self.assertEqual((result['code'], result['accepted'], result['reconciled']), ('reward_response_mismatch', 2, 1))
+
+    def test_noncanonical_slot_and_potion_bound(self):
+        for action in ('claim:01', 'claim:32', 'discard:8'):
+            wire = ExpandedGoldWire(10)
+            def corrupt(value):
+                value['legal_actions'][0]['action_id'] = action
+                return value
+            wire.corrupt = corrupt
+            self.assertEqual(self.run_wire(wire)['code'], 'reward_response_mismatch')
+            self.assertEqual(wire.calls, [])
+
+
 class ModifiedGoldWire(RewardWire):
     def __init__(self, amount=14, *, skip=False, initial_gold=99):
         super().__init__(skip=skip)
@@ -608,3 +695,51 @@ class ModifiedGoldTests(unittest.TestCase):
         wire=ModifiedGoldWire();wire.corrupt=lambda value,method:OSError('lost') if method=='POST' else value
         result=self.run_wire(wire)
         self.assertEqual((result['attempted'],result['accepted'],result['reconciled'],result['claimed_gold'],wire.posts),(1,0,0,0,1))
+
+
+class FakeMangoWire(MaxHpRewardWire):
+    def __init__(self, hp=18, max_hp=80, waffle=None):
+        super().__init__(hp,max_hp,waffle)
+        for row in self.state['rewards']:
+            row['gold_gain']=None
+            if row['item_key']=='STRAWBERRY':
+                row.update(item_key='FAKE_MANGO',max_hp_gain=3,heal_amount=3)
+        self.state['schema_version']=10
+
+    def actions(self):
+        super().actions()
+        for action in self.state['legal_actions']:action['potion_slot']=None
+
+
+class FakeMangoTests(unittest.TestCase):
+    run_wire=SpecialRewardTests.run_wire
+
+    def test_growth_compaction_and_native_healing_order(self):
+        for order in (None,'first','last'):
+            wire=FakeMangoWire(18,88,order);result=self.run_wire(wire)
+            self.assertEqual(result['status'],'resolved',result)
+            expected_hp=21 if order is None else 29 if order=='first' else 30
+            self.assertEqual((result['after_player']['hp'],result['after_player']['max_hp']),(expected_hp,91))
+            self.assertEqual(result['accepted'],result['reconciled'])
+
+    def test_declaration_and_downgrade_reject_without_retry(self):
+        for mode in ('old_schema','old_zero_effect','wrong_gain','wrong_heal','wrong_kind','cap','after_downgrade','bad_effect','lost'):
+            wire=FakeMangoWire();row=wire.state['rewards'][0]
+            if mode=='old_schema':wire.state['schema_version']=9
+            if mode=='old_zero_effect':
+                wire.state['schema_version']=9
+                row.update(max_hp_gain=0,heal_amount=0)
+            if mode=='wrong_gain':row['max_hp_gain']=7
+            if mode=='wrong_heal':row['heal_amount']=0
+            if mode=='wrong_kind':row['kind']='potion'
+            if mode=='cap':wire.state['player']['max_hp']=999998
+            def corrupt(value,method):
+                if wire.posts==1:
+                    if method=='GET' and mode=='after_downgrade':value['schema_version']=9
+                    if method=='GET' and mode=='bad_effect':value['player']['max_hp']+=1
+                    if method=='POST' and mode=='lost':return OSError('lost')
+                return value
+            wire.corrupt=corrupt;result=self.run_wire(wire)
+            self.assertEqual(result['status'],'failed',(mode,result))
+            self.assertEqual(wire.posts,1 if mode in ('after_downgrade','bad_effect','lost') else 0)
+            self.assertEqual((result['reconciled'],result['collected_items']),(0,[]),(mode,result))

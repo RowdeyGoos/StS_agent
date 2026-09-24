@@ -267,6 +267,8 @@ internal sealed class PinnedPublicRewardInteractionSession
     internal bool HealingRewards {get;private set;}
     internal bool MaxHpRewards {get;private set;}
     internal bool ModifiedGoldRewards {get;private set;}
+    internal bool ExpandedRewards {get;private set;}
+    internal bool FakeMangoRewards {get;private set;}
     private readonly Dictionary<Reward,(int Revision,NRewardButton Button,PinnedPublicGoldRewardClaim Claim)> _goldTargets=new(ReferenceEqualityComparer.Instance);
     internal PinnedPublicGoldRewardClaim BindGold(GoldReward reward,NRewardButton button) {
         if(_goldTargets.TryGetValue(reward,out var prior)&&prior.Revision==_decisionRevision) {
@@ -295,7 +297,9 @@ internal sealed class PinnedPublicRewardInteractionSession
     internal bool ForceRewardOrdinals;
     internal void BindRewardDomain(List<(NRewardButton Button,Reward Reward)> rows)
     {
-        ModifiedGoldRewards |= rows.Any(row=>row.Reward is GoldReward gold&&PinnedPublicGoldRewardClaim.Effect(gold).Modified);
+        FakeMangoRewards |= rows.Any(row=>PinnedPublicItemRewardClaim.MaximumHpGain(row.Reward)==3);
+        ExpandedRewards |= rows.Count > 8 || FakeMangoRewards;
+        ModifiedGoldRewards |= ExpandedRewards || rows.Any(row=>row.Reward is GoldReward gold&&PinnedPublicGoldRewardClaim.Effect(gold).Modified);
         if(_itemDomain is null&&(ModifiedGoldRewards||ForceRewardOrdinals||rows.Exists(row=>row.Reward.GetType()==typeof(PotionReward)||row.Reward.GetType()==typeof(RelicReward)))) {
             if(!PinnedPublicItemRewardClaim.Slots(rows[0].Reward.Player,out _initialPotions))throw new InvalidOperationException("Potion inventory unavailable.");
             _initialPotionKeys=_initialPotions.Select(PinnedPublicItemRewardClaim.Key).ToArray();
@@ -430,7 +434,7 @@ internal sealed class PinnedPublicRewardInteractionSession
             }
             foreach(var target in targets)if(target.Projection.Kind is PublicRewardKind.Potion or PublicRewardKind.Relic&&
                 !_itemTargets.Exists(old=>ReferenceEquals(old.Reward,target.Reward))) {
-                if(_itemTargets.Count>=8)throw new InvalidOperationException("Item reward domain limit.");
+                if(_itemTargets.Count>=PublicRewardActionBudget.MaximumExpandedRewards)throw new InvalidOperationException("Item reward domain limit.");
                 _itemTargets.Add((target.Reward,target.Button,PinnedPublicItemRewardClaim.Model(target.Reward)!,target.Projection.ItemKey!));
             }
             foreach(var old in _specialTargets) {
@@ -485,7 +489,7 @@ internal sealed class PinnedPublicRewardInteractionSession
             _acceptedDecisionIds.Clear();
             _skippedCardRewards.Clear();
             _specialTargets.Clear();
-            _itemDomain=null;_goldTargets.Clear();CapacityRewards=false;HealingRewards=false;MaxHpRewards=false;ModifiedGoldRewards=false;_initialPotions=null;_initialPotionKeys=null;_itemTargets.Clear();_settledItems.Clear();
+            _itemDomain=null;_goldTargets.Clear();CapacityRewards=false;HealingRewards=false;MaxHpRewards=false;ModifiedGoldRewards=false;ExpandedRewards=false;FakeMangoRewards=false;_initialPotions=null;_initialPotionKeys=null;_itemTargets.Clear();_settledItems.Clear();
             _decisionRevision++; // A later native screen cannot reuse an earlier action identity.
             _completedSession = false;
             _currentDecisionId = string.Empty;
@@ -527,8 +531,8 @@ internal sealed class PinnedPublicRewardInteractionSession
             {
                 return PublicRewardActionApplyOutcome.AlreadyApplied;
             }
-            if (_acceptedActionCount >= PublicRewardActionBudget.MaximumAcceptedActionsPerSession ||
-                _processAcceptedActionCount >= _maximumSessions*PublicRewardActionBudget.MaximumAcceptedActionsPerSession)
+            if (_acceptedActionCount >= (ExpandedRewards ? PublicRewardActionBudget.MaximumExpandedActions : PublicRewardActionBudget.MaximumAcceptedActionsPerSession) ||
+                _processAcceptedActionCount >= _maximumSessions*PublicRewardActionBudget.MaximumExpandedActions)
             {
                 return PublicRewardActionApplyOutcome.ActionLimitReached;
             }

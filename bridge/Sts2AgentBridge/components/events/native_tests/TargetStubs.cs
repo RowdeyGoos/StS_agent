@@ -452,6 +452,7 @@ namespace MegaCrit.Sts2.Core.CardSelection {
     {
         public MegaCrit.Sts2.Core.Localization.LocString? Prompt {get;init;}
         public static MegaCrit.Sts2.Core.Localization.LocString TransformSelectionPrompt=>new("card_selection","TO_TRANSFORM");
+        public static MegaCrit.Sts2.Core.Localization.LocString RemoveSelectionPrompt=>new("card_selection","TO_REMOVE");
         public Comparison<MegaCrit.Sts2.Core.Models.CardModel>? Comparison {get;init;}
         public bool UnpoweredPreviews {get;init;}
         public bool PretendCardsCanBePlayed {get;init;}
@@ -842,3 +843,5 @@ namespace MegaCrit.Sts2.Core.Models.Relics {
   public override Task AfterModifyingGoldGained(MegaCrit.Sts2.Core.Entities.Players.Player player,decimal amount)=>Task.CompletedTask;
  }
 }
+
+namespace MegaCrit.Sts2.Core.Models.Relics { public sealed class FakeMango:RelicModel {public FakeMango(){Id.Entry="FAKE_MANGO";DynamicVars["MaxHp"]=new(){BaseValue=3m};}} }

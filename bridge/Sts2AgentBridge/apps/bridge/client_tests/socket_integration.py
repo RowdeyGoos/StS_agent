@@ -118,6 +118,29 @@ def rest(action):
             process.kill(); process.wait()
 
 
+def expanded_rewards():
+    process = subprocess.Popen([sys.argv[1], sys.argv[2], '--serve-expanded-rewards'], stdin=subprocess.PIPE,
+                               stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    try:
+        port = json.loads(process.stdout.readline())['port']
+        client = BridgeClient(bytearray(b'a' * 64), connector=lambda: socket.create_connection(('127.0.0.1', port), timeout=2))
+        try:
+            assert run_combat(client.exchange)['status'] == 'resolved'
+            loot = reward_host.run_rewards(client.exchange)
+            assert loot['status'] == 'resolved', loot
+            assert loot['attempted'] == loot['accepted'] == loot['reconciled'] == 65, loot
+            assert loot['selected_cards'] == ['STRIKE_IRONCLAD'] * 32, loot
+            assert loot['after_player']['deck_count'] - loot['before_player']['deck_count'] == 32, loot
+        finally:
+            client.close()
+        process.stdin.write('stop\n'); process.stdin.flush()
+        _, errors = process.communicate(timeout=5)
+        assert process.returncode == 0, errors
+    finally:
+        if process.poll() is None:
+            process.kill(); process.wait()
+
+
 def combat(reward_policy=None, event_resume=False, resume_items=False, special_card=False, item_rewards=False, full_potions=False, replace_potions=False, capacity_potions=False, healing_relic=False, potion_policy="stop-on-full", draw_choice=False, max_hp_relic=False, modified_gold=False, offer_choice=False):
     process = subprocess.Popen([sys.argv[1], sys.argv[2], '--serve-offer-choice' if offer_choice else '--serve-modified-gold' if modified_gold else '--serve-draw-choice' if draw_choice else '--serve-max-hp-relic' if max_hp_relic else '--serve-healing-relic' if healing_relic else '--serve-capacity-potions' if capacity_potions else '--serve-replace-potions' if replace_potions else '--serve-full-potions' if full_potions else '--serve-combat-items' if item_rewards else '--serve-special-card' if special_card else '--serve-resume-items' if resume_items else '--serve-event-resume' if event_resume else '--serve-combat-map' if reward_policy else '--serve-combat'], stdin=subprocess.PIPE,
                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -451,6 +474,7 @@ def main():
         combat('skip-card',replace_potions=True,potion_policy='replace-first')
         combat('first-card',item_rewards=True,max_hp_relic=True)
         combat('skip-card',item_rewards=True,max_hp_relic=True)
+        expanded_rewards()
         combat('first-card',modified_gold=True)
         combat('skip-card',modified_gold=True)
         combat('first-card',item_rewards=True,healing_relic=True)

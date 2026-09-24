@@ -66,8 +66,9 @@ internal sealed class AgentSession : IDisposable
                 if (reply.Terminal) return Stop("native_failure");
                 using var parsed = JsonDocument.Parse(reply.Body);
                 var root = parsed.RootElement;
-                // agent_v1 cannot consume nonnumeric health, even when completing a pending play.
-                if (family == "combat" && root.GetProperty("schema_version").GetInt32() != 1)
+                // Reject newer semantics before reconciling any pending action.
+                if (family == "combat" && root.GetProperty("schema_version").GetInt32() != 1 ||
+                    family == "reward" && root.GetProperty("schema_version").GetInt32() >= 9)
                     throw new AgentUnsupported();
                 string? status = root.GetProperty("status").GetString();
                 if (status == "waiting")
