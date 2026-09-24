@@ -472,8 +472,60 @@
   },
   "install_inputs": "/private/tmp/sts-unified-bridge-release",
   "live": {
+    "authenticated_health": {
+      "correlation_id": "b522a59f1152f6169080906bd50aee02",
+      "status": "passed"
+    },
+    "automatic_removal": {
+      "result": {
+        "code": null,
+        "event": {
+          "child_accepted": 0,
+          "child_attempted": 0,
+          "child_episodes": 0,
+          "child_reconciled": 0,
+          "code": null,
+          "completed_card_children": 0,
+          "completed_item_children": 0,
+          "destination": "map_handoff",
+          "effects": "unverified",
+          "parent_accepted": 2,
+          "parent_attempted": 2,
+          "parent_reconciled": 2,
+          "reads": 36,
+          "schema_version": 1,
+          "session_nonce": "01c1c62addebada7f31968d6ffd893ed",
+          "status": "resolved",
+          "total_attempted": 2
+        },
+        "map_handoff": {
+          "candidate_count": 2,
+          "code": null,
+          "reads": 1,
+          "status": "passed"
+        },
+        "schema_version": 1,
+        "status": "resolved"
+      },
+      "retry_performed": false,
+      "scope": "One eligible card, null-filter automatic removal. Automatic parent effects retain the result effects: unverified label.",
+      "setup": "Native Continue restored Tea Master with four Bludgeons and Headbutt. Native console replaced those five cards with one unupgraded Bash and entered Doors of Light and Dark. Deck UI verified sole Bash; console and deck closed before dispatch.",
+      "status": "passed",
+      "ui_after": "Actionable map with two legal destinations, zero-card deck header and unchanged 21/83 HP and 399 gold. No selection screen or child action."
+    },
     "base_files_verified": 429,
     "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+    "cleanup": {
+      "base_files_verified": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "game_process_running": false,
+      "generated_files_removed": 4,
+      "overlay_count": 0,
+      "port_accepting": false,
+      "quarantine_state_sha256": "ea83baff394c229f34ae1ed64e3ce8305ba33261c2b007fedafc0668eac9f83f",
+      "status": "passed",
+      "verified_by_utc": "2026-09-24 20:58:54"
+    },
     "controller_running": false,
     "installation_state_sha256": "dd497f3685e7bf26fc7bdd62a5496f20e32303dcfa9e9a9e6a0bbe6c3b46a856",
     "merchant_retest_required": false,
@@ -481,8 +533,8 @@
     "requested_cases": [
       "Doors of Light and Dark automatic removal with one eligible card"
     ],
-    "status": "installed_waiting_manual_launch",
-    "target_game_executed": false,
+    "status": "automatic_removal_passed_cleanup_complete",
+    "target_game_executed": true,
     "verified_by_utc": "2026-09-24 20:47:21"
   },
   "milestone_acceptance": {

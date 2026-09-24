@@ -98,7 +98,7 @@ extend standalone rest/shop contracts.
 | Deck changes around a selector | Append-only baseline before the first selector; removal followed by at most one separate appended grant | Grave/Confront and Amalgamator/CombineStrikes demonstrated; grant provenance unverified; arbitrary survivor changes/multiple grants unsupported |
 | Upgrade | Fixed selection counts 1–8; eligible allocated off-screen holders | Sapphire Seed single upgrade at slot 20 of 23 demonstrated. **True multi-card upgrade selector remains untested live**; Dummy automatic upgrades are not selector evidence |
 | Enchant | Single selection and fixed 2–8 selections with exact preview/effects | Sapphire Seed, Grave and Prickly Sponge fixed-two demonstrated; other counts/callers offline only; stacking/replacement and optional counts unsupported |
-| Remove | Positive selections up to eight with exact original preview/removal | Amalgamator fixed-two demonstrated; other counts/callers need evidence |
+| Remove | Positive selections up to eight with exact original preview/removal; owned automatic removal without a selector | Amalgamator fixed-two and one-card Dark Door automatic completion/map demonstrated; other counts/callers need evidence |
 | Transform | Fixed/positive variable counts up to eight; optional 0..8; fixed-one generic transform-prompt surface | Allocated off-screen input, Wood Carvings/Bird and Claws zero/three/six demonstrated; Torus and other callers need evidence |
 | Add-card grid | Positive selection; optional 0..15 with explicit confirmation | Cheese two-of-eight and Sea Glass zero/three/fifteen demonstrated |
 | Ordinary card-reward menus | One or 2–8 menus, 1–5 cards/menu, native choice/Skip and final dismissal | Brain Leech singleton and Colorful Philosophers choose/Skip/choose demonstrated; other counts/outcomes offline only |
@@ -195,9 +195,8 @@ These are **not an implementation queue or required live-test checklist**:
 - Expanded terminal schemas 9–10: the representative ten-entry screen passed live.
   The wider 32-entry bound and 65-action card-menu sequence remain fixture/socket
   evidence, without a separately identified ordinary 32-entry gameplay caller.
-- Selectorless removal: exact owned request and parent completion, unchanged
-  survivors and ownership checked offline. Doors of Light and Dark/Dark with one
-  eligible removable card remains the concrete live case.
+- Selectorless removal: one-card Dark Door passed live. Empty domains, retained
+  Eternal cards, other callers and adversarial variants remain fixture evidence.
 - Shop passive relic/Potion Belt purchases, all five pickup selectors, and remaining
   zero-buy/kind/gold-reserve variants.
 - Capacity-first Potion Belt collection in terminal, event and resume reward flows.
@@ -224,10 +223,11 @@ is **`308e9683a74a3d60ef2071e3dd6f97583e2ace1adb2494778a9aaee73e89105e`**.
 It binds 416 exact source/test inputs across 51 projects, committed in `b7ee84b`.
 The release gate passed **83 groups in 304.387 seconds**, including 12,799 native
 checks. The wrapper-only removal correction passed 320 focused checks and
-independent semantic review. It is installed, verified by **20:47:21 UTC**, and
-awaits manual Profile 3 launch for the removal retest; two exact overlays and all
-429 base files were verified. The merchant retest is already complete under the
-preceding package identity.
+independent semantic review. The one-card Dark Door retest passed live with
+**2/2/2 parent actions**, no child selector, and an actionable map with two legal
+destinations. Owned cleanup completed by **20:58:54 UTC**: game/listener stopped,
+four generated files removed, zero overlays, and all 429 base files unchanged.
+The merchant acceptance retains the preceding package identity.
 
 An earlier candidate read Profile 3's original ten-entry Fake Merchant screen
 after an assisted fight (11/11/11 combat actions). Rewards stopped at **8 attempted /
@@ -241,11 +241,11 @@ gold, Regen Potion, all seven fake relics and Headbutt, then the actionable map.
 HP changed from 10/80 to 21/83, including Waffle and Fake Mango's exact effects.
 This attempt attached at rewards; it did not replay the fight.
 
-The one-Bash Dark Door retest still stopped at **1/1/0** with
+That preceding package's one-Bash Dark Door retest stopped at **1/1/0** with
 `pending_selectorless_request`. The game removed Bash and displayed Proceed;
 the bridge did not claim completion or retry. A source correction now handles an
 exact outer removal request without requiring a second observation of its generic
-implementation; it is now validated and installed for retesting. The original
+implementation; its one-card live retest now passes as recorded above. The original
 rejected predicate was not emitted. Both attempts were cleaned up by **20:31:55 UTC**: process and
 listener stopped, four generated files removed, zero overlays, all 429 base files
 unchanged.

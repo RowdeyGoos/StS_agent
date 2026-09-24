@@ -173,10 +173,10 @@ foreign-screen and mismatched-effect cases stop. When only the outer removal
 request is observed, a null-filter request also binds its complete removable
 domain at entry and requires that the result contains exactly that domain, with
 no meaningful choice to skip. Arbitrary filters are never invoked by the observer.
-This correction is validated offline and installed for retesting; the preceding
-release's one-card Dark Door attempt stopped at automatic-removal verification,
-before Proceed. See [current
-evidence](STATUS.md#release-and-latest-evidence) for the released/live distinction.
+The one-card Dark Door case passed live: two parent actions reconciled, no child
+selector was invented, and the actionable map was verified. Empty domains, retained
+Eternal cards and adversarial variants remain fixture evidence. See [current
+evidence](STATUS.md#release-and-latest-evidence) for exact release identities.
 
 Removal uses native input on the exact allocated holder, so admission no longer
 requires computed whole-grid dimensions, full viewport containment or unchanged

@@ -433,10 +433,10 @@ The first bridge corrections, committed in `4a03c3c`, extend terminal rewards to
 implement native selectorless removal continuation. Focused native/router
 and shared-client tests passed, including all 65 actions for 32 card rewards.
 The original ten-entry merchant rewards passed live after native Continue;
-automatic removal still failed completion verification and has a further
-correction for observing outer removal requests (`b7ee84b`), validated and
-installed for retesting. Representative live checks remain distinct from fixture
-evidence.
+automatic removal passed after the outer-request correction (`b7ee84b`): two
+parent actions reconciled, no child selection, and an actionable map. Owned cleanup
+passed with zero overlays and 429 unchanged base files. Representative live checks
+remain distinct from fixture evidence.
 
 The remaining implementation must provide full public native observations and
 semantic candidates across combat, potions, rewards, maps, shops, rests, events,

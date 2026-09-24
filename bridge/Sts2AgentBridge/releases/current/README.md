@@ -28,12 +28,14 @@ that path, the null-filter removable domain is captured at entry, must fit withi
 the native automatic bound, and must exactly match the returned originals. Both
 owned tasks and the exact deck change still have to complete. Arbitrary supplied
 filters are never invoked. The prior live failure's exact predicate remains
-unproven; offline reproduction does not establish a new live success.
+unproven. The new release separately passed the one-card Dark Door live case.
 
-**Installed and verified by 20:47:21 UTC on 2026-09-24, awaiting manual Profile 3
-launch**: two exact overlays and all 429 base files unchanged. Installation-state
-SHA-256: `dd497f3685e7bf26fc7bdd62a5496f20e32303dcfa9e9a9e6a0bbe6c3b46a856`.
-Only the one-card automatic-removal retest is requested.
+**Live automatic removal passed on 2026-09-24:** one eligible Bash was removed,
+**2/2/2 parent actions** reconciled, no child selection was invented, and the
+actionable map exposed two legal destinations. Owned cleanup completed by
+**20:58:54 UTC**: game/listener stopped, four generated files removed, zero overlays
+and all 429 base files unchanged. Exact installation and cleanup identities are
+retained in `validation.json`. This is one representative automatic-removal case.
 
 The preceding `00280cad…` release passed the original ten-entry Fake Merchant
 rewards after native Continue: **12/12/12** actions, all entries collected,
