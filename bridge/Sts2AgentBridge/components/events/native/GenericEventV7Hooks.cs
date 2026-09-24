@@ -681,6 +681,9 @@ public sealed class GenericEventV7Hooks : IDisposable
             if(!Owns(b)||b.Closed||b.RequestSeen||!ReferenceEquals(__0,b.Player)||!b.ContextValid(false)||!b.BindSelectionDeck())
             {b.Failed=true;return;}
             b.RequestSeen=true;b.Prefs=__1;b.RemovalPredicate=__2;
+            // Native IsRemovable is exactly the absence of the Eternal keyword.
+            // Never invoke an arbitrary supplied filter to reconstruct a domain.
+            if(__2 is null)b.UnfilteredRemovalDomain=b.SelectionDeck.Select(d=>(CardModel)d.ModelIdentity).Where(c=>c.IsRemovable).ToArray();
             b.Operation=Sts2AgentBridge.Successors.CardSelectionV1.CardSelectionV1Operation.Remove;
             if(__1.Cancelable||__1.MinSelect<1||__1.MinSelect>__1.MaxSelect||__1.MaxSelect>8)b.Failed=true;
             Request.Value=b;

@@ -153,7 +153,7 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
             {
                 diagnostic=GenericEventDiagnosticCode.PendingSelectorlessRequest;
                 if(b.ChosenTask?.IsCompletedSuccessfully!=true)return Fixed("waiting");
-                if(!b.VerifyAutomaticRemoval())return Fixed("unsupported");
+                if(!b.VerifyAutomaticRemoval(out diagnostic))return Fixed("unsupported");
             }
             if(b.RequestSeen && !b.AutomaticRemovalCompleted)
             {

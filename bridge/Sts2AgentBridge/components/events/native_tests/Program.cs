@@ -1092,17 +1092,25 @@ internal static partial class Program
     }
     private static void AutomaticRemovalTests()
     {
-        foreach(var shape in new[]{"awaited","forwarded","direct"})
-        foreach(var mode in new[]{"one","empty","delayed","request_delayed","foreign","duplicate","survivor","survivor_owner","foreign_append","extra_removed","missing_effect","manual","too_many","wrong_owner","duplicate_request","wrong_prompt"}) {
+        foreach(var shape in new[]{"awaited","forwarded","direct","wrapper_only"})
+        foreach(var mode in new[]{"one","one_eligible","empty","delayed","request_delayed","foreign","duplicate","survivor","survivor_owner","foreign_append","extra_removed","missing_effect","manual","too_many","wrong_owner","duplicate_request","wrong_prompt","filtered","empty_result","eternal_result"}) {
             if(mode=="wrong_prompt"&&shape!="direct")continue;
-            using var f=new RemovalFixture("AUTOMATIC_REMOVE",1,1,mode=="empty"?0:mode is "survivor" or "survivor_owner" or "extra_removed" or "too_many"?2:1,delayedCompletion:mode=="delayed");
+            if(mode is "filtered" or "empty_result" or "eternal_result" && shape!="wrapper_only")continue;
+            using var f=new RemovalFixture("AUTOMATIC_REMOVE",1,1,mode=="empty"?0:mode is "one_eligible" or "eternal_result" or "survivor" or "survivor_owner" or "extra_removed" or "too_many"?2:1,delayedCompletion:mode=="delayed");
             f.NativeAutomatic=true;
+            if(mode is "one_eligible" or "eternal_result")f.Cards[1].IsRemovable=false;
+            int filterCalls=0;
+            if(mode=="filtered")f.RemovalFilter=card=>{filterCalls++;return true;};
             f.DirectGenericRemoval=shape=="direct";
             if(shape=="forwarded")CardSelectCmd.RemovalHandler=(player,prefs,filter)=>CardSelectCmd.FromDeckGeneric(player,prefs,filter);
             CardSelectCmd.GenericHandler=(player,prefs,filter)=>Task.FromResult<IEnumerable<CardModel>>(mode=="foreign"?new[]{new CardModel{Owner=player}}:
-                mode=="duplicate"?new[]{f.Cards[0],f.Cards[0]}:mode=="too_many"?f.Cards:f.Cards.Take(1));
+                mode=="duplicate"?new[]{f.Cards[0],f.Cards[0]}:mode=="too_many"?f.Cards:
+                mode=="empty_result"?Array.Empty<CardModel>():mode=="eternal_result"?new[]{f.Cards[1]}:f.Cards.Take(1));
             var requestGate=new TaskCompletionSource<IEnumerable<CardModel>>();
             if(mode=="request_delayed")CardSelectCmd.GenericHandler=(player,prefs,filter)=>requestGate.Task;
+            // Model an owned native wrapper whose generic implementation does
+            // not enter a separate hook (e.g. a previously inlined call).
+            if(shape=="wrapper_only")CardSelectCmd.RemovalHandler=(player,prefs,filter)=>CardSelectCmd.GenericHandler!(player,prefs,filter);
             if(mode=="wrong_owner")f.WrongPlayer=true;
             if(mode=="wrong_prompt")f.WrongRemovalPrompt=true;
             if(mode=="duplicate_request")f.AfterEffect=()=>_=CardSelectCmd.FromDeckGeneric(f.Player,
@@ -1122,11 +1130,12 @@ internal static partial class Program
                 Check(result.Status=="waiting","automatic removal waits for parent callback");
                 f.CompletionGate.SetResult();result=f.Session.Read();
             }
-            if(mode is "one" or "empty" or "delayed" or "request_delayed") {
+            if(mode is "one" or "one_eligible" or "empty" or "delayed" or "request_delayed") {
                 Check(result.Status=="ready"&&result.Phase=="proceed"&&result.Child is null,"automatic removal returns to parent without child input: "+shape+"/"+mode);
                 Check(f.SelectCalls==0&&f.ConfirmCalls==0&&f.OptionCalls==1,"no synthetic selector action or parent retry");
                 f.Session.Apply(result.DecisionId,"choose:0");Check(f.Session.Read().Status=="complete","automatic removal proceeds to map");
             } else Check(result.Status=="unsupported","invalid automatic removal rejected: "+mode);
+            Check(filterCalls==0,"observer never invokes an arbitrary removal filter");
         }
     }
     private static void RemovalTests()
@@ -1206,6 +1215,7 @@ internal static partial class Program
         internal PinnedGenericEventV7NativeAdapter Adapter;
         internal int OptionCalls,SelectCalls,PreviewCalls,ConfirmCalls;
         internal Func<IEnumerable<CardModel>,IEnumerable<CardModel>>? RequestResult,ScreenResult;
+        internal Func<CardModel,bool>? RemovalFilter;
         internal bool IgnoreRequestForEffect=false;
         internal Action? BeforeCreate,AfterCreate,AfterEffect;
         internal bool FaultRequest,FaultCallback,DuplicateCreate,WrongPlayer,ChangePrefs,Shortcut,NativeAutomatic,ManualAutomatic,DirectGenericRemoval,WrongRemovalPrompt;
@@ -1222,7 +1232,7 @@ internal static partial class Program
                     Prompt=WrongRemovalPrompt?new MegaCrit.Sts2.Core.Localization.LocString("card_selection","TO_UNKNOWN"):CardSelectorPrefs.RemoveSelectionPrompt};
                 var selected=enchant ? await CardSelectCmd.FromDeckForEnchantment(Cards,Enchantment,amount,new CardSelectorPrefs(minSelect,maxSelect)) : DirectGenericRemoval
                     ? await CardSelectCmd.FromDeckGeneric(WrongPlayer?new Player():Player,prefs,null,null)
-                    : await CardSelectCmd.FromDeckForRemoval(WrongPlayer?new Player():Player,prefs,null);
+                    : await CardSelectCmd.FromDeckForRemoval(WrongPlayer?new Player():Player,prefs,RemovalFilter);
                 foreach(var card in IgnoreRequestForEffect?Selected:selected)
                     if(enchant)Fixture.ApplyEnchantment(card,amount,"STEADY");else Player.Deck.Cards.Remove(card);
                 AfterEffect?.Invoke();

@@ -1,3 +1,4 @@
+using G = Sts2AgentBridge.Successors.GenericEventReleaseV5.GenericEventDiagnosticCode;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -74,6 +75,7 @@ internal sealed class GenericEventV7Binding
     internal Func<CardModel,bool>? RemovalPredicate;
     internal bool GenericDeckTransform;
     internal bool GenericDeckRemoval;
+    internal CardModel[]? UnfilteredRemovalDomain;
     internal bool AutomaticRemovalCompleted;
     internal EnchantmentModel? EnchantmentModel;
     internal CardSelectionV1Enchantment? Enchantment;
@@ -238,18 +240,33 @@ internal sealed class GenericEventV7Binding
     // FromDeckGeneric returns all available cards without constructing a screen
     // when manual confirmation is off and the domain is at most MinSelect.
     // This is an automatic native continuation, not a fabricated policy choice.
-    internal bool VerifyAutomaticRemoval()
+    internal bool VerifyAutomaticRemoval(out G diagnostic)
     {
-        if(!GenericDeckRemoval || Operation!=CardSelectionV1Operation.Remove || Prefs.RequireManualConfirmation ||
-            Prefs.Cancelable || ScreenSeen || Screen is not null || Overlays.ScreenCount!=0 ||
-            !MatchesChildBinding() || ChosenTask?.IsCompletedSuccessfully!=true || RequestTask?.IsCompletedSuccessfully!=true)
+        diagnostic=G.PendingSelectorlessRequest;
+        // The exact removal wrapper is itself an owned native request. A
+        // separately observed call to its generic implementation can be absent.
+        // For that shape, bind the pure native IsRemovable domain at entry and
+        // require that the entire domain was automatic, leaving no policy choice.
+        if(!GenericDeckRemoval && (UnfilteredRemovalDomain is null || UnfilteredRemovalDomain.Length>Prefs.MinSelect) ||
+            Operation!=CardSelectionV1Operation.Remove ||
+            Prefs.RequireManualConfirmation || Prefs.Cancelable)
             return false;
+        diagnostic=G.PendingOverlay;
+        if(ScreenSeen || Screen is not null || Overlays.ScreenCount!=0)return false;
+        diagnostic=G.PendingContext;
+        if(!MatchesChildBinding())return false;
+        diagnostic=G.PendingTaskFailed;
+        if(ChosenTask?.IsCompletedSuccessfully!=true || RequestTask?.IsCompletedSuccessfully!=true)return false;
         try {
+            diagnostic=G.PendingOffers;
             var selected=_requestResult ??= RequestTask.Result.Take(Prefs.MaxSelect+1).ToArray();
             if(selected.Length>Prefs.MinSelect || selected.Length>Prefs.MaxSelect ||
                 selected.Distinct(ReferenceEqualityComparer.Instance).Count()!=selected.Length ||
                 selected.Any(c=>c is null || !SelectionDeck.Any(d=>ReferenceEquals(d.ModelIdentity,c))))return false;
+            if(!GenericDeckRemoval && (selected.Length!=UnfilteredRemovalDomain!.Length ||
+                !selected.ToHashSet(ReferenceEqualityComparer.Instance).SetEquals(UnfilteredRemovalDomain)))return false;
             var survivors=SelectionDeck.Where(d=>!selected.Any(c=>ReferenceEquals(d.ModelIdentity,c))).ToArray();
+            diagnostic=G.PendingDeck;
             var after=CopyDeck(Player);
             if(after.Any(c=>c.ModelIdentity is not CardModel card || !ReferenceEquals(card.Owner,Player) ||
                 !ReferenceEquals(card.RunState,RunState) ||
