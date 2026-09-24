@@ -23,7 +23,7 @@ serializable continuations. Gameplay does not depend on projections or encoders.
 | HF-28–38: initialization, generation, rooms, rewards, acts and difficulty | Implemented for the declared profile through victory | [Ascensions](evidence/headless_ascensions_2026_09_20.md), [native character campaigns](evidence/native_character_campaigns_2026_09_21.md) |
 | HF-39–43: events and Ancients | Full solo roster implemented; 9,376 native cases plus separate Architect ending coverage | [Event branch scope](evidence/native_event_branches_2026_09_20.md) |
 | HF-52: playable characters | All five implemented; the four added characters have A0/A10 native victories | [Campaign evidence](evidence/native_character_campaigns_2026_09_21.md), [focused interaction audit](evidence/native_character_interactions_2026_09_21.md) |
-| HF-44–47: public observations, encoding, datasets and operational adapters | Open for the complete game | Assignments below |
+| HF-44–47: public observations, encoding, datasets and operational adapters | Full headless public profile, encoding, Gym, datasets, CLI and bounded workers implemented | Assignments below |
 | HF-48: fidelity acceptance | Retained full campaigns and focused comparisons pass; ongoing discrepancy-driven work | [Acceptance task](#hf-48--accept-complete-run-fidelity-and-close-coverage-gaps) |
 | HF-49–50: throughput and delivery | Test-overhead improvements landed; training/search workloads and full-game consumer delivery remain | Assignments below |
 
@@ -58,17 +58,34 @@ The old simulator/reduced backend and its research pipelines were retired on
 2026-09-22 by user request. They are not implementation starting points or
 compatibility targets. Keep the current engine and production bridge independent.
 
-**Next: HF-44, public full-run observations.** Implement one versioned read-only
-adapter over the mature game engine. Start with states for all five characters
-and a combat → reward → map sequence, including a nested card choice. Preserve
-the independent rules layer; do not add projection work to individual cards.
-Then carry the same decisions through HF-45–47. This audit does not implement
-those external adapters or certify every character/item permutation.
+**Consumer delivery implemented (HF-44–47).** The opt-in
+full headless public profile now covers the engine's command/decision families,
+all five characters and multi-act endings with fixed encoding and Gym execution.
+Public trajectories, split-checked loaders, the agent command and bounded workers
+carry those decisions through operational execution.
+The bounded v1 slice retains its controlled Ironclad live acceptance; the v2
+coverage census explicitly records native exclusions. Preserve the independent
+rules layer and distinguish interface coverage from exhaustive native fidelity.
 
-## Open assignments
+The [shared agent interface and Gymnasium plan](AGENT_ENVIRONMENT.md) sequences
+HF-44–47 with the existing live bridge: the public-only combat/selection/reward/map
+slice, full headless encoding/Gym profile and trajectory/operational delivery
+are implemented. It separates the shared-interface milestone from subsequent
+complete autonomous live runs.
+
+<a id="open-assignments"></a>
+
+## Consumer assignments
 
 ### HF-44 — Expose sufficient public run state and observable history
 
+- **Implemented for the current headless scope:** [v2 public graph and producer](AGENT_CONTRACT.md#full-run-v2-profile)
+  cover the command/decision families with public-only choice, guarded dispatch
+  and explicit public/private information boundaries. The retained v1 bounded
+  bridge translation, shared-policy slice,
+  separate map dispatch and cleanup passed
+  [controlled live acceptance](AGENT_ENVIRONMENT.md#3-integrate-the-same-policy-with-the-bridge-for-the-first-slice)
+  on 2026-09-23.
 - **Implement:** define a versioned public adapter over `RunEngine` with visible deck
   instances/modifiers, relics/counters, potions, character resources, act/floor,
   ascension, map context, public pile information and pending decision candidates.
@@ -84,6 +101,10 @@ those external adapters or certify every character/item permutation.
 
 ### HF-45 — Encode public decisions without dropping legal choices
 
+- **Implemented:** [versioned lossless public tables, candidate indexes/masks and
+  collation](AGENT_ENCODING.md) cover the slice and full-run profiles. Large
+  deck/target/selector and rare-family tests retain every candidate; overflow fails
+  explicitly. Training-library/model integration is separate future consumer work.
 - **Depends on:** HF-44's versioned public view.
 - **Implement:** build actor encoders and candidate scoring for every
   supported action/resource family using HF-44. Derive capacities and categorical
@@ -96,6 +117,10 @@ those external adapters or certify every character/item permutation.
 
 ### HF-46 — Carry full-run semantics through datasets and artifacts
 
+- **Implemented:** [versioned public trajectories and training loaders](AGENT_EXECUTION.md)
+  preserve candidates, chosen actions, actual outcomes, source/policy identities,
+  evidence labels and explicit splits. Private replay audits remain separate;
+  incomplete writes are never published as complete artifacts.
 - **Depends on:** HF-44/45.
 - **Implement:** record trajectories, policy datasets and reports to
   retain the new decisions, build/rules identity, real victory/defeat and truncation.
@@ -108,6 +133,11 @@ those external adapters or certify every character/item permutation.
 
 ### HF-47 — Deliver full-game agent execution and CLI
 
+- **Implemented:** [StsEnv and FullRunEnv](AGENT_ENCODING.md#gymnasium-lifecycle-and-outcomes)
+  provide seeded reset/step/close, fixed spaces, sparse run reward and explicit
+  cutoffs/failures. [`sts-agent-play`, recording and bounded spawn workers](AGENT_EXECUTION.md)
+  deliver operational execution with cancellation and cleanup;
+  `sts-headless-play` is unchanged.
 - **Depends on:** HF-44–46 for the delivered adapter.
 - **Implement:** add agent execution, bounded workers and recording around
   the full engine and HF-44–46 adapters. Reuse `sts-headless-play` for direct gameplay;
@@ -123,6 +153,10 @@ those external adapters or certify every character/item permutation.
 - **Status:** selected native campaigns, complete declared event branches and
   focused item/monster/character interactions have retained evidence. No unresolved
   gameplay mismatch is identified by the September 21 character audit.
+- **Corrected discrepancy (2026-09-22):** Neow's Fury now exposes the native
+  optional discard selection with hand-capacity bounds and no selection RNG
+  consumption. [Fourteen native comparisons and replay checks](evidence/neows_fury_2026_09_22.md)
+  resolve the source mismatch found during the agent-interface preflight.
 - **Ongoing work:** choose a concrete untested mechanism or observed mismatch,
   reproduce it natively, and add one focused regression after fixing it. Campaign
   inventories exercise a small portion of possible combinations; additional
@@ -137,7 +171,9 @@ those external adapters or certify every character/item permutation.
 ### HF-49 — Measure and improve full-run/branching performance
 
 - **Status:** measured test/catalog/restore overhead improvements are implemented;
-  full training/search throughput is not established by pytest wall time.
+  [recorded agent rollout timings](AGENT_EXECUTION.md#validation-and-timing) now
+  cover reset, observation/candidates, policy, step, recording and worker throughput.
+  Full training/search throughput is not established by these bounded samples.
 - **Implement:** measure reset, step, observation/candidate creation, snapshot,
   restore, branching and worker throughput/memory on representative full-game
   workloads. Optimize measured bottlenecks through existing mechanisms.
@@ -147,6 +183,10 @@ those external adapters or certify every character/item permutation.
 
 ### HF-50 — Deliver a reproducible supported simulator package
 
+- **Consumer delivery:** the [agent package validation](AGENT_EXECUTION.md#validation-and-timing)
+  checks clean core/optional-Gym installations, installed commands, recorded
+  execution and exact shipped-source identity. Existing engine continuation
+  remains separate from public trajectories; no adapter checkpoint was added.
 - **Depends on:** the chosen HF-44–49 consumer milestone.
 - **Implement:** reconcile headless integration with main, preserve concurrent
   bridge work, and validate clean installation of canonical packages/commands.

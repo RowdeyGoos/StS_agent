@@ -11,12 +11,17 @@ requires-python = ">=3.10"
 dependencies = []
 
 [project.optional-dependencies]
+gym = [
+    "gymnasium>=1.0,<2.0",
+    "numpy>=1.24,<3.0",
+]
 dev = [
     "pytest>=8.0,<9.0",
 ]
 
 [project.scripts]
 sts-headless-play = "game.cli.headless_play:main"
+sts-agent-play = "game.cli.agent_play:main"
 
 [tool.setuptools.packages.find]
 include = ["game*"]

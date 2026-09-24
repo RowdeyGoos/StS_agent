@@ -1,0 +1,326 @@
+[
+  {
+    "name": "future schema",
+    "path": [
+      "schema"
+    ],
+    "value": "sts_public_decision_v2"
+  },
+  {
+    "name": "future profile",
+    "path": [
+      "profile"
+    ],
+    "value": "full_game_v99"
+  },
+  {
+    "name": "private seed",
+    "path": [
+      "seed"
+    ],
+    "value": 7
+  },
+  {
+    "name": "private RNG",
+    "path": [
+      "run",
+      "rng"
+    ],
+    "value": {}
+  },
+  {
+    "name": "bool as HP",
+    "path": [
+      "run",
+      "hp"
+    ],
+    "value": true
+  },
+  {
+    "name": "numeric string",
+    "path": [
+      "run",
+      "gold"
+    ],
+    "value": "99"
+  },
+  {
+    "name": "floating HP",
+    "path": [
+      "run",
+      "hp"
+    ],
+    "value": 60.0
+  },
+  {
+    "name": "negative HP",
+    "path": [
+      "run",
+      "hp"
+    ],
+    "value": -1
+  },
+  {
+    "name": "missing run fields",
+    "path": [
+      "run"
+    ],
+    "value": {}
+  },
+  {
+    "name": "unknown with data",
+    "path": [
+      "run",
+      "history"
+    ],
+    "value": {
+      "status": "unknown",
+      "value": []
+    }
+  },
+  {
+    "name": "NA required deck",
+    "path": [
+      "run",
+      "deck"
+    ],
+    "value": {
+      "status": "not_applicable",
+      "value": null
+    }
+  },
+  {
+    "name": "known without value",
+    "path": [
+      "run",
+      "history"
+    ],
+    "value": {
+      "status": "known",
+      "value": null
+    }
+  },
+  {
+    "name": "unknown status",
+    "path": [
+      "run",
+      "history"
+    ],
+    "value": {
+      "status": "missing",
+      "value": null
+    }
+  },
+  {
+    "name": "negative minimum",
+    "path": [
+      "context",
+      "minimum"
+    ],
+    "value": -1
+  },
+  {
+    "name": "out of bounds maximum",
+    "path": [
+      "context",
+      "maximum"
+    ],
+    "value": 3
+  },
+  {
+    "name": "duplicate selection",
+    "path": [
+      "context",
+      "selected"
+    ],
+    "value": [
+      "card:4",
+      "card:4"
+    ]
+  },
+  {
+    "name": "unknown selection",
+    "path": [
+      "context",
+      "selected"
+    ],
+    "value": [
+      "card:99"
+    ]
+  },
+  {
+    "name": "wrong source",
+    "path": [
+      "context",
+      "source"
+    ],
+    "value": {
+      "status": "known",
+      "value": "card:99"
+    }
+  },
+  {
+    "name": "unknown choice option",
+    "path": [
+      "context",
+      "options"
+    ],
+    "value": [
+      "card:4",
+      "card:99"
+    ]
+  },
+  {
+    "name": "draw order",
+    "path": [
+      "context",
+      "combat",
+      "piles",
+      1,
+      "order"
+    ],
+    "value": "visible"
+  },
+  {
+    "name": "pile count",
+    "path": [
+      "context",
+      "combat",
+      "piles",
+      2,
+      "count"
+    ],
+    "value": 1
+  },
+  {
+    "name": "duplicate physical card",
+    "path": [
+      "context",
+      "combat",
+      "piles",
+      2,
+      "cards",
+      "value",
+      1,
+      "ref"
+    ],
+    "value": "card:4"
+  },
+  {
+    "name": "private reference",
+    "path": [
+      "context",
+      "combat",
+      "enemies",
+      0,
+      "ref"
+    ],
+    "value": "native:0"
+  },
+  {
+    "name": "candidate for wrong phase",
+    "path": [
+      "candidates",
+      0,
+      "kind"
+    ],
+    "value": "play_card"
+  },
+  {
+    "name": "false deselect",
+    "path": [
+      "candidates",
+      0,
+      "kind"
+    ],
+    "value": "deselect_card"
+  },
+  {
+    "name": "unknown subject",
+    "path": [
+      "candidates",
+      0,
+      "subject"
+    ],
+    "value": "card:99"
+  },
+  {
+    "name": "unexpected target",
+    "path": [
+      "candidates",
+      0,
+      "target"
+    ],
+    "value": "enemy:0"
+  },
+  {
+    "name": "cancel unavailable",
+    "path": [
+      "candidates",
+      2,
+      "kind"
+    ],
+    "value": "cancel_selection"
+  },
+  {
+    "name": "confirmation with argument",
+    "path": [
+      "candidates",
+      2,
+      "subject"
+    ],
+    "value": "card:4"
+  },
+  {
+    "name": "duplicate action",
+    "path": [
+      "candidates",
+      1,
+      "ref"
+    ],
+    "value": "action:0"
+  },
+  {
+    "name": "no candidates",
+    "path": [
+      "candidates"
+    ],
+    "value": []
+  },
+  {
+    "name": "hidden map room detail",
+    "path": [
+      "run",
+      "map",
+      "value",
+      "nodes",
+      1,
+      "encounter_id"
+    ],
+    "value": "jaw_worm"
+  },
+  {
+    "name": "negative Stars",
+    "path": [
+      "context",
+      "combat",
+      "resources",
+      "stars"
+    ],
+    "value": {
+      "status": "known",
+      "value": -1
+    }
+  },
+  {
+    "name": "absent required selection source",
+    "path": [
+      "context",
+      "source"
+    ],
+    "value": {
+      "status": "not_applicable",
+      "value": null
+    }
+  }
+]
