@@ -4,7 +4,7 @@ from game.headless.core.actions import ChooseCombatCard, ConfirmCombatSelection
 from game.headless.core.resolution import push, find, move_out, drain
 
 
-def begin(p, source, cards, *, operation="move", destination="hand", minimum=1, maximum=1, free="", whitelist=None):
+def begin(p, source, cards, *, operation="move", destination="hand", minimum=1, maximum=1, free="", whitelist=None, native_set_order=False):
     ids = [c.instance_id for c in cards]
     if not ids:
         return
@@ -22,6 +22,9 @@ def begin(p, source, cards, *, operation="move", destination="hand", minimum=1, 
     )
     if whitelist is not None:
         p.rules.selection["whitelist"] = list(whitelist)
+    if native_set_order:
+        p.rules.selection["order_slots"] = []
+        p.rules.selection["free_slots"] = []
     if minimum == len(ids):
         p.rules.selection["selected"] = ids.copy()
         confirm(p)
@@ -42,8 +45,21 @@ def toggle(p, identity):
         raise ValueError("Illegal combat selection.")
     if identity in s["selected"]:
         s["selected"].remove(identity)
+        if "order_slots" in s:
+            slot = s["order_slots"].index(identity)
+            s["order_slots"][slot] = None
+            s["free_slots"].append(slot)
     else:
-        s["selected"].append(identity)
+        if "order_slots" in s:
+            # The pinned native pile selector returns its HashSet enumeration:
+            # removed entries are reused in LIFO order, not appended anew.
+            if s["free_slots"]:
+                s["order_slots"][s["free_slots"].pop()] = identity
+            else:
+                s["order_slots"].append(identity)
+            s["selected"] = [i for i in s["order_slots"] if i is not None]
+        else:
+            s["selected"].append(identity)
 
 
 def confirm(p):

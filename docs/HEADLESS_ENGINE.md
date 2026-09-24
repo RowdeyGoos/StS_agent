@@ -177,11 +177,15 @@ specific caller or differing sequence, not an unbounded new seed matrix.
 
 ## Private continuation
 
-Current schemas are **`headless_combat_state_v47`** and
-**`headless_run_state_v68`**, defined in the
+Current schemas are **`headless_combat_state_v48`** and
+**`headless_run_state_v69`**, defined in the
 [combat serializer](../game/headless/core/snapshots.py) and
 [run serializer](../game/headless/run/snapshots.py). Snapshots are JSON-compatible
 private continuation records, not public observations or native on-disk saves.
+
+Versions v48/v69 retain Neow's Fury's native selection slots and free-slot order,
+so deselect/reselect and restored continuations return cards in the same order.
+Earlier continuation versions are rejected rather than inferring this state.
 
 They retain RNG state/aliases, stable identities, ordered piles, modifiers, owned
 pending tasks/selections, character resources and run/room history. Restore binds
@@ -190,9 +194,15 @@ it does not infer missing state. Reuse the same rules/catalogs when restoring.
 Mutable branch state is independent, while immutable definitions may be shared.
 Do not serialize arbitrary callables or import a type named by a snapshot.
 
+The [Neow's Fury choice correction](evidence/neows_fury_2026_09_22.md) changes the
+default card-catalog fingerprint. Saves from the previous default catalog are
+incompatible even though these structural schema versions remain unchanged.
+
 These records are not release-provenance certificates. Actor inputs must exclude
-private RNG, hidden draw order and privileged continuation data. HF-44 owns the
-future public view.
+private RNG, hidden draw order and privileged continuation data. HF-44's
+[first public contract and headless producer](AGENT_CONTRACT.md#headless-producer)
+now cover the bounded combat/selection/reward/map slice. Full-game producer
+coverage remains open; the rules package does not depend on that adapter.
 
 ## Consolidated native verification
 
@@ -203,6 +213,7 @@ Use evidence for its declared profile, inputs and compared boundaries:
 | [Generated campaign comparisons](evidence/headless_generated_route_2026_09_20.md) | Selected Ironclad routes and regional bosses |
 | [Ascension comparisons](evidence/headless_ascensions_2026_09_20.md) | Cumulative difficulty checks and selected A10 campaigns |
 | [Character campaigns](evidence/native_character_campaigns_2026_09_21.md) | Eight additional-character A0/A10 native victories and JSON replay |
+| [Neow's Fury choices](evidence/neows_fury_2026_09_22.md) | Optional discard selection, upgrade/hand bounds, no selection RNG and replay |
 | [Event branch matrix](evidence/native_event_branches_2026_09_20.md) | 9,376 native branch-prefix cases across 65 families, with separate Architect coverage |
 | [Item/status comparisons](evidence/native_item_status_2026_09_20.md), [focused monster behavior](evidence/native_focused_behavior_2026_09_20.md) | Declared relic, potion, power and monster interactions |
 | [Character interaction audit](evidence/native_character_interactions_2026_09_21.md) | Focused character/item mechanisms, orb passive rules and RNG salt correction |

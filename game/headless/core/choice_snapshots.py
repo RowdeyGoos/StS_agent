@@ -86,8 +86,20 @@ def validate_selection(r, p, *, deferred=False, shared_offers=False):
             raise ValueError("Unowned offered cards.")
         return
     fields = {"source", "candidates", "selected", "operation", "destination", "minimum", "maximum", "free"}
-    if not isinstance(s, dict) or set(s) - {"whitelist"} != fields:
+    if not isinstance(s, dict) or set(s) - {"whitelist", "order_slots", "free_slots"} != fields:
         raise ValueError("Invalid selection fields.")
+    if "order_slots" in s or "free_slots" in s:
+        slots, free_slots = s.get("order_slots"), s.get("free_slots")
+        if (type(s["maximum"]) is not int or not isinstance(slots, list) or not isinstance(free_slots, list)
+                or len(slots) > s["maximum"] or any(i is not None and not isinstance(i, str) for i in slots)
+                or any(type(i) is not int or not 0 <= i < len(slots) for i in free_slots)
+                or len(free_slots) != len(set(free_slots))
+                or set(free_slots) != {i for i, card in enumerate(slots) if card is None}
+                or [i for i in slots if i is not None] != s["selected"]):
+            raise ValueError("Invalid native selection order.")
+        if not any(c.instance_id == s["source"] and c.definition.definition_id == "neows_fury"
+                   for c in p.deck.in_play):
+            raise ValueError("Unowned native selection order.")
     from game.headless.core.necrobinder_snapshots import CHOICES as NECRO_CHOICES, validate_selection as nec_selection
     from game.headless.core.regent_snapshots import CHOICES as REGENT_CHOICES, validate_selection as regent_selection
     if (
@@ -162,9 +174,12 @@ def validate_selection(r, p, *, deferred=False, shared_offers=False):
         "seeker_strike": ("draw_pile", "move", "hand", ""),
         "discovery": ("offered", "move", "hand", "free_until_played"),
         "splash": ("offered", "move", "hand", "free_this_turn"),
+        "choose_discard_to_hand": ("discard_pile", "move", "hand", ""),
     }
     if operation not in settings:
         raise ValueError("Unsupported choice source.")
+    if ("order_slots" in s) != (operation == "choose_discard_to_hand"):
+        raise ValueError("Selection order differs from source.")
     pile, effect, destination, free = settings[operation]
     if (s["operation"], s["destination"], s["free"]) != (effect, destination, free):
         raise ValueError("Choice semantics differ from source.")
@@ -204,8 +219,12 @@ def validate_selection(r, p, *, deferred=False, shared_offers=False):
         if operation in ("entropy", "stratagem")
         else (5 if source.upgraded else 3) if operation == "purity" else 1
     )
+    if operation == "choose_discard_to_hand":
+        from game.headless.cards.operations import value
+        effect = source.definition.effects[index]
+        expected_max = min(value(source, effect.amount, effect.upgraded_amount), max(0, 10 - len(p.hand)))
     expected_max = min(expected_max, len(s["candidates"]))
-    expected_min = 0 if operation in ("purity", "discovery", "splash", "gambling_chip", "toolbox") else expected_max
+    expected_min = 0 if operation in ("purity", "discovery", "splash", "gambling_chip", "toolbox", "choose_discard_to_hand") else expected_max
     if (s["minimum"], s["maximum"]) != (expected_min, expected_max):
         raise ValueError("Choice limits differ from source.")
     if operation in ("secret_technique", "secret_weapon"):

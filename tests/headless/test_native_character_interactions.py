@@ -139,13 +139,12 @@ def test_native_character_interactions(row):
 
 
 def test_native_character_interaction_capture_identity():
-    import hashlib
+    from tests.headless.native_fixture_sources import assert_campaign_sources
     assert RECORD['userDirectoryRemoved']
     assert RECORD['pins']['sts2.dll'] == 'e7ceb80669bfaf5c8fccabaa126ae2bb283aba514be5b5b55612579cfd285f18'
     assert {r['character'] for r in RECORD['result']['rows']} == {'Silent', 'Regent', 'Necrobinder', 'Defect'}
     assert len(RECORD['result']['rows']) == 4
-    for name, digest in RECORD['fixtureSources'].items():
-        assert hashlib.sha256((ROOT / 'tools/native_combat_oracle/queue_runtime' / name).read_bytes()).hexdigest() == digest
+    assert_campaign_sources(RECORD)
 
 
 def test_cables_excludes_all_direct_passive_callers():

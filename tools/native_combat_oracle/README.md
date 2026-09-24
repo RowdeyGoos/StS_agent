@@ -806,3 +806,15 @@ orb passives plus random channels. See the [audit and comparisons](../../docs/ev
 This mode deliberately calls selected phase hooks; it is not a complete-turn or
 live-UI test. The [23 retained baseline reruns](../../docs/evidence/native_character_interaction_regressions_2026_09_21.json)
 bind the extended shared harness to unchanged campaign and interaction results.
+
+### Neow's Fury optional discard selection
+
+`queue_runtime/run.py --mode neows-fury` calls actual native `NeowsFury.OnPlay`
+on authored combat state with a recording test selector. Fourteen base/upgraded
+cases cover optional zero/positive selections, empty/singleton piles, hand space
+and lethal damage; the native selection RNG remains unchanged. This does not run
+the card-play wrapper, live selector UI or full combat ending. See the
+[comparison and continuation evidence](../../docs/evidence/neows_fury_2026_09_22.md).
+The [current 24-run regression report](../../docs/evidence/native_neows_fury_regressions_2026_09_22.json)
+binds affected retained results to fresh executions of the extended shared harness;
+original captures and historical report identities remain unchanged.

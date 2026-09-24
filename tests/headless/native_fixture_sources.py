@@ -5,14 +5,14 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).parents[2]
-REPORT = ROOT / 'docs/evidence/native_character_interaction_regressions_2026_09_21.json'
+REPORT = ROOT / 'docs/evidence/native_neows_fury_regressions_2026_09_22.json'
 
 
 def assert_current_sources():
     report = json.loads(REPORT.read_text())
     for name, digest in report['fixtureSources'].items():
         assert hashlib.sha256((ROOT / 'tools/native_combat_oracle/queue_runtime' / name).read_bytes()).hexdigest() == digest
-    assert len(report['runs']) == 23
+    assert len(report['runs']) == 24
     for row in report['runs']:
         raw = (ROOT / row['baseline']).read_bytes()
         baseline = json.loads(gzip.decompress(raw) if row['baseline'].endswith('.gz') else raw)

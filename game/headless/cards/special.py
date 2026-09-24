@@ -33,12 +33,13 @@ def apply_operation(operation, card, p, target, amount):
     if p.combat_is_ending:
         return
     r = p.rules
-    if operation == "random_discard_to_hand":
-        choices = list(p.deck.discard_pile)
-        p.deck.selection_rng.shuffle(choices)
-        for chosen in choices[:amount]:
-            move_out(p, chosen)
-            (p.hand if len(p.hand) < 10 else p.deck.discard_pile).append(chosen)
+    if operation == "choose_discard_to_hand":
+        from game.headless.core.choices import begin
+
+        maximum = min(amount, max(0, 10 - len(p.hand)))
+        if maximum:
+            begin(p, card.instance_id, tuple(p.deck.discard_pile),
+                  minimum=0, maximum=maximum, native_set_order=True)
     elif operation == "clone":
         clone_to(p, card, "discard_pile")
     elif operation == "hp_loss":

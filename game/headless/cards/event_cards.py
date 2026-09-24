@@ -12,7 +12,7 @@ from game.headless.cards.operations import Attack, CardOperation
 NEOWS_FURY = CardDefinition("neows_fury", (
     CardSpec("Neow's Fury", 1, "attack", base_damage=10, exhausts=True),
     CardSpec("Neow's Fury+", 1, "attack", base_damage=14, exhausts=True),
-), (Attack(), CardOperation("random_discard_to_hand", 2, 3)), rarity="ancient", pool="colorless", generate_in_combat=False)
+), (Attack(), CardOperation("choose_discard_to_hand", 2, 3)), rarity="ancient", pool="colorless", generate_in_combat=False)
 from game.headless.cards.event_effects import ToricBlock
 PECK = CardDefinition("peck", (
     CardSpec("Peck", 1, "attack", base_damage=2),
