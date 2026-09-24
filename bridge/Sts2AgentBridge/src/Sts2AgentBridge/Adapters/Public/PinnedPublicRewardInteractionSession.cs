@@ -37,6 +37,7 @@ internal sealed class PinnedPublicRewardParentTarget
     public PublicRewardItem Projection { get; }
 
     public IReadOnlyList<CardModel> OfferedCards { get; }
+    internal PinnedPublicGoldRewardClaim? Gold {get;set;}
 }
 
 internal sealed class PinnedPublicRewardCardTarget
@@ -106,6 +107,103 @@ internal sealed class PinnedPublicSpecialCardClaim
     }
 }
 
+// GoldReward.Amount is the printed base amount. Bowler Hat changes the actual
+// native gain before truncation. Do not run gameplay hooks to predict the effect.
+internal sealed class PinnedPublicGoldRewardClaim
+{
+    private readonly GoldReward _reward;
+    private readonly Player _player;
+    private readonly object _run;
+    private readonly MegaCrit.Sts2.Core.Runs.RunManager _manager;
+    private readonly MegaCrit.Sts2.Core.Nodes.NRun _node;
+    private readonly object? _room, _parentSet;
+    private readonly int _amount;
+    private readonly (RelicModel Model,string Key)[] _relics;
+    private readonly (CardModel Model,string Key,int Level,object? Enchantment,int Amount)[] _cards;
+    private readonly (PotionModel? Model,string? Key)[] _potions;
+    internal int Gain {get;}
+    internal bool Modified {get;}
+
+    internal static (int Gain,bool Modified) Effect(GoldReward reward)
+    {
+        if(reward.GetType()!=typeof(GoldReward)||reward.Amount<0)throw new InvalidOperationException("Gold reward unavailable.");
+        var player=reward.Player;
+        if(player.Relics.Count>128)throw new InvalidOperationException("Gold modifier bound.");
+        bool bowler=false;
+        foreach(var model in Listeners(player,false)) {
+            bool exact=model.GetType()==typeof(MegaCrit.Sts2.Core.Models.Relics.BowlerHat);
+            if(exact||model is RelicModel relic&&relic.Id.Entry=="BOWLER_HAT") {
+                var hat=model as RelicModel;
+                if(!exact||bowler||hat is null||!ReferenceEquals(hat.Owner,player)||
+                    !player.Relics.Any(r=>ReferenceEquals(r,hat))||hat.Id.Entry!="BOWLER_HAT"||hat.DynamicVars["GoldIncrease"].BaseValue!=1.25m)
+                    throw new InvalidOperationException("Gold modifier identity.");
+                bowler=true;
+            }
+            CheckHook(model,"ModifyGoldGained",exact);
+            CheckHook(model,"AfterModifyingGoldGained",exact);
+        }
+        foreach(var model in Listeners(player,true)) {
+            CheckHook(model,"AfterGoldGained",false);
+            CheckHook(model,"AfterRewardTaken",false);
+        }
+        long gain=bowler?(long)reward.Amount*5/4:reward.Amount;
+        if(gain>int.MaxValue||player.Gold<0)
+            throw new InvalidOperationException("Gold gain overflow.");
+        return ((int)gain,bowler);
+    }
+    private static void CheckHook(AbstractModel model,string name,bool allowed)
+    {
+        var hook=model.GetType().GetMethod(name);
+        if(hook is null||!allowed&&hook.DeclaringType!=hook.GetBaseDefinition().DeclaringType)
+            throw new InvalidOperationException("Unsupported gold hook.");
+    }
+    private static AbstractModel[] Listeners(Player player,bool after)
+    {
+        var models=player.RunState.IterateHookListeners(after?null:player.Creature.CombatState).Take(2049).ToArray();
+        if(models.Length>2048)throw new InvalidOperationException("Gold hook bound.");
+        return models;
+    }
+    private readonly AbstractModel[] _gainListeners;
+    private readonly AbstractModel[] _afterListeners;
+    internal PinnedPublicGoldRewardClaim(GoldReward reward)
+    {
+        _reward=reward;_player=reward.Player;_run=_player.RunState;_amount=reward.Amount;
+        _manager=MegaCrit.Sts2.Core.Runs.RunManager.Instance??throw new InvalidOperationException("Gold run manager unavailable.");
+        _node=MegaCrit.Sts2.Core.Nodes.NRun.Instance??throw new InvalidOperationException("Gold run node unavailable.");
+        _room=_player.RunState.CurrentRoom;_parentSet=reward.ParentRewardSet;
+        (Gain,Modified)=Effect(reward);
+        if(!reward.SuccessfullySelected&&(long)_player.Gold+Gain>int.MaxValue)throw new InvalidOperationException("Gold sum overflow.");
+        _gainListeners=Listeners(_player,false);_afterListeners=Listeners(_player,true);
+        if(_player.Deck.Cards.Count is <1 or >512 || _player.PotionSlots.Count>8)
+            throw new InvalidOperationException("Gold inventory bound.");
+        _relics=_player.Relics.Select(r=>(r,r.Id.Entry)).ToArray();
+        _cards=_player.Deck.Cards.Select(c=>(c,c.Id.Entry,c.CurrentUpgradeLevel,(object?)c.Enchantment,c.Enchantment?.Amount??0)).ToArray();
+        _potions=_player.PotionSlots.Select(p=>(p,p?.Id.Entry)).ToArray();
+    }
+    internal bool Valid()
+    {
+        if(!ReferenceEquals(MegaCrit.Sts2.Core.Runs.RunManager.Instance,_manager)||!ReferenceEquals(_manager.DebugOnlyGetState(),_run)||
+            !ReferenceEquals(MegaCrit.Sts2.Core.Nodes.NRun.Instance,_node)||!Godot.GodotObject.IsInstanceValid(_node)||
+            !ReferenceEquals(_player.RunState.CurrentRoom,_room)||!ReferenceEquals(_reward.ParentRewardSet,_parentSet)||
+            MegaCrit.Sts2.Core.Commands.CardSelectCmd.Selector is not null||!ReferenceEquals(_reward.Player,_player)||!ReferenceEquals(_player.RunState,_run)||_reward.Amount!=_amount)return false;
+        try{if(Effect(_reward)!=(Gain,Modified)||!Listeners(_player,false).SequenceEqual(_gainListeners,ReferenceEqualityComparer.Instance)||
+            !Listeners(_player,true).SequenceEqual(_afterListeners,ReferenceEqualityComparer.Instance))return false;}catch{return false;}
+        if(_player.Relics.Count!=_relics.Length||_player.Deck.Cards.Count!=_cards.Length||_player.PotionSlots.Count!=_potions.Length)return false;
+        for(int i=0;i<_relics.Length;i++)if(!ReferenceEquals(_player.Relics[i],_relics[i].Model)||_player.Relics[i].Id.Entry!=_relics[i].Key)return false;
+        for(int i=0;i<_cards.Length;i++) {
+            var card=_player.Deck.Cards[i];var old=_cards[i];
+            if(!ReferenceEquals(card,old.Model)||card.Id.Entry!=old.Key||card.CurrentUpgradeLevel!=old.Level||
+                !ReferenceEquals(card.Enchantment,old.Enchantment)||(card.Enchantment?.Amount??0)!=old.Amount||
+                !ReferenceEquals(card.Owner,_player)||!ReferenceEquals(card.RunState,_run))return false;
+        }
+        for(int i=0;i<_potions.Length;i++) {
+            var potion=_player.PotionSlots[i];var old=_potions[i];
+            if(!ReferenceEquals(potion,old.Model)||potion?.Id.Entry!=old.Key||potion is not null&&!ReferenceEquals(potion.Owner,_player))return false;
+        }
+        return true;
+    }
+}
+
 internal sealed class PinnedPublicRewardPendingMutation
 {
     public PinnedPublicRewardPendingMutation(
@@ -118,9 +216,10 @@ internal sealed class PinnedPublicRewardPendingMutation
         NRewardsScreen? parentScreen = null,
         PinnedPublicItemRewardClaim? item = null,
         IReadOnlyList<PinnedPublicItemRewardClaim>? unclaimedPotions = null,
-        PinnedPublicPotionDiscard? discard = null)
+        PinnedPublicPotionDiscard? discard = null,
+        PinnedPublicGoldRewardClaim? gold = null)
     {
-        Kind = kind;
+        Kind = kind; Gold=gold;
         BeforePlayer = beforePlayer;
         ParentTarget = parentTarget;
         CardTarget = cardTarget;
@@ -141,8 +240,10 @@ internal sealed class PinnedPublicRewardPendingMutation
     internal NRewardsScreen? ParentScreen { get; }
     internal PinnedPublicItemRewardClaim? Item { get; }
     internal PinnedPublicPotionDiscard? Discard { get; }
+    internal PinnedPublicGoldRewardClaim? Gold { get; }
     internal IReadOnlyList<PinnedPublicItemRewardClaim> UnclaimedPotions { get; }
     internal System.Threading.Tasks.Task? ProceedTask { get; set; }
+    internal IPublicRewardTransition? Transition { get; set; }
     internal bool UnclaimedPotionsValid() {foreach(var potion in UnclaimedPotions)if(!potion.Unclaimed)return false;return true;}
 }
 
@@ -164,6 +265,18 @@ internal sealed class PinnedPublicRewardInteractionSession
     private readonly List<PinnedPublicItemRewardClaim> _settledItems=new();
     internal bool CapacityRewards {get;private set;}
     internal bool HealingRewards {get;private set;}
+    internal bool MaxHpRewards {get;private set;}
+    internal bool ModifiedGoldRewards {get;private set;}
+    private readonly Dictionary<Reward,(int Revision,NRewardButton Button,PinnedPublicGoldRewardClaim Claim)> _goldTargets=new(ReferenceEqualityComparer.Instance);
+    internal PinnedPublicGoldRewardClaim BindGold(GoldReward reward,NRewardButton button) {
+        if(_goldTargets.TryGetValue(reward,out var prior)&&prior.Revision==_decisionRevision) {
+            if(!ReferenceEquals(prior.Button,button)||!prior.Claim.Valid()||!reward.SuccessfullySelected&&(long)reward.Player.Gold+prior.Claim.Gain>int.MaxValue)throw new InvalidOperationException("Gold binding changed.");
+            return prior.Claim;
+        }
+        var claim=new PinnedPublicGoldRewardClaim(reward);
+        if(!claim.Valid())throw new InvalidOperationException("Gold binding unavailable.");
+        _goldTargets[reward]=(_decisionRevision,button,claim);return claim;
+    }
     internal bool UsesItemIndices => _itemDomain is not null;
     internal bool SettledItemsValid() {
         var growth=_pending?.Item;
@@ -182,14 +295,16 @@ internal sealed class PinnedPublicRewardInteractionSession
     internal bool ForceRewardOrdinals;
     internal void BindRewardDomain(List<(NRewardButton Button,Reward Reward)> rows)
     {
-        if(_itemDomain is null&&(ForceRewardOrdinals||rows.Exists(row=>row.Reward.GetType()==typeof(PotionReward)||row.Reward.GetType()==typeof(RelicReward)))) {
+        ModifiedGoldRewards |= rows.Any(row=>row.Reward is GoldReward gold&&PinnedPublicGoldRewardClaim.Effect(gold).Modified);
+        if(_itemDomain is null&&(ModifiedGoldRewards||ForceRewardOrdinals||rows.Exists(row=>row.Reward.GetType()==typeof(PotionReward)||row.Reward.GetType()==typeof(RelicReward)))) {
             if(!PinnedPublicItemRewardClaim.Slots(rows[0].Reward.Player,out _initialPotions))throw new InvalidOperationException("Potion inventory unavailable.");
             _initialPotionKeys=_initialPotions.Select(PinnedPublicItemRewardClaim.Key).ToArray();
             _itemDomain=new(ReferenceEqualityComparer.Instance);
             for(int i=0;i<rows.Count;i++)_itemDomain.Add(rows[i].Reward,(i,rows[i].Reward.RewardsSetIndex));
         }
         if(_itemDomain is null)return;
-        HealingRewards |= rows.Any(row=>PinnedPublicItemRewardClaim.HealingReward(row.Reward));
+        MaxHpRewards |= ModifiedGoldRewards || rows.Any(row=>PinnedPublicItemRewardClaim.MaximumHpGain(row.Reward)>0);
+        HealingRewards |= MaxHpRewards || rows.Any(row=>PinnedPublicItemRewardClaim.HealingReward(row.Reward));
         CapacityRewards |= HealingRewards || rows.Any(row=>PinnedPublicItemRewardClaim.CapacityGain(row.Reward)>0);
         foreach(var row in rows)if(!_itemDomain.TryGetValue(row.Reward,out var entry)||entry.Native!=row.Reward.RewardsSetIndex)
             throw new InvalidOperationException("Item reward domain replaced.");
@@ -201,6 +316,11 @@ internal sealed class PinnedPublicRewardInteractionSession
 
     private int _acceptedActionCount;
     private int _processAcceptedActionCount;
+    private readonly int _maximumSessions;
+    internal PinnedPublicRewardInteractionSession(int maximumSessions = PublicRewardActionBudget.MaximumRewardSessionsPerProcess) {
+        if(maximumSessions is <1 or >64)throw new ArgumentOutOfRangeException(nameof(maximumSessions));
+        _maximumSessions=maximumSessions;
+    }
     private int _rewardSessionCount;
     private int _decisionRevision;
     private bool _observedReady;
@@ -355,7 +475,7 @@ internal sealed class PinnedPublicRewardInteractionSession
                 return true;
             }
             if (!_completedSession ||
-                _rewardSessionCount >= PublicRewardActionBudget.MaximumRewardSessionsPerProcess)
+                _rewardSessionCount >= _maximumSessions)
             {
                 return false;
             }
@@ -365,8 +485,8 @@ internal sealed class PinnedPublicRewardInteractionSession
             _acceptedDecisionIds.Clear();
             _skippedCardRewards.Clear();
             _specialTargets.Clear();
-            _itemDomain=null;CapacityRewards=false;HealingRewards=false;_initialPotions=null;_initialPotionKeys=null;_itemTargets.Clear();_settledItems.Clear();
-            _decisionRevision = 0;
+            _itemDomain=null;_goldTargets.Clear();CapacityRewards=false;HealingRewards=false;MaxHpRewards=false;ModifiedGoldRewards=false;_initialPotions=null;_initialPotionKeys=null;_itemTargets.Clear();_settledItems.Clear();
+            _decisionRevision++; // A later native screen cannot reuse an earlier action identity.
             _completedSession = false;
             _currentDecisionId = string.Empty;
             _parentScreen = screen;
@@ -408,7 +528,7 @@ internal sealed class PinnedPublicRewardInteractionSession
                 return PublicRewardActionApplyOutcome.AlreadyApplied;
             }
             if (_acceptedActionCount >= PublicRewardActionBudget.MaximumAcceptedActionsPerSession ||
-                _processAcceptedActionCount >= PublicRewardActionBudget.MaximumAcceptedActionsPerProcess)
+                _processAcceptedActionCount >= _maximumSessions*PublicRewardActionBudget.MaximumAcceptedActionsPerSession)
             {
                 return PublicRewardActionApplyOutcome.ActionLimitReached;
             }
@@ -628,14 +748,14 @@ internal sealed class PinnedPublicRewardInteractionSession
     {
         lock (_gate)
         {
-            if (_rewardSessionCount >= PublicRewardActionBudget.MaximumRewardSessionsPerProcess)
+            if (_rewardSessionCount >= _maximumSessions)
             {
                 return false;
             }
             _rewardSessionCount++;
             _acceptedActionCount = 0;
             _acceptedDecisionIds.Clear();
-            _decisionRevision = 0;
+            _decisionRevision++; // A later native screen cannot reuse an earlier action identity.
             _completedSession = false;
             _currentDecisionId = string.Empty;
             _pending = null;

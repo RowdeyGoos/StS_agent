@@ -3,12 +3,16 @@ namespace Sts2AgentBridge.Successors.GenericEventReleaseV5;
 internal static class GenericEventDiagnosticCodec
 {
     internal static GenericEventDiagnosticCode Normalize(GenericEventDiagnosticCode value) =>
-        value is >= GenericEventDiagnosticCode.NotCaptured and <= GenericEventDiagnosticCode.CombatWaitingEnd ? value : GenericEventDiagnosticCode.DiagnosticUnavailable;
+        value is >= GenericEventDiagnosticCode.NotCaptured and <= GenericEventDiagnosticCode.ParentTravel ? value : GenericEventDiagnosticCode.DiagnosticUnavailable;
     internal static string Encode(GenericEventDiagnosticCode value) => value switch
     {
         GenericEventDiagnosticCode.NotCaptured => "none",
         GenericEventDiagnosticCode.ParentReady => "parent_ready",
         GenericEventDiagnosticCode.ParentUnavailable => "parent_unavailable",
+        GenericEventDiagnosticCode.ParentMap => "parent_map",
+        GenericEventDiagnosticCode.ParentOverlay => "parent_overlay",
+        GenericEventDiagnosticCode.ParentLayout => "parent_layout",
+        GenericEventDiagnosticCode.ParentTravel => "parent_travel",
         GenericEventDiagnosticCode.ParentWaiting => "parent_waiting",
         GenericEventDiagnosticCode.PendingBindingFailed => "pending_binding_failed",
         GenericEventDiagnosticCode.PendingOwnership => "pending_ownership",

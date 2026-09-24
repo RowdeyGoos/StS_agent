@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net9.0</TargetFramework><OutputType>Exe</OutputType><EnableDefaultCompileItems>false</EnableDefaultCompileItems><DefineConstants>COMBAT_POTION_TEST_SEAM</DefineConstants></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../runtime/CombatPotionContracts.cs" />
+    <Compile Include="../native/CombatPotions.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicCombatDecision.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicCombatDecisionReader.cs" />
+    <Compile Include="FakeGame.cs" /><Compile Include="Program.cs" />
+    <Reference Include="0Harmony"><HintPath>$(HarmonyPath)</HintPath><Private>true</Private></Reference>
+  </ItemGroup>
+</Project>

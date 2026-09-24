@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Sts2AgentBridge.Core.Public;
+using Sts2AgentBridge.Core.Protocol;
 using Sts2AgentBridge.Unified;
 using Sts2AgentBridge.Cards.Combat;
 using System.Text.Json;
@@ -19,7 +20,7 @@ internal static partial class Program
     private static int _checks;
     private static void Check(bool test, string label) { _checks++; if (!test) throw new Exception(label); }
     private static BridgeRequest Request(Capability c, string path, bool post = false) => new(c, path, post, 0, 64, post ? Decision : null, post ? "choose:0" : null);
-    private static CoreBridgeModule Core(CoreFixture f) => new(Nonce, f, f, f, f, f, f, f, f, f, f.Choice);
+    private static CoreBridgeModule Core(CoreFixture f) { var core = new CoreBridgeModule(Nonce, f, f, f, f, f, f, f, f, f, f.Choice); if(f.Potions is not null)core.BindPotions(f.Potions); return core; }
     private static string Body(BridgeReply reply) => Encoding.UTF8.GetString(reply.Response);
     private static int Main(string[] args)
     {
@@ -29,8 +30,17 @@ internal static partial class Program
             if (args.Length == 2 && args[0] == "--serve-rest") return ServeRest(args[1]);
             if (args.SequenceEqual(new[] { "--serve" })) return Serve();
             if (args.SequenceEqual(new[] { "--serve-read-timeout" })) return Serve(readTimeout:true);
+            if (args.SequenceEqual(new[] { "--serve-read-recovery" })) return Serve(readRecovery:true);
+            if (args.SequenceEqual(new[] { "--serve-combat-potions" })) return Serve(true, combatPotions: true);
+            if (args.SequenceEqual(new[] { "--serve-infinite-health" })) return Serve(true, infiniteHealth: true);
             if (args.SequenceEqual(new[] { "--serve-combat" })) return Serve(true);
+            if (args.SequenceEqual(new[] { "--serve-offer-choice" })) return Serve(true, offerChoice: true);
+            if (args.SequenceEqual(new[] { "--serve-draw-choice" })) return Serve(true, drawChoice: true);
+            if (args.SequenceEqual(new[] { "--serve-agent" })) return Serve(true, agent: true);
+            if (args.SequenceEqual(new[] { "--serve-campaign" })) return Serve(campaign: true);
             if (args.SequenceEqual(new[] { "--serve-combat-map" })) return Serve(true, true);
+            if (args.SequenceEqual(new[] { "--serve-max-hp-relic" })) return Serve(true,true,itemRewards:true,maxHpRelic:true);
+            if (args.SequenceEqual(new[] { "--serve-modified-gold" })) return Serve(true,true,modifiedGold:true);
             if (args.SequenceEqual(new[] { "--serve-healing-relic" })) return Serve(true,true,itemRewards:true,healingRelic:true);
             if (args.SequenceEqual(new[] { "--serve-capacity-potions" })) return Serve(true,true,capacityPotions:true);
             if (args.SequenceEqual(new[] { "--serve-replace-potions" })) return Serve(true,true,replacePotions:true);
@@ -39,21 +49,31 @@ internal static partial class Program
             if (args.SequenceEqual(new[] { "--serve-special-card" })) return Serve(true,true,specialCard:true);
             if (args.SequenceEqual(new[] { "--serve-resume-items" })) return Serve(eventResume:true,resumeItems:true);
             if (args.SequenceEqual(new[] { "--serve-event-resume" })) return Serve(eventResume:true);
-            RestFlowTests.Run(Check); EventBoundaryTests.Run(Check); EventCombatTransfer(); EventCombatResume(); ResumeItemRouting(); Ownership(); CleanupFailure(); CoreHandoff(); CombatChoiceHandoff(); Parser(); ResumeDiagnostics(); ReadDispatchFailures(); SocketHandoff(); StaleRecovery(); LostResponse(); DuplicatePost(); RepeatedCombatIdentities();
+            CombatHealthDisplay(); CombatPotionOwnership(); AgentSessionTests.Run(Check); RestFlowTests.Run(Check); EventBoundaryTests.Run(Check); EventCombatTransfer(); EventCombatResume(); ResumeItemRouting(); Ownership(); CleanupFailure(); CoreHandoff(); CombatChoiceHandoff(); Parser(); ResumeDiagnostics(); ReadDispatchRecovery(); ReadDispatchFailures(); SocketHandoff(); StaleRecovery(); LostResponse(); DuplicatePost(); RepeatedCombatIdentities();
             Console.WriteLine("{\"status\":\"passed\",\"suite\":\"unified_bridge\",\"checks\":" + _checks + "}");
             return 0;
         }
         catch (Exception error) { Console.Error.WriteLine(error); return 1; }
     }
-    private static int Serve(bool combat = false, bool rewards = false, bool eventResume=false,bool resumeItems=false,bool specialCard=false,bool itemRewards=false,bool fullPotions=false,bool replacePotions=false,bool capacityPotions=false,bool readTimeout=false,bool healingRelic=false)
+    private static int Serve(bool combat = false, bool rewards = false, bool eventResume=false,bool resumeItems=false,bool specialCard=false,bool itemRewards=false,bool fullPotions=false,bool replacePotions=false,bool capacityPotions=false,bool readTimeout=false,bool healingRelic=false,bool agent=false,bool campaign=false,bool drawChoice=false,bool maxHpRelic=false,bool modifiedGold=false,bool offerChoice=false,bool readRecovery=false,bool combatPotions=false,bool infiniteHealth=false)
     {
-        var fixture = eventResume?new CoreFixture{CombatReady=true,MapReady=true}:combat ? CombatScenario() : new CoreFixture { Reject = true, MapReady = true };
-        fixture.HealingRelicScenario=healingRelic;fixture.RewardScenario = rewards;fixture.SpecialCardScenario=specialCard;fixture.ItemRewardScenario=itemRewards;fixture.FullPotionScenario=fullPotions;fixture.ReplacePotionScenario=replacePotions;fixture.CapacityPotionScenario=capacityPotions;
-        var (runtime, port) = Start((capability, _) => resumeItems?new ResumeItemModule(fixture):eventResume?new FakeModule(capability){Complete=true,CombatScope=()=>fixture.CombatAccepted==0,CombatResume=()=>fixture.CombatAccepted==0?"combat":"resumed",EventNonce=Nonce}:new FakeModule(capability) { AutoComplete = true }, fixture);
+        var fixture = eventResume?new CoreFixture{CombatReady=true,MapReady=true}:combat ? CombatScenario(drawChoice, offerChoice) : new CoreFixture { Reject = true, MapReady = true };
+        if(combatPotions)fixture.Potions=new PotionFixture{Finish=true,Completed=()=>fixture.Stage=3};
+        fixture.InfiniteHealthScenario=infiniteHealth;
+        fixture.ModifiedGoldScenario=modifiedGold;fixture.MaxHpRelicScenario=maxHpRelic;fixture.HealingRelicScenario=healingRelic;fixture.RewardScenario = rewards;fixture.SpecialCardScenario=specialCard;fixture.ItemRewardScenario=itemRewards;fixture.FullPotionScenario=fullPotions;fixture.ReplacePotionScenario=replacePotions;fixture.CapacityPotionScenario=capacityPotions;
+        if(campaign){fixture.Reject=false;fixture.Stage=3;fixture.RewardScenario=true;fixture.RewardDestination="act";}
+        var (runtime, port) = Start((capability, _) => resumeItems?new ResumeItemModule(fixture):eventResume?new FakeModule(capability){Complete=true,CombatScope=()=>fixture.CombatAccepted==0,CombatResume=()=>fixture.CombatAccepted==0?"combat":"resumed",EventNonce=Nonce}:new FakeModule(capability) { AutoComplete = true }, fixture, agent, campaign);
         Console.WriteLine("{\"port\":" + port + "}");
         var stop = Task.Run(Console.ReadLine);
         var until = DateTime.UtcNow.AddSeconds(30);
-        while (!stop.IsCompleted && DateTime.UtcNow < until) { if(!readTimeout)runtime.DrainFrame(); Thread.Sleep(1); }
+        bool recovered = false;
+        while (!stop.IsCompleted && DateTime.UtcNow < until) {
+            recovered |= runtime.OutstandingFrameCount == 2;
+            if(!readTimeout && (!readRecovery || recovered))runtime.DrainFrame();
+            Thread.Sleep(1);
+        }
+        if(readRecovery)Check(runtime.UnclaimedReadRetries == 1 && !runtime.IsTerminalOrStopping,
+            "socket recovery replaces exactly one unclaimed read and keeps its owner running");
         Stop(runtime);
         return 0;
     }
@@ -168,6 +188,21 @@ internal static partial class Program
         }
         public void Dispose(){}
     }
+    private static void CombatHealthDisplay()
+    {
+        var f=new CoreFixture{InfiniteHealthScenario=true,Stage=1};
+        var snapshot=((IPublicCombatDecisionService)f).Read().Snapshot;
+        string json=Encoding.ASCII.GetString(CanonicalProbeEncoder.EncodePublicCombatDecisionBody(snapshot));
+        Check(json.Contains("\"schema_version\":2")&&json.Contains("\"hp_display\":\"infinite\",\"hp\":null,\"max_hp\":null"),"infinite health is explicit and nullable");
+        var noisy=snapshot with {Enemies=new[]{snapshot.Enemies[0] with {Hp=200,MaxHp=999999999}}};
+        Check(PublicCombatDecisionIdentity.Compute(snapshot)==PublicCombatDecisionIdentity.Compute(noisy)&&json==Encoding.ASCII.GetString(CanonicalProbeEncoder.EncodePublicCombatDecisionBody(noisy)),"public codec and digest ignore hidden numbers");
+        var terminal=PublicCombatDecisionSnapshot.Complete(5,snapshot.Player with{Hp=0},snapshot.Enemies,PublicCombatOutcome.Defeat);
+        string defeat=Encoding.ASCII.GetString(CanonicalProbeEncoder.EncodePublicCombatDecisionBody(terminal));
+        Check(defeat.Contains("\"schema_version\":2")&&defeat.Contains("\"hp\":null")&&defeat.Contains("\"outcome\":\"defeat\""),"defeat retains public infinity");
+        var unknown=snapshot with{Enemies=new[]{snapshot.Enemies[0] with{HealthDisplay=(PublicEnemyHealthDisplay)99}}};
+        bool rejected=false;try{CanonicalProbeEncoder.EncodePublicCombatDecisionBody(unknown);}catch(ArgumentException){rejected=true;}
+        Check(rejected,"unknown health mode cannot be encoded");
+    }
     private static void Ownership()
     {
         var created = new List<FakeModule>(); var nonces = new HashSet<string>();
@@ -224,32 +259,37 @@ internal static partial class Program
         using var fault = new BridgeRouter(Core(new CoreFixture { Fault = true }), (c,_) => new FakeModule(c));
         Check(fault.Handle(post).Terminal && fault.Handle(next).Terminal, "backend fault remains terminal");
     }
-    private static CoreFixture CombatScenario()
+    private static CoreFixture CombatScenario(bool draw = false, bool offer = false)
     {
         var core = new CoreFixture { Scenario = true };
-        var selection = new ChoiceFixture { OnDispose = () => core.Stage = 2 };
+        var selection = new ChoiceFixture { Pile = offer ? "offer" : draw ? "draw" : "discard", OnDispose = () => core.Stage = 2 };
         core.Choice = new CombatCardChoiceService(() => core.Stage == 1 ? selection : null, Nonce);
         return core;
     }
     private static void CombatChoiceHandoff()
     {
-        var fixture = CombatScenario(); int factories = 0;
+        foreach (int version in new[] { 1, 2, 3 })
+        {
+        string decisionRoute = version == 3 ? CombatCardChoiceService.DecisionRouteV3 : version == 2 ? CombatCardChoiceService.DecisionRouteV2 : CombatCardChoiceService.DecisionRoute;
+        string actionRoute = version == 3 ? CombatCardChoiceService.ActionRouteV3 : version == 2 ? CombatCardChoiceService.ActionRouteV2 : CombatCardChoiceService.ActionRoute;
+        var fixture = CombatScenario(version == 2, version == 3); int factories = 0;
         var module = Core(fixture);
         using var router = new BridgeRouter(module, (c,_) => { factories++; return new FakeModule(c); });
         router.Handle(new(Capability.Core,"/probe/v0/public/combat-action",true,0,64,Decision,"play:0:0"));
         Check(module.HasPendingAction && fixture.Stage == 1, "accepted combat parent retained");
-        var ready = module.Handle(Request(Capability.Core,CombatCardChoiceService.DecisionRoute));
+        var ready = module.Handle(Request(Capability.Core,decisionRoute));
         using var parsed = JsonDocument.Parse(ready.Body);
         string choiceDecision = parsed.RootElement.GetProperty("decision_id").GetString()!;
         Check(Body(router.Handle(Request(Capability.Core,"/probe/v0/public/combat-decision"))).Contains("capability_busy"), "nested choice owns core gameplay");
         var events = Request(Capability.Events,"/probe/generic-event-v7/public/decision");
         Check(Body(router.Handle(events)).Contains("capability_busy") && factories == 0, "choice blocks foreign module creation");
-        Check(!router.Handle(new(Capability.Core,CombatCardChoiceService.ActionRoute,true,0,64,choiceDecision,"select:0")).Terminal, "nested choice input accepted");
-        Check(Body(router.Handle(Request(Capability.Core,CombatCardChoiceService.DecisionRoute))).Contains("selection_verified"), "exact child completion");
+        Check(!router.Handle(new(Capability.Core,actionRoute,true,0,64,choiceDecision,"select:0")).Terminal, "nested choice input accepted");
+        Check(Body(router.Handle(Request(Capability.Core,decisionRoute))).Contains("selection_verified"), "exact child completion");
         Check(module.HasPendingAction && Body(router.Handle(events)).Contains("capability_busy"), "child cleanup does not reconcile parent card");
         router.Handle(Request(Capability.Core,"/probe/v0/public/combat-decision"));
         Check(!module.HasPendingAction, "fresh combat decision reconciles parent");
         Check(!router.Handle(events).Terminal && factories == 1, "completed combat reconciliation releases ownership");
+        }
         foreach (bool failDispose in new[] { false, true })
         {
             var child = new ChoiceFixture { FailDispose = failDispose, Throw = !failDispose };
@@ -269,14 +309,30 @@ internal static partial class Program
     {
         private readonly object _identity = new(), _model = new(), _holder = new();
         internal bool Closed, FailDispose, Throw; internal int Calls; internal Action OnDispose = () => { };
-        public ChoiceSurface Capture() => new(_identity,"discard",0,1,false,true,Closed,Closed,false,
-            new[] { new ChoiceCard(_model,_holder,"STRIKE",0,Closed,true) },Closed ? new[] { _model } : Array.Empty<object>(),true);
+        internal string Pile = "discard";
+        public ChoiceSurface Capture() => new(_identity,Pile,Pile == "offer" ? 1 : 0,1,false,true,Closed,Closed,false,
+            new[] { new ChoiceCard(_model,_holder,"STRIKE",0,Closed,true) },Closed ? new[] { _model } : Array.Empty<object>(),Pile != "offer");
         public void Toggle(int slot) { Calls++; Closed = true; if (Throw) throw new Exception(); }
         public void Confirm() => throw new Exception("not used by this scenario");
         public void Dispose() { if (FailDispose) throw new Exception(); OnDispose(); }
     }
     private static void Parser()
     {
+        Check(BridgeRequestParser.TryParse(Head(CombatCardChoiceService.DecisionRouteV3),out _),"offer chooser GET grammar");
+        Check(BridgeRequestParser.TryParse(Head(CombatCardChoiceService.ActionRouteV3,"select:0"),out _),"offer chooser POST grammar");
+        Check(!BridgeRequestParser.TryParse(Head(CombatCardChoiceService.ActionRouteV3,"end_turn"),out _),"offer chooser rejects combat input");
+        Check(BridgeRequestParser.TryParse(Head(CombatCardChoiceService.DecisionRouteV2),out _),"draw chooser GET grammar");
+        Check(BridgeRequestParser.TryParse(Head(CombatCardChoiceService.ActionRouteV2,"select:0"),out _),"draw chooser POST grammar");
+        Check(!BridgeRequestParser.TryParse(Head(CombatCardChoiceService.ActionRouteV2,"end_turn"),out _),"draw chooser rejects combat input");
+        Check(BridgeRequestParser.TryParse(Head(CampaignRoutes.Decision),out _),"campaign GET grammar");
+        Check(BridgeRequestParser.TryParse(Head(CampaignRoutes.Action,"proceed"),out var navigation)&&navigation.IsPost,"campaign POST grammar");
+        Check(!BridgeRequestParser.TryParse(Head(CampaignRoutes.Action,"end_turn"),out _),"campaign rejects combat input");
+        Check(BridgeRequestParser.TryParse(Head(CampaignRoutes.RewardDecision),out _),"campaign reward GET grammar");
+        Check(BridgeRequestParser.TryParse(Head(CampaignRoutes.RewardAction,"proceed"),out _),"campaign reward POST grammar");
+        Check(BridgeRequestParser.TryParse(Head(AgentSession.DecisionRoute), out var agentRead) && !agentRead.IsPost && agentRead.Capability == Capability.Core, "agent GET route");
+        Check(BridgeRequestParser.TryParse(Head(AgentSession.ActionRoute, "action:0"), out var agentPost) && agentPost.IsPost && agentPost.Capability == Capability.Core, "agent POST route");
+        foreach (string action in new[] { "action:00", "action:512", "play:0:0", "action:-1" })
+            Check(!BridgeRequestParser.TryParse(Head(AgentSession.ActionRoute, action), out _), "invalid agent action rejected before dispatch");
         foreach (string action in new[] { "lift", "kindle", "dig", "clone", "hatch", "cook:0:2", "cook:1:63" })
             Check(BridgeRequestParser.TryParse(Head("/probe/room-flows-v1/public/action", action), out var rest) && rest.Capability == Capability.Rooms && rest.Action == action, "rest request grammar");
         foreach (string action in new[] { "lift:0", "kindle:0", "cook", "cook:2:0", "cook:0:0", "cook:00:1", "cook:0:64", "Lift", "kindle ", "lift\r\nOrigin: evil" })
@@ -297,14 +353,19 @@ internal static partial class Program
     private static byte[] Head(string path, string? action = null, string? token = null, string extra = "", string? decision = null) => Encoding.ASCII.GetBytes(
         (action is null ? "GET " : "POST ") + path + " HTTP/1.1\r\nHost: 127.0.0.1:43117\r\nAuthorization: Bearer " + (token ?? Token) +
         "\r\nAccept: application/json\r\n" + (action is null ? "" : "X-Sts2-Decision-Id: " + (decision ?? Decision) + "\r\nX-Sts2-Action-Id: " + action + "\r\n") + extra + "Connection: close\r\n\r\n");
-    private static (BridgeTransportRuntime Runtime, int Port) Start(Func<Capability,string,IBridgeModule> factory, CoreFixture? core = null)
+    private static (BridgeTransportRuntime Runtime, int Port) Start(Func<Capability,string,IBridgeModule> factory, CoreFixture? core = null, bool agent = false,bool campaign=false)
     {
-        var runtime = BridgeTransportRuntime.Create(BridgeConfiguration.Enabled.ToArray(), () => Encoding.ASCII.GetBytes(Token), n => new BridgeRouter(Core(core ?? new()), factory))!;
+        var runtime = BridgeTransportRuntime.Create(BridgeConfiguration.Enabled.ToArray(), () => Encoding.ASCII.GetBytes(Token), n => {
+            var module = Core(core ?? new());
+            if (agent) module.BindAgent(new AgentSessionTests.Reader());
+            if (campaign) module.BindCampaign(new CampaignFixture(),core!);
+            return new BridgeRouter(module, factory);
+        })!;
         var listener = new TcpListener(IPAddress.Loopback, 0); listener.Start();
         int port = ((IPEndPoint)listener.LocalEndpoint).Port;
         Check(runtime.StartForTests(listener), "shared listener starts"); return (runtime, port);
     }
-    private static string Exchange(BridgeTransportRuntime runtime, int port, byte[] request, bool drain = true)
+    private static string Exchange(BridgeTransportRuntime runtime, int port, byte[] request, bool drain = true, Func<bool>? drainWhen = null)
     {
         var task = Task.Run(() =>
         {
@@ -318,7 +379,7 @@ internal static partial class Program
             return Encoding.UTF8.GetString(bytes.ToArray());
         });
         var deadline = DateTime.UtcNow.AddSeconds(5);
-        while (!task.IsCompleted && DateTime.UtcNow < deadline) { if(drain) runtime.DrainFrame(); Thread.Sleep(1); }
+        while (!task.IsCompleted && DateTime.UtcNow < deadline) { if(drain && (drainWhen is null || drainWhen())) runtime.DrainFrame(); Thread.Sleep(1); }
         Check(task.IsCompleted, "bounded socket exchange"); return task.GetAwaiter().GetResult();
     }
     private static void Stop(BridgeTransportRuntime runtime)
@@ -340,6 +401,72 @@ internal static partial class Program
             Check(body.RootElement.GetProperty("resume_diagnostic").GetString()==(code==(Sts2AgentBridge.Successors.GenericEventV7.GenericEventV7ResumeDiagnostic)999?"diagnostic_unavailable":"callback_parent_retained"),"closed resume vocabulary including unknown enum");
             Array.Clear(reply.Body);core.Dispose();
         }
+    }
+    private static void ReadDispatchRecovery()
+    {
+        const string events = "/probe/generic-event-v7/public/decision";
+        const string health = "/probe/v0/health";
+        int created = 0; FakeModule? module = null;
+        var (runtime, port) = Start((capability, _) => { created++; return module = new FakeModule(capability); });
+        string reply = Exchange(runtime, port, Head(events), drainWhen: () => runtime.OutstandingFrameCount == 2);
+        Check(reply.Contains("ready") && !runtime.IsTerminalOrStopping, "unclaimed read recovers on the same listener");
+        Check(created == 1 && runtime.ReadSubmissionCount == 1 && runtime.ReservedReads == 2 && runtime.UnclaimedReadRetries == 1,
+            "cancelled callback cannot run; replacement reserves a read and creates exactly one module");
+        runtime.DrainFrame();
+        Check(created == 1 && runtime.OutstandingFrameCount == 0 && !module!.Disposed, "late frame cannot replay or dispose recovered owner");
+        module!.Complete = true;
+        Check(Exchange(runtime, port, Head(events)).Contains("resolved") && module.Disposed, "normal reconciliation and cleanup after read recovery");
+        Stop(runtime);
+
+        var core = CombatScenario(offer: true); created = 0;
+        (runtime, port) = Start((capability, _) => { created++; return new FakeModule(capability); }, core);
+        Check(Exchange(runtime, port, Head("/probe/v0/public/combat-action", "play:0:0")).Contains("accepted"), "parent accepted before stalled choice read");
+        reply = Exchange(runtime, port, Head(CombatCardChoiceService.DecisionRouteV3), drainWhen: () => runtime.OutstandingFrameCount == 2);
+        using (var parsed = JsonDocument.Parse(reply.Split("\r\n\r\n", 2)[1]))
+        {
+            string choice = parsed.RootElement.GetProperty("decision_id").GetString()!;
+            Check(core.Stage == 1 && core.CombatAccepted == 1 && runtime.UnclaimedReadRetries == 1, "read recovery retains exact pending combat parent");
+            Check(Exchange(runtime, port, Head(events)).Contains("capability_busy") && created == 0, "recovered child keeps foreign modules fenced");
+            Check(Exchange(runtime, port, Head(CombatCardChoiceService.ActionRouteV3, "select:0", decision: choice)).Contains("accepted"), "recovered chooser accepts one native selection");
+        }
+        Check(Exchange(runtime, port, Head(CombatCardChoiceService.DecisionRouteV3)).Contains("selection_verified"), "recovered chooser verifies and disposes child");
+        Check(Exchange(runtime, port, Head(events)).Contains("capability_busy") && created == 0, "child cleanup still cannot release pending parent");
+        Check(Exchange(runtime, port, Head("/probe/v0/public/combat-decision")).Contains(new string('e', 64)), "fresh combat read reconciles original parent");
+        Check(Exchange(runtime, port, Head(events)).Contains("ready") && created == 1 && core.CombatAccepted == 1,
+            "only normal parent reconciliation permits foreign handoff");
+        Stop(runtime);
+
+        (runtime, port) = Start((capability, _) => new FakeModule(capability));
+        for (int i = 0; i < BridgeTransportRuntime.MaximumUnclaimedReadRetries; i++)
+        {
+            reply = Exchange(runtime, port, Head(health), drainWhen: () => runtime.OutstandingFrameCount == 2);
+            Check(!reply.Contains("error") && reply.Contains("correlation_id") && !runtime.IsTerminalOrStopping, "bounded recovery succeeds " + i);
+            Check(runtime.ReadSubmissionCount == i + 1 && runtime.ReservedReads == 2 * (i + 1), "each recovery executes once and consumes two reservations");
+        }
+        reply = Exchange(runtime, port, Head(health), drain: false);
+        Check(reply.Contains("dispatch_timeout_before_claim") && SpinWait.SpinUntil(() => runtime.IsTerminalOrStopping, 1000), "exhausted recovery cap is terminal");
+        Check(runtime.UnclaimedReadRetries == BridgeTransportRuntime.MaximumUnclaimedReadRetries &&
+            runtime.ReadSubmissionCount == BridgeTransportRuntime.MaximumUnclaimedReadRetries &&
+            runtime.ReservedReads == 2 * BridgeTransportRuntime.MaximumUnclaimedReadRetries + 1, "cap exhaustion neither retries nor executes cancelled work");
+        Stop(runtime);
+
+        (runtime, port) = Start((capability, _) => new FakeModule(capability));
+        bool reserved = true;
+        for (int i = 0; i < BridgeTransportLimits.MaximumReads - 1; i++) reserved &= runtime.ReserveReadForTests();
+        Check(reserved, "prepare final available read reservation");
+        reply = Exchange(runtime, port, Head(health), drain: false);
+        Check(reply.Contains("dispatch_timeout_before_claim") && SpinWait.SpinUntil(() => runtime.IsTerminalOrStopping, 1000), "read budget exhaustion still terminates");
+        Check(runtime.ReservedReads == BridgeTransportLimits.MaximumReads && runtime.UnclaimedReadRetries == 0 && runtime.ReadSubmissionCount == 0,
+            "recovery cannot bypass the total read budget");
+        Stop(runtime);
+
+        (runtime, port) = Start((capability, _) => new FakeModule(capability));
+        runtime.AfterAuthenticatedReservationForTests = () => Thread.Sleep(BridgeTransportLimits.ConnectionLifetimeMilliseconds + 50);
+        reply = Exchange(runtime, port, Head(health), drain: false);
+        Check(reply == "" && SpinWait.SpinUntil(() => runtime.IsTerminalOrStopping, 1000), "expired connection cannot deliver or resume read");
+        Check(runtime.ReservedReads == 1 && runtime.UnclaimedReadRetries == 0 && runtime.ReadSubmissionCount == 0,
+            "expired exchange cannot reserve replacement work");
+        Stop(runtime);
     }
     private static void ReadDispatchFailures()
     {
@@ -370,6 +497,7 @@ internal static partial class Program
             else if(mode=="unauthenticated")Check(reply==""&&!runtime.IsTerminalOrStopping,"unauthenticated request gets no diagnostic");
             else Check(reply.Contains("bridge_stopped")&&!reply.Contains("private exception text")&&runtime.IsTerminalOrStopping,"router fault remains bounded and terminal");
             if(mode is "before" or "post" or "unauthenticated")Check(created==0,"unclaimed work creates no native module");
+            Check(runtime.UnclaimedReadRetries == (mode == "before" ? 1 : 0), "only an unclaimed authenticated GET receives one retry: " + mode);
             Stop(runtime);
             Check(module is null||module.Disposed,"late module cleaned on owner frame");
         }
@@ -484,14 +612,22 @@ internal static partial class Program
         IPublicRewardDecisionService, IPublicRewardActionService, IPublicMapDecisionService, IPublicMapActionService,
         IPublicRoomDecisionService, IPublicRoomActionService
     {
-        internal CombatCardChoiceService? Choice; internal bool Scenario; internal int Stage;
-        internal bool RewardScenario, RewardWaited, Skipped, SpecialCardScenario, ItemRewardScenario, FullPotionScenario, ReplacePotionScenario, CapacityPotionScenario, HealingRelicScenario; internal int RewardStep;
+        internal PotionFixture? Potions;
+        internal string RewardDestination="map";
+        internal CombatCardChoiceService? Choice; internal bool Scenario, InfiniteHealthScenario; internal int Stage;
+        internal bool RewardScenario, RewardWaited, Skipped, SpecialCardScenario, ItemRewardScenario, FullPotionScenario, ReplacePotionScenario, CapacityPotionScenario, HealingRelicScenario, MaxHpRelicScenario, ModifiedGoldScenario; internal int RewardStep;
         internal bool MapComplete, MapReady, Reject, Fault, CombatReady; internal int Applies, CombatAccepted;
         internal PublicCombatDecisionSnapshot? CombatOverride;
         PublicScreenReadResult IPublicScreenService.Read() => PublicScreenReadResult.BackendFault();
-        PublicCombatDecisionReadResult IPublicCombatDecisionService.Read() => PublicCombatDecisionReadResult.FromSnapshot(CombatOverride ?? (Scenario ? ScenarioSnapshot() : CombatReady
+        PublicCombatDecisionReadResult IPublicCombatDecisionService.Read() => PublicCombatDecisionReadResult.FromSnapshot(CombatOverride ?? (InfiniteHealthScenario ? HealthSnapshot() : Scenario ? ScenarioSnapshot() : CombatReady
             ? new(PublicDecisionStatus.Ready, Decision, 1, new(80,80,0,0), new[] { new PublicCombatEnemy(0,"SLIME",8,8,0,Array.Empty<string>()) }, Array.Empty<PublicCombatCard>(), new[] { new PublicDecisionAction(PublicDecisionActionKind.EndTurn,-1,-1) }, PublicCombatOutcome.None)
             : PublicCombatDecisionSnapshot.Waiting()));
+        private PublicCombatDecisionSnapshot HealthSnapshot() => Stage==3
+            ? PublicCombatDecisionSnapshot.Complete(3,new(80,80,0,0),Array.Empty<PublicCombatEnemy>(),PublicCombatOutcome.Victory)
+            : new(PublicDecisionStatus.Ready,new string((char)('b'+Stage),64),Stage<2?1:2,new(80,80,0,Stage==0?1:0),
+                new[]{new PublicCombatEnemy(0,"WATERFALL_GIANT",Stage==0?20:0,Stage==0?240:0,0,new[]{"stun"},Stage==0?PublicEnemyHealthDisplay.Numeric:PublicEnemyHealthDisplay.Infinite)},
+                Stage==0?new[]{new PublicCombatCard(0,"STRIKE","attack","1","anyenemy",true)}:Array.Empty<PublicCombatCard>(),
+                Stage==0?new[]{new PublicDecisionAction(PublicDecisionActionKind.PlayCard,0,0),new PublicDecisionAction(PublicDecisionActionKind.EndTurn,-1,-1)}:new[]{new PublicDecisionAction(PublicDecisionActionKind.EndTurn,-1,-1)},PublicCombatOutcome.None);
         private PublicCombatDecisionSnapshot ScenarioSnapshot() => Stage switch {
             0 => new(PublicDecisionStatus.Ready, Decision, 1, new(80,80,0,1),
                 new[] { new PublicCombatEnemy(0,"SLIME",8,8,0,Array.Empty<string>()) },
@@ -561,13 +697,13 @@ internal static partial class Program
                 return new(PublicDecisionStatus.Ready,(RewardStep+10).ToString("x64"),RewardStep==3?"card_reward":"rewards",fullPlayer,rows,fullActions,RewardStep,true);
             }
             if(ItemRewardScenario) {
-                var itemPlayer=new PublicRewardPlayer(HealingRelicScenario?(RewardStep>=4?41:33):80,80,RewardStep==0?99:113,RewardStep>=6&&!Skipped?11:10);
+                var itemPlayer=new PublicRewardPlayer(MaxHpRelicScenario?(RewardStep>=4?40:33):HealingRelicScenario?(RewardStep>=4?41:33):80,MaxHpRelicScenario&&RewardStep>=4?87:80,RewardStep==0?99:113,RewardStep>=6&&!Skipped?11:10);
                 if(RewardStep==7)return PublicRewardDecisionSnapshot.Complete(itemPlayer,7);
                 var all=new[]{new PublicRewardItem(0,PublicRewardKind.Gold,false,14,Array.Empty<string>(),false),
                     new PublicRewardItem(1,PublicRewardKind.Card,RewardStep==6&&!Skipped,0,new[]{"ANGER","BASH"},true),
                     new PublicRewardItem(2,PublicRewardKind.Potion,false,0,Array.Empty<string>(),false,"POTION"),
                     new PublicRewardItem(3,PublicRewardKind.Potion,false,0,Array.Empty<string>(),false,"POTION"),
-                    new PublicRewardItem(4,PublicRewardKind.Relic,false,0,Array.Empty<string>(),false,HealingRelicScenario?"FAKE_LEES_WAFFLE":"RELIC",0,HealingRelicScenario?8:0)};
+                    new PublicRewardItem(4,PublicRewardKind.Relic,false,0,Array.Empty<string>(),false,MaxHpRelicScenario?"STRAWBERRY":HealingRelicScenario?"FAKE_LEES_WAFFLE":"RELIC",0,MaxHpRelicScenario?7:HealingRelicScenario?8:0,MaxHpRelicScenario?7:0)};
                 var rows=all.Where(r=>RewardStep==0 || r.RewardIndex==1 || RewardStep<=r.RewardIndex-1).ToArray();
                 string[] itemActions=RewardStep switch {
                     0=>new[]{"claim:0","open:1","collect:2","collect:3","collect:4","proceed"},
@@ -575,7 +711,7 @@ internal static partial class Program
                     2=>new[]{"open:0","collect:1","collect:2","proceed"},
                     3=>new[]{"open:0","collect:1","proceed"},4=>new[]{"open:0","proceed"},
                     5=>new[]{"choose:0","choose:1","skip_card"},_=>new[]{"proceed"}};
-                return new(PublicDecisionStatus.Ready,(RewardStep+10).ToString("x64"),RewardStep==5?"card_reward":"rewards",itemPlayer,rows,itemActions,RewardStep,true,HealingRelicScenario?new string?[]{RewardStep>=2?"POTION":null,RewardStep>=3?"POTION":null,null}:null,HealingRelicScenario,HealingRelicScenario);
+                return new(PublicDecisionStatus.Ready,(RewardStep+10).ToString("x64"),RewardStep==5?"card_reward":"rewards",itemPlayer,rows,itemActions,RewardStep,true,HealingRelicScenario||MaxHpRelicScenario?new string?[]{RewardStep>=2?"POTION":null,RewardStep>=3?"POTION":null,null}:null,HealingRelicScenario||MaxHpRelicScenario,HealingRelicScenario||MaxHpRelicScenario,MaxHpRelicScenario);
             }
             if(SpecialCardScenario) {
                 var specialPlayer=new PublicRewardPlayer(80,80,RewardStep==0?99:113,
@@ -591,20 +727,20 @@ internal static partial class Program
                 return new(PublicDecisionStatus.Ready,(RewardStep+10).ToString("x64"),RewardStep==3?"card_reward":"rewards",
                     specialPlayer,rows,specialActions,RewardStep);
             }
-            var player = new PublicRewardPlayer(80,80,RewardStep == 0 ? 99 : 113,RewardStep >= 3 && !Skipped ? 11 : 10);
-            if (RewardStep == 4) return PublicRewardDecisionSnapshot.Complete(player,4);
+            var player = new PublicRewardPlayer(80,80,RewardStep == 0 ? 99 : ModifiedGoldScenario?116:113,RewardStep >= 3 && !Skipped ? 11 : 10);
+            if (RewardStep == 4) return PublicRewardDecisionSnapshot.Complete(player,4) with {ScreenKind=RewardDestination};
             var card = new PublicRewardItem(1,PublicRewardKind.Card,RewardStep == 3 && !Skipped,0,new[] { "ANGER","BASH" },true);
-            var rewards = RewardStep == 0 ? new[] { new PublicRewardItem(0,PublicRewardKind.Gold,false,14,Array.Empty<string>(),false),card } : new[] { card };
+            var rewards = RewardStep == 0 ? new[] { new PublicRewardItem(0,PublicRewardKind.Gold,false,14,Array.Empty<string>(),false,GoldGain:ModifiedGoldScenario?17:null),card } : new[] { card };
             string[] actions = RewardStep switch { 0 => new[] { "claim:0","open:1","proceed" }, 1 => new[] { "open:0","proceed" },
                 2 => new[] { "choose:0","choose:1","skip_card" }, _ => new[] { "proceed" } };
-            return new(PublicDecisionStatus.Ready,(RewardStep+10).ToString("x64"),RewardStep == 2 ? "card_reward" : "rewards",player,rewards,actions,RewardStep);
+            return new(PublicDecisionStatus.Ready,(RewardStep+10).ToString("x64"),RewardStep == 2 ? "card_reward" : "rewards",player,rewards,actions,RewardStep,ModifiedGoldScenario,ModifiedGoldScenario?new string?[]{null,null,null}:null,ModifiedGoldScenario,ModifiedGoldScenario,ModifiedGoldScenario,ModifiedGoldScenario);
         }
         PublicRewardDecisionReadResult IPublicRewardDecisionService.Read() => PublicRewardDecisionReadResult.FromSnapshot(RewardScenario ? RewardSnapshot() : PublicRewardDecisionSnapshot.Waiting());
         PublicMapDecisionReadResult IPublicMapDecisionService.Read() => PublicMapDecisionReadResult.FromSnapshot(MapComplete ? PublicMapDecisionSnapshot.Complete(new(0,0,1,"unknown")) : MapReady || RewardScenario && RewardStep == (CapacityPotionScenario?7:ReplacePotionScenario?9:FullPotionScenario?5:ItemRewardScenario?7:SpecialCardScenario?5:4)
             ? new(PublicDecisionStatus.Ready, Decision, "map", null, new[] { new PublicMapCandidate(0,2,3,"monster") }, new[] { "select:0" })
             : PublicMapDecisionSnapshot.Waiting());
         PublicRoomDecisionReadResult IPublicRoomDecisionService.Read() => PublicRoomDecisionReadResult.FromSnapshot(PublicRoomDecisionSnapshot.Waiting());
-        PublicCombatActionApplyResult IPublicCombatActionService.Apply(PublicCombatActionRequest r) { if (!Reject) { CombatAccepted++; if (Scenario) Stage++; } return PublicCombatActionApplyResult.FromRequest(Reject ? PublicCombatActionApplyOutcome.StaleDecision : PublicCombatActionApplyOutcome.Accepted,r); }
+        PublicCombatActionApplyResult IPublicCombatActionService.Apply(PublicCombatActionRequest r) { if(InfiniteHealthScenario){var s=HealthSnapshot();Check(r.DecisionId==s.DecisionId&&r.ActionId==(Stage==0?"play:0:0":"end_turn"),"exact infinity phase command");} if (!Reject) { CombatAccepted++; if (Scenario || InfiniteHealthScenario) Stage++; } return PublicCombatActionApplyResult.FromRequest(Reject ? PublicCombatActionApplyOutcome.StaleDecision : PublicCombatActionApplyOutcome.Accepted,r); }
         PublicRewardActionApplyResult IPublicRewardActionService.Apply(PublicRewardActionRequest r)
         {
             if (RewardScenario)

@@ -13,13 +13,16 @@ namespace Sts2AgentBridge.Adapters.Public;
 
 public sealed class PinnedPublicRoomActionApplier : IPublicRoomActionApplier
 {
+    private readonly int _maximumActions = PublicRoomActionBudget.MaximumAcceptedActions;
     private readonly PinnedPublicRoomDecisionReader _reader;
     private readonly object _gate = new();
     private readonly Dictionary<string, string> _acceptedByDecision = new(StringComparer.Ordinal);
 
-    public PinnedPublicRoomActionApplier(PinnedPublicRoomDecisionReader reader)
+    public PinnedPublicRoomActionApplier(PinnedPublicRoomDecisionReader reader, int maximumActions = PublicRoomActionBudget.MaximumAcceptedActions)
     {
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
+        if(maximumActions is <1 or >160)throw new ArgumentOutOfRangeException(nameof(maximumActions));
+        _maximumActions=maximumActions;
     }
 
 #if STS2_AGENT_BRIDGE_TEST_SEAM
@@ -204,7 +207,7 @@ public sealed class PinnedPublicRoomActionApplier : IPublicRoomActionApplier
             {
                 return PublicRoomActionApplyOutcome.AlreadyApplied;
             }
-            if (_acceptedByDecision.Count >= PublicRoomActionBudget.MaximumAcceptedActions)
+            if (_acceptedByDecision.Count >= _maximumActions)
             {
                 return PublicRoomActionApplyOutcome.ActionLimitReached;
             }
@@ -220,7 +223,7 @@ public sealed class PinnedPublicRoomActionApplier : IPublicRoomActionApplier
             {
                 return PublicRoomActionApplyOutcome.AlreadyApplied;
             }
-            if (_acceptedByDecision.Count >= PublicRoomActionBudget.MaximumAcceptedActions)
+            if (_acceptedByDecision.Count >= _maximumActions)
             {
                 return PublicRoomActionApplyOutcome.ActionLimitReached;
             }

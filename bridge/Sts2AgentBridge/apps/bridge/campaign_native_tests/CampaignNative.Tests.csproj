@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net9.0</TargetFramework><OutputType>Exe</OutputType><EnableDefaultCompileItems>false</EnableDefaultCompileItems><DefineConstants>CAMPAIGN_TEST_SEAM</DefineConstants></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../runtime/CampaignContracts.cs" />
+    <Compile Include="../native/CampaignNavigation.cs" />
+    <Compile Include="../native/CampaignTreasureTransition.cs" />
+    <Compile Include="../native/CampaignRewardTransition.cs" />
+    <Compile Include="../native/CampaignShopTransition.cs" />
+    <Compile Include="../../../components/rooms/shop/tests/MultiplePurchaseFixture.cs" />
+    <ProjectReference Include="../../../components/rooms/shop/core/Sts2AgentBridge.RoomFlowsV1.Shop.Core.csproj" />
+    <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicCombatDecision.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicMapDecision.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicMapAction.cs" />
+    <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicMapDecisionReader.cs" />
+    <Compile Include="FakeGame.cs" /><Compile Include="Program.cs" />
+    <Reference Include="0Harmony"><HintPath>$(HarmonyPath)</HintPath><Private>true</Private></Reference>
+  </ItemGroup>
+</Project>

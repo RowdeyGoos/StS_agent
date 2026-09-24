@@ -188,10 +188,12 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
         diagnostic=GenericEventDiagnosticCode.ParentUnavailable;
         var run=NRun.Instance; var room=run?.EventRoom;var map=run?.GlobalUi?.MapScreen;var overlays=run?.GlobalUi?.Overlays;
         if(!Exact(run)||!Exact(room)||!Exact(map)||!Exact(overlays)||
-            !ReferenceEquals(NEventRoom.Instance,room)||!ReferenceEquals(NMapScreen.Instance,map)||
-            map!.IsOpen||map.IsTraveling||overlays!.ScreenCount!=0||
-            !room!.IsVisibleInTree()||room.CustomEventNode is not null||!GenericEventV7Binding.CombatLayoutReady(room)||!GenericEventV7Binding.CapstoneReady()||
-            CardSelectCmd.Selector is not null) return Fixed("unsupported");
+            !ReferenceEquals(NEventRoom.Instance,room)||!ReferenceEquals(NMapScreen.Instance,map)) return Fixed("unsupported");
+        if(map!.IsOpen||map.IsTraveling) {diagnostic=GenericEventDiagnosticCode.ParentMap;return Fixed("unsupported");}
+        if(overlays!.ScreenCount!=0||!GenericEventV7Binding.CapstoneReady()||CardSelectCmd.Selector is not null)
+            {diagnostic=GenericEventDiagnosticCode.ParentOverlay;return Fixed("unsupported");}
+        if(!room!.IsVisibleInTree()||room.CustomEventNode is not null||!GenericEventV7Binding.CombatLayoutReady(room))
+            {diagnostic=GenericEventDiagnosticCode.ParentLayout;return Fixed("unsupported");}
         NEventLayout? layout=room.Layout;
         if(!SupportedLayout(layout)||!layout!.IsVisibleInTree()) {diagnostic=_pending is null?GenericEventDiagnosticCode.ParentUnavailable:GenericEventDiagnosticCode.ParentWaiting;return _pending is null?Fixed("unsupported"):Fixed("waiting");}
         var options=new List<GenericEventV7NativeOption>(); EventModel? model=null;Player? player=null;
@@ -226,7 +228,8 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
                 button.IsVisibleInTree()&&button.IsEnabled&&!option.IsLocked,dangerous,option.IsProceed,dangerous&&GenericEventV7AbandonPopup.IsConfirmation(option,current)));
         }
         if(model is null||player is null) {diagnostic=_pending is null?GenericEventDiagnosticCode.ParentUnavailable:GenericEventDiagnosticCode.ParentWaiting;return _pending is null?Fixed("unsupported"):Fixed("waiting");}
-        if(map!.IsTravelEnabled&&!GenericEventV7Binding.FinishedProceed(layout,model))return Fixed("unsupported");
+        if(map!.IsTravelEnabled&&!GenericEventV7Binding.FinishedProceed(layout,model)&&!GenericEventV7Binding.VictoryDialogue(layout,model))
+            {diagnostic=GenericEventDiagnosticCode.ParentTravel;return Fixed("unsupported");}
         if(!BindWorld(run!,room,map!,overlays!,layout,model,player))return Fixed("unsupported");
         diagnostic=GenericEventDiagnosticCode.ParentReady;
         return new GenericEventV7NativeCapture("parent",model.IsFinished,options);

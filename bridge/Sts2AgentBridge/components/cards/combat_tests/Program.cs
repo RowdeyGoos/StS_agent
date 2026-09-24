@@ -26,18 +26,23 @@ internal static class Program
     {
         if (args.Length > 0 && args[0] == "--wire")
         {
-            var fixture = new Fixture(min: 0, max: 2, count: 3, manual: true);
+            int version = args.Length > 1 && args[1] == "offer-v3" ? 3 : args.Length > 1 && args[1] == "draw-v2" ? 2 : 1;
+            var fixture = new Fixture(min: 0, max: 2, count: 3, manual: true,
+                pile: version == 2 ? PileType.Draw : PileType.Discard, version: version);
+            var service = version == 3 ? new CombatOfferFixture().Service : fixture.Service;
             while (Console.ReadLine() is string line)
             {
                 using var input = JsonDocument.Parse(line); var request = input.RootElement;
-                var reply = request.GetProperty("method").GetString() == "GET" ? fixture.Service.Read() :
-                    fixture.Service.Apply(request.GetProperty("decision_id").GetString()!, request.GetProperty("action_id").GetString()!);
+                var reply = request.GetProperty("method").GetString() == "GET" ? service.Read(version) :
+                    service.Apply(request.GetProperty("decision_id").GetString()!, request.GetProperty("action_id").GetString()!, version);
                 Console.WriteLine(Encoding.UTF8.GetString(reply.Body));
             }
-            fixture.Service.Dispose(); return;
+            service.Dispose(); return;
         }
-        OptionalAndMultiple(); BindingFailures(); DispatchAndCompletionFailures();
+        OptionalAndMultiple(); BindingFailures(); DispatchAndCompletionFailures(); DrawPileV2();
         CombatIdentityFixtures.Run(Check);
+        CombatExecutionFixtures.Run(Check);
+        CombatOfferFixtures.Run(Check);
         Console.WriteLine("{\"status\":\"passed\",\"suite\":\"combat_choice_native\",\"checks\":" + _checks + "}");
     }
     private static void OptionalAndMultiple()
@@ -122,14 +127,77 @@ internal static class Program
         for (int i = 0; i < 201; i++) last = stuck.Service.Read();
         Check(last.Terminal && stuck.Holders[0].Calls == 1, "bounded reconciliation without retry");
     }
+    private static void DrawPileV2()
+    {
+        var draw = new Fixture(1, 1, 2, false, PileType.Draw, 2);
+        // Hidden pile order and public grid order deliberately differ. Only the
+        // two displayed holders belong to this filtered selection domain.
+        var pile = draw.Models[0].Owner.Piles[PileType.Draw];
+        pile.Cards.Reverse();
+        pile.Cards.Add(new CardModel { Owner = draw.Models[0].Owner, Id = new ModelId { Entry = "UNDISPLAYED" } });
+        var before = draw.Ready();
+        Check(before.GetProperty("protocol").GetString() == "combat_card_choice_v2" &&
+            before.GetProperty("pile").GetString() == "draw", "draw is explicitly versioned");
+        Check(before.GetProperty("candidates")[0].GetProperty("key").GetString() == "STRIKE_0" &&
+            !before.GetRawText().Contains("UNDISPLAYED"), "only public holder order and domain projected");
+        pile.Cards.Reverse();
+        Check(draw.Ready().GetRawText() == before.GetRawText(), "hidden draw permutation cannot change public observation");
+        draw.Act("select:0");
+        Check(Status(draw.Service.Read(2)) == "complete" && draw.Screen.Selected.SetEquals(new[] { draw.Models[0] }),
+            "Seance-style automatic draw choice returns exact displayed model");
+        foreach (bool post in new[] { false, true })
+        {
+            var mixed = new Fixture(pile: PileType.Draw, version: 2);
+            string decision = mixed.Ready().GetProperty("decision_id").GetString()!;
+            var reply = post ? mixed.Service.Apply(decision, "select:0", 1) : mixed.Service.Read(1);
+            Check(reply.Terminal && mixed.Holders.Sum(h => h.Calls) == 0 && mixed.Service.IsActive,
+                "another protocol cannot adopt an active selector");
+        }
+        foreach (var mutation in new Action<Fixture>[] {
+            f => f.Models[0].Owner.Piles[PileType.Draw] = new CardPile { Type = PileType.Draw },
+            f => f.Models[0].Owner.Piles[PileType.Draw].Cards.Remove(f.Models[0]),
+            f => f.Grid.CurrentlyDisplayedCardHolders.Reverse(),
+            f => f.Models[0].Owner = new Player() })
+        {
+            var changed = new Fixture(pile: PileType.Draw, version: 2);
+            string decision = changed.Ready().GetProperty("decision_id").GetString()!;
+            mutation(changed);
+            Check(changed.Service.Apply(decision, "select:0", 2).Terminal && changed.Holders.Sum(h => h.Calls) == 0,
+                "draw owner/domain revalidated before input");
+        }
+        foreach (var unsupported in new[] { PileType.Hand, PileType.Deck, PileType.Play, PileType.None })
+        {
+            var other = new Fixture(pile: unsupported, version: 2);
+            Check(other.Service.Read(2).Terminal && other.Holders.Sum(h => h.Calls) == 0, "v2 still excludes " + unsupported);
+        }
+        foreach (int version in new[] { 1, 2 })
+        {
+            var service = new CombatCardChoiceService(PinnedCombatCardChoiceAdapter.TryCreate, new string('b', 32));
+            int limit = version == 1 ? 32 : 1024;
+            for (int i = 0; i < limit; i++)
+            {
+                var episode = new Fixture(pile: version == 1 ? PileType.Discard : PileType.Draw, version: version);
+                var ready = Read(service.Read(version));
+                string decision = ready.GetProperty("decision_id").GetString()!;
+                Check(Status(service.Apply(decision, "select:0", version)) == "accepted" &&
+                    Status(service.Read(version)) == "complete", "bounded repeated episode " + version);
+            }
+            var overflow = new Fixture(version: version);
+            var failure = Read(service.Read(version));
+            Check(failure.GetProperty("code").GetString() == "choice_limit" && overflow.Holders.Sum(h => h.Calls) == 0,
+                "process episode cap enforced for v" + version);
+        }
+    }
     private sealed class Fixture
     {
         internal NRun Run = new(); internal NCombatPileCardSelectScreen Screen = new();
         internal NCardGrid Grid = new(); internal NConfirmButton Confirm = new();
         internal CardModel[] Models; internal NGridCardHolder[] Holders; internal CombatCardChoiceService Service;
         internal bool Defer, Throw, WrongResult, DelayCompletion; internal Action? Pending;
-        internal Fixture(int min = 0, int max = 1, int count = 3, bool manual = false, PileType pile = PileType.Discard)
+        internal readonly int Version;
+        internal Fixture(int min = 0, int max = 1, int count = 3, bool manual = false, PileType pile = PileType.Discard, int version = 1)
         {
+            Version = version;
             NRun.Instance = Run; NOverlayStack.Instance = Run.GlobalUi.Overlays; Run.GlobalUi.Overlays.Top = Screen;
             var player = new Player(); var cards = new CardPile { Type = pile };
             player.Piles[pile] = cards; CombatManager.Instance = new(); CombatManager.Instance.State.Players.Add(player);
@@ -155,10 +223,10 @@ internal static class Program
             Grid.CurrentlyDisplayedCardHolders.AddRange(Holders);
             Service = new CombatCardChoiceService(PinnedCombatCardChoiceAdapter.TryCreate, new string('a', 32));
         }
-        internal JsonElement Ready() { var value = Read(Service.Read()); Check(value.GetProperty("status").GetString() == "ready", "ready selector"); return value; }
+        internal JsonElement Ready() { var value = Read(Service.Read(Version)); Check(value.GetProperty("status").GetString() == "ready", "ready selector"); return value; }
         internal void Act(string action) {
             var ready = Ready(); Check(ready.GetProperty("legal_actions").EnumerateArray().Any(a => a.GetString() == action), "advertised " + action);
-            Check(Status(Service.Apply(ready.GetProperty("decision_id").GetString()!, action)) == "accepted", "accepted " + action);
+            Check(Status(Service.Apply(ready.GetProperty("decision_id").GetString()!, action, Version)) == "accepted", "accepted " + action);
         }
     }
 }

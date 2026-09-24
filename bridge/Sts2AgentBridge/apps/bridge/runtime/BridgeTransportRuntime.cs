@@ -54,6 +54,8 @@ internal sealed class BridgeTransportRuntime : IDisposable
     private int _joinWaiters;
     private int _parentPostCount;
     private int _readCount;
+    private int _unclaimedReadRetries;
+    internal const int MaximumUnclaimedReadRetries = 8;
     private int _exchangeInFlight;
     private int _exchangeResponseSent;
     private int _authenticatedCleanupParticipants;
@@ -216,6 +218,8 @@ internal sealed class BridgeTransportRuntime : IDisposable
     internal static bool IsAllowedTestEndpoint(IPEndPoint endpoint) =>
         IsAllowedEndpoint(endpoint, production: false);
     internal int ReadSubmissionCount => Volatile.Read(ref _readSubmissionCountForTests);
+    internal int ReservedReads { get { lock (_gate) return _readCount; } }
+    internal int UnclaimedReadRetries { get { lock (_gate) return _unclaimedReadRetries; } }
     internal int ReservedParentPosts { get { lock (_gate) return _parentPostCount; } }
     internal int OutstandingFrameCount => _frameQueue.OutstandingCount;
     internal bool DropNextPostResponseForTests { get; set; }
@@ -476,7 +480,7 @@ internal sealed class BridgeTransportRuntime : IDisposable
             }
 
             var readTrace=request.IsPost?null:new ReadStageTrace();
-            OwnedByteDispatchResult dispatch = _frameQueue.Submit(() =>
+            Func<OwnedServiceResponse> operation = () =>
             {
                 serviceMayHaveRun = true;
 #if BRIDGE_TEST_SEAM
@@ -485,13 +489,21 @@ internal sealed class BridgeTransportRuntime : IDisposable
                 BridgeReply reply = (_service ?? throw new InvalidOperationException("Service unavailable.")).Handle(request,readTrace);
                 staleWithoutMutation = reply.StaleWithoutMutation;
                 return new OwnedServiceResponse(reply.Terminal ? 503 : 200, reply.Response);
-            });
+            };
+            OwnedByteDispatchResult dispatch = _frameQueue.Submit(operation);
+            // This status atomically changes queued work to Cancelled, so the
+            // first callback cannot run, even on a later frame. Keep the same
+            // exchange/owner and allow one replacement GET within all original
+            // deadlines. A claimed callback or any POST is never resubmitted.
+            if (!request.IsPost && dispatch.Status == OwnedByteDispatchStatus.TimedOutBeforeClaim &&
+                !serviceMayHaveRun && !lifetime.IsCancellationRequested && ReserveUnclaimedReadRetry())
+                dispatch = _frameQueue.Submit(operation);
             body = dispatch.Value;
             if (dispatch.Status != OwnedByteDispatchStatus.Success || body is null)
             {
                 terminalAfterCleanup = true; LatchTerminal();
                 // Report only a closed transport category, never exception text or
-                // native data. A read failure still terminates the owner; a timed-out
+                // native data. An unresolved read failure terminates the owner; a timed-out
                 // callback may still be running and is never retried or handed off.
                 if (!request.IsPost)
                 {
@@ -589,6 +601,20 @@ internal sealed class BridgeTransportRuntime : IDisposable
                 _readCount >= BridgeTransportLimits.MaximumReads)
                 return false;
             _readCount++;
+            return true;
+        }
+    }
+
+    private bool ReserveUnclaimedReadRetry()
+    {
+        lock (_gate)
+        {
+            if (_stopping || Volatile.Read(ref _terminalRequested) != 0 ||
+                _readCount >= BridgeTransportLimits.MaximumReads ||
+                _unclaimedReadRetries >= MaximumUnclaimedReadRetries)
+                return false;
+            _readCount++;
+            _unclaimedReadRetries++;
             return true;
         }
     }

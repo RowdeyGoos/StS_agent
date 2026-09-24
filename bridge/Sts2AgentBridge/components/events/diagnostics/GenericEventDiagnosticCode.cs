@@ -135,4 +135,8 @@ public enum GenericEventDiagnosticCode
     CombatIdentity = 129,
     CombatReady = 130,
     CombatWaitingEnd = 131,
+    ParentMap = 132,
+    ParentOverlay = 133,
+    ParentLayout = 134,
+    ParentTravel = 135,
 }

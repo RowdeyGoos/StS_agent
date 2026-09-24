@@ -184,6 +184,7 @@ _COMBAT_WAITING = (
 )
 _COMBAT_UNSUPPORTED = _COMBAT_WAITING.replace(b'"waiting"', b'"unsupported"')
 _COMBAT_COMPLETE_PREFIX = b'{"schema_version":1,"status":"complete",'
+_COMBAT_COMPLETE_PREFIX_V2 = b'{"schema_version":2,"status":"complete",'
 
 _COMBAT_MISMATCH_ENVELOPE = "decision_envelope_mismatch"
 _COMBAT_MISMATCH_IDENTITY = "decision_identity_mismatch"
@@ -744,9 +745,27 @@ def _validate_exact_keys(value: object, expected: tuple[str, ...]) -> dict[str, 
     return value
 
 
+def _validate_enemy_health(enemy, schema_version, *, terminal=False):
+    if not _is_bounded_nonnegative_integer(enemy['block']):
+        raise ValueError('enemy block')
+    display = enemy.get('hp_display', 'numeric')
+    if schema_version == 2 and display not in ('numeric', 'infinite'):
+        raise ValueError('enemy health display')
+    if display == 'infinite':
+        if enemy['hp'] is not None or enemy['max_hp'] is not None:
+            raise ValueError('hidden enemy health')
+    elif (not _is_bounded_nonnegative_integer(enemy['hp']) or
+          not _is_bounded_nonnegative_integer(enemy['max_hp']) or
+          enemy['max_hp'] < 1 or not int(terminal) <= enemy['hp'] <= enemy['max_hp']):
+        raise ValueError('enemy health')
+
+
 def _validate_combat(
     body: memoryview,
     decision_provider: str = "heuristic",
+    *,
+    allow_empty_enemies: bool = False,
+    allow_infinite_health: bool = False,
 ) -> dict[str, object]:
     try:
         decoded = bytes(body).decode("ascii")
@@ -771,7 +790,8 @@ def _validate_combat(
             ),
         )
         if (
-            root["schema_version"] != 1
+            type(root["schema_version"]) is not int
+            or root["schema_version"] not in ((1, 2) if allow_infinite_health else (1,))
             or root["status"] != "ready"
             or root["decision_kind"] != "combat"
             or root["actionable"] is not True
@@ -806,23 +826,22 @@ def _validate_combat(
 
     try:
         enemies = root["enemies"]
-        if not isinstance(enemies, list) or not 1 <= len(enemies) <= 6:
+        # Campaign combat can remain actionable between a boss's lives. The
+        # native reader omits dead creatures and still advertises End Turn.
+        # Keep the historical standalone profile's nonempty-enemy requirement.
+        minimum_enemies = 0 if allow_empty_enemies else 1
+        if not isinstance(enemies, list) or not minimum_enemies <= len(enemies) <= 6:
             raise ValueError("enemy count")
         validated_enemies: list[dict[str, object]] = []
         for expected_index, raw_enemy in enumerate(enemies):
             enemy = _validate_exact_keys(
                 raw_enemy,
-                ("index", "id", "hp", "max_hp", "block", "intents"),
+                (("index", "id", "hp_display", "hp", "max_hp", "block", "intents")
+                 if root['schema_version'] == 2 else ("index", "id", "hp", "max_hp", "block", "intents")),
             )
             if enemy["index"] != expected_index or not _is_public_string(enemy["id"]):
                 raise ValueError("enemy identity")
-            if any(
-                not _is_bounded_nonnegative_integer(enemy[name])
-                for name in ("hp", "max_hp", "block")
-            ):
-                raise ValueError("enemy values")
-            if enemy["max_hp"] < 1 or enemy["hp"] > enemy["max_hp"]:
-                raise ValueError("enemy health")
+            _validate_enemy_health(enemy, root['schema_version'])
             intents = enemy["intents"]
             if (
                 not isinstance(intents, list)
@@ -831,6 +850,8 @@ def _validate_combat(
             ):
                 raise ValueError("enemy intents")
             validated_enemies.append(enemy)
+        if root['schema_version'] == 2 and not any(e['hp_display'] == 'infinite' for e in validated_enemies):
+            raise ValueError('unnecessary health schema')
     except (ValueError, TypeError, KeyError):
         fail(EXIT_MISMATCH, _COMBAT_MISMATCH_ENEMIES)
 
@@ -943,7 +964,7 @@ def _validate_combat(
     }
 
 
-def _validate_combat_terminal(body: memoryview) -> dict[str, object]:
+def _validate_combat_terminal(body: memoryview, *, allow_infinite_health: bool = False) -> dict[str, object]:
     try:
         decoded = bytes(body).decode("ascii")
         root = json.loads(
@@ -968,7 +989,8 @@ def _validate_combat_terminal(body: memoryview) -> dict[str, object]:
             ),
         )
         if (
-            root["schema_version"] != 1
+            type(root["schema_version"]) is not int
+            or root["schema_version"] not in ((1, 2) if allow_infinite_health else (1,))
             or root["status"] != "complete"
             or root["decision_kind"] != "combat"
             or root["actionable"] is not False
@@ -997,17 +1019,12 @@ def _validate_combat_terminal(body: memoryview) -> dict[str, object]:
         for expected_index, raw_enemy in enumerate(enemies):
             enemy = _validate_exact_keys(
                 raw_enemy,
-                ("index", "id", "hp", "max_hp", "block", "intents"),
+                (("index", "id", "hp_display", "hp", "max_hp", "block", "intents")
+                 if root['schema_version'] == 2 else ("index", "id", "hp", "max_hp", "block", "intents")),
             )
             if enemy["index"] != expected_index or not _is_public_string(enemy["id"]):
                 raise ValueError("combat terminal enemy identity")
-            if any(
-                not _is_bounded_nonnegative_integer(enemy[name])
-                for name in ("hp", "max_hp", "block")
-            ):
-                raise ValueError("combat terminal enemy values")
-            if enemy["max_hp"] < 1 or not 1 <= enemy["hp"] <= enemy["max_hp"]:
-                raise ValueError("combat terminal enemy health")
+            _validate_enemy_health(enemy, root['schema_version'], terminal=True)
             intents = enemy["intents"]
             if (
                 not isinstance(intents, list)
@@ -1016,6 +1033,9 @@ def _validate_combat_terminal(body: memoryview) -> dict[str, object]:
             ):
                 raise ValueError("combat terminal enemy intents")
             validated_enemies.append(enemy)
+
+        if root['schema_version'] == 2 and not any(e['hp_display'] == 'infinite' for e in validated_enemies):
+            raise ValueError('unnecessary health schema')
 
         if root["outcome"] == "victory":
             if player["hp"] < 1 or validated_enemies:

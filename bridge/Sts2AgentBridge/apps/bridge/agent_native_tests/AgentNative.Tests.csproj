@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><TargetFramework>net9.0</TargetFramework><OutputType>Exe</OutputType><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../runtime/AgentContracts.cs" />
+    <Compile Include="../native/AgentPublicReader.cs" />
+    <Compile Include="../native/AgentCombatHistory.cs" />
+    <Compile Include="FakeGame.cs" /><Compile Include="Program.cs" />
+  </ItemGroup>
+</Project>

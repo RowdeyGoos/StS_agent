@@ -164,17 +164,22 @@ def load(name, relative):
 
 def retain_read_diagnostic(result, client):
     """Keep original stage/counter evidence alongside a bounded runtime failure."""
+    if getattr(client, 'native_diagnostic', None) is not None:
+        result = {**result, 'native_diagnostic': client.native_diagnostic}
     if client.read_diagnostic is not None:
         return {**result, 'read_diagnostic': client.read_diagnostic}
     return result
 
 
-def main():
+def parse_args(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--release-manifest', type=Path, required=True)
     parser.add_argument('--release-sha256', required=True)
     parser.add_argument('--expected-state-sha256', required=True)
-    parser.add_argument('--capability', choices=['events', 'event-map', 'event-combat-map', 'combat', 'combat-map', 'combat-choice', 'rewards', 'cards', 'items', 'shop', 'room-event', 'rest', 'core'], required=True)
+    parser.add_argument('--capability', choices=['campaign', 'agent', 'events', 'event-map', 'event-combat-map', 'combat', 'combat-map', 'combat-choice', 'rewards', 'cards', 'items', 'shop', 'room-event', 'rest', 'core'], required=True)
+    parser.add_argument('--campaign-setup', choices=('controlled_extra_hp','normal_hp'), help='Campaign: declare the manually prepared Ironclad A0 entry. No native reset or setup mutations are performed by the controller.')
+    parser.add_argument('--campaign-entry', choices=('fresh', 'resume'), help='Campaign entry: fresh (default) requires the first-act event/map; resume attaches after native Continue and records only this segment, never full-campaign acceptance.')
+    parser.add_argument('--agent-dispatch-map', action='store_true', help='Agent: dispatch one advertised map node and stop after native completion; otherwise stop at the actionable map.')
     parser.add_argument('--shop-max-purchases', type=int, choices=range(9), default=1, help='Maximum shop purchases, 0 to 8; zero leaves without buying.')
     parser.add_argument('--event-potion-policy', choices=('skip-full','skip-all','replace-first','stop-on-full'), default='skip-full')
     parser.add_argument('--shop-potion-policy', choices=('skip-full','replace-first'), default='skip-full', help='Optionally discard an eligible original potion before buying when the belt is full.')
@@ -194,11 +199,20 @@ def main():
     parser.add_argument('--action')
     parser.add_argument('--rest-option', choices=('lift', 'kindle', 'dig', 'cook', 'clone', 'hatch'), help='Required for rest: execute this option once and return at the rest site.')
     parser.add_argument('--rest-cook-slots', type=int, nargs=2, metavar=('FIRST', 'SECOND'), help='Cook: two increasing original deck slots (0–63); default is the first two removable cards.')
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
+    if (args.capability == 'campaign') != (args.campaign_setup is not None):
+        parser.error('--campaign-setup is required only for --capability campaign')
+    if args.campaign_entry is not None and args.capability != 'campaign':
+        parser.error('--campaign-entry requires --capability campaign')
     if args.rest_cook_slots is not None and (args.capability != 'rest' or args.rest_option != 'cook' or not 0 <= args.rest_cook_slots[0] < args.rest_cook_slots[1] < 64):
         parser.error('--rest-cook-slots requires Cook and two increasing slots from 0 to 63')
     if args.capability == 'rest' and args.rest_option is None:
         parser.error('--rest-option is required for --capability rest')
+    return args
+
+
+def main():
+    args = parse_args()
     credential = bytearray()
     client = None
     result = {'status': 'failed', 'code': 'client_preflight_failed'}
@@ -213,7 +227,20 @@ def main():
         layout, state = manager.validate_installed_for_client(args.expected_state_sha256)
         credential = read_credential(layout.user_profile, os.geteuid(), state, manager.require_no_granting_acl_fd)
         client = BridgeClient(credential)
-        if args.capability in ('combat', 'combat-map', 'combat-choice', 'rewards'):
+        if args.capability == 'campaign':
+            combat = load('unified_combat_host', 'apps/bridge/client/combat_host.py')
+            rewards = load('unified_reward_host', 'apps/bridge/client/reward_host.py')
+            events = load('unified_event_host', 'components/events/host/generic_event_host.py')
+            shop = load('unified_room_host', 'components/rooms/host/room_flow_host.py')
+            items = load('unified_item_host', 'components/item_wire/host/item_host.py')
+            host = load('unified_campaign_host', 'apps/bridge/client/campaign_host.py')
+            result = host.run_campaign(client.exchange, client.item_exchange, combat=combat, rewards=rewards, events=events,
+                shop=shop, items=items, setup=args.campaign_setup, entry_mode=args.campaign_entry or 'fresh',
+                progress=lambda stage: print(json.dumps({'campaign_progress': stage}, separators=(',', ':')), file=sys.stderr, flush=True))
+        elif args.capability == 'agent':
+            host = load('unified_agent_host', 'apps/bridge/client/agent_host.py')
+            result = host.run_agent(client.exchange, dispatch_map=args.agent_dispatch_map)
+        elif args.capability in ('combat', 'combat-map', 'combat-choice', 'rewards'):
             host = load('unified_combat_host', 'apps/bridge/client/combat_host.py')
             provider = host.first_select if args.choice_policy == 'first-select' else host.minimum_select
             if args.capability in ('combat-map', 'rewards'):

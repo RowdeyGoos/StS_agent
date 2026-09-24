@@ -12,13 +12,16 @@ namespace Sts2AgentBridge.Adapters.Public;
 
 public sealed class PinnedPublicCombatActionApplier : IPublicCombatActionApplier
 {
-    private readonly IPublicCombatDecisionReader _reader;
+    private readonly int _maximumActions = PublicCombatActionBudget.MaximumAcceptedActions;
+    private readonly PinnedPublicCombatDecisionReader _reader;
     private readonly object _gate = new();
     private readonly HashSet<string> _acceptedDecisionIds = new(StringComparer.Ordinal);
 
-    public PinnedPublicCombatActionApplier(IPublicCombatDecisionReader reader)
+    public PinnedPublicCombatActionApplier(PinnedPublicCombatDecisionReader reader, int maximumActions = PublicCombatActionBudget.MaximumAcceptedActions)
     {
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
+        if(maximumActions is <1 or >8192)throw new ArgumentOutOfRangeException(nameof(maximumActions));
+        _maximumActions=maximumActions;
     }
 
     public PublicCombatActionApplyResult Apply(PublicCombatActionRequest request)
@@ -88,8 +91,9 @@ public sealed class PinnedPublicCombatActionApplier : IPublicCombatActionApplier
                 return Result(reservationFailure.Value, request);
             }
 
-            RunManager.Instance.ActionQueueSynchronizer.RequestEnqueue(
-                new EndPlayerTurnAction(player, playerCombat.TurnNumber));
+            var action = new EndPlayerTurnAction(player, playerCombat.TurnNumber);
+            _reader.TrackAction(action, null, combat);
+            RunManager.Instance.ActionQueueSynchronizer.RequestEnqueue(action);
             return Result(PublicCombatActionApplyOutcome.Accepted, request);
         }
 
@@ -147,8 +151,9 @@ public sealed class PinnedPublicCombatActionApplier : IPublicCombatActionApplier
             return Result(playReservationFailure.Value, request);
         }
 
-        RunManager.Instance.ActionQueueSynchronizer.RequestEnqueue(
-            new PlayCardAction(card, target));
+        var play = new PlayCardAction(card, target);
+        _reader.TrackAction(play, card, combat);
+        RunManager.Instance.ActionQueueSynchronizer.RequestEnqueue(play);
         return Result(PublicCombatActionApplyOutcome.Accepted, request);
     }
 
@@ -160,7 +165,7 @@ public sealed class PinnedPublicCombatActionApplier : IPublicCombatActionApplier
             {
                 return PublicCombatActionApplyOutcome.AlreadyApplied;
             }
-            if (_acceptedDecisionIds.Count >= PublicCombatActionBudget.MaximumAcceptedActions)
+            if (_acceptedDecisionIds.Count >= _maximumActions)
             {
                 return PublicCombatActionApplyOutcome.ActionLimitReached;
             }
@@ -176,7 +181,7 @@ public sealed class PinnedPublicCombatActionApplier : IPublicCombatActionApplier
             {
                 return PublicCombatActionApplyOutcome.AlreadyApplied;
             }
-            if (_acceptedDecisionIds.Count >= PublicCombatActionBudget.MaximumAcceptedActions)
+            if (_acceptedDecisionIds.Count >= _maximumActions)
             {
                 return PublicCombatActionApplyOutcome.ActionLimitReached;
             }

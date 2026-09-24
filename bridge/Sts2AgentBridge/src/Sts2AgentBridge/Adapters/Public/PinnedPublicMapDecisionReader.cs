@@ -12,6 +12,7 @@ public sealed class PinnedPublicMapDecisionReader : IPublicMapDecisionReader
 {
     private const int MaximumTraversedNodes = 2048;
     private const int MaximumCandidates = 8;
+    private readonly System.Runtime.CompilerServices.ConditionalWeakTable<object, string> _scopes = new();
     private PublicMapCandidate? _acceptedDestination;
 
     public PublicMapDecisionSnapshot Read()
@@ -44,6 +45,7 @@ public sealed class PinnedPublicMapDecisionReader : IPublicMapDecisionReader
             return PublicMapDecisionSnapshot.Waiting();
         }
 
+        string? scope = null;
         var candidates = new List<PublicMapCandidate>();
         var pending = new List<Node> { map };
         for (int cursor = 0; cursor < pending.Count; cursor++)
@@ -56,6 +58,7 @@ public sealed class PinnedPublicMapDecisionReader : IPublicMapDecisionReader
             Node node = pending[cursor];
             if (node is NMapPoint mapPointNode && mapPointNode.State == MapPointState.Travelable)
             {
+                scope ??= _scopes.GetValue(mapPointNode, _ => Guid.NewGuid().ToString("N"));
                 MapPoint? point = mapPointNode.Point;
                 if (point is null)
                 {
@@ -131,7 +134,8 @@ public sealed class PinnedPublicMapDecisionReader : IPublicMapDecisionReader
             null,
             indexed,
             legalActions);
-        return snapshot with { DecisionId = PublicMapDecisionIdentity.Compute(snapshot) };
+        return snapshot with { DecisionId = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(
+            System.Text.Encoding.ASCII.GetBytes(scope + PublicMapDecisionIdentity.Compute(snapshot)))).ToLowerInvariant() };
     }
 
     public void RecordAcceptedDestination(PublicMapCandidate destination)

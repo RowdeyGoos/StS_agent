@@ -6,6 +6,14 @@ using System.Text;
 
 namespace Sts2AgentBridge.Core.Public;
 
+// A campaign Proceed owns the native callback through its witnessed destination.
+// Waiting/complete are distinct from accepting the UI input.
+public interface IPublicRewardTransition : IDisposable
+{
+    void Dispatch();
+    string Poll(); // waiting, map, act, ending; throws on uncertainty
+}
+
 public readonly record struct PublicRewardPlayer(
     int Hp,
     int MaxHp,
@@ -31,7 +39,9 @@ public readonly record struct PublicRewardItem(
     bool CardSelectionCanSkip,
     string? ItemKey = null,
     int PotionCapacityGain = 0,
-    int HealAmount = 0);
+    int HealAmount = 0,
+    int MaxHpGain = 0,
+    int? GoldGain = null);
 
 public readonly record struct PublicRewardDecisionSnapshot(
     PublicDecisionStatus Status,
@@ -44,7 +54,9 @@ public readonly record struct PublicRewardDecisionSnapshot(
     bool ItemRewards = false,
     IReadOnlyList<string?>? PotionSlots = null,
     bool CapacityRewards = false,
-    bool HealingRewards = false)
+    bool HealingRewards = false,
+    bool MaxHpRewards = false,
+    bool ModifiedGoldRewards = false)
 {
     public static PublicRewardDecisionSnapshot Waiting() => new(
         PublicDecisionStatus.Waiting,
@@ -87,7 +99,7 @@ public static class PublicRewardDecisionIdentity
 
         var builder = new StringBuilder(512);
         if(snapshot.PotionSlots is not null) {
-            Append(builder,snapshot.HealingRewards?"reward_v6":snapshot.CapacityRewards?"reward_v5":"reward_v4");Append(builder,snapshot.PotionSlots.Count);
+            Append(builder,snapshot.ModifiedGoldRewards?"reward_v8":snapshot.MaxHpRewards?"reward_v7":snapshot.HealingRewards?"reward_v6":snapshot.CapacityRewards?"reward_v5":"reward_v4");Append(builder,snapshot.PotionSlots.Count);
             foreach(var potion in snapshot.PotionSlots)Append(builder,potion??string.Empty);
         }else if(snapshot.ItemRewards)Append(builder,"reward_v3");
         Append(builder, snapshot.ScreenKind);
@@ -102,6 +114,8 @@ public static class PublicRewardDecisionIdentity
             if(reward.Kind is PublicRewardKind.Potion or PublicRewardKind.Relic)Append(builder,reward.ItemKey??string.Empty);
             if(snapshot.CapacityRewards)Append(builder,reward.PotionCapacityGain);
             if(snapshot.HealingRewards)Append(builder,reward.HealAmount);
+            if(snapshot.MaxHpRewards)Append(builder,reward.MaxHpGain);
+            if(snapshot.ModifiedGoldRewards)Append(builder,reward.GoldGain??reward.GoldAmount);
             Append(builder, reward.RewardIndex);
             Append(builder, (int)reward.Kind);
             Append(builder, reward.SuccessfullySelected ? 1 : 0);

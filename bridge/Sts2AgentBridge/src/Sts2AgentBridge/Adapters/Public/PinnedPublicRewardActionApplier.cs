@@ -16,11 +16,14 @@ public sealed class PinnedPublicRewardActionApplier : IPublicRewardActionApplier
 {
     private readonly PinnedPublicRewardDecisionReader _reader;
     private readonly PinnedPublicRewardInteractionSession _session;
+    private readonly Func<NRewardsScreen, IPublicRewardTransition?>? _transition;
 
-    public PinnedPublicRewardActionApplier(PinnedPublicRewardDecisionReader reader)
+    public PinnedPublicRewardActionApplier(PinnedPublicRewardDecisionReader reader,
+        Func<NRewardsScreen, IPublicRewardTransition?>? transition = null)
     {
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         _session = reader.InteractionSession;
+        _transition = transition;
     }
 
     public PublicRewardActionApplyResult Apply(PublicRewardActionRequest request)
@@ -90,8 +93,13 @@ public sealed class PinnedPublicRewardActionApplier : IPublicRewardActionApplier
             item=new PinnedPublicItemRewardClaim(target.Reward);
             if(!item.HasCapacity||!item.Valid(false))return Result(PublicRewardActionApplyOutcome.StaleDecision,request);
         }
+        PinnedPublicGoldRewardClaim? gold=null;
+        if(claimGold) {
+            gold=target.Gold;
+            if(gold is null||!gold.Valid()||gold.Gain!=(target.Projection.GoldGain??target.Projection.GoldAmount))return Result(PublicRewardActionApplyOutcome.StaleDecision,request);
+        }
         var pending = new PinnedPublicRewardPendingMutation(
-            request.Kind, snapshot.Player, target, specialCard:special, parentScreen:screen, item:item);
+            request.Kind, snapshot.Player, target, specialCard:special, parentScreen:screen, item:item, gold:gold);
         PublicRewardActionApplyOutcome? reservationFailure =
             _session.Begin(request.DecisionId, pending);
         if (reservationFailure.HasValue)
@@ -251,7 +259,9 @@ public sealed class PinnedPublicRewardActionApplier : IPublicRewardActionApplier
             return Result(reservationFailure.Value, request);
         }
 
-        pending.ProceedTask = RunManager.Instance!.ProceedFromTerminalRewardsScreen();
+        pending.Transition = _transition?.Invoke(screen);
+        if(pending.Transition is {} transition) transition.Dispatch();
+        else pending.ProceedTask = RunManager.Instance!.ProceedFromTerminalRewardsScreen();
         return Result(PublicRewardActionApplyOutcome.Accepted, request);
     }
 

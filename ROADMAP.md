@@ -1,17 +1,18 @@
 # Roadmap
 
-Priorities set 2026-09-13; documentation clarified 2026-09-19. This file owns priorities; [current status](docs/STATUS.md)
+Priorities updated 2026-09-24 after campaign acceptance. This file owns priorities; [current status](docs/STATUS.md)
 owns capability and evidence. Follow [AGENTS.md](AGENTS.md) for the development
 process. Completed packets and old campaign instructions are historical references.
 
 ## Immediate priorities
 
-1. **Resolve Architect admission before another ending retest.** Native final-act
-   setup now reaches its untouched Proceed, but the bridge returns
-   `unsupported_state` before dispatch. Identify the exact rejected predicate,
-   preserve native ownership and task guards, then verify the complete win path.
-   The implemented terminal task chain has offline coverage; it has not passed live.
-2. **Finish representative coverage of remaining pickup and selector variants.**
+Milestone 7 is accepted by the user for the assisted potion campaign: all gameplay
+was policy-controlled through the native ending, with one reload to install the
+Waterfall Giant correction. Its original continuation result remains unchanged;
+another fresh campaign is not an acceptance requirement. See the
+[accepted scope](docs/AGENT_ENVIRONMENT.md#7-complete-live-campaign-traversal).
+
+1. **Finish representative coverage of remaining pickup and selector variants.**
    Custom screens, Trial abandonment Cancel/Confirm, event combat/reward/map paths,
    Dummy victory with automatic upgrades, terminal potion policies and assisted
    Fake Merchant seven-relic collection now have live results. Remaining targets
@@ -22,11 +23,11 @@ process. Completed packets and old campaign instructions are historical referenc
    handling that full screen is distinct from the demonstrated assisted collection.
    Choose a concrete native caller and observable outcome before extending a mechanism.
    [Current status](docs/STATUS.md) owns exact evidence and practical limits.
-3. **Compose supported interactions into longer live runs after event coverage.**
+2. **Exercise remaining handoff variants in useful live runs.**
    Reuse the [multi-case results](docs/evidence/MULTICASE_BRIDGE_LIVE_2026_09_12.md),
    [combined batch](docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md) and
    [unified smoke](docs/evidence/UNIFIED_BRIDGE_SMOKE_2026_09_08.md).
-   Test remaining handoffs and elite continuation, keeping run completion,
+   Test held-out handoffs and elite variants, keeping run completion,
    branch coverage and strategic quality as separate claims. Use generalized
    transformation in useful play; do not repeat the card16 geometry experiment.
 
@@ -64,9 +65,21 @@ scope and acceptance cases. Strike+ is now ordinary game content; the experiment
 per-upgrade profile is retired. Headless and bridge work can proceed in parallel
 with disjoint source ownership and shared pinned-game rule evidence.
 
-Next implement HF-44: sufficient public full-run observations, then encoding,
-datasets and agent execution in HF-45–47. Establish faithful public inputs before
-selecting training algorithms or investing in search infrastructure.
+Public datasets and operational agent execution now consume the full-run
+observations/encoding in HF-46/47. Stronger policies, training-library integration
+and search remain subsequent work over that interface.
+The [agent environment plan](docs/AGENT_ENVIRONMENT.md) defines the shared-contract,
+bridge-adapter and Gymnasium milestones and their observable acceptance cases.
+Its [shared contract and both bounded producers](docs/AGENT_CONTRACT.md) are
+implemented, with the same public-only chooser over the combat/selection/reward/map
+slice. Milestone 3's controlled native slice, separate map dispatch and cleanup
+are accepted. Milestone 4's [fixed public encoding and Gymnasium environment](docs/AGENT_ENCODING.md)
+are implemented. Milestone 5 adds full headless decision/content coverage and
+`FullRunEnv`, with explicit exclusions from the existing live profile. Milestone 6
+adds [public trajectories, the installed agent command and bounded workers](docs/AGENT_EXECUTION.md).
+Milestone 7's assisted live traversal is accepted with its documented bridge-fix
+reload. Further native coverage and stronger policies preserve the current
+profile's explicit gaps and evidence requirements.
 
 ## Long-term destination
 

@@ -29,8 +29,10 @@ internal static class CombatIdentityFixtures
         var reader=new PinnedPublicCombatDecisionReader();var applier=new PinnedPublicCombatActionApplier(reader);
         var a=reader.Read();check(a.Status==PublicDecisionStatus.Ready,"first native combat ready");
         check(applier.Apply(Play(a.DecisionId)).Outcome==PublicCombatActionApplyOutcome.Accepted,"first native action accepted");
+        reader.Read(); // Reconcile the exact completed action before a combat handoff.
         manager.State=second;reader.BeginObservedCombat();var b=reader.Read();
         check(applier.Apply(Play(b.DecisionId)).Outcome==PublicCombatActionApplyOutcome.Accepted,"second identical native combat accepts its own first action");
+        reader.Read();
         check(a.DecisionId!=b.DecisionId,"different native combat objects have distinct decision identities");
         check(RunManager.Instance.ActionQueueSynchronizer.Actions.Count==2,"exactly one native action per combat");
         reader.BeginObservedCombat();check(reader.Read().DecisionId==b.DecisionId,"duplicate begin notification cannot renew action identity");
@@ -51,6 +53,18 @@ internal static class CombatIdentityFixtures
         RunManager.Instance.ActionQueueSynchronizer.ThrowAfterEnqueue=false;reader.BeginObservedCombat();
         check(service.Apply(Play(reader.Read().DecisionId)).Outcome==PublicCombatActionApplyOutcome.AlreadyApplied,"begin notification cannot retry uncertain enqueue");
         check(RunManager.Instance.ActionQueueSynchronizer.Actions.Count==3,"uncertain native action queued at most once");
+        manager.State=Encounter();using var healthReader=new PinnedPublicCombatDecisionReader();
+        var numeric=healthReader.Read();var creature=manager.State.Enemies[0];
+        creature.HpDisplay=HpDisplay.InfiniteWithNumbers;
+        check(healthReader.Read().DecisionId==numeric.DecisionId,"native invincibility color retains displayed numeric health");
+        creature.HpDisplay=HpDisplay.InfiniteWithoutNumbers;creature.CurrentHp=creature.MaxHp=999999999;
+        var infinite=healthReader.Read();
+        check(infinite.Enemies[0].Hp==0&&infinite.Enemies[0].MaxHp==0,"hidden native HP absent from public snapshot");
+        check(infinite.DecisionId!=numeric.DecisionId&&infinite.Enemies[0].HealthDisplay==PublicEnemyHealthDisplay.Infinite,"visible infinity changes public identity and display");
+        creature.CurrentHp=200;creature.MaxHp=500;var hiddenChange=healthReader.Read();
+        check(infinite.DecisionId==hiddenChange.DecisionId&&hiddenChange.Enemies[0].Hp==0&&hiddenChange.Enemies[0].MaxHp==0,"hidden HP changes cannot affect public snapshot or identity");
+        creature.HpDisplay=(HpDisplay)99;
+        check(healthReader.Read().Status==PublicDecisionStatus.Unsupported,"unknown health display stops projection");
         CombatManager.Instance=null;NOverlayStack.Instance=null;
     }
 }

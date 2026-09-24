@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import shutil
 import sys
 import tempfile
 import unittest
@@ -44,6 +45,32 @@ class ReleaseBoundaryTests(unittest.TestCase):
         digest = self.seal()
         (self.root / "components/cards/host/card_selection_host.py").write_text("changed\n")
         with self.assertRaisesRegex(ValueError, "release_source_mismatch"):
+            self.verify(digest)
+
+    def test_shared_agent_contract_and_policy_are_bound_without_a_bridge_copy(self):
+        repository = self.root / 'repository'
+        bridge = repository / 'bridge' / 'Sts2AgentBridge'
+        fixture = self.root / 'fixture'
+        fixture.mkdir()
+        for path in list(self.root.iterdir()):
+            if path != fixture:
+                shutil.move(str(path), str(fixture / path.name))
+        shutil.copytree(fixture, bridge)
+        (bridge / 'apps/bridge/client/agent_host.py').write_text('shared consumer\n')
+        for name in ('game/__init__.py', 'game/agent/__init__.py', 'game/agent/policy.py',
+                     'game/agent/contracts/__init__.py', 'game/agent/contracts/models.py',
+                     'game/agent/contracts/codec.py', 'game/agent/contracts/validation.py'):
+            path = repository / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text('shared source\n')
+        self.root = bridge
+        self.release['files'], self.release['source_inventory_sha256'] = inventory(collect_sources(bridge, ['bridge']))
+        self.manifest = bridge / 'release.json'
+        digest = self.seal()
+        self.verify(digest)
+        self.assertEqual(len([name for name in self.release['files'] if name.startswith('../../game/')]), 7)
+        (repository / 'game/agent/policy.py').write_text('changed policy\n')
+        with self.assertRaisesRegex(ValueError, 'release_source_mismatch'):
             self.verify(digest)
 
     def test_added_source_rejected_but_documentation_does_not_rebind_release(self):

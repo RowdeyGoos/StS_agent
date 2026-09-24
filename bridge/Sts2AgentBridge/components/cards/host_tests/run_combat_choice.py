@@ -10,20 +10,23 @@ from combat_host import run_choice, first_select, minimum_select
 
 
 def main():
-    for provider, count, actions in [(first_select, 2, 3), (minimum_select, 0, 1),
-                                    (lambda value, seq=iter(['select:0','deselect:0','select:2','confirm']): next(seq), 1, 4)]:
-        process = subprocess.Popen([sys.argv[1], sys.argv[2], '--wire'], stdin=subprocess.PIPE,
+    for provider, count, actions, version in [(first_select, 2, 3, 1), (minimum_select, 0, 1, 1),
+                                    (lambda value, seq=iter(['select:0','deselect:0','select:2','confirm']): next(seq), 1, 4, 1),
+                                    (first_select, 2, 3, 2), (minimum_select, 0, 1, 2), (first_select, 1, 1, 3), (minimum_select, 1, 1, 3)]:
+        process = subprocess.Popen([sys.argv[1], sys.argv[2], '--wire', 'offer-v3' if version == 3 else 'draw-v2' if version == 2 else 'v1'], stdin=subprocess.PIPE,
                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         buffers = []
         try:
             def request(method, route, body):
+                assert route == f'/probe/combat-choice-v{version}/public/' + ('action' if method == 'POST' else 'decision')
                 value = {'method':method}
                 if body is not None: value.update(json.loads(body)); buffers.append(body)
                 process.stdin.write(json.dumps(value) + '\n'); process.stdin.flush()
                 response = bytearray(process.stdout.readline().encode()); buffers.append(response); return response
-            result = run_choice(request, provider=provider)
+            result = run_choice(request, provider=provider, version=version)
             assert result['status'] == 'resolved', result
             assert result['selected_count'] == count, result
+            assert result['pile'] == ('offer' if version == 3 else 'draw' if version == 2 else 'discard'), result
             assert result['attempted'] == result['accepted'] == result['reconciled'] == actions, result
             assert all(not any(b) for b in buffers)
             process.stdin.close(); process.stdin = None
@@ -31,7 +34,7 @@ def main():
             assert process.returncode == 0, errors
         finally:
             if process.poll() is None: process.kill(); process.wait()
-    print('{"status":"passed","suite":"combat_choice_host_native","scenarios":3,"target_game_executed":false}')
+    print('{"status":"passed","suite":"combat_choice_host_native","scenarios":7,"target_game_executed":false}')
 
 
 if __name__ == '__main__': main()

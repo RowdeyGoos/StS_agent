@@ -33,13 +33,16 @@ public readonly record struct PublicCombatPlayer(
     int Block,
     int Energy);
 
+public enum PublicEnemyHealthDisplay { Numeric = 0, Infinite = 1 }
+
 public readonly record struct PublicCombatEnemy(
     int Index,
     string Id,
     int Hp,
     int MaxHp,
     int Block,
-    IReadOnlyList<string> Intents);
+    IReadOnlyList<string> Intents,
+    PublicEnemyHealthDisplay HealthDisplay = PublicEnemyHealthDisplay.Numeric);
 
 public readonly record struct PublicCombatCard(
     int HandIndex,
@@ -132,8 +135,17 @@ public static class PublicCombatDecisionIdentity
         {
             Append(builder, enemy.Index);
             Append(builder, enemy.Id);
-            Append(builder, enemy.Hp);
-            Append(builder, enemy.MaxHp);
+            if (enemy.HealthDisplay == PublicEnemyHealthDisplay.Numeric)
+            {
+                Append(builder, enemy.Hp);
+                Append(builder, enemy.MaxHp);
+            }
+            else if (enemy.HealthDisplay == PublicEnemyHealthDisplay.Infinite)
+            {
+                // Identity is public: hidden native sentinel/damage cannot change it.
+                Append(builder, "infinite");
+            }
+            else throw new ArgumentException("Unknown public health display.", nameof(snapshot));
             Append(builder, enemy.Block);
             Append(builder, enemy.Intents.Count);
             foreach (string intent in enemy.Intents)

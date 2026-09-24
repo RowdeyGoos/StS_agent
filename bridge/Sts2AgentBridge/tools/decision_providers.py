@@ -40,6 +40,9 @@ class HeuristicDecisionProvider:
         hand: list[dict[str, object]],
         actions: list[dict[str, object]],
     ) -> dict[str, object]:
+        if enemies and all(enemy.get('hp_display') == 'infinite' for enemy in enemies):
+            selected = next(action for action in actions if action['kind'] == 'end_turn')
+            return _selection(selected, hand, 'infinite_health')
         incoming_attack = any(
             "attack" in str(intent).lower()
             for enemy in enemies
@@ -49,6 +52,8 @@ class HeuristicDecisionProvider:
             action
             for action in actions
             if action["kind"] == "play_card"
+            and (action['target_index'] is None or
+                 enemies[int(action['target_index'])].get('hp_display') != 'infinite')
             and str(hand[int(action["hand_index"])]["id"]).lower()
             not in _UNSUPPORTED_FOLLOWUP_CARD_IDS
         ]

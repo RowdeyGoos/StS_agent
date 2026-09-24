@@ -152,13 +152,18 @@ namespace MegaCrit.Sts2.Core.Models
         public Player? Owner { get; set; }
         public bool IsFinished { get; set; }
     }
-    public class PotionModel {
+    public class PotionModel : AbstractModel {
  public void EnqueueManualUse(object? target){IsQueued=true;MegaCrit.Sts2.Core.Runs.RunManager.Instance!.ActionQueueSynchronizer.RequestEnqueue((MegaCrit.Sts2.Core.GameActions.GameAction)new MegaCrit.Sts2.Core.GameActions.UsePotionAction(this));}
  public MegaCrit.Sts2.Core.Entities.Players.Player? Owner; public bool IsQueued, HasBeenRemovedFromState; public ModelId Id {get;}=new(); }
     public class FixtureDynamicVar {public decimal BaseValue {get;set;} public int IntValue {get;set;}=2; }
-    public class RelicModel {public virtual Task AfterObtained()=>Task.CompletedTask; public Dictionary<string,FixtureDynamicVar> DynamicVars {get;}=new(); public Player? Owner {get;set;} public ModelId Id {get;}=new(); }
-    public class AbstractModel {}
-    public class EnchantmentModel
+    public class RelicModel : AbstractModel {public bool IsMelted {get;set;}public virtual Task AfterObtained()=>Task.CompletedTask; public Dictionary<string,FixtureDynamicVar> DynamicVars {get;}=new(); public Player? Owner {get;set;} public ModelId Id {get;}=new(); }
+    public class AbstractModel {
+ public virtual decimal ModifyGoldGained(Player player,decimal amount)=>amount;
+ public virtual Task AfterModifyingGoldGained(Player player,decimal amount)=>Task.CompletedTask;
+ public virtual Task AfterGoldGained(Player player)=>Task.CompletedTask;
+ public virtual Task AfterRewardTaken(Player player,MegaCrit.Sts2.Core.Rewards.Reward reward)=>Task.CompletedTask;
+ }
+    public class EnchantmentModel : AbstractModel
     {
         public ModelId Id {get;}=new();
         public int Amount {get;set;}
@@ -167,7 +172,7 @@ namespace MegaCrit.Sts2.Core.Models
         public Func<CardModel,bool>? Eligible;
         public bool CanEnchant(CardModel card)=>Eligible?.Invoke(card)??card.Enchantment is null;
     }
-    public class CardModel
+    public class CardModel : AbstractModel
     {
         public EnchantmentModel? Enchantment {get;set;}
         public bool IsEnchantmentPreview {get;set;}
@@ -187,7 +192,7 @@ namespace MegaCrit.Sts2.Core.Entities.Players
 {
     using MegaCrit.Sts2.Core.Models;
     public sealed class Deck : MegaCrit.Sts2.Core.Entities.Cards.CardPile {}
-    public sealed class Creature { public int CurrentHp=80,MaxHp=80; }
+    public sealed class Creature { public MegaCrit.Sts2.Core.Combat.CombatState? CombatState {get;set;}  public int CurrentHp=80,MaxHp=80; }
     public sealed class Player { public bool CanRemovePotions=true; public List<RelicModel> Relics {get;}=new(); public Creature Creature {get;}=new();public int Gold {get;set;}=99; public int MaxPotionCount {get;set;}=3; public List<PotionModel?> PotionSlots {get;}=new(){null,null,null}; public Deck Deck { get; } = new(); private MegaCrit.Sts2.Core.Runs.IRunState _run=new MegaCrit.Sts2.Core.Runs.FixtureRunState(); public bool ThrowRunState {get;set;} public MegaCrit.Sts2.Core.Runs.IRunState RunState {get=>ThrowRunState?throw new InvalidOperationException("fixture getter"):_run;set=>_run=value;} }
 }
 
@@ -213,6 +218,7 @@ namespace MegaCrit.Sts2.Core.Events
 namespace MegaCrit.Sts2.Core.Models.Events
 {
     using MegaCrit.Sts2.Core.Entities.Players;
+    public sealed class TheArchitect : MegaCrit.Sts2.Core.Models.EventModel { }
     public sealed class RoomFullOfCheese { public Player? Owner { get; set; } public bool IsFinished { get; set; } }
     public sealed class AromaOfChaos : MegaCrit.Sts2.Core.Models.EventModel { }
     public sealed class SapphireSeed : MegaCrit.Sts2.Core.Models.EventModel { }
@@ -472,8 +478,17 @@ namespace MegaCrit.Sts2.Core.CardSelection {
     }
 }
 namespace MegaCrit.Sts2.Core.Runs {
- public interface IRunState{ MegaCrit.Sts2.Core.Rooms.AbstractRoom? CurrentRoom=>this is RunState run?run.CurrentRoom as MegaCrit.Sts2.Core.Rooms.AbstractRoom:null; } public sealed class FixtureRunState:RunState{}
+ public interface IRunState{ IEnumerable<MegaCrit.Sts2.Core.Models.AbstractModel> IterateHookListeners(MegaCrit.Sts2.Core.Combat.CombatState? state)=>((RunState)this).IterateHookListeners(state);  MegaCrit.Sts2.Core.Rooms.AbstractRoom? CurrentRoom=>this is RunState run?run.CurrentRoom as MegaCrit.Sts2.Core.Rooms.AbstractRoom:null; } public sealed class FixtureRunState:RunState{}
  public class RunState:IRunState {
+  public List<MegaCrit.Sts2.Core.Models.AbstractModel> ExtraListeners {get;}=new();
+  public IEnumerable<MegaCrit.Sts2.Core.Models.AbstractModel> IterateHookListeners(MegaCrit.Sts2.Core.Combat.CombatState? state) {
+   foreach(var player in Players) {foreach(var card in player.Deck.Cards){yield return card;if(card.Enchantment is not null)yield return card.Enchantment;}
+    foreach(var relic in player.Relics)if(!relic.IsMelted)yield return relic;
+    foreach(var potion in player.PotionSlots)if(potion is not null)yield return potion;}
+   foreach(var model in ExtraListeners)yield return model;
+  }
+
+  public List<Player> Players {get;}=new();
   public object? CurrentRoom {get;set;}
   public Func<MegaCrit.Sts2.Core.Models.CardModel,MegaCrit.Sts2.Core.Models.CardModel>? CloneOverride;
   [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
@@ -598,6 +613,7 @@ namespace MegaCrit.Sts2.Core.Rewards
     public sealed class RelicReward:Reward { public RelicModel Relic {get;set;}=null!;public RelicModel? ClaimedRelic {get;set;} }
     public class RewardsSet
     {
+        public MegaCrit.Sts2.Core.Rooms.AbstractRoom? Room {get;set;}
         public Player Player {get;set;}=null!;
         public List<Reward> Rewards {get;set;}=new();
         public bool DisallowSkipping {get;set;}
@@ -614,6 +630,11 @@ namespace MegaCrit.Sts2.Core.Nodes.Screens
     using MegaCrit.Sts2.Core.Runs;
     public class NRewardsScreen:Control
     {
+        private RewardsSet? _rewardsSet;
+        private IRunState? _runState;
+        private bool _isTerminal;
+        public void BindRewards(RewardsSet set, IRunState run, bool terminal=true) {_rewardsSet=set;_runState=run;_isTerminal=terminal;}
+        public bool RewardsBound=>_rewardsSet is not null&&_runState is not null&&_isTerminal;
         private MegaCrit.Sts2.Core.Nodes.CommonUi.NProceedButton? _proceedButton;
         public void BindProceed(MegaCrit.Sts2.Core.Nodes.CommonUi.NProceedButton button){_proceedButton=button;Bind("ProceedButton",button);}
         public bool ProceedBound=>_proceedButton is not null;
@@ -848,3 +869,13 @@ namespace MegaCrit.Sts2.Core.GameActions {
 }
 
 namespace MegaCrit.Sts2.Core.Models.Relics { public sealed class FakeLeesWaffle:RelicModel {public FakeLeesWaffle(){Id.Entry="FAKE_LEES_WAFFLE";DynamicVars["Heal"]=new(){BaseValue=10m};}} }
+
+namespace MegaCrit.Sts2.Core.Models.Relics { public sealed class Strawberry:RelicModel {public Strawberry(){Id.Entry="STRAWBERRY";DynamicVars["MaxHp"]=new(){BaseValue=7m};}} }
+
+namespace MegaCrit.Sts2.Core.Models.Relics {
+ public sealed class BowlerHat:RelicModel {
+  public BowlerHat(){Id.Entry="BOWLER_HAT";DynamicVars["GoldIncrease"]=new(){BaseValue=1.25m};}
+  public override decimal ModifyGoldGained(MegaCrit.Sts2.Core.Entities.Players.Player player,decimal amount)=>ReferenceEquals(player,Owner)?amount*DynamicVars["GoldIncrease"].BaseValue:amount;
+  public override Task AfterModifyingGoldGained(MegaCrit.Sts2.Core.Entities.Players.Player player,decimal amount)=>Task.CompletedTask;
+ }
+}

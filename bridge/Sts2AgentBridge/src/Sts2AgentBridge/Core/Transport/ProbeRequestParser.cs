@@ -38,6 +38,8 @@ internal enum ParsedRouteTarget
     EventCombatDecision = 15,
     EventResumeItemDecision = 16,
     EventResumeItemAction = 17,
+    AgentDecision = 18,
+    AgentAction = 19,
 }
 
 internal readonly record struct ParsedProbeRequest(
@@ -414,6 +416,30 @@ internal static class ProbeRequestParser
         {
             routeTarget = ParsedRouteTarget.Manifest;
         }
+        else if (target.SequenceEqual("/probe/combat-potions-v1/public/decision"u8))
+        {
+            routeTarget = ParsedRouteTarget.PublicCombatDecision;
+        }
+        else if (target.SequenceEqual("/probe/combat-potions-v1/public/action"u8))
+        {
+            routeTarget = ParsedRouteTarget.PublicCombatAction;
+        }
+        else if (target.SequenceEqual("/probe/campaign-v2/public/decision"u8))
+        {
+            routeTarget = ParsedRouteTarget.PublicScreen;
+        }
+        else if (target.SequenceEqual("/probe/campaign-v2/public/action"u8))
+        {
+            routeTarget = ParsedRouteTarget.PublicRoomAction;
+        }
+        else if (target.SequenceEqual("/probe/reward-v2/public/decision"u8))
+        {
+            routeTarget = ParsedRouteTarget.PublicRewardDecision;
+        }
+        else if (target.SequenceEqual("/probe/reward-v2/public/action"u8))
+        {
+            routeTarget = ParsedRouteTarget.PublicRewardAction;
+        }
         else if (target.SequenceEqual("/probe/v0/public/screen"u8))
         {
             routeTarget = ParsedRouteTarget.PublicScreen;
@@ -458,14 +484,18 @@ internal static class ProbeRequestParser
         {
             routeTarget = ParsedRouteTarget.EventCombatDecision;
         }
-        else if (target.SequenceEqual("/probe/combat-choice-v1/public/decision"u8))
+        else if (target.SequenceEqual("/probe/combat-choice-v1/public/decision"u8) || target.SequenceEqual("/probe/combat-choice-v2/public/decision"u8) || target.SequenceEqual("/probe/combat-choice-v3/public/decision"u8))
         {
             routeTarget = ParsedRouteTarget.CombatChoiceDecision;
         }
-        else if (target.SequenceEqual("/probe/combat-choice-v1/public/action"u8))
+        else if (target.SequenceEqual("/probe/combat-choice-v1/public/action"u8) || target.SequenceEqual("/probe/combat-choice-v2/public/action"u8) || target.SequenceEqual("/probe/combat-choice-v3/public/action"u8))
         {
             routeTarget = ParsedRouteTarget.CombatChoiceAction;
         }
+        else if (target.SequenceEqual("/probe/agent-v1/public/decision"u8))
+        { routeTarget = ParsedRouteTarget.AgentDecision; }
+        else if (target.SequenceEqual("/probe/agent-v1/public/action"u8))
+        { routeTarget = ParsedRouteTarget.AgentAction; }
         else
         {
             routeTarget = ParsedRouteTarget.Unknown;

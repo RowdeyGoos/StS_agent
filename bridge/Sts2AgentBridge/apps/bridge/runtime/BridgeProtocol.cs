@@ -14,7 +14,7 @@ internal static class BridgeTransportLimits
 {
     internal const int Port = 43117, Backlog = 8, MaximumHandlers = 4;
     internal const int MaximumRequestHead = 4096, RequestBufferSize = 4097, MaximumBody = 66560;
-    internal const int MaximumReads = 16384, MaximumTotalPosts = 512;
+    internal const int MaximumReads = 131072, MaximumTotalPosts = 8192;
     internal const int HeaderReadMilliseconds = 1000, ResponseWriteMilliseconds = 1000;
     internal const int ConnectionLifetimeMilliseconds = 2000, ShutdownJoinMilliseconds = 2000;
 }
@@ -86,7 +86,7 @@ internal static class BridgeRequestParser
             core.HostState != ParsedHostState.Exact || core.HasOrigin || core.AuthorizationCount != 1 ||
             core.AuthorizationValueLength != 71 || !head.Slice(core.AuthorizationValueOffset, 7).SequenceEqual("Bearer "u8)) return false;
         bool action = core.RouteTarget is ParsedRouteTarget.PublicCombatAction or ParsedRouteTarget.PublicRewardAction or
-            ParsedRouteTarget.PublicMapAction or ParsedRouteTarget.PublicRoomAction or ParsedRouteTarget.CombatChoiceAction or ParsedRouteTarget.EventResumeItemAction;
+            ParsedRouteTarget.PublicMapAction or ParsedRouteTarget.PublicRoomAction or ParsedRouteTarget.CombatChoiceAction or ParsedRouteTarget.EventResumeItemAction or ParsedRouteTarget.AgentAction;
         if (action ? !core.IsPost || core.DecisionIdCount != 1 || core.ActionIdCount != 1 :
             !core.IsGet || core.DecisionIdCount != 0 || core.ActionIdCount != 0) return false;
         request = new(Capability.Core, path, action, core.AuthorizationValueOffset + 7, 64,

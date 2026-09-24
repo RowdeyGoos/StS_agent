@@ -54,6 +54,13 @@ public static class CanonicalProbeEncoder
 
     public static byte[] EncodePublicCombatDecisionBody(PublicCombatDecisionSnapshot snapshot)
     {
+        bool displayHealth = false;
+        foreach (PublicCombatEnemy enemy in snapshot.Enemies)
+        {
+            if (enemy.HealthDisplay is not (PublicEnemyHealthDisplay.Numeric or PublicEnemyHealthDisplay.Infinite))
+                throw new ArgumentException("Unknown public health display.", nameof(snapshot));
+            displayHealth |= enemy.HealthDisplay == PublicEnemyHealthDisplay.Infinite;
+        }
         if (snapshot.Status == PublicDecisionStatus.Complete)
         {
             if (snapshot.Round < 1 || snapshot.Enemies.Count > 6 || snapshot.Hand.Count != 0 ||
@@ -68,7 +75,8 @@ public static class CanonicalProbeEncoder
             }
 
             var terminal = new StringBuilder(1024);
-            terminal.Append("{\"schema_version\":1,\"status\":\"complete\",\"decision_kind\":\"combat\",\"actionable\":false,\"decision_id\":null,\"round\":");
+            terminal.Append(displayHealth ? "{\"schema_version\":2" : "{\"schema_version\":1");
+            terminal.Append(",\"status\":\"complete\",\"decision_kind\":\"combat\",\"actionable\":false,\"decision_id\":null,\"round\":");
             terminal.Append(snapshot.Round.ToString(CultureInfo.InvariantCulture));
             terminal.Append(",\"player\":{\"hp\":");
             AppendNonNegative(terminal, snapshot.Player.Hp);
@@ -87,7 +95,8 @@ public static class CanonicalProbeEncoder
                     terminal.Append(',');
                 }
                 if (enemy.Index != index || enemy.Intents.Count > 8 ||
-                    enemy.MaxHp < 1 || enemy.Hp < 1 || enemy.Hp > enemy.MaxHp)
+                    enemy.HealthDisplay == PublicEnemyHealthDisplay.Numeric &&
+                    (enemy.MaxHp < 1 || enemy.Hp < 1 || enemy.Hp > enemy.MaxHp))
                 {
                     throw new ArgumentException("Invalid public enemy projection.", nameof(snapshot));
                 }
@@ -95,10 +104,7 @@ public static class CanonicalProbeEncoder
                 terminal.Append(index.ToString(CultureInfo.InvariantCulture));
                 terminal.Append(",\"id\":");
                 AppendJsonString(terminal, enemy.Id);
-                terminal.Append(",\"hp\":");
-                AppendNonNegative(terminal, enemy.Hp);
-                terminal.Append(",\"max_hp\":");
-                AppendNonNegative(terminal, enemy.MaxHp);
+                AppendEnemyHealth(terminal, enemy, displayHealth);
                 terminal.Append(",\"block\":");
                 AppendNonNegative(terminal, enemy.Block);
                 terminal.Append(",\"intents\":[");
@@ -150,7 +156,8 @@ public static class CanonicalProbeEncoder
         }
 
         var builder = new StringBuilder(2048);
-        builder.Append("{\"schema_version\":1,\"status\":\"ready\",\"decision_kind\":\"combat\",\"actionable\":true,\"decision_id\":\"");
+        builder.Append(displayHealth ? "{\"schema_version\":2" : "{\"schema_version\":1");
+        builder.Append(",\"status\":\"ready\",\"decision_kind\":\"combat\",\"actionable\":true,\"decision_id\":\"");
         builder.Append(snapshot.DecisionId);
         builder.Append("\",\"round\":");
         builder.Append(snapshot.Round.ToString(CultureInfo.InvariantCulture));
@@ -178,10 +185,7 @@ public static class CanonicalProbeEncoder
             builder.Append(index.ToString(CultureInfo.InvariantCulture));
             builder.Append(",\"id\":");
             AppendJsonString(builder, enemy.Id);
-            builder.Append(",\"hp\":");
-            AppendNonNegative(builder, enemy.Hp);
-            builder.Append(",\"max_hp\":");
-            AppendNonNegative(builder, enemy.MaxHp);
+            AppendEnemyHealth(builder, enemy, displayHealth);
             builder.Append(",\"block\":");
             AppendNonNegative(builder, enemy.Block);
             builder.Append(",\"intents\":[");
@@ -272,7 +276,7 @@ public static class CanonicalProbeEncoder
         return body;
     }
 
-    public static byte[] EncodePublicRewardDecisionBody(PublicRewardDecisionSnapshot snapshot)
+    public static byte[] EncodePublicRewardDecisionBody(PublicRewardDecisionSnapshot snapshot, bool campaign = false)
     {
         if (snapshot.Status is PublicDecisionStatus.Waiting or PublicDecisionStatus.Unsupported)
         {
@@ -294,14 +298,16 @@ public static class CanonicalProbeEncoder
         ValidateRewardPlayer(snapshot.Player, nameof(snapshot));
         if (snapshot.Status == PublicDecisionStatus.Complete)
         {
-            if (snapshot.DecisionId.Length != 0 || snapshot.ScreenKind != "map" ||
+            if (snapshot.DecisionId.Length != 0 || !(snapshot.ScreenKind == "map" || campaign && snapshot.ScreenKind is "act" or "ending") ||
                 snapshot.Rewards.Count != 0 || snapshot.LegalActions.Count != 0 ||
                 snapshot.DecisionRevision < 0)
             {
                 throw new ArgumentException("Invalid completed reward decision.", nameof(snapshot));
             }
             var completed = new StringBuilder(320);
-            completed.Append("{\"schema_version\":1,\"status\":\"complete\",\"decision_kind\":\"reward\",\"actionable\":false,\"decision_id\":null,\"screen_kind\":\"map\",\"player\":");
+            completed.Append("{\"schema_version\":1,\"status\":\"complete\",\"decision_kind\":\"reward\",\"actionable\":false,\"decision_id\":null,\"screen_kind\":\"");
+            completed.Append(snapshot.ScreenKind);
+            completed.Append("\",\"player\":");
             AppendRewardPlayer(completed, snapshot.Player);
             completed.Append(",\"rewards\":[],\"legal_actions\":[]}");
             return EncodeAscii(completed.ToString());
@@ -324,7 +330,9 @@ public static class CanonicalProbeEncoder
         bool items = snapshot.PotionSlots is not null || snapshot.ItemRewards || System.Linq.Enumerable.Any(snapshot.Rewards, r => r.Kind is PublicRewardKind.Potion or PublicRewardKind.Relic);
         if(snapshot.CapacityRewards&&snapshot.PotionSlots is null)throw new ArgumentException("Capacity schema needs potion slots.",nameof(snapshot));
         if(snapshot.HealingRewards&&!snapshot.CapacityRewards)throw new ArgumentException("Healing schema needs capacity fields.",nameof(snapshot));
-        builder.Append(snapshot.HealingRewards ? "6" : snapshot.CapacityRewards ? "5" : snapshot.PotionSlots is not null ? "4" : items ? "3" : special ? "2" : "1");
+        if(snapshot.MaxHpRewards&&!snapshot.HealingRewards)throw new ArgumentException("Max HP schema needs healing fields.",nameof(snapshot));
+        if(snapshot.ModifiedGoldRewards&&!snapshot.MaxHpRewards)throw new ArgumentException("Modified gold schema needs max HP fields.",nameof(snapshot));
+        builder.Append(snapshot.ModifiedGoldRewards ? "8" : snapshot.MaxHpRewards ? "7" : snapshot.HealingRewards ? "6" : snapshot.CapacityRewards ? "5" : snapshot.PotionSlots is not null ? "4" : items ? "3" : special ? "2" : "1");
         builder.Append(",\"status\":\"ready\",\"decision_kind\":\"reward\",\"actionable\":true,\"decision_id\":\"");
         builder.Append(snapshot.DecisionId);
         builder.Append("\",\"decision_revision\":");
@@ -410,14 +418,32 @@ public static class CanonicalProbeEncoder
                 builder.Append(",\"item_key\":");
                 if(reward.ItemKey is null)builder.Append("null");else AppendJsonString(builder,reward.ItemKey);
             }
+            int expectedMaxHpGain=reward.Kind==PublicRewardKind.Relic&&reward.ItemKey=="STRAWBERRY"?7:0;
+            if(reward.MaxHpGain!=0&&!snapshot.MaxHpRewards || snapshot.MaxHpRewards&&reward.MaxHpGain!=expectedMaxHpGain)
+                throw new ArgumentException("Unsupported reward max HP effect.",nameof(snapshot));
+            if(reward.MaxHpGain>0&&!reward.SuccessfullySelected&&(long)snapshot.Player.MaxHp+reward.MaxHpGain>999999999)
+                throw new ArgumentException("Max HP reward exceeds native cap.",nameof(snapshot));
             if(reward.HealAmount<0 || reward.HealAmount!=0&&!snapshot.HealingRewards || snapshot.HealingRewards&&
-                reward.HealAmount!=(reward.Kind==PublicRewardKind.Relic&&reward.ItemKey=="FAKE_LEES_WAFFLE"?snapshot.Player.MaxHp/10:0))
+                reward.HealAmount!=(reward.Kind==PublicRewardKind.Relic&&reward.ItemKey=="FAKE_LEES_WAFFLE"?snapshot.Player.MaxHp/10:reward.MaxHpGain))
                 throw new ArgumentException("Unsupported reward healing effect.",nameof(snapshot));
             if(snapshot.CapacityRewards) {
                 builder.Append(",\"potion_capacity_gain\":");AppendNonNegative(builder,reward.PotionCapacityGain);
             }
             if(snapshot.HealingRewards) {
                 builder.Append(",\"heal_amount\":");AppendNonNegative(builder,reward.HealAmount);
+            }
+            if(snapshot.MaxHpRewards) {
+                builder.Append(",\"max_hp_gain\":");AppendNonNegative(builder,reward.MaxHpGain);
+            }
+            if(reward.GoldGain.HasValue&&(!snapshot.ModifiedGoldRewards||reward.Kind!=PublicRewardKind.Gold||
+                reward.GoldGain.Value!=(long)reward.GoldAmount*5/4))throw new ArgumentException("Invalid modified gold gain.",nameof(snapshot));
+            if(snapshot.ModifiedGoldRewards) {
+                builder.Append(",\"gold_gain\":");
+                if(reward.Kind==PublicRewardKind.Gold) {
+                    int gain=reward.GoldGain??reward.GoldAmount;
+                    if(!reward.SuccessfullySelected&&(long)snapshot.Player.Gold+gain>int.MaxValue)throw new ArgumentException("Gold overflow.",nameof(snapshot));
+                    AppendNonNegative(builder,gain);
+                }else builder.Append("null");
             }
             builder.Append('}');
         }
@@ -1339,6 +1365,20 @@ public static class CanonicalProbeEncoder
         builder.Append(",\"deck_count\":");
         AppendNonNegative(builder, player.DeckCount);
         builder.Append('}');
+    }
+
+    private static void AppendEnemyHealth(StringBuilder builder, PublicCombatEnemy enemy, bool displayHealth)
+    {
+        if (displayHealth)
+            builder.Append(enemy.HealthDisplay == PublicEnemyHealthDisplay.Infinite
+                ? ",\"hp_display\":\"infinite\"" : ",\"hp_display\":\"numeric\"");
+        if (enemy.HealthDisplay == PublicEnemyHealthDisplay.Infinite)
+            builder.Append(",\"hp\":null,\"max_hp\":null");
+        else
+        {
+            builder.Append(",\"hp\":"); AppendNonNegative(builder, enemy.Hp);
+            builder.Append(",\"max_hp\":"); AppendNonNegative(builder, enemy.MaxHp);
+        }
     }
 
     private static void AppendJsonString(StringBuilder builder, string value)

@@ -12,6 +12,8 @@
     <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicRoomAction.cs" />
     <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicRoomDecision.cs" />
     <Compile Include="CombatIdentityFixtures.cs" />
+    <Compile Include="CombatExecutionFixtures.cs" />
+    <Compile Include="CombatOfferFixtures.cs" />
     <Compile Include="TargetStubs.cs" /><Compile Include="Program.cs" />
   </ItemGroup>
 </Project>

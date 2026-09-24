@@ -63,6 +63,77 @@ separate immutable content from mutable instances. Consult the
 continuation and native verification limits, and the
 [implementation backlog](docs/HEADLESS_FULL_GAME_IMPLEMENTATION.md) for remaining work.
 
+The public adapter and reference choosers are available without optional
+dependencies. Only the public decision goes to the chooser; its dispatch binding
+stays with the caller:
+
+```python
+from game.agent.headless import HeadlessAdapter
+from game.agent.policy import choose_action
+from game.headless.run.engine import RunEngine
+
+adapter = HeadlessAdapter(RunEngine.ironclad_slice(seed=2))
+frame = adapter.observe()
+candidate = choose_action(frame.decision)
+report = adapter.step(frame.binding, candidate.ref)
+next_frame_or_outcome = adapter.observe()
+```
+
+This is the first combat/selection/reward/map integration slice, with explicit
+[content and decision limits](docs/AGENT_CONTRACT.md#headless-producer).
+`observe()` raises `UnsupportedProfile` when that state cannot be represented
+completely. A completed game returns `RunOutcome`; stale or invalid selections
+return a rejection without mutation. For the full engine, select
+`decision_profile="full_run_v2"` and use `game.agent.full_policy.choose_action`;
+its [coverage table](docs/AGENT_CONTRACT.md#command-and-pending-surface-coverage)
+includes every current engine command family and distinguishes live exclusions.
+
+## Gymnasium environment
+
+Install `python -m pip install -e '.[gym]'` for the optional fixed-space environment:
+
+```python
+from game.agent.gym_env import FullRunEnv
+from game.agent.full_policy import choose_action
+
+with FullRunEnv(character="defect", first_act="underdocks", ascension=0) as env:
+    observation, info = env.reset(seed=2)
+    while True:
+        decision = env.encoder.decode(observation)
+        candidate = choose_action(decision)
+        observation, reward, terminated, truncated, info = env.step(
+            decision.candidates.index(candidate))
+        if terminated or truncated:
+            break
+```
+
+The full-run action space has 2,048 candidate slots and a legality mask. A slot
+selects one of the current decision's legal commands. The lossless public encoding
+preserves every candidate and fails explicitly on capacity overflow. Ordinary
+transitions and real defeat earn 0; victory after the Architect earns 1. All five
+characters, both Act 1 regions and A0–A10 are supported. The demonstration chooser
+can lose. The original `StsEnv` remains the 256-slot authored combat/reward/map
+slice, ending in truncation with reward 0. See
+[encoding, lifecycle and scope](docs/AGENT_ENCODING.md) for masked sampling,
+reset options, custom engine factories and failure behavior.
+
+## Recording agent runs
+
+The installed agent command records complete public decisions, chosen actions,
+reconciled transitions and actual outcomes without optional dependencies:
+
+```bash
+sts-agent-play --output-dir runs/train --split train --seed 30 \
+  --episodes 2 --workers 2 --max-decisions 600 --time-limit 120
+```
+
+Public trajectories go under `runs/train`; private replay seeds/configuration go
+under the separate owner-only `runs/train-private` directory. Interrupted writes
+remain `.partial`, and finished artifacts are never overwritten. Worker scheduling
+preserves each episode's seed. The command reports actual outcomes and timings;
+the demonstration policy can lose. See [execution, data loading and cancellation](docs/AGENT_EXECUTION.md).
+`sts-headless-play` remains the direct gameplay command.
+
 ## Validation
 
 ```bash
@@ -72,6 +143,8 @@ PYTHONPATH=. python -m pytest -q
 
 Use focused files under `tests/headless/` during gameplay development. The full
 suite also checks the retained bridge wire codec and offline operational fixtures.
+Install `'.[dev,gym]'` to include the optional encoding/Gym tests; those tests skip
+when their optional dependencies are absent.
 Native reference harnesses live under `tools/`; their guides explain build inputs
 and evidence boundaries.
 
@@ -85,14 +158,17 @@ checker. The status page separates implemented support, known live failures,
 missing features and remaining live tests. Use the [caller evidence index](docs/EVENT_COVERAGE.md)
 to find exact tested branches and the [event contracts](docs/GENERIC_EVENTS.md)
 for protocol/effect details. Dated ledgers retain test history and setup assistance.
-Complete autonomous runs remain an open target.
+Milestone 7's assisted campaign traversal is accepted: policy-controlled gameplay
+through the ending, with one recorded reload for a bridge correction. Normal-HP
+policy strength and broader native coverage remain separate targets.
 
 ## Package layout
 
 | Location | Purpose |
 | --- | --- |
 | `game/headless/` | Canonical game rules, content, combat, persistent state and private continuation |
-| `game/cli/headless_play.py` | Direct gameplay CLI (`sts-headless-play`) |
+| `game/agent/` | Public contract/adapter, choosers, trajectories, workers, optional encoding and Gymnasium environment |
+| `game/cli/` | Direct gameplay (`sts-headless-play`) and public agent execution (`sts-agent-play`) |
 | `game/backends/live/r0i_wire.py` | Retained bridge wire fixture codec and identity checks |
 | `bridge/Sts2AgentBridge/` | Production bridge, shared capabilities, client and focused checks |
 | `tools/`, `tests/`, `manifests/game-builds/` | Native reference harnesses, regression coverage and pinned build identities |
@@ -101,7 +177,14 @@ The old `CombatEnv`, RL/search/training/benchmark pipelines, reduced backend,
 public fixture contracts and their commands were retired on 2026-09-22. They are
 not compatibility APIs. Historical guides and exact source references remain in
 the [archive](docs/archive/README.md#retired-simulator-pipelines).
-Full-game public observations and subsequent policy/data adapters are future work
-over the current engine, tracked as HF-44–47; they must not duplicate game rules.
+Full-game public observations and fixed encoding now consume the current engine
+without duplicating game rules. Public trajectories, data loaders, the installed
+agent command and bounded workers deliver HF-46/47.
+The [shared public contract, headless producer and bounded native adapter](docs/AGENT_CONTRACT.md)
+are implemented, with the controlled shared-policy slice and map dispatch accepted
+live. Full headless decision coverage and `FullRunEnv` are implemented in milestone 5;
+the live bridge retains its explicitly bounded v1 profile. Milestone 6 completes
+the initial interface delivery. Milestone 7's assisted live campaign is accepted
+under the recorded scope in the [delivery plan](docs/AGENT_ENVIRONMENT.md).
 
 [Documentation index](docs/README.md) · [Roadmap](ROADMAP.md) · [Decisions](DECISIONS.md)

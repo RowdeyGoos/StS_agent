@@ -101,9 +101,17 @@ def collect_sources(bridge: Path, targets: list[str]) -> dict[str, bytes]:
     # The actual original combat client transport is a maintained consumer.
     for name in ("tools/probe_live.py", "tools/probe_live_fixtures.py",
                  "tools/decision_providers.py", "tools/tool_common.py", "tools/apply_map_live.py",
-                 "tools/apply_reward_live.py", "tools/reward_action_diagnostics.py", "tools/apply_reward_live_fixtures.py"):
+                 "tools/apply_reward_live.py", "tools/reward_action_diagnostics.py", "tools/apply_reward_live_fixtures.py",
+                 "tools/apply_room_live.py", "tools/room_stage_diagnostics.py", "tools/apply_room_live_fixtures.py"):
         if (bridge / name).is_file():
             files[name] = read_regular(bridge / name)
+    # Bind the actual shared contract and chooser, not a second bridge copy.
+    # These fixed paths preserve the repository layout in disposable gate inputs.
+    if "apps/bridge/client/agent_host.py" in files:
+        for name in ("game/__init__.py", "game/agent/__init__.py", "game/agent/policy.py",
+                     "game/agent/contracts/__init__.py", "game/agent/contracts/models.py",
+                     "game/agent/contracts/codec.py", "game/agent/contracts/validation.py"):
+            files["../../" + name] = read_regular(bridge.parents[1] / name)
     return dict(sorted(files.items()))
 
 

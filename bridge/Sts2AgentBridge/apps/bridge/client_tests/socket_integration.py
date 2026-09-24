@@ -18,6 +18,84 @@ sys.path.insert(0, str(ROOT / "components/rooms/host"))
 import room_flow_host
 
 
+def agent_post():
+    """Exercise the new headers through the existing Python client and C# router.
+
+    This is a transport/ownership fixture; rich public projection is paired
+    separately against the native-reader fixture and the headless adapter.
+    """
+    process = subprocess.Popen([sys.argv[1], sys.argv[2], '--serve-agent'], stdin=subprocess.PIPE,
+                               stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    try:
+        port = json.loads(process.stdout.readline())['port']
+        client = BridgeClient(bytearray(b'a' * 64), connector=lambda: socket.create_connection(('127.0.0.1', port), timeout=2))
+        def exchange(method, path, body=None):
+            raw = client.exchange(method, path, body)
+            try:
+                return json.loads(raw)
+            finally:
+                raw[:] = b'\0' * len(raw)
+        try:
+            ready = exchange('GET', '/probe/agent-v1/public/decision')
+            assert ready['status'] == 'ready' and ready['accepted'] == 0, ready
+            body = bytearray(json.dumps(dict(decision_id=ready['decision_id'], action_id='action:0')).encode())
+            try:
+                accepted = exchange('POST', '/probe/agent-v1/public/action', body)
+            finally:
+                body[:] = b'\0' * len(body)
+            assert accepted['status'] == 'accepted' and accepted['accepted'] == 1 and accepted['reconciled'] == 0, accepted
+            nested = exchange('GET', '/probe/agent-v1/public/decision')
+            assert nested['status'] == 'ready' and nested['parent_pending'] and nested['accepted'] == 1, nested
+            assert nested['observation']['source'] == 'card:0', nested
+        finally:
+            client.close()
+        process.stdin.write('stop\n'); process.stdin.flush()
+        _, errors = process.communicate(timeout=5)
+        assert process.returncode == 0, errors
+    finally:
+        if process.poll() is None:
+            process.kill(); process.wait()
+
+
+def campaign_post():
+    process = subprocess.Popen([sys.argv[1], sys.argv[2], '--serve-campaign'], stdin=subprocess.PIPE,
+                               stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    try:
+        port = json.loads(process.stdout.readline())['port']
+        client = BridgeClient(bytearray(b'a' * 64), connector=lambda: socket.create_connection(('127.0.0.1', port), timeout=2))
+        def exchange(method, route, value=None):
+            request = None if value is None else bytearray(json.dumps(value).encode())
+            response = None
+            try:
+                response = client.exchange(method, route, request)
+                return json.loads(response)
+            finally:
+                if request is not None: request[:] = b'\0' * len(request)
+                if response is not None: response[:] = b'\0' * len(response)
+        try:
+            ready = exchange('GET', '/probe/campaign-v2/public/decision')
+            receipt = exchange('POST', '/probe/campaign-v2/public/action', dict(decision_id=ready['decision_id'], action_id='open_chest'))
+            assert receipt['status'] == 'accepted', receipt
+            assert exchange('GET', '/probe/v0/public/map-decision')['code'] == 'capability_busy'
+            next_choice = exchange('GET', '/probe/campaign-v2/public/decision')
+            assert next_choice['status'] == 'ready' and next_choice['legal_actions'] == ['skip_relic']
+            assert exchange('GET', '/probe/v0/public/combat-decision')['code'] == 'capability_busy'
+            receipt = exchange('POST', '/probe/campaign-v2/public/action', dict(decision_id=next_choice['decision_id'], action_id='skip_relic'))
+            assert receipt['status'] == 'accepted'
+            assert exchange('GET', '/probe/campaign-v2/public/decision')['status'] == 'complete'
+            result = reward_host.run_rewards(client.exchange, policy='skip-card', campaign=True)
+            assert result['status'] == 'resolved' and result['destination'] == 'act', result
+            assert result['attempted'] == result['accepted'] == result['reconciled'] == 4, result
+        finally:
+            client.close()
+        process.stdin.write('stop\n'); process.stdin.flush()
+        _, errors = process.communicate(timeout=5)
+        assert process.returncode == 0, errors
+    finally:
+        if process.poll() is None:
+            process.kill(); process.wait()
+
+
 def rest(action):
     process = subprocess.Popen([sys.argv[1], sys.argv[2], '--serve-rest', action], stdin=subprocess.PIPE,
                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -40,8 +118,8 @@ def rest(action):
             process.kill(); process.wait()
 
 
-def combat(reward_policy=None, event_resume=False, resume_items=False, special_card=False, item_rewards=False, full_potions=False, replace_potions=False, capacity_potions=False, healing_relic=False, potion_policy="stop-on-full"):
-    process = subprocess.Popen([sys.argv[1], sys.argv[2], '--serve-healing-relic' if healing_relic else '--serve-capacity-potions' if capacity_potions else '--serve-replace-potions' if replace_potions else '--serve-full-potions' if full_potions else '--serve-combat-items' if item_rewards else '--serve-special-card' if special_card else '--serve-resume-items' if resume_items else '--serve-event-resume' if event_resume else '--serve-combat-map' if reward_policy else '--serve-combat'], stdin=subprocess.PIPE,
+def combat(reward_policy=None, event_resume=False, resume_items=False, special_card=False, item_rewards=False, full_potions=False, replace_potions=False, capacity_potions=False, healing_relic=False, potion_policy="stop-on-full", draw_choice=False, max_hp_relic=False, modified_gold=False, offer_choice=False):
+    process = subprocess.Popen([sys.argv[1], sys.argv[2], '--serve-offer-choice' if offer_choice else '--serve-modified-gold' if modified_gold else '--serve-draw-choice' if draw_choice else '--serve-max-hp-relic' if max_hp_relic else '--serve-healing-relic' if healing_relic else '--serve-capacity-potions' if capacity_potions else '--serve-replace-potions' if replace_potions else '--serve-full-potions' if full_potions else '--serve-combat-items' if item_rewards else '--serve-special-card' if special_card else '--serve-resume-items' if resume_items else '--serve-event-resume' if event_resume else '--serve-combat-map' if reward_policy else '--serve-combat'], stdin=subprocess.PIPE,
                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     try:
         port = json.loads(process.stdout.readline())['port']
@@ -63,20 +141,58 @@ def combat(reward_policy=None, event_resume=False, resume_items=False, special_c
                 assert loot['skipped_potions'] == ([dict(key='POTION',reward_index=i,reason='inventory_full' if potion_policy=='skip-full' else 'policy') for i in (2,3)] if full_potions else []), flow
                 assert loot['discarded_potions'] == ([dict(slot=i,key='OLD_'+str(i)) for i in range(2)] if replace_potions else []), flow
                 assert loot['potion_capacity_gains'] == ([dict(key='POTION_BELT',reward_index=4,before=2,after=4)] if capacity_potions else []), flow
-                assert loot['claimed_gold'] == 14, flow
+                assert loot['claimed_gold'] == (17 if modified_gold else 14), flow
+                if max_hp_relic:assert loot['before_player']['hp']==33 and loot['after_player']['hp']==40 and loot['before_player']['max_hp']==80 and loot['after_player']['max_hp']==87, flow
                 if healing_relic:assert loot['before_player']['hp']==33 and loot['after_player']['hp']==41, flow
-                assert loot['collected_items'] == ([dict(kind='relic',key='POTION_BELT',reward_index=4),dict(kind='potion',key='POTION',reward_index=2),dict(kind='potion',key='POTION',reward_index=3)] if capacity_potions else [dict(kind='relic',key='RELIC',reward_index=4),dict(kind='potion',key='POTION',reward_index=2),dict(kind='potion',key='POTION',reward_index=3)] if replace_potions else [dict(kind='potion',key='POTION',reward_index=2),dict(kind='potion',key='POTION',reward_index=3),dict(kind='relic',key='FAKE_LEES_WAFFLE' if healing_relic else 'RELIC',reward_index=4)] if item_rewards else [dict(kind='relic',key='RELIC',reward_index=4)] if full_potions else []), flow
+                assert loot['collected_items'] == ([dict(kind='relic',key='POTION_BELT',reward_index=4),dict(kind='potion',key='POTION',reward_index=2),dict(kind='potion',key='POTION',reward_index=3)] if capacity_potions else [dict(kind='relic',key='RELIC',reward_index=4),dict(kind='potion',key='POTION',reward_index=2),dict(kind='potion',key='POTION',reward_index=3)] if replace_potions else [dict(kind='potion',key='POTION',reward_index=2),dict(kind='potion',key='POTION',reward_index=3),dict(kind='relic',key='STRAWBERRY' if max_hp_relic else 'FAKE_LEES_WAFFLE' if healing_relic else 'RELIC',reward_index=4)] if item_rewards else [dict(kind='relic',key='RELIC',reward_index=4)] if full_potions else []), flow
                 assert loot['claimed_special_cards'] == (['LANTERN_KEY'] if special_card else []), flow
                 assert loot['selected_cards'] == ([] if reward_policy == 'skip-card' else ['ANGER']), flow
                 assert loot['skipped_card_rewards'] == (1 if reward_policy == 'skip-card' else 0), flow
                 result = flow['combat']
             else:
-                result = run_combat(client.exchange)
+                result = run_combat(client.exchange, campaign=draw_choice or offer_choice)
             if not event_resume:
                 assert result['status'] == 'resolved' and result['outcome'] == 'victory', result
                 assert result['attempted'] == result['accepted'] == result['reconciled'] == 2, result
                 assert len(result['choices']) == 1 and result['choices'][0]['selected_count'] == 1, result
                 assert result['choices'][0]['accepted'] == result['choices'][0]['reconciled'] == 1, result
+                assert result['choices'][0]['pile'] == ('offer' if offer_choice else 'draw' if draw_choice else 'discard'), result
+        finally:
+            client.close()
+        process.stdin.write('stop\n'); process.stdin.flush()
+        _, errors = process.communicate(timeout=5)
+        assert process.returncode == 0, errors
+    finally:
+        if process.poll() is None:
+            process.kill(); process.wait()
+
+
+def read_recovery():
+    """The existing client receives one response after server-side cancellation/recovery."""
+    process = subprocess.Popen([sys.argv[1], sys.argv[2], '--serve-read-recovery'],
+        stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    try:
+        port = json.loads(process.stdout.readline())['port']
+        client = BridgeClient(bytearray(b'a' * 64), connector=lambda: socket.create_connection(('127.0.0.1', port), timeout=2))
+        def exchange(method, route, value=None):
+            request = None if value is None else bytearray(json.dumps(value).encode())
+            response = None
+            try:
+                response = client.exchange(method, route, request)
+                return json.loads(response)
+            finally:
+                if request is not None: request[:] = b'\0' * len(request)
+                if response is not None: response[:] = b'\0' * len(response)
+        try:
+            health = exchange('GET', '/probe/v0/health')
+            assert health['lifecycle_state'] == 'running', health
+            assert exchange('GET', '/probe/v0/health') == health
+            ready = exchange('GET', '/probe/generic-event-v7/public/decision')
+            assert ready['status'] == 'ready', ready
+            result = exchange('POST', '/probe/generic-event-v7/public/action',
+                dict(decision_id='b' * 64, action_id='choose:0', child=None))
+            assert result['status'] == 'resolved', result
+            assert verify_map_handoff(client.exchange)['status'] == 'passed'
         finally:
             client.close()
         process.stdin.write('stop\n'); process.stdin.flush()
@@ -231,7 +347,34 @@ def shop_potion_policies():
     shop({"purchase_policy":"cards-and-potions","max_purchases":8},2,"potion_bad_debit",expected_potions=1,slots=["OLD","POTION_1",None])
 
 
+def combat_potions(infinite_health=False):
+    process = subprocess.Popen([sys.argv[1], sys.argv[2], '--serve-infinite-health' if infinite_health else '--serve-combat-potions'], stdin=subprocess.PIPE,
+                               stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    try:
+        port = json.loads(process.stdout.readline())['port']
+        client = BridgeClient(bytearray(b'a' * 64), connector=lambda: socket.create_connection(('127.0.0.1', port), timeout=2))
+        try:
+            result = run_combat(client.exchange, campaign=True, campaign_potions=not infinite_health)
+            assert result['status'] == 'resolved' and result['outcome'] == 'victory', result
+            if infinite_health:
+                assert result['attempted'] == result['accepted'] == result['reconciled'] == 3, result
+            else:
+                assert result['accepted'] == 0 and len(result['potions']) == 1, result
+                assert result['potions'][0]['attempted'] == result['potions'][0]['accepted'] == result['potions'][0]['reconciled'] == 1, result
+        finally:
+            client.close()
+        process.stdin.write('stop\n'); process.stdin.flush()
+        _, errors = process.communicate(timeout=5)
+        assert process.returncode == 0, errors
+    finally:
+        if process.poll() is None:
+            process.kill(); process.wait()
+
+
 def main():
+    combat_potions()
+    combat_potions(infinite_health=True)
+    campaign_post()
     process = subprocess.Popen([sys.argv[1], sys.argv[2], '--serve'], stdin=subprocess.PIPE,
                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     try:
@@ -284,6 +427,8 @@ def main():
         shop({"potion_policy":"skip-full","purchase_policy":"potions","max_purchases":8},0,"replacement_potion",slots=["OLD_A","OLD_B"])
         shop({"potion_policy":"replace-first","purchase_policy":"potions","max_purchases":8},2,"replacement_potion",expected_potions=2,expected_discards=2,slots=["POTION_0","POTION_0"])
 
+        agent_post()
+        read_recovery()
         read_timeout()
         rest('lift')
         rest('kindle')
@@ -292,6 +437,8 @@ def main():
         rest('hatch')
         rest('cook:0:2')
         combat()
+        combat(draw_choice=True)
+        combat(offer_choice=True)
         combat('first-card')
         combat('skip-card')
         for potion_policy in ('skip-full','skip-all'):
@@ -302,6 +449,10 @@ def main():
             combat('skip-card',capacity_potions=True,potion_policy=capacity_policy)
         combat('first-card',replace_potions=True,potion_policy='replace-first')
         combat('skip-card',replace_potions=True,potion_policy='replace-first')
+        combat('first-card',item_rewards=True,max_hp_relic=True)
+        combat('skip-card',item_rewards=True,max_hp_relic=True)
+        combat('first-card',modified_gold=True)
+        combat('skip-card',modified_gold=True)
         combat('first-card',item_rewards=True,healing_relic=True)
         combat('skip-card',item_rewards=True,healing_relic=True)
         combat('first-card',item_rewards=True)

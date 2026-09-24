@@ -28,6 +28,18 @@ internal sealed class PinnedPublicItemRewardClaim
         return slots.Where(p=>p is not null).All(p=>ValidKey(Key(p))) && slots.Where(p=>p is not null).Distinct(ReferenceEqualityComparer.Instance).Count()==slots.Count(p=>p is not null);
     }
     internal static int CapacityGain(Reward reward)=>Sts2AgentBridge.Items.Native.PinnedPotionCapacity.Gain(Model(reward));
+    // Strawberry's pinned pickup grants exactly seven max HP and seven healing.
+    // Match the native type, key and variable; the public key is not authority.
+    internal static int MaximumHpGain(Reward reward) {
+        var model=Model(reward);
+        if(model is Strawberry || Key(model)=="STRAWBERRY") {
+            if(model?.GetType()!=typeof(Strawberry)||Key(model)!="STRAWBERRY"||
+                ((RelicModel)model).DynamicVars["MaxHp"].BaseValue!=7m)
+                throw new InvalidOperationException("Unsupported max HP relic effect.");
+            return 7;
+        }
+        return 0;
+    }
     // Pinned FakeLeesWaffle heals ten percent of max HP, truncated and capped.
     // A public key alone cannot grant permission for a native health mutation.
     internal static bool HealingReward(Reward reward) {
@@ -40,10 +52,15 @@ internal sealed class PinnedPublicItemRewardClaim
         }
         return false;
     }
-    internal static int HealingAmount(Reward reward)=>HealingReward(reward)?reward.Player.Creature.MaxHp/10:0;
+    internal static int HealingAmount(Reward reward) {
+        int gain=MaximumHpGain(reward);
+        return gain>0?gain:HealingReward(reward)?reward.Player.Creature.MaxHp/10:0;
+    }
     internal int HealAmount {get;}
+    internal int MaxHpGain {get;}
     internal bool MatchesPlayer(PublicRewardPlayer before,PublicRewardPlayer after)=>
-        after==before with {Hp=(int)Math.Min((long)before.Hp+HealAmount,before.MaxHp)};
+        (long)before.MaxHp+MaxHpGain<=int.MaxValue &&
+        after==before with {MaxHp=before.MaxHp+MaxHpGain,Hp=(int)Math.Min((long)before.Hp+HealAmount,(long)before.MaxHp+MaxHpGain)};
     internal int PotionCapacityGain {get;}
     internal int ResultCapacity=>_potions.Length+PotionCapacityGain;
     private int _settledCapacity;
@@ -62,7 +79,11 @@ internal sealed class PinnedPublicItemRewardClaim
         _reward=reward;_player=reward.Player;_run=_player.RunState;
         _node=NRun.Instance??throw new InvalidOperationException("Item reward run unavailable.");
         _model=Model(reward)??throw new InvalidOperationException("Item reward unpopulated.");
-        _key=Key(_model)!;PotionCapacityGain=CapacityGain(reward);HealAmount=HealingAmount(reward);
+        _key=Key(_model)!;PotionCapacityGain=CapacityGain(reward);MaxHpGain=MaximumHpGain(reward);HealAmount=HealingAmount(reward);
+        // The pinned game caps max HP at 999,999,999 and heals only the actual
+        // gain. This contract admits the exact-seven case, never a capped gain.
+        if(MaxHpGain>0&&(long)_player.Creature.MaxHp+MaxHpGain>999999999)
+            throw new InvalidOperationException("Max HP reward exceeds supported range.");
         if(_model is RelicModel {Owner:not null})throw new InvalidOperationException("Offered relic already owned.");
         if(!ValidKey(_key)||!Slots(_player,out _potions)||_player.Relics.Count>512||_player.Deck.Cards.Count>512)
             throw new InvalidOperationException("Item reward baseline unavailable.");
@@ -74,9 +95,13 @@ internal sealed class PinnedPublicItemRewardClaim
         if(!Valid(false))throw new InvalidOperationException("Item reward ownership unavailable.");
     }
     internal bool HasCapacity => _model is PotionModel ? _potions.Any(p=>p is null) : ResultCapacity<=8;
+    // Keep the native effect identity stable after settlement. A later verified
+    // Strawberry may change a Waffle's percentage amount; its captured pickup
+    // amount still governs MatchesPlayer for that Waffle's own action.
     private bool Identity() => ReferenceEquals(NRun.Instance,_node)&&ReferenceEquals(RunManager.Instance?.DebugOnlyGetState(),_run)&&
         ReferenceEquals(_player.RunState,_run)&&ReferenceEquals(_reward.Player,_player)&&ReferenceEquals(Model(_reward),_model)&&Key(_model)==_key&&
-        _reward.ParentRewardSet is null&&CardSelectCmd.Selector is null&&CapacityGain(_reward)==PotionCapacityGain&&HealingAmount(_reward)==HealAmount&&
+        _reward.ParentRewardSet is null&&CardSelectCmd.Selector is null&&CapacityGain(_reward)==PotionCapacityGain&&MaximumHpGain(_reward)==MaxHpGain&&
+        (HealingReward(_reward)?_key=="FAKE_LEES_WAFFLE":HealAmount==MaxHpGain)&&
         (_model is not RelicModel relic||relic.Owner is null||ReferenceEquals(relic.Owner,_player));
     private object? Claimed => _reward is PotionReward p?p.ClaimedPotion:((RelicReward)_reward).ClaimedRelic;
     internal bool Valid(bool inserted, int discardedSlot = -1)

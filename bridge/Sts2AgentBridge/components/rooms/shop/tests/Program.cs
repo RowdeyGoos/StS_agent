@@ -25,6 +25,7 @@ internal static class Program
             Check(MultiplePurchases);
             Check(PurchaseCloseLeave);
             Check(ZeroPurchaseCloseLeave);
+            Check(CampaignClosedEntry);
             Check(PurchaseWaitingAndContradictions);
             Check(StaleAndMalformedSurfaces);
             Check(LimitsAndActionGrammar);
@@ -378,6 +379,31 @@ internal static class Program
         Equal(0, f.Dispatch.InvokeCount); Equal("inventory_close", leave.PriorResults[0].Kind);
         Receipt(session.Apply(leave.DecisionId, "leave"));
         Equal("complete", Obs(session.Read()).Status);
+    }
+
+    private static void CampaignClosedEntry()
+    {
+        var legacy=new Fixture { InventoryOpen=false };
+        using(var session=new ShopV1Session(Nonce,legacy.Adapter))
+            Equal("unsupported",Obs(session.Read()).Status);
+        foreach(var mode in new[]{"ok","foreign_inventory","opened","blocked","late_gold"}) {
+            var f=new Fixture { InventoryOpen=false };
+            using var session=new ShopV1Session(Nonce,f.Adapter,allowClosedEntry:true);
+            var ready=Obs(session.Read());
+            Equal("room_ready_to_leave",ready.Phase);Empty(ready.PriorResults);
+            Sequence(new[]{"leave"},ready.LegalActions);
+            if(mode=="foreign_inventory")f.Adapter.SurfaceFactory=()=>new Fixture{InventoryOpen=false}.Surface();
+            if(mode=="opened")f.InventoryOpen=true;
+            if(mode=="blocked")f.ForegroundBlocked=true;
+            if(mode is "foreign_inventory" or "opened" or "blocked") {
+                Equal("unsupported",Failure(session.Apply(ready.DecisionId,"leave")).Outcome);
+                Equal(0,f.ProceedCount);continue;
+            }
+            Receipt(session.Apply(ready.DecisionId,"leave"));
+            if(mode=="late_gold")f.Gold++;
+            var done=Obs(session.Read());Equal(mode=="ok"?"complete":"unsupported",done.Status);
+            Equal(0,f.BackCount);Equal(1,f.ProceedCount);Equal(0,f.Dispatch.InvokeCount);
+        }
     }
 
     private static void PurchaseWaitingAndContradictions()

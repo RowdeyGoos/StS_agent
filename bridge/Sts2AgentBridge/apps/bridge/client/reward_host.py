@@ -15,7 +15,10 @@ READ = '/probe/v0/public/reward-decision'
 ACTION = '/probe/v0/public/reward-action'
 
 
-def run_rewards(request, *, policy='first-card', potion_policy='stop-on-full', clock=time.monotonic, sleep=time.sleep):
+def run_rewards(request, *, policy='first-card', potion_policy='stop-on-full', campaign=False, clock=time.monotonic, sleep=time.sleep):
+    read_route = "/probe/reward-v2/public/decision" if campaign else READ
+    action_route = "/probe/reward-v2/public/action" if campaign else ACTION
+    destination = None
     attempted = accepted = reconciled = reads = stale = 0
     claimed_gold = skipped = 0
     selected_cards = []
@@ -26,6 +29,8 @@ def run_rewards(request, *, policy='first-card', potion_policy='stop-on-full', c
     capacity_gains = []
     capacity_schema = None
     healing_schema = None
+    max_hp_schema = None
+    modified_gold_schema = None
     pending = None
     finished = set()
     offers = None
@@ -36,14 +41,18 @@ def run_rewards(request, *, policy='first-card', potion_policy='stop-on-full', c
         require(clock() < deadline, 'reward_timeout')
 
     def offer(reward):
-        return (reward['kind'], reward['gold_amount'], tuple(reward['cards']), reward.get('item_key'), reward.get('potion_capacity_gain',0), reward.get('heal_amount',0))
+        return (reward['kind'], reward['gold_amount'], tuple(reward['cards']), reward.get('item_key'), reward.get('potion_capacity_gain',0), reward.get('heal_amount',0), reward.get('max_hp_gain',0), reward.get('gold_gain',reward['gold_amount']))
 
     def validate_domain(state):
-        nonlocal offers, capacity_schema, healing_schema
+        nonlocal offers, capacity_schema, healing_schema, max_hp_schema, modified_gold_schema
         if capacity_schema is None:capacity_schema=state.get('capacity_rewards',False)
         require(state.get('capacity_rewards',False)==capacity_schema,'reward_offer_changed')
         if healing_schema is None:healing_schema=state.get('healing_rewards',False)
         require(state.get('healing_rewards',False)==healing_schema,'reward_offer_changed')
+        if max_hp_schema is None:max_hp_schema=state.get('max_hp_rewards',False)
+        require(state.get('max_hp_rewards',False)==max_hp_schema,'reward_offer_changed')
+        if modified_gold_schema is None:modified_gold_schema=state.get('modified_gold_rewards',False)
+        require(state.get('modified_gold_rewards',False)==modified_gold_schema,'reward_offer_changed')
         for slot, reward in enumerate(state['rewards']):
             require(type(reward['reward_slot']) is int and reward['reward_slot'] == slot)
             require(reward['kind'] != 'unsupported' or reward['successfully_selected'], 'unsupported_reward')
@@ -78,7 +87,7 @@ def run_rewards(request, *, policy='first-card', potion_policy='stop-on-full', c
             reads += 1
             body = None
             try:
-                body = request('GET', READ, None)
+                body = request('GET', read_route, None)
                 check()
                 require(type(body) is bytearray and 0 < len(body) <= 65536)
                 value = json.loads(body, object_pairs_hook=codec.probe._unique_object, parse_constant=codec.probe._reject_json_constant)
@@ -87,7 +96,7 @@ def run_rewards(request, *, policy='first-card', potion_policy='stop-on-full', c
                     state = None
                 else:
                     require(body != codec._REWARD_UNSUPPORTED, 'unsupported_reward')
-                    state = (codec._validate_complete(body) if value.get('status') == 'complete' else
+                    state = (codec._validate_complete(body, campaign=campaign) if value.get('status') == 'complete' else
                              codec._validate_ready(body))
             finally:
                 if type(body) is bytearray:
@@ -101,7 +110,7 @@ def run_rewards(request, *, policy='first-card', potion_policy='stop-on-full', c
                     require(state == before, 'reward_identity_reused')
                     sleep(min(0.05, max(0, deadline - clock())))
                     continue
-                codec._validate_transition(before, state, action)
+                codec._validate_transition(before, state, action, campaign=campaign)
                 kind = action['kind']
                 if kind == 'open_card':
                     opened = before['rewards'][action['reward_slot']]
@@ -110,7 +119,7 @@ def run_rewards(request, *, policy='first-card', potion_policy='stop-on-full', c
                 # Count only transitions that the native reader has reconciled.
                 if kind == 'claim_gold':
                     reward = before['rewards'][action['reward_slot']]
-                    claimed_gold += reward['gold_amount']
+                    claimed_gold += reward.get('gold_gain',reward['gold_amount'])
                     finished.add(reward['reward_index'])
                 elif kind == 'discard_potion':
                     slot=action['potion_slot']
@@ -120,6 +129,12 @@ def run_rewards(request, *, policy='first-card', potion_policy='stop-on-full', c
                     collected_items.append(dict(kind=reward['kind'], key=reward['item_key'], reward_index=reward['reward_index']))
                     if reward.get('potion_capacity_gain',0):
                         capacity_gains.append(dict(key=reward['item_key'],reward_index=reward['reward_index'],before=len(before['potion_slots']),after=len(state['potion_slots'])))
+                    if reward.get('max_hp_gain',0):
+                        # Only a reconciled max-HP pickup can change the declared
+                        # percentage heal of another already-bound Waffle offer.
+                        for index, original in offers.items():
+                            if original[0]=='relic' and original[3]=='FAKE_LEES_WAFFLE':
+                                offers[index]=original[:5]+(state['player']['max_hp']//10,)+original[6:]
                     finished.add(reward['reward_index'])
                 elif kind == 'claim_special_card':
                     reward = before['rewards'][action['reward_slot']]
@@ -134,11 +149,12 @@ def run_rewards(request, *, policy='first-card', potion_policy='stop-on-full', c
                 pending = None
                 after_player = state['player']
                 if kind == 'proceed':
+                    destination = state['screen_kind']
                     skipped_potions = [dict(key=r['item_key'], reward_index=r['reward_index'],
                         reason='policy' if potion_policy == 'skip-all' else 'inventory_full')
                         for slot, r in enumerate(before['rewards']) if r['kind'] == 'potion' and not r['successfully_selected']]
                     break
-            require(state['screen_kind'] != 'map', 'reward_already_complete')
+            require(state['screen_kind'] not in ('map', 'act', 'ending'), 'reward_already_complete')
             validate_domain(state)
             if before_player is None:
                 before_player = state['player']
@@ -152,7 +168,7 @@ def run_rewards(request, *, policy='first-card', potion_policy='stop-on-full', c
             receipt = None
             attempted += 1
             try:
-                receipt = request('POST', ACTION, request_body)
+                receipt = request('POST', action_route, request_body)
                 check()
                 response = decode(receipt)
                 rejected = dict(schema_version=1, status='rejected', mutation_state='none',
@@ -184,7 +200,7 @@ def run_rewards(request, *, policy='first-card', potion_policy='stop-on-full', c
     except Exception:
         code = 'reward_transport_failure'
     return dict(schema_version=1, status='resolved' if code is None else 'failed', code=code,
-                policy=policy, potion_policy=potion_policy, skipped_potions=skipped_potions, discarded_potions=discarded_potions, potion_capacity_gains=capacity_gains, attempted=attempted, accepted=accepted, reconciled=reconciled,
+                policy=policy, potion_policy=potion_policy, destination=destination, skipped_potions=skipped_potions, discarded_potions=discarded_potions, potion_capacity_gains=capacity_gains, attempted=attempted, accepted=accepted, reconciled=reconciled,
                 reads=reads, stale_rejections=stale, claimed_gold=claimed_gold,
                 selected_cards=selected_cards, claimed_special_cards=claimed_special_cards, collected_items=collected_items, skipped_card_rewards=skipped,
                 before_player=before_player, after_player=after_player)

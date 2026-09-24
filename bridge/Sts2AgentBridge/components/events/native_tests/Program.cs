@@ -363,6 +363,7 @@ internal static partial class Program
         if(args.SequenceEqual(new[]{"--card-offers"})){OfferTests();Console.WriteLine("card offer checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--event-surfaces"})){SurfaceTests();Console.WriteLine("event surface checks: "+_checks);return;}
 #if TERMINAL_REWARD_TESTS
+        if(args.SequenceEqual(new[]{"--empty-rewards"})){EmptyTerminalRewardCases();Console.WriteLine("empty terminal reward checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--combat-items"})){CombatItemCases();Console.WriteLine("combat item checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--embedded-combat"})){EmbeddedCombatCases();SpecialCardCases();Console.WriteLine("embedded combat checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--special-card"})){SpecialCardCases();Console.WriteLine("special card checks: "+_checks);return;}
@@ -877,7 +878,7 @@ internal static partial class Program
             Enchantment.Id.Entry="SOWN"; EnchantPreview.Setup(EnchantBefore,EnchantAfter);
             Cards=Enumerable.Range(0,domain+1).Select(i=>new CardModel{IsUpgradable=i<domain}).ToArray();
             for(int i=0;i<Cards.Length;i++){Cards[i].Id.Entry="Card_"+i;Player.Deck.Cards.Add(Cards[i]);if(enchant)Cards[i].Owner=Player;}
-            Model=name=="ABANDON"?new MegaCrit.Sts2.Core.Models.Events.Trial():name=="RESUME_OVERRIDE"?new ResumeEvent():name=="FIRST_EVENT"?new FirstEvent():name=="ANOTHER_EVENT"?new SecondEvent():new HeldOutEvent();
+            Model=name=="ARCHITECT"?new MegaCrit.Sts2.Core.Models.Events.TheArchitect():name=="ABANDON"?new MegaCrit.Sts2.Core.Models.Events.Trial():name=="RESUME_OVERRIDE"?new ResumeEvent():name=="FIRST_EVENT"?new FirstEvent():name=="ANOTHER_EVENT"?new SecondEvent():new HeldOutEvent();
             Model.Owner=Player;
             Run.EventRoom=Room;Run.GlobalUi=new GlobalUiState{MapScreen=Map,Overlays=Overlays};
             NRun.Instance=Run;NEventRoom.Instance=Room;NMapScreen.Instance=Map;

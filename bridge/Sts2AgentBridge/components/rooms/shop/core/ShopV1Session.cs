@@ -11,6 +11,7 @@ public sealed class ShopV1Session : IRoomFlowSession
     private readonly int _ownerThreadId = Environment.CurrentManagedThreadId;
     private readonly string _sessionNonce;
     private readonly IShopV1NativeAdapter _adapter;
+    private readonly bool _allowClosedEntry;
     private readonly HashSet<string> _reservedDecisionIds = new(StringComparer.Ordinal);
     private object? _boundRun;
     private object? _boundRoom;
@@ -42,7 +43,7 @@ public sealed class ShopV1Session : IRoomFlowSession
     private int _reservations;
     private int _pendingReads;
 
-    public ShopV1Session(string sessionNonce, IShopV1NativeAdapter adapter)
+    public ShopV1Session(string sessionNonce, IShopV1NativeAdapter adapter, bool allowClosedEntry = false)
     {
         if (!RoomFlowIdentity.IsNonce(sessionNonce))
         {
@@ -50,6 +51,7 @@ public sealed class ShopV1Session : IRoomFlowSession
         }
         _sessionNonce = sessionNonce;
         _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
+        _allowClosedEntry = allowClosedEntry;
     }
 
     public string FlowKind => ShopV1Constants.FlowKind;
@@ -800,7 +802,10 @@ public sealed class ShopV1Session : IRoomFlowSession
     {
         if (_boundRun is null)
         {
-            if (!bind || _closeReconciled || !capture.InventoryOpen) return false;
+            if (!bind || _closeReconciled || !capture.InventoryOpen && !_allowClosedEntry) return false;
+            // Campaign navigation may leave an untouched, closed inventory.
+            // The legacy shop wire entry still requires an open inventory.
+            _closeReconciled = !capture.InventoryOpen;
             foreach(var potion in capture.PotionSlots)if(potion.ModelIdentity is {} model)_originalPotions.Add(model);
             _boundRun = capture.RunIdentity;
             _boundRoom = capture.RoomIdentity;

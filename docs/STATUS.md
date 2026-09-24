@@ -1,7 +1,8 @@
 # Bridge support and status
 
-Reviewed 2026-09-19 against bridge source, pinned native game IL and retained evidence. Latest live
-session: **2026-09-13**. This is the authoritative summary of bridge support;
+Updated 2026-09-24 for campaign implementation; other capability review remains
+2026-09-19 against bridge source, pinned native game IL and retained evidence. Latest live
+session: **2026-09-24**. This is the authoritative summary of bridge support;
 [usage](../bridge/Sts2AgentBridge/README.md), [technical contracts](GENERIC_EVENTS.md),
 [caller evidence](EVENT_COVERAGE.md) and [priorities](../ROADMAP.md) have separate roles.
 
@@ -19,7 +20,9 @@ console/UI-assisted setup; it does not certify every caller, branch or full run.
 A **known live failure** is neither missing code nor accepted working behavior.
 
 There is one production bridge, `bridge/Sts2AgentBridge/apps/bridge/`. It supports
-bounded interactions, not a complete autonomous run. Shared event mechanisms discover
+bounded interactions and a live-demonstrated campaign traversal controller.
+The user accepted milestone 7's assisted campaign with one recorded bridge-fix
+reload; normal-HP policy strength remains unmeasured. Shared event mechanisms discover
 supported requests at runtime; there is no blanket event-name allowlist. Automatic
 parent effects generally remain `unverified` even when a child effect and map return
 are verified. Final Proceed does not erase earlier verified child results.
@@ -30,8 +33,12 @@ are verified. Final Proceed does not erase earlier verified child results.
 
 | Interaction | Implemented scope | Live evidence and limits |
 | --- | --- | --- |
-| Combat → rewards → map | Bounded combat, gold/card/item rewards, card choice or Skip, actionable-map check | Both card policies demonstrated; no autonomous full-run acceptance |
-| Combat card choices | Owned discard/exhaust selections, including optional zero confirmation | Neow’s Fury zero/two-card choices and resumed victory demonstrated; other fixed/exhaust callers offline only |
+| Combat → rewards → map | Bounded combat, gold/card/item rewards, card choice or Skip, actionable-map check | Both card policies demonstrated; assisted campaign traversal accepted under the scope below |
+| Shared agent contract/policy | `agent_v1` public projection and the same public-only chooser as headless; owned combat/selection/reward/map dispatch | Controlled Neow's Fury two-card selection, combat, gold/reward leave and separate map transition demonstrated with one shared callback. Live card-offer selection and wider content remain unverified; see the [native producer contract](AGENT_CONTRACT.md#native-producer) |
+| Campaign traversal | Prepared Ironclad A0 entry, persistent process budgets, versioned native act/ending transitions, rest/shop/treasure/event/combat orchestration | Milestone 7 accepted by the user: upfront-assisted potion campaign, all gameplay by policy, one Waterfall Giant correction/reload, then all three bosses and the ending. Original continuation flags and earlier failures remain recorded; shared v1 coverage is unchanged |
+| Combat potion use | `combat_potions_v1`: 15 ordinary types, exact native inventory/target/task binding; campaign collects and uses eligible potions | Four uses of Fire, Strength and Vulnerable potions reconciled in the fresh assisted run under v5. The other 12 types remain offline only; the v6 continuation commanded no potions |
+| Visible infinite enemy HP | Combat schema 2 represents the native infinity display with null numeric HP; campaign v6 conserves potions and ends turns when all enemies are infinite | Saved Waterfall Giant retest passed: 25/25/25 combat actions, native victory, rewards and Act 2 entry. The same controller continued through both remaining bosses and the native ending |
+| Combat card choices | Owned discard/exhaust selections, including optional zero confirmation; v2 adds visible Draw grids; v3 adds mandatory one-card offers | Neow’s Fury zero/two-card choices and resumed victory demonstrated. Repeated Séance Draw selections and enclosing victories passed through Act 3. Three Knowledge Demon offers reconciled, followed by its boss victory and the ending. Other fixed/exhaust callers remain offline only |
 | Map and room handoffs | Public legal map actions and bounded event/combat-to-map verification | Representative map/next-room transitions demonstrated; composite `*-map` clients verify the map but do not select a node |
 | Rest | Heal/Proceed and Smith (one card); Lift, Kindle, Dig, Cook, Clone and Hatch in source | Heal/Smith demonstrated. The six additional actions have offline fixtures/build coverage only; see the native action table and limits below |
 | Shop purchases | Cards, potions, supported passive relics, Potion Belt +2 slots; 0–8 purchases, kind policy, gold reserve and callback-certified restock | Seven-card/one-potion visit and three restocked potion purchases with original-potion replacement demonstrated. Passive relics, capacity and other policy variants need live coverage |
@@ -50,15 +57,15 @@ The new rest flow has its own native effect and selector checks.
 | Heal | Default rest option | Heal, then run rest hooks and any generated rewards | Ordinary Heal/Proceed demonstrated; relic-triggered follow-up rewards not covered by that result |
 | Smith | Default rest option | Select and upgrade **one** card | Supported; native cancellation is not exposed by the bridge |
 | Dig | Shovel | Obtain a relic directly, including its pickup callback | Implemented in source; exact new relic and callback completion. One owned deck/enchantment selector of up to three cards; other follow-up surfaces stop |
-| Lift | Girya, fewer than three lifts | Increase its lift counter, granting Strength in later combats | Implemented in source; exact +1 and native task completion checked. Offline fixtures/build only; not released or live demonstrated |
+| Lift | Girya, fewer than three lifts | Increase its lift counter, granting Strength in later combats | Included in the current package; exact +1 and native task completion checked offline. No live demonstration |
 | Cook | Meat Cleaver | Remove two cards, gain nine max HP; native selection can be canceled | Implemented in source; exact requested original pair and +9 max HP. Cancellation remains unsupported |
 | Clone | Pael’s Growth | Copy the deck’s Clone-enchanted cards | Implemented in source; scoped native insertion results, including add-time upgrades |
-| Kindle | Pumpkin Candle | Add five to its remaining combat counter | Implemented in source; exact +5 and native task completion checked. Offline fixtures/build only; not released or live demonstrated |
+| Kindle | Pumpkin Candle | Add five to its remaining combat counter | Included in the current package; exact +5 and native task completion checked offline. No live demonstration |
 | Hatch | Byrdonis Egg card | Obtain Byrdpip and transform every egg into Byrd Swoop | Implemented in source; exact relic and all egg transformations |
 | Mend | Generated only with multiple players | Target and heal another player | Outside the current single-player bridge scope |
 
 The six new options use `rest_v2` on the existing room-flow routes. They are
-implemented and validated offline, **not released or live demonstrated**. A flow
+implemented, validated offline and included in the current package, **without live demonstration**. A flow
 starts with at most 64 deck cards, executes one option, waits for the native effect
 and rest continuation, verifies hook removal, then returns at the rest site without
 pressing Proceed. Remaining Miniature Tent choices stay available for the next
@@ -107,8 +114,10 @@ extend standalone rest/shop contracts.
 | Event potion/relic rewards | Singleton or 2–8 ordered items; supported exact pickup effects | Singleton and Potion Courier three-potion collection demonstrated; other counts/relic sets offline only |
 | Mixed event rewards | 2–8 card/potion/relic entries; use advertised order, native card Skip/final dismissal | Lost Coffer choose and Skip demonstrated; other orders/counts offline only |
 | Full-inventory event/resume policies | `item_policy_v1`: skip-full, skip-all, protected original-potion replacement, stop-on-full; capacity-first collection | Courier full-belt skip/three replacements, Lost Coffer card plus potion skip/replacement, and Dummy resume skip/replacement demonstrated. Capacity-first paths need live coverage |
+| Terminal Strawberry pickup | Exact native type/key/+7 max HP/+7 HP, ready schema 7 | Saved floor-8 native retest passed: five reward actions reconciled and reached the map; max HP 2,064→2,071 |
+| Modified terminal gold | Bowler Hat final integer gain, ready schema 8 in source | Saved floor-15 retest passed: printed 20 gold yielded and reconciled 25 gold (492 → 517), then reached the map |
 | Terminal reward potions | Stop-on-full, skip-full, skip-all, protected original-potion replacement | Skip-full, skip-all with full **and free** capacity, and replacement including distinct same-key potions demonstrated |
-| Potion Belt capacity | Exact +2 empty slots, retained prior inventory, at most eight slots; terminal, event and resume paths | Implemented and offline tested; representative live capacity pickup remains open |
+| Potion Belt capacity | Exact +2 empty slots, retained prior inventory, at most eight slots; terminal, event and resume paths | Floor-31 terminal pickup increased capacity from three to five slots, retaining both original potions. Event/resume pickup and full-belt capacity-first behavior remain unverified |
 | Special/extra combat rewards | At most eight event extras, at most one special card; gold/card/potion/relic collection | Lantern Key special card and Punch Off potion/relic extras demonstrated. Complete terminal screen still limited to eight entries |
 | Non-resuming event combat | Exact entry ownership → combat → rewards → map | Dense Vegetation, Lantern Key, Punch Off and initial Fake Merchant fight demonstrated |
 | Resuming event combat | Exact original Resume callback/task → owned item reward if present → resumed event/Proceed/map | Dummy training expiry, Setting1 victory/potion and Setting2 victory demonstrated; consecutive matching combats also demonstrated. No recursive combat driver |
@@ -117,31 +126,33 @@ extend standalone rest/shop contracts.
 | Fake Merchant fight/healing | Initial owned Foul Potion starts combat; terminal Fake Lee’s Waffle verifies capped 10% max-HP healing | Assisted seven-relic collection, HP33→41 at max80, Proceed/map/next room demonstrated. Setup removed ordinary rewards before the first core read; **original ten-entry screen is not supported by the eight-entry reader**. Fight after shopping unsupported |
 | Crystal Sphere | Owned Uncover Future/Payment Plan entry, small/big tool, legal 11×11 fog reveals, earned rewards and exact native exit/overlay cleanup | Both entry paths demonstrated; Uncover Future gold/map verified. Other tool/reward variants offline only. Hidden items are not projected; already-open adoption and full-belt replacement unsupported |
 | Trial abandonment | Owned popup Cancel or explicit Confirm, exact native abandonment task | Both demonstrated; Cancel continued to rewards/map/next room, Confirm produced `run_abandoned` and native Defeat/HP0 |
-| Architect ending | Native vote/queued action/next-act/WinRun task chain, terminal `run_won` | **Known live failure:** initial bridge read returned `unsupported_state` at the prepared final Proceed; zero actions. Ending code is offline tested, but live terminal progression is not working/accepted |
+| Architect ending | Native vote/queued action/next-act/WinRun task chain, terminal `run_won`; exact owned victory event with its combat layout and retained map-travel flag | Empty final-boss reward Proceed and the Architect parent sequence reached `run_won`; native Victory observed in both controlled saved runs. The latest ending used three reconciled parent actions. Saved continuations report `continued_victory`, not full-campaign certification |
 
 <a id="current-exclusions"></a>
 
 ## Known failures and runtime limits
 
-- **Architect admission:** native final-act setup reached the event, but the exact
-  rejected admission predicate remains unknown. Diagnose it before another win
-  attempt. Direct `event THE_ARCHITECT` is unavailable in the console catalog.
-- **Cold-start reads:** intermittent owner-frame deadline failures remain unresolved.
-  Fixed diagnostic codes/stage timings are available; later successful starts do
-  not prove the cause is fixed. Reads retain the 500 ms frame-result deadline.
-- **Terminal reward budget:** at most **eight entries per screen, three screens per
-  game process, 17 accepted actions per screen/51 total**. A new client does not
-  reset the process counter. Resume-item children use a separate path.
-- **Global bounds:** 16,384 reads, 512 action reservations and 64 feature sessions;
-  individual controllers have tighter limits. These are not full-run budgets.
+- **Owner-frame reads:** an earlier floor-33 read timed out before claim at 501 ms.
+  The accepted release permits one internal GET replacement after atomic
+  cancellation, with at most eight replacements per process. The saved continuation
+  then completed 7,477 reads through victory without a read failure. Successful
+  responses do not expose a retry count, so this does not prove recovery occurred
+  or explain intermittent cold-start failures. The 500 ms per-submission deadline
+  remains; POSTs and claimed callbacks cannot be retried.
+- **Campaign budgets in source:** terminal rewards allow eight entries and 17
+  accepted actions per screen, across at most 64 screens. Transport allows 131,072
+  reads and 8,192 action reservations; the 64 feature-session cap is unchanged.
+  A new client resets none of these process counters. Ordinary controllers retain
+  tighter local bounds; see [campaign limits](../bridge/Sts2AgentBridge/README.md#campaign-traversal).
+  These budgets are included in the current accepted assisted campaign release.
 - **Native ownership:** modules remain exclusive until reconciliation and successful
   disposal. Uncertain mutations or failed cleanup stop the host; no mutation retries.
   Only a known `stale_decision` with `mutation_state: none` permits bounded re-observation.
 - **Selectors:** direct input requires allocated native holders. Optional zero
   confirmation is supported on specific contracts; it is not native cancellation.
 - **Evidence boundary:** supported child effects do not certify all automatic parent
-  rewards/costs. Setup-assisted tests do not establish natural eligibility, whole-event
-  coverage, boss victory or autonomous play. Public-screen reads are not map probes.
+  rewards/costs or whole-event coverage. Controlled victories do not establish
+  normal-HP win rate or exhaustive native coverage. Public-screen reads are not map probes.
 
 ## Implementation gaps versus remaining live tests
 
@@ -159,11 +170,8 @@ extend standalone rest/shop contracts.
   cards without opening a screen when no manual confirmation is requested and
   count is at most the minimum. Doors of Light and Dark/Dark with one eligible
   removable card is a source-backed case; runtime compatibility remains unaccepted.
-- **Longer/full-run orchestration:** actual runs exceed the current bounded client
-  flows/process budgets; no complete autonomous run or strategic live policy is accepted.
 
-Architect is an existing implementation with a **known live admission failure**,
-not an absent terminal feature. Rest-triggered rewards (Dream Catcher card reward,
+Rest-triggered rewards (Dream Catcher card reward,
 Tiny Mailbox’s two potion rewards) are also real; their continuation needs a compatibility
 check before assigning a new adapter or claiming ordinary Heal covers them.
 
@@ -189,14 +197,17 @@ These are **not an implementation queue or required live-test checklist**:
 - Shop passive relic/Potion Belt purchases, all five pickup selectors, and remaining
   zero-buy/kind/gold-reserve variants.
 - Capacity-first Potion Belt collection in terminal, event and resume reward flows.
+  The demonstrated terminal pickup verifies +2 capacity and retained potions;
+  full-inventory ordering and the event/resume variants remain separate tests.
 - True multi-upgrade selection using Trial/MerchantInnocent (two) or Yummy Cookie
   (four); held-out enchant/removal/transform callers such as Torus; Trial’s
   conditional curse-plus-two-transform path.
 - Natural ancient entry/dialogue.
 - Broader reward orders/outcomes with a concrete offered screen, Sphere small-tool
   and earned card/potion/relic variants, and Fake Merchant zero/six-purchase variants.
-- Elite continuation and longer multi-room composition. Passing these does not by
-  itself establish all-branch coverage or strategic quality.
+- Held-out elite and room-handoff variants beyond the accepted campaign route.
+  The demonstrated long traversal does not establish all-branch coverage or
+  strategic quality. Another fresh run is not required for milestone 7 acceptance.
 
 [Roadmap](../ROADMAP.md) owns the order of work. [Caller evidence](EVENT_COVERAGE.md)
 links the exact demonstrated paths; the [research map](EVENT_INTERACTION_MAP.md)
@@ -205,27 +216,78 @@ supplies dated source candidates rather than a current implementation checklist.
 ## Release and latest evidence
 
 The accepted [release manifest](../bridge/Sts2AgentBridge/releases/current/bridge.json)
-is **`cb2d91104d8cab404a0000f004e0d0dcef9b5850cff2e8273425e27c043a20b0`**.
-It retains its original build provenance from the working checkout based on
-`7334873`; implementation was subsequently committed in `cd3dc76`. Documentation
-cleanup does not change that manifest or repin historical evidence.
+is **`96f48a88aed4dca0da4dcaf6a3530f565b6954f890219438a0cac5db38bcfe8f`**.
+It binds 416 exact source/test inputs from the working checkout based on
+`14182eb`. Campaign v6 handles the native infinity HP display without exposing
+hidden numeric health or changing numeric-only consumers. It passed offline
+validation and was installed at **17:53:47 UTC**; both overlays are exact and all
+429 base files unchanged. Manual Profile 3 launch and authenticated health passed.
+Native Continue restored the floor-17 fight at turn 1; the v6 continuation began
+near **18:14:01 UTC** with no new assistance. Waterfall Giant, both remaining
+bosses and the native ending passed: **643 attempted / accepted / reconciled
+actions**, **82 stages**, **9,456 reads**, **672.271 seconds**. No manual gameplay,
+controller replacement or potion action occurred in this segment. The result is
+`continued_victory`, with `full_campaign_verified: false`. Normal quit and owned
+cleanup completed at **18:27:26 UTC**: zero overlays and all 429 base files
+unchanged. The bridge is now absent.
 
-The pinned target is **v0.107.1 / Steam 23811903 / macOS arm64**. This is the tested
-build, not a claim about the currently installed game. The accepted gate passed
-**71 groups in 262.450 seconds**, including reproducible build, package and owned
-installation/cleanup checks; focused native/client/integration checks and independent
-semantic review preceded it. See the [release record](../bridge/Sts2AgentBridge/releases/current/README.md)
-and [validation](../bridge/Sts2AgentBridge/releases/current/validation.json).
+The preceding fresh assisted potion run demonstrated **four potion uses** across
+Fire, Strength and Vulnerable potions, then stopped at Waterfall Giant's infinity
+phase: **200 attempted / 200 accepted / 199 reconciled actions**, 42 stages,
+2,347 reads and 168.564 seconds. No gameplay intervention occurred during that
+attempt. Native Save and Quit preserved the campaign; the original package was
+fully cleaned at **17:34:13 UTC**. The [M7 record](evidence/AGENT_CAMPAIGN_M7_2026_09_24.md)
+retains its original release identity, diagnostic evidence and cleanup.
 
-The last recorded live session passed Dummy victory/resumption/map and visually
-confirmed two automatic upgrades, then stopped at Architect admission with zero
-Architect actions. Normal quit, stopped-process/closed-listener verification and
-owned quarantine/purge completed: **installation absent at that September 13 cleanup**.
-This documentation review did not recheck the running machine or launch the game.
+Across earlier controlled resumed Profile 3 segments, both act transitions,
+repeated Draw selectors, Potion Belt capacity growth, room handoffs, Test
+Subject's final victory and the Architect ending passed. The run used extra HP,
+approved damage cards, Eidolon removal and earlier manual assistance. Its ending
+reports `continued_victory`, with `full_campaign_verified: false`.
+
+A subsequent fresh attempt used the agreed upfront 2,064 HP, four Breaks and two
+Flash of Steels. Saved continuations verified Strawberry's +7 max HP and Bowler
+Hat's printed 20 → actual 25 gold. The latest continuation, from floor 33 under
+the preceding read-recovery release (`8c3060…`), defeated Knowledge Demon with three reconciled offered-card
+choices, traversed Act 3, defeated its boss and reached the Architect ending and
+native Victory. All **481 attempted/accepted/reconciled actions** completed across
+44 stages and 7,477 reads in **507.729 seconds**, with no manual gameplay or new
+setup assistance. It reports `continued_victory`; earlier restarts mean that
+`full_campaign_verified` remains false.
+The [M7 record](evidence/AGENT_CAMPAIGN_M7_2026_09_24.md) retains assistance,
+failures, original package identities and cleanup.
+
+The pinned target is **v0.107.1 / Steam 23811903 / macOS arm64**. The current
+accepted gate passed **83 groups in 290.147 seconds**, including reproducible
+build, package and disposable owned installation/cleanup checks. Focused native,
+client and shared socket checks and independent semantic review preceded it.
+The preceding successful continuation's victory and **16:11:53 UTC** cleanup
+retain their original package identity. The user accepted milestone 7 on this
+campaign evidence, including the one bridge-fix reload, and removed the requirement
+for another fresh run. The original continuation result remains unchanged; see
+the [acceptance decision](evidence/AGENT_CAMPAIGN_M7_2026_09_24.md#milestone-acceptance).
+See the
+[release record](../bridge/Sts2AgentBridge/releases/current/README.md) and
+[validation](../bridge/Sts2AgentBridge/releases/current/validation.json).
+
+The accepted M3 live session, under the previous M3 release, completed the controlled shared-policy combat, Neow's Fury
+two-card selection, gold/reward leave and separate map transition: **16 attempted,
+accepted and reconciled actions**, with no pending action or stale rejection.
+It used the same headless/live callback with a gold-then-leave reward override.
+A fresh native act map resolved the preceding setup-sensitive stall with the same
+package; the original rejected map predicate remains unknown. Normal quit, exact
+stopped-process/closed-listener checks and owned quarantine/purge completed:
+**installation absent at 2026-09-23 19:14:56 UTC**, zero overlay files and all 429
+base game files unchanged. The first M7 package was subsequently installed and
+cleaned up after its controlled attempt; the [M7 record](evidence/AGENT_CAMPAIGN_M7_2026_09_24.md)
+retains that distinct release, result and cleanup identity. The earlier M3 result
+is not live evidence for the new candidate.
 
 | Evidence record | What it establishes |
 | --- | --- |
-| [September 12–13 multi-case ledger](evidence/MULTICASE_BRIDGE_LIVE_2026_09_12.md) | Current shop/potion/combat/resume/Trial/Merchant/Dummy results and unresolved Architect failure; exact releases, assistance, counts and cleanup |
+| [September 24 campaign integration](evidence/AGENT_CAMPAIGN_M7_2026_09_24.md) | Controlled resumed campaign victory, act transitions/ending, selectors and rewards, four live potion uses, Waterfall Giant stop/correction, assistance and cleanup |
+| [September 23 agent integration](evidence/AGENT_BRIDGE_M3_2026_09_23.md) | Shared-contract adapter, paired/inert fixtures, accepted package and controlled live slice/map/cleanup; earlier failed attempts retained |
+| [September 12–13 multi-case ledger](evidence/MULTICASE_BRIDGE_LIVE_2026_09_12.md) | Earlier shop/potion/combat/resume/Trial/Merchant/Dummy results and original Architect failure; exact releases, assistance, counts and cleanup |
 | [Crystal Sphere ledger](evidence/CRYSTAL_SPHERE_LIVE_2026_09_12.md) | Uncover Future reveal/gold/map and corrected overlay cleanup |
 | [September 9–10 combined ledger](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md) | Representative selector/reward/ancient/combat-choice paths |
 | [September 8 unified smoke](evidence/UNIFIED_BRIDGE_SMOKE_2026_09_08.md) | Earlier core/rest/shop/item/event smoke with its original assistance and limits |
@@ -246,4 +308,12 @@ This simulator evidence is separate from live-bridge acceptance above.
 The legacy simulator, reduced backend and actor/training pipelines were retired
 on 2026-09-22; their evidence remains [archival](archive/README.md#retired-simulator-pipelines).
 Full-game public observations and policy/data adapters are HF-44–47 in the
-[current backlog](HEADLESS_FULL_GAME_IMPLEMENTATION.md).
+[current backlog](HEADLESS_FULL_GAME_IMPLEMENTATION.md). The headless
+[`full_run_v2` profile](AGENT_CONTRACT.md#full-run-v2-profile), public-only chooser
+and [`FullRunEnv`](AGENT_ENCODING.md#full-run-profile-and-environment) now cover
+the current engine's command/decision families. Normal-HP campaign tests and
+controlled ending fixtures are separate from policy strength and native fidelity.
+This does not widen the live `agent_v1` profile or change its accepted package;
+[public trajectories, data loaders, the installed agent CLI and bounded workers](AGENT_EXECUTION.md)
+now deliver headless operational execution. Autonomous live campaigns remain
+outside that delivery.

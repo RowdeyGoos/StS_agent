@@ -18,10 +18,13 @@ internal static partial class Program
 {
     private static void CombatItemCases()
     {
+        EmptyTerminalRewardCases();
         SkippedPotionCases();
         PotionDiscardCases();
         PotionCapacityCases();
         HealingRewardCases();
+        MaxHpRewardCases();
+        ModifiedGoldRewardCases();
         foreach(int count in new[]{1,2,3,8})foreach(bool compact in new[]{false,true}) {
             using var f=new CombatItemsFixture(count);
             var reader=f.Reader;var applier=f.Applier;
@@ -46,7 +49,8 @@ internal static partial class Program
             f.World.Player.PotionSlots[0]=null;f.World.Map.IsOpen=false;
             var next=new NRewardsScreen();var gold=new GoldReward{Player=f.World.Player,RewardsSetIndex=0,Amount=3};next.Children.Add(new NRewardButton{Reward=gold});
             f.World.Overlays.Screens.Clear();f.World.Overlays.Screens.Add(next);
-            var fresh=reader.Read();Check(fresh.Status==PublicDecisionStatus.Ready&&!fresh.ItemRewards&&fresh.DecisionRevision==0,"fresh reward session after legal potion consumption");
+            var fresh=reader.Read();Check(fresh.Status==PublicDecisionStatus.Ready&&!fresh.ItemRewards&&fresh.DecisionRevision>done.DecisionRevision,
+                "fresh reward session after legal potion consumption has a new process revision");
         }
         foreach(var mode in new[]{"full","late_full","delayed","wrong_claim","wrong_potion","replace_model","replace_reward","replace_button","drop","reorder","native_index","nested","empty_overlay","deck_change","capacity","relic_replace","settled_move","lost","early_map","foreign_relic"}) {
             using var f=new CombatItemsFixture(2);
@@ -120,6 +124,92 @@ internal static partial class Program
             Check(!f.World.Adapter.CombatScope!(),"retained extra item identity: "+mode);
         }
     }
+    private static void EmptyTerminalRewardCases()
+    {
+        foreach (string mode in new[]{"ok","loading","button_loading","nonterminal","set_player","foreign_player","multiple_players","abandoned","screen_run","active_run","room",
+            "replace_set","replace_player","replace_run","replace_room","replace_manager","append_reward","extra_overlay","replace_button","disable_button"})
+        {
+            using var f = new CombatItemsFixture(0, start:false);
+            var run = (RunState)f.World.Player.RunState;
+            run.Players.Add(f.World.Player);
+            run.CurrentRoom = f.Room;
+            var set = new RewardsSet { Player=f.World.Player, Room=f.Room };
+            f.Screen.BindRewards(set, run);
+            var button = new MegaCrit.Sts2.Core.Nodes.CommonUi.NProceedButton {IsEnabled=true};
+            f.Screen.BindProceed(button);
+            f.World.Overlays.Screens.Add(f.Screen);
+            var transition = new EmptyRewardTransition();
+            var applier = new PinnedPublicRewardActionApplier(f.Reader, screen => {
+                Check(ReferenceEquals(screen, f.Screen), "empty reward dispatch retains its native screen");
+                return transition;
+            });
+            if (mode == "nonterminal") f.Screen.BindRewards(set, run, false);
+            if (mode == "set_player") set.Player = new();
+            if (mode == "foreign_player") set.Player = new(){RunState=run};
+            if (mode == "multiple_players") run.Players.Add(new(){RunState=run});
+            if (mode == "abandoned") RunManager.Instance!.IsAbandoned=true;
+            if (mode == "screen_run") f.Screen.BindRewards(set, new RunState());
+            if (mode == "active_run") RunManager.Instance!.State = new();
+            if (mode == "room") set.Room = new AbstractRoom();
+            if (mode == "loading") set.Rewards.Add(new GoldReward {Player=f.World.Player, Amount=3, RewardsSetIndex=0});
+            if (mode == "button_loading") button.IsEnabled=false;
+            var first = f.Reader.Read();
+            if (mode == "button_loading") {
+                Check(first.Status == PublicDecisionStatus.Waiting, "empty reward waits for native Proceed enablement");
+                button.IsEnabled=true;
+                Check(f.Reader.Read().Status == PublicDecisionStatus.Ready, "empty reward becomes ready when Proceed is enabled");
+                continue;
+            }
+            if (mode == "loading") {
+                Check(first.Status == PublicDecisionStatus.Waiting, "unrendered nonempty reward set cannot publish Proceed");
+                f.Screen.Children.Add(new NRewardButton {Reward=set.Rewards[0]});
+                Check(f.Reader.Read().Status == PublicDecisionStatus.Ready, "loaded original reward remains readable");
+                continue;
+            }
+            if (mode is "nonterminal" or "set_player" or "foreign_player" or "multiple_players" or "abandoned" or "screen_run" or "active_run" or "room") {
+                Check(first.Status == PublicDecisionStatus.Unsupported && transition.Dispatches == 0, "invalid empty reward owner before input: " + mode);
+                continue;
+            }
+            Check(first.Status == PublicDecisionStatus.Ready && first.Rewards.Count == 0 &&
+                first.LegalActions.SequenceEqual(new[]{"proceed"}) && first.Player.Gold == f.World.Player.Gold,
+                "fresh empty terminal screen exposes only Proceed for the exact set owner: " + mode);
+            switch (mode) {
+                case "replace_set": f.Screen.BindRewards(new RewardsSet {Player=f.World.Player, Room=f.Room}, run); break;
+                case "replace_player": set.Player=new(){RunState=run}; break;
+                case "replace_run": var other=new RunState{CurrentRoom=f.Room};set.Player.RunState=other;RunManager.Instance!.State=other;f.Screen.BindRewards(set,other);break;
+                case "replace_room": set.Room=new AbstractRoom();run.CurrentRoom=set.Room;break;
+                case "replace_manager": RunManager.Instance=new(){State=run};break;
+                case "append_reward": set.Rewards.Add(new GoldReward {Player=f.World.Player});break;
+                case "extra_overlay": f.World.Overlays.Screens.Insert(0,new Control());break;
+                case "replace_button": f.Screen.BindProceed(new(){IsEnabled=true});break;
+                case "disable_button": button.IsEnabled=false;break;
+            }
+            Check(PublicRewardActionRequest.TryCreate(first.DecisionId, "proceed", out var request), "empty reward request parses");
+            var result = applier.Apply(request);
+            if (mode != "ok") {
+                Check(result.Outcome != PublicRewardActionApplyOutcome.Accepted && transition.Dispatches == 0,
+                    "empty reward identity is revalidated before dispatch: " + mode);
+                continue;
+            }
+            Check(result.Outcome == PublicRewardActionApplyOutcome.Accepted && transition.Dispatches == 1,
+                "empty terminal reward dispatches exactly once");
+            Check(applier.Apply(request).Outcome == PublicRewardActionApplyOutcome.AlreadyApplied && transition.Dispatches == 1,
+                "empty reward Proceed is never retried");
+            Check(f.Reader.Read().Status == PublicDecisionStatus.Waiting, "accepted Proceed waits for native transition");
+            transition.Complete = true;
+            var complete = f.Reader.Read();
+            Check(complete.Status == PublicDecisionStatus.Complete && complete.ScreenKind == "ending" && transition.Disposed,
+                "empty reward completion retains ending destination after transition cleanup");
+        }
+    }
+    private sealed class EmptyRewardTransition : IPublicRewardTransition
+    {
+        internal int Dispatches;
+        internal bool Complete, Disposed;
+        public void Dispatch() => Dispatches++;
+        public string Poll() => Complete ? "ending" : "waiting";
+        public void Dispose() => Disposed=true;
+    }
     private static void SkippedPotionCases()
     {
         foreach(var mode in new[]{"full","available","inventory","model","claimed","selected","deck","capacity","fault","cancel","lost","delay","no_map","foreign_screen"}) {
@@ -186,7 +276,7 @@ internal static partial class Program
             foreach(var reward in Rewards) {
                 var button=new NRewardButton{Reward=reward};Buttons.Add(button);Screen.Children.Add(button);
                 button.Handler=()=>{
-                    if(reward is PotionReward p){p.ClaimedPotion=p.Potion;World.Player.PotionSlots[World.Player.PotionSlots.FindIndex(x=>x is null)]=p.Potion;}
+                    if(reward is PotionReward p){p.ClaimedPotion=p.Potion;p.Potion.Owner=World.Player;World.Player.PotionSlots[World.Player.PotionSlots.FindIndex(x=>x is null)]=p.Potion;}
                     else {var r=(RelicReward)reward;r.ClaimedRelic=r.Relic;r.Relic.Owner=World.Player;World.Player.Relics.Add(r.Relic);}
                     reward.SuccessfullySelected=true;return Task.CompletedTask;
                 };

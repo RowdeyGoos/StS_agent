@@ -144,7 +144,16 @@ internal sealed class GenericEventV7Binding
         Valid(Run)&&Valid(Room)&&Valid(Map)&&Valid(Overlays)&&Valid(Layout) &&
         (exit || Room.IsVisibleInTree()) && Room.CustomEventNode is null && CombatLayoutReady(Room) && ReferenceEquals(Room.EmbeddedCombatRoom,EmbeddedRoom) && CapstoneReady(Results) &&
         CardSelectCmd.Selector is null && (exit || !Map.IsOpen && !Map.IsTraveling &&
-            (!Map.IsTravelEnabled || Option.IsProceed && FinishedProceed(Layout,EventModel,Option)));
+            (!Map.IsTravelEnabled || Option.IsProceed && FinishedProceed(Layout,EventModel,Option) || VictoryDialogue(Layout,EventModel)));
+    // EnterNextAct enters the Architect without regenerating the map. The
+    // previous combat's travel-enabled bit survives; its dialogue options are
+    // ordinary event choices (including the last option named PROCEED).
+    internal static bool VictoryDialogue(NEventLayout layout,EventModel model) =>
+        model.GetType()==typeof(MegaCrit.Sts2.Core.Models.Events.TheArchitect) &&
+        layout.GetType()==typeof(NCombatEventLayout) && ReferenceEquals(model.Node,layout) &&
+        RunManager.Instance?.DebugOnlyGetState() is {} run && ReferenceEquals(model.Owner?.RunState,run) &&
+        run.CurrentRoom is MegaCrit.Sts2.Core.Rooms.EventRoom {IsVictoryRoom:true} room &&
+        ReferenceEquals(room.LocalMutableEvent,model);
     internal static bool FinishedProceed(NEventLayout layout,EventModel model,EventOption? expected=null) {
         if(!model.IsFinished||!ReferenceEquals(model.Node,layout)||
             RunManager.Instance?.DebugOnlyGetState() is not {} run||!ReferenceEquals(model.Owner?.RunState,run)||

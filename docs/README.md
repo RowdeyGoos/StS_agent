@@ -19,6 +19,8 @@ The top level contains current guidance. Completed Phase 0/1 work lives in the
 | Named event live evidence | [Caller evidence index](EVENT_COVERAGE.md) |
 | Static native event census (historical gap labels) | [Research map and corrections](EVENT_INTERACTION_MAP.md) |
 | Full-game headless implementation tasks | [Current implementation backlog](HEADLESS_FULL_GAME_IMPLEMENTATION.md) |
+| Shared public contract, bridge adapter and Gymnasium delivery | [V1/full-run v2 contracts and producer mapping](AGENT_CONTRACT.md), [encoding and Gymnasium](AGENT_ENCODING.md), [delivery plan](AGENT_ENVIRONMENT.md) |
+| Public trajectories, agent command, workers and training data | [Execution and data loading](AGENT_EXECUTION.md) |
 | Headless game logic and architecture | [Game engine](HEADLESS_ENGINE.md) |
 | Agent-evaluation scope and information boundary | [Target](TARGET.md) |
 | Delegated work, when needed | [Multi-agent guide](MULTI_AGENT_EXECUTION.md) |

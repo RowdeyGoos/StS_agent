@@ -14,7 +14,7 @@ internal sealed class MultiplePurchaseFixture : IShopV1NativeAdapter
         internal readonly int Index=index;
         internal ShopV1OfferKind Kind=ShopV1OfferKind.Card;
         internal string? KeyOverride;
-        internal int CapacityGain;
+        internal int CapacityGain=0;
         public ShopV1RestockWitness? Restocked {get;internal set;}
         internal object? RemovalTarget;
         public void SelectTarget(ShopV1DeckCardBinding card){RemovalTarget=card.ModelIdentity;}
@@ -32,7 +32,7 @@ internal sealed class MultiplePurchaseFixture : IShopV1NativeAdapter
     internal readonly List<ShopV1RelicBinding> Relics=new();
     internal int Gold=100,Purchases,Disposals,Closes,Leaves,Discards;
     internal int FailAt=-1,BadCleanupAt=-1,BadDebitAt=-1,PriceAfterFirst=-1;
-    internal bool Delay=false,Closed,MapOpen,Restock,AllowDiscards;
+    internal bool Delay=false,Closed,MapOpen,Restock=false,AllowDiscards=false;
     internal Offer? Pending;
     internal MultiplePurchaseFixture(int count=9){Offers=Enumerable.Range(0,count).Select(i=>new Offer(this,i)).ToArray();}
     internal void Settle(Offer offer){Gold-=offer.Price+(BadDebitAt==Purchases?1:0);if(offer.Kind==ShopV1OfferKind.Potion){int slot=Potions.FindIndex(p=>p.ModelIdentity is null);if(slot<0)throw new InvalidOperationException("no potion space");Potions[slot]=new(offer.Card,offer.Key);}else if(offer.Kind==ShopV1OfferKind.Relic){Relics.Add(new(offer.Card,offer.Key));for(int i=0;i<offer.CapacityGain;i++)Potions.Add(new(null,null));}else if(offer.Kind==ShopV1OfferKind.Removal){ownerRemove(offer);}else Deck.Add(new(offer.Card,offer.Key));offer.Stocked=false;if(Restock && offer.Kind!=ShopV1OfferKind.Removal){offer.Card=new();if(offer.Kind==ShopV1OfferKind.Relic)offer.KeyOverride="RELIC_GEN_"+Purchases;offer.Price++;offer.Stocked=true;offer.Restocked=new(offer.Card,offer.Key,offer.Price);}offer.State=ShopV1Completion.Succeeded;Pending=null;if(Purchases==1&&PriceAfterFirst>=0)Offers[1].Price=PriceAfterFirst;}

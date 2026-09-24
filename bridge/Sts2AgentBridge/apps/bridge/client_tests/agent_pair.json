@@ -1,0 +1,2857 @@
+{
+  "evidence": "authored_matching_setups",
+  "decisions": [
+    {
+      "schema": "sts_public_decision_v1",
+      "profile": "combat_reward_map_v1",
+      "run": {
+        "character": "ironclad",
+        "ascension": 0,
+        "act": 1,
+        "floor": 1,
+        "hp": 80,
+        "max_hp": 80,
+        "gold": 99,
+        "deck": {
+          "status": "known",
+          "value": [
+            {
+              "ref": "card:0",
+              "definition_id": "defend",
+              "upgrade_level": 0,
+              "cost": {
+                "energy": {
+                  "status": "known",
+                  "value": 1
+                },
+                "energy_x": false,
+                "stars": {
+                  "status": "not_applicable",
+                  "value": null
+                },
+                "stars_x": false
+              },
+              "values": {
+                "status": "known",
+                "value": [
+                  {
+                    "key": "block",
+                    "amount": 5
+                  }
+                ]
+              },
+              "modifiers": {
+                "status": "known",
+                "value": []
+              },
+              "origin": {
+                "status": "not_applicable",
+                "value": null
+              }
+            },
+            {
+              "ref": "card:1",
+              "definition_id": "neows_fury",
+              "upgrade_level": 0,
+              "cost": {
+                "energy": {
+                  "status": "known",
+                  "value": 1
+                },
+                "energy_x": false,
+                "stars": {
+                  "status": "not_applicable",
+                  "value": null
+                },
+                "stars_x": false
+              },
+              "values": {
+                "status": "known",
+                "value": [
+                  {
+                    "key": "damage",
+                    "amount": 10
+                  },
+                  {
+                    "key": "hits",
+                    "amount": 1
+                  },
+                  {
+                    "key": "select_maximum",
+                    "amount": 2
+                  }
+                ]
+              },
+              "modifiers": {
+                "status": "known",
+                "value": [
+                  {
+                    "key": "exhausts",
+                    "amount": 1
+                  }
+                ]
+              },
+              "origin": {
+                "status": "not_applicable",
+                "value": null
+              }
+            },
+            {
+              "ref": "card:2",
+              "definition_id": "strike",
+              "upgrade_level": 0,
+              "cost": {
+                "energy": {
+                  "status": "known",
+                  "value": 1
+                },
+                "energy_x": false,
+                "stars": {
+                  "status": "not_applicable",
+                  "value": null
+                },
+                "stars_x": false
+              },
+              "values": {
+                "status": "known",
+                "value": [
+                  {
+                    "key": "damage",
+                    "amount": 6
+                  },
+                  {
+                    "key": "hits",
+                    "amount": 1
+                  }
+                ]
+              },
+              "modifiers": {
+                "status": "known",
+                "value": []
+              },
+              "origin": {
+                "status": "not_applicable",
+                "value": null
+              }
+            },
+            {
+              "ref": "card:3",
+              "definition_id": "strike",
+              "upgrade_level": 0,
+              "cost": {
+                "energy": {
+                  "status": "known",
+                  "value": 1
+                },
+                "energy_x": false,
+                "stars": {
+                  "status": "not_applicable",
+                  "value": null
+                },
+                "stars_x": false
+              },
+              "values": {
+                "status": "known",
+                "value": [
+                  {
+                    "key": "damage",
+                    "amount": 6
+                  },
+                  {
+                    "key": "hits",
+                    "amount": 1
+                  }
+                ]
+              },
+              "modifiers": {
+                "status": "known",
+                "value": []
+              },
+              "origin": {
+                "status": "not_applicable",
+                "value": null
+              }
+            }
+          ]
+        },
+        "relics": {
+          "status": "known",
+          "value": []
+        },
+        "potions": {
+          "status": "known",
+          "value": [
+            {
+              "index": 0,
+              "potion": null
+            },
+            {
+              "index": 1,
+              "potion": null
+            },
+            {
+              "index": 2,
+              "potion": null
+            }
+          ]
+        },
+        "map": {
+          "status": "known",
+          "value": {
+            "current": {
+              "status": "known",
+              "value": "node:0"
+            },
+            "nodes": [
+              {
+                "ref": "node:0",
+                "row": 1,
+                "column": 0,
+                "kind": "combat",
+                "next_nodes": [
+                  "node:1"
+                ]
+              },
+              {
+                "ref": "node:1",
+                "row": 2,
+                "column": 0,
+                "kind": "combat",
+                "next_nodes": []
+              }
+            ]
+          }
+        },
+        "history": {
+          "status": "known",
+          "value": {
+            "coverage": "attachment",
+            "events": []
+          }
+        }
+      },
+      "context": {
+        "kind": "combat",
+        "round": 1,
+        "block": 0,
+        "energy": 3,
+        "powers": {
+          "status": "known",
+          "value": []
+        },
+        "resources": {
+          "stars": {
+            "status": "not_applicable",
+            "value": null
+          },
+          "sovereign_blades": {
+            "status": "not_applicable",
+            "value": null
+          },
+          "osty": {
+            "status": "not_applicable",
+            "value": null
+          },
+          "orb_slots": {
+            "status": "not_applicable",
+            "value": null
+          },
+          "orbs": {
+            "status": "not_applicable",
+            "value": null
+          }
+        },
+        "enemies": [
+          {
+            "ref": "enemy:0",
+            "definition_id": "simple_enemy",
+            "hp": 40,
+            "max_hp": 40,
+            "block": 0,
+            "powers": {
+              "status": "known",
+              "value": []
+            },
+            "intents": {
+              "status": "known",
+              "value": [
+                {
+                  "kind": "attack",
+                  "damage": {
+                    "status": "known",
+                    "value": 6
+                  },
+                  "hits": {
+                    "status": "known",
+                    "value": 1
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "piles": [
+          {
+            "kind": "hand",
+            "count": 1,
+            "cards": {
+              "status": "known",
+              "value": [
+                {
+                  "ref": "card:4",
+                  "definition_id": "neows_fury",
+                  "upgrade_level": 0,
+                  "cost": {
+                    "energy": {
+                      "status": "known",
+                      "value": 1
+                    },
+                    "energy_x": false,
+                    "stars": {
+                      "status": "not_applicable",
+                      "value": null
+                    },
+                    "stars_x": false
+                  },
+                  "values": {
+                    "status": "known",
+                    "value": [
+                      {
+                        "key": "damage",
+                        "amount": 10
+                      },
+                      {
+                        "key": "hits",
+                        "amount": 1
+                      },
+                      {
+                        "key": "select_maximum",
+                        "amount": 2
+                      }
+                    ]
+                  },
+                  "modifiers": {
+                    "status": "known",
+                    "value": [
+                      {
+                        "key": "exhausts",
+                        "amount": 1
+                      }
+                    ]
+                  },
+                  "origin": {
+                    "status": "unknown",
+                    "value": null
+                  }
+                }
+              ]
+            },
+            "order": "visible"
+          },
+          {
+            "kind": "draw",
+            "count": 0,
+            "cards": {
+              "status": "known",
+              "value": []
+            },
+            "order": "canonical"
+          },
+          {
+            "kind": "discard",
+            "count": 3,
+            "cards": {
+              "status": "known",
+              "value": [
+                {
+                  "ref": "card:5",
+                  "definition_id": "strike",
+                  "upgrade_level": 0,
+                  "cost": {
+                    "energy": {
+                      "status": "known",
+                      "value": 1
+                    },
+                    "energy_x": false,
+                    "stars": {
+                      "status": "not_applicable",
+                      "value": null
+                    },
+                    "stars_x": false
+                  },
+                  "values": {
+                    "status": "known",
+                    "value": [
+                      {
+                        "key": "damage",
+                        "amount": 6
+                      },
+                      {
+                        "key": "hits",
+                        "amount": 1
+                      }
+                    ]
+                  },
+                  "modifiers": {
+                    "status": "known",
+                    "value": []
+                  },
+                  "origin": {
+                    "status": "unknown",
+                    "value": null
+                  }
+                },
+                {
+                  "ref": "card:6",
+                  "definition_id": "strike",
+                  "upgrade_level": 0,
+                  "cost": {
+                    "energy": {
+                      "status": "known",
+                      "value": 1
+                    },
+                    "energy_x": false,
+                    "stars": {
+                      "status": "not_applicable",
+                      "value": null
+                    },
+                    "stars_x": false
+                  },
+                  "values": {
+                    "status": "known",
+                    "value": [
+                      {
+                        "key": "damage",
+                        "amount": 6
+                      },
+                      {
+                        "key": "hits",
+                        "amount": 1
+                      }
+                    ]
+                  },
+                  "modifiers": {
+                    "status": "known",
+                    "value": []
+                  },
+                  "origin": {
+                    "status": "unknown",
+                    "value": null
+                  }
+                },
+                {
+                  "ref": "card:7",
+                  "definition_id": "defend",
+                  "upgrade_level": 0,
+                  "cost": {
+                    "energy": {
+                      "status": "known",
+                      "value": 1
+                    },
+                    "energy_x": false,
+                    "stars": {
+                      "status": "not_applicable",
+                      "value": null
+                    },
+                    "stars_x": false
+                  },
+                  "values": {
+                    "status": "known",
+                    "value": [
+                      {
+                        "key": "block",
+                        "amount": 5
+                      }
+                    ]
+                  },
+                  "modifiers": {
+                    "status": "known",
+                    "value": []
+                  },
+                  "origin": {
+                    "status": "unknown",
+                    "value": null
+                  }
+                }
+              ]
+            },
+            "order": "visible"
+          },
+          {
+            "kind": "exhaust",
+            "count": 0,
+            "cards": {
+              "status": "known",
+              "value": []
+            },
+            "order": "visible"
+          },
+          {
+            "kind": "in_play",
+            "count": 0,
+            "cards": {
+              "status": "known",
+              "value": []
+            },
+            "order": "visible"
+          },
+          {
+            "kind": "powers",
+            "count": 0,
+            "cards": {
+              "status": "known",
+              "value": []
+            },
+            "order": "visible"
+          }
+        ]
+      },
+      "candidates": [
+        {
+          "ref": "action:0",
+          "kind": "end_turn",
+          "subject": null,
+          "target": null
+        },
+        {
+          "ref": "action:1",
+          "kind": "play_card",
+          "subject": "card:4",
+          "target": "enemy:0"
+        }
+      ]
+    },
+    {
+      "schema": "sts_public_decision_v1",
+      "profile": "combat_reward_map_v1",
+      "run": {
+        "character": "ironclad",
+        "ascension": 0,
+        "act": 1,
+        "floor": 1,
+        "hp": 80,
+        "max_hp": 80,
+        "gold": 99,
+        "deck": {
+          "status": "known",
+          "value": [
+            {
+              "ref": "card:0",
+              "definition_id": "defend",
+              "upgrade_level": 0,
+              "cost": {
+                "energy": {
+                  "status": "known",
+                  "value": 1
+                },
+                "energy_x": false,
+                "stars": {
+                  "status": "not_applicable",
+                  "value": null
+                },
+                "stars_x": false
+              },
+              "values": {
+                "status": "known",
+                "value": [
+                  {
+                    "key": "block",
+                    "amount": 5
+                  }
+                ]
+              },
+              "modifiers": {
+                "status": "known",
+                "value": []
+              },
+              "origin": {
+                "status": "not_applicable",
+                "value": null
+              }
+            },
+            {
+              "ref": "card:1",
+              "definition_id": "neows_fury",
+              "upgrade_level": 0,
+              "cost": {
+                "energy": {
+                  "status": "known",
+                  "value": 1
+                },
+                "energy_x": false,
+                "stars": {
+                  "status": "not_applicable",
+                  "value": null
+                },
+                "stars_x": false
+              },
+              "values": {
+                "status": "known",
+                "value": [
+                  {
+                    "key": "damage",
+                    "amount": 10
+                  },
+                  {
+                    "key": "hits",
+                    "amount": 1
+                  },
+                  {
+                    "key": "select_maximum",
+                    "amount": 2
+                  }
+                ]
+              },
+              "modifiers": {
+                "status": "known",
+                "value": [
+                  {
+                    "key": "exhausts",
+                    "amount": 1
+                  }
+                ]
+              },
+              "origin": {
+                "status": "not_applicable",
+                "value": null
+              }
+            },
+            {
+              "ref": "card:2",
+              "definition_id": "strike",
+              "upgrade_level": 0,
+              "cost": {
+                "energy": {
+                  "status": "known",
+                  "value": 1
+                },
+                "energy_x": false,
+                "stars": {
+                  "status": "not_applicable",
+                  "value": null
+                },
+                "stars_x": false
+              },
+              "values": {
+                "status": "known",
+                "value": [
+                  {
+                    "key": "damage",
+                    "amount": 6
+                  },
+                  {
+                    "key": "hits",
+                    "amount": 1
+                  }
+                ]
+              },
+              "modifiers": {
+                "status": "known",
+                "value": []
+              },
+              "origin": {
+                "status": "not_applicable",
+                "value": null
+              }
+            },
+            {
+              "ref": "card:3",
+              "definition_id": "strike",
+              "upgrade_level": 0,
+              "cost": {
+                "energy": {
+                  "status": "known",
+                  "value": 1
+                },
+                "energy_x": false,
+                "stars": {
+                  "status": "not_applicable",
+                  "value": null
+                },
+                "stars_x": false
+              },
+              "values": {
+                "status": "known",
+                "value": [
+                  {
+                    "key": "damage",
+                    "amount": 6
+                  },
+                  {
+                    "key": "hits",
+                    "amount": 1
+                  }
+                ]
+              },
+              "modifiers": {
+                "status": "known",
+                "value": []
+              },
+              "origin": {
+                "status": "not_applicable",
+                "value": null
+              }
+            }
+          ]
+        },
+        "relics": {
+          "status": "known",
+          "value": []
+        },
+        "potions": {
+          "status": "known",
+          "value": [
+            {
+              "index": 0,
+              "potion": null
+            },
+            {
+              "index": 1,
+              "potion": null
+            },
+            {
+              "index": 2,
+              "potion": null
+            }
+          ]
+        },
+        "map": {
+          "status": "known",
+          "value": {
+            "current": {
+              "status": "known",
+              "value": "node:0"
+            },
+            "nodes": [
+              {
+                "ref": "node:0",
+                "row": 1,
+                "column": 0,
+                "kind": "combat",
+                "next_nodes": [
+                  "node:1"
+                ]
+              },
+              {
+                "ref": "node:1",
+                "row": 2,
+                "column": 0,
+                "kind": "combat",
+                "next_nodes": []
+              }
+            ]
+          }
+        },
+        "history": {
+          "status": "known",
+          "value": {
+            "coverage": "attachment",
+            "events": [
+              {
+                "kind": "card_played",
+                "subject": {
+                  "status": "known",
+                  "value": "card:4"
+                },
+                "target": {
+                  "status": "known",
+                  "value": "enemy:0"
+                },
+                "values": []
+              }
+            ]
+          }
+        }
+      },
+      "context": {
+        "kind": "card_selection",
+        "combat": {
+          "kind": "combat",
+          "round": 1,
+          "block": 0,
+          "energy": 2,
+          "powers": {
+            "status": "known",
+            "value": []
+          },
+          "resources": {
+            "stars": {
+              "status": "not_applicable",
+              "value": null
+            },
+            "sovereign_blades": {
+              "status": "not_applicable",
+              "value": null
+            },
+            "osty": {
+              "status": "not_applicable",
+              "value": null
+            },
+            "orb_slots": {
+              "status": "not_applicable",
+              "value": null
+            },
+            "orbs": {
+              "status": "not_applicable",
+              "value": null
+            }
+          },
+          "enemies": [
+            {
+              "ref": "enemy:0",
+              "definition_id": "simple_enemy",
+              "hp": 30,
+              "max_hp": 40,
+              "block": 0,
+              "powers": {
+                "status": "known",
+                "value": []
+              },
+              "intents": {
+                "status": "known",
+                "value": [
+                  {
+                    "kind": "attack",
+                    "damage": {
+                      "status": "known",
+                      "value": 6
+                    },
+                    "hits": {
+                      "status": "known",
+                      "value": 1
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "piles": [
+            {
+              "kind": "hand",
+              "count": 0,
+              "cards": {
+                "status": "known",
+                "value": []
+              },
+              "order": "visible"
+            },
+            {
+              "kind": "draw",
+              "count": 0,
+              "cards": {
+                "status": "known",
+                "value": []
+              },
+              "order": "canonical"
+            },
+            {
+              "kind": "discard",
+              "count": 3,
+              "cards": {
+                "status": "known",
+                "value": [
+                  {
+                    "ref": "card:5",
+                    "definition_id": "strike",
+                    "upgrade_level": 0,
+                    "cost": {
+                      "energy": {
+                        "status": "known",
+                        "value": 1
+                      },
+                      "energy_x": false,
+                      "stars": {
+                        "status": "not_applicable",
+                        "value": null
+                      },
+                      "stars_x": false
+                    },
+                    "values": {
+                      "status": "known",
+                      "value": [
+                        {
+                          "key": "damage",
+                          "amount": 6
+                        },
+                        {
+                          "key": "hits",
+                          "amount": 1
+                        }
+                      ]
+                    },
+                    "modifiers": {
+                      "status": "known",
+                      "value": []
+                    },
+                    "origin": {
+                      "status": "unknown",
+                      "value": null
+                    }
+                  },
+                  {
+                    "ref": "card:6",
+                    "definition_id": "strike",
+                    "upgrade_level": 0,
+                    "cost": {
+                      "energy": {
+                        "status": "known",
+                        "value": 1
+                      },
+                      "energy_x": false,
+                      "stars": {
+                        "status": "not_applicable",
+                        "value": null
+                      },
+                      "stars_x": false
+                    },
+                    "values": {
+                      "status": "known",
+                      "value": [
+                        {
+                          "key": "damage",
+                          "amount": 6
+                        },
+                        {
+                          "key": "hits",
+                          "amount": 1
+                        }
+                      ]
+                    },
+                    "modifiers": {
+                      "status": "known",
+                      "value": []
+                    },
+                    "origin": {
+                      "status": "unknown",
+                      "value": null
+                    }
+                  },
+                  {
+                    "ref": "card:7",
+                    "definition_id": "defend",
+                    "upgrade_level": 0,
+                    "cost": {
+                      "energy": {
+                        "status": "known",
+                        "value": 1
+                      },
+                      "energy_x": false,
+                      "stars": {
+                        "status": "not_applicable",
+                        "value": null
+                      },
+                      "stars_x": false
+                    },
+                    "values": {
+                      "status": "known",
+                      "value": [
+                        {
+                          "key": "block",
+                          "amount": 5
+                        }
+                      ]
+                    },
+                    "modifiers": {
+                      "status": "known",
+                      "value": []
+                    },
+                    "origin": {
+                      "status": "unknown",
+                      "value": null
+                    }
+                  }
+                ]
+              },
+              "order": "visible"
+            },
+            {
+              "kind": "exhaust",
+              "count": 0,
+              "cards": {
+                "status": "known",
+                "value": []
+              },
+              "order": "visible"
+            },
+            {
+              "kind": "in_play",
+              "count": 1,
+              "cards": {
+                "status": "known",
+                "value": [
+                  {
+                    "ref": "card:4",
+                    "definition_id": "neows_fury",
+                    "upgrade_level": 0,
+                    "cost": {
+                      "energy": {
+                        "status": "known",
+                        "value": 1
+                      },
+                      "energy_x": false,
+                      "stars": {
+                        "status": "not_applicable",
+                        "value": null
+                      },
+                      "stars_x": false
+                    },
+                    "values": {
+                      "status": "known",
+                      "value": [
+                        {
+                          "key": "damage",
+                          "amount": 10
+                        },
+                        {
+                          "key": "hits",
+                          "amount": 1
+                        },
+                        {
+                          "key": "select_maximum",
+                          "amount": 2
+                        }
+                      ]
+                    },
+                    "modifiers": {
+                      "status": "known",
+                      "value": [
+                        {
+                          "key": "exhausts",
+                          "amount": 1
+                        }
+                      ]
+                    },
+                    "origin": {
+                      "status": "unknown",
+                      "value": null
+                    }
+                  }
+                ]
+              },
+              "order": "visible"
+            },
+            {
+              "kind": "powers",
+              "count": 0,
+              "cards": {
+                "status": "known",
+                "value": []
+              },
+              "order": "visible"
+            }
+          ]
+        },
+        "source": {
+          "status": "known",
+          "value": "card:4"
+        },
+        "pile": "discard",
+        "options": [
+          "card:5",
+          "card:6",
+          "card:7"
+        ],
+        "selected": [],
+        "minimum": 0,
+        "maximum": 2,
+        "manual_confirmation": true,
+        "cancelable": false
+      },
+      "candidates": [
+        {
+          "ref": "action:0",
+          "kind": "confirm_selection",
+          "subject": null,
+          "target": null
+        },
+        {
+          "ref": "action:1",
+          "kind": "select_card",
+          "subject": "card:5",
+          "target": null
+        },
+        {
+          "ref": "action:2",
+          "kind": "select_card",
+          "subject": "card:6",
+          "target": null
+        },
+        {
+          "ref": "action:3",
+          "kind": "select_card",
+          "subject": "card:7",
+          "target": null
+        }
+      ]
+    },
+    {
+      "schema": "sts_public_decision_v1",
+      "profile": "combat_reward_map_v1",
+      "run": {
+        "character": "ironclad",
+        "ascension": 0,
+        "act": 1,
+        "floor": 1,
+        "hp": 80,
+        "max_hp": 80,
+        "gold": 99,
+        "deck": {
+          "status": "known",
+          "value": [
+            {
+              "ref": "card:0",
+              "definition_id": "defend",
+              "upgrade_level": 0,
+              "cost": {
+                "energy": {
+                  "status": "known",
+                  "value": 1
+                },
+                "energy_x": false,
+                "stars": {
+                  "status": "not_applicable",
+                  "value": null
+                },
+                "stars_x": false
+              },
+              "values": {
+                "status": "known",
+                "value": [
+                  {
+                    "key": "block",
+                    "amount": 5
+                  }
+                ]
+              },
+              "modifiers": {
+                "status": "known",
+                "value": []
+              },
+              "origin": {
+                "status": "not_applicable",
+                "value": null
+              }
+            },
+            {
+              "ref": "card:1",
+              "definition_id": "neows_fury",
+              "upgrade_level": 0,
+              "cost": {
+                "energy": {
+                  "status": "known",
+                  "value": 1
+                },
+                "energy_x": false,
+                "stars": {
+                  "status": "not_applicable",
+                  "value": null
+                },
+                "stars_x": false
+              },
+              "values": {
+                "status": "known",
+                "value": [
+                  {
+                    "key": "damage",
+                    "amount": 10
+                  },
+                  {
+                    "key": "hits",
+                    "amount": 1
+                  },
+                  {
+                    "key": "select_maximum",
+                    "amount": 2
+                  }
+                ]
+              },
+              "modifiers": {
+                "status": "known",
+                "value": [
+                  {
+                    "key": "exhausts",
+                    "amount": 1
+                  }
+                ]
+              },
+              "origin": {
+                "status": "not_applicable",
+                "value": null
+              }
+            },
+            {
+              "ref": "card:2",
+              "definition_id": "strike",
+              "upgrade_level": 0,
+              "cost": {
+                "energy": {
+                  "status": "known",
+                  "value": 1
+                },
+                "energy_x": false,
+                "stars": {
+                  "status": "not_applicable",
+                  "value": null
+                },
+                "stars_x": false
+              },
+              "values": {
+                "status": "known",
+                "value": [
+                  {
+                    "key": "damage",
+                    "amount": 6
+                  },
+                  {
+                    "key": "hits",
+                    "amount": 1
+                  }
+                ]
+              },
+              "modifiers": {
+                "status": "known",
+                "value": []
+              },
+              "origin": {
+                "status": "not_applicable",
+                "value": null
+              }
+            },
+            {
+              "ref": "card:3",
+              "definition_id": "strike",
+              "upgrade_level": 0,
+              "cost": {
+                "energy": {
+                  "status": "known",
+                  "value": 1
+                },
+                "energy_x": false,
+                "stars": {
+                  "status": "not_applicable",
+                  "value": null
+                },
+                "stars_x": false
+              },
+              "values": {
+                "status": "known",
+                "value": [
+                  {
+                    "key": "damage",
+                    "amount": 6
+                  },
+                  {
+                    "key": "hits",
+                    "amount": 1
+                  }
+                ]
+              },
+              "modifiers": {
+                "status": "known",
+                "value": []
+              },
+              "origin": {
+                "status": "not_applicable",
+                "value": null
+              }
+            }
+          ]
+        },
+        "relics": {
+          "status": "known",
+          "value": []
+        },
+        "potions": {
+          "status": "known",
+          "value": [
+            {
+              "index": 0,
+              "potion": null
+            },
+            {
+              "index": 1,
+              "potion": null
+            },
+            {
+              "index": 2,
+              "potion": null
+            }
+          ]
+        },
+        "map": {
+          "status": "known",
+          "value": {
+            "current": {
+              "status": "known",
+              "value": "node:0"
+            },
+            "nodes": [
+              {
+                "ref": "node:0",
+                "row": 1,
+                "column": 0,
+                "kind": "combat",
+                "next_nodes": [
+                  "node:1"
+                ]
+              },
+              {
+                "ref": "node:1",
+                "row": 2,
+                "column": 0,
+                "kind": "combat",
+                "next_nodes": []
+              }
+            ]
+          }
+        },
+        "history": {
+          "status": "known",
+          "value": {
+            "coverage": "attachment",
+            "events": [
+              {
+                "kind": "card_played",
+                "subject": {
+                  "status": "known",
+                  "value": "card:4"
+                },
+                "target": {
+                  "status": "known",
+                  "value": "enemy:0"
+                },
+                "values": []
+              },
+              {
+                "kind": "card_selected",
+                "subject": {
+                  "status": "known",
+                  "value": "card:5"
+                },
+                "target": {
+                  "status": "not_applicable",
+                  "value": null
+                },
+                "values": [
+                  {
+                    "key": "selected",
+                    "amount": 1
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "context": {
+        "kind": "card_selection",
+        "combat": {
+          "kind": "combat",
+          "round": 1,
+          "block": 0,
+          "energy": 2,
+          "powers": {
+            "status": "known",
+            "value": []
+          },
+          "resources": {
+            "stars": {
+              "status": "not_applicable",
+              "value": null
+            },
+            "sovereign_blades": {
+              "status": "not_applicable",
+              "value": null
+            },
+            "osty": {
+              "status": "not_applicable",
+              "value": null
+            },
+            "orb_slots": {
+              "status": "not_applicable",
+              "value": null
+            },
+            "orbs": {
+              "status": "not_applicable",
+              "value": null
+            }
+          },
+          "enemies": [
+            {
+              "ref": "enemy:0",
+              "definition_id": "simple_enemy",
+              "hp": 30,
+              "max_hp": 40,
+              "block": 0,
+              "powers": {
+                "status": "known",
+                "value": []
+              },
+              "intents": {
+                "status": "known",
+                "value": [
+                  {
+                    "kind": "attack",
+                    "damage": {
+                      "status": "known",
+                      "value": 6
+                    },
+                    "hits": {
+                      "status": "known",
+                      "value": 1
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "piles": [
+            {
+              "kind": "hand",
+              "count": 0,
+              "cards": {
+                "status": "known",
+                "value": []
+              },
+              "order": "visible"
+            },
+            {
+              "kind": "draw",
+              "count": 0,
+              "cards": {
+                "status": "known",
+                "value": []
+              },
+              "order": "canonical"
+            },
+            {
+              "kind": "discard",
+              "count": 3,
+              "cards": {
+                "status": "known",
+                "value": [
+                  {
+                    "ref": "card:5",
+                    "definition_id": "strike",
+                    "upgrade_level": 0,
+                    "cost": {
+                      "energy": {
+                        "status": "known",
+                        "value": 1
+                      },
+                      "energy_x": false,
+                      "stars": {
+                        "status": "not_applicable",
+                        "value": null
+                      },
+                      "stars_x": false
+                    },
+                    "values": {
+                      "status": "known",
+                      "value": [
+                        {
+                          "key": "damage",
+                          "amount": 6
+                        },
+                        {
+                          "key": "hits",
+                          "amount": 1
+                        }
+                      ]
+                    },
+                    "modifiers": {
+                      "status": "known",
+                      "value": []
+                    },
+                    "origin": {
+                      "status": "unknown",
+                      "value": null
+                    }
+                  },
+                  {
+                    "ref": "card:6",
+                    "definition_id": "strike",
+                    "upgrade_level": 0,
+                    "cost": {
+                      "energy": {
+                        "status": "known",
+                        "value": 1
+                      },
+                      "energy_x": false,
+                      "stars": {
+                        "status": "not_applicable",
+                        "value": null
+                      },
+                      "stars_x": false
+                    },
+                    "values": {
+                      "status": "known",
+                      "value": [
+                        {
+                          "key": "damage",
+                          "amount": 6
+                        },
+                        {
+                          "key": "hits",
+                          "amount": 1
+                        }
+                      ]
+                    },
+                    "modifiers": {
+                      "status": "known",
+                      "value": []
+                    },
+                    "origin": {
+                      "status": "unknown",
+                      "value": null
+                    }
+                  },
+                  {
+                    "ref": "card:7",
+                    "definition_id": "defend",
+                    "upgrade_level": 0,
+                    "cost": {
+                      "energy": {
+                        "status": "known",
+                        "value": 1
+                      },
+                      "energy_x": false,
+                      "stars": {
+                        "status": "not_applicable",
+                        "value": null
+                      },
+                      "stars_x": false
+                    },
+                    "values": {
+                      "status": "known",
+                      "value": [
+                        {
+                          "key": "block",
+                          "amount": 5
+                        }
+                      ]
+                    },
+                    "modifiers": {
+                      "status": "known",
+                      "value": []
+                    },
+                    "origin": {
+                      "status": "unknown",
+                      "value": null
+                    }
+                  }
+                ]
+              },
+              "order": "visible"
+            },
+            {
+              "kind": "exhaust",
+              "count": 0,
+              "cards": {
+                "status": "known",
+                "value": []
+              },
+              "order": "visible"
+            },
+            {
+              "kind": "in_play",
+              "count": 1,
+              "cards": {
+                "status": "known",
+                "value": [
+                  {
+                    "ref": "card:4",
+                    "definition_id": "neows_fury",
+                    "upgrade_level": 0,
+                    "cost": {
+                      "energy": {
+                        "status": "known",
+                        "value": 1
+                      },
+                      "energy_x": false,
+                      "stars": {
+                        "status": "not_applicable",
+                        "value": null
+                      },
+                      "stars_x": false
+                    },
+                    "values": {
+                      "status": "known",
+                      "value": [
+                        {
+                          "key": "damage",
+                          "amount": 10
+                        },
+                        {
+                          "key": "hits",
+                          "amount": 1
+                        },
+                        {
+                          "key": "select_maximum",
+                          "amount": 2
+                        }
+                      ]
+                    },
+                    "modifiers": {
+                      "status": "known",
+                      "value": [
+                        {
+                          "key": "exhausts",
+                          "amount": 1
+                        }
+                      ]
+                    },
+                    "origin": {
+                      "status": "unknown",
+                      "value": null
+                    }
+                  }
+                ]
+              },
+              "order": "visible"
+            },
+            {
+              "kind": "powers",
+              "count": 0,
+              "cards": {
+                "status": "known",
+                "value": []
+              },
+              "order": "visible"
+            }
+          ]
+        },
+        "source": {
+          "status": "known",
+          "value": "card:4"
+        },
+        "pile": "discard",
+        "options": [
+          "card:5",
+          "card:6",
+          "card:7"
+        ],
+        "selected": [
+          "card:5"
+        ],
+        "minimum": 0,
+        "maximum": 2,
+        "manual_confirmation": true,
+        "cancelable": false
+      },
+      "candidates": [
+        {
+          "ref": "action:0",
+          "kind": "confirm_selection",
+          "subject": null,
+          "target": null
+        },
+        {
+          "ref": "action:1",
+          "kind": "deselect_card",
+          "subject": "card:5",
+          "target": null
+        },
+        {
+          "ref": "action:2",
+          "kind": "select_card",
+          "subject": "card:6",
+          "target": null
+        },
+        {
+          "ref": "action:3",
+          "kind": "select_card",
+          "subject": "card:7",
+          "target": null
+        }
+      ]
+    },
+    {
+      "schema": "sts_public_decision_v1",
+      "profile": "combat_reward_map_v1",
+      "run": {
+        "character": "ironclad",
+        "ascension": 0,
+        "act": 1,
+        "floor": 1,
+        "hp": 80,
+        "max_hp": 80,
+        "gold": 99,
+        "deck": {
+          "status": "known",
+          "value": [
+            {
+              "ref": "card:0",
+              "definition_id": "defend",
+              "upgrade_level": 0,
+              "cost": {
+                "energy": {
+                  "status": "known",
+                  "value": 1
+                },
+                "energy_x": false,
+                "stars": {
+                  "status": "not_applicable",
+                  "value": null
+                },
+                "stars_x": false
+              },
+              "values": {
+                "status": "known",
+                "value": [
+                  {
+                    "key": "block",
+                    "amount": 5
+                  }
+                ]
+              },
+              "modifiers": {
+                "status": "known",
+                "value": []
+              },
+              "origin": {
+                "status": "not_applicable",
+                "value": null
+              }
+            },
+            {
+              "ref": "card:1",
+              "definition_id": "neows_fury",
+              "upgrade_level": 0,
+              "cost": {
+                "energy": {
+                  "status": "known",
+                  "value": 1
+                },
+                "energy_x": false,
+                "stars": {
+                  "status": "not_applicable",
+                  "value": null
+                },
+                "stars_x": false
+              },
+              "values": {
+                "status": "known",
+                "value": [
+                  {
+                    "key": "damage",
+                    "amount": 10
+                  },
+                  {
+                    "key": "hits",
+                    "amount": 1
+                  },
+                  {
+                    "key": "select_maximum",
+                    "amount": 2
+                  }
+                ]
+              },
+              "modifiers": {
+                "status": "known",
+                "value": [
+                  {
+                    "key": "exhausts",
+                    "amount": 1
+                  }
+                ]
+              },
+              "origin": {
+                "status": "not_applicable",
+                "value": null
+              }
+            },
+            {
+              "ref": "card:2",
+              "definition_id": "strike",
+              "upgrade_level": 0,
+              "cost": {
+                "energy": {
+                  "status": "known",
+                  "value": 1
+                },
+                "energy_x": false,
+                "stars": {
+                  "status": "not_applicable",
+                  "value": null
+                },
+                "stars_x": false
+              },
+              "values": {
+                "status": "known",
+                "value": [
+                  {
+                    "key": "damage",
+                    "amount": 6
+                  },
+                  {
+                    "key": "hits",
+                    "amount": 1
+                  }
+                ]
+              },
+              "modifiers": {
+                "status": "known",
+                "value": []
+              },
+              "origin": {
+                "status": "not_applicable",
+                "value": null
+              }
+            },
+            {
+              "ref": "card:3",
+              "definition_id": "strike",
+              "upgrade_level": 0,
+              "cost": {
+                "energy": {
+                  "status": "known",
+                  "value": 1
+                },
+                "energy_x": false,
+                "stars": {
+                  "status": "not_applicable",
+                  "value": null
+                },
+                "stars_x": false
+              },
+              "values": {
+                "status": "known",
+                "value": [
+                  {
+                    "key": "damage",
+                    "amount": 6
+                  },
+                  {
+                    "key": "hits",
+                    "amount": 1
+                  }
+                ]
+              },
+              "modifiers": {
+                "status": "known",
+                "value": []
+              },
+              "origin": {
+                "status": "not_applicable",
+                "value": null
+              }
+            }
+          ]
+        },
+        "relics": {
+          "status": "known",
+          "value": []
+        },
+        "potions": {
+          "status": "known",
+          "value": [
+            {
+              "index": 0,
+              "potion": null
+            },
+            {
+              "index": 1,
+              "potion": null
+            },
+            {
+              "index": 2,
+              "potion": null
+            }
+          ]
+        },
+        "map": {
+          "status": "known",
+          "value": {
+            "current": {
+              "status": "known",
+              "value": "node:0"
+            },
+            "nodes": [
+              {
+                "ref": "node:0",
+                "row": 1,
+                "column": 0,
+                "kind": "combat",
+                "next_nodes": [
+                  "node:1"
+                ]
+              },
+              {
+                "ref": "node:1",
+                "row": 2,
+                "column": 0,
+                "kind": "combat",
+                "next_nodes": []
+              }
+            ]
+          }
+        },
+        "history": {
+          "status": "known",
+          "value": {
+            "coverage": "attachment",
+            "events": [
+              {
+                "kind": "card_played",
+                "subject": {
+                  "status": "known",
+                  "value": "card:4"
+                },
+                "target": {
+                  "status": "known",
+                  "value": "enemy:0"
+                },
+                "values": []
+              },
+              {
+                "kind": "card_selected",
+                "subject": {
+                  "status": "known",
+                  "value": "card:5"
+                },
+                "target": {
+                  "status": "not_applicable",
+                  "value": null
+                },
+                "values": [
+                  {
+                    "key": "selected",
+                    "amount": 1
+                  }
+                ]
+              },
+              {
+                "kind": "card_selected",
+                "subject": {
+                  "status": "known",
+                  "value": "card:6"
+                },
+                "target": {
+                  "status": "not_applicable",
+                  "value": null
+                },
+                "values": [
+                  {
+                    "key": "selected",
+                    "amount": 1
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "context": {
+        "kind": "card_selection",
+        "combat": {
+          "kind": "combat",
+          "round": 1,
+          "block": 0,
+          "energy": 2,
+          "powers": {
+            "status": "known",
+            "value": []
+          },
+          "resources": {
+            "stars": {
+              "status": "not_applicable",
+              "value": null
+            },
+            "sovereign_blades": {
+              "status": "not_applicable",
+              "value": null
+            },
+            "osty": {
+              "status": "not_applicable",
+              "value": null
+            },
+            "orb_slots": {
+              "status": "not_applicable",
+              "value": null
+            },
+            "orbs": {
+              "status": "not_applicable",
+              "value": null
+            }
+          },
+          "enemies": [
+            {
+              "ref": "enemy:0",
+              "definition_id": "simple_enemy",
+              "hp": 30,
+              "max_hp": 40,
+              "block": 0,
+              "powers": {
+                "status": "known",
+                "value": []
+              },
+              "intents": {
+                "status": "known",
+                "value": [
+                  {
+                    "kind": "attack",
+                    "damage": {
+                      "status": "known",
+                      "value": 6
+                    },
+                    "hits": {
+                      "status": "known",
+                      "value": 1
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+          "piles": [
+            {
+              "kind": "hand",
+              "count": 0,
+              "cards": {
+                "status": "known",
+                "value": []
+              },
+              "order": "visible"
+            },
+            {
+              "kind": "draw",
+              "count": 0,
+              "cards": {
+                "status": "known",
+                "value": []
+              },
+              "order": "canonical"
+            },
+            {
+              "kind": "discard",
+              "count": 3,
+              "cards": {
+                "status": "known",
+                "value": [
+                  {
+                    "ref": "card:5",
+                    "definition_id": "strike",
+                    "upgrade_level": 0,
+                    "cost": {
+                      "energy": {
+                        "status": "known",
+                        "value": 1
+                      },
+                      "energy_x": false,
+                      "stars": {
+                        "status": "not_applicable",
+                        "value": null
+                      },
+                      "stars_x": false
+                    },
+                    "values": {
+                      "status": "known",
+                      "value": [
+                        {
+                          "key": "damage",
+                          "amount": 6
+                        },
+                        {
+                          "key": "hits",
+                          "amount": 1
+                        }
+                      ]
+                    },
+                    "modifiers": {
+                      "status": "known",
+                      "value": []
+                    },
+                    "origin": {
+                      "status": "unknown",
+                      "value": null
+                    }
+                  },
+                  {
+                    "ref": "card:6",
+                    "definition_id": "strike",
+                    "upgrade_level": 0,
+                    "cost": {
+                      "energy": {
+                        "status": "known",
+                        "value": 1
+                      },
+                      "energy_x": false,
+                      "stars": {
+                        "status": "not_applicable",
+                        "value": null
+                      },
+                      "stars_x": false
+                    },
+                    "values": {
+                      "status": "known",
+                      "value": [
+                        {
+                          "key": "damage",
+                          "amount": 6
+                        },
+                        {
+                          "key": "hits",
+                          "amount": 1
+                        }
+                      ]
+                    },
+                    "modifiers": {
+                      "status": "known",
+                      "value": []
+                    },
+                    "origin": {
+                      "status": "unknown",
+                      "value": null
+                    }
+                  },
+                  {
+                    "ref": "card:7",
+                    "definition_id": "defend",
+                    "upgrade_level": 0,
+                    "cost": {
+                      "energy": {
+                        "status": "known",
+                        "value": 1
+                      },
+                      "energy_x": false,
+                      "stars": {
+                        "status": "not_applicable",
+                        "value": null
+                      },
+                      "stars_x": false
+                    },
+                    "values": {
+                      "status": "known",
+                      "value": [
+                        {
+                          "key": "block",
+                          "amount": 5
+                        }
+                      ]
+                    },
+                    "modifiers": {
+                      "status": "known",
+                      "value": []
+                    },
+                    "origin": {
+                      "status": "unknown",
+                      "value": null
+                    }
+                  }
+                ]
+              },
+              "order": "visible"
+            },
+            {
+              "kind": "exhaust",
+              "count": 0,
+              "cards": {
+                "status": "known",
+                "value": []
+              },
+              "order": "visible"
+            },
+            {
+              "kind": "in_play",
+              "count": 1,
+              "cards": {
+                "status": "known",
+                "value": [
+                  {
+                    "ref": "card:4",
+                    "definition_id": "neows_fury",
+                    "upgrade_level": 0,
+                    "cost": {
+                      "energy": {
+                        "status": "known",
+                        "value": 1
+                      },
+                      "energy_x": false,
+                      "stars": {
+                        "status": "not_applicable",
+                        "value": null
+                      },
+                      "stars_x": false
+                    },
+                    "values": {
+                      "status": "known",
+                      "value": [
+                        {
+                          "key": "damage",
+                          "amount": 10
+                        },
+                        {
+                          "key": "hits",
+                          "amount": 1
+                        },
+                        {
+                          "key": "select_maximum",
+                          "amount": 2
+                        }
+                      ]
+                    },
+                    "modifiers": {
+                      "status": "known",
+                      "value": [
+                        {
+                          "key": "exhausts",
+                          "amount": 1
+                        }
+                      ]
+                    },
+                    "origin": {
+                      "status": "unknown",
+                      "value": null
+                    }
+                  }
+                ]
+              },
+              "order": "visible"
+            },
+            {
+              "kind": "powers",
+              "count": 0,
+              "cards": {
+                "status": "known",
+                "value": []
+              },
+              "order": "visible"
+            }
+          ]
+        },
+        "source": {
+          "status": "known",
+          "value": "card:4"
+        },
+        "pile": "discard",
+        "options": [
+          "card:5",
+          "card:6",
+          "card:7"
+        ],
+        "selected": [
+          "card:5",
+          "card:6"
+        ],
+        "minimum": 0,
+        "maximum": 2,
+        "manual_confirmation": true,
+        "cancelable": false
+      },
+      "candidates": [
+        {
+          "ref": "action:0",
+          "kind": "confirm_selection",
+          "subject": null,
+          "target": null
+        },
+        {
+          "ref": "action:1",
+          "kind": "deselect_card",
+          "subject": "card:5",
+          "target": null
+        },
+        {
+          "ref": "action:2",
+          "kind": "deselect_card",
+          "subject": "card:6",
+          "target": null
+        }
+      ]
+    },
+    {
+      "schema": "sts_public_decision_v1",
+      "profile": "combat_reward_map_v1",
+      "run": {
+        "character": "ironclad",
+        "ascension": 0,
+        "act": 1,
+        "floor": 1,
+        "hp": 80,
+        "max_hp": 80,
+        "gold": 99,
+        "deck": {
+          "status": "known",
+          "value": [
+            {
+              "ref": "card:0",
+              "definition_id": "defend",
+              "upgrade_level": 0,
+              "cost": {
+                "energy": {
+                  "status": "known",
+                  "value": 1
+                },
+                "energy_x": false,
+                "stars": {
+                  "status": "not_applicable",
+                  "value": null
+                },
+                "stars_x": false
+              },
+              "values": {
+                "status": "known",
+                "value": [
+                  {
+                    "key": "block",
+                    "amount": 5
+                  }
+                ]
+              },
+              "modifiers": {
+                "status": "known",
+                "value": []
+              },
+              "origin": {
+                "status": "not_applicable",
+                "value": null
+              }
+            },
+            {
+              "ref": "card:1",
+              "definition_id": "neows_fury",
+              "upgrade_level": 0,
+              "cost": {
+                "energy": {
+                  "status": "known",
+                  "value": 1
+                },
+                "energy_x": false,
+                "stars": {
+                  "status": "not_applicable",
+                  "value": null
+                },
+                "stars_x": false
+              },
+              "values": {
+                "status": "known",
+                "value": [
+                  {
+                    "key": "damage",
+                    "amount": 10
+                  },
+                  {
+                    "key": "hits",
+                    "amount": 1
+                  },
+                  {
+                    "key": "select_maximum",
+                    "amount": 2
+                  }
+                ]
+              },
+              "modifiers": {
+                "status": "known",
+                "value": [
+                  {
+                    "key": "exhausts",
+                    "amount": 1
+                  }
+                ]
+              },
+              "origin": {
+                "status": "not_applicable",
+                "value": null
+              }
+            },
+            {
+              "ref": "card:2",
+              "definition_id": "strike",
+              "upgrade_level": 0,
+              "cost": {
+                "energy": {
+                  "status": "known",
+                  "value": 1
+                },
+                "energy_x": false,
+                "stars": {
+                  "status": "not_applicable",
+                  "value": null
+                },
+                "stars_x": false
+              },
+              "values": {
+                "status": "known",
+                "value": [
+                  {
+                    "key": "damage",
+                    "amount": 6
+                  },
+                  {
+                    "key": "hits",
+                    "amount": 1
+                  }
+                ]
+              },
+              "modifiers": {
+                "status": "known",
+                "value": []
+              },
+              "origin": {
+                "status": "not_applicable",
+                "value": null
+              }
+            },
+            {
+              "ref": "card:3",
+              "definition_id": "strike",
+              "upgrade_level": 0,
+              "cost": {
+                "energy": {
+                  "status": "known",
+                  "value": 1
+                },
+                "energy_x": false,
+                "stars": {
+                  "status": "not_applicable",
+                  "value": null
+                },
+                "stars_x": false
+              },
+              "values": {
+                "status": "known",
+                "value": [
+                  {
+                    "key": "damage",
+                    "amount": 6
+                  },
+                  {
+                    "key": "hits",
+                    "amount": 1
+                  }
+                ]
+              },
+              "modifiers": {
+                "status": "known",
+                "value": []
+              },
+              "origin": {
+                "status": "not_applicable",
+                "value": null
+              }
+            }
+          ]
+        },
+        "relics": {
+          "status": "known",
+          "value": []
+        },
+        "potions": {
+          "status": "known",
+          "value": [
+            {
+              "index": 0,
+              "potion": null
+            },
+            {
+              "index": 1,
+              "potion": null
+            },
+            {
+              "index": 2,
+              "potion": null
+            }
+          ]
+        },
+        "map": {
+          "status": "known",
+          "value": {
+            "current": {
+              "status": "known",
+              "value": "node:0"
+            },
+            "nodes": [
+              {
+                "ref": "node:0",
+                "row": 1,
+                "column": 0,
+                "kind": "combat",
+                "next_nodes": [
+                  "node:1"
+                ]
+              },
+              {
+                "ref": "node:1",
+                "row": 2,
+                "column": 0,
+                "kind": "combat",
+                "next_nodes": []
+              }
+            ]
+          }
+        },
+        "history": {
+          "status": "known",
+          "value": {
+            "coverage": "attachment",
+            "events": [
+              {
+                "kind": "card_played",
+                "subject": {
+                  "status": "known",
+                  "value": "card:4"
+                },
+                "target": {
+                  "status": "known",
+                  "value": "enemy:0"
+                },
+                "values": []
+              },
+              {
+                "kind": "card_selected",
+                "subject": {
+                  "status": "known",
+                  "value": "card:5"
+                },
+                "target": {
+                  "status": "not_applicable",
+                  "value": null
+                },
+                "values": [
+                  {
+                    "key": "selected",
+                    "amount": 1
+                  }
+                ]
+              },
+              {
+                "kind": "card_selected",
+                "subject": {
+                  "status": "known",
+                  "value": "card:6"
+                },
+                "target": {
+                  "status": "not_applicable",
+                  "value": null
+                },
+                "values": [
+                  {
+                    "key": "selected",
+                    "amount": 1
+                  }
+                ]
+              },
+              {
+                "kind": "selection_confirmed",
+                "subject": {
+                  "status": "not_applicable",
+                  "value": null
+                },
+                "target": {
+                  "status": "not_applicable",
+                  "value": null
+                },
+                "values": []
+              }
+            ]
+          }
+        }
+      },
+      "context": {
+        "kind": "combat",
+        "round": 1,
+        "block": 0,
+        "energy": 2,
+        "powers": {
+          "status": "known",
+          "value": []
+        },
+        "resources": {
+          "stars": {
+            "status": "not_applicable",
+            "value": null
+          },
+          "sovereign_blades": {
+            "status": "not_applicable",
+            "value": null
+          },
+          "osty": {
+            "status": "not_applicable",
+            "value": null
+          },
+          "orb_slots": {
+            "status": "not_applicable",
+            "value": null
+          },
+          "orbs": {
+            "status": "not_applicable",
+            "value": null
+          }
+        },
+        "enemies": [
+          {
+            "ref": "enemy:0",
+            "definition_id": "simple_enemy",
+            "hp": 30,
+            "max_hp": 40,
+            "block": 0,
+            "powers": {
+              "status": "known",
+              "value": []
+            },
+            "intents": {
+              "status": "known",
+              "value": [
+                {
+                  "kind": "attack",
+                  "damage": {
+                    "status": "known",
+                    "value": 6
+                  },
+                  "hits": {
+                    "status": "known",
+                    "value": 1
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "piles": [
+          {
+            "kind": "hand",
+            "count": 2,
+            "cards": {
+              "status": "known",
+              "value": [
+                {
+                  "ref": "card:5",
+                  "definition_id": "strike",
+                  "upgrade_level": 0,
+                  "cost": {
+                    "energy": {
+                      "status": "known",
+                      "value": 1
+                    },
+                    "energy_x": false,
+                    "stars": {
+                      "status": "not_applicable",
+                      "value": null
+                    },
+                    "stars_x": false
+                  },
+                  "values": {
+                    "status": "known",
+                    "value": [
+                      {
+                        "key": "damage",
+                        "amount": 6
+                      },
+                      {
+                        "key": "hits",
+                        "amount": 1
+                      }
+                    ]
+                  },
+                  "modifiers": {
+                    "status": "known",
+                    "value": []
+                  },
+                  "origin": {
+                    "status": "unknown",
+                    "value": null
+                  }
+                },
+                {
+                  "ref": "card:6",
+                  "definition_id": "strike",
+                  "upgrade_level": 0,
+                  "cost": {
+                    "energy": {
+                      "status": "known",
+                      "value": 1
+                    },
+                    "energy_x": false,
+                    "stars": {
+                      "status": "not_applicable",
+                      "value": null
+                    },
+                    "stars_x": false
+                  },
+                  "values": {
+                    "status": "known",
+                    "value": [
+                      {
+                        "key": "damage",
+                        "amount": 6
+                      },
+                      {
+                        "key": "hits",
+                        "amount": 1
+                      }
+                    ]
+                  },
+                  "modifiers": {
+                    "status": "known",
+                    "value": []
+                  },
+                  "origin": {
+                    "status": "unknown",
+                    "value": null
+                  }
+                }
+              ]
+            },
+            "order": "visible"
+          },
+          {
+            "kind": "draw",
+            "count": 0,
+            "cards": {
+              "status": "known",
+              "value": []
+            },
+            "order": "canonical"
+          },
+          {
+            "kind": "discard",
+            "count": 1,
+            "cards": {
+              "status": "known",
+              "value": [
+                {
+                  "ref": "card:7",
+                  "definition_id": "defend",
+                  "upgrade_level": 0,
+                  "cost": {
+                    "energy": {
+                      "status": "known",
+                      "value": 1
+                    },
+                    "energy_x": false,
+                    "stars": {
+                      "status": "not_applicable",
+                      "value": null
+                    },
+                    "stars_x": false
+                  },
+                  "values": {
+                    "status": "known",
+                    "value": [
+                      {
+                        "key": "block",
+                        "amount": 5
+                      }
+                    ]
+                  },
+                  "modifiers": {
+                    "status": "known",
+                    "value": []
+                  },
+                  "origin": {
+                    "status": "unknown",
+                    "value": null
+                  }
+                }
+              ]
+            },
+            "order": "visible"
+          },
+          {
+            "kind": "exhaust",
+            "count": 1,
+            "cards": {
+              "status": "known",
+              "value": [
+                {
+                  "ref": "card:4",
+                  "definition_id": "neows_fury",
+                  "upgrade_level": 0,
+                  "cost": {
+                    "energy": {
+                      "status": "known",
+                      "value": 1
+                    },
+                    "energy_x": false,
+                    "stars": {
+                      "status": "not_applicable",
+                      "value": null
+                    },
+                    "stars_x": false
+                  },
+                  "values": {
+                    "status": "known",
+                    "value": [
+                      {
+                        "key": "damage",
+                        "amount": 10
+                      },
+                      {
+                        "key": "hits",
+                        "amount": 1
+                      },
+                      {
+                        "key": "select_maximum",
+                        "amount": 2
+                      }
+                    ]
+                  },
+                  "modifiers": {
+                    "status": "known",
+                    "value": [
+                      {
+                        "key": "exhausts",
+                        "amount": 1
+                      }
+                    ]
+                  },
+                  "origin": {
+                    "status": "unknown",
+                    "value": null
+                  }
+                }
+              ]
+            },
+            "order": "visible"
+          },
+          {
+            "kind": "in_play",
+            "count": 0,
+            "cards": {
+              "status": "known",
+              "value": []
+            },
+            "order": "visible"
+          },
+          {
+            "kind": "powers",
+            "count": 0,
+            "cards": {
+              "status": "known",
+              "value": []
+            },
+            "order": "visible"
+          }
+        ]
+      },
+      "candidates": [
+        {
+          "ref": "action:0",
+          "kind": "end_turn",
+          "subject": null,
+          "target": null
+        },
+        {
+          "ref": "action:1",
+          "kind": "play_card",
+          "subject": "card:5",
+          "target": "enemy:0"
+        },
+        {
+          "ref": "action:2",
+          "kind": "play_card",
+          "subject": "card:6",
+          "target": "enemy:0"
+        }
+      ]
+    }
+  ],
+  "actions": [
+    "play_card",
+    "select_card",
+    "select_card",
+    "confirm_selection",
+    "play_card"
+  ]
+}

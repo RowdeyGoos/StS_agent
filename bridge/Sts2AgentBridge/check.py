@@ -46,7 +46,7 @@ class Gate:
             "DOTNET_GENERATE_ASPNET_CERTIFICATE": "false", "DOTNET_MULTILEVEL_LOOKUP": "0",
             "DOTNET_CLI_DO_NOT_USE_MSBUILD_SERVER": "1", "MSBUILDDISABLENODEREUSE": "1",
             "NUGET_PACKAGES": str(scratch / "packages"), "PYTHONDONTWRITEBYTECODE": "1",
-            "PYTHONPATH": str(self.source),
+            "PYTHONPATH": os.pathsep.join((str(self.source), str(self.source.parents[1]))),
         }
         self.checks: dict[str, dict] = {}
         self._lock = threading.Lock()
@@ -154,6 +154,7 @@ class Gate:
             self.python_check("client", [sys.executable, "-B", "-m", "unittest", "discover", "-s", str(app / "client_tests"), "-p", "test_*.py"])
             self.python_check("core_client", [sys.executable, "-B", str(self.source / "tools/probe_live_fixtures.py")])
             self.python_check("reward_codec", [sys.executable, "-B", str(self.source / "tools/apply_reward_live_fixtures.py")])
+            self.python_check("room_codec", [sys.executable, "-B", str(self.source / "tools/apply_room_live_fixtures.py")])
             for script in sorted(app.glob("client_tests/*_fixtures.py")):
                 self.python_check(str(script.relative_to(self.source)), [sys.executable, "-B", str(script)])
             for script in sorted(app.glob("operations/*_fixtures.py")):
@@ -236,6 +237,9 @@ class Gate:
         if self.component in ("all", "host", "core") and self.selected("shared_client:socket"):
             self.run("shared_client:socket", [sys.executable, "-B", str(self.source / "apps/bridge/client_tests/socket_integration.py"),
                 self.dotnet, str(self.build("apps/bridge/tests/Sts2AgentBridge.Unified.Tests.csproj"))])
+        if self.component in ("all", "core") and self.selected("agent:paired"):
+            self.run("agent:paired", [sys.executable, "-B", str(self.source / "apps/bridge/client_tests/agent_pair.py"),
+                self.dotnet, str(self.build("apps/bridge/agent_native_tests/AgentNative.Tests.csproj"))])
 
     def prepare_identity(self) -> None:
         """Bind the built candidate once, before packaging/installation fixtures.

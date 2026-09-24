@@ -447,5 +447,164 @@ class HealingRewardTests(unittest.TestCase):
             self.assertEqual(wire.posts,2 if mode=='late_loss' else 1)
             self.assertEqual(result['reconciled'],1 if mode=='late_loss' else 0)
 
+
+class MaxHpRewardWire(ItemRewardWire):
+    def __init__(self,hp=33,max_hp=80,waffle=None):
+        super().__init__(1)
+        self.state.update(schema_version=7,potion_slots=[None]*3)
+        self.state['player'].update(hp=hp,max_hp=max_hp)
+        row=self.state['rewards'][0]
+        row.update(kind='relic',item_key='STRAWBERRY',potion_capacity_gain=0,heal_amount=7,max_hp_gain=7)
+        if waffle is not None:
+            other=dict(row,item_key='FAKE_LEES_WAFFLE',heal_amount=max_hp//10,max_hp_gain=0)
+            self.state['rewards']=[other,row] if waffle=='first' else [row,other]
+            for index,reward in enumerate(self.state['rewards']):reward.update(reward_slot=index,reward_index=index)
+        self.actions()
+
+    def actions(self):
+        super().actions()
+        if self.state.get('schema_version')==7:
+            for action in self.state['legal_actions']:action['potion_slot']=None
+
+    def request(self,method,route,body=None):
+        if method=='POST':
+            action=json.loads(body)['action_id'];before=copy.deepcopy(self.state['player'])
+            if action.startswith('collect:'):
+                row=self.state['rewards'][0]
+                self.state['player']['max_hp']+=row['max_hp_gain']
+                self.state['player']['hp']=min(self.state['player']['max_hp'],before['hp']+row['heal_amount'])
+                for reward in self.state['rewards'][1:]:
+                    if reward['item_key']=='FAKE_LEES_WAFFLE':reward['heal_amount']=self.state['player']['max_hp']//10
+            result=super().request(method,route,body)
+            if action=='proceed':self.state['player']=before
+            return result
+        return super().request(method,route,body)
+
+class MaxHpRewardTests(unittest.TestCase):
+    run_wire=SpecialRewardTests.run_wire
+
+    def test_exact_health_growth_survives_compaction_and_exit(self):
+        for hp,max_hp in [(33,80),(80,80),(1,9),(2056,2064),(999986,999993)]:
+            wire=MaxHpRewardWire(hp,max_hp);result=self.run_wire(wire)
+            self.assertEqual(result['status'],'resolved',result)
+            self.assertEqual((result['attempted'],result['accepted'],result['reconciled']),(2,2,2))
+            self.assertEqual((result['after_player']['hp'],result['after_player']['max_hp']),(hp+7,max_hp+7))
+            self.assertEqual(result['collected_items'],[dict(kind='relic',key='STRAWBERRY',reward_index=0)])
+
+    def test_bad_max_hp_declarations_fail_before_input(self):
+        for key,value in [('max_hp_gain',True),('max_hp_gain',-1),('max_hp_gain',6),('max_hp_gain',8),
+                          ('heal_amount',0),('heal_amount',8),('item_key','PASSIVE'),('kind','potion')]:
+            wire=MaxHpRewardWire();wire.state['rewards'][0][key]=value
+            result=self.run_wire(wire)
+            self.assertEqual((result['status'],wire.posts),('failed',0),(key,value,result))
+        wire=MaxHpRewardWire();wire.state['schema_version']=6
+        self.assertEqual(self.run_wire(wire)['status'],'failed');self.assertEqual(wire.posts,0)
+        for max_hp in (999995,999999995):
+            wire=MaxHpRewardWire(max_hp=max_hp)
+            self.assertEqual(self.run_wire(wire)['status'],'failed');self.assertEqual(wire.posts,0)
+
+    def test_wrong_effect_and_schema_loss_stop_without_retry(self):
+        for mode in ['hp_missing','hp_extra','max_missing','max_extra','gold','deck','potion','schema','lost','late_loss']:
+            wire=MaxHpRewardWire()
+            def corrupt(value,method):
+                if mode=='lost' and method=='POST':return OSError('lost')
+                if mode=='late_loss' and method=='POST' and wire.posts==2:return OSError('lost')
+                if method=='GET' and wire.posts==1:
+                    if mode=='hp_missing':value['player']['hp']=33
+                    if mode=='hp_extra':value['player']['hp']=41
+                    if mode=='max_missing':value['player']['max_hp']=80
+                    if mode=='max_extra':value['player']['max_hp']=88
+                    if mode in ('gold','deck'):value['player']['deck_count' if mode=='deck' else mode]+=1
+                    if mode=='potion':value['potion_slots'][0]='FOREIGN'
+                    if mode=='schema':value['schema_version']=6
+                return value
+            wire.corrupt=corrupt;result=self.run_wire(wire)
+            self.assertEqual(result['status'],'failed',(mode,result))
+            self.assertEqual(wire.posts,2 if mode=='late_loss' else 1)
+            self.assertEqual(result['reconciled'],1 if mode=='late_loss' else 0)
+
+    def test_waffle_uses_current_max_hp_only_after_verified_growth(self):
+        for order in ('first','last'):
+            wire=MaxHpRewardWire(33,85,waffle=order);result=self.run_wire(wire)
+            self.assertEqual(result['status'],'resolved',result)
+            self.assertEqual((result['accepted'],result['reconciled']),(3,3))
+            self.assertEqual((result['after_player']['hp'],result['after_player']['max_hp']),(48 if order=='first' else 49,92))
+        wire=MaxHpRewardWire(33,85,waffle='last')
+        def corrupt(value,method):
+            if method=='GET' and wire.posts==1:value['rewards'][0]['heal_amount']=8
+            return value
+        wire.corrupt=corrupt;result=self.run_wire(wire)
+        self.assertEqual((result['status'],wire.posts),('failed',1))
+
 if __name__ == '__main__':
     unittest.main()
+
+
+class ModifiedGoldWire(RewardWire):
+    def __init__(self, amount=14, *, skip=False, initial_gold=99):
+        super().__init__(skip=skip)
+        self.amount,self.initial_gold=amount,initial_gold
+        self.state['rewards'][0]['gold_amount']=amount
+        self.state['player']['gold']=initial_gold
+        self.after_projection=lambda value,method:value
+
+    def request(self,method,route,body=None):
+        buffer=super().request(method,route,body)
+        value=json.loads(buffer);buffer[:]=b'\0'*len(buffer)
+        if 'player' in value:
+            value['player']['gold']=self.initial_gold+(self.amount*5//4 if self.stage else 0)
+        if value.get('status')=='ready':
+            value['schema_version']=8;value['potion_slots']=[None]*3
+            for action in value['legal_actions']:action['potion_slot']=None
+            for row in value['rewards']:
+                row.update(item_key=None,potion_capacity_gain=0,heal_amount=0,max_hp_gain=0,
+                           gold_gain=self.amount*5//4 if row['kind']=='gold' else None)
+        value=self.after_projection(value,method)
+        buffer=encode(value);self.buffers.append(buffer);return buffer
+
+
+class ModifiedGoldTests(unittest.TestCase):
+    def run_wire(self,wire):
+        clock=Clock()
+        result=host.run_rewards(wire.request,policy='skip-card' if wire.skip else 'first-card',clock=clock,sleep=clock.sleep)
+        self.assertTrue(all(not any(b) for b in wire.buffers))
+        return result
+
+    def test_native_rounding_compaction_and_card_child(self):
+        for amount in (0,1,3,4,14,15,43):
+            for skip in (False,True):
+                wire=ModifiedGoldWire(amount,skip=skip);result=self.run_wire(wire)
+                self.assertEqual(result['status'],'resolved',result)
+                self.assertEqual((result['claimed_gold'],result['attempted'],result['reconciled']), (amount*5//4,4,4))
+        result=self.run_wire(ModifiedGoldWire(initial_gold=999983))
+        self.assertEqual((result['status'],result['after_player']['gold']),('resolved',1000000))
+
+    def test_malformed_gain_and_overflow_rejected_before_input(self):
+        for gain in (-1,18,True,None,1.25):
+            wire=ModifiedGoldWire()
+            def corrupt(value,method):
+                if method=='GET':value['rewards'][0]['gold_gain']=gain
+                return value
+            wire.after_projection=corrupt
+            self.assertEqual(self.run_wire(wire)['attempted'],0)
+        self.assertEqual(self.run_wire(ModifiedGoldWire(initial_gold=999984))['attempted'],0)
+
+    def test_unexpected_gain_or_schema_loss_is_never_retried(self):
+        for mode in ('wrong_gain','schema_loss','changed_offer'):
+            wire=ModifiedGoldWire()
+            def corrupt(value,method):
+                if method=='GET' and wire.stage==1:
+                    if mode=='wrong_gain':value['player']['gold']-=1
+                    elif mode=='schema_loss':
+                        value['schema_version']=7
+                        for row in value['rewards']:row.pop('gold_gain')
+                    else:value['rewards'][0]['gold_gain']=1
+                return value
+            wire.after_projection=corrupt;result=self.run_wire(wire)
+            self.assertEqual(result['status'],'failed',result)
+            self.assertEqual((result['attempted'],result['accepted'],wire.posts),(1,1,1))
+
+    def test_lost_receipt_does_not_retry_or_count_gain(self):
+        wire=ModifiedGoldWire();wire.corrupt=lambda value,method:OSError('lost') if method=='POST' else value
+        result=self.run_wire(wire)
+        self.assertEqual((result['attempted'],result['accepted'],result['reconciled'],result['claimed_gold'],wire.posts),(1,0,0,0,1))

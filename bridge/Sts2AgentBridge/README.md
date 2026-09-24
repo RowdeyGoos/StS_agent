@@ -21,8 +21,11 @@ Start with [support and known limits](../../docs/STATUS.md). This guide owns
 | Module | Existing interface |
 | --- | --- |
 | Core combat, rewards, map, rest/basic rooms | `/probe/v0/health`, `/probe/v0/manifest`, `/probe/v0/public/*` |
+| Shared public agent decisions | `/probe/agent-v1/public/decision` and `action`; bounded combat/selection/reward/map profile |
 | Event combat continuation | `/probe/event-combat-v2/public/decision`; owned child `/probe/event-combat-v2/public/item-decision` and `item-action` |
 | Combat discard/exhaust choice | `/probe/combat-choice-v1/public/decision` and `action` |
+| Combat pile choice, including visible Draw | `/probe/combat-choice-v2/public/decision` and `action`; same exclusive owner |
+| Campaign combat choices, including mandatory offered cards | `/probe/combat-choice-v3/public/decision` and `action`; same exclusive owner |
 | Potion/relic collection | `/probe/item-v1/public/item-decision` and `item-action` |
 | Shop, standard room flows and additional rest options | `/probe/room-flows-v1/public/decision` and `action` |
 | Standalone card selection | `/card-selection-v1/parent`, `parent/action`, `child`, `child/action` |
@@ -40,11 +43,23 @@ operations until the
 native result reconciles and disposal succeeds; another capability receives
 `capability_busy`. The standard event parent retains its item-child route.
 Core actions likewise fence unrelated operations until their decision reconciles.
+Combat ownership retains the exact queued native action through its execution and
+nested selectors. Changed HP/energy or a closed selector does not establish
+completion; end-turn also waits for turn advancement and coherent readiness.
 
 Clean completion releases the module and keeps the host available for the next
 capability. An uncertain mutation, failed response delivery or failed cleanup
 stops the host. There are no automatic mutation retries.
-Authenticated reads that fail in the owner-frame queue return a terminal
+An authenticated GET cancelled before the owner-frame callback is claimed can
+receive one internal replacement submission in the same exchange. The cancelled
+callback cannot execute later. Recovery retains the existing module and pending
+action, consumes another read reservation and is capped at eight replacements
+per bridge process. Each submission retains its 500 ms frame-result deadline;
+the connection lifetime is unchanged. POSTs and callbacks already claimed are
+never retried. A second failure, exhausted budget or expired connection stops
+the host under the existing cleanup rules.
+
+Unresolved authenticated read failures in the owner-frame queue return a terminal
 `kind: error` with one fixed code: `dispatch_unavailable`, `dispatch_busy`,
 `dispatch_timeout_before_claim`, `dispatch_timeout_after_claim`, `dispatch_fault`
 or `dispatch_invalid_result`. Failed read replies also carry up to 15 fixed-name
@@ -65,18 +80,12 @@ predicates from combat-entry callback, run, rewards, encounter, state, parent,
 player and node checks. These closed labels report the actual evaluated boundary;
 a combat rejection is not inferred to be an ownership failure.
 
-Process-wide limits are
-16,384 reads, 512 action reservations and 64 feature sessions, with the existing
-stricter limits inside each module.
-
-In particular, the persistent core reward reader permits **three terminal reward
-screens per game process**, at most eight entries per screen, with 17 accepted
-actions per screen and 51 total.
-Starting another client invocation does not reset this counter. A fourth screen
-currently returns the generic `unsupported_reward` before offer inspection.
-Budget these screens when combining live tests; use a fresh game process for the
-next batch. Event-owned resume-item children use a separate path and do not consume
-this core counter.
+Process-wide limits are 131,072 reads, 8,192 action reservations and 64 feature
+sessions, with stricter limits inside individual controllers. The production core
+reward reader permits **64 terminal reward screens per game process**, at most
+eight entries and 17 accepted actions per screen. Starting another client resets
+none of these counters. Event-owned resume-item children use a separate path and
+do not consume this core reward counter.
 
 A core `stale_decision` rejection with `mutation_state: none` permits a fresh
 observation: native dispatch did not occur. Once its response is fully sent, its
@@ -173,6 +182,10 @@ identities. Retain its printed SHA-256 separately. Failure cannot emit an accept
 release manifest. Keep one [current release record](releases/current/README.md);
 Git retains earlier records. Development corrections do not need manual freezing.
 
+The release also binds the actual `game.agent.contracts` and `game.agent.policy`
+sources consumed by the live agent client. They remain shared repository modules;
+there is no copied bridge policy. Changing either invalidates release verification.
+
 To place accepted artifacts in the fixed install-input directory:
 
 ```bash
@@ -211,8 +224,27 @@ After installation and the user's requested game setup, use one client:
 
 ## Client modes
 
+`--capability agent` uses the same public-only chooser as the headless adapter.
+It handles supported combat, nested card selection and rewards, then stops at an
+actionable map. Add `--agent-dispatch-map` for a separate bounded case that selects
+one legal node and stops after native completion. It reports attempted, accepted
+and reconciled counts independently and stops on uncertainty. Its 180-second run
+limit and native ownership/budgets remain active.
+
+This profile requires the bridge observer to start before combat setup and an
+explicitly supported deck/inventory; arbitrary reward offers can be unsupported.
+See the [native producer boundary](../../docs/AGENT_CONTRACT.md#native-producer).
+The [controlled live slice](../../docs/evidence/AGENT_BRIDGE_M3_2026_09_23.md) passed
+with the same callback on headless and live backends, using a gold-then-leave reward
+override through `run_agent(policy=...)`. That result does not cover live card-offer
+selection by the default CLI chooser. A native debug fight needs a valid map
+starting context; the accepted setup used a fresh act map. The optional
+[Gymnasium environment and fixed public encoding](../../docs/AGENT_ENCODING.md)
+are implemented for the headless slice; this does not broaden live coverage.
+
 | `--capability` | Behavior / required starting surface |
 | --- | --- |
+| `campaign` | Prepared Ironclad A0 → bounded multi-act traversal; requires `--campaign-setup controlled_extra_hp` or `normal_hp`; optional `--campaign-entry resume` continues a native checkpoint |
 | `combat` | One bounded combat, including supported nested discard/exhaust choices |
 | `combat-choice` | One already-open supported combat selector |
 | `combat-map` | Combat → terminal rewards → independent actionable-map check |
@@ -227,7 +259,8 @@ After installation and the user's requested game setup, use one client:
 A core accepted receipt is acceptance, not completion: reconcile through its
 decision route. `events` may end at `combat_handoff`, `combat_resume_handoff`,
 `map_handoff`, `run_abandoned` or `run_won`; entry alone is not combat victory.
-Architect currently fails live admission; see [status](../../docs/STATUS.md).
+Architect admission has a fixture-tested correction; live acceptance remains open.
+See [status](../../docs/STATUS.md).
 The composite modes retain earlier stage counts/results if a later stage fails.
 Defeat prevents reward control. None of the `*-map` modes selects a map node.
 
@@ -242,6 +275,141 @@ have different opaque IDs. Clients echo the 64-character lowercase hex ID. Known
 no-mutation stale rejections allow bounded fresh observation; they do not permit
 replay of an uncertain action. Combat/choice bounds and contracts are in
 [combat choices](../../docs/COMBAT_CHOICES.md).
+
+### Campaign traversal
+
+`--capability campaign --campaign-setup controlled_extra_hp` attaches to a manually
+prepared Ironclad A0 run at its first event or map, with floor at most one and
+max HP above 80. The flag records the setup; it does not grant HP, create a run,
+change its seed or reset the game. `normal_hp` accepts the same entry without
+requiring an HP increase. Profile selection and launch follow the live guide.
+
+The default `--campaign-entry fresh` retains that entry requirement. After native
+Continue, `--campaign-entry resume` accepts a supported ready surface at a later
+floor or act. It starts a new segment with the same profile/HP and subsequent
+run/act/floor continuity checks. It neither reloads a save nor retries or adopts
+an uncertain action from a failed host. Reload the native checkpoint in a fresh
+game process after a failed attempt, following normal owned cleanup and setup.
+The result records `entry_mode`, the entry scene and only the acts and bosses
+observed in this segment. A native ending reached in resume mode reports
+`continued_victory` with `full_campaign_verified: false`, even if all bosses
+happened to be observed. Prior partial runs are separate operational evidence.
+
+Campaign combat accepts an actionable decision with zero living enemies, as
+occurs between Test Subject's lives. It continues using only native-advertised
+legal actions, including End Turn; an empty enemy list alone never means victory.
+Standalone combat retains its earlier nonempty-enemy profile.
+Combat decisions containing a native `InfiniteWithoutNumbers` health display
+use **schema 2** on the existing route. Every enemy then includes `hp_display`
+(`numeric` or `infinite`); infinite enemies have `hp: null` and `max_hp: null`.
+Neither the response nor its opaque identity includes the native hidden health
+sentinel. All-numeric, waiting and unsupported decisions retain schema 1.
+`InfiniteWithNumbers` remains numeric because the native UI shows those values;
+unknown display modes are unsupported. Schema 2 also covers a terminal defeat
+with a surviving infinite-health enemy. Campaign clients explicitly accept this
+extension; standalone combat and shared `agent_v1` retain their numeric profile.
+The campaign ends turns when every remaining enemy displays infinity and avoids
+potion use in that phase. Mixed encounters retain finite targets. Native legal
+actions, task completion and the actual combat ending remain authoritative.
+Initially empty terminal rewards use the native reward set's sole player and
+exact run/room/screen binding. Proceed is offered only when the native button is
+usable; a nonempty set whose buttons are still loading remains waiting. The
+campaign reward route verifies the native act/ending transition before completion.
+
+The declared policy is `native_campaign_smoke_v6`: prioritize an advertised legal
+Frantic Escape card against The Insatiable's instant-kill mechanic, then redirect
+a recommended card targeting Parafright to The Obscura when the same card has a
+legal target action on the living summoner. Other combat recommendations are
+unchanged apart from the visible-infinity handling above. Collect gold and potions when capacity is available, skip optional combat cards, heal at
+rest sites, leave shops without purchases, open chests and decline their relics,
+and prefer advertised
+Leave/Ignore/Refuse/Proceed event options. Map routing prefers rest sites,
+ordinary fights, shops, treasure, elites, unknowns, ancients, then bosses. Other
+event choices use the first legal action and supported child controllers.
+This tests native traversal; the shared `agent_v1` projection and headless
+`full_run_v2` policy/encoding keep their separately declared coverage.
+Combat children use `combat_card_choice_v3`, which admits visible draw-pile
+grids such as Séance and mandatory one-of-one-to-three offered cards such as
+Knowledge Demon's status choice. Public candidates follow native displayed-holder
+order, never hidden draw order. Offered choices use `pile: offer`, bind the native
+result task and do not imply that a card was added to a pile or deck. Ordinary combat retains the v1 selector contract.
+
+Campaign combat also uses `combat_potions_v1` through the existing core owner.
+`GET /probe/combat-potions-v1/public/decision` returns `waiting` or `ready` with
+an opaque `decision_id`, the matching `combat_decision_id`, public inventory rows
+(`slot`, `id`, `supported`) and `legal_actions`. `POST .../action` takes the usual
+decision/action headers: `use:S` targets self/no creature; `use:S:T` targets the
+advertised living enemy index. Up to eight inventory slots and six living enemy
+indices are supported. The exact native potion and creature, not a later occupant
+of those indices, remain bound through execution.
+
+The first manual-use slice supports Blood Potion, Block Potion, Dexterity Potion,
+Energy Potion, Explosive Ampoule, Fire Potion, Flex Potion, Fruit Juice, Heart of
+Iron, Liquid Bronze, Regen Potion, Speed Potion, Strength Potion, Vulnerable Potion
+and Weak Potion. Automatic potions remain native; other manual types, including
+card offers, draw/autoplay and pile selectors, have no advertised use actions.
+The policy uses damage/stat potions when available, defensive potions against
+attack intents, energy at one or less with cards in hand, and healing at 80% HP or
+less. Targeted uses prefer The Obscura and then larger enemies to avoid spending
+potions repeatedly on respawning minions. This is a smoke policy, not an optimized
+potion-saving strategy. Full inventory uses `skip-full`; it never discards to make
+room and does not buy shop potions.
+
+A queued receipt is followed by `waiting` until that exact native UsePotionAction,
+its raw effect task and execution/completion tasks succeed and the exact potion
+is removed. Only successful hook cleanup produces `resolved` with the matching
+decision/action IDs. Early inventory removal and changed HP are insufficient.
+Another capability, card action, chooser or outer event continuation cannot take
+ownership while the potion is pending. Unresolved disposal retains a revocation
+guard so a delayed action cannot execute after the host stops. Failures terminate
+the host without retry; a pre-dispatch stale rejection certifies no mutation.
+The adapter allows 256 accepted potion decisions per process; the client allows
+24 attempts per combat and 30 seconds/640 completion reads per potion, within
+campaign budgets. Each combat stage records a `potions` list and separate
+`potion_attempted`, `potion_accepted`, `potion_reconciled` counts. Combat-v0 and
+`agent_v1` action/encoding contracts retain their earlier scope.
+
+The read route `/probe/campaign-v2/public/decision` reports public scene, act,
+total floor, character, ascension and HP with an opaque run binding. Its action
+route advertises `open_chest`, then `skip_relic` under a fresh decision ID, or
+`proceed` for a no-purchase leave from an untouched, closed shop. Opening a chest
+allows its normal automatic gold reward. Skip is advertised only after native
+Open reaches the relic chooser and its delay/tutorial tasks finish. Open is
+reconciled at that visible decision, while its pending native task stays owned
+across both POSTs. The exact queued null-index relic choice and Proceed task must
+complete before map handoff. Single-player Skip intentionally leaves Open suspended on the
+collection's pending picking task; the adapter verifies that dormant state, the
+native skipped flag and unchanged owner/collection immediately before cleanup.
+It never completes or cancels that task artificially. Reads never dispatch; foreign
+owners, unexpected extra reward overlays, tutorial interference and incomplete
+cleanup stop the host.
+This explicit chest sequence replaced the pre-acceptance `campaign_v1` route;
+prior attempts retain their original policy and route identities. Chest relic
+selection is outside this policy.
+
+The closed-shop action reuses the existing shop identity and inventory
+reconciliation with a campaign-only entry; the ordinary shop mode still expects
+an open inventory. Modal/tutorial interference stops it. Terminal rewards use
+`/probe/reward-v2/public/decision` and `/action`: completion distinguishes `map`,
+`act` and `ending`. The existing v1 reward route rejects an act transition before
+input. Native Proceed/vote/task completion, exact owner and destination, and hook
+cleanup must all succeed before another capability can take ownership.
+
+The campaign stops at 90 minutes, 320 stages, 8,192 POSTs or 131,072 reads. Each
+combat retains a 15-minute, 96-round, 512-accepted-action limit. Process budgets
+are persistent: 8,192 combat actions, 80 map actions, 160 room actions and 64
+terminal reward screens (eight entries and 17 accepted actions per screen), 1,024
+v2/v3 combat-selector episodes (32 inputs each), plus
+the unchanged 64 feature-session limit. Starting another client resets none of
+these native counters. Ordinary bounded client modes keep their tighter limits.
+
+The controller records known attempted/accepted/reconciled counts on failures,
+including bounded nested combat-choice summaries and their separate child counts,
+never retries uncertain input, and requires fresh entry, observed boss victories
+in all three acts and the native Architect `run_won` chain before reporting full victory.
+An ending handoff alone is not victory. Unsupported content and cleanup failures
+stop execution. Stage summaries are operational evidence, not training trajectories;
+retaining live observation corpora requires separate scope.
 
 `--choice-policy first-select` (default) fills a combat selection to its maximum;
 `minimum` confirms as soon as native controls permit it. These are mechanical
@@ -389,7 +557,8 @@ subject to the process-wide limits above.
 Results retain verified collections, special cards, discarded potions, skipped
 potions and capacity gains. Skips count only after verified native exit; an
 accepted click alone is not an effect. Ready schemas distinguish special cards,
-item identity, potion slots, capacity and exact Fake Lee’s Waffle healing; waiting,
+item identity, potion slots, capacity, exact Fake Lee’s Waffle healing and
+Strawberry’s +7 max HP/+7 HP, and Bowler Hat’s modified gold gain; waiting,
 completion and receipt schemas keep their own versioning. See the
 [terminal reward reference](../../docs/GENERIC_EVENTS.md#terminal-combat-rewards)
 for exact wire/effect semantics and the eight-entry limit.

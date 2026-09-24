@@ -1,10 +1,19 @@
 # Event caller evidence index
 
-Reviewed 2026-09-19; latest live evidence is September 13. Use
+Updated 2026-09-24; latest live evidence is September 24. Use
 [bridge status](STATUS.md) for current support and gaps, and
 [generic event contracts](GENERIC_EVENTS.md) for exact semantics. This page maps
 **named tested paths to their evidence**. It is not an event allowlist or a second
 family support matrix. No row establishes every branch of an event.
+
+## September 24 campaign ending
+
+The [M7 campaign record](evidence/AGENT_CAMPAIGN_M7_2026_09_24.md) binds the
+corrected release, saved-run entry, action reconciliation and owned cleanup.
+
+| Caller/path | Recorded result | Qualification |
+| --- | --- | --- |
+| The Architect: owned final event → terminal choice | Two reconciled parent actions reached `run_won`; native Victory observed | Entered after one reconciled Proceed from the empty final-boss reward screen. Reports `continued_victory`; earlier campaign setup and manual fight assistance remain recorded |
 
 ## September 12–13 cases
 
@@ -26,7 +35,7 @@ summarizes the final recorded case; it does not repin earlier tests to the lates
 | Fake Merchant: initial Foul Potion | Combat, seven relics, Waffle healing33→41/max80, Proceed/map/next room passed | Native setup removed ordinary rewards first; original ten-entry screen not covered. Waffle was sixth, Strike Dummy last |
 | Crystal Sphere: Payment Plan | Reveal/reward/exit and independent map check passed | Does not establish every reward/tool variant |
 | Trial: Reject → Double Down | Cancel and Confirm both passed | Cancel continued to rewards/map/next room; Confirm produced `run_abandoned` and native Defeat/HP0 |
-| The Architect: final Proceed | **Initial read failed `unsupported_state`; zero actions** | Native final-act setup succeeded; exact rejection predicate and terminal win remain unresolved |
+| The Architect: final Proceed | **Initial read failed `unsupported_state`; zero actions** | Native final-act setup succeeded; unresolved in this historical record. See the September 24 corrected acceptance above |
 
 The separate [Crystal Sphere ledger](evidence/CRYSTAL_SPHERE_LIVE_2026_09_12.md)
 records Uncover Future/gold/map acceptance and exact completed-overlay cleanup.

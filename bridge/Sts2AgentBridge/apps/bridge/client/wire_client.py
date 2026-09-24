@@ -7,6 +7,9 @@ import socket
 import time
 
 ROUTES = {
+    "/probe/combat-potions-v1/public/decision": False, "/probe/combat-potions-v1/public/action": True,
+    "/probe/campaign-v2/public/decision": False, "/probe/campaign-v2/public/action": True,
+    "/probe/reward-v2/public/decision": False, "/probe/reward-v2/public/action": True,
     "/probe/event-combat-v2/public/decision": False,
     "/probe/event-combat-v2/public/item-decision": False,
     "/probe/event-combat-v2/public/item-action": True,
@@ -19,6 +22,9 @@ ROUTES = {
     "/card-selection-v1/child": False, "/card-selection-v1/child/action": True,
     "/probe/generic-event-v7/public/decision": False, "/probe/generic-event-v7/public/action": True,
     "/probe/combat-choice-v1/public/decision": False, "/probe/combat-choice-v1/public/action": True,
+    "/probe/combat-choice-v2/public/decision": False, "/probe/combat-choice-v2/public/action": True,
+    "/probe/combat-choice-v3/public/decision": False, "/probe/combat-choice-v3/public/action": True,
+    "/probe/agent-v1/public/decision": False, "/probe/agent-v1/public/action": True,
 }
 
 
@@ -140,9 +146,10 @@ class BridgeClient:
         self._connector = connector or (lambda: socket.create_connection(("127.0.0.1", 43117), timeout=2))
         self._failed, self._requests = False, 0
         self.read_diagnostic = None
+        self.native_diagnostic = None
 
     def exchange(self, method, route, body=None, *, deadline=None):
-        require(not self._failed and self._requests < 16896, "client_stopped")
+        require(not self._failed and self._requests < 139264, "client_stopped")
         self._requests += 1
         request, response = bytearray(), bytearray()
         client = None
@@ -173,7 +180,15 @@ class BridgeClient:
                 require(len(response) <= 66560, "response_limit")
             if method == 'GET' and self.read_diagnostic is None:
                 self.read_diagnostic = read_failure_diagnostic(response)
-            return parse_response(response, event=route.startswith("/probe/generic-event-v7/"))
+            event = route.startswith("/probe/generic-event-v7/")
+            parsed = parse_response(response, event=event)
+            if event:
+                # Retain only admission failure categories, never raw headers.
+                diagnostic = response[:response.find(b'\r\n\r\n')].split(b'\r\n')[5].split(b': ')[1]
+                if diagnostic in (b'parent_unavailable', b'parent_map', b'parent_overlay',
+                                  b'parent_layout', b'parent_travel', b'capture_exception'):
+                    self.native_diagnostic = diagnostic.decode('ascii')
+            return parsed
         except BaseException:
             self._failed = True
             raise

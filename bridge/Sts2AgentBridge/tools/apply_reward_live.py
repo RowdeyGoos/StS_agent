@@ -165,7 +165,7 @@ def _validate_reward(raw_reward: object, expected_slot: int, schema: int = 1) ->
             "gold_amount",
             "cards",
             "card_selection_can_skip",
-        ) + (("item_key",) if schema >= 3 else ()) + (("potion_capacity_gain",) if schema >= 5 else ()) + (("heal_amount",) if schema == 6 else ()),
+        ) + (("item_key",) if schema >= 3 else ()) + (("potion_capacity_gain",) if schema >= 5 else ()) + (("heal_amount",) if schema >= 6 else ()) + (("max_hp_gain",) if schema >= 7 else ()) + (("gold_gain",) if schema >= 8 else ()),
     )
     if reward["reward_slot"] != expected_slot:
         raise ValueError("reward slot")
@@ -306,7 +306,7 @@ def _validate_ready(body: bytes) -> dict[str, object]:
         revision = root["decision_revision"]
         screen_kind = root["screen_kind"]
         if (
-            type(root["schema_version"]) is not int or root["schema_version"] not in (1, 2, 3, 4, 5, 6)
+            type(root["schema_version"]) is not int or root["schema_version"] not in (1, 2, 3, 4, 5, 6, 7, 8)
             or root["status"] != "ready"
             or root["decision_kind"] != "reward"
             or root["actionable"] is not True
@@ -330,9 +330,22 @@ def _validate_ready(body: bytes) -> dict[str, object]:
             reward = _validate_reward(raw_reward, slot, root["schema_version"])
             if int(reward["reward_index"]) <= previous_index:
                 raise ValueError("reward index order")
-            if schema == 6:
+            if schema >= 8:
+                gain=reward["gold_gain"]
+                if reward["kind"]=="gold":
+                    amount=reward["gold_amount"]
+                    if not probe._is_bounded_nonnegative_integer(gain) or gain not in (amount,amount*5//4):raise ValueError("gold gain")
+                    if not reward['successfully_selected'] and not probe._is_bounded_nonnegative_integer(player['gold']+gain):raise ValueError("gold exceeds client range")
+                elif gain is not None:raise ValueError("unexpected gold gain")
+            if schema >= 7:
+                gain=reward["max_hp_gain"]
+                expected=7 if reward["kind"]=="relic" and reward["item_key"]=="STRAWBERRY" else 0
+                if type(gain) is not int or gain!=expected:raise ValueError("max HP effect")
+                if gain and not reward['successfully_selected'] and not probe._is_bounded_nonnegative_integer(player['max_hp']+gain):
+                    raise ValueError("max HP exceeds client range")
+            if schema >= 6:
                 heal=reward["heal_amount"]
-                expected=player["max_hp"]//10 if reward["kind"]=="relic" and reward["item_key"]=="FAKE_LEES_WAFFLE" else 0
+                expected=player["max_hp"]//10 if reward["kind"]=="relic" and reward["item_key"]=="FAKE_LEES_WAFFLE" else reward.get("max_hp_gain",0)
                 if type(heal) is not int or heal!=expected:raise ValueError("healing effect")
             previous_index = int(reward["reward_index"])
             rewards.append(reward)
@@ -388,11 +401,13 @@ def _validate_ready(body: bytes) -> dict[str, object]:
         "legal_actions": actions,
         **({"potion_slots": potions} if schema >= 4 else {}),
         **({"capacity_rewards": True} if schema >= 5 else {}),
-        **({"healing_rewards": True} if schema == 6 else {}),
+        **({"healing_rewards": True} if schema >= 6 else {}),
+        **({"max_hp_rewards": True} if schema >= 7 else {}),
+        **({"modified_gold_rewards": True} if schema >= 8 else {}),
     }
 
 
-def _validate_complete(body: bytes) -> dict[str, object]:
+def _validate_complete(body: bytes, *, campaign: bool = False) -> dict[str, object]:
     try:
         root = _decode_exact(
             body,
@@ -414,7 +429,7 @@ def _validate_complete(body: bytes) -> dict[str, object]:
             or root["decision_kind"] != "reward"
             or root["actionable"] is not False
             or root["decision_id"] is not None
-            or root["screen_kind"] != "map"
+            or root["screen_kind"] not in (("map", "act", "ending") if campaign else ("map",))
             or root["rewards"] != []
             or root["legal_actions"] != []
         ):
@@ -422,7 +437,7 @@ def _validate_complete(body: bytes) -> dict[str, object]:
         player = _validate_player(root["player"])
     except (ValueError, TypeError, KeyError, IndexError):
         fail(EXIT_MISMATCH, "reward_complete_response_mismatch")
-    return {"screen_kind": "map", "player": player}
+    return {"screen_kind": root["screen_kind"], "player": player}
 
 
 def _validate_action_response(body: bytes, decision_id: str, action_id: str) -> None:
@@ -522,6 +537,7 @@ def _validate_transition(
     before: dict[str, object],
     after: dict[str, object],
     action: dict[str, object],
+    *, campaign: bool = False,
 ) -> None:
     before_player = before["player"]
     after_player = after["player"]
@@ -536,17 +552,18 @@ def _validate_transition(
     elif kind == "claim_gold":
         reward = before["rewards"][int(action["reward_slot"])]
         expected = dict(before_player)
-        expected["gold"] += int(reward["gold_amount"])
+        expected["gold"] += int(reward.get("gold_gain",reward["gold_amount"]))
         if after["screen_kind"] != "rewards" or after_player != expected:
             fail(EXIT_MISMATCH, "gold_claim_reconciliation_failed")
     elif kind == "collect_item":
         reward = before["rewards"][int(action["reward_slot"])]
         remaining = [r for r in after.get("rewards", []) if r["reward_index"] == reward["reward_index"]]
         expected=dict(before_player)
+        expected["max_hp"]+=reward.get("max_hp_gain",0)
         expected["hp"]=min(expected["max_hp"],expected["hp"]+reward.get("heal_amount",0))
         if (after["screen_kind"] != "rewards" or expected != after_player or
                 any(r["successfully_selected"] is not True or any(r.get(k) != reward.get(k) for k in
-                    ("kind", "gold_amount", "cards", "card_selection_can_skip", "item_key", "potion_capacity_gain", "heal_amount")) for r in remaining)):
+                    ("kind", "gold_amount", "cards", "card_selection_can_skip", "item_key", "potion_capacity_gain", "heal_amount", "max_hp_gain", "gold_gain")) for r in remaining)):
             fail(EXIT_MISMATCH, "item_claim_reconciliation_failed")
     elif kind == "claim_special_card":
         expected = dict(before_player)
@@ -569,7 +586,7 @@ def _validate_transition(
         if after["screen_kind"] != "rewards" or not _same_player(before_player, after_player):
             fail(EXIT_MISMATCH, "card_skip_reconciliation_failed")
     elif kind == "proceed":
-        if after["screen_kind"] != "map" or not _same_player(before_player, after_player):
+        if after["screen_kind"] not in (("map", "act", "ending") if campaign else ("map",)) or not _same_player(before_player, after_player):
             fail(EXIT_MISMATCH, "reward_proceed_reconciliation_failed")
     else:
         fail(EXIT_MISMATCH, "reward_unknown_transition")
@@ -588,13 +605,18 @@ def _validate_transition(
         if not valid:
             fail(EXIT_MISMATCH, "item_claim_reconciliation_failed")
 
-    if before.get("healing_rewards") and after["screen_kind"]!="map" and not after.get("healing_rewards"):
+    complete = after["screen_kind"] in (("map", "act", "ending") if campaign else ("map",))
+    if before.get("modified_gold_rewards") and not complete and not after.get("modified_gold_rewards"):
+        fail(EXIT_MISMATCH,"reward_response_mismatch")
+    if before.get("max_hp_rewards") and not complete and not after.get("max_hp_rewards"):
+        fail(EXIT_MISMATCH,"reward_response_mismatch")
+    if before.get("healing_rewards") and not complete and not after.get("healing_rewards"):
         fail(EXIT_MISMATCH,"reward_response_mismatch")
 
-    if before.get("capacity_rewards") and after["screen_kind"]!="map" and not after.get("capacity_rewards"):
+    if before.get("capacity_rewards") and not complete and not after.get("capacity_rewards"):
         fail(EXIT_MISMATCH,"reward_response_mismatch")
 
-    if after["screen_kind"] != "map" and (
+    if not complete and (
         int(after["decision_revision"]) != int(before["decision_revision"]) + 1
     ):
         fail(EXIT_MISMATCH, "reward_revision_mismatch")
@@ -640,7 +662,7 @@ def _run_apply_reward(
             chosen_card: str | None = None
             if action["kind"] == "claim_gold":
                 reward = state["rewards"][int(action["reward_slot"])]
-                claimed_gold += int(reward["gold_amount"])
+                claimed_gold += int(reward.get("gold_gain",reward["gold_amount"]))
             elif action["kind"] == "claim_special_card":
                 chosen_card = str(state["rewards"][int(action["reward_slot"])]["cards"][0])
             elif action["kind"] == "choose_card":

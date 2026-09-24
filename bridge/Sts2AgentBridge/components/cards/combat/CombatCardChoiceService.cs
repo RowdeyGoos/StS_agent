@@ -11,7 +11,7 @@ internal sealed record ChoiceCard(object Model, object Holder, string Key, int U
     bool Selected, bool Enabled);
 internal sealed record ChoiceSurface(object Identity, string Pile, int MinSelect, int MaxSelect,
     bool ManualConfirmation, bool Ready, bool Closed, bool TaskSucceeded, bool TaskFailed,
-    ChoiceCard[] Cards, object[] Result, bool ConfirmEnabled);
+    ChoiceCard[] Cards, object[] Result, bool ConfirmEnabled, object[]? SelectedOrder = null, bool Cancelable = false);
 internal interface ICombatCardChoiceAdapter : IDisposable
 {
     ChoiceSurface Capture();
@@ -26,18 +26,28 @@ internal sealed class CombatCardChoiceService : IDisposable
 {
     internal const string DecisionRoute = "/probe/combat-choice-v1/public/decision";
     internal const string ActionRoute = "/probe/combat-choice-v1/public/action";
+    internal const string DecisionRouteV2 = "/probe/combat-choice-v2/public/decision";
+    internal const string ActionRouteV2 = "/probe/combat-choice-v2/public/action";
+    internal const string DecisionRouteV3 = "/probe/combat-choice-v3/public/decision";
+    internal const string ActionRouteV3 = "/probe/combat-choice-v3/public/action";
+    internal static int Version(string path) => path is DecisionRouteV3 or ActionRouteV3 ? 3 : path is DecisionRouteV2 or ActionRouteV2 ? 2 : 1;
     private readonly Func<ICombatCardChoiceAdapter?> _factory;
     private readonly string _nonce;
     private readonly int _thread = Environment.CurrentManagedThreadId;
     private readonly HashSet<object> _seen = new(ReferenceEqualityComparer.Instance);
     private ICombatCardChoiceAdapter? _adapter;
     private ChoiceSurface? _initial;
+    private ChoiceSurface? _publicSurface;
+    internal ChoiceSurface PublicSurface(string decision) => _decision == decision && _publicSurface is not null
+        ? _publicSurface : throw new InvalidOperationException("No coherent public choice.");
     private ChoiceCard[] _cards = Array.Empty<ChoiceCard>();
     private int[] _selected = Array.Empty<int>();
     private string? _decision, _choice, _pending;
     private int[]? _expected;
     private int _episodes, _reads, _pendingReads, _attempted, _accepted, _reconciled;
     private bool _done, _failed, _disposed;
+    private int _version = 1;
+    private string Protocol => "combat_card_choice_v" + _version;
     internal bool IsActive => _adapter is not null && !_done || _failed;
 
     internal CombatCardChoiceService(Func<ICombatCardChoiceAdapter?> factory, string nonce)
@@ -55,9 +65,16 @@ internal sealed class CombatCardChoiceService : IDisposable
     private static string Hash(string text) => Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(text))).ToLowerInvariant();
     private void Require(bool value, string code) { if (!value) throw new InvalidOperationException(code); }
 
-    internal ChoiceReply Read()
+    private bool BindVersion(int version)
+    {
+        if (version is not (1 or 2 or 3) || _adapter is not null && !_done && _version != version) return false;
+        _version = version;
+        return true;
+    }
+    internal ChoiceReply Read(int version = 1)
     {
         if (_failed || _disposed || Environment.CurrentManagedThreadId != _thread) return Fail("choice_stopped");
+        if (!BindVersion(version)) return Fail("choice_protocol_changed");
         try
         {
             if (_adapter is null || _done)
@@ -70,14 +87,18 @@ internal sealed class CombatCardChoiceService : IDisposable
                     _attempted = _accepted = _reconciled = 0;
                     return Observation("waiting");
                 }
-                Require(++_episodes <= 32, "choice_limit");
+                Require(++_episodes <= (_version >= 2 ? 1024 : 32), "choice_limit");
                 _initial = _adapter.Capture();
                 Require(_seen.Add(_initial.Identity) && !_initial.Closed && !_initial.TaskSucceeded && !_initial.TaskFailed,
                     "choice_not_fresh");
-                Require(_initial.Pile is "discard" or "exhaust" && _initial.Cards.Length is >= 1 and <= 64 &&
+                Require((_initial.Pile is "discard" or "exhaust" || _version >= 2 && _initial.Pile == "draw" ||
+                    _version == 3 && _initial.Pile == "offer") && _initial.Cards.Length is >= 1 and <= 64 &&
                     _initial.MinSelect >= 0 && _initial.MaxSelect is >= 1 and <= 8 &&
                     _initial.MinSelect <= _initial.MaxSelect && _initial.MaxSelect <= _initial.Cards.Length &&
                     _initial.Cards.All(c => !c.Selected), "unsupported_choice");
+                Require(_initial.Pile != "offer" || _initial.Cards.Length <= 3 &&
+                    _initial.MinSelect == 1 && _initial.MaxSelect == 1 && !_initial.ManualConfirmation &&
+                    !_initial.Cancelable && !_initial.ConfirmEnabled, "unsupported_choice");
                 Require(_initial.Cards.Select(c => c.Model).Distinct(ReferenceEqualityComparer.Instance).Count() == _initial.Cards.Length &&
                     _initial.Cards.Select(c => c.Holder).Distinct(ReferenceEqualityComparer.Instance).Count() == _initial.Cards.Length &&
                     _initial.Cards.All(c => c.Model is not null && c.Holder is not null && c.Key.Length is >= 1 and <= 96 &&
@@ -93,7 +114,8 @@ internal sealed class CombatCardChoiceService : IDisposable
             ChoiceSurface surface = _adapter.Capture();
             Require(ReferenceEquals(surface.Identity, _initial!.Identity) && surface.Pile == _initial.Pile &&
                 surface.MinSelect == _initial.MinSelect && surface.MaxSelect == _initial.MaxSelect &&
-                surface.ManualConfirmation == _initial.ManualConfirmation && !surface.TaskFailed, "choice_identity_changed");
+                surface.ManualConfirmation == _initial.ManualConfirmation && !surface.TaskFailed &&
+                (_initial.Pile != "offer" || !surface.Cancelable && !surface.ConfirmEnabled), "choice_identity_changed");
             if (surface.Closed || surface.TaskSucceeded)
             {
                 Require(_pending is not null && _expected is not null &&
@@ -125,6 +147,7 @@ internal sealed class CombatCardChoiceService : IDisposable
             _cards = surface.Cards;
             if (!surface.Ready) { _decision = null; return Observation("waiting"); }
             string[] legal = Legal(surface.ConfirmEnabled);
+            _publicSurface = surface;
             _decision = Hash(_choice + ":" + _reconciled + ":" + string.Join(",", legal));
             return Observation("ready", legal);
         }
@@ -145,11 +168,12 @@ internal sealed class CombatCardChoiceService : IDisposable
         if (confirm && _selected.Length >= _initial!.MinSelect && _selected.Length <= _initial.MaxSelect) result.Add("confirm");
         return result.ToArray();
     }
-    internal ChoiceReply Apply(string decision, string action)
+    internal ChoiceReply Apply(string decision, string action, int version = 1)
     {
         if (_failed || _disposed || Environment.CurrentManagedThreadId != _thread) return Fail("choice_stopped");
+        if (!BindVersion(version)) return Fail("choice_protocol_changed");
         if (_adapter is null || _done || _pending is not null || !IsAction(decision, action)) return Fail("choice_not_actionable");
-        ChoiceReply fresh = Read();
+        ChoiceReply fresh = Read(version);
         try
         {
             if (fresh.Terminal) return fresh;
@@ -167,14 +191,14 @@ internal sealed class CombatCardChoiceService : IDisposable
         {
             if (action == "confirm") _adapter!.Confirm(); else _adapter!.Toggle(slot);
             _accepted++;
-            return new(JsonSerializer.SerializeToUtf8Bytes(new { schema_version = 1, protocol = "combat_card_choice_v1",
+            return new(JsonSerializer.SerializeToUtf8Bytes(new { schema_version = 1, protocol = Protocol,
                 status = "accepted", choice_id = _choice, decision_id = decision, action_id = action,
                 attempted = _attempted, accepted = _accepted, reconciled = _reconciled }));
         }
         catch { return Fail("uncertain_choice"); }
     }
     private ChoiceReply Observation(string status, string[]? legal = null) => new(JsonSerializer.SerializeToUtf8Bytes(new {
-        schema_version = 1, protocol = "combat_card_choice_v1", status,
+        schema_version = 1, protocol = Protocol, status,
         choice_id = _choice, decision_id = status == "ready" ? _decision : null,
         pile = _initial?.Pile, min_select = _initial?.MinSelect ?? 0, max_select = _initial?.MaxSelect ?? 0,
         manual_confirmation = _initial?.ManualConfirmation ?? false,
@@ -190,9 +214,9 @@ internal sealed class CombatCardChoiceService : IDisposable
         string[] allowed = { "choice_stopped", "choice_limit", "choice_not_fresh", "unsupported_choice", "invalid_candidates",
             "choice_read_limit", "choice_identity_changed", "unexpected_completion", "choice_result_mismatch",
             "choice_candidates_changed", "choice_selection_mismatch", "unsolicited_selection", "choice_reconciliation_timeout",
-            "choice_not_actionable", "stale_or_illegal_choice", "choice_action_limit", "uncertain_choice" };
+            "choice_not_actionable", "stale_or_illegal_choice", "choice_action_limit", "uncertain_choice", "choice_protocol_changed" };
         if (!allowed.Contains(code)) code = "choice_capture_failed";
-        return new(JsonSerializer.SerializeToUtf8Bytes(new { schema_version = 1, protocol = "combat_card_choice_v1",
+        return new(JsonSerializer.SerializeToUtf8Bytes(new { schema_version = 1, protocol = Protocol,
             status = "failed", code, choice_id = _choice, attempted = _attempted, accepted = _accepted, reconciled = _reconciled }), true);
     }
     public void Dispose()

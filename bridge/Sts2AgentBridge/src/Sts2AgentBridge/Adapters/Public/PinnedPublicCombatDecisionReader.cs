@@ -1,19 +1,22 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
+using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.GameActions;
 using MegaCrit.Sts2.Core.MonsterMoves.MonsterMoveStateMachine;
 using MegaCrit.Sts2.Core.Nodes.Screens.Overlays;
 using Sts2AgentBridge.Core.Public;
 
 namespace Sts2AgentBridge.Adapters.Public;
 
-public sealed class PinnedPublicCombatDecisionReader : IPublicCombatDecisionReader
+public sealed class PinnedPublicCombatDecisionReader : IPublicCombatDecisionReader, IDisposable
 {
     private const int MaximumEnemies = 6;
     private const int MaximumHandCards = 10;
@@ -22,6 +25,70 @@ public sealed class PinnedPublicCombatDecisionReader : IPublicCombatDecisionRead
 
     private bool _observedCombatInProgress;
     private PublicCombatDecisionSnapshot? _terminalSnapshot;
+    private PendingAction? _pending;
+    private bool _disposed, _failed;
+
+    // Public HP/energy/hand changes can precede an asynchronous card selector.
+    // Keep the exact queued action until its execution (not just its receipt)
+    // finishes, while the existing choice service owns any nested input.
+    private sealed class PendingAction : IDisposable
+    {
+        private static readonly FieldInfo ExecutionTask = typeof(GameAction).GetField(
+            "_executionTask", BindingFlags.Instance | BindingFlags.NonPublic)
+            ?? throw new InvalidOperationException("Combat execution task unavailable.");
+        internal readonly GameAction Action;
+        internal readonly CombatState Combat;
+        private readonly CardModel? _card;
+        private readonly CardPile _playPile;
+        private readonly int _turn;
+        private bool _started, _cancelled, _enteredPlay, _wrongTurn;
+
+        internal PendingAction(GameAction action, CardModel? card, CombatState combat)
+        {
+            Action = action; Combat = combat; _card = card;
+            var state = combat.Players[0].PlayerCombatState!;
+            _playPile = state.PlayPile; _turn = state.TurnNumber;
+            action.BeforeExecuted += Started;
+            action.BeforeCancelled += Cancelled;
+            _playPile.CardAdded += EnteredPlay;
+        }
+        private void Started(GameAction _) {
+            _started = true;
+            _wrongTurn = Combat.Players[0].PlayerCombatState?.TurnNumber != _turn;
+        }
+        private void Cancelled(GameAction _) => _cancelled = true;
+        private void EnteredPlay(CardModel card) { if (ReferenceEquals(card, _card)) _enteredPlay = true; }
+        internal bool IsPending(CombatManager manager)
+        {
+            if (_cancelled || _wrongTurn || Action.Exception is not null ||
+                !ReferenceEquals(manager.DebugOnlyGetState(), Combat))
+                throw new InvalidOperationException("Owned combat action failed.");
+            if (!Action.CompletionTask.IsCompleted) return true;
+            // GameAction's completion source succeeds even when its internal
+            // execution task faults or is cancelled. Inspect both pinned tasks.
+            if (!_started || !Action.CompletionTask.IsCompletedSuccessfully ||
+                ExecutionTask.GetValue(Action) is not Task { IsCompletedSuccessfully: true } ||
+                _card is not null && !_enteredPlay)
+                throw new InvalidOperationException("Owned combat action did not complete.");
+            // EndPlayerTurnAction only starts the turn transition; its task can
+            // finish before the old player phase has left the screen.
+            return _card is null && !manager.IsOverOrEnding &&
+                Combat.Players[0].PlayerCombatState!.TurnNumber <= _turn;
+        }
+        public void Dispose()
+        {
+            Action.BeforeExecuted -= Started;
+            Action.BeforeCancelled -= Cancelled;
+            _playPile.CardAdded -= EnteredPlay;
+        }
+    }
+
+    internal void TrackAction(GameAction action, CardModel? card, CombatState combat)
+    {
+        if (_disposed || _failed || _pending is not null)
+            throw new InvalidOperationException("Combat action already owned.");
+        _pending = new PendingAction(action, card, combat);
+    }
     // Returning to an already observed native object must retain its identity:
     // BeginObservedCombat and waiting periods cannot make an old action reusable.
     private readonly ConditionalWeakTable<object, string> _combatScopes = new();
@@ -32,7 +99,18 @@ public sealed class PinnedPublicCombatDecisionReader : IPublicCombatDecisionRead
 
     public PublicCombatDecisionSnapshot Read()
     {
+        if (_disposed || _failed) throw new InvalidOperationException("Combat reader stopped.");
         CombatManager? manager = CombatManager.Instance;
+        if (_pending is not null)
+        {
+            try
+            {
+                if (manager is null) throw new InvalidOperationException("Owned combat disappeared.");
+                if (_pending.IsPending(manager)) return PublicCombatDecisionSnapshot.Waiting();
+                _pending.Dispose(); _pending = null;
+            }
+            catch { _failed = true; throw; }
+        }
         if (_terminalSnapshot.HasValue)
         {
             if (manager is null || !manager.IsInProgress || manager.IsOverOrEnding)
@@ -66,6 +144,8 @@ public sealed class PinnedPublicCombatDecisionReader : IPublicCombatDecisionRead
         {
             return PublicCombatDecisionSnapshot.Unsupported();
         }
+        if (player.Creature.HpDisplay is not (HpDisplay.Normal or HpDisplay.InfiniteWithNumbers))
+            return PublicCombatDecisionSnapshot.Unsupported();
 
         var enemyModels = new List<PublicCombatEnemy>();
         var enemyCreatures = new List<Creature>();
@@ -80,6 +160,9 @@ public sealed class PinnedPublicCombatDecisionReader : IPublicCombatDecisionRead
             {
                 return PublicCombatDecisionSnapshot.Unsupported();
             }
+            if (creature.HpDisplay is not (HpDisplay.Normal or HpDisplay.InfiniteWithNumbers or HpDisplay.InfiniteWithoutNumbers))
+                return PublicCombatDecisionSnapshot.Unsupported();
+            bool infinite = creature.HpDisplay == HpDisplay.InfiniteWithoutNumbers;
 
             var intents = new List<string>();
             if (creature.Monster?.NextMove is MoveState move)
@@ -100,10 +183,11 @@ public sealed class PinnedPublicCombatDecisionReader : IPublicCombatDecisionRead
             enemyModels.Add(new PublicCombatEnemy(
                 index,
                 creature.Monster?.Id.Entry ?? "unknown",
-                creature.CurrentHp,
-                creature.MaxHp,
+                infinite ? 0 : creature.CurrentHp,
+                infinite ? 0 : creature.MaxHp,
                 creature.Block,
-                intents));
+                intents,
+                infinite ? PublicEnemyHealthDisplay.Infinite : PublicEnemyHealthDisplay.Numeric));
         }
 
         if (manager.IsInProgress)
@@ -230,6 +314,14 @@ public sealed class PinnedPublicCombatDecisionReader : IPublicCombatDecisionRead
             DecisionId = PublicCombatDecisionIdentity.Compute(snapshot,
                 _combatScopes.GetValue(combat, _ => Convert.ToHexString(RandomNumberGenerator.GetBytes(16)).ToLowerInvariant())),
         };
+    }
+
+    public void Dispose()
+    {
+        bool unresolved = _pending is not null || _failed;
+        _failed |= unresolved;
+        _pending?.Dispose(); _pending = null; _disposed = true;
+        if (unresolved) throw new InvalidOperationException("Unreconciled combat action on disposal.");
     }
 
 }

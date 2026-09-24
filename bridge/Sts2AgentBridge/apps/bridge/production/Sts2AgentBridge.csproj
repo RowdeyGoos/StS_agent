@@ -21,6 +21,13 @@
     <Compile Include="../native/BridgeGodotFrameConnector.cs" />
     <Compile Include="../native/BridgeModEntry.cs" />
     <Compile Include="../native/CoreNativeFactory.cs" />
+    <Compile Include="../native/CombatPotions.cs" />
+    <Compile Include="../native/CampaignNavigation.cs" />
+    <Compile Include="../native/CampaignTreasureTransition.cs" />
+    <Compile Include="../native/CampaignRewardTransition.cs" />
+    <Compile Include="../native/CampaignShopTransition.cs" />
+    <Compile Include="../runtime/CampaignContracts.cs" />
+    <Compile Include="../runtime/CombatPotionContracts.cs" />
     <Compile Include="../native/NativeBridgeModule.cs" />
     <Compile Include="../native/ProductionBridgeRuntimeFactory.cs" />
     <Compile Include="../operator/BridgeOperatorFiles.cs" />
@@ -28,6 +35,10 @@
     <Compile Include="../runtime/BridgeRouter.cs" />
     <Compile Include="../runtime/BridgeTransportRuntime.cs" />
     <Compile Include="../runtime/CoreBridgeModule.cs" />
+    <Compile Include="../runtime/AgentSession.cs" />
+    <Compile Include="../runtime/AgentContracts.cs" />
+    <Compile Include="../native/AgentPublicReader.cs" />
+    <Compile Include="../native/AgentCombatHistory.cs" />
     <Compile Include="../runtime/OwnedByteFrameQueue.cs" />
     <Compile Include="../../../components/cards/transport/CardSelectionTransportContracts.cs" />
     <Compile Include="../../../components/cards/transport/CardSelectionTransportProtocol.cs" />

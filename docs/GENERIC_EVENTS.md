@@ -913,7 +913,7 @@ owned relics. Special-card extras retain their populated-card rules above.
 
 The existing core reward reader and controller also collect potion/relic rewards
 on ordinary terminal reward screens. A screen containing items uses **ready schema
-4**, or schema 5/6 for the specific capacity/healing effects below, for its entire
+4**, or schema 5/6/7 for the specific capacity/healing/max-HP effects below, for its entire
 reward session, including ordinary card children and empty parents after collection. Every reward row appends `item_key`, a bounded public
 model key for `potion`/`relic` and null for other kinds. Item rows have empty cards,
 null gold and no Skip flag. `collect:0` through `collect:7` use action kind
@@ -942,7 +942,7 @@ that alter these baselines or open a selector remain unsupported.
 Both card policies collect items before special/ordinary cards and record only
 verified pickups in `rewards.collected_items` as kind, public key and reward index.
 Prior verified effects survive later stage failures. Potion Belt capacity and
-Fake Lee’s Waffle healing are the explicit effect exceptions below; arbitrary
+Fake Lee’s Waffle healing and Strawberry max-HP growth are the explicit effect exceptions below; arbitrary
 relic pickup effects may reach the unsupported boundary.
 
 ### Terminal Potion Belt capacity pickup
@@ -1007,6 +1007,63 @@ live button remains required. Parent overlay ownership and no-retry rules remain
 unchanged. This is a targeted terminal correction; it does not certify other
 healing relics, event/resume pickup effects or Merchant reward screens exceeding
 the eight-entry projection limit.
+
+### Terminal Strawberry max-HP pickup
+
+The terminal reward adapter recognizes exact native `Strawberry`, public key
+`STRAWBERRY`, and `MaxHp.BaseValue` equal to seven. Pinned `AfterObtained` calls
+`CreatureCmd.GainMaxHp`, which raises maximum HP and heals the actual increase.
+The supported case is exactly **+7 max HP and +7 HP**, preserving gold, deck,
+other relics and potion inventory. Changed models/keys/variables, extra mutations,
+selectors and incomplete native selection stop without retry. Health changes
+alone never establish completion.
+
+A session containing Strawberry uses **ready schema 7**, retained through card
+children and empty-parent compaction. Every row adds `max_hp_gain` after schema
+6's fields: seven for Strawberry, zero otherwise. Strawberry's `heal_amount` is
+seven. Decision identity uses `reward_v7` and binds both amounts. Existing schemas
+and waiting/completion/receipt versions retain their semantics. The native adapter
+rejects before pickup if +7 would exceed the pinned 999,999,999 max-HP cap; the
+maintained Python client also rejects crossing its existing 1,000,000 public
+integer bound before sending input. Capped partial gains are outside this contract.
+
+A Waffle on the same screen uses the current max HP when it is collected. Only a
+verified Strawberry transition updates that already-bound offer's expected
+percentage heal; all its other fields and exact native identity remain bound.
+Fixture and real-socket coverage includes both pickup orders, delayed selection,
+compaction, card children and normal exit. A saved floor-8 native retest completed
+all five reward actions and reached the map; max HP rose from 2,064 to 2,071.
+This does not add arbitrary max-HP relics or widen event/resume item contracts.
+
+### Modified terminal gold rewards
+
+`GoldReward.Amount` is the printed amount, before native gain modifiers. Ready
+**schema 8** adds `gold_gain` after schema 7's fields: the expected final integer
+gain for gold rows, `null` for other rows. `gold_amount` retains its old meaning.
+The schema and `reward_v8` decision binding persist through compaction and card
+children. Older schemas keep their unchanged-gold semantics.
+
+The supported modifier is one exact, active, owned native Bowler Hat with key
+`BOWLER_HAT` and `GoldIncrease.BaseValue == 1.25`. Its expected gain is
+`floor(gold_amount * 5 / 4)`, including recovered stolen gold. Active native hook
+listeners are inspected without invoking their callbacks or consuming RNG.
+Melted/inactive relics do not apply the bonus. Unknown gain/after-gain/reward hooks,
+duplicate active Hats or spoofed identity stop before input; Ectoplasm and Dragon
+Fruit effects are outside this narrow gold contract.
+
+The claim retains the active manager/run/node/room, exact reward/button, original
+deck/potions/relics and both listener lists. Revalidation precedes input and
+continues while pending. Native `SuccessfullySelected` is required even after
+button disposal; a gold delta alone never proves completion. Health and all other
+inventory stay unchanged. Only the exact predicted gain reconciles. Native int
+arithmetic overflow and the client's existing 1,000,000 public integer limit are
+rejected before input. A missing receipt or effect mismatch never retries.
+
+Focused native/host/socket checks cover rounding, inactive relics, compaction,
+card choices, delayed completion, ownership changes, unknown callbacks, limits and
+schema retention. The floor-15 native Bowler Hat retest passed: printed 20 gold produced and
+reconciled 25 gold (492 → 517), followed by the map. See the
+[M7 evidence](evidence/AGENT_CAMPAIGN_M7_2026_09_24.md).
 
 ### Terminal potion reward policies
 
@@ -1217,7 +1274,8 @@ exact retained ownership/inventory and native win effect produce `run_won`.
 Pending votes or win tasks remain waiting; foreign actions, altered state, failed
 tasks and unresolved cleanup stop the host. No map read is required after `run_won`.
 
-The implementation has a known live admission failure; see [status](STATUS.md).
+The corrected admission and terminal progression passed the controlled resumed
+campaign ending; [status](STATUS.md) owns current evidence and limits.
 
 <a id="separate-remaining-questions"></a>
 

@@ -11,13 +11,16 @@ namespace Sts2AgentBridge.Adapters.Public;
 public sealed class PinnedPublicMapActionApplier : IPublicMapActionApplier
 {
     private const int MaximumTraversedNodes = 2048;
+    private readonly int _maximumActions = PublicMapActionBudget.MaximumAcceptedActions;
     private readonly PinnedPublicMapDecisionReader _reader;
     private readonly object _gate = new();
     private readonly HashSet<string> _acceptedDecisionIds = new(StringComparer.Ordinal);
 
-    public PinnedPublicMapActionApplier(PinnedPublicMapDecisionReader reader)
+    public PinnedPublicMapActionApplier(PinnedPublicMapDecisionReader reader, int maximumActions = PublicMapActionBudget.MaximumAcceptedActions)
     {
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
+        if(maximumActions is <1 or >80)throw new ArgumentOutOfRangeException(nameof(maximumActions));
+        _maximumActions=maximumActions;
     }
 
     public PublicMapActionApplyResult Apply(PublicMapActionRequest request)
@@ -111,7 +114,7 @@ public sealed class PinnedPublicMapActionApplier : IPublicMapActionApplier
             {
                 return PublicMapActionApplyOutcome.AlreadyApplied;
             }
-            if (_acceptedDecisionIds.Count >= PublicMapActionBudget.MaximumAcceptedActions)
+            if (_acceptedDecisionIds.Count >= _maximumActions)
             {
                 return PublicMapActionApplyOutcome.ActionLimitReached;
             }
