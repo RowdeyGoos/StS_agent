@@ -160,17 +160,23 @@ Existing selection counts, preview/confirm actions, task ownership, action bound
 and parent completion checks remain. Older generic clients reject the new child
 version rather than silently accepting broader semantics.
 
-An owned `FromDeckForRemoval` that forwards through `FromDeckGeneric`, or a direct
-generic request with the exact native removal prompt, may complete without a
-screen: native code returns zero eligible originals, or all originals
+An owned `FromDeckForRemoval`, or a direct generic request with the exact native
+removal prompt, may complete without a screen: native code returns zero eligible
+originals, or all originals
 when their count is at most the minimum and manual confirmation is disabled.
 The bridge now drains that automatic branch after both its exact request task and
 parent callback succeed. It verifies the returned original identities, their
 removal, unchanged ordered survivors, exact Player/RunState ownership, and at most
 one new appended grant; captured preview/upgrade clones cannot become that grant.
 No child decision or selection input is invented. Manual, cancelable, faulted,
-foreign-screen and mismatched-effect cases stop. This is offline-tested; Doors of
-Light and Dark/Dark with one eligible removable card is the pending live case.
+foreign-screen and mismatched-effect cases stop. When only the outer removal
+request is observed, a null-filter request also binds its complete removable
+domain at entry and requires that the result contains exactly that domain, with
+no meaningful choice to skip. Arbitrary filters are never invoked by the observer.
+This correction is validated offline and installed for retesting; the preceding
+release's one-card Dark Door attempt stopped at automatic-removal verification,
+before Proceed. See [current
+evidence](STATUS.md#release-and-latest-evidence) for the released/live distinction.
 
 Removal uses native input on the exact allocated holder, so admission no longer
 requires computed whole-grid dimensions, full viewport containment or unchanged
@@ -1071,9 +1077,10 @@ schema downgrade before reconciliation; the shared `agent_v1` slice rejects sche
 
 Offline native fixtures cover ten and 32 item pickups, compaction, replay rejection
 and 33-entry rejection. The real C#-to-Python socket fixture resolves 32 card menus
-through all 65 actions. The ten-entry live test read the full screen and reconciled
-seven pickups, then stopped at Fake Mango (8/8/7); the effect correction below
-still needs live validation. The older assisted seven-relic run is separate evidence.
+through all 65 actions. The original ten-entry screen passed live after native
+Continue: 12/12/12 actions collected all ten entries and reached the actionable
+map. The prior Fake Mango failure (8/8/7) and older assisted seven-relic run retain
+their separate original evidence.
 
 ### Terminal Fake Mango max-HP pickup
 
@@ -1086,9 +1093,9 @@ changed variables and extra or missing effects stop the session without retry.
 Schema 10 remains active through row compaction and child card menus. Older
 schemas cannot represent this known pickup, even by declaring zero effect.
 Client transitions reject a downgrade before crediting reconciliation. The live
-failure that exposed this omission is retained under its original release;
-118 focused native checks and client/protocol tests establish the correction
-offline, not a completed live pickup.
+failure that exposed this omission is retained under its original release.
+The correction passed 118 focused native checks, client/protocol tests and the
+ten-entry live reward retest, including exact +3 maximum HP/+3 HP and map return.
 
 ### Modified terminal gold rewards
 

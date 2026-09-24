@@ -123,7 +123,7 @@ extend standalone rest/shop contracts.
 | Resuming event combat | Exact original Resume callback/task → owned item reward if present → resumed event/Proceed/map | Dummy training expiry, Setting1 victory/potion and Setting2 victory demonstrated; consecutive matching combats also demonstrated. No recursive combat driver |
 | Resume-time item rewards | One owned Offer with singleton or 2–8 potion/relic entries | Setting1 potion collect/skip/replacement demonstrated. Relic/set reward screens are fixture-only with no concrete resume caller identified; Setting3 obtains its relic directly. Resume-time cards/selectors unsupported |
 | Fake Merchant inventory | Initially closed inventory → 0–6 supported relic purchases → close/Leave | Two-purchase visit demonstrated; zero/six purchase variants offline only; already-open entry unsupported |
-| Fake Merchant fight/healing | Initial owned Foul Potion starts combat; terminal Fake Lee’s Waffle verifies capped 10% max-HP healing; terminal schemas 9–10 support 32 entries in source; schema 10 adds exact Fake Mango +3 max HP/+3 HP | Assisted seven-relic collection, HP33→41 at max80, Proceed/map/next room demonstrated. That setup removed ordinary rewards. The original ten-entry retest read the expanded screen and reconciled seven pickups, then stopped at Fake Mango (8/8/7); its effect correction is validated offline. Fight after shopping unsupported |
+| Fake Merchant fight/healing | Initial owned Foul Potion starts combat; terminal Fake Lee’s Waffle verifies capped 10% max-HP healing; terminal schemas 9–10 support 32 entries; schema 10 adds exact Fake Mango +3 max HP/+3 HP | Original ten-entry rewards passed after native Continue: 12/12/12 actions, all rewards collected, HP10/80→21/83 and actionable map. Earlier assisted seven-relic collection and the failed 8/8/7 Mango attempt retain separate evidence. Fight after shopping unsupported |
 | Crystal Sphere | Owned Uncover Future/Payment Plan entry, small/big tool, legal 11×11 fog reveals, earned rewards and exact native exit/overlay cleanup | Both entry paths demonstrated; Uncover Future gold/map verified. Other tool/reward variants offline only. Hidden items are not projected; already-open adoption and full-belt replacement unsupported |
 | Trial abandonment | Owned popup Cancel or explicit Confirm, exact native abandonment task | Both demonstrated; Cancel continued to rewards/map/next room, Confirm produced `run_abandoned` and native Defeat/HP0 |
 | Architect ending | Native vote/queued action/next-act/WinRun task chain, terminal `run_won`; exact owned victory event with its combat layout and retained map-travel flag | Empty final-boss reward Proceed and the Architect parent sequence reached `run_won`; native Victory observed in both controlled saved runs. The latest ending used three reconciled parent actions. Saved continuations report `continued_victory`, not full-campaign certification |
@@ -192,10 +192,9 @@ These are **not an implementation queue or required live-test checklist**:
 
 ### Implemented, but still needing representative live evidence
 
-- Expanded terminal schemas 9–10: ten/32-entry native fixtures and a 65-action
-  real socket card-reward sequence passed. The ten-entry screen was read live,
-  but its Fake Mango pickup stopped reconciliation; the exact +3 effect
-  correction remains the concrete live retest.
+- Expanded terminal schemas 9–10: the representative ten-entry screen passed live.
+  The wider 32-entry bound and 65-action card-menu sequence remain fixture/socket
+  evidence, without a separately identified ordinary 32-entry gameplay caller.
 - Selectorless removal: exact owned request and parent completion, unchanged
   survivors and ownership checked offline. Doors of Light and Dark/Dark with one
   eligible removable card remains the concrete live case.
@@ -221,22 +220,35 @@ supplies dated source candidates rather than a current implementation checklist.
 ## Release and latest evidence
 
 The current [release manifest](../bridge/Sts2AgentBridge/releases/current/bridge.json)
-is **`00280cad681d0e074ec174ca548b273e1c77edfd58e838b10c6426f6a7827fe8`**.
-It binds 416 exact source/test inputs across 51 projects from the checkout based
-on `dbd7861`. The release gate passed **83 groups in 306.807 seconds**, including
-12,647 native checks. Focused Fake Mango tests and independent review passed.
+is **`308e9683a74a3d60ef2071e3dd6f97583e2ace1adb2494778a9aaee73e89105e`**.
+It binds 416 exact source/test inputs across 51 projects, committed in `b7ee84b`.
+The release gate passed **83 groups in 304.387 seconds**, including 12,799 native
+checks. The wrapper-only removal correction passed 320 focused checks and
+independent semantic review. It is installed, verified by **20:47:21 UTC**, and
+awaits manual Profile 3 launch for the removal retest; two exact overlays and all
+429 base files were verified. The merchant retest is already complete under the
+preceding package identity.
 
-The previous candidate read Profile 3's original ten-entry Fake Merchant screen
+An earlier candidate read Profile 3's original ten-entry Fake Merchant screen
 after an assisted fight (11/11/11 combat actions). Rewards stopped at **8 attempted /
 8 accepted / 7 reconciled** when Fake Mango applied its unrecognized +3 max HP/+3 HP.
 No pickup was retried. Exact cleanup completed by **19:56:46 UTC on 2026-09-24**.
 The earlier Dark Door failure retains its separate identity and unknown predicate.
 
-The corrected candidate is **installed, awaiting manual Profile 3 launch**.
-Installation verified by **20:12:14 UTC**: two exact overlays and all 429 base files
-unchanged. It adds exact Fake Mango effect reconciliation and retains the direct
-generic automatic-removal correction. Both live retests remain pending;
-offline fixtures do not establish native live support.
+The preceding `00280cad…` candidate passed the **original ten-entry Fake Merchant
+rewards** after native Continue restored the whole list: **12/12/12** reward actions, 300
+gold, Regen Potion, all seven fake relics and Headbutt, then the actionable map.
+HP changed from 10/80 to 21/83, including Waffle and Fake Mango's exact effects.
+This attempt attached at rewards; it did not replay the fight.
+
+The one-Bash Dark Door retest still stopped at **1/1/0** with
+`pending_selectorless_request`. The game removed Bash and displayed Proceed;
+the bridge did not claim completion or retry. A source correction now handles an
+exact outer removal request without requiring a second observation of its generic
+implementation; it is now validated and installed for retesting. The original
+rejected predicate was not emitted. Both attempts were cleaned up by **20:31:55 UTC**: process and
+listener stopped, four generated files removed, zero overlays, all 429 base files
+unchanged.
 
 The pinned target remains **v0.107.1 / Steam 23811903 / macOS arm64**.
 The previous package completed an assisted campaign continuation with **643

@@ -428,10 +428,15 @@ after milestone 7 acceptance. Baseline work is committed as `1093aca`, `222dcb8`
 and `dbd7861`. The full headless profile is complete; the native campaign controller
 still uses its own choices and is not yet a producer of `full_run_v2`.
 
-The first bridge corrections extend terminal rewards to 32 entries under schema
-9 and accept the native selectorless removal continuation. Focused native/router
+The first bridge corrections, committed in `4a03c3c`, extend terminal rewards to
+32 entries under schema 9, add exact Fake Mango pickup under schema 10, and
+implement native selectorless removal continuation. Focused native/router
 and shared-client tests passed, including all 65 actions for 32 card rewards.
-Their representative live checks remain distinct from fixture evidence.
+The original ten-entry merchant rewards passed live after native Continue;
+automatic removal still failed completion verification and has a further
+correction for observing outer removal requests (`b7ee84b`), validated and
+installed for retesting. Representative live checks remain distinct from fixture
+evidence.
 
 The remaining implementation must provide full public native observations and
 semantic candidates across combat, potions, rewards, maps, shops, rests, events,
