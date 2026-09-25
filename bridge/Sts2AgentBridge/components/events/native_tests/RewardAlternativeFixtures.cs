@@ -82,6 +82,26 @@ internal static partial class Program
     private static void RewardAlternativeCases()
     {
         AutomaticRelicRewardCases();
+        foreach(int eligible in new[]{0,1,2})foreach(bool unscoped in new[]{false,true})using(var f=new AlternativesFixture("sacrifice",1)) {
+            var player=f.World.World.Player;
+            for(int i=0;i<player.Deck.Cards.Count;i++)player.Deck.Cards[i].IsUpgradable=i<eligible;
+            f.Wing.Grant=new Whetstone();
+            var first=f.Open();f.Apply(first,"sacrifice");
+            if(unscoped)player.Deck.Cards[^1].UpgradeInternal();
+            bool failed=false;
+            try {Check(f.World.Reader.Read().Status==PublicDecisionStatus.Ready&&f.Reward.SuccessfullySelected&&f.Wing.RewardsSacrificed==2,
+                "Whetstone sacrifice reconciles the native model upgrade path");}
+            catch(InvalidOperationException){failed=true;}
+            Check(failed==unscoped,"only the retained pickup scope can certify a model upgrade");
+            if(!unscoped)Check(player.Deck.Cards.Select((c,i)=>c.CurrentUpgradeLevel==(i<eligible?1:0)).All(x=>x),
+                "Whetstone changes only eligible original cards");
+            for(int i=0;i<2;i++) {
+                bool cleanup=false;try{f.World.Reader.Dispose();}catch(InvalidOperationException){cleanup=true;}
+                Check(cleanup==unscoped,"Whetstone cleanup preserves an unresolved failure");
+            }
+            Check(!(HarmonyLib.Harmony.GetPatchInfo(typeof(CardModel).GetMethod("UpgradeInternal")!)?.Owners.Any()??false),
+                "Whetstone model upgrade hook is removed on success and failure");
+        }
         using(var f=new AlternativesFixture("sacrifice",1,items:2)) {
             var player=f.World.World.Player;player.PotionSlots.RemoveRange(6,2);player.MaxPotionCount=6;
             var belt=new PotionBelt();belt.DynamicVars["PotionSlots"].IntValue=2;f.Wing.Grant=belt;

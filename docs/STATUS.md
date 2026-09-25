@@ -34,9 +34,12 @@ now include hand/optional combat choices, general potion use/discard and owned
 selectors, chest claims/empty chests, reward reroll/sacrifice, shop removal cancel,
 automatic relic effects, Cauldron/Orrery rewards and shared event reward children.
 An opt-in public live journal is implemented; no live corpus was collected for
-this development. These additions have offline evidence and await live acceptance.
-The v2 test completed four actions without pending work; prior rest cancellation
-and potion-reward evidence retains its separate package identity.
+this development. The [broader live batch](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md)
+demonstrated reroll, map potion use/discard, chest claiming, potion-owned hand and
+optional offers, and the first Sacrifice. A second Sacrifice visibly granted
+Whetstone but failed reconciliation at **36/36/35** actions. Its upgrade-observer
+correction passes focused checks and still needs a live retest. Prior rest
+cancellation and potion-reward evidence retains its separate package identity.
 
 ## Supported interactions
 
@@ -224,11 +227,11 @@ These are **not an implementation queue or required live-test checklist**:
 
 ### Implemented, but still needing representative live evidence
 
-- Full-producer hand/optional offers, potion use/discard and potion-owned choices,
-  chest relic/empty-chest completion, reward reroll/sacrifice, automatic pickup
-  effects, shop removal cancel/Cauldron/Orrery and shared event reward children.
-  Native-shaped fixtures establish ownership/settlement boundaries; the new
-  producer still needs representative live interactions and an ending test.
+- Full-producer empty-chest completion, automatic pickup effects, shop removal
+  cancel/Cauldron/Orrery and shared event reward children, plus an ending test.
+  Representative hand/optional offers, potion use/discard and potion-owned choices,
+  chest claiming, reroll and first Sacrifice passed live. Whetstone on the second
+  Sacrifice exposed a reconciliation failure; the correction needs a live retest.
 - Expanded terminal schemas 9–10: the representative ten-entry screen passed live.
   The wider 32-entry bound and 65-action card-menu sequence remain fixture/socket
   evidence, without a separately identified ordinary 32-entry gameplay caller.
@@ -260,9 +263,12 @@ is **`32d721e8f6f680d6fc0eeccfe90eeb5926dcbe17ac605cab43b89b36561ec314`**.
 It binds 461 source/test inputs across 52 projects, source `6c04327`, feature
 `cc9fa81`. The gate passed **85 groups in 319.717 seconds**, including 168 client
 tests, 1,628 router checks, 13,930 native event checks and 656 rest checks.
-Independent semantic review is clear. The exact package is installed for bounded
-Profile 3 checks after manual launch; all 429 base files remain unchanged and
-the two installed overlay files match the release. **New live acceptance is pending.**
+Independent semantic review was clear. The bounded Profile 3 batch completed
+35 actions before Whetstone's Sacrifice reconciliation failed on action 36.
+The [live ledger](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md) records each case.
+Normal quit and owned cleanup finished by **14:09:44 UTC**: four generated files
+removed, all 429 base files unchanged and zero overlays. A narrow upgrade-observer
+correction is validated locally and awaits a new release and live retest.
 
 The previous manifest `812c148b…`, source `53e2255`, passed the controlled
 Profile 3 v2 rest/card-reward/map test: **4/4/4 actions**, 27 reads, no stale

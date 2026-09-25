@@ -169,6 +169,8 @@ namespace MegaCrit.Sts2.Core.Models
         public ModelId Id { get; } = new();
         private int _level; public int CurrentUpgradeLevel { get=>FixtureTrace.Read(this,"level",_level);set=>_level=value; }
         public bool IsUpgradable { get; set; }
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+        public void UpgradeInternal()=>CurrentUpgradeLevel++;
     }
 }
 

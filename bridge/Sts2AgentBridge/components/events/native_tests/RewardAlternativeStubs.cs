@@ -16,7 +16,9 @@ namespace MegaCrit.Sts2.Core.Entities.Players {
 }
 namespace MegaCrit.Sts2.Core.Commands {
     public static partial class CardCmd {
-        [MethodImpl(MethodImplOptions.NoInlining)]public static void Upgrade(CardModel card,MegaCrit.Sts2.Core.Nodes.CommonUi.CardPreviewStyle style=default)=>card.CurrentUpgradeLevel++;
+        public static void Upgrade(CardModel card,MegaCrit.Sts2.Core.Nodes.CommonUi.CardPreviewStyle style=default)=>Upgrade(new[]{card},style);
+        [MethodImpl(MethodImplOptions.NoInlining)]public static void Upgrade(IEnumerable<CardModel> cards,MegaCrit.Sts2.Core.Nodes.CommonUi.CardPreviewStyle style)
+        {foreach(var card in cards)if(card.IsUpgradable)card.UpgradeInternal();}
     }
     public static class RelicCmd {
         [MethodImpl(MethodImplOptions.NoInlining)]public static async Task<RelicModel> Obtain(RelicModel relic,MegaCrit.Sts2.Core.Entities.Players.Player player,int index=-1)
@@ -44,7 +46,12 @@ namespace MegaCrit.Sts2.Core.Models.Relics {
     public sealed class WarPaint:RelicModel {
         [MethodImpl(MethodImplOptions.NoInlining)]public override Task AfterObtained(){foreach(var card in Owner!.Deck.Cards.Take(2))MegaCrit.Sts2.Core.Commands.CardCmd.Upgrade(card);return Task.CompletedTask;}
     }
-    public sealed class Whetstone:RelicModel {}
+    public sealed class Whetstone:RelicModel {
+        // The native single-card command can be inlined into this caller. Keep
+        // the actual enumerable-command -> model-mutation path in the fixture.
+        public Whetstone(){Id.Entry="WHETSTONE";}
+        [MethodImpl(MethodImplOptions.NoInlining)]public override Task AfterObtained(){foreach(var card in Owner!.Deck.Cards.Where(c=>c.IsUpgradable).Take(2))MegaCrit.Sts2.Core.Commands.CardCmd.Upgrade(new[]{card},default);return Task.CompletedTask;}
+    }
     public sealed class Mango:RelicModel {
         [MethodImpl(MethodImplOptions.NoInlining)]public override Task AfterObtained(){Owner!.Creature.SetMaxHpInternal(Owner.Creature.MaxHp+14);Owner.Creature.SetCurrentHpInternal(Owner.Creature.CurrentHp+14);return Task.CompletedTask;}
     }

@@ -69,7 +69,10 @@ internal sealed class PinnedAutomaticRelicEffects : IDisposable
             Patch(player.Creature.GetType().GetMethod("SetCurrentHpInternal")!,nameof(HpPrefix),nameof(HpPostfix));
             Patch(player.Creature.GetType().GetMethod("SetMaxHpInternal")!,nameof(HpPrefix),nameof(HpPostfix));
             Patch(typeof(Player).GetMethod("AddToMaxPotionCount")!,nameof(CapacityPrefix),nameof(CapacityPostfix));
-            Patch(typeof(CardCmd).GetMethods().Single(m=>m.Name=="Upgrade"&&m.GetParameters()[0].ParameterType==typeof(CardModel)),nameof(UpgradePrefix),nameof(UpgradePostfix));
+            // CardCmd's single-card overload is a tiny forwarding wrapper and
+            // can be inlined before its hook is installed. Observe the actual
+            // model mutation without enumerating the native target sequence.
+            Patch(typeof(CardModel).GetMethod("UpgradeInternal",Type.EmptyTypes)!,nameof(UpgradePrefix),nameof(UpgradePostfix));
             if(relic.GetType()==typeof(OldCoin)&&player.Relics.Any(r=>r.GetType()==typeof(DragonFruit)))
                 Patch(typeof(DragonFruit).GetMethod("AfterGoldGained")!,nameof(GoldHpPrefix),nameof(GoldHpPostfix));
         } catch {_failed=true;Dispose();throw;}
@@ -96,9 +99,9 @@ internal sealed class PinnedAutomaticRelicEffects : IDisposable
     private static void CapacityPrefix(Player __instance,int __0,out PinnedAutomaticRelicEffects? __state)
     {__state=Begin();if(__state is {} s)s.Require(s._relic.GetType()==typeof(PotionBelt)&&ReferenceEquals(__instance,s._player)&&__0==2);}
     private static void CapacityPostfix(PinnedAutomaticRelicEffects? __state) {if(__state is {} s)s.Accept("capacity");}
-    private static void UpgradePrefix(CardModel __0,out PinnedAutomaticRelicEffects? __state)
-    {__state=Begin();if(__state is {} s)s.Require((s._relic.GetType()==typeof(WarPaint)||s._relic.GetType()==typeof(Whetstone))&&s._expected.Deck.Any(c=>ReferenceEquals(c.Model,__0))&&__0.IsUpgradable);}
-    private static void UpgradePostfix(CardModel __0,PinnedAutomaticRelicEffects? __state) {if(__state is {} s)s.Accept("upgrade",__0);}
+    private static void UpgradePrefix(CardModel __instance,out PinnedAutomaticRelicEffects? __state)
+    {__state=Begin();if(__state is {} s)s.Require((s._relic.GetType()==typeof(WarPaint)||s._relic.GetType()==typeof(Whetstone))&&s._expected.Deck.Any(c=>ReferenceEquals(c.Model,__instance))&&__instance.IsUpgradable);}
+    private static void UpgradePostfix(CardModel __instance,PinnedAutomaticRelicEffects? __state) {if(__state is {} s)s.Accept("upgrade",__instance);}
     private void Accept(string kind,CardModel? upgraded=null)
     {
         var next=new State(_player);var before=_expected;

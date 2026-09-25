@@ -7,7 +7,11 @@
       "2026-09-25 11:10:24 UTC",
       "2026-09-25 13:27:39 UTC"
     ],
-    "note": "Implementation, review and focused checks overlapped; exclusive implementation time and packaging/install duration were not measured. Manual-launch wait remains open."
+    "live_through_cleanup_interval_utc": [
+      "2026-09-25 13:50:24 UTC",
+      "2026-09-25 14:09:44 UTC"
+    ],
+    "note": "Implementation, review and focused checks overlapped; exclusive implementation time, packaging/install duration and user wait were not measured. Live interval includes setup, tests and initial diagnosis."
   },
   "evidence_root": "/private/tmp/sts-bridge-d2n3wh6m",
   "failed_release_attempts": [
@@ -505,10 +509,40 @@
     "status": "passed"
   },
   "live": {
-    "planned_scope": "Continue existing test run for bounded representative new interactions. No full campaign acceptance or retained live corpus requested.",
+    "accepted": 36,
+    "attempted": 36,
+    "cleanup": {
+      "base_file_count": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "game_process_running": false,
+      "generated_files_removed": 4,
+      "normal_quit": true,
+      "overlay_count": 0,
+      "port_accepting": false,
+      "quarantined_state_sha256": "bf83d500d73bd79d5691340cdeeb956b1cbf97ffa48802bdf25d69d5466baa2d",
+      "status": "passed",
+      "verified_by_utc": "2026-09-25 14:09:44 UTC"
+    },
+    "code": "read_native_failed",
+    "entry": "Native Continue on existing assisted run; no full-campaign acceptance claim.",
+    "failure": "Second Sacrifice visibly granted Whetstone and closed the card menu, but remained unreconciled. No mutation retry.",
+    "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md",
+    "passed_cases": [
+      "rest_reward_reroll_card_map",
+      "general_potion_discard",
+      "fruit_juice_at_map",
+      "treasure_open_claim_leave",
+      "gamblers_brew_hand_choice",
+      "skill_potion_card_offer",
+      "skill_potion_optional_skip",
+      "first_sacrifice_to_map"
+    ],
+    "pending": true,
     "profile": 3,
-    "status": "awaiting_manual_launch",
-    "target_game_executed": false
+    "reconciled": 35,
+    "recorded_live_corpus": false,
+    "status": "stopped_on_unreconciled_sacrifice",
+    "target_game_executed": true
   },
   "preinstall": {
     "base": {
@@ -650,6 +684,6 @@
     "timing_note": "All intervals are on 2026-09-25. Reviews overlapped implementation and each other; do not sum them as exclusive work time."
   },
   "source_commit": "6c043278311dac931903e4dc110f43e8264bac2f",
-  "user_data_access": "No profile/save/history/Cloud content accessed and no live public corpus collected during development.",
+  "user_data_access": "Native UI Continue, console setup, and Save and Quit on the authorized Profile 3 test run. No profile/save/history/Cloud filesystem content accessed; no live public corpus collected.",
   "work_started_utc": "2026-09-25 11:10:24 UTC"
 }

@@ -33,11 +33,14 @@ Cauldron/Orrery reward decisions, shared event reward children, and opt-in publi
 live recording. Parent completion waits for exact native tasks, individual child
 receipts and successful cleanup. Legacy versioned controllers retain their scope.
 
-These additions have **offline evidence**. The exact package is installed for
-bounded Profile 3 checks following manual launch. The installation verification
-passed with **429 unchanged base files and two owned overlay files**. No profile,
-save, history or Cloud content was accessed during development, and no live
-trajectory corpus was collected. New live acceptance remains pending.
+The [bounded live batch](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md)
+passed reroll, map potion use/discard, chest claiming, potion-owned hand/optional
+offers and the first Sacrifice. Whetstone on the second Sacrifice failed
+reconciliation at **36/36/35** actions. No mutation was retried. Normal quit and
+exact four-file cleanup finished by **14:09:44 UTC**, with **429 unchanged base
+files and zero overlays**. No profile/save/history/Cloud filesystem content was
+accessed and no live trajectory corpus was collected. A narrow observer correction
+is validated locally; this manifest does not contain that correction.
 
 The [native candidate boundary](../../../../docs/AGENT_CONTRACT.md#native-full-run-v2-candidate)
 remains explicit. Neow's Bones needs a compound relic-pickup/curse continuation;
