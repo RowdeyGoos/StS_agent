@@ -23,6 +23,8 @@ namespace Sts2AgentBridge.Successors.RoomFlowsV1.Shop.Native;
 /// </summary>
 public sealed class PinnedShopV1NativeAdapter : IShopV1NativeAdapter
 {
+    private readonly bool _interactive;
+    public PinnedShopV1NativeAdapter(bool interactive = false) => _interactive = interactive;
     public ShopV1SurfaceCapture CaptureSurface()
     {
         if (!TryContext(out ShopContext? context))
@@ -40,7 +42,7 @@ public sealed class PinnedShopV1NativeAdapter : IShopV1NativeAdapter
 
         var offers = new List<ShopV1NativeOffer>();
         if (context.InventoryNode.IsOpen &&
-            !TryOffers(context, offers))
+            !TryOffers(context, offers, _interactive))
             return ShopV1SurfaceCapture.Unsupported();
 
         return new ShopV1SurfaceCapture(
@@ -165,7 +167,7 @@ public sealed class PinnedShopV1NativeAdapter : IShopV1NativeAdapter
             !GodotObject.IsInstanceValid(proceedNode))
             return false;
         back = Control(backNode, backNode.ForceClick);
-        merchant = Control(merchantNode, null);
+        merchant = Control(merchantNode, merchantNode.ForceClick);
         proceed = Control(proceedNode, proceedNode.ForceClick);
         return true;
     }
@@ -176,7 +178,7 @@ public sealed class PinnedShopV1NativeAdapter : IShopV1NativeAdapter
         new(control, control.IsVisibleInTree(), control.IsEnabled, dispatch);
 
     private static bool TryOffers(
-        ShopContext context, List<ShopV1NativeOffer> offers)
+        ShopContext context, List<ShopV1NativeOffer> offers, bool interactive)
     {
         var inventory=context.InventoryNode;var player=context.Player;
         int slotIndex = 0;
@@ -229,7 +231,7 @@ public sealed class PinnedShopV1NativeAdapter : IShopV1NativeAdapter
                         dispatch = new PinnedPurchaseDispatch(relicEntry, relicSlot);
                         if(PinnedShopPickupDispatch.Supports(relic)) {
                             if(!RemovalContext(context)||player.Deck.Cards.Count is <1 or >64){dispatch=null;model=null;}
-                            else dispatch=new PinnedShopPickupDispatch(player,relic,context.Overlays!,dispatch,()=>RemovalContext(context));
+                            else dispatch=new PinnedShopPickupDispatch(player,relic,context.Overlays!,dispatch,()=>RemovalContext(context), interactive);
                         }
                     }
                 }

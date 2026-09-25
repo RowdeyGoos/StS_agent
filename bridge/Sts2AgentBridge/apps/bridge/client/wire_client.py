@@ -26,7 +26,10 @@ ROUTES = {
     "/probe/combat-choice-v2/public/decision": False, "/probe/combat-choice-v2/public/action": True,
     "/probe/combat-choice-v3/public/decision": False, "/probe/combat-choice-v3/public/action": True,
     "/probe/agent-v1/public/decision": False, "/probe/agent-v1/public/action": True,
+    "/probe/agent-v2/public/decision": False, "/probe/agent-v2/public/action": True,
 }
+FULL_ROUTES = {"/probe/agent-v2/public/decision", "/probe/agent-v2/public/action"}
+FULL_BODY_LIMIT = 2097152
 
 
 def require(value, code):
@@ -47,7 +50,8 @@ def build_request(method: str, route: str, body: bytearray | None, token: bytear
             expected.add("child")
         require(type(value) is dict and set(value) == expected, "action_fields")
         require(type(value["decision_id"]) is str and re.fullmatch("[0-9a-f]{64}", value["decision_id"]), "decision")
-        require(type(value["action_id"]) is str and (route not in ("/probe/room-flows-v1/public/action", "/probe/rest-v3/public/action") and re.fullmatch(r"[a-z_]+(?::[0-9]{1,3}){0,2}", value["action_id"]) or
+        require(type(value["action_id"]) is str and (route == "/probe/agent-v2/public/action" and re.fullmatch(r"action:(?:0|[1-9][0-9]{0,3})", value["action_id"]) and int(value["action_id"][7:]) < 2048 or
+                route not in ("/probe/room-flows-v1/public/action", "/probe/rest-v3/public/action", "/probe/agent-v2/public/action") and re.fullmatch(r"[a-z_]+(?::[0-9]{1,3}){0,2}", value["action_id"]) or
                 route == "/probe/rest-v3/public/action" and re.fullmatch(r"(?:option:(?:heal|smith|lift|kindle|dig|cook|clone|hatch)|(?:de)?select:(?:[0-9]|[1-5][0-9]|6[0-3])|confirm|cancel|reward:(?:(?:open|collect):[0-7]|choose:[0-4]|skip_card|dismiss))", value["action_id"]) or
                 route == "/probe/room-flows-v1/public/action" and re.fullmatch(r"(?:buy:(?:card|potion|relic):(?:[0-9]|[12][0-9]|3[01])|remove:(?:[0-9]|[1-9][0-9]|[1-4][0-9]{2}|50[0-9]|51[01])|discard:[0-7]|inventory:close|leave|choose:[0-7]|lift|kindle|dig|clone|hatch|cook:(?:[0-9]|[1-5][0-9]|6[0-3]):(?:[0-9]|[1-5][0-9]|6[0-3]))", value["action_id"]) or
                 event and type(value.get("child")) is dict and re.fullmatch(
@@ -72,7 +76,7 @@ def build_request(method: str, route: str, body: bytearray | None, token: bytear
     return result
 
 
-def parse_response(response: bytearray, *, event: bool) -> bytearray:
+def parse_response(response: bytearray, *, event: bool, full: bool = False) -> bytearray:
     offset = response.find(b"\r\n\r\n")
     require(0 < offset < 1024, "response_header")
     lines = response[:offset].split(b"\r\n")
@@ -82,7 +86,8 @@ def parse_response(response: bytearray, *, event: bool) -> bytearray:
             lines[-1] == b"Connection: close", "response_shape")
     require(lines[2].startswith(b"Content-Length: "), "response_length")
     count = lines[2][16:]
-    require(re.fullmatch(b"[1-9][0-9]{0,4}", count) and int(count) <= 65536 and len(response) - offset - 4 == int(count), "response_length")
+    require(re.fullmatch(b"[1-9][0-9]{0,6}" if full else b"[1-9][0-9]{0,4}", count) and
+            int(count) <= (FULL_BODY_LIMIT if full else 65536) and len(response) - offset - 4 == int(count), "response_length")
     if event:
         require(re.fullmatch(b"X-Sts2-Native-Diagnostic: [a-z_]{1,33}", lines[5]), "diagnostic")
     result = response[offset + 4:]
@@ -179,11 +184,11 @@ class BridgeClient:
                 if not chunk:
                     break
                 response.extend(chunk)
-                require(len(response) <= 66560, "response_limit")
+                require(len(response) <= (FULL_BODY_LIMIT + 1024 if route in FULL_ROUTES else 66560), "response_limit")
             if method == 'GET' and self.read_diagnostic is None:
                 self.read_diagnostic = read_failure_diagnostic(response)
             event = route.startswith("/probe/generic-event-v7/")
-            parsed = parse_response(response, event=event)
+            parsed = parse_response(response, event=event, full=route in FULL_ROUTES)
             if event:
                 # Keep bounded ownership/completion failures as well as admission
                 # failures. A stopped parent must not lose its native boundary.

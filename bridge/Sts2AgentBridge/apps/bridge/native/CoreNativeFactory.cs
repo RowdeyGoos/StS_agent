@@ -4,7 +4,7 @@ using Sts2AgentBridge.Cards.Combat;
 namespace Sts2AgentBridge.Unified;
 internal static class CoreNativeFactory
 {
-    internal static CoreBridgeModule Create(string nonce)
+    internal static BridgeRouter Create(string nonce)
     {
         var combat = new PinnedPublicCombatDecisionReader();
         var reward = new PinnedPublicRewardDecisionReader(64);
@@ -20,6 +20,8 @@ internal static class CoreNativeFactory
         core.BindPotions(new CombatPotions(combat));
         core.BindAgent(new AgentPublicReader(reward, choice));
         core.BindCampaign(new CampaignNavigation(),new PublicRewardActionService(new PinnedPublicRewardActionApplier(reward,screen=>new CampaignRewardTransition(screen))));
-        return core;
+        var router = new BridgeRouter(core, (capability, session) => new NativeBridgeModule(capability, session));
+        router.BindFullAgent(new FullAgentSession(new FullNativeBackend(router, reward, choice), nonce));
+        return router;
     }
 }

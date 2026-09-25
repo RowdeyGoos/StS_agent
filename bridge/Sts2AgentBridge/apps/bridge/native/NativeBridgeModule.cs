@@ -30,12 +30,14 @@ internal sealed class NativeBridgeModule : IBridgeModule
     private Action? _cleanup;
     private RoomFlowSelection _roomSelection;
     private bool _initialized, _disposed, _restInteractive;
+    private string? _restPrefix;
     private ReadStageTrace? _readTrace;
+    public object? ObservationSource { get; private set; }
     public void SetReadTrace(ReadStageTrace? trace)=>_readTrace=trace;
     private void Stage(int value)=>_readTrace?.Mark(value);
     internal NativeBridgeModule(Capability capability, string nonce) { Capability = capability; _nonce = nonce; }
     public bool Owns(BridgeRequest request) => request.Capability == Capability &&
-        (!_initialized || Capability != Capability.Rooms || _restInteractive == request.Path.StartsWith("/probe/rest-v3/", StringComparison.Ordinal)) ||
+        (!_initialized || Capability != Capability.Rooms || (_restInteractive ? request.Path.StartsWith(_restPrefix!, StringComparison.Ordinal) : !request.Path.StartsWith("/probe/rest-v", StringComparison.Ordinal))) ||
         Capability == Capability.Rooms && _roomSelection == RoomFlowSelection.Event && request.Capability == Capability.Items;
     public ModuleReply Handle(BridgeRequest request)
     {
@@ -45,11 +47,25 @@ internal sealed class NativeBridgeModule : IBridgeModule
     }
     private void Initialize(BridgeRequest first)
     {
-        if (Capability == Capability.Rooms && first.Path == RestInteractiveSession.DecisionRoute)
+        if (Capability == Capability.Rooms && first.Path == ShopInteractiveSession.DecisionRoute)
+        {
+            if (!PinnedGenericEventHarmonyGuard.Verify()) throw new InvalidOperationException("Native dependency mismatch.");
+            _restInteractive = true; _restPrefix = "/probe/shop-v7/";
+            var shop = new ShopInteractiveSession(_nonce, new PinnedShopV1NativeAdapter(interactive: true)); _cleanup = shop.Dispose; ObservationSource = shop;
+            _handle = request => {
+                byte[] body = shop.Handle(request.IsPost, request.Decision, request.Action);
+                using var json = JsonDocument.Parse(body); string? status = Text(json.RootElement, "status");
+                return new(body, Complete: status == "complete", Terminal: status is not ("ready" or "waiting" or "accepted" or "complete"));
+            };
+            return;
+        }
+        if (Capability == Capability.Rooms && first.Path is RestInteractiveSession.DecisionRoute or RestInteractiveSession.FullDecisionRoute)
         {
             if (!PinnedGenericEventHarmonyGuard.Verify()) throw new InvalidOperationException("Native dependency mismatch.");
             _restInteractive = true;
-            var rest = new RestInteractiveSession(_nonce); _cleanup = rest.Dispose;
+            _restPrefix = first.Path == RestInteractiveSession.DecisionRoute ? "/probe/rest-v3/" : "/probe/rest-v4/";
+            var rest = new RestInteractiveSession(_nonce, leave: first.Path == RestInteractiveSession.FullDecisionRoute ? new FullNativeRestLeave() : null); _cleanup = rest.Dispose;
+            ObservationSource = rest;
             _handle = request =>
             {
                 byte[] body = rest.Handle(request.IsPost, request.Decision, request.Action);
@@ -145,6 +161,7 @@ internal sealed class NativeBridgeModule : IBridgeModule
                 _cleanup = native.Dispose;
                 Stage(9);
                 var events = new GenericEventV7Session(native, _nonce);
+                ObservationSource = (native, events);
                 _cleanup = events.Dispose;
                 Stage(10);
                 var eventWire = new GenericEventV7WireService(_nonce, events);
@@ -188,6 +205,6 @@ internal sealed class NativeBridgeModule : IBridgeModule
     {
         if (_disposed) return;
         _cleanup?.Invoke();
-        _cleanup = null; _handle = null; _disposed = true;
+        _cleanup = null; _handle = null; ObservationSource = null; _disposed = true;
     }
 }

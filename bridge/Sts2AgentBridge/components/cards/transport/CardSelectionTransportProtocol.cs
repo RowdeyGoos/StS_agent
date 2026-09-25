@@ -181,9 +181,9 @@ internal static class CardSelectionTransportServiceBody
 
 internal static class CardSelectionTransportHttpEncoder
 {
-    internal static byte[] Wrap(byte[] body)
+    internal static byte[] Wrap(byte[] body, int maximumBody = CardSelectionTransportLimits.MaximumBody)
     {
-        if (body.Length is < 1 or > CardSelectionTransportLimits.MaximumBody)
+        if (body.Length < 1 || body.Length > maximumBody)
             throw new InvalidOperationException("Invalid service body length.");
         byte[] header = Encoding.ASCII.GetBytes(
             "HTTP/1.1 200 OK\r\nContent-Type: application/json; charset=utf-8\r\nContent-Length: " +

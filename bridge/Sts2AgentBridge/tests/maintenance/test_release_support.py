@@ -57,7 +57,8 @@ class ReleaseBoundaryTests(unittest.TestCase):
                 shutil.move(str(path), str(fixture / path.name))
         shutil.copytree(fixture, bridge)
         (bridge / 'apps/bridge/client/agent_host.py').write_text('shared consumer\n')
-        for name in ('game/__init__.py', 'game/agent/__init__.py', 'game/agent/policy.py',
+        for name in ('game/__init__.py', 'game/agent/__init__.py', 'game/agent/policy.py', 'game/agent/full_policy.py',
+                     'game/agent/contracts/full.py',
                      'game/agent/contracts/__init__.py', 'game/agent/contracts/models.py',
                      'game/agent/contracts/codec.py', 'game/agent/contracts/validation.py'):
             path = repository / name
@@ -68,10 +69,13 @@ class ReleaseBoundaryTests(unittest.TestCase):
         self.manifest = bridge / 'release.json'
         digest = self.seal()
         self.verify(digest)
-        self.assertEqual(len([name for name in self.release['files'] if name.startswith('../../game/')]), 7)
-        (repository / 'game/agent/policy.py').write_text('changed policy\n')
-        with self.assertRaisesRegex(ValueError, 'release_source_mismatch'):
-            self.verify(digest)
+        self.assertEqual(len([name for name in self.release['files'] if name.startswith('../../game/')]), 9)
+        for name in ('policy.py', 'full_policy.py', 'contracts/full.py'):
+            path = repository / 'game/agent' / name
+            path.write_text('changed policy\n')
+            with self.assertRaisesRegex(ValueError, 'release_source_mismatch'):
+                self.verify(digest)
+            path.write_text('shared source\n')
 
     def test_added_source_rejected_but_documentation_does_not_rebind_release(self):
         digest = self.seal()

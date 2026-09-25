@@ -10,7 +10,7 @@ internal sealed class ProductionBridgeRuntimeFactory : IBridgeBootstrapRuntimeFa
         try
         {
             var runtime = BridgeTransportRuntime.Create(configuration, () => credential,
-                nonce => new BridgeRouter(CoreNativeFactory.Create(nonce), (capability, session) => new NativeBridgeModule(capability, session)));
+                CoreNativeFactory.Create);
             return runtime is null ? null : new Runtime(runtime);
         }
         finally { CryptographicOperations.ZeroMemory(configuration); CryptographicOperations.ZeroMemory(credential); }

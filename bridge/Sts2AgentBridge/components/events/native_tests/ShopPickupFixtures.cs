@@ -26,17 +26,19 @@ internal static partial class Program {
     }
     private static void ShopPickupCases() {
         InteractiveChoiceCases();
-        foreach(string type in new[]{"mirror","hammer","kifuda","dagger","stamp"})foreach(int count in new[]{1,2,4})foreach(bool delayed in new[]{false,true})foreach(string mode in new[]{"success","wrong_result","wrong_effect","pending_dispose"}) {
+        foreach(string type in new[]{"mirror","hammer","kifuda","dagger","stamp"})foreach(int count in new[]{1,2,4})foreach(bool delayed in new[]{false,true})foreach(string mode in new[]{"success","wrong_result","wrong_effect","pending_dispose"}) foreach(bool interactive in new[]{false,true}) {
             var player=new Player{Gold=100};var cards=Enumerable.Range(0,count).Select(i=>{var c=new CardModel{Owner=player};c.Id.Entry="CARD_"+i;return c;}).ToArray();player.Deck.Cards.AddRange(cards);
             RelicModel relic=type switch{"mirror"=>new DollysMirror(),"hammer"=>new GnarledHammer(),"kifuda"=>new Kifuda(),"dagger"=>new PunchDagger(),_=>new RoyalStamp()};
-            var overlays=new NOverlayStack();var purchase=new PickupPurchase(player,relic){Delay=delayed?new():null};var dispatch=new PinnedShopPickupDispatch(player,relic,overlays,purchase,()=>true);
+            var overlays=new NOverlayStack();var purchase=new PickupPurchase(player,relic){Delay=delayed?new():null};var dispatch=new PinnedShopPickupDispatch(player,relic,overlays,purchase,()=>true,interactive:interactive);
             int clicks=0,confirms=0,previews=0;var chosen=new List<CardModel>();
             Control Build(IReadOnlyList<CardModel> domain,EnchantmentModel? effect,int amount,CardSelectorPrefs prefs) {
                 NCardGridSelectionScreen screen=effect is null?new NDeckCardSelectScreen():new NDeckEnchantSelectScreen();
                 var selected=new TaskCompletionSource<IEnumerable<CardModel>>();screen.SelectionTask=selected.Task;
+                MegaCrit.Sts2.Core.Nodes.Screens.ScreenContext.ActiveScreenContext.Instance=new(){Current=screen};
                 var grid=new NCardGrid();var container=new Control{Visible=false};var preview=new Control();var confirm=new NConfirmButton();var open=new NConfirmButton();
                 screen.Bind("%CardGrid",grid);screen.Bind(effect is null?"%PreviewContainer":prefs.MaxSelect==1?"%EnchantSinglePreviewContainer":"%EnchantMultiPreviewContainer",container);screen.Bind(effect is null?"%Confirm":"Confirm",open);
                 container.Bind(effect is null?"%PreviewConfirm":"Confirm",confirm);
+                screen.Bind("%Close",new NBackButton());container.Bind(effect is null?"%PreviewCancel":"Cancel",new NBackButton());
                 if(effect is not null&&prefs.MaxSelect==1){var single=new NEnchantPreview();single.Setup(new Control(),new Control());container.Bind("EnchantPreview",single);}else container.Bind(effect is null?"%Cards":"Cards",preview);
                 void Show(){previews++;container.Visible=true;if(effect is not null&&prefs.MaxSelect==1){var single=container.GetNodeOrNull<NEnchantPreview>("EnchantPreview")!;var fields=single.ReadFixtureFields();var original=chosen.Single();var clone=new CardModel{Owner=player,IsEnchantmentPreview=true};clone.Id.Entry=original.Id.Entry;clone.Enchantment=new(){Card=clone,Amount=amount};clone.Enchantment.Id.Entry=effect.Id.Entry;((Control)fields[0]).Children.Add(new NPreviewCardHolder{CardNode=new NCard{Model=original}});((Control)fields[1]).Children.Add(new NPreviewCardHolder{CardNode=new NCard{Model=clone}});}else foreach(var card in chosen)preview.Children.Add(new NPreviewCardHolder{CardNode=new NCard{Model=card}});}
                 foreach(var card in domain.Reverse()) {
@@ -49,13 +51,21 @@ internal static partial class Program {
             NDeckEnchantSelectScreen.Factory=(domain,e,amount,prefs)=>(NDeckEnchantSelectScreen)Build(domain,e,amount,prefs);
             CardSelectCmd.GenericHandler=(p,prefs,filter)=>{var domain=p.Deck.Cards.Where(filter!).ToArray();if(domain.Length<=prefs.MinSelect&&!prefs.RequireManualConfirmation)return System.Threading.Tasks.Task.FromResult<IEnumerable<CardModel>>(domain);var screen=NDeckCardSelectScreen.Create(domain,prefs);overlays.Screens.Add(screen);return screen.CardsSelected();};
             CardSelectCmd.EnchantHandler=(domain,e,amount,prefs)=>{if(domain.Count<=prefs.MinSelect&&!prefs.RequireManualConfirmation)return System.Threading.Tasks.Task.FromResult<IEnumerable<CardModel>>(domain);var screen=NDeckEnchantSelectScreen.ShowScreen(domain,e,amount,prefs);overlays.Screens.Add(screen);return screen.CardsSelected();};
+            void Advance() {
+                dispatch.Advance();
+                if(interactive && dispatch.Completion==ShopV1Completion.Pending && dispatch.ReadChoice() is {} choice) {
+                    int desired=Math.Min(type is "hammer" or "kifuda"?3:1,count);
+                    if(choice.Selected.Length<desired)dispatch.ApplyChoice("select",cards.First(c=>!choice.Selected.Contains(c)));
+                    else dispatch.ApplyChoice("confirm",null);
+                }
+            }
             if(mode=="wrong_effect")purchase.After=()=>cards[0].CurrentUpgradeLevel++;
             try {
                 if(mode!="success") {
                     bool failed=false;
                     try {
                         dispatch.Invoke();if(delayed)purchase.Delay!.SetResult();
-                        if(mode!="pending_dispose")for(int i=0;i<12&&dispatch.Completion==ShopV1Completion.Pending;i++)dispatch.Advance();
+                        if(mode!="pending_dispose")for(int i=0;i<24&&dispatch.Completion==ShopV1Completion.Pending;i++)Advance();
                     }catch(InvalidOperationException){failed=true;}
                     bool shortcut=clicks==0&&dispatch.Completion==ShopV1Completion.Succeeded;
                     if(shortcut&&mode is "wrong_result" or "pending_dispose"){dispatch.Dispose();continue;}
@@ -66,7 +76,7 @@ internal static partial class Program {
                     Check(rejected,"pickup cleanup failure remains sticky");continue;
                 }
                 dispatch.Invoke();if(delayed){Check(dispatch.Completion==ShopV1Completion.Pending,"debit delay retains pickup");purchase.Delay!.SetResult();}
-                for(int i=0;i<12&&dispatch.Completion==ShopV1Completion.Pending;i++)dispatch.Advance();
+                for(int i=0;i<24&&dispatch.Completion==ShopV1Completion.Pending;i++)Advance();
                 Check(dispatch.Completion==ShopV1Completion.Succeeded,"native pickup complete "+type+count);
                 int selectedCount=Math.Min(type is "hammer" or "kifuda"?3:1,count);
                 Check(player.Gold==90&&player.Relics.Single()==relic,"pickup relic and payment exact");

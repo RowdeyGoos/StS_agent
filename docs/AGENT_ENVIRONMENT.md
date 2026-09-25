@@ -448,15 +448,25 @@ and offline checks. Each native child is separately exposed to its callback.
 Representative live checks passed on 2026-09-25: immediate/preview cancellation
 for both options, combined card/potion collection, and separate card Skip/parent
 dismissal, with 20/20/20 actions and complete owned cleanup. The controlled rest
-client is not yet connected to the full shared policy. The Dig pool audit found no
+client retains that evidence separately from the new full shared producer. The Dig pool audit found no
 normal-game pickup-screen caller among its Common/Uncommon/Rare relics; broader
 injected pickup screens remain a contract limit.
 These changes belong in the existing native modules, router and client. Completion
 requires a shared-policy native run through the affected decisions, appropriate
 paired/privacy/adversarial fixtures, one stable combined release and owned cleanup.
 
-This follow-through remains open. The accepted assisted campaign is not evidence
-that the full shared native profile already exists.
+The next candidate now implements native `agent_v2` graph projection and private
+semantic dispatch through the existing owners, with one shared Python callback,
+2,048 candidates, route-scoped larger responses and exact nested receipts. Rest
+and shop choices are connected; event children, combat resumption, Sphere and
+ending routes use the same coordinator. The [current candidate boundary](AGENT_CONTRACT.md#native-full-run-v2-candidate)
+is authoritative. Native projection/live validation, general potion/hand-selector
+coverage, treasure claims, removal cancellation, reward rerolls and public live
+recording remain unfinished. A bounded shared-policy case can stop at a reconciled
+map before attempting a campaign.
+
+This follow-through remains open. The accepted assisted campaign and legacy rest
+checks do not establish full shared native coverage or v2 live acceptance.
 
 The integration slice, fixed-space Gym consumer, full headless profile and
 operational delivery span the completed milestones **1 → 2 → 3 → 4 → 5 → 6**.

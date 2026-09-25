@@ -108,7 +108,8 @@ def collect_sources(bridge: Path, targets: list[str]) -> dict[str, bytes]:
     # Bind the actual shared contract and chooser, not a second bridge copy.
     # These fixed paths preserve the repository layout in disposable gate inputs.
     if "apps/bridge/client/agent_host.py" in files:
-        for name in ("game/__init__.py", "game/agent/__init__.py", "game/agent/policy.py",
+        for name in ("game/__init__.py", "game/agent/__init__.py", "game/agent/policy.py", "game/agent/full_policy.py",
+                     "game/agent/contracts/full.py",
                      "game/agent/contracts/__init__.py", "game/agent/contracts/models.py",
                      "game/agent/contracts/codec.py", "game/agent/contracts/validation.py"):
             files["../../" + name] = read_regular(bridge.parents[1] / name)

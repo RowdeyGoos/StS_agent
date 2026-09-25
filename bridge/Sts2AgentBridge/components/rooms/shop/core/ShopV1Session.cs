@@ -55,6 +55,14 @@ public sealed class ShopV1Session : IRoomFlowSession
     }
 
     public string FlowKind => ShopV1Constants.FlowKind;
+    internal ShopV1SurfaceCapture Inspect(string decision)
+    {
+        if (_disposed || _unsupported || _inside || Environment.CurrentManagedThreadId != _ownerThreadId ||
+            _published?.Observation.DecisionId != decision) throw new InvalidOperationException("Shop observation unavailable.");
+        return _published.Capture;
+    }
+    internal IShopV1NativeDispatch? PendingPurchase => !_disposed && !_unsupported && !_inside && Environment.CurrentManagedThreadId == _ownerThreadId
+        ? _pending?.Probe.PurchaseDispatch : throw new InvalidOperationException("Shop owner unavailable.");
 
     public IRoomFlowReadValue Read()
     {

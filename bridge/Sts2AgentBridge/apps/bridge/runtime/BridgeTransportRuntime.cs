@@ -488,7 +488,8 @@ internal sealed class BridgeTransportRuntime : IDisposable
 #endif
                 BridgeReply reply = (_service ?? throw new InvalidOperationException("Service unavailable.")).Handle(request,readTrace);
                 staleWithoutMutation = reply.StaleWithoutMutation;
-                return new OwnedServiceResponse(reply.Terminal ? 503 : 200, reply.Response);
+                return new OwnedServiceResponse(reply.Terminal ? 503 : 200, reply.Response,
+                    FullPublic: request.Path is FullAgentRoutes.Decision or FullAgentRoutes.Action);
             };
             OwnedByteDispatchResult dispatch = _frameQueue.Submit(operation);
             // This status atomically changes queued work to Cancelled, so the

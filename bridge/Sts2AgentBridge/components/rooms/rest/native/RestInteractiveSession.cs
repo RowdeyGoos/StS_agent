@@ -10,6 +10,13 @@ using Sts2AgentBridge.Successors.RoomFlowsV1.Shop.Native;
 
 namespace Sts2AgentBridge.Rooms.Rest;
 
+internal interface IRestLeave : IDisposable
+{
+    string? ReadDecision(object room);
+    void Apply(string decision);
+    bool Poll();
+}
+
 // Interactive successor on the same room module. One owned rest option may
 // yield several policy decisions; acceptance is credited only after each exact
 // selection/reward reconciles, and the parent only after native return/cleanup.
@@ -17,8 +24,12 @@ internal sealed class RestInteractiveSession : IDisposable
 {
     internal const string DecisionRoute = "/probe/rest-v3/public/decision";
     internal const string ActionRoute = "/probe/rest-v3/public/action";
+    internal const string FullDecisionRoute = "/probe/rest-v4/public/decision", FullActionRoute = "/probe/rest-v4/public/action";
     private readonly PinnedRestV2NativeAdapter _native;
     private readonly string _nonce;
+    private readonly IRestLeave? _leave;
+    private string? _leaveDecision;
+    private bool _leaving;
     private readonly int _thread = Environment.CurrentManagedThreadId;
     private RestV2Surface? _bound, _surface;
     private RestV2NativeOption? _option;
@@ -30,11 +41,17 @@ internal sealed class RestInteractiveSession : IDisposable
     private readonly JsonArray _completed = new();
     private int _revision, _reads, _actions;
     private bool _failed, _disposed, _inside, _dispatching;
-    internal RestInteractiveSession(string nonce, PinnedRestV2NativeAdapter? native = null)
-    { _nonce = nonce; _native = native ?? new(interactive: true); }
+    internal RestInteractiveSession(string nonce, PinnedRestV2NativeAdapter? native = null, IRestLeave? leave = null)
+    { _nonce = nonce; _native = native ?? new(interactive: true); _leave = leave; }
     internal bool Complete => _terminal?["status"]?.GetValue<string>() == "complete";
+    internal (RestV2Surface Surface, DeckChoiceView? Choice, RestRewardContinuation? Rewards, string RewardDecision) Inspect(string decision)
+    {
+        Require(!_failed && !_disposed && !_inside && Environment.CurrentManagedThreadId == _thread &&
+            _published?["decision_id"]?.GetValue<string>() == decision && _surface is not null);
+        return (_surface!, _choice, _native.Rewards, _rewards.DecisionId);
+    }
     internal static bool ValidAction(string? action) => action is not null && action.Length <= 64 &&
-        (action is "confirm" or "cancel" || action.StartsWith("option:", StringComparison.Ordinal) ||
+        (action is "confirm" or "cancel" or "leave" || action.StartsWith("option:", StringComparison.Ordinal) ||
          action.StartsWith("select:", StringComparison.Ordinal) || action.StartsWith("deselect:", StringComparison.Ordinal) ||
          action.StartsWith("reward:", StringComparison.Ordinal)) && action.All(c => c is >= 'a' and <= 'z' or >= '0' and <= '9' or '_' or ':');
     private void Require([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)] bool value) { if (!value) { _failed = true; throw new InvalidOperationException("rest_interactive_boundary"); } }
@@ -58,7 +75,7 @@ internal sealed class RestInteractiveSession : IDisposable
     }
     private JsonObject Value(string status, string phase) => new()
     {
-        ["schema_version"] = 3, ["capability"] = "rest_v3", ["session_nonce"] = _nonce,
+        ["schema_version"] = _leave is null ? 3 : 4, ["capability"] = _leave is null ? "rest_v3" : "rest_v4", ["session_nonce"] = _nonce,
         ["status"] = status, ["phase"] = phase, ["completed"] = _completed.DeepClone()
     };
     private JsonObject Ready(string phase, IEnumerable<string> actions, JsonObject fields)
@@ -75,14 +92,22 @@ internal sealed class RestInteractiveSession : IDisposable
     {
         Require(++_reads <= 4096);
         if (_terminal is not null) return _terminal;
+        if (_leaving)
+        {
+            if (!_leave!.Poll()) return Value("waiting", "map");
+            Settle(_parentDecision!, _parentAction!, "reconciled");
+            return _terminal = Value("complete", "map");
+        }
         _surface = _native.Capture(); _bound ??= _surface;
         Require(ReferenceEquals(_surface.Run, _bound.Run) && ReferenceEquals(_surface.Player, _bound.Player) &&
             ReferenceEquals(_surface.Room, _bound.Room) && ReferenceEquals(_surface.Map, _bound.Map));
         if (_option is null)
         {
             if (!_surface.Foreground) return Value("waiting", "option");
-            var actions = _surface.Options.Where(o => o.Public.Enabled).Select(o => "option:" + o.Public.ActionId).ToArray();
-            Require(actions.Length > 0);
+            var actions = _surface.Options.Where(o => o.Public.Enabled).Select(o => "option:" + o.Public.ActionId).ToList();
+            _leaveDecision = _leave?.ReadDecision(_surface.Room);
+            if (_leaveDecision is not null) actions.Add("leave");
+            Require(actions.Count > 0);
             return Ready("option", actions, new()
             {
                 ["options"] = new JsonArray(_surface.Options.Select(o => (JsonNode?)new JsonObject
@@ -154,13 +179,14 @@ internal sealed class RestInteractiveSession : IDisposable
     private JsonObject Apply(string? decision, string? action)
     {
         Require(_published is not null && ValidAction(action) && _published["decision_id"]!.GetValue<string>() == decision);
-        var oldSurface = _surface; var oldChoice = _choice; string priorReward = _rewards.DecisionId;
+        var oldSurface = _surface; var oldChoice = _choice; string priorReward = _rewards.DecisionId; string? priorLeave = _leaveDecision;
         string before = _published.ToJsonString(); var fresh = Read();
         Require(fresh.ToJsonString() == before && fresh["legal_actions"]!.AsArray().Any(a => a!.GetValue<string>() == action) && _actions < 128);
         if (_option is null)
         {
             Require(oldSurface is not null && SameOptions(oldSurface, _surface!));
-            _option = _surface!.Options.Single(o => "option:" + o.Public.ActionId == action);
+            if (action == "leave") Require(_leave is not null && _leaveDecision is not null && priorLeave == _leaveDecision);
+            else _option = _surface!.Options.Single(o => "option:" + o.Public.ActionId == action);
             _parentDecision = decision; _parentAction = action;
         }
         else
@@ -176,7 +202,8 @@ internal sealed class RestInteractiveSession : IDisposable
         }
         _actions++; _revision++; _completed.Clear(); _published = null;
         _dispatching = true;
-        if (_childAction is null) _native.Begin(_option!, _option!.Public.ActionId);
+        if (action == "leave") { _leaving = true; _leave!.Apply(_leaveDecision!); }
+        else if (_childAction is null) _native.Begin(_option!, _option!.Public.ActionId);
         else if (action!.StartsWith("reward:", StringComparison.Ordinal)) _native.Rewards!.Apply(_rewards.DecisionId, action[7..]);
         else
         {
@@ -196,6 +223,7 @@ internal sealed class RestInteractiveSession : IDisposable
     {
         Require(Environment.CurrentManagedThreadId == _thread && !_inside);
         if (_disposed) return;
-        _native.Dispose(); _disposed = true;
+        try { _native.Dispose(); } finally { _leave?.Dispose(); }
+        _disposed = true;
     }
 }

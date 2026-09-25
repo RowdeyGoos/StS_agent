@@ -16,6 +16,7 @@ using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Nodes.Screens.CardSelection;
 using MegaCrit.Sts2.Core.Nodes.Screens.Overlays;
+using MegaCrit.Sts2.Core.Nodes.Screens.ScreenContext;
 using Sts2AgentBridge.Successors.CardSelectionV1;
 using Sts2AgentBridge.Successors.CardSelectionV1.Native;
 
@@ -103,7 +104,7 @@ internal sealed class PinnedShopRemovalDispatch : IShopV1RemovalDispatch
     }
     private static void ScreenPostfix(NDeckCardSelectScreen __result,PinnedShopRemovalDispatch? __state)
     {if(__state is {} s){s.Require(s._screenSeen&&s._screen is null&&__result?.GetType()==typeof(NDeckCardSelectScreen));s._screen=__result;}}
-    internal bool OwnsForeground => _invoked&&!_failed&&Valid(_screen)&&_overlays.ScreenCount==1&&ReferenceEquals(_overlays.Peek(),_screen);
+    internal bool OwnsForeground => _invoked&&!_failed&&Valid(_screen)&&_overlays.ScreenCount==1&&ReferenceEquals(_overlays.Peek(),_screen)&&ReferenceEquals(ActiveScreenContext.Instance.GetCurrentScreen(),_screen);
     internal void Advance()
     {
         Require(_invoked&&!_disposed&&!_failed&&Context()&&_wrapper is not null&&_selection is not null);

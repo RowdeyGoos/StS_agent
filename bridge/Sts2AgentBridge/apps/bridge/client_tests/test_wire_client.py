@@ -9,6 +9,39 @@ from run_live import core_summary, retain_read_diagnostic
 
 
 class ClientBoundaryTests(unittest.TestCase):
+    def test_full_action_slots_keep_legacy_bounds(self):
+        token = bytearray(b'a' * 64)
+        for slot in (0, 255, 256, 2047):
+            body = bytearray(json.dumps(dict(decision_id='b' * 64, action_id=f'action:{slot}')).encode())
+            self.assertIn(f'X-Sts2-Action-Id: action:{slot}\r\n'.encode(),
+                          build_request('POST', '/probe/agent-v2/public/action', body, token))
+            if slot > 999:
+                with self.assertRaises(ValueError): build_request('POST', '/probe/agent-v1/public/action', body, token)
+        for slot in ('2048', '00', '-1', '1x', ' 1'):
+            body = bytearray(json.dumps(dict(decision_id='b' * 64, action_id=f'action:{slot}')).encode())
+            with self.assertRaises(ValueError): build_request('POST', '/probe/agent-v2/public/action', body, token)
+
+    def test_full_response_capacity_is_route_scoped(self):
+        for size in (65536, 65537, 2097152, 2097153):
+            raw = b'"' + b'x' * (size - 2) + b'"'
+            for full in (False, True):
+                response = framed_error(raw, event=False)
+                if size <= (2097152 if full else 65536):
+                    self.assertEqual(parse_response(response, event=False, full=full), raw)
+                else:
+                    with self.assertRaises(ValueError): parse_response(response, event=False, full=full)
+        for route, succeeds in (('/probe/agent-v2/public/decision', True), ('/probe/agent-v1/public/decision', False)):
+            sent = []
+            def connect():
+                sock = FakeSocket(sent); sock.response = framed_error(b'"' + b'x' * 70000 + b'"', event=False); return sock
+            with_client = BridgeClient(bytearray(b'a' * 64), connector=connect)
+            try:
+                if succeeds: self.assertEqual(len(with_client.exchange('GET', route)), 70002)
+                else:
+                    with self.assertRaises(ValueError): with_client.exchange('GET', route)
+                self.assertTrue(all(not any(buffer) for buffer in sent))
+            finally: with_client.close()
+
     def test_interactive_rest_actions_are_bounded_and_route_scoped(self):
         route = '/probe/rest-v3/public/action'
         token = bytearray(b'a' * 64)

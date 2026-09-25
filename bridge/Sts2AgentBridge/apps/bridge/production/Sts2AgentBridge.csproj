@@ -39,6 +39,16 @@
     <Compile Include="../runtime/CoreBridgeModule.cs" />
     <Compile Include="../runtime/AgentSession.cs" />
     <Compile Include="../runtime/AgentContracts.cs" />
+    <Compile Include="../runtime/FullPublicGraph.cs" />
+    <Compile Include="../runtime/FullAgentContracts.cs" />
+    <Compile Include="../runtime/FullAgentSession.cs" />
+    <Compile Include="../native/FullNativeDisplay.cs" />
+    <Compile Include="../native/FullNativeState.cs" />
+    <Compile Include="../native/FullNativeBackend.cs" />
+    <Compile Include="../native/FullNativeCoreProjection.cs" />
+    <Compile Include="../native/FullNativeEvents.cs" />
+    <Compile Include="../native/FullNativeRestLeave.cs" />
+    <Compile Include="../native/FullNativeShop.cs" />
     <Compile Include="../native/AgentPublicReader.cs" />
     <Compile Include="../native/AgentCombatHistory.cs" />
     <Compile Include="../runtime/OwnedByteFrameQueue.cs" />
@@ -129,6 +139,7 @@
     <Compile Include="../../../components/rooms/shop/native/PinnedShopRemovalDispatch.cs" />
     <Compile Include="../../../components/rooms/shop/native/PinnedDeckCardChoice.cs" />
     <Compile Include="../../../components/rooms/shop/native/PinnedShopPickupDispatch.cs" />
+    <Compile Include="../../../components/rooms/shop/native/ShopInteractiveSession.cs" />
     <Compile Include="../../../components/rooms/wire/RoomFlowWireCodec.cs" />
     <Compile Include="../../../components/rooms/wire/RoomFlowWireService.cs" />
     <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicCombatActionApplier.cs" />

@@ -26,7 +26,8 @@ ACTIONS = ('play_card', 'end_turn', 'select_card', 'deselect_card', 'confirm_sel
            'deselect_relic_card', 'confirm_relic_selection', 'choose_relic_reward',
            'lift', 'dig', 'use_rest_relic', 'choose_cook_card', 'deselect_cook_card',
            'confirm_cook', 'choose_extra_reward', 'reroll_card_reward',
-           'sacrifice_card_reward', 'continue_act', 'abandon_run', 'open_reward', 'close_reward')
+           'sacrifice_card_reward', 'continue_act', 'abandon_run', 'open_reward', 'close_reward',
+           'open_shop', 'close_shop')
 _REF = re.compile(r'(' + '|'.join(NAMESPACES) + r'):[0-9]+\Z')
 
 

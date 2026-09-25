@@ -40,6 +40,7 @@ namespace MegaCrit.Sts2.Core.Nodes.Screens.Shops {
 }
 namespace MegaCrit.Sts2.Core.Nodes.CommonUi {public class NBackButton:NButton {}}
 namespace MegaCrit.Sts2.Core.Nodes.Rooms {public class NMerchantButton:NButton {public bool IsLocalPlayerDead {get;set;}}}
+namespace MegaCrit.Sts2.Core.Nodes.Rooms {public class NMerchantRoom:Godot.Control {}}
 namespace MegaCrit.Sts2.Core.Models.Events {public class FakeMerchant:EventModel {
 public Func<MegaCrit.Sts2.Core.Models.Potions.FoulPotion,System.Threading.Tasks.Task>? FoulHandler;
 [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]

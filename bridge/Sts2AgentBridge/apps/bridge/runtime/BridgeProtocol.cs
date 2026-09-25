@@ -86,7 +86,7 @@ internal static class BridgeRequestParser
             core.HostState != ParsedHostState.Exact || core.HasOrigin || core.AuthorizationCount != 1 ||
             core.AuthorizationValueLength != 71 || !head.Slice(core.AuthorizationValueOffset, 7).SequenceEqual("Bearer "u8)) return false;
         bool action = core.RouteTarget is ParsedRouteTarget.PublicCombatAction or ParsedRouteTarget.PublicRewardAction or
-            ParsedRouteTarget.PublicMapAction or ParsedRouteTarget.PublicRoomAction or ParsedRouteTarget.CombatChoiceAction or ParsedRouteTarget.EventResumeItemAction or ParsedRouteTarget.AgentAction or ParsedRouteTarget.RestAction;
+            ParsedRouteTarget.PublicMapAction or ParsedRouteTarget.PublicRoomAction or ParsedRouteTarget.CombatChoiceAction or ParsedRouteTarget.EventResumeItemAction or ParsedRouteTarget.AgentAction or ParsedRouteTarget.FullAgentAction or ParsedRouteTarget.RestAction;
         if (action ? !core.IsPost || core.DecisionIdCount != 1 || core.ActionIdCount != 1 :
             !core.IsGet || core.DecisionIdCount != 0 || core.ActionIdCount != 0) return false;
         bool rest = core.RouteTarget is ParsedRouteTarget.RestDecision or ParsedRouteTarget.RestAction;
@@ -102,7 +102,8 @@ internal static class BridgeRequestParser
                  RestIndex(value, "select:", 63) || RestIndex(value, "deselect:", 63) ||
                  RestIndex(value, "reward:open:", 7) || RestIndex(value, "reward:collect:", 7) || RestIndex(value, "reward:choose:", 4));
         }
-        return !action || CoreBridgeModule.IsValidAction(request);
+        return !action || (core.RouteTarget == ParsedRouteTarget.FullAgentAction
+            ? FullAgentRoutes.IsAction(request.Decision, request.Action) : CoreBridgeModule.IsValidAction(request));
     }
     private static bool RestIndex(string value, string prefix, int maximum) => value.StartsWith(prefix, StringComparison.Ordinal) &&
         int.TryParse(value[prefix.Length..], out int index) && index >= 0 && index <= maximum && value == prefix + index;

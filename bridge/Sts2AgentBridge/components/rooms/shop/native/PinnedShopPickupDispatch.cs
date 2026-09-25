@@ -28,6 +28,9 @@ internal sealed class PinnedShopPickupDispatch : IShopV1PickupDispatch,IShopV1Re
     private readonly NOverlayStack _overlays;
     private readonly IShopV1NativeDispatch _purchase;
     private readonly Func<bool> _context;
+    private readonly bool _interactive;
+    private int _min;
+    private bool _cancelable;
     private readonly int _thread=System.Environment.CurrentManagedThreadId;
     private readonly Harmony _hooks=new("sts.bridge.shop.pickup."+Guid.NewGuid().ToString("N"));
     private readonly List<MethodBase> _targets=new();
@@ -44,8 +47,8 @@ internal sealed class PinnedShopPickupDispatch : IShopV1PickupDispatch,IShopV1Re
     private long _deadline;
     private sealed record Snapshot(CardModel Model,string Key,int Level,EnchantmentModel? Enchantment,string? EnchantmentKey,decimal Amount);
     internal static bool Supports(RelicModel r)=>r.GetType()==typeof(DollysMirror)||r.GetType()==typeof(GnarledHammer)||r.GetType()==typeof(Kifuda)||r.GetType()==typeof(PunchDagger)||r.GetType()==typeof(RoyalStamp);
-    internal PinnedShopPickupDispatch(Player player,RelicModel relic,NOverlayStack overlays,IShopV1NativeDispatch purchase,Func<bool> context)
-    {_player=player;_relic=relic;_overlays=overlays;_purchase=purchase;_context=context;}
+    internal PinnedShopPickupDispatch(Player player,RelicModel relic,NOverlayStack overlays,IShopV1NativeDispatch purchase,Func<bool> context, bool interactive = false)
+    {_player=player;_relic=relic;_overlays=overlays;_purchase=purchase;_context=context;_interactive=interactive;}
     private static Snapshot Copy(CardModel c)=>new(c,c.Id.Entry,c.CurrentUpgradeLevel,c.Enchantment,c.Enchantment?.Id.Entry,c.Enchantment?.Amount??0);
     private bool Owner()=>!_failed&&!_disposed&&System.Environment.CurrentManagedThreadId==_thread&&ReferenceEquals(Active,this)&&System.Environment.TickCount64<=_deadline&&_context()&&
         _player.Creature.CurrentHp==_hp&&_player.Creature.MaxHp==_maxHp&&(_player.Gold==_gold||_player.Gold<_gold)&&
@@ -77,10 +80,11 @@ internal sealed class PinnedShopPickupDispatch : IShopV1PickupDispatch,IShopV1Re
     private static void ObtainedPostfix(Task __result,PinnedShopPickupDispatch? __state){if(__state is {} s)s._obtained=__result;}
     private void Begin(IReadOnlyList<CardModel> cards,CardSelectorPrefs prefs) {
         Require(Owner()&&_obtainedSeen&&!_requestSeen&&prefs.MinSelect>=0&&prefs.MaxSelect is >=1 and <=3&&prefs.MinSelect<=prefs.MaxSelect&&cards.Count<=64&&DeckValid(false));
-        _requestSeen=true;_insideRequest=true;_max=prefs.MaxSelect;
+        _requestSeen=true;_insideRequest=true;_max=prefs.MaxSelect;_min=prefs.MinSelect;_cancelable=prefs.Cancelable;
         _domain=cards.ToArray();Require(_domain.Distinct(ReferenceEqualityComparer.Instance).Count()==_domain.Length&&_domain.All(c=>_deck.Any(d=>ReferenceEquals(d.Model,c))));
         // Native sorting may vary; policy uses stable original deck order.
-        _selected=_deck.Select(d=>d.Model).Where(c=>_domain.Contains(c)).Take(Math.Min(_max,_domain.Length)).ToArray();
+        bool nativeAutomatic = !prefs.RequireManualConfirmation && _domain.Length <= _min;
+        _selected=_interactive && !nativeAutomatic ? Array.Empty<CardModel>() : _deck.Select(d=>d.Model).Where(c=>_domain.Contains(c)).Take(Math.Min(_max,_domain.Length)).ToArray();
     }
     private static void GenericPrefix(Player __0,CardSelectorPrefs __1,Func<CardModel,bool>? __2,Func<CardModel,int>? __3,out PinnedShopPickupDispatch? __state) {
         __state=Scope.Value;if(__state is not {} s)return;
@@ -108,7 +112,9 @@ internal sealed class PinnedShopPickupDispatch : IShopV1PickupDispatch,IShopV1Re
         Require(Owner()&&_insideRequest&&!_screenSeen&&prefs.MaxSelect==_max&&cards.Count==_domain.Length&&cards.All(c=>_domain.Contains(c))&&DeckValid(false));_screenSeen=true;
     }
     private static void ScreenPostfix(Control __result,PinnedShopPickupDispatch? __state) {
-        if(__state is {} s){s.Require(s._screenSeen&&s._choice is null&&__result is not null);s._choice=new(__result,s._overlays,s._domain,s._selected,()=>s.Owner()&&s.DeckValid(false),s._enchantment,s._amount,s._max);}
+        if(__state is {} s){s.Require(s._screenSeen&&s._choice is null&&__result is not null);s._choice=s._interactive
+            ? new(__result,s._overlays,s._domain,()=>s.Owner()&&s.DeckValid(false),s._enchantment,s._amount,s._min,s._max,s._cancelable)
+            : new(__result,s._overlays,s._domain,s._selected,()=>s.Owner()&&s.DeckValid(false),s._enchantment,s._amount,s._max);}
     }
     private static void ClonePrefix(object __instance,CardModel __0,out PinnedShopPickupDispatch? __state) {
         __state=Scope.Value;if(__state is not {} s)return;
@@ -140,6 +146,13 @@ internal sealed class PinnedShopPickupDispatch : IShopV1PickupDispatch,IShopV1Re
         return !complete||effectReady&&(_enchantment is not null||_selected.Length==0?cards.Count==_deck.Length:_clone is not null&&cards.Count==_deck.Length+1);
     }
     internal bool OwnsForeground=>_choice?.OwnsForeground==true;
+    internal DeckChoiceView? ReadChoice() { Require(_interactive&&Owner()); return _choice?.Read(); }
+    internal void ApplyChoice(string operation, CardModel? card) {
+        Require(_interactive&&Owner()&&_choice is not null);
+        if(operation=="confirm")_selected=_choice!.Selected;
+        if(operation=="cancel")_selected=Array.Empty<CardModel>();
+        _choice!.Apply(operation,card);
+    }
     internal void Advance(){Require(Owner());if(_choice is not null&&!_choice.Completed)_choice.Advance();Require(DeckValid(false));}
     public bool DeckMatches(IReadOnlyList<ShopV1DeckCardBinding> deck,bool complete)=>Owner()&&DeckValid(complete)&&deck.Count==_player.Deck.Cards.Count&&deck.Select((c,i)=>ReferenceEquals(c.ModelIdentity,_player.Deck.Cards[i])&&c.StableKey==_player.Deck.Cards[i].Id.Entry&&c.UpgradeLevel==_player.Deck.Cards[i].CurrentUpgradeLevel).All(x=>x);
     public ShopV1RestockWitness? Restocked=>(_purchase as IShopV1RestockDispatch)?.Restocked;

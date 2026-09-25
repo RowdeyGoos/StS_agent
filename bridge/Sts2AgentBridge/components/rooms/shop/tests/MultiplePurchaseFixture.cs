@@ -31,6 +31,10 @@ internal sealed class MultiplePurchaseFixture : IShopV1NativeAdapter
     internal readonly List<ItemV1PotionSlotBinding> Potions=new();
     internal readonly List<ShopV1RelicBinding> Relics=new();
     internal int Gold=100,Purchases,Disposals,Closes,Leaves,Discards;
+    internal object? RoomOverride, InventoryOverride;
+    internal Action? OnOpened, OnClosed;
+    internal bool CanOpen;
+    internal int Opens;
     internal int FailAt=-1,BadCleanupAt=-1,BadDebitAt=-1,PriceAfterFirst=-1;
     internal bool Delay=false,Closed,MapOpen,Restock=false,AllowDiscards=false;
     internal Offer? Pending;
@@ -43,15 +47,15 @@ internal sealed class MultiplePurchaseFixture : IShopV1NativeAdapter
         public void Invoke(){owner.Discards++;owner.Potions[slot]=new(null,null);done=true;}
         public void Dispose(){owner.Disposals++;}
     }
-    private ShopV1NativeControl Merchant()=>new(_merchant,true,Closed,null);
+    private ShopV1NativeControl Merchant()=>new(_merchant,true,Closed,CanOpen?()=>{Opens++;Closed=false;OnOpened?.Invoke();}:null);
     private ShopV1NativeControl Proceed()=>new(_proceed,true,Closed,()=>{Leaves++;MapOpen=true;});
-    public ShopV1SurfaceCapture CaptureSurface()=>new(ShopV1SurfaceStatus.Available,_run,_room,_inventory,_inventoryModel,_player,_map,
+    public ShopV1SurfaceCapture CaptureSurface()=>new(ShopV1SurfaceStatus.Available,_run,RoomOverride??_room,InventoryOverride??_inventory,_inventoryModel,_player,_map,
         !MapOpen,!Closed,!Closed,false,MapOpen,MapOpen,false,Gold,Deck,
         Closed?Array.Empty<ShopV1NativeOffer>():Offers.Where(o=>o.Stocked).Select(o=>new ShopV1NativeOffer(o.Index,o.Kind,o.Key,o.Price,true,true,true,o.Slot,o.Entry,o.Kind==ShopV1OfferKind.Removal?null:o.Card,o.Hitbox,o.Label,o,o.CapacityGain)).ToArray(),
-        new ShopV1NativeControl(_back,true,!Closed,()=>{Closes++;Closed=true;}),Merchant(),Proceed(),Potions,Relics,AllowDiscards&&!Closed&&Potions.All(p=>p.ModelIdentity is not null)?Enumerable.Range(0,Potions.Count).Select(i=>new ShopV1PotionDiscardBinding(i,new Discard(this,i))).ToArray():null);
+        new ShopV1NativeControl(_back,true,!Closed,()=>{Closes++;Closed=true;OnClosed?.Invoke();}),Merchant(),Proceed(),Potions,Relics,AllowDiscards&&!Closed&&Potions.All(p=>p.ModelIdentity is not null)?Enumerable.Range(0,Potions.Count).Select(i=>new ShopV1PotionDiscardBinding(i,new Discard(this,i))).ToArray():null);
     public ShopV1PendingCapture CapturePending(ShopV1PendingProbe probe) {
         var offer=(probe.Kind is ShopV1ActionKind.PurchaseCard or ShopV1ActionKind.PurchasePotion or ShopV1ActionKind.PurchaseRelic or ShopV1ActionKind.RemoveCard)?Offers[probe.TargetSlot]:null;
-        return new(ShopV1SurfaceStatus.Available,_run,_room,_inventory,_inventoryModel,_player,_map,!MapOpen,!Closed,!Closed,false,MapOpen,MapOpen,false,Gold,Deck,Merchant(),Proceed(),
+        return new(ShopV1SurfaceStatus.Available,_run,RoomOverride??_room,InventoryOverride??_inventory,_inventoryModel,_player,_map,!MapOpen,!Closed,!Closed,false,MapOpen,MapOpen,false,Gold,Deck,Merchant(),Proceed(),
             offer is not null,offer?.Slot,offer?.Entry,offer?.Stocked??false,offer?.Stocked==true&&offer.Kind!=ShopV1OfferKind.Removal?offer.Card:null,offer?.State??probe.PurchaseDispatch?.Completion??ShopV1Completion.Pending,Potions,Relics);
     }
 }

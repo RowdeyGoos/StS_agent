@@ -24,7 +24,7 @@ internal readonly record struct OwnedByteDispatchResult(
     GenericEventDiagnosticCode Diagnostic = GenericEventDiagnosticCode.NotCaptured);
 
 internal readonly record struct OwnedServiceResponse(int StatusCode, byte[] Body,
-    GenericEventDiagnosticCode Diagnostic = GenericEventDiagnosticCode.NotCaptured);
+    GenericEventDiagnosticCode Diagnostic = GenericEventDiagnosticCode.NotCaptured, bool FullPublic = false);
 
 internal sealed class OwnedByteFrameQueue : IDisposable
 {
@@ -286,8 +286,8 @@ internal sealed class OwnedByteFrameQueue : IDisposable
                 _statusCode = response.StatusCode;
                 value = response.Body;
                 diagnostic = response.Diagnostic;
-                success = value is not null &&
-                    value.Length is >= 1 and <= BridgeTransportLimits.MaximumBody;
+                success = value is not null && value.Length >= 1 &&
+                    value.Length <= (response.FullPublic ? FullAgentRoutes.MaximumBody + 1024 : BridgeTransportLimits.MaximumBody);
             }
             catch
             {

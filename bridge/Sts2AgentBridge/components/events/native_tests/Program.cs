@@ -504,6 +504,9 @@ internal static partial class Program
         RemovalHitboxTests();
         RemovalLayoutTests();
         MultiEnchantmentTests();
+#if TERMINAL_REWARD_TESTS
+        ShopInteractiveCases();
+#endif
         ItemSetTests();EventCapacityCases(); ItemPolicyCases();MerchantScreenCases();ShopPotionOwnershipCases();ShopRelicCases();ShopPickupCases();MerchantFightCases();ShopRemovalCases();SphereCases();AbandonPopupCases();TerminalCases();
         AutomaticRemovalTests();CardRewardTests();
         CardRewardSetTests();

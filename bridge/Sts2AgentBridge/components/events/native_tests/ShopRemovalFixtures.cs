@@ -33,14 +33,14 @@ internal static partial class Program
             Check(f.Dispatch.Completion==ShopV1Completion.Succeeded&&!f.Dispatch.OwnsForeground,"wrapper callback and closed overlay certify completion");
             f.Dispatch.Dispose();f.Dispatch.Dispose();Check(f.Entry.Subscribers==0,"completed disposal detaches once");
         }
-        foreach(string mode in new[]{"selecting_dispose","confirmed_dispose","cancel","wrong_preview","modal_before_select","modal_before_confirm","capstone_before_select","capstone_before_confirm","context","gold","card_level","card_owner","relic","potion","unremovable","foreign_overlay","duplicate_screen","bad_prefs","wrong_entry","throw_input","holder_replaced","confirm_replaced","wrong_counter","callback_modal","callback_context","certificate_throws"}) {
+        foreach(string mode in new[]{"selecting_dispose","confirmed_dispose","cancel","wrong_preview","modal_before_select","modal_before_confirm","capstone_before_select","capstone_before_confirm","inspect_before_select","inspect_before_confirm","context","gold","card_level","card_owner","relic","potion","unremovable","foreign_overlay","duplicate_screen","bad_prefs","wrong_entry","throw_input","holder_replaced","confirm_replaced","wrong_counter","callback_modal","callback_context","certificate_throws"}) {
             using var f=new ShopRemoveFixture(3);f.Mode=mode;
             if(mode is "duplicate_screen" or "bad_prefs" or "wrong_entry" or "throw_input") {
                 ShopRemoveThrows(f.Begin);ShopRemoveThrows(f.Dispatch.Dispose);ShopRemoveThrows(f.Dispatch.Dispose);
                 Check(f.Selects==0&&f.Confirms==0,"invalid invocation never selects");continue;
             }
             f.Begin();
-            bool afterSelect=mode is "confirmed_dispose" or "wrong_preview" or "modal_before_confirm" or "capstone_before_confirm" or "confirm_replaced" or "wrong_counter" or "callback_modal" or "callback_context" or "certificate_throws";
+            bool afterSelect=mode is "confirmed_dispose" or "wrong_preview" or "modal_before_confirm" or "capstone_before_confirm" or "inspect_before_confirm" or "confirm_replaced" or "wrong_counter" or "callback_modal" or "callback_context" or "certificate_throws";
             if(afterSelect)f.Dispatch.Advance();
             switch(mode) {
                 case "confirmed_dispose":f.Delay=true;f.Dispatch.Advance();break;
@@ -48,6 +48,7 @@ internal static partial class Program
                 case "wrong_preview":((NPreviewCardHolder)f.PreviewCards.Children[0]).CardNode.Model=f.Cards[0];break;
                 case "modal_before_select":case "modal_before_confirm":NModalContainer.Instance=new(){OpenModal=new object()};break;
                 case "capstone_before_select":case "capstone_before_confirm":NCapstoneContainer.Instance!.CurrentCapstoneScreen=new ShopRemoveCapstone();break;
+                case "inspect_before_select":case "inspect_before_confirm":MegaCrit.Sts2.Core.Nodes.Screens.ScreenContext.ActiveScreenContext.Instance.Current=new();break;
                 case "context":f.Context=false;break;
                 case "gold":f.Player.Gold--;break;
                 case "card_level":f.Cards[0].CurrentUpgradeLevel++;break;
@@ -128,6 +129,7 @@ internal static partial class Program
             NModalContainer.Instance=null;MegaCrit.Sts2.Core.Nodes.NRun.Instance=new(){GlobalUi=new(){CapstoneContainer=new()}};CardSelectCmd.Selector=null;
             Cards=Enumerable.Range(0,count).Select(i=>{var c=new CardModel{Owner=Player,IsRemovable=true};c.Id.Entry="CARD_"+i;return c;}).ToArray();Player.Deck.Cards.AddRange(Cards);
             Inventory=new(){Player=Player};Entry.SetPlayer(Player);Screen.SelectionTask=Selection.Task;
+            MegaCrit.Sts2.Core.Nodes.Screens.ScreenContext.ActiveScreenContext.Instance=new(){Current=Screen};
             Screen.SelectionTaskFactory=call=>DelayObserver&&call==2?Observer.Task:Selection.Task;
             Screen.Bind("%CardGrid",Grid);Screen.Bind("%PreviewContainer",PreviewContainer);PreviewContainer.Bind("%Cards",PreviewCards);PreviewContainer.Bind("%PreviewConfirm",Confirm);
             // Reverse display order to establish identity rather than a deck/grid index assumption.

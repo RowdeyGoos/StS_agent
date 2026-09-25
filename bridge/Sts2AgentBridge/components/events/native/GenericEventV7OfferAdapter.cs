@@ -37,6 +37,8 @@ internal sealed class GenericEventV7OfferAdapter:IGenericEventV7OfferAdapter {
     private int? _selected;private bool _confirmed,_disposed,_skipped;
     private int _added;
     internal int Count=>_models.Length;
+    internal IReadOnlyList<CardModel> PublicOffer(int index)
+    { Domain(); Require(index >= 0 && index < Count && Screen is not null && Screen.IsVisibleInTree()); return Array.AsReadOnly(_models[index]); }
     internal GenericEventV7OfferAdapter(GenericEventV7Binding binding,object identity,IReadOnlyList<CardModel>[] offers,bool bundle,bool canSkip=false) {
         Binding=binding;DomainIdentity=identity;Bundle=bundle;CanSkip=canSkip;_lists=offers;_models=offers.Select(o=>o.ToArray()).ToArray();
         _deck=GenericEventV7Binding.CopyDeck(binding.Player);

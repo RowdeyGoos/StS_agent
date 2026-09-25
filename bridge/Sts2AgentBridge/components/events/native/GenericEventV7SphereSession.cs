@@ -61,6 +61,15 @@ internal sealed class GenericEventV7SphereSession:IGenericEventV7RewardChildSess
     private PinnedPublicRewardDecisionReader? _reader;
     private PinnedPublicRewardActionApplier? _applier;
     private PublicRewardDecisionSnapshot _rewardView;
+    internal (object Identity, int X, int Y, bool Hidden, object? Fragment)[] InspectCells(string decision) {
+        Require(Context()&&!_inside&&_published?.Status=="ready"&&decision==_decision&&_pending is null);
+        return _cells.Cast<CrystalSphereCell>().OrderBy(c=>c.Y*11+c.X)
+            .Select(c=>((object)c,c.X,c.Y,c.IsHidden,c.IsHidden?null:(object?)c.Item)).ToArray();
+    }
+    internal (PinnedPublicRewardInteractionSession Session, PublicRewardDecisionSnapshot View) InspectRewards(string decision) {
+        Require(Context()&&!_inside&&_published?.Status=="ready"&&decision==_decision&&_pending is null&&_reader is not null&&RewardScope());
+        return (_reader!.InteractionSession,_rewardView);
+    }
     private NRewardButton? _expectedButton;
     private NCardRewardSelectionScreen? _menu;
     private Task<int?>? _menuTask;

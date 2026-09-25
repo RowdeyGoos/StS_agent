@@ -42,6 +42,8 @@ internal enum ParsedRouteTarget
     AgentAction = 19,
     RestDecision = 20,
     RestAction = 21,
+    FullAgentDecision = 22,
+    FullAgentAction = 23,
 }
 
 internal readonly record struct ParsedProbeRequest(
@@ -502,6 +504,10 @@ internal static class ProbeRequestParser
         { routeTarget = ParsedRouteTarget.AgentDecision; }
         else if (target.SequenceEqual("/probe/agent-v1/public/action"u8))
         { routeTarget = ParsedRouteTarget.AgentAction; }
+        else if (target.SequenceEqual("/probe/agent-v2/public/decision"u8))
+        { routeTarget = ParsedRouteTarget.FullAgentDecision; }
+        else if (target.SequenceEqual("/probe/agent-v2/public/action"u8))
+        { routeTarget = ParsedRouteTarget.FullAgentAction; }
         else
         {
             routeTarget = ParsedRouteTarget.Unknown;

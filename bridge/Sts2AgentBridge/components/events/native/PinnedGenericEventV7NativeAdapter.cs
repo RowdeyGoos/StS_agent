@@ -40,6 +40,7 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
     public Func<string>? CombatResume {get;private set;}
     public GenericEventV7ResumeDiagnostic CombatResumeDiagnostic=>_hooks.ResumeDiagnostic;
     public object ReadResumeItem()=>_hooks.ReadResumeItem();
+    internal GenericEventV7Binding InspectResumeItem()=>_hooks.InspectResumeItem();
     public object ApplyResumeItem(string? decision,string? action)=>_hooks.ApplyResumeItem(decision,action);
     private DialogueBinding? _dialogue,_pendingDialogue;
     private readonly Dictionary<NEventOptionButton,OptionBinding> _options=new();
@@ -49,6 +50,18 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
     private readonly HashSet<object> _commandTasks=new(ReferenceEqualityComparer.Instance);
     private readonly HashSet<object> _itemIdentities=new(ReferenceEqualityComparer.Instance);
     private readonly HashSet<object> _tasks=new(ReferenceEqualityComparer.Instance);
+    internal GenericEventV7Binding InspectPending(string decision, string action)
+    {
+        if (_disposed || System.Environment.CurrentManagedThreadId != _thread || _pending is not {} binding ||
+            binding.Failed || binding.Closed || binding.Decision != decision || binding.Action != action)
+            throw new InvalidOperationException("No matching event continuation.");
+        return binding;
+    }
+    internal EventOption? InspectOption(object identity)
+    {
+        if (_disposed || System.Environment.CurrentManagedThreadId != _thread) throw new InvalidOperationException("Event observer stopped.");
+        return identity is OptionBinding option && _options.Values.Contains(option) ? option.Option : null;
+    }
     public PinnedGenericEventV7NativeAdapter():this(false){}
     private readonly Action<int>? _readStage;
     public PinnedGenericEventV7NativeAdapter(bool incrementalHooks,Action<int>? readStage=null) {

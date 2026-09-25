@@ -260,6 +260,7 @@ public sealed class GenericEventV7Hooks : IDisposable
     internal static bool OwnsResume(GenericEventV7Binding binding)=>_installed is { _disposed:false } h&&
         Environment.CurrentManagedThreadId==h._thread&&h.ExactPatches()&&h._resume?.Owns(binding)==true;
     internal object ReadResumeItem()=>CheckedResume().ReadItem();
+    internal GenericEventV7Binding InspectResumeItem()=>CheckedResume().Binding;
     internal object ApplyResumeItem(string? decision,string? action)=>CheckedResume().ApplyItem(decision,action);
     private GenericEventV7CombatHandoff CheckedResume() {
         if(_resume is null||!OwnsResume(_resume.Binding))throw new InvalidOperationException("Resume owner unavailable.");

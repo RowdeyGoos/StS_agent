@@ -22,6 +22,7 @@ Start with [support and known limits](../../docs/STATUS.md). This guide owns
 | --- | --- |
 | Core combat, rewards, map, rest/basic rooms | `/probe/v0/health`, `/probe/v0/manifest`, `/probe/v0/public/*` |
 | Shared public agent decisions | `/probe/agent-v1/public/decision` and `action`; bounded combat/selection/reward/map profile |
+| Full graph candidate | `/probe/agent-v2/public/decision` and `action`; rich public graph, 2,048 slots and shared-policy continuation within the documented native bounds |
 | Event combat continuation | `/probe/event-combat-v2/public/decision`; owned child `/probe/event-combat-v2/public/item-decision` and `item-action` |
 | Combat discard/exhaust choice | `/probe/combat-choice-v1/public/decision` and `action` |
 | Combat pile choice, including visible Draw | `/probe/combat-choice-v2/public/decision` and `action`; same exclusive owner |
@@ -184,8 +185,8 @@ identities. Retain its printed SHA-256 separately. Failure cannot emit an accept
 release manifest. Keep one [current release record](releases/current/README.md);
 Git retains earlier records. Development corrections do not need manual freezing.
 
-The release also binds the actual `game.agent.contracts` and `game.agent.policy`
-sources consumed by the live agent client. They remain shared repository modules;
+The release also binds the actual `game.agent.contracts`, `game.agent.policy`
+and `game.agent.full_policy` sources consumed by the live agent client. They remain shared repository modules;
 there is no copied bridge policy. Changing either invalidates release verification.
 
 To place accepted artifacts in the fixed install-input directory:
@@ -225,6 +226,16 @@ After installation and the user's requested game setup, use one client:
 ```
 
 ## Client modes
+
+`--capability full-agent` selects the native `agent_v2` candidate and the same
+`game.agent.full_policy.choose_action` callback as the full headless environment.
+Use `--agent-stop-at-map` for a controlled interaction: it stops only after all
+accepted actions reconcile and an actionable map is visible. Without that flag,
+the host continues within 8,192 decisions/90 minutes and the stricter native
+controller budgets. This is an implemented candidate awaiting live acceptance;
+its [explicit coverage and gaps](../../docs/AGENT_CONTRACT.md#native-full-run-v2-candidate)
+are narrower than the full headless engine. It retains bounded summaries and
+actual outcomes, with no mutation retries.
 
 `--capability agent` uses the same public-only chooser as the headless adapter.
 It handles supported combat, nested card selection and rewards, then stops at an

@@ -26,9 +26,15 @@ def choose_action(decision):
         if plays:
             def score(action):
                 card = entities[action.subject]
-                spec = next(n for n in card.children if n.kind == 'spec')
+                # Native values are displayed previews, while the headless
+                # descriptor exposes static specifications. Keep that distinction
+                # in the contract and use either for this demonstration score.
+                preview = next((n for n in card.children if n.kind == 'preview'), None)
+                spec = next((n for n in card.children if n.kind == 'spec'), None)
+                damage = preview.get('damage', 0) if preview else spec.get('base_damage', 0) if spec else 0
+                block = preview.get('block', 0) if preview else spec.get('block_gain', 0) if spec else 0
                 target_hp = (entities[action.target].get('hp') or 0) if action.target else 0
-                return (spec.get('base_damage', 0), spec.get('block_gain', 0), -target_hp)
+                return (damage, block, -target_hp)
             return max(plays, key=score)
         return of('end_turn')[0]
     if context.kind == 'relic_choice':
@@ -40,6 +46,9 @@ def choose_action(decision):
         if choices:
             return choices[0]
     if context.kind == 'rest':
+        selections = [n for n in f.walk(context) if n.kind == 'selection']
+        if selections and of('confirm_selection') and len(selections[0].linked('selected')) >= selections[0].get('minimum'):
+            return of('confirm_selection')[0]
         if of('confirm_cook'):
             return of('confirm_cook')[0]
         choices = of('choose_cook_card', 'choose_upgrade')
@@ -53,7 +62,7 @@ def choose_action(decision):
                 return of(kind)[0]
     for kind in ('choose_event_card', 'choose_shop_removal', 'claim_gold', 'claim_relic', 'claim_potion',
                  'choose_reward_card', 'choose_extra_reward', 'choose_ancient_relic', 'open_chest',
-                 'claim_treasure_relic', 'buy_shop_item', 'continue_act', 'open_reward'):
+                 'claim_treasure_relic', 'buy_shop_item', 'continue_act', 'open_reward', 'open_shop'):
         if of(kind):
             return of(kind)[0]
     events = of('choose_event_option')
@@ -71,7 +80,7 @@ def choose_action(decision):
             return 1
         return max(events, key=score)
     for kind in ('leave_rewards', 'leave_event', 'leave_treasure', 'leave_shop', 'skip_reward',
-                 'confirm_selection', 'confirm_relic_selection', 'cancel_selection'):
+                 'confirm_selection', 'confirm_relic_selection', 'close_shop', 'cancel_selection'):
         if of(kind):
             return of(kind)[0]
     maps = of('choose_map_node')

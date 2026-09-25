@@ -37,6 +37,7 @@ internal static partial class Program
             if (args.SequenceEqual(new[] { "--serve-offer-choice" })) return Serve(true, offerChoice: true);
             if (args.SequenceEqual(new[] { "--serve-draw-choice" })) return Serve(true, drawChoice: true);
             if (args.SequenceEqual(new[] { "--serve-agent" })) return Serve(true, agent: true);
+            if (args.SequenceEqual(new[] { "--serve-full-agent" })) return Serve(fullAgent: true);
             if (args.SequenceEqual(new[] { "--serve-campaign" })) return Serve(campaign: true);
             if (args.SequenceEqual(new[] { "--serve-combat-map" })) return Serve(true, true);
             if (args.SequenceEqual(new[] { "--serve-max-hp-relic" })) return Serve(true,true,itemRewards:true,maxHpRelic:true);
@@ -50,7 +51,7 @@ internal static partial class Program
             if (args.SequenceEqual(new[] { "--serve-special-card" })) return Serve(true,true,specialCard:true);
             if (args.SequenceEqual(new[] { "--serve-resume-items" })) return Serve(eventResume:true,resumeItems:true);
             if (args.SequenceEqual(new[] { "--serve-event-resume" })) return Serve(eventResume:true);
-            ExpandedRewardEncoding(); CombatHealthDisplay(); CombatPotionOwnership(); AgentSessionTests.Run(Check); RestFlowTests.Run(Check); EventBoundaryTests.Run(Check); EventCombatTransfer(); EventCombatResume(); ResumeItemRouting(); Ownership(); CleanupFailure(); CoreHandoff(); CombatChoiceHandoff(); Parser(); ResumeDiagnostics(); ReadDispatchRecovery(); ReadDispatchFailures(); SocketHandoff(); StaleRecovery(); LostResponse(); DuplicatePost(); RepeatedCombatIdentities();
+            ExpandedRewardEncoding(); CombatHealthDisplay(); CombatPotionOwnership(); AgentSessionTests.Run(Check); FullAgentSessionTests.Run(Check); RestFlowTests.Run(Check); EventBoundaryTests.Run(Check); EventCombatTransfer(); EventCombatResume(); ResumeItemRouting(); Ownership(); CleanupFailure(); CoreHandoff(); CombatChoiceHandoff(); Parser(); ResumeDiagnostics(); ReadDispatchRecovery(); ReadDispatchFailures(); SocketHandoff(); StaleRecovery(); LostResponse(); DuplicatePost(); RepeatedCombatIdentities();
             Console.WriteLine("{\"status\":\"passed\",\"suite\":\"unified_bridge\",\"checks\":" + _checks + "}");
             return 0;
         }
@@ -80,7 +81,7 @@ internal static partial class Program
         Check(childDoc.RootElement.GetProperty("schema_version").GetInt32()==9&&childDoc.RootElement.GetProperty("rewards")[0].GetProperty("reward_index").GetInt32()==31,"card child retains schema and original index");
     }
 
-    private static int Serve(bool combat = false, bool rewards = false, bool eventResume=false,bool resumeItems=false,bool specialCard=false,bool itemRewards=false,bool fullPotions=false,bool replacePotions=false,bool capacityPotions=false,bool readTimeout=false,bool healingRelic=false,bool agent=false,bool campaign=false,bool drawChoice=false,bool maxHpRelic=false,bool modifiedGold=false,bool offerChoice=false,bool readRecovery=false,bool combatPotions=false,bool infiniteHealth=false,bool expandedRewards=false)
+    private static int Serve(bool combat = false, bool rewards = false, bool eventResume=false,bool resumeItems=false,bool specialCard=false,bool itemRewards=false,bool fullPotions=false,bool replacePotions=false,bool capacityPotions=false,bool readTimeout=false,bool healingRelic=false,bool agent=false,bool campaign=false,bool drawChoice=false,bool maxHpRelic=false,bool modifiedGold=false,bool offerChoice=false,bool readRecovery=false,bool combatPotions=false,bool infiniteHealth=false,bool expandedRewards=false,bool fullAgent=false)
     {
         var fixture = eventResume?new CoreFixture{CombatReady=true,MapReady=true}:combat ? CombatScenario(drawChoice, offerChoice) : new CoreFixture { Reject = true, MapReady = true };
         if(combatPotions)fixture.Potions=new PotionFixture{Finish=true,Completed=()=>fixture.Stage=3};
@@ -88,7 +89,7 @@ internal static partial class Program
         fixture.ExpandedRewardScenario=expandedRewards;
         fixture.ModifiedGoldScenario=modifiedGold;fixture.MaxHpRelicScenario=maxHpRelic;fixture.HealingRelicScenario=healingRelic;fixture.RewardScenario = rewards;fixture.SpecialCardScenario=specialCard;fixture.ItemRewardScenario=itemRewards;fixture.FullPotionScenario=fullPotions;fixture.ReplacePotionScenario=replacePotions;fixture.CapacityPotionScenario=capacityPotions;
         if(campaign){fixture.Reject=false;fixture.Stage=3;fixture.RewardScenario=true;fixture.RewardDestination="act";}
-        var (runtime, port) = Start((capability, _) => resumeItems?new ResumeItemModule(fixture):eventResume?new FakeModule(capability){Complete=true,CombatScope=()=>fixture.CombatAccepted==0,CombatResume=()=>fixture.CombatAccepted==0?"combat":"resumed",EventNonce=Nonce}:new FakeModule(capability) { AutoComplete = true }, fixture, agent, campaign);
+        var (runtime, port) = Start((capability, _) => resumeItems?new ResumeItemModule(fixture):eventResume?new FakeModule(capability){Complete=true,CombatScope=()=>fixture.CombatAccepted==0,CombatResume=()=>fixture.CombatAccepted==0?"combat":"resumed",EventNonce=Nonce}:new FakeModule(capability) { AutoComplete = true }, fixture, agent, campaign, fullAgent);
         Console.WriteLine("{\"port\":" + port + "}");
         var stop = Task.Run(Console.ReadLine);
         var until = DateTime.UtcNow.AddSeconds(30);
@@ -256,6 +257,22 @@ internal static partial class Program
         try { router.Dispose(); throw new Exception("expected cleanup failure"); } catch (InvalidOperationException) { }
         module.FailDispose = false; router.Dispose();
         Check(module.Disposed && module.DisposeAttempts == 3, "cleanup owner retained for owner-frame retry");
+        foreach (bool activeFails in new[] { false, true })
+        {
+            int cleanup = 0;
+            var f = new CoreFixture();
+            var core = new CoreBridgeModule(Nonce, f, f, f, f, f, f, f, f, f, cleanupRewards: () => cleanup++);
+            var owner = new FakeModule(Capability.Events) { FailDispose = activeFails };
+            var backend = new FullAgentSessionTests.Backend { DisposeFailed = true };
+            var all = new BridgeRouter(core, (_, _) => owner);
+            all.BindFullAgent(new(backend, Nonce));
+            all.Handle(Request(Capability.Events, "/probe/generic-event-v7/public/decision"));
+            bool threw = false; try { all.Dispose(); } catch (InvalidOperationException) { threw = true; }
+            Check(threw && cleanup == 1 && owner.DisposeAttempts == 1, "all native owners get cleanup despite a full/active disposal failure");
+            owner.FailDispose = backend.DisposeFailed = false;
+            all.Dispose();
+            Check(owner.Disposed && cleanup == 2, "failed cleanup retains retryable owners without declaring completion");
+        }
     }
     private static void CoreHandoff()
     {
@@ -385,13 +402,15 @@ internal static partial class Program
     private static byte[] Head(string path, string? action = null, string? token = null, string extra = "", string? decision = null) => Encoding.ASCII.GetBytes(
         (action is null ? "GET " : "POST ") + path + " HTTP/1.1\r\nHost: 127.0.0.1:43117\r\nAuthorization: Bearer " + (token ?? Token) +
         "\r\nAccept: application/json\r\n" + (action is null ? "" : "X-Sts2-Decision-Id: " + (decision ?? Decision) + "\r\nX-Sts2-Action-Id: " + action + "\r\n") + extra + "Connection: close\r\n\r\n");
-    private static (BridgeTransportRuntime Runtime, int Port) Start(Func<Capability,string,IBridgeModule> factory, CoreFixture? core = null, bool agent = false,bool campaign=false)
+    private static (BridgeTransportRuntime Runtime, int Port) Start(Func<Capability,string,IBridgeModule> factory, CoreFixture? core = null, bool agent = false,bool campaign=false,bool fullAgent=false)
     {
         var runtime = BridgeTransportRuntime.Create(BridgeConfiguration.Enabled.ToArray(), () => Encoding.ASCII.GetBytes(Token), n => {
             var module = Core(core ?? new());
             if (agent) module.BindAgent(new AgentSessionTests.Reader());
             if (campaign) module.BindCampaign(new CampaignFixture(),core!);
-            return new BridgeRouter(module, factory);
+            var router = new BridgeRouter(module, factory);
+            if (fullAgent) router.BindFullAgent(new(new FullAgentSessionTests.SocketBackend(), Nonce));
+            return router;
         })!;
         var listener = new TcpListener(IPAddress.Loopback, 0); listener.Start();
         int port = ((IPEndPoint)listener.LocalEndpoint).Port;

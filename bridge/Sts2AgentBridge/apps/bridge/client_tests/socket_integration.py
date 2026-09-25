@@ -57,6 +57,33 @@ def agent_post():
             process.kill(); process.wait()
 
 
+def full_agent_post():
+    """Full graph, 2,048th slot and nested receipt over the actual listener."""
+    from agent_host import run_agent
+    process = subprocess.Popen([sys.argv[1], sys.argv[2], '--serve-full-agent'], stdin=subprocess.PIPE,
+                               stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    try:
+        port = json.loads(process.stdout.readline())['port']
+        client = BridgeClient(bytearray(b'a' * 64), connector=lambda: socket.create_connection(('127.0.0.1', port), timeout=2))
+        try:
+            ready = client.exchange('GET', '/probe/agent-v2/public/decision')
+            assert len(ready) > 65536
+            ready[:] = b'\0' * len(ready)
+            busy = client.exchange('GET', '/probe/v0/public/map-decision')
+            try: assert json.loads(busy)['code'] == 'capability_busy'
+            finally: busy[:] = b'\0' * len(busy)
+            result = run_agent(client.exchange, full=True, policy=lambda public: public.candidates[-1])
+            assert result['status'] == 'resolved' and result['outcome']['kind'] == 'victory', result
+            assert result['attempted'] == result['accepted'] == result['reconciled'] == 2 and not result['pending'], result
+        finally: client.close()
+        process.stdin.write('stop\n'); process.stdin.flush()
+        _, errors = process.communicate(timeout=5)
+        assert process.returncode == 0, errors
+    finally:
+        if process.poll() is None:
+            process.kill(); process.wait()
+
+
 def campaign_post():
     process = subprocess.Popen([sys.argv[1], sys.argv[2], '--serve-campaign'], stdin=subprocess.PIPE,
                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -451,6 +478,7 @@ def main():
         shop({"potion_policy":"replace-first","purchase_policy":"potions","max_purchases":8},2,"replacement_potion",expected_potions=2,expected_discards=2,slots=["POTION_0","POTION_0"])
 
         agent_post()
+        full_agent_post()
         read_recovery()
         read_timeout()
         rest('lift')

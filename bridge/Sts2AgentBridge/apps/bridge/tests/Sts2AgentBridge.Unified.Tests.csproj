@@ -14,7 +14,11 @@
     <Compile Include="../runtime/CombatPotionContracts.cs" />
   <Compile Include="../runtime/AgentSession.cs" />
   <Compile Include="../runtime/AgentContracts.cs" />
+  <Compile Include="../runtime/FullAgentContracts.cs" />
+  <Compile Include="../runtime/FullAgentSession.cs" />
+  <Compile Include="../runtime/FullPublicGraph.cs" />
   <Compile Include="AgentSessionTests.cs" />
+  <Compile Include="FullAgentSessionTests.cs" />
   <Compile Include="CampaignFixture.cs" />
     <Compile Include="CombatPotionTests.cs" />
   <Compile Include="../runtime/OwnedByteFrameQueue.cs" />

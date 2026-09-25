@@ -7,6 +7,11 @@
     <Compile Include="ShopPotionFixtures.cs" />
     <Compile Include="ShopRelicFixtures.cs" />
     <Compile Include="ShopPickupFixtures.cs" />
+    <Compile Include="ShopInteractiveFixtures.cs" />
+    <Compile Include="../../rooms/shop/native/ShopInteractiveSession.cs" />
+    <Compile Include="../../rooms/shop/tests/MultiplePurchaseFixture.cs" />
+    <Compile Include="../../rooms/shop/core/ShopV1Session.cs" />
+    <Compile Include="../../rooms/shop/core/ShopV1CanonicalEncoder.cs" />
     <Compile Include="RestRewardFixtures.cs" />
     <Compile Include="../../rooms/rest/native/RestRewardContinuation.cs" />
     <Compile Include="../../rooms/rest/native/RestNativeState.cs" />

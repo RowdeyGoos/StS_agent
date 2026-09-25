@@ -33,6 +33,12 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
     private ItemV1DispatchReceipt? _itemReceipt;
     private readonly List<ItemV1ResolvedResult> _itemResults=new();
     private string _effects = "none_attempted";
+    internal GenericEventV7NativeCapture InspectParent(string decision)
+    {
+        if (_inside || _disposed || _unsupported || _pending || Environment.CurrentManagedThreadId != _thread ||
+            _published is null || _decision != decision) throw new InvalidOperationException("No published event parent.");
+        return _published;
+    }
 
     public GenericEventV7Session(IGenericEventV7NativeAdapter adapter, string sessionNonce)
     {

@@ -1,6 +1,6 @@
 # Bridge support and status
 
-Updated 2026-09-25 for interactive rest live validation; other capability review remains
+Updated 2026-09-25 for interactive rest live validation and the v2 shared-interface candidate; other capability review remains
 2026-09-19 against bridge source, pinned native game IL and retained evidence. Latest live
 session: **2026-09-25**. This is the authoritative summary of bridge support;
 [usage](../bridge/Sts2AgentBridge/README.md), [technical contracts](GENERIC_EVENTS.md),
@@ -26,6 +26,13 @@ reload; normal-HP policy strength remains unmeasured. Shared event mechanisms di
 supported requests at runtime; there is no blanket event-name allowlist. Automatic
 parent effects generally remain `unverified` even when a child effect and map return
 are verified. Final Proceed does not erase earlier verified child results.
+
+The new native `agent_v2` / `full_run_v2` candidate connects rich observations and
+nested decisions to the same public-only chooser as headless. It is being validated;
+there is **no v2 live acceptance yet**. Its [coverage and remaining gaps](AGENT_CONTRACT.md#native-full-run-v2-candidate)
+include supported rest/shop/event continuations, while general potions, hand
+selectors, treasure claims, reward rerolls and live public recording remain open.
+The accepted release/evidence below still describes the completed rest tests.
 
 ## Supported interactions
 

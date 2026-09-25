@@ -1,9 +1,50 @@
 using System;
+using System.Linq;
 using System.Text.Json.Nodes;
 using Sts2AgentBridge.Rooms.Rest;
 
 internal static partial class Program
 {
+    private sealed class RestLeaveFixture : IRestLeave
+    {
+        internal string? Decision = new string('a', 64);
+        internal int Inputs, Polls;
+        internal bool Complete, Lost, Disposed;
+        public string? ReadDecision(object room) => Decision;
+        public void Apply(string decision) { Check(decision == Decision, "exact rest Proceed token"); Inputs++; if (Lost) throw new InvalidOperationException(); }
+        public bool Poll() { Polls++; return Complete; }
+        public void Dispose() { Disposed = true; if (Inputs != 0 && !Complete) throw new InvalidOperationException(); }
+    }
+    private static void RestLeaveCases()
+    {
+        foreach (string mode in new[] { "complete", "stale", "lost", "pending", "unavailable" })
+        {
+            using var f = new Fixture("lift", interactive: true);
+            var leave = new RestLeaveFixture();
+            var session = new RestInteractiveSession(Nonce, f.Native, leave);
+            if (mode == "unavailable") leave.Decision = null;
+            var before = InteractiveRead(session);
+            Check(before["schema_version"]!.GetValue<int>() == 4 &&
+                before["legal_actions"]!.AsArray().Any(a => a!.GetValue<string>() == "leave") == (mode != "unavailable"), "rest Proceed follows native legality");
+            if (mode == "stale") leave.Decision = new string('b', 64);
+            if (mode == "lost") leave.Lost = true;
+            var result = JsonNode.Parse(session.Handle(true, before["decision_id"]!.GetValue<string>(), "leave"))!;
+            Check(result["status"]!.GetValue<string>() == (mode is "stale" or "unavailable" ? "rejected" : mode == "lost" ? "uncertain" : "accepted"), "rest leave boundary " + mode);
+            if (mode == "complete")
+            {
+                Check(InteractiveRead(session)["status"]!.GetValue<string>() == "waiting", "rest Leave awaits actual map handoff");
+                leave.Complete = true;
+                var done = InteractiveRead(session);
+                Check(done["status"]!.GetValue<string>() == "complete" && done["completed"]!.AsArray().Count == 1 &&
+                    done["completed"]![0]!["action_id"]!.GetValue<string>() == "leave", "rest Leave exact receipt");
+                int polls = leave.Polls;
+                Check(InteractiveRead(session).ToJsonString() == done.ToJsonString() && leave.Polls == polls, "rest Leave terminal retention");
+            }
+            bool failed = false; try { session.Dispose(); } catch (InvalidOperationException) { failed = true; }
+            Check(failed == (mode is "lost" or "pending") && leave.Disposed, "rest unresolved Leave cannot hand off");
+            Check(leave.Inputs == (mode is "stale" or "unavailable" ? 0 : 1) && f.Button.Clicks == 0, "rest Leave never invokes a rest option");
+        }
+    }
     private static int ServeInteractive(string option)
     {
         using var f = new Fixture(option, interactive: true);
@@ -27,6 +68,7 @@ internal static partial class Program
     }
     private static void InteractiveWireCases()
     {
+        RestLeaveCases();
         using (var f = new Fixture("heal", interactive: true))
         {
             var session = new RestInteractiveSession(Nonce, f.Native);

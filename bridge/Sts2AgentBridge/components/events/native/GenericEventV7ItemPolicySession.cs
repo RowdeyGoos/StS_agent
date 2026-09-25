@@ -29,6 +29,12 @@ internal sealed class GenericEventV7ItemPolicySession : IGenericEventV7RewardChi
     private RelicModel[] _relics;
     private GenericEventV7ItemAdapter? _collection;
     private GenericEventV7CardRewardAdapter? _card;
+    internal int? InspectCardIndex(string decision)
+    {
+        if (_disposed || _failed || _inside || System.Environment.CurrentManagedThreadId != _thread || decision != _decision)
+            throw new InvalidOperationException("Item policy view unavailable.");
+        return _card is null ? null : _index;
+    }
     private readonly Dictionary<int,bool> _cardResults=new();
     private bool _cardChosen;
     private PinnedPotionDiscard? _discard;
