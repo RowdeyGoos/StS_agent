@@ -283,9 +283,13 @@ removed, zero overlays, all 429 base files unchanged.
 The same package passed shop-removal preview cancellation: **5/5/5 actions**,
 seven reads, unchanged deck/gold and map return. Normal quit and exact cleanup
 completed by **14:54:07 UTC**, with four generated files removed and all 429 base
-files unchanged. It was reinstalled for a separate Lost Coffer reward check;
-installation was verified by **14:54:38 UTC**, with two exact owned overlays.
-That next check awaits manual launch on the saved campaign.
+files unchanged. The following Lost Coffer attempt stopped before any policy
+action (**0/0/0**, 34 reads): shop-based setup retained map-travel state incompatible
+with the ancient entry guard. That source-supported setup diagnosis is separate
+from live reward acceptance, which remains open. Cleanup finished by **15:13:49 UTC**;
+the same package was reinstalled and verified by **15:14:15 UTC**, with two exact
+owned overlays and unchanged base files. Corrected event-room setup awaits manual
+launch on the saved campaign.
 
 The preceding package `32d721e8…`, source `6c04327`, completed 35 actions before
 Whetstone's second-Sacrifice reconciliation failed on action 36. The

@@ -147,3 +147,34 @@ Quarantine state was `75cc3f0fac1937b700aacf07612dbb7a474d28ebdf601f2fbe433b2bac
 Execution and user-wait durations were not measured separately. The planned Lost
 Coffer check was deferred to a fresh bridge process because this process retained
 its reconciled shop-to-map owner; no unrelated event was attached to that owner.
+
+## Lost Coffer setup-only stop
+
+The next manual-launch Profile 3 process used the same corrected manifest and
+installed state `3098285400f093f2eeb9ca415c34bbe2a51d64cd41cfee21095eb1a454ca3a44`.
+Native Continue restored the combat reward checkpoint. Direct
+`ancient NEOW LOST_COFFER` entry left the old reward overlay present. A subsequent
+`room shop` cleared that overlay, then another `ancient NEOW LOST_COFFER` created
+the intended visible choice. Neither ancient option was selected. One setup UI
+Power Potion discard click produced no observed inventory change and was not
+repeated. Neow entry healed HP 86/88 to 88/88; gold remained 466 and the deck seven.
+
+The full-agent host stopped with `read_native_failed` after 34 reads, **0 attempted /
+0 accepted / 0 reconciled**, no decision and no pending action. The reward behavior
+was not exercised. No policy mutation was dispatched or retried.
+
+Pinned source identifies a setup mismatch: `NMerchantRoom._Ready` enables map
+travel; `AncientConsoleCmd` enters a new event without clearing that flag, and the
+ancient reader rejects enabled travel. This is a source-supported explanation;
+the exact rejected predicate was not emitted. The next setup uses `room event`
+to clear the restored overlay before creating Lost Coffer, in a new bridge process.
+No production guard or package was changed to accommodate the invalid setup.
+
+Normal Save and Quit/game Quit, stopped-process/closed-listener verification and
+exact owned quarantine/purge completed by **15:13:49 UTC**. Four generated files
+were removed, zero overlays remained, and all 429 base files were unchanged at
+SHA-256 `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Quarantine state was `0b55bbb050c9ca21f8b24903697573c55aa000ed8936849f87b52ddc42931ef0`.
+Work resumed at 15:07:23 UTC; setup, diagnosis, execution and cleanup overlapped,
+and their separate durations were not measured. No user-data files or retained
+public trajectory corpus were accessed.

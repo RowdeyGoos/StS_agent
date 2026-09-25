@@ -59,6 +59,52 @@
       "stale_rejections": 0,
       "status": "passed",
       "target_game_executed": true
+    },
+    {
+      "accepted": 0,
+      "actions": [],
+      "attempted": 0,
+      "case": "lost_coffer_setup_stop",
+      "cleanup": {
+        "base_file_count": 429,
+        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+        "game_process_running": false,
+        "generated_files_removed": 4,
+        "normal_quit": true,
+        "overlay_count": 0,
+        "port_accepting": false,
+        "quarantined_state_sha256": "0b55bbb050c9ca21f8b24903697573c55aa000ed8936849f87b52ddc42931ef0",
+        "status": "passed",
+        "verified_by_utc": "2026-09-25 15:13:49 UTC"
+      },
+      "code": "read_native_failed",
+      "decisions": 0,
+      "diagnosis": "Native NMerchantRoom._Ready enables map travel, while AncientConsoleCmd enters a room without resetting it; the ancient reader rejects enabled travel. This is a source-supported setup mismatch, not a captured fine-grained failure predicate. No Lost Coffer option was selected.",
+      "installation": {
+        "phase": "installed",
+        "state_sha256": "3098285400f093f2eeb9ca415c34bbe2a51d64cd41cfee21095eb1a454ca3a44",
+        "status": "passed"
+      },
+      "installation_verification": {
+        "base_file_count": 429,
+        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+        "overlay_count": 2,
+        "status": "passed",
+        "verified_by_utc": "2026-09-25 14:54:38 UTC"
+      },
+      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md",
+      "next_setup": "Use room event to clear the restored reward overlay before ancient NEOW LOST_COFFER in a fresh process; no shop entry, no full-agent observation until setup is complete.",
+      "outcome": null,
+      "pending": false,
+      "profile": 3,
+      "reads": 34,
+      "reconciled": 0,
+      "recorded_live_corpus": false,
+      "release_manifest_sha256": "1f83ded88af136170f2c1191bf28371aa435c9ab1616c011357fa64140e6f7e6",
+      "setup": "Native Continue restored combat rewards. Direct ancient command left that overlay present; room shop cleared it, followed by ancient NEOW LOST_COFFER. One setup UI Power Potion discard click had no observed inventory effect and was not repeated. Neow entry healed 86/88 to 88/88; gold 466 and deck seven unchanged.",
+      "stale_rejections": 0,
+      "status": "stopped_before_policy_action",
+      "target_game_executed": true
     }
   ],
   "change": "Observe CardModel.UpgradeInternal during certified relic pickup effects instead of the potentially inlined CardCmd forwarding overload.",
@@ -593,12 +639,12 @@
   "next_live_preparation": {
     "installation": {
       "phase": "installed",
-      "state_sha256": "3098285400f093f2eeb9ca415c34bbe2a51d64cd41cfee21095eb1a454ca3a44",
+      "state_sha256": "ca10969454347174e890d6e2eda7ccfdab0d4d59734724ca00ec09195664f3d2",
       "status": "passed"
     },
     "profile": 3,
     "release_manifest_sha256": "1f83ded88af136170f2c1191bf28371aa435c9ab1616c011357fa64140e6f7e6",
-    "scope": "Continue the saved campaign for the bounded Lost Coffer shared-reward check in a fresh bridge process; no new campaign or public corpus.",
+    "scope": "Continue the saved campaign for Lost Coffer in a fresh bridge process after clearing the reward overlay with room event, then ancient NEOW LOST_COFFER; no shop setup, no fresh campaign or public corpus.",
     "status": "awaiting_manual_launch",
     "target_game_executed": false,
     "verification": {
@@ -606,7 +652,7 @@
       "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
       "overlay_count": 2,
       "status": "passed",
-      "verified_by_utc": "2026-09-25 14:54:38 UTC"
+      "verified_by_utc": "2026-09-25 15:14:15 UTC"
     }
   },
   "previous_release": {

@@ -38,9 +38,12 @@ corpus was collected.
 The same package also passed shop-removal preview cancellation: **5/5/5 actions**,
 seven reads, unchanged deck/gold and map return. Normal quit and exact cleanup
 completed by **14:54:07 UTC**: four generated files removed, zero overlays and all
-429 base files unchanged. The package is reinstalled for a separate Lost Coffer
-shared-reward check. Its new installation has two verified overlays and unchanged
-base files (14:54:38 UTC); that check awaits manual launch on the saved campaign.
+429 base files unchanged. The next Lost Coffer test stopped before policy input
+(**0/0/0**, 34 reads) after shop-based setup retained incompatible map-travel state.
+The reward behavior remains untested. Cleanup completed by **15:13:49 UTC**;
+the unchanged package is reinstalled for corrected event-room setup, with two
+verified overlays and unchanged base files (15:14:15 UTC). It awaits manual launch
+on the saved campaign. The live ledger retains the setup and diagnostic limits.
 
 The previous package `32d721e8…`, source `6c04327`, passed the representative
 reroll, map potion use/discard, chest claim and potion-owned hand/optional choices.
