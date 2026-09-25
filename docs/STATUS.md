@@ -32,7 +32,7 @@ nested decisions to the same public-only chooser as headless. It is being valida
 there is **no v2 live acceptance yet**. Its [coverage and remaining gaps](AGENT_CONTRACT.md#native-full-run-v2-candidate)
 include supported rest/shop/event continuations, while general potions, hand
 selectors, treasure claims, reward rerolls and live public recording remain open.
-The accepted release/evidence below still describes the completed rest tests.
+The latest live evidence remains the completed rest tests on the previous package.
 
 ## Supported interactions
 
@@ -235,18 +235,22 @@ supplies dated source candidates rather than a current implementation checklist.
 ## Release and latest evidence
 
 The current [release manifest](../bridge/Sts2AgentBridge/releases/current/bridge.json)
-is **`1926afc8917efd6b27165057d412bb63bd33a2bfed4ba6570773ca19083e54e5`**.
-It binds 423 exact source/test inputs across 51 projects, committed in `ff3cb5f`
-(rest feature `24f620d`). The final gate passed **83 groups in 307.672 seconds**,
-including **12,925 native checks**, 625 rest checks, 22 rest host tests and 18
-Python/C# rest scenarios. Independent semantic review is clear. The controlled
-Profile 3 live checks passed on **2026-09-25**: Smith/Cook immediate and preview
-cancellation, Heal-owned card/two-potion collection, and separate card Skip/parent
-dismissal. All **20/20/20 actions** reconciled across 102 reads. Normal quit and
-owned cleanup completed by **07:11:34 UTC**: process/listener stopped, four generated
-files removed, zero overlays and all 429 base files unchanged. Detailed case counts
-are in the [release record](../bridge/Sts2AgentBridge/releases/current/README.md).
-Full shared native observations and policy orchestration remain in progress.
+is **`3e5a097e4ace0ba01ffb63f2cea67854bfc5c1d322a76ac7c043421443a09064`**. It binds 439 source/test inputs across 51 projects,
+source `a39c40f`, feature `49a6de1`. The gate passed **83 groups in 313.512 seconds**,
+including **13,372 native checks**, **656 rest checks**, **1,600 router checks** and
+18 rest Python/C# scenarios. The candidate is installed and its exact overlay is
+verified against all 429 unchanged base files; it awaits manual Profile 3 launch.
+**Native v2 live acceptance remains outstanding.** The [release record](../bridge/Sts2AgentBridge/releases/current/README.md)
+retains the exact source/package, review, validation and installation identities.
+
+The previous rest manifest was `1926afc8…`, source `ff3cb5f` (feature `24f620d`),
+recorded in Git `4f8b633`. Its controlled Profile 3 checks passed on **2026-09-25**:
+Smith/Cook immediate and preview cancellation, Heal-owned card/two-potion
+collection, and separate card Skip/parent dismissal. All **20/20/20 actions**
+reconciled across 102 reads. Normal quit and owned cleanup completed by
+**07:11:34 UTC**: process/listener stopped, four generated files removed, zero
+overlays and all 429 base files unchanged. Those original results are retained
+with their original package; they are not evidence of v2 shared-policy behavior.
 
 The prior automatic-removal release was
 **`308e9683a74a3d60ef2071e3dd6f97583e2ace1adb2494778a9aaee73e89105e`**,

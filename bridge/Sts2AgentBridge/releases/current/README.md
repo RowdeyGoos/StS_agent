@@ -2,66 +2,50 @@
 
 This directory binds the current package to its source and validation.
 [Current status](../../../../docs/STATUS.md#release-and-latest-evidence) owns live
-support; [bridge usage](../../README.md#interactive-rest) owns commands.
+support; [bridge usage](../../README.md#client-modes) owns commands.
 
 | Record | Meaning |
 | --- | --- |
 | [bridge.json](bridge.json) | Exact source/test, toolchain, reference, binary and package identities |
-| [validation.json](validation.json) | Release checks, independent review, installation and current live status |
+| [validation.json](validation.json) | Release checks, independent review, installation and live status |
 
-Manifest SHA-256:
-`1926afc8917efd6b27165057d412bb63bd33a2bfed4ba6570773ca19083e54e5`.
-It binds **423 inputs across 51 projects**, committed in `ff3cb5f`; the rest feature
-is in `24f620d`. DLL: **1,470,464 bytes**, SHA-256
-`b1a4252411a14ee32b5708bf01ea41e24cefb2d54aaa7f9ceb65963df90e4441`.
+Manifest SHA-256: `3e5a097e4ace0ba01ffb63f2cea67854bfc5c1d322a76ac7c043421443a09064`.
+It binds **439 inputs across 51 projects**, source `a39c40f`, feature `49a6de1`.
+DLL: **1,565,184 bytes**, SHA-256
+`d322c0b824d35ca551e8de8a6b30ef1a61d12e051f3baf2655ee1c01889f69fb`.
 
-The final release gate passed **83 groups in 307.672 seconds**, including
-reproducible build, public transport, native metadata/dependency verification,
-packaging and disposable installation/cleanup. It includes **12,925 native
-regression checks**, **625 rest checks**, **22 rest host tests**, **18 rest
-Python/C# scenarios** and **1,546 router checks**. The focused reward mode passed
-87 checks; those cases are also included in the full native regression.
+The final release gate passed **83 groups in 313.512 seconds**, including
+reproducible builds, native metadata/dependency checks, packaging and disposable
+installation/cleanup. It includes **13,372 native regression checks**, **656 rest
+checks**, **1,600 unified router checks**, 18 rest Python/C# scenarios, and the
+actual-listener full-graph/2,048-slot/nested-receipt test. These are offline checks.
+The complete Python suite passed **8,177 tests in 1,826.64 seconds**, with two
+Gymnasium warnings about fixed observation fields; compilation also passed.
+Independent semantic review is clear within the [candidate boundary](../../../../docs/AGENT_CONTRACT.md#native-full-run-v2-candidate).
+Measured review intervals and gate timings are retained in `validation.json`.
 
-`rest_v3` exposes individual option, select/deselect/confirm/cancel and reward
-decisions on the existing room module. Smith/Cook cancellation requires unchanged
-deck/inventory and restored rest controls. Heal retains its exact Dream Catcher
-card/Tiny Mailbox potion reward continuation. Collection, native card Skip and
-explicit dismissal remain distinct. Unopened cards stay hidden; stale owners,
-changed menus, late responses and uncertain input cannot become clean completion.
-Independent review is clear; measured review intervals and corrections are in
-`validation.json`.
+The package adds opt-in `agent_v2` public graphs and semantic dispatch through the
+existing native owners and shared Python policy. It exposes supported rest/shop
+and event children separately, preserves exact receipt lineage, withholds hidden
+information and stops on uncertainty. General potion/hand-selector coverage,
+treasure claiming, removal cancellation, reward rerolls and public live recording
+remain open. **This is not complete native coverage or live v2 acceptance.**
 
-**Representative rest tests passed live on 2026-09-25.** After manual launch on
-Profile 3 and native Continue, controlled relic grants and native map entry
-established the rest sites. Smith and Cook both canceled before selection and
-after selecting their previews, preserving the deck and restoring all options.
-Heal collected Dream Catcher's card and Tiny Mailbox's two potions. A separate
-Dream Catcher offer passed card Skip followed by explicit parent dismissal.
+The package is installed for the next controlled Profile 3 test, awaiting manual
+launch. Installation and exact overlay verification passed: the expected two
+package files are present and all **429 base files** remain unchanged. Owned state
+SHA-256: `b739d04f39fee68974a03a806b79c74550ea545c50acaa55588e3971af74a298`.
+No game action has been sent with this release. Cleanup follows the live test.
 
-| Case | Attempted / accepted / reconciled | Reads |
-| --- | --- | --- |
-| Smith immediate cancellation | 2 / 2 / 2 | 4 |
-| Smith preview cancellation | 3 / 3 / 3 | 13 |
-| Cook immediate cancellation | 2 / 2 / 2 | 4 |
-| Cook preview cancellation | 4 / 4 / 4 | 22 |
-| Heal card + two potion rewards | 5 / 5 / 5 | 30 |
-| Heal card Skip + parent dismissal | 4 / 4 / 4 | 29 |
+The previous rest package and evidence remain bound to manifest `1926afc8…`, source
+`ff3cb5f`, and Git record `4f8b633`. Its Smith/Cook immediate/preview cancellation,
+Heal card/two-potion collection and card Skip/dismissal passed **20/20/20 actions**
+across 102 reads, followed by normal quit and complete owned cleanup at
+**2026-09-25 07:11:34 UTC**. Those results do not establish this candidate's v2
+projection or shared-policy behavior.
 
-The collected rewards increased the deck from five to six cards and the belt
-from one to three potions. Skip preserved both counts. Both Heal cases returned
-to native Proceed. By **07:11:34 UTC**, normal quit and owned cleanup passed:
-game/listener stopped, four generated files removed, zero overlays, and all
-**429 base files** unchanged. This does not complete the full shared native
-interface or establish other rest/relic variants.
-
-An initial gate caught a shared-fixture compilation mismatch; the next caught an
-unintended regex dependency. Both were corrected and focused checks passed before
-the final accepted gate. Neither failed candidate emitted an accepted manifest or
-was installed. Their logs remain at the paths in `validation.json`.
-
-Gate/operational evidence is retained at `/private/tmp/sts-bridge-cscqj2sh`; current
-install inputs are at `/private/tmp/sts-unified-bridge-release`. The prior package
-and exact records are retained under the gate's `previous-*` paths and in Git
-`b6e406c`. That release passed one-card automatic removal with **2/2/2** parent
-actions, no child selector and an actionable map, followed by complete owned
-cleanup. Its result remains bound to manifest `308e9683…`, not this package.
+Evidence and the preserved prior package/record are under
+`/private/tmp/sts-bridge-rul6heyh`. Current install inputs are at
+`/private/tmp/sts-unified-bridge-release`. One initial release attempt stopped on a
+fixture compilation error; the corrected focused check passed before the final
+gate. The failed attempt emitted no accepted release manifest and was not installed.
