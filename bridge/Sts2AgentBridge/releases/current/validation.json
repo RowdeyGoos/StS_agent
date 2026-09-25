@@ -1,8 +1,543 @@
 {
-  "additional_live_tests": [
-    {
-      "actions": [],
-      "case": "shop_passive_after_debug_room_switch",
+  "change": "Connect Neows Bones to one full_rewards_v2 compound owner: retained nested reward/card/bundle/deck decisions, exact native pickup and card-command effects, chain-backed nested Sacrifice and final curse completion. Project visible choices through existing full_run_v2 actions.",
+  "elapsed_times": {
+    "final_semantic_review_seconds": 137,
+    "installation_verified_by_utc": "2026-09-25 20:38:49 UTC",
+    "note": "Implementation, inspection and focused validation overlapped. Separate implementation, release preparation and user-wait durations were not measured.",
+    "previous_live_cleanup_verified_by_utc": "2026-09-25 16:58:22 UTC",
+    "release_gate_seconds": 361.201
+  },
+  "evidence_root": "/private/tmp/sts-bridge-fqtsg2hk",
+  "feature_commit": "7bd3e09de0e262b3cb75c8854bb0456ad2fbb011",
+  "full_shared_native_interface_complete": false,
+  "gate": {
+    "checks": {
+      "agent:paired": {
+        "log": "log-078.txt",
+        "seconds": 0.153,
+        "status": "passed"
+      },
+      "apps/bridge/operations/check_live_runtime_fixtures.py": {
+        "log": "log-013.txt",
+        "seconds": 0.062,
+        "status": "passed"
+      },
+      "apps/bridge/operations/manage_live_campaign_fixtures.py": {
+        "log": "log-014.txt",
+        "seconds": 2.776,
+        "status": "passed"
+      },
+      "apps/bridge/operations/predecessor_conflict_fixtures.py": {
+        "log": "log-015.txt",
+        "seconds": 0.828,
+        "status": "passed"
+      },
+      "build:apps/bridge/agent_native_tests/AgentNative.Tests.csproj": {
+        "log": "log-017.txt",
+        "seconds": 1.134,
+        "status": "passed"
+      },
+      "build:apps/bridge/campaign_native_tests/CampaignNative.Tests.csproj": {
+        "log": "log-019.txt",
+        "seconds": 3.223,
+        "status": "passed"
+      },
+      "build:apps/bridge/full_native_tests/FullNative.Tests.csproj": {
+        "log": "log-021.txt",
+        "seconds": 2.677,
+        "status": "passed"
+      },
+      "build:apps/bridge/potion_native_tests/CombatPotions.Tests.csproj": {
+        "log": "log-023.txt",
+        "seconds": 1.115,
+        "status": "passed"
+      },
+      "build:apps/bridge/production/Sts2AgentBridge.csproj": {
+        "log": "log-001.txt",
+        "seconds": 1.62,
+        "status": "passed"
+      },
+      "build:apps/bridge/tests/Sts2AgentBridge.Unified.Tests.csproj": {
+        "log": "log-025.txt",
+        "seconds": 1.352,
+        "status": "passed"
+      },
+      "build:apps/bridge/verifier/Sts2AgentBridge.Unified.Verifier.csproj": {
+        "log": "log-080.txt",
+        "seconds": 1.081,
+        "status": "passed"
+      },
+      "build:components/cards/combat_tests/CombatCardChoice.Tests.csproj": {
+        "log": "log-027.txt",
+        "seconds": 1.132,
+        "status": "passed"
+      },
+      "build:components/cards/completion_tests/Sts2AgentBridge.CardSelectionCompletionV1.Native.Tests.csproj": {
+        "log": "log-029.txt",
+        "seconds": 1.116,
+        "status": "passed"
+      },
+      "build:components/cards/native_tests/Sts2AgentBridge.CardSelectionV1.Native.Tests.csproj": {
+        "log": "log-031.txt",
+        "seconds": 1.786,
+        "status": "passed"
+      },
+      "build:components/cards/parent_native_adapter_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Adapter.Tests.csproj": {
+        "log": "log-033.txt",
+        "seconds": 1.891,
+        "status": "passed"
+      },
+      "build:components/cards/parent_native_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Tests.csproj": {
+        "log": "log-035.txt",
+        "seconds": 1.03,
+        "status": "passed"
+      },
+      "build:components/cards/parent_tests/Sts2AgentBridge.CardSelectionV1.Parent.Tests.csproj": {
+        "log": "log-037.txt",
+        "seconds": 1.233,
+        "status": "passed"
+      },
+      "build:components/cards/tests/Sts2AgentBridge.CardSelectionV1.Core.Tests.csproj": {
+        "log": "log-039.txt",
+        "seconds": 1.23,
+        "status": "passed"
+      },
+      "build:components/cards/wire_tests/Sts2AgentBridge.CardSelectionV1.Wire.Tests.csproj": {
+        "log": "log-041.txt",
+        "seconds": 1.939,
+        "status": "passed"
+      },
+      "build:components/events/direct_input_tests/DirectTransformInput.Tests.csproj": {
+        "log": "log-043.txt",
+        "seconds": 1.996,
+        "status": "passed"
+      },
+      "build:components/events/integration/GenericEventV7.Native.Integration.csproj": {
+        "log": "log-071.txt",
+        "seconds": 2.08,
+        "status": "passed"
+      },
+      "build:components/events/integration/Sts2AgentBridge.GenericEventV7.Integration.csproj": {
+        "log": "log-070.txt",
+        "seconds": 1.197,
+        "status": "passed"
+      },
+      "build:components/events/item_tests/GenericEventV7.Item.Tests.csproj": {
+        "log": "log-045.txt",
+        "seconds": 1.17,
+        "status": "passed"
+      },
+      "build:components/events/native_tests/GenericEventV7.Native.Tests.csproj": {
+        "log": "log-047.txt",
+        "seconds": 2.006,
+        "status": "passed"
+      },
+      "build:components/events/transform_tests/CardTransformV2.Tests.csproj": {
+        "log": "log-048.txt",
+        "seconds": 1.219,
+        "status": "passed"
+      },
+      "build:components/events/wire_tests/Sts2AgentBridge.GenericEventV7.WireTests.csproj": {
+        "log": "log-050.txt",
+        "seconds": 1.221,
+        "status": "passed"
+      },
+      "build:components/item_bootstrap/lifecycle_tests/Sts2AgentBridge.ItemV1.Bootstrap.Tests.csproj": {
+        "log": "log-052.txt",
+        "seconds": 1.081,
+        "status": "passed"
+      },
+      "build:components/item_bootstrap/operator_tests/Sts2AgentBridge.ItemV1.Operator.Tests.csproj": {
+        "log": "log-054.txt",
+        "seconds": 1.089,
+        "status": "passed"
+      },
+      "build:components/item_transport/runtime_tests/Sts2AgentBridge.ItemV1.Transport.Tests.csproj": {
+        "log": "log-056.txt",
+        "seconds": 2.671,
+        "status": "passed"
+      },
+      "build:components/item_wire/producer_tests/Sts2AgentBridge.ItemV1.Wire.Tests.csproj": {
+        "log": "log-058.txt",
+        "seconds": 1.338,
+        "status": "passed"
+      },
+      "build:components/items/tests/Sts2AgentBridge.ItemV1.Tests.csproj": {
+        "log": "log-060.txt",
+        "seconds": 1.198,
+        "status": "passed"
+      },
+      "build:components/rooms/broker_tests/Sts2AgentBridge.RoomFlowsV1.Broker.Tests.csproj": {
+        "log": "log-062.txt",
+        "seconds": 1.95,
+        "status": "passed"
+      },
+      "build:components/rooms/event/tests/Sts2AgentBridge.RoomFlowsV1.Event.Tests.csproj": {
+        "log": "log-064.txt",
+        "seconds": 1.963,
+        "status": "passed"
+      },
+      "build:components/rooms/rest/tests/Sts2AgentBridge.RestV2.Tests.csproj": {
+        "log": "log-066.txt",
+        "seconds": 2.875,
+        "status": "passed"
+      },
+      "build:components/rooms/shop/tests/Sts2AgentBridge.RoomFlowsV1.Shop.Tests.csproj": {
+        "log": "log-068.txt",
+        "seconds": 1.31,
+        "status": "passed"
+      },
+      "cards:combat_host_native": {
+        "log": "log-075.txt",
+        "seconds": 0.397,
+        "status": "passed"
+      },
+      "cards:host_wire": {
+        "log": "log-076.txt",
+        "seconds": 0.127,
+        "status": "passed"
+      },
+      "clean_install": {
+        "log": "log-084.txt",
+        "seconds": 0.079,
+        "status": "passed"
+      },
+      "client": {
+        "log": "log-009.txt",
+        "seconds": 1.27,
+        "status": "passed"
+      },
+      "components/cards/host_tests": {
+        "log": "log-003.txt",
+        "seconds": 0.049,
+        "status": "passed"
+      },
+      "components/events/host_tests": {
+        "log": "log-004.txt",
+        "seconds": 2.343,
+        "status": "passed"
+      },
+      "components/item_transport/transport_tests": {
+        "log": "log-005.txt",
+        "seconds": 0.043,
+        "status": "passed"
+      },
+      "components/item_wire/host_tests": {
+        "log": "log-006.txt",
+        "seconds": 0.049,
+        "status": "passed"
+      },
+      "components/rooms/rest/host_tests": {
+        "log": "log-007.txt",
+        "seconds": 0.046,
+        "status": "passed"
+      },
+      "core_client": {
+        "log": "log-010.txt",
+        "seconds": 0.048,
+        "status": "passed"
+      },
+      "events:host_native": {
+        "log": "log-073.txt",
+        "seconds": 74.586,
+        "status": "passed"
+      },
+      "package": {
+        "log": "log-083.txt",
+        "seconds": 0.075,
+        "status": "passed"
+      },
+      "package_identity": {
+        "log": "log-002.txt",
+        "seconds": 0.029,
+        "status": "passed"
+      },
+      "package_output": {
+        "log": "log-085.txt",
+        "seconds": 0.03,
+        "status": "passed"
+      },
+      "production_surface": {
+        "log": "log-081.txt",
+        "seconds": 0.059,
+        "status": "passed"
+      },
+      "production_surface_rejections": {
+        "log": "log-082.txt",
+        "seconds": 0.076,
+        "status": "passed"
+      },
+      "reproducible_build": {
+        "log": "log-079.txt",
+        "seconds": 1.627,
+        "status": "passed"
+      },
+      "reward_codec": {
+        "log": "log-011.txt",
+        "seconds": 0.043,
+        "status": "passed"
+      },
+      "room_codec": {
+        "log": "log-012.txt",
+        "seconds": 0.154,
+        "status": "passed"
+      },
+      "rooms:rest_host_native": {
+        "log": "log-074.txt",
+        "seconds": 6.039,
+        "status": "passed"
+      },
+      "sdk": {
+        "log": "log-016.txt",
+        "seconds": 0.047,
+        "status": "passed"
+      },
+      "shared_client:socket": {
+        "log": "log-077.txt",
+        "seconds": 84.689,
+        "status": "passed"
+      },
+      "test:apps/bridge/agent_native_tests/AgentNative.Tests.csproj": {
+        "log": "log-018.txt",
+        "seconds": 0.073,
+        "status": "passed"
+      },
+      "test:apps/bridge/campaign_native_tests/CampaignNative.Tests.csproj": {
+        "log": "log-020.txt",
+        "seconds": 0.486,
+        "status": "passed"
+      },
+      "test:apps/bridge/full_native_tests/FullNative.Tests.csproj": {
+        "log": "log-022.txt",
+        "seconds": 0.065,
+        "status": "passed"
+      },
+      "test:apps/bridge/potion_native_tests/CombatPotions.Tests.csproj": {
+        "log": "log-024.txt",
+        "seconds": 0.357,
+        "status": "passed"
+      },
+      "test:apps/bridge/tests/Sts2AgentBridge.Unified.Tests.csproj": {
+        "log": "log-026.txt",
+        "seconds": 11.843,
+        "status": "passed"
+      },
+      "test:components/cards/combat_tests/CombatCardChoice.Tests.csproj": {
+        "log": "log-028.txt",
+        "seconds": 0.101,
+        "status": "passed"
+      },
+      "test:components/cards/completion_tests/Sts2AgentBridge.CardSelectionCompletionV1.Native.Tests.csproj": {
+        "log": "log-030.txt",
+        "seconds": 0.051,
+        "status": "passed"
+      },
+      "test:components/cards/native_tests/Sts2AgentBridge.CardSelectionV1.Native.Tests.csproj": {
+        "log": "log-032.txt",
+        "seconds": 0.037,
+        "status": "passed"
+      },
+      "test:components/cards/parent_native_adapter_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Adapter.Tests.csproj": {
+        "log": "log-034.txt",
+        "seconds": 0.031,
+        "status": "passed"
+      },
+      "test:components/cards/parent_native_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Tests.csproj": {
+        "log": "log-036.txt",
+        "seconds": 0.024,
+        "status": "passed"
+      },
+      "test:components/cards/parent_tests/Sts2AgentBridge.CardSelectionV1.Parent.Tests.csproj": {
+        "log": "log-038.txt",
+        "seconds": 0.043,
+        "status": "passed"
+      },
+      "test:components/cards/tests/Sts2AgentBridge.CardSelectionV1.Core.Tests.csproj": {
+        "log": "log-040.txt",
+        "seconds": 0.047,
+        "status": "passed"
+      },
+      "test:components/cards/wire_tests/Sts2AgentBridge.CardSelectionV1.Wire.Tests.csproj": {
+        "log": "log-042.txt",
+        "seconds": 0.053,
+        "status": "passed"
+      },
+      "test:components/events/direct_input_tests/DirectTransformInput.Tests.csproj": {
+        "log": "log-044.txt",
+        "seconds": 0.955,
+        "status": "passed"
+      },
+      "test:components/events/item_tests/GenericEventV7.Item.Tests.csproj": {
+        "log": "log-046.txt",
+        "seconds": 0.035,
+        "status": "passed"
+      },
+      "test:components/events/native_tests/GenericEventV7.Native.Tests.csproj": {
+        "log": "log-072.txt",
+        "seconds": 186.961,
+        "status": "passed"
+      },
+      "test:components/events/transform_tests/CardTransformV2.Tests.csproj": {
+        "log": "log-049.txt",
+        "seconds": 0.074,
+        "status": "passed"
+      },
+      "test:components/events/wire_tests/Sts2AgentBridge.GenericEventV7.WireTests.csproj": {
+        "log": "log-051.txt",
+        "seconds": 0.117,
+        "status": "passed"
+      },
+      "test:components/item_bootstrap/lifecycle_tests/Sts2AgentBridge.ItemV1.Bootstrap.Tests.csproj": {
+        "log": "log-053.txt",
+        "seconds": 0.028,
+        "status": "passed"
+      },
+      "test:components/item_bootstrap/operator_tests/Sts2AgentBridge.ItemV1.Operator.Tests.csproj": {
+        "log": "log-055.txt",
+        "seconds": 0.208,
+        "status": "passed"
+      },
+      "test:components/item_transport/runtime_tests/Sts2AgentBridge.ItemV1.Transport.Tests.csproj": {
+        "log": "log-057.txt",
+        "seconds": 6.483,
+        "status": "passed"
+      },
+      "test:components/item_wire/producer_tests/Sts2AgentBridge.ItemV1.Wire.Tests.csproj": {
+        "log": "log-059.txt",
+        "seconds": 0.035,
+        "status": "passed"
+      },
+      "test:components/items/tests/Sts2AgentBridge.ItemV1.Tests.csproj": {
+        "log": "log-061.txt",
+        "seconds": 0.037,
+        "status": "passed"
+      },
+      "test:components/rooms/broker_tests/Sts2AgentBridge.RoomFlowsV1.Broker.Tests.csproj": {
+        "log": "log-063.txt",
+        "seconds": 0.042,
+        "status": "passed"
+      },
+      "test:components/rooms/event/tests/Sts2AgentBridge.RoomFlowsV1.Event.Tests.csproj": {
+        "log": "log-065.txt",
+        "seconds": 0.036,
+        "status": "passed"
+      },
+      "test:components/rooms/rest/tests/Sts2AgentBridge.RestV2.Tests.csproj": {
+        "log": "log-067.txt",
+        "seconds": 0.477,
+        "status": "passed"
+      },
+      "test:components/rooms/shop/tests/Sts2AgentBridge.RoomFlowsV1.Shop.Tests.csproj": {
+        "log": "log-069.txt",
+        "seconds": 0.049,
+        "status": "passed"
+      },
+      "tests/maintenance": {
+        "log": "log-008.txt",
+        "seconds": 1.19,
+        "status": "passed"
+      }
+    },
+    "component": "all",
+    "event_groups": [],
+    "integration_jobs": 4,
+    "live_campaign_started": false,
+    "release_manifests": {
+      "bridge": "18169693a3ea87ca93c5513024e3e7dab9f62d2e1a0f2cc8a9fccf63c5394660"
+    },
+    "seconds": 361.201,
+    "selected_checks": [],
+    "source": {
+      "files": 485,
+      "projects": 52,
+      "targets": 1
+    },
+    "status": "passed",
+    "suite": "release",
+    "target_game_executed": false,
+    "targets": [
+      "bridge"
+    ]
+  },
+  "initial_gate_environment_stop": {
+    "reason": "Sandbox denied ephemeral localhost socket binding before native integration. Full gate rerun with local socket permission; no release manifest accepted from this attempt.",
+    "root": "/private/tmp/sts-bridge-ttjkr2hs",
+    "status": "stopped"
+  },
+  "installation": {
+    "base_file_count": 429,
+    "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+    "credential_content_read": false,
+    "overlay_count": 2,
+    "phase": "installed",
+    "state_sha256": "920640b5ab3231f5925feb91a5dd7b967dd5e0a395d412c7ef30d90efa273163",
+    "status": "passed",
+    "verified_by_utc": "2026-09-25 20:38:49 UTC"
+  },
+  "live": {
+    "installation": {
+      "base_file_count": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "credential_content_read": false,
+      "overlay_count": 2,
+      "phase": "installed",
+      "state_sha256": "920640b5ab3231f5925feb91a5dd7b967dd5e0a395d412c7ef30d90efa273163",
+      "status": "passed",
+      "verified_by_utc": "2026-09-25 20:38:49 UTC"
+    },
+    "recorded_live_corpus": false,
+    "scope": "Continue the saved Profile 3 campaign, prepare Neows Bones using native controls before attaching the full producer, and verify the mandatory rewards, actual generated follow-ups, final curse and event/map return.",
+    "status": "awaiting_manual_launch",
+    "target_game_executed": false
+  },
+  "previous_release": {
+    "additional_live_tests": [
+      {
+        "actions": [],
+        "case": "shop_passive_after_debug_room_switch",
+        "cleanup": {
+          "base_file_count": 429,
+          "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+          "game_process_running": false,
+          "generated_files_removed": 4,
+          "normal_quit": true,
+          "overlay_count": 0,
+          "port_accepting": false,
+          "quarantined_state_sha256": "8029c09b85a11f51009dd986f280ec1211e40b3623b02c5a2e067204e2acc858",
+          "status": "passed",
+          "verified_by_utc": "2026-09-25 16:58:22 UTC"
+        },
+        "code": "time_limit",
+        "cumulative_counts": {
+          "accepted": 6,
+          "attempted": 6,
+          "reconciled": 6
+        },
+        "decisions": 0,
+        "diagnosis": "Existing full producer still tracked map after native room Shop debug switch. No shop candidate or mutation. No claim of shop purchase acceptance or executor failure.",
+        "pending": false,
+        "reads": 900,
+        "status": "setup_only",
+        "test_delta": {
+          "accepted": 0,
+          "attempted": 0,
+          "reconciled": 0
+        }
+      }
+    ],
+    "install_inputs": "/private/tmp/sts-bridge-fqtsg2hk/previous-install-inputs",
+    "live": {
+      "accepted": 6,
+      "actions": [
+        "choose_ancient_relic",
+        "discard_potion",
+        "claim_potion",
+        "open_reward",
+        "choose_reward_card",
+        "leave_event"
+      ],
+      "attempted": 6,
+      "case": "lost_coffer_full_producer_rewards",
       "cleanup": {
         "base_file_count": 429,
         "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
@@ -15,596 +550,70 @@
         "status": "passed",
         "verified_by_utc": "2026-09-25 16:58:22 UTC"
       },
-      "code": "time_limit",
-      "cumulative_counts": {
-        "accepted": 6,
-        "attempted": 6,
-        "reconciled": 6
-      },
-      "decisions": 0,
-      "diagnosis": "Existing full producer still tracked map after native room Shop debug switch. No shop candidate or mutation. No claim of shop purchase acceptance or executor failure.",
-      "pending": false,
-      "reads": 900,
-      "status": "setup_only",
-      "test_delta": {
-        "accepted": 0,
-        "attempted": 0,
-        "reconciled": 0
-      }
-    }
-  ],
-  "change": "Recognize full_rewards_v1 at the production event-response boundary, with exact descriptor, receipt, phase/action and history validation. Keep waiting/resolved reward children under the parent event owner.",
-  "diagnostic_commit": "9b8008840e51c96c550015d8894800c52698b73d",
-  "elapsed_times": {
-    "classifier_diagnosis_review_seconds": 76,
-    "focused_validation_seconds": [
-      14.776,
-      5.911
-    ],
-    "installation_verified_by_utc": "2026-09-25 16:41:55 UTC",
-    "live_cleanup_verified_by_utc": "2026-09-25 16:58:22 UTC",
-    "live_work_resumed_utc": "2026-09-25 16:50:24 UTC",
-    "lost_coffer_resolved_by_utc": "2026-09-25 16:52:09 UTC",
-    "note": "Implementation and inspection overlapped. Separate implementation, release preparation and user-wait durations were not measured.",
-    "previous_live_cleanup_verified_by_utc": "2026-09-25 16:26:04 UTC",
-    "release_gate_seconds": 313.361,
-    "semantic_review_seconds": 29
-  },
-  "evidence_root": "/private/tmp/sts-bridge-og6_b103",
-  "feature_commit": "cc9fa81c64631b1d246bda42eb17abfa96101dcc",
-  "full_shared_native_interface_complete": false,
-  "gate": {
-    "checks": {
-      "agent:paired": {
-        "log": "log-078.txt",
-        "seconds": 0.149,
-        "status": "passed"
-      },
-      "apps/bridge/operations/check_live_runtime_fixtures.py": {
-        "log": "log-013.txt",
-        "seconds": 0.062,
-        "status": "passed"
-      },
-      "apps/bridge/operations/manage_live_campaign_fixtures.py": {
-        "log": "log-014.txt",
-        "seconds": 2.839,
-        "status": "passed"
-      },
-      "apps/bridge/operations/predecessor_conflict_fixtures.py": {
-        "log": "log-015.txt",
-        "seconds": 0.832,
-        "status": "passed"
-      },
-      "build:apps/bridge/agent_native_tests/AgentNative.Tests.csproj": {
-        "log": "log-017.txt",
-        "seconds": 1.145,
-        "status": "passed"
-      },
-      "build:apps/bridge/campaign_native_tests/CampaignNative.Tests.csproj": {
-        "log": "log-019.txt",
-        "seconds": 3.387,
-        "status": "passed"
-      },
-      "build:apps/bridge/full_native_tests/FullNative.Tests.csproj": {
-        "log": "log-021.txt",
-        "seconds": 2.755,
-        "status": "passed"
-      },
-      "build:apps/bridge/potion_native_tests/CombatPotions.Tests.csproj": {
-        "log": "log-023.txt",
-        "seconds": 1.165,
-        "status": "passed"
-      },
-      "build:apps/bridge/production/Sts2AgentBridge.csproj": {
-        "log": "log-001.txt",
-        "seconds": 1.604,
-        "status": "passed"
-      },
-      "build:apps/bridge/tests/Sts2AgentBridge.Unified.Tests.csproj": {
-        "log": "log-025.txt",
-        "seconds": 1.397,
-        "status": "passed"
-      },
-      "build:apps/bridge/verifier/Sts2AgentBridge.Unified.Verifier.csproj": {
-        "log": "log-080.txt",
-        "seconds": 1.061,
-        "status": "passed"
-      },
-      "build:components/cards/combat_tests/CombatCardChoice.Tests.csproj": {
-        "log": "log-027.txt",
-        "seconds": 1.18,
-        "status": "passed"
-      },
-      "build:components/cards/completion_tests/Sts2AgentBridge.CardSelectionCompletionV1.Native.Tests.csproj": {
-        "log": "log-029.txt",
-        "seconds": 1.151,
-        "status": "passed"
-      },
-      "build:components/cards/native_tests/Sts2AgentBridge.CardSelectionV1.Native.Tests.csproj": {
-        "log": "log-031.txt",
-        "seconds": 1.838,
-        "status": "passed"
-      },
-      "build:components/cards/parent_native_adapter_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Adapter.Tests.csproj": {
-        "log": "log-033.txt",
-        "seconds": 1.974,
-        "status": "passed"
-      },
-      "build:components/cards/parent_native_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Tests.csproj": {
-        "log": "log-035.txt",
-        "seconds": 1.105,
-        "status": "passed"
-      },
-      "build:components/cards/parent_tests/Sts2AgentBridge.CardSelectionV1.Parent.Tests.csproj": {
-        "log": "log-037.txt",
-        "seconds": 1.289,
-        "status": "passed"
-      },
-      "build:components/cards/tests/Sts2AgentBridge.CardSelectionV1.Core.Tests.csproj": {
-        "log": "log-039.txt",
-        "seconds": 1.246,
-        "status": "passed"
-      },
-      "build:components/cards/wire_tests/Sts2AgentBridge.CardSelectionV1.Wire.Tests.csproj": {
-        "log": "log-041.txt",
-        "seconds": 2.042,
-        "status": "passed"
-      },
-      "build:components/events/direct_input_tests/DirectTransformInput.Tests.csproj": {
-        "log": "log-043.txt",
-        "seconds": 1.744,
-        "status": "passed"
-      },
-      "build:components/events/integration/GenericEventV7.Native.Integration.csproj": {
-        "log": "log-071.txt",
-        "seconds": 1.783,
-        "status": "passed"
-      },
-      "build:components/events/integration/Sts2AgentBridge.GenericEventV7.Integration.csproj": {
-        "log": "log-070.txt",
-        "seconds": 1.191,
-        "status": "passed"
-      },
-      "build:components/events/item_tests/GenericEventV7.Item.Tests.csproj": {
-        "log": "log-045.txt",
-        "seconds": 1.176,
-        "status": "passed"
-      },
-      "build:components/events/native_tests/GenericEventV7.Native.Tests.csproj": {
-        "log": "log-047.txt",
-        "seconds": 1.873,
-        "status": "passed"
-      },
-      "build:components/events/transform_tests/CardTransformV2.Tests.csproj": {
-        "log": "log-048.txt",
-        "seconds": 1.219,
-        "status": "passed"
-      },
-      "build:components/events/wire_tests/Sts2AgentBridge.GenericEventV7.WireTests.csproj": {
-        "log": "log-050.txt",
-        "seconds": 1.222,
-        "status": "passed"
-      },
-      "build:components/item_bootstrap/lifecycle_tests/Sts2AgentBridge.ItemV1.Bootstrap.Tests.csproj": {
-        "log": "log-052.txt",
-        "seconds": 1.058,
-        "status": "passed"
-      },
-      "build:components/item_bootstrap/operator_tests/Sts2AgentBridge.ItemV1.Operator.Tests.csproj": {
-        "log": "log-054.txt",
-        "seconds": 1.116,
-        "status": "passed"
-      },
-      "build:components/item_transport/runtime_tests/Sts2AgentBridge.ItemV1.Transport.Tests.csproj": {
-        "log": "log-056.txt",
-        "seconds": 2.64,
-        "status": "passed"
-      },
-      "build:components/item_wire/producer_tests/Sts2AgentBridge.ItemV1.Wire.Tests.csproj": {
-        "log": "log-058.txt",
-        "seconds": 1.285,
-        "status": "passed"
-      },
-      "build:components/items/tests/Sts2AgentBridge.ItemV1.Tests.csproj": {
-        "log": "log-060.txt",
-        "seconds": 1.232,
-        "status": "passed"
-      },
-      "build:components/rooms/broker_tests/Sts2AgentBridge.RoomFlowsV1.Broker.Tests.csproj": {
-        "log": "log-062.txt",
-        "seconds": 2.004,
-        "status": "passed"
-      },
-      "build:components/rooms/event/tests/Sts2AgentBridge.RoomFlowsV1.Event.Tests.csproj": {
-        "log": "log-064.txt",
-        "seconds": 1.972,
-        "status": "passed"
-      },
-      "build:components/rooms/rest/tests/Sts2AgentBridge.RestV2.Tests.csproj": {
-        "log": "log-066.txt",
-        "seconds": 2.838,
-        "status": "passed"
-      },
-      "build:components/rooms/shop/tests/Sts2AgentBridge.RoomFlowsV1.Shop.Tests.csproj": {
-        "log": "log-068.txt",
-        "seconds": 1.308,
-        "status": "passed"
-      },
-      "cards:combat_host_native": {
-        "log": "log-075.txt",
-        "seconds": 0.371,
-        "status": "passed"
-      },
-      "cards:host_wire": {
-        "log": "log-076.txt",
-        "seconds": 0.118,
-        "status": "passed"
-      },
-      "clean_install": {
-        "log": "log-084.txt",
-        "seconds": 0.078,
-        "status": "passed"
-      },
-      "client": {
-        "log": "log-009.txt",
-        "seconds": 1.29,
-        "status": "passed"
-      },
-      "components/cards/host_tests": {
-        "log": "log-003.txt",
-        "seconds": 0.052,
-        "status": "passed"
-      },
-      "components/events/host_tests": {
-        "log": "log-004.txt",
-        "seconds": 2.363,
-        "status": "passed"
-      },
-      "components/item_transport/transport_tests": {
-        "log": "log-005.txt",
-        "seconds": 0.044,
-        "status": "passed"
-      },
-      "components/item_wire/host_tests": {
-        "log": "log-006.txt",
-        "seconds": 0.052,
-        "status": "passed"
-      },
-      "components/rooms/rest/host_tests": {
-        "log": "log-007.txt",
-        "seconds": 0.049,
-        "status": "passed"
-      },
-      "core_client": {
-        "log": "log-010.txt",
-        "seconds": 0.05,
-        "status": "passed"
-      },
-      "events:host_native": {
-        "log": "log-073.txt",
-        "seconds": 71.54,
-        "status": "passed"
-      },
-      "package": {
-        "log": "log-083.txt",
-        "seconds": 0.072,
-        "status": "passed"
-      },
-      "package_identity": {
-        "log": "log-002.txt",
-        "seconds": 0.031,
-        "status": "passed"
-      },
-      "package_output": {
-        "log": "log-085.txt",
-        "seconds": 0.029,
-        "status": "passed"
-      },
-      "production_surface": {
-        "log": "log-081.txt",
-        "seconds": 0.051,
-        "status": "passed"
-      },
-      "production_surface_rejections": {
-        "log": "log-082.txt",
-        "seconds": 0.075,
-        "status": "passed"
-      },
-      "reproducible_build": {
-        "log": "log-079.txt",
-        "seconds": 1.529,
-        "status": "passed"
-      },
-      "reward_codec": {
-        "log": "log-011.txt",
-        "seconds": 0.041,
-        "status": "passed"
-      },
-      "room_codec": {
-        "log": "log-012.txt",
-        "seconds": 0.148,
-        "status": "passed"
-      },
-      "rooms:rest_host_native": {
-        "log": "log-074.txt",
-        "seconds": 6.003,
-        "status": "passed"
-      },
-      "sdk": {
-        "log": "log-016.txt",
-        "seconds": 0.046,
-        "status": "passed"
-      },
-      "shared_client:socket": {
-        "log": "log-077.txt",
-        "seconds": 87.754,
-        "status": "passed"
-      },
-      "test:apps/bridge/agent_native_tests/AgentNative.Tests.csproj": {
-        "log": "log-018.txt",
-        "seconds": 0.076,
-        "status": "passed"
-      },
-      "test:apps/bridge/campaign_native_tests/CampaignNative.Tests.csproj": {
-        "log": "log-020.txt",
-        "seconds": 0.46,
-        "status": "passed"
-      },
-      "test:apps/bridge/full_native_tests/FullNative.Tests.csproj": {
-        "log": "log-022.txt",
-        "seconds": 0.064,
-        "status": "passed"
-      },
-      "test:apps/bridge/potion_native_tests/CombatPotions.Tests.csproj": {
-        "log": "log-024.txt",
-        "seconds": 0.349,
-        "status": "passed"
-      },
-      "test:apps/bridge/tests/Sts2AgentBridge.Unified.Tests.csproj": {
-        "log": "log-026.txt",
-        "seconds": 11.809,
-        "status": "passed"
-      },
-      "test:components/cards/combat_tests/CombatCardChoice.Tests.csproj": {
-        "log": "log-028.txt",
-        "seconds": 0.103,
-        "status": "passed"
-      },
-      "test:components/cards/completion_tests/Sts2AgentBridge.CardSelectionCompletionV1.Native.Tests.csproj": {
-        "log": "log-030.txt",
-        "seconds": 0.052,
-        "status": "passed"
-      },
-      "test:components/cards/native_tests/Sts2AgentBridge.CardSelectionV1.Native.Tests.csproj": {
-        "log": "log-032.txt",
-        "seconds": 0.039,
-        "status": "passed"
-      },
-      "test:components/cards/parent_native_adapter_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Adapter.Tests.csproj": {
-        "log": "log-034.txt",
-        "seconds": 0.033,
-        "status": "passed"
-      },
-      "test:components/cards/parent_native_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Tests.csproj": {
-        "log": "log-036.txt",
-        "seconds": 0.026,
-        "status": "passed"
-      },
-      "test:components/cards/parent_tests/Sts2AgentBridge.CardSelectionV1.Parent.Tests.csproj": {
-        "log": "log-038.txt",
-        "seconds": 0.044,
-        "status": "passed"
-      },
-      "test:components/cards/tests/Sts2AgentBridge.CardSelectionV1.Core.Tests.csproj": {
-        "log": "log-040.txt",
-        "seconds": 0.046,
-        "status": "passed"
-      },
-      "test:components/cards/wire_tests/Sts2AgentBridge.CardSelectionV1.Wire.Tests.csproj": {
-        "log": "log-042.txt",
-        "seconds": 0.055,
-        "status": "passed"
-      },
-      "test:components/events/direct_input_tests/DirectTransformInput.Tests.csproj": {
-        "log": "log-044.txt",
-        "seconds": 0.956,
-        "status": "passed"
-      },
-      "test:components/events/item_tests/GenericEventV7.Item.Tests.csproj": {
-        "log": "log-046.txt",
-        "seconds": 0.036,
-        "status": "passed"
-      },
-      "test:components/events/native_tests/GenericEventV7.Native.Tests.csproj": {
-        "log": "log-072.txt",
-        "seconds": 136.116,
-        "status": "passed"
-      },
-      "test:components/events/transform_tests/CardTransformV2.Tests.csproj": {
-        "log": "log-049.txt",
-        "seconds": 0.074,
-        "status": "passed"
-      },
-      "test:components/events/wire_tests/Sts2AgentBridge.GenericEventV7.WireTests.csproj": {
-        "log": "log-051.txt",
-        "seconds": 0.109,
-        "status": "passed"
-      },
-      "test:components/item_bootstrap/lifecycle_tests/Sts2AgentBridge.ItemV1.Bootstrap.Tests.csproj": {
-        "log": "log-053.txt",
-        "seconds": 0.026,
-        "status": "passed"
-      },
-      "test:components/item_bootstrap/operator_tests/Sts2AgentBridge.ItemV1.Operator.Tests.csproj": {
-        "log": "log-055.txt",
-        "seconds": 0.235,
-        "status": "passed"
-      },
-      "test:components/item_transport/runtime_tests/Sts2AgentBridge.ItemV1.Transport.Tests.csproj": {
-        "log": "log-057.txt",
-        "seconds": 6.478,
-        "status": "passed"
-      },
-      "test:components/item_wire/producer_tests/Sts2AgentBridge.ItemV1.Wire.Tests.csproj": {
-        "log": "log-059.txt",
-        "seconds": 0.034,
-        "status": "passed"
-      },
-      "test:components/items/tests/Sts2AgentBridge.ItemV1.Tests.csproj": {
-        "log": "log-061.txt",
-        "seconds": 0.038,
-        "status": "passed"
-      },
-      "test:components/rooms/broker_tests/Sts2AgentBridge.RoomFlowsV1.Broker.Tests.csproj": {
-        "log": "log-063.txt",
-        "seconds": 0.041,
-        "status": "passed"
-      },
-      "test:components/rooms/event/tests/Sts2AgentBridge.RoomFlowsV1.Event.Tests.csproj": {
-        "log": "log-065.txt",
-        "seconds": 0.036,
-        "status": "passed"
-      },
-      "test:components/rooms/rest/tests/Sts2AgentBridge.RestV2.Tests.csproj": {
-        "log": "log-067.txt",
-        "seconds": 0.475,
-        "status": "passed"
-      },
-      "test:components/rooms/shop/tests/Sts2AgentBridge.RoomFlowsV1.Shop.Tests.csproj": {
-        "log": "log-069.txt",
-        "seconds": 0.049,
-        "status": "passed"
-      },
-      "tests/maintenance": {
-        "log": "log-008.txt",
-        "seconds": 1.176,
-        "status": "passed"
-      }
-    },
-    "component": "all",
-    "event_groups": [],
-    "integration_jobs": 4,
-    "live_campaign_started": false,
-    "release_manifests": {
-      "bridge": "2d9a256032206ea0117c6caef38fad54a7180a2b635f7821d2982660fcff9c23"
-    },
-    "seconds": 313.361,
-    "selected_checks": [],
-    "source": {
-      "files": 464,
-      "projects": 52,
-      "targets": 1
-    },
-    "status": "passed",
-    "suite": "release",
-    "target_game_executed": false,
-    "targets": [
-      "bridge"
-    ]
-  },
-  "installation": {
-    "phase": "absent",
-    "status": "passed",
-    "verified_by_utc": "2026-09-25 16:58:22 UTC"
-  },
-  "installation_verification": {
-    "base_file_count": 429,
-    "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-    "overlay_count": 2,
-    "status": "passed",
-    "verified_by_utc": "2026-09-25 16:41:55 UTC"
-  },
-  "live": {
-    "accepted": 6,
-    "actions": [
-      "choose_ancient_relic",
-      "discard_potion",
-      "claim_potion",
-      "open_reward",
-      "choose_reward_card",
-      "leave_event"
-    ],
-    "attempted": 6,
-    "case": "lost_coffer_full_producer_rewards",
-    "cleanup": {
-      "base_file_count": 429,
-      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "game_process_running": false,
-      "generated_files_removed": 4,
-      "normal_quit": true,
-      "overlay_count": 0,
-      "port_accepting": false,
-      "quarantined_state_sha256": "8029c09b85a11f51009dd986f280ec1211e40b3623b02c5a2e067204e2acc858",
-      "status": "passed",
-      "verified_by_utc": "2026-09-25 16:58:22 UTC"
-    },
-    "decisions": 6,
-    "installation": {
-      "phase": "installed",
-      "state_sha256": "2d1ba162ac4e9a7c3e8f73f4f4b0943cfb3ce97d003fbe8c94bee23a4135c157",
-      "status": "passed"
-    },
-    "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md",
-    "limit": "One controlled Lost Coffer path; not all reward callers, alternatives or compound pickups.",
-    "observed": "Actionable map and Lost Coffer relic; deck seven to eight, HP 88/88 and gold 466 unchanged. All native effects/tasks and parent reconciled.",
-    "outcome": {
-      "kind": "truncated",
-      "reason": "external_stop"
-    },
-    "pending": false,
-    "reads": 42,
-    "reconciled": 6,
-    "recorded_live_corpus": false,
-    "setup": "Manual Profile 3 Continue restored Neow; native ancient NEOW LOST_COFFER forced target. No new act reset. Console closed before test. Existing Power Potion replaced through public actions.",
-    "stale_rejections": 0,
-    "status": "passed",
-    "target_game_executed": true
-  },
-  "previous_release": {
-    "install_inputs": "/private/tmp/sts-bridge-og6_b103/previous-install-inputs",
-    "live": {
-      "accepted": 1,
-      "actions": [
-        "choose_ancient_relic"
-      ],
-      "attempted": 1,
-      "case": "lost_coffer_full_reward_classification",
-      "cleanup": {
-        "base_file_count": 429,
-        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-        "game_process_running": false,
-        "generated_files_removed": 4,
-        "normal_quit": true,
-        "overlay_count": 0,
-        "port_accepting": false,
-        "quarantined_state_sha256": "1757d938582b2bb979da4527d32dd6b0f6ce52ee0bd44694b059a3c7c8c8dba7",
-        "status": "passed",
-        "verified_by_utc": "2026-09-25 16:26:04 UTC"
-      },
-      "code": "read_native_failed",
-      "decisions": 1,
-      "diagnosis": "Production GenericEventTerminalClassifier omits full_rewards descriptor and GET/POST branches. Invalid classification precedes diagnostic attachment, producing the coarse read_native_failed code.",
+      "decisions": 6,
       "installation": {
         "phase": "installed",
-        "state_sha256": "78efff693b3b5cbd42aa7cf48f07d055467cd317643680030624dbf683f05c04",
+        "state_sha256": "2d1ba162ac4e9a7c3e8f73f4f4b0943cfb3ce97d003fbe8c94bee23a4135c157",
         "status": "passed"
       },
       "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md",
-      "observed": "Neow parent projection passed. Lost Coffer appeared in the relic bar; native Loot displayed Flex Potion and Add a card. No reward action ran.",
-      "pending": true,
-      "reads": 35,
-      "reconciled": 0,
+      "limit": "One controlled Lost Coffer path; not all reward callers, alternatives or compound pickups.",
+      "observed": "Actionable map and Lost Coffer relic; deck seven to eight, HP 88/88 and gold 466 unchanged. All native effects/tasks and parent reconciled.",
+      "outcome": {
+        "kind": "truncated",
+        "reason": "external_stop"
+      },
+      "pending": false,
+      "reads": 42,
+      "reconciled": 6,
       "recorded_live_corpus": false,
-      "setup": "Manual Profile 3 launch; Continue restored Neow at 88/88 HP, gold 466, deck seven and three potions. Native ancient NEOW LOST_COFFER visibly forced the target; no new act reset needed.",
+      "setup": "Manual Profile 3 Continue restored Neow; native ancient NEOW LOST_COFFER forced target. No new act reset. Console closed before test. Existing Power Potion replaced through public actions.",
       "stale_rejections": 0,
-      "status": "failed",
-      "target_game_executed": true,
-      "uncertain_mutation_retried": false
+      "status": "passed",
+      "target_game_executed": true
     },
-    "manifest_sha256": "bc0767b1035808cf89020126cc727191526bf208d88d81e8c32b9b1f03b8a662",
-    "record_copy": "/private/tmp/sts-bridge-og6_b103/previous-release-record",
-    "record_git_commit": "ca440d3",
-    "source_commit": "d9eda0d499ec1c6807abb8b3a7fadb575239cb4c"
+    "manifest_sha256": "2d9a256032206ea0117c6caef38fad54a7180a2b635f7821d2982660fcff9c23",
+    "record_copy": "/private/tmp/sts-bridge-fqtsg2hk/previous-release-record",
+    "record_git_commit": "43241c9",
+    "source_commit": "b55c51d0ae8c22bc2f7654593f625aae05f5bf7b"
+  },
+  "prior_reviewed_implementation": {
+    "commits": [
+      "f86ff62",
+      "55414ad",
+      "b7b0d3e",
+      "42215b5",
+      "eb42027",
+      "95131c8",
+      "536647d"
+    ],
+    "limit": "Source and native-shaped fixtures do not establish live rendering, localization or full gameplay acceptance.",
+    "projection_review": {
+      "finding": "Nested Sacrifice was silently filtered. The final change retains and dispatches that native alternative using the existing pickup chain.",
+      "other_scope": "No additional blocker in projection, action bindings, factory admission, receipt lineage, budgets or pinned Neow pickup census.",
+      "seconds": 375,
+      "status": "corrected_by_final_review",
+      "utc": [
+        "2026-09-25 20:12:00 UTC",
+        "2026-09-25 20:18:15 UTC"
+      ]
+    },
+    "remaining_pickup_review": {
+      "scope": "Large Capsule certified-child handoff and actual additions; Phial Holster exact procurement results; Leafy Poultice transform and scoped native HP loss.",
+      "seconds": 277,
+      "status": "clear",
+      "utc": [
+        "2026-09-25 20:03:53 UTC",
+        "2026-09-25 20:08:30 UTC"
+      ]
+    },
+    "scope": "Retained ancestor overlays and completion certificates; actual pickup task trees; nested reward sets; actual card additions and callbacks; offers/bundles; automatic Neow effects; retained removal, upgrade and transform choices."
+  },
+  "publication": {
+    "artifact_root": "/private/tmp/sts-unified-bridge-release",
+    "dll_input": "/private/tmp/sts-bridge-fqtsg2hk/package/Sts2AgentBridgeUnified.dll",
+    "release_sources_verified": true,
+    "status": "passed"
   },
   "python_integration": {
     "previous_broad_run": {
@@ -630,71 +639,44 @@
         "test": "tests/maintenance/test_release_support.py"
       }
     ],
-    "reason": "This correction changes the C# event-response classifier and wire fixtures. All twelve bound game.agent/shared Python sources match the preceding release. The gate reran bridge client/integration checks; no new broad Python run is claimed.",
-    "record": "Original broad run and focused corrections retained in Git 887c1da; preceding complete record in Git ca440d3 and /private/tmp/sts-bridge-og6_b103/previous-release-record/validation.json",
+    "reason": "Compound reward changes are in the C# native owners, wire boundary and fixtures. All twelve bound game.agent/shared Python sources match the preceding release. The gate reran bridge client/integration checks; no new broad Python run is claimed.",
+    "record": "Original broad run and focused corrections retained in Git 887c1da; preceding complete release record in Git 43241c9 and /private/tmp/sts-bridge-fqtsg2hk/previous-release-record/validation.json",
     "status": "unaffected_evidence_retained"
-  },
-  "regression": {
-    "after_fix": {
-      "checks": [
-        "event wire",
-        "production router"
-      ],
-      "root": "/private/tmp/sts-bridge-zoc9m0pm",
-      "seconds": 14.776,
-      "status": "passed"
-    },
-    "before_fix": {
-      "assertion": "Actual full-reward wire GET classifies Invalid at the production boundary.",
-      "root": "/private/tmp/sts-bridge-q9nur8pu",
-      "status": "failed_as_expected"
-    },
-    "cases": "Actual wire bytes through production classifier: all full-reward action families, waiting and resolved child states, subsequent parent reconciliation, terminal failed receipts, malformed descriptor/version/nonce/phase/actions/history and no unopened card exposure.",
-    "limit": "Wire and classifier execute together with an inert event-session fixture. Native integration uses inert game objects; the separately recorded live Lost Coffer path passed.",
-    "native_integration": {
-      "check": "events:full_rewards_native",
-      "root": "/private/tmp/sts-bridge-pm4rh4ef",
-      "seconds": 5.911,
-      "status": "passed"
-    }
   },
   "release_check_counts": {
     "campaign_native_checks": 252,
     "client_tests": 168,
-    "event_wire_checks": 211,
-    "native_event_checks": 13986,
+    "event_wire_checks": 229,
+    "native_event_checks": 16750,
     "potion_native_checks": 179,
     "rest_checks": 656,
     "router_checks": 1639
   },
-  "release_manifest_sha256": "2d9a256032206ea0117c6caef38fad54a7180a2b635f7821d2982660fcff9c23",
-  "remaining_gap_source_review": {
-    "reviewer": "semantic_review",
-    "scope": "Concrete Neow nested reward/selector callers, existing child completion versus outer callback, ancestor stack identity and synchronous last-reward-to-curse ordering. No blocker found in ordinary Lost Coffer path; guard remains. Not acceptance of a compound implementation.",
-    "seconds": 279,
-    "status": "source_review_only",
-    "utc": [
-      "2026-09-25 14:37:56 UTC",
-      "2026-09-25 14:42:35 UTC"
-    ]
-  },
+  "release_manifest_sha256": "18169693a3ea87ca93c5513024e3e7dab9f62d2e1a0f2cc8a9fccf63c5394660",
   "remaining_limits": [
-    "Neows Bones compound mandatory relic pickups followed by curses: actionable full-producer parent rejected before input.",
-    "Arbitrary nested relic pickup callbacks and multiple independent selector children remain outside the certified effect families.",
+    "Arbitrary nested relic pickup callbacks and unrelated selector chains remain outside the named pinned effect families.",
     "Existing per-controller bounds and pinned single-player native surface restrictions remain.",
-    "New native action paths and the full-producer ending require representative live acceptance.",
+    "Compound Neow, remaining shop/rest/pickup paths, empty chests and the full-producer ending require representative live acceptance.",
     "No claim of complete native/headless projection equivalence, all-branch content coverage or normal-HP policy strength."
   ],
   "semantic_review": {
+    "focused_validation": {
+      "groups": 4,
+      "root": "/private/tmp/sts-bridge-z4ymx1op",
+      "scope": "Full event/compound owners and standalone reward alternatives; nested no-grant/passive/gold/upgrade/capacity, delayed tasks, malformed/faulted callbacks, existing Small Capsule child, final curse, complete legal options and observer cleanup.",
+      "seconds": 49.605,
+      "status": "passed"
+    },
+    "limit": "Independent source and diff review; no additional tests or live execution by reviewer.",
     "reviewer": "semantic_review",
-    "scope": "Closed descriptor and action grammar, phase compatibility, parent ownership, terminal failures, public-data boundary and unchanged legacy families.",
-    "seconds": 29,
+    "scope": "Final connection: preserve nested Sacrifice, exact callback/continuation ownership, child task and effect certificates, capacity, reconciliation and sticky cleanup; legacy alternatives retain their prior path. Prior projection review found no other blocker.",
+    "seconds": 137,
     "status": "clear",
     "utc": [
-      "2026-09-25 16:35:09 UTC",
-      "2026-09-25 16:35:38 UTC"
+      "2026-09-25 20:24:15 UTC",
+      "2026-09-25 20:26:32 UTC"
     ]
   },
-  "source_commit": "b55c51d0ae8c22bc2f7654593f625aae05f5bf7b",
+  "source_commit": "7bd3e09de0e262b3cb75c8854bb0456ad2fbb011",
   "user_data_access": "No profile/save/history/Cloud filesystem access. No public live trajectory corpus collected."
 }

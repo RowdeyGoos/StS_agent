@@ -198,7 +198,7 @@ To place accepted artifacts in the fixed install-input directory:
 ```bash
 .venv/bin/python -B bridge/Sts2AgentBridge/apps/bridge/package/publish.py \
   --release-manifest /ABS/bridge-release.json --release-sha256 <accepted-hash> \
-  --dll /ABS/release-output/package/Sts2AgentBridgeUnified.dll
+  --dll /ABS/package/Sts2AgentBridgeUnified.dll
 ```
 
 This verifies current release sources and package identity, then creates
