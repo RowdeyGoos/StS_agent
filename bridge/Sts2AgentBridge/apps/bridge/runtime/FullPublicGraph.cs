@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using System.Text.RegularExpressions;
 
 namespace Sts2AgentBridge.Unified;
 
@@ -11,7 +10,14 @@ namespace Sts2AgentBridge.Unified;
 // Native objects and command tokens never pass through this serializer.
 internal static class FullPublicGraph
 {
-    private static readonly Regex Reference = new("^(card|relic|potion|enemy|power|orb|reward|node|option|offer|cell):[0-9]+$", RegexOptions.CultureInvariant);
+    private static bool IsReference(string value)
+    {
+        int colon = value.IndexOf(':');
+        if (colon < 1 || colon == value.Length - 1 || value[..colon] is not
+            ("card" or "relic" or "potion" or "enemy" or "power" or "orb" or "reward" or "node" or "option" or "offer" or "cell")) return false;
+        for (int i = colon + 1; i < value.Length; i++) if (value[i] is < '0' or > '9') return false;
+        return true;
+    }
     private static readonly HashSet<string> Actions = new(("play_card end_turn select_card deselect_card confirm_selection cancel_selection " +
         "choose_map_node claim_gold choose_reward_card skip_reward claim_potion claim_relic leave_rewards rest smith hatch choose_upgrade leave_rest " +
         "use_potion discard_potion buy_shop_item begin_shop_removal choose_shop_removal leave_shop open_chest claim_treasure_relic leave_treasure " +
@@ -33,7 +39,7 @@ internal static class FullPublicGraph
             Require(depth <= 24 && ++nodes <= 32768);
             Shape(node, "kind", "definition_id", "ref", "fields", "links", "children");
             Require(String(node["kind"]).Length > 0 && String(node["definition_id"]).Length > 0);
-            if (node["ref"] is {} reference) { string id = String(reference); Require(Reference.IsMatch(id) && definitions.Add(id)); }
+            if (node["ref"] is {} reference) { string id = String(reference); Require(IsReference(id) && definitions.Add(id)); }
             var keys = new HashSet<string>(StringComparer.Ordinal);
             foreach (var row in node["fields"]!.AsArray())
             {
@@ -43,7 +49,7 @@ internal static class FullPublicGraph
                 Require(scalar is JsonValue);
                 var value = (JsonValue)scalar;
                 bool text = value.TryGetValue<string>(out var word);
-                Require(text ? word!.Length <= 8192 && !Reference.IsMatch(word) : value.TryGetValue<int>(out _) || value.TryGetValue<bool>(out _));
+                Require(text ? word!.Length <= 8192 && !IsReference(word) : value.TryGetValue<int>(out _) || value.TryGetValue<bool>(out _));
             }
             keys.Clear();
             foreach (var row in node["links"]!.AsArray())
@@ -51,7 +57,7 @@ internal static class FullPublicGraph
                 var link = row!.AsObject(); Shape(link, "key", "targets");
                 string key = String(link["key"]); Require(key.Length > 0 && keys.Add(key));
                 string[] targets = link["targets"]!.AsArray().Select(String).ToArray();
-                Require(targets.All(Reference.IsMatch)); links.Add((key, targets));
+                Require(targets.All(IsReference)); links.Add((key, targets));
             }
             foreach (var child in node["children"]!.AsArray()) Visit(child!.AsObject(), depth + 1);
         }

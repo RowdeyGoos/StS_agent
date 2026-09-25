@@ -31,9 +31,9 @@ internal sealed class MultiplePurchaseFixture : IShopV1NativeAdapter
     internal readonly List<ItemV1PotionSlotBinding> Potions=new();
     internal readonly List<ShopV1RelicBinding> Relics=new();
     internal int Gold=100,Purchases,Disposals,Closes,Leaves,Discards;
-    internal object? RoomOverride, InventoryOverride;
-    internal Action? OnOpened, OnClosed;
-    internal bool CanOpen;
+    internal object? RoomOverride = null, InventoryOverride = null;
+    internal Action? OnOpened = null, OnClosed = null;
+    internal bool CanOpen = false;
     internal int Opens;
     internal int FailAt=-1,BadCleanupAt=-1,BadDebitAt=-1,PriceAfterFirst=-1;
     internal bool Delay=false,Closed,MapOpen,Restock=false,AllowDiscards=false;

@@ -73,6 +73,12 @@ internal static class FullAgentSessionTests
         session.Handle(new(Capability.Core, FullAgentRoutes.Action, true, 0, 0, observation["decision_id"]!.GetValue<string>(), "action:0"));
     internal static void Run(Action<bool, string> check)
     {
+        foreach (string reference in new[] { "card:0", "option:2047", "cell:120", "private:0", "card:", "card:-1", "card:1\n", "card:1:2", "card:１" })
+        {
+            var graph = Decision(Node("run", children: new[] { Node("card", reference: reference) }), Node("combat"), new[] { Candidate(0, "end_turn") });
+            bool valid = true; try { Validate(graph); } catch (AgentUnsupported) { valid = false; }
+            check(valid == (reference is "card:0" or "option:2047" or "cell:120"), "closed public reference boundary " + reference);
+        }
         foreach (bool identity in new[] { false, true })
         {
             var backend = new Backend(); using var session = new FullAgentSession(backend, "fixture");
