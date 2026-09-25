@@ -235,23 +235,20 @@ supplies dated source candidates rather than a current implementation checklist.
 ## Release and latest evidence
 
 The current [release manifest](../bridge/Sts2AgentBridge/releases/current/bridge.json)
-is **`7be74f7e95ad55e39e3b333eacc17547d7b888edf7cfef13d6ac1a3821bde5ce`**.
-It binds 439 source/test inputs across 51 projects, source `1989124`, feature
-`49a6de1`. The gate passed **83 groups in 311.142 seconds**, including 164 client
-tests, 1,624 router checks, 13,372 native checks and 656 rest checks. Independent
-semantic review is clear. The diagnostic candidate stopped before any action with `read_context_failed`
-on the saved rest site (0/0/0, one read). Normal quit and complete owned cleanup
-left all 429 base files unchanged with zero overlays by 10:09:24 UTC.
+is **`812c148b2cf224a3fd5a0d77c35be4f5e9cbbe07e1373123330e3e3c65a10364`**.
+It binds 439 source/test inputs across 51 projects, source `53e2255`, feature
+`49a6de1`. The gate passed **83 groups in 317.947 seconds**, including 164 client
+tests, 1,628 router checks, 13,372 native checks and 656 rest checks. Independent
+semantic review is clear. The corrected package is installed and verified against
+all 429 unchanged base files, awaiting manual Profile 3 launch.
 
-The first live v2 read on the preceding `3e5a097e…` package stopped at the saved
-rest site before any policy action (0/0/0, one read). The host retained only
-`native_failure`. The current correction preserves closed read-stage categories
-and validated counts. A source inspection and regression reproduced the cause:
-the shared native reader cleared a response buffer while its JSON document still
-borrowed that memory. A correction is undergoing release preparation; its native
-shared-policy behavior still needs live validation.
-The failed attempt ended with normal quit and complete owned cleanup: four files
-removed, all 429 base files unchanged and zero overlays, recorded in Git `39e2267`.
+The preceding diagnostic package stopped at the saved rest site with
+`read_context_failed` before any policy action (0/0/0, one read). A regression
+reproduced the cause: the shared reader cleared a response buffer while its JSON
+document still borrowed that memory. The current correction gives the document
+its own storage before clearing the source. The diagnostic run ended with normal
+quit and complete owned cleanup: four files removed, all 429 base files unchanged,
+zero overlays by 10:09:24 UTC, recorded in Git `53e2255`.
 **Native v2 live acceptance remains outstanding.** The
 [release record](../bridge/Sts2AgentBridge/releases/current/README.md) retains exact
 source/package, review, validation and installation identities.
