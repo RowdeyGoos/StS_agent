@@ -1,4 +1,38 @@
 {
+  "additional_live_tests": [
+    {
+      "actions": [],
+      "case": "shop_passive_after_debug_room_switch",
+      "cleanup": {
+        "base_file_count": 429,
+        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+        "game_process_running": false,
+        "generated_files_removed": 4,
+        "normal_quit": true,
+        "overlay_count": 0,
+        "port_accepting": false,
+        "quarantined_state_sha256": "8029c09b85a11f51009dd986f280ec1211e40b3623b02c5a2e067204e2acc858",
+        "status": "passed",
+        "verified_by_utc": "2026-09-25 16:58:22 UTC"
+      },
+      "code": "time_limit",
+      "cumulative_counts": {
+        "accepted": 6,
+        "attempted": 6,
+        "reconciled": 6
+      },
+      "decisions": 0,
+      "diagnosis": "Existing full producer still tracked map after native room Shop debug switch. No shop candidate or mutation. No claim of shop purchase acceptance or executor failure.",
+      "pending": false,
+      "reads": 900,
+      "status": "setup_only",
+      "test_delta": {
+        "accepted": 0,
+        "attempted": 0,
+        "reconciled": 0
+      }
+    }
+  ],
   "change": "Recognize full_rewards_v1 at the production event-response boundary, with exact descriptor, receipt, phase/action and history validation. Keep waiting/resolved reward children under the parent event owner.",
   "diagnostic_commit": "9b8008840e51c96c550015d8894800c52698b73d",
   "elapsed_times": {
@@ -8,6 +42,9 @@
       5.911
     ],
     "installation_verified_by_utc": "2026-09-25 16:41:55 UTC",
+    "live_cleanup_verified_by_utc": "2026-09-25 16:58:22 UTC",
+    "live_work_resumed_utc": "2026-09-25 16:50:24 UTC",
+    "lost_coffer_resolved_by_utc": "2026-09-25 16:52:09 UTC",
     "note": "Implementation and inspection overlapped. Separate implementation, release preparation and user-wait durations were not measured.",
     "previous_live_cleanup_verified_by_utc": "2026-09-25 16:26:04 UTC",
     "release_gate_seconds": 313.361,
@@ -466,9 +503,9 @@
     ]
   },
   "installation": {
-    "phase": "installed",
-    "state_sha256": "2d1ba162ac4e9a7c3e8f73f4f4b0943cfb3ce97d003fbe8c94bee23a4135c157",
-    "status": "passed"
+    "phase": "absent",
+    "status": "passed",
+    "verified_by_utc": "2026-09-25 16:58:22 UTC"
   },
   "installation_verification": {
     "base_file_count": 429,
@@ -478,10 +515,50 @@
     "verified_by_utc": "2026-09-25 16:41:55 UTC"
   },
   "live": {
+    "accepted": 6,
+    "actions": [
+      "choose_ancient_relic",
+      "discard_potion",
+      "claim_potion",
+      "open_reward",
+      "choose_reward_card",
+      "leave_event"
+    ],
+    "attempted": 6,
+    "case": "lost_coffer_full_producer_rewards",
+    "cleanup": {
+      "base_file_count": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "game_process_running": false,
+      "generated_files_removed": 4,
+      "normal_quit": true,
+      "overlay_count": 0,
+      "port_accepting": false,
+      "quarantined_state_sha256": "8029c09b85a11f51009dd986f280ec1211e40b3623b02c5a2e067204e2acc858",
+      "status": "passed",
+      "verified_by_utc": "2026-09-25 16:58:22 UTC"
+    },
+    "decisions": 6,
+    "installation": {
+      "phase": "installed",
+      "state_sha256": "2d1ba162ac4e9a7c3e8f73f4f4b0943cfb3ce97d003fbe8c94bee23a4135c157",
+      "status": "passed"
+    },
+    "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md",
+    "limit": "One controlled Lost Coffer path; not all reward callers, alternatives or compound pickups.",
+    "observed": "Actionable map and Lost Coffer relic; deck seven to eight, HP 88/88 and gold 466 unchanged. All native effects/tasks and parent reconciled.",
+    "outcome": {
+      "kind": "truncated",
+      "reason": "external_stop"
+    },
+    "pending": false,
+    "reads": 42,
+    "reconciled": 6,
     "recorded_live_corpus": false,
-    "scope": "Continue the saved Profile 3 campaign, inspect the checkpoint and prepare Lost Coffer. Verify the reward child and parent event reconciliation through the full producer.",
-    "status": "awaiting_manual_launch",
-    "target_game_executed": false
+    "setup": "Manual Profile 3 Continue restored Neow; native ancient NEOW LOST_COFFER forced target. No new act reset. Console closed before test. Existing Power Potion replaced through public actions.",
+    "stale_rejections": 0,
+    "status": "passed",
+    "target_game_executed": true
   },
   "previous_release": {
     "install_inputs": "/private/tmp/sts-bridge-og6_b103/previous-install-inputs",
@@ -573,7 +650,7 @@
       "status": "failed_as_expected"
     },
     "cases": "Actual wire bytes through production classifier: all full-reward action families, waiting and resolved child states, subsequent parent reconciliation, terminal failed receipts, malformed descriptor/version/nonce/phase/actions/history and no unopened card exposure.",
-    "limit": "Wire and classifier execute together with an inert event-session fixture. Native integration also uses inert game objects; live reward acceptance remains open.",
+    "limit": "Wire and classifier execute together with an inert event-session fixture. Native integration uses inert game objects; the separately recorded live Lost Coffer path passed.",
     "native_integration": {
       "check": "events:full_rewards_native",
       "root": "/private/tmp/sts-bridge-pm4rh4ef",

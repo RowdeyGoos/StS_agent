@@ -39,11 +39,17 @@ zero overlays and all 429 base files unchanged. Original evidence remains in Git
 `ca440d3`, the [live ledger](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md)
 and this release's `previous-release-record` directory.
 
-The corrected package is installed and verified by **16:41:55 UTC**, with two
-exact overlays and all 429 base files unchanged. It awaits manual Profile 3 launch
-for the saved-campaign Lost Coffer retest. Inspect the checkpoint before setup.
-No fresh campaign is required. No profile/save/history/Cloud filesystem content
-or live trajectory corpus was accessed.
+The saved-campaign Lost Coffer retest passed: **6 attempted / 6 accepted /
+6 reconciled**, 42 reads, no stale rejection or pending action. Potion replacement,
+card choice and event/map return completed; HP/gold remained 88/88 and 466, with
+the deck growing seven to eight. A subsequent debug shop switch timed out with
+900 reads and no new agent action because the existing full session still tracked
+the map. It does not establish shop acceptance.
+
+Normal quit and exact cleanup finished by **16:58:22 UTC**: four generated files
+removed, zero overlays and all 429 base files unchanged. The game is stopped and
+the owned bridge installation is absent. No profile/save/history/Cloud filesystem
+content or live trajectory corpus was accessed.
 
 The [native candidate boundary](../../../../docs/AGENT_CONTRACT.md#native-full-run-v2-candidate)
 remains explicit. Neow's Bones needs a compound relic-pickup/curse continuation.

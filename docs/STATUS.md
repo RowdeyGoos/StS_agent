@@ -140,6 +140,7 @@ extend standalone rest/shop contracts.
 | --- | --- | --- |
 | Event potion/relic rewards | Singleton or 2–8 ordered items; supported exact pickup effects | Singleton and Potion Courier three-potion collection demonstrated; other counts/relic sets offline only |
 | Mixed event rewards | 2–8 card/potion/relic entries; use advertised order, native card Skip/final dismissal | Lost Coffer choose and Skip demonstrated; other orders/counts offline only |
+| Full-producer event rewards | `full_rewards_v1`: shared visible reward actions retained under the event owner | Lost Coffer potion replacement, card choice and event/map return passed 6/6/6; other callers and alternatives retain separate evidence limits |
 | Full-inventory event/resume policies | `item_policy_v1`: skip-full, skip-all, protected original-potion replacement, stop-on-full; capacity-first collection | Courier full-belt skip/three replacements, Lost Coffer card plus potion skip/replacement, and Dummy resume skip/replacement demonstrated. Capacity-first paths need live coverage |
 | Terminal Strawberry pickup | Exact native type/key/+7 max HP/+7 HP, ready schema 7 | Saved floor-8 native retest passed: five reward actions reconciled and reached the map; max HP 2,064→2,071 |
 | Modified terminal gold | Bowler Hat final integer gain, ready schema 8 in source | Saved floor-15 retest passed: printed 20 gold yielded and reconciled 25 gold (492 → 517), then reached the map |
@@ -239,11 +240,12 @@ These are **not an implementation queue or required live-test checklist**:
 ### Implemented, but still needing representative live evidence
 
 - Full-producer empty-chest completion, automatic pickup effects, shop
-  Cauldron/Orrery and shared event reward children, plus an ending test.
+  Cauldron/Orrery and additional shared event reward callers, plus an ending test.
   Representative hand/optional offers, potion use/discard and potion-owned choices,
   chest claiming, reroll and Sacrifice passed live, including the corrected
   Whetstone-granting second Sacrifice. Shop-removal preview cancellation also
-  passed, with unchanged deck/gold and map return.
+  passed, with unchanged deck/gold and map return. Lost Coffer's full-producer
+  rewards passed potion replacement, card choice and event/map return at 6/6/6.
 - Expanded terminal schemas 9–10: the representative ten-entry screen passed live.
   The wider 32-entry bound and 65-action card-menu sequence remain fixture/socket
   evidence, without a separately identified ordinary 32-entry gameplay caller.
@@ -281,9 +283,15 @@ contract. Its regression reproduced the missing boundary before the fix and now
 checks actual wire messages, phase-specific actions and malformed inputs. Waiting
 and completed children retain their parent owner until event reconciliation;
 failed receipts still stop. These fixtures do not establish live reward acceptance.
-The corrected package is installed and verified by **16:41:55 UTC**, with two
-exact overlays and all 429 base files unchanged. It awaits manual Profile 3 launch
-for the saved-run retest.
+Lost Coffer then passed live: **6 attempted / 6 accepted / 6 reconciled**, 42 reads,
+no stale rejection or pending action. The policy selected the relic, replaced a
+potion, chose the card reward and left the event for the map. HP/gold stayed
+88/88 and 466; the deck grew from seven to eight. A subsequent debug shop switch
+produced no agent action: the existing full session still tracked the map and
+timed out after 900 reads. This is setup-only evidence, not shop acceptance.
+Normal quit and exact cleanup finished by **16:58:22 UTC**: four generated files
+removed, zero overlays and all 429 base files unchanged. The game is stopped and
+the owned bridge installation is absent.
 
 The preceding manifest `bc0767b1…`, source `d9eda0d`, passed Neow projection and
 accepted Lost Coffer. Native Loot displayed Flex Potion and Add a card, then
@@ -292,8 +300,8 @@ accepted Lost Coffer. Native Loot displayed Flex Potion and Add a card, then
 was retried. Normal quit and exact cleanup finished by **16:26:04 UTC**, with four
 generated files removed, zero overlays and all 429 base files unchanged. The result
 retains its original release identity in Git `ca440d3` and the
-[live ledger](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md). Full-producer Lost Coffer
-reward acceptance remains open.
+[live ledger](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md). Its unreconciled action
+remains separate from the corrected release's successful retest.
 
 Under the earlier manifest `1f83ded8…`, source `887c1da`, Whetstone Sacrifice
 passed **4/4/4 actions**, five reads and map return. Shop-removal preview

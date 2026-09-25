@@ -296,3 +296,43 @@ overlays remained and all 429 base files were unchanged at SHA-256
 Quarantine state was `1757d938582b2bb979da4527d32dd6b0f6ce52ee0bd44694b059a3c7c8c8dba7`.
 Separate execution and cleanup durations were not measured. No profile/save/history/
 Cloud filesystem content was accessed and no public trajectory corpus was retained.
+
+## Lost Coffer: full-producer reward completion passed
+
+Manifest `2d9a256032206ea0117c6caef38fad54a7180a2b635f7821d2982660fcff9c23`,
+source `b55c51d0ae8c22bc2f7654593f625aae05f5bf7b`, was manually launched on Profile 3
+under installed state `2d1ba162ac4e9a7c3e8f73f4f4b0943cfb3ce97d003fbe8c94bee23a4135c157`.
+Work resumed at **16:50:24 UTC**. Health passed and Continue restored Neow at HP
+88/88, gold 466, deck seven and three potions. Native `ancient NEOW LOST_COFFER`
+forced the visible option; no new act reset was needed. The console was closed
+before the bounded full-producer test.
+
+The run resolved at the map by **16:52:09 UTC**, with **6 attempted / 6 accepted /
+6 reconciled**, six decisions, 42 reads, zero stale rejections and no pending
+action. The exact semantic sequence was `choose_ancient_relic`, `discard_potion`,
+`claim_potion`, `open_reward`, `choose_reward_card`, `leave_event`. The controlled
+policy discarded the existing Power Potion to make room. Native effect and task
+checks reconciled all six actions, including the event parent after its rewards.
+The map was visibly open, Lost Coffer was in the relic bar, the deck had grown
+seven to eight, and HP/gold remained 88/88 and 466. The final truncated
+`external_stop` is the intentional stop at the map, not campaign victory.
+
+### Subsequent shop setup did not exercise a purchase
+
+After the settled map, native `room Shop` opened a shop in the same process. Its
+visible stock lacked Cauldron/Orrery and offered Nunchaku at 222 gold. Inventory
+was inspected and closed before a bounded full-producer purchase check. No
+candidate was published and no shop action ran: **`time_limit`**, zero decisions,
+900 reads and no pending action. Cumulative counters stayed **6/6/6** from Lost
+Coffer, so the shop delta is **0/0/0**. Source inspection showed the existing
+`FullNativeBackend` still tracked its map family after the external debug room
+switch. This is a setup limitation and does not establish purchase acceptance or
+a failure in the purchase executor. No mutation was retried.
+
+Normal Save and Quit/game Quit, stopped-process/closed-listener verification and
+exact owned cleanup finished by **16:58:22 UTC**. Four generated files were removed,
+zero overlays remained and all 429 base files were unchanged at SHA-256
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Quarantine state was `8029c09b85a11f51009dd986f280ec1211e40b3623b02c5a2e067204e2acc858`.
+Separate execution and cleanup durations were not measured. No profile/save/history/
+Cloud filesystem content was accessed and no public trajectory corpus was retained.
