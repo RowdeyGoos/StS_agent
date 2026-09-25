@@ -203,3 +203,38 @@ Quarantine state was `1104f79a06f360e593c5d95a6954037d9fff003432f7c24c101bcab52c
 Work resumed at 15:18:32 UTC; separate setup, execution and cleanup durations were
 not measured. No profile/save/history/Cloud filesystem content was accessed, and
 no public trajectory corpus was retained.
+
+## Lost Coffer: retained travel flag identified
+
+The diagnostic release `7b6bb85e09e5c10b07ccc2c6b016bea99c8c0a6fd3183a27e77f1fc6755106db`,
+source `af80a77`, was manually launched on Profile 3. Installed state was
+`3f601ed4551213f5453ca954379c370d7d8ae68ddac80cfd606ff2d728d7b642`.
+Health and release identity passed. Native Continue restored the checkpoint;
+`room event` cleared the reward overlay and `ancient NEOW LOST_COFFER` displayed
+the intended option. No option was chosen. Neow entry healed HP 86/88 to 88/88;
+gold stayed 466 and the deck seven.
+
+The full producer stopped with **`read_native_event_parent_travel`**, **0 attempted /
+0 accepted / 0 reconciled**, 34 reads, no decision and no pending action. This
+directly identifies the existing guard observing enabled map travel. Debug event
+entry retains that flag too; shop entry was not necessary. Neither event dialogue
+nor relic/reward input ran. The diagnostic works live, while Lost Coffer reward
+acceptance through the full producer remains open. No mutation was retried.
+
+Normal Save and Quit/game Quit, stopped-process/closed-listener verification and
+exact cleanup finished by **15:49:13 UTC**. Four generated files were removed,
+zero overlays remained and all 429 base files were unchanged at SHA-256
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Quarantine state was `172044dfa0335652903ca4ba505c110d56d8ba6e54df0b6b3bc066509c62353e`.
+Live preflight was observed at 15:46:02 UTC; separate execution and cleanup
+durations were not measured. No profile/save/history/Cloud filesystem content or
+public live trajectory corpus was accessed.
+
+The unchanged package was reinstalled and verified by **15:49:47 UTC**, with two
+exact overlays and unchanged base files. Installed state is
+`f8a6c2c5b9ff0bee71c4ee7b5a9b40c9e5ea37f5bec99fa14d366ee88f27739a`.
+The corrected setup will use native `act 1` inside the saved campaign, then force
+Lost Coffer before attaching the full agent. Pinned `ActConsoleCmd` invokes
+`RunManager.EnterAct`, which clears screens and invokes `SetActInternal`; that
+regenerates the act map and calls `SetTravelEnabled(false)`. No production guard
+or package change is needed for that setup. This preparation is not yet live evidence.

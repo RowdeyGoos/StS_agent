@@ -279,16 +279,22 @@ diagnostic correction `9b80088` and broader feature `cc9fa81`. The gate passed
 Independent semantic review found no blocker. The full-agent boundary now preserves
 closed native-event failure reasons, wiped response buffers, terminal ownership
 and separate attempted/accepted/reconciled counts. The existing ancient travel
-guard reports its own category. The package is installed and awaits manual launch
-for the saved-run Lost Coffer check; its reward path remains unaccepted. Verification
-at **15:41:32 UTC** found two exact owned overlays and all 429 base files unchanged.
+guard reports its own category. The next live Lost Coffer check identified
+`read_native_event_parent_travel`: **0/0/0**, 34 reads, no decision or pending
+action. Debug event-room entry also retains enabled travel. No option or reward
+action ran. Normal quit and exact cleanup finished by **15:49:13 UTC**, with four
+generated files removed, zero overlays and unchanged base files. The same package
+is reinstalled, verified by **15:49:47 UTC** with two exact overlays and unchanged
+base files. It awaits manual launch; next setup uses native `act 1` within the saved
+campaign to rebuild the act map and disable travel before Lost Coffer. Full-producer
+reward acceptance remains open.
 
 Under the preceding manifest `1f83ded8…`, source `887c1da`, Whetstone Sacrifice
 passed **4/4/4 actions**, five reads and map return. Shop-removal preview
 cancellation also passed **5/5/5**, seven reads, unchanged deck/gold and map return.
 Both later Lost Coffer setups stopped before policy input: **0/0/0**, 34 reads and
 `read_native_failed`. The second used an event room, so the earlier shop-travel
-explanation is insufficient. Exact cause remains unknown. Normal quit and exact
+explanation was insufficient; those coarse diagnostics left the cause unknown. Normal quit and exact
 cleanup finished by **15:23:45 UTC**: four generated files removed, zero overlays
 and all 429 base files unchanged. These results remain bound to their original
 artifact in Git `7e23b4e` and the live ledger; the diagnostic change does not turn

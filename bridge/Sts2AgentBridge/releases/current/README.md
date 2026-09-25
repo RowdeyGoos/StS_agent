@@ -33,16 +33,24 @@ establish the cause of the earlier Lost Coffer failures.
 
 The preceding manifest `1f83ded8…`, source `887c1da`, passed Whetstone Sacrifice
 (**4/4/4**) and shop-removal preview cancellation (**5/5/5**). Its two Lost Coffer
-setups both stopped before policy input (**0/0/0**, 34 reads). Exact live cause and
-full-producer reward acceptance remain open. Normal quit and exact cleanup ended
+setups both stopped before policy input (**0/0/0**, 34 reads). Their coarse
+diagnostics did not identify the failing guard; full-producer reward acceptance remains open. Normal quit and exact cleanup ended
 by **15:23:45 UTC**, with four generated files removed, zero overlays and all
 429 base files unchanged. Those live results retain their original package identity
 in Git `7e23b4e` and the [live ledger](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md).
 
-The current package is installed and awaits manual Profile 3 launch for the saved
-campaign's Lost Coffer check. Verification at **15:41:32 UTC** found two exact
-owned overlays and all 429 base files unchanged. No fresh campaign is required.
-No profile/save/history/Cloud filesystem content or live trajectory corpus was accessed.
+The current package identified the next stop as `read_native_event_parent_travel`:
+**0/0/0**, 34 reads, no decision and no pending action. The event-room setup also
+retains enabled map travel. No option or reward action ran. Normal quit and owned
+cleanup completed by **15:49:13 UTC**: four generated files removed, zero overlays
+and unchanged base files. This confirms the rejected boundary, not reward acceptance.
+
+The same validated package is reinstalled, verified at **15:49:47 UTC** with two
+exact owned overlays and all 429 base files unchanged. It awaits manual Profile 3
+launch. The next setup uses native `act 1` within the saved campaign to clear
+screens, rebuild the act map and disable travel before creating Lost Coffer.
+No new campaign is required. No profile/save/history/Cloud filesystem content or
+live trajectory corpus was accessed.
 
 The [native candidate boundary](../../../../docs/AGENT_CONTRACT.md#native-full-run-v2-candidate)
 remains explicit. Neow's Bones needs a compound relic-pickup/curse continuation;
