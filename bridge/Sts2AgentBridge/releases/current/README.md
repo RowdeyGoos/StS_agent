@@ -39,10 +39,13 @@ quit and cleanup ended by **15:56:14 UTC**: four generated files removed, zero
 overlays and all 429 base files unchanged. Those results remain bound to their
 original package in Git `9f221b6` and the [live ledger](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md).
 
-The corrected package is installed and verified by **16:18:32 UTC**, with two
-exact owned overlays and all 429 base files unchanged. It awaits manual Profile 3
-launch for the saved-campaign Lost Coffer retest. Inspect the continued checkpoint before setup;
-the preceding native act reset saved a new checkpoint. No fresh campaign is required.
+The saved-campaign retest passed Neow projection and accepted Lost Coffer. Native
+Loot displayed Flex Potion and Add a card, then `read_native_failed` stopped the
+test at **1 attempted / 1 accepted / 0 reconciled**, 35 reads and a pending parent
+action. The production classifier omits the full-reward family. No reward action
+ran or uncertain mutation was retried. Normal quit and exact cleanup finished by
+**16:26:04 UTC**: four generated files removed, zero overlays and all 429 base files
+unchanged. The game is stopped and the owned installation is absent.
 No profile/save/history/Cloud filesystem content or live trajectory corpus was accessed.
 
 The [native candidate boundary](../../../../docs/AGENT_CONTRACT.md#native-full-run-v2-candidate)

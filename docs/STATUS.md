@@ -282,9 +282,13 @@ ancient table has no Neow initial/done description; dialogue is displayed separa
 The actual parent-projection regression failed before the correction and passes
 with missing/existing/null descriptions, exact commands and zero-input accounting.
 Existing formatting errors and unsupported compound pickups still stop before input.
-The corrected package is installed, verified by **16:18:32 UTC** with two exact
-overlays and all 429 base files unchanged. It awaits manual Profile 3 launch for
-the saved-run retest.
+The saved-run retest passed Neow projection and accepted Lost Coffer; native Loot
+showed Flex Potion and Add a card. The next read stopped at `read_native_failed`:
+**1 attempted / 1 accepted / 0 reconciled**, 35 reads and one pending parent action.
+The production event-response classifier omitted `full_rewards_v1`; no reward
+action ran or uncertain mutation was retried. Normal quit and exact cleanup finished
+by **16:26:04 UTC**, with four generated files removed, zero overlays and all 429
+base files unchanged. The game is stopped and the owned installation is absent.
 
 The preceding manifest `7b6bb85e…`, source `af80a77`, identified the ancient travel
 guard. The next test used native `act 1` in the saved campaign, passed native

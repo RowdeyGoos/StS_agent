@@ -264,3 +264,35 @@ overlays remained and all 429 base files were unchanged at SHA-256
 Quarantine state was `9ecc39d58f34b839df352f858c11ea0f67b34dbefa5bb303cdb2140b3fa6b695`.
 Separate execution and cleanup durations were not measured. No profile/save/history/
 Cloud filesystem content was accessed and no public trajectory corpus was retained.
+
+## Lost Coffer: relic accepted; full-reward classification stopped
+
+Manifest `bc0767b1035808cf89020126cc727191526bf208d88d81e8c32b9b1f03b8a662`,
+source `d9eda0d499ec1c6807abb8b3a7fadb575239cb4c`, was manually launched on Profile 3
+under installed state `78efff693b3b5cbd42aa7cf48f07d055467cd317643680030624dbf683f05c04`.
+Work resumed at **16:21:44 UTC**. Health passed. Continue restored Neow with HP
+88/88, gold 466, deck seven and three potions; no new act reset was needed.
+Native `ancient NEOW LOST_COFFER` visibly forced the intended relic option. The
+console was closed before attaching the full producer.
+
+The corrected description projection passed. The exact public `choose_ancient_relic`
+action was accepted; Lost Coffer appeared in the relic bar and native Loot showed
+Flex Potion and Add a card. The next read stopped with **`read_native_failed`**:
+**1 attempted / 1 accepted / 0 reconciled**, one decision, 35 reads, zero stale
+rejections and a pending parent action. No reward action ran and no uncertain
+mutation was retried. This demonstrates parent projection and native relic input,
+not reward completion or parent reconciliation.
+
+Source inspection found that `GenericEventTerminalClassifier` omits the
+`full_rewards` descriptor and its GET/POST payload branches. The wire service
+already emits `full_rewards_v1`; the classifier rejects it before bounded event
+diagnostics can be attached. Independent source review confirmed this integration
+gap in **76 seconds**, from 16:25:42 to 16:26:58 UTC.
+
+Normal Save and Quit/game Quit and exact owned cleanup finished by **16:26:04 UTC**.
+The game process and listener were stopped, four generated files removed, zero
+overlays remained and all 429 base files were unchanged at SHA-256
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Quarantine state was `1757d938582b2bb979da4527d32dd6b0f6ce52ee0bd44694b059a3c7c8c8dba7`.
+Separate execution and cleanup durations were not measured. No profile/save/history/
+Cloud filesystem content was accessed and no public trajectory corpus was retained.

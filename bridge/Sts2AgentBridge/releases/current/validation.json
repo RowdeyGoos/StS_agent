@@ -2,12 +2,15 @@
   "change": "Match native event description handling: skip absent localization entries before formatting. Exercise the actual first-ready event-parent projection with the real event session and wire service.",
   "diagnostic_commit": "9b8008840e51c96c550015d8894800c52698b73d",
   "elapsed_times": {
+    "classifier_diagnosis_review_seconds": 76,
     "focused_validation_seconds": [
       2.913,
       2.976
     ],
     "installation_verified_by_utc": "2026-09-25 16:18:32 UTC",
     "investigation_resumed_utc": "2026-09-25 16:02:11 UTC",
+    "live_cleanup_verified_by_utc": "2026-09-25 16:26:04 UTC",
+    "live_work_resumed_utc": "2026-09-25 16:21:44 UTC",
     "note": "Implementation, inspection and review overlapped. Separate implementation, release preparation and user-wait durations were not measured.",
     "previous_live_cleanup_verified_by_utc": "2026-09-25 15:56:14 UTC",
     "release_gate_seconds": 309.499,
@@ -470,9 +473,9 @@
     ]
   },
   "installation": {
-    "phase": "installed",
-    "state_sha256": "78efff693b3b5cbd42aa7cf48f07d055467cd317643680030624dbf683f05c04",
-    "status": "passed"
+    "phase": "absent",
+    "status": "passed",
+    "verified_by_utc": "2026-09-25 16:26:04 UTC"
   },
   "installation_verification": {
     "base_file_count": 429,
@@ -482,16 +485,49 @@
     "verified_by_utc": "2026-09-25 16:18:32 UTC"
   },
   "live": {
+    "accepted": 1,
+    "actions": [
+      "choose_ancient_relic"
+    ],
+    "attempted": 1,
+    "case": "lost_coffer_full_reward_classification",
+    "cleanup": {
+      "base_file_count": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "game_process_running": false,
+      "generated_files_removed": 4,
+      "normal_quit": true,
+      "overlay_count": 0,
+      "port_accepting": false,
+      "quarantined_state_sha256": "1757d938582b2bb979da4527d32dd6b0f6ce52ee0bd44694b059a3c7c8c8dba7",
+      "status": "passed",
+      "verified_by_utc": "2026-09-25 16:26:04 UTC"
+    },
+    "code": "read_native_failed",
+    "decisions": 1,
+    "diagnosis": "Production GenericEventTerminalClassifier omits full_rewards descriptor and GET/POST branches. Invalid classification precedes diagnostic attachment, producing the coarse read_native_failed code.",
+    "installation": {
+      "phase": "installed",
+      "state_sha256": "78efff693b3b5cbd42aa7cf48f07d055467cd317643680030624dbf683f05c04",
+      "status": "passed"
+    },
+    "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md",
+    "observed": "Neow parent projection passed. Lost Coffer appeared in the relic bar; native Loot displayed Flex Potion and Add a card. No reward action ran.",
+    "pending": true,
+    "reads": 35,
+    "reconciled": 0,
     "recorded_live_corpus": false,
-    "scope": "Continue the saved Profile 3 campaign, inspect its new checkpoint and establish Lost Coffer before attaching the full agent. Bounded dialogue, relic choice, card/potion rewards and event return.",
-    "status": "awaiting_manual_launch",
-    "target_game_executed": false
+    "setup": "Manual Profile 3 launch; Continue restored Neow at 88/88 HP, gold 466, deck seven and three potions. Native ancient NEOW LOST_COFFER visibly forced the target; no new act reset needed.",
+    "stale_rejections": 0,
+    "status": "failed",
+    "target_game_executed": true,
+    "uncertain_mutation_retried": false
   },
   "native_source_confirmation": {
     "access": "Read-only pinned base-game PCK index and this localization entry; no retained asset copy or user data.",
     "asset": "localization/eng/ancients.json",
     "bytes": 34143,
-    "conclusion": "Confirms the missing native Neow description premise and reproduces the projection defect. Live retest still required.",
+    "conclusion": "Missing Neow descriptions confirmed in pinned native localization. The live parent projection now passes; the next full-reward classification fails separately.",
     "description_rule": "NEventRoom.SetDescription checks Exists() before formatting; ancient dialogue is populated separately. Title is formatted normally.",
     "keys_present": {
       "NEOW.pages.DONE.description": false,
