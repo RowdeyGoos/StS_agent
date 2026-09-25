@@ -159,6 +159,7 @@ internal static partial class Program
     private static void CompoundRewardCases()
     {
         CompoundOfferCases();
+        CompoundAutomaticCases();
         foreach(string tail in new[]{"curse","scalar","delayed","chosen","fault","missing","wrong_type","two"}) {
             using var f=new CompoundRewardFixture(tail:tail);var c=f.Start();Check(c.Child is not null,"compound tail admission "+tail+" "+System.Text.Json.JsonSerializer.Serialize(c));
             f.Act(c,"collect:0");f.Act(c,"collect:0");f.Act(c,"collect:1");

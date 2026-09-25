@@ -166,6 +166,8 @@ namespace MegaCrit.Sts2.Core.Models
         public bool IsRemovable {get;set;}=true;
         public int Type {get;set;}
         public bool IsTransformable {get;set;}=true;
+        public string Rarity {get;set;}="Common";
+        public string[] Tags {get;set;}=Array.Empty<string>();
         public ModelId Id { get; } = new();
         private int _level; public int CurrentUpgradeLevel { get=>FixtureTrace.Read(this,"level",_level);set=>_level=value; }
         public bool IsUpgradable { get; set; }

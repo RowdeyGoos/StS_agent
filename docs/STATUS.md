@@ -269,6 +269,16 @@ integration passed eight groups in 37.997 s; the production build passed two in
 1.835 s. Independent semantic review found no blocker. This remains unshipped:
 deck selectors and remaining automatic Neow pickups are not connected yet.
 
+The compound owner also handles Golden Pearl, Nutritious Oyster, Silken Tress,
+Arcane Scroll, Neow's Torment, Cursed Pearl and Neow's Talisman. Their retained
+native pickup tasks own scalar changes, actual generated additions and exact
+basic-card upgrades. Arcane Scroll accepts native Egg upgrades of generated
+options before insertion while rejecting changes to existing deck cards.
+Focused cases passed three groups in 21.781 s; native/direct-input fixtures
+passed five groups in 155.564 s and compilation two groups in 2.222 s.
+Independent semantic review cleared the Egg correction. These named pickups are
+still unshipped, with production Neow's Bones admission guarded.
+
 ### Contract limits without a confirmed missing gameplay caller
 
 These are **not an implementation queue or required live-test checklist**:

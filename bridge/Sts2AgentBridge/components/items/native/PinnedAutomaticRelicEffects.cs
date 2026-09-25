@@ -48,6 +48,18 @@ internal sealed partial class PinnedAutomaticRelicEffects : IDisposable
     private static readonly AsyncLocal<DragonFruit?> GoldHpSource=new();
     private readonly Player _player;
     private readonly RelicModel? _relic;
+    private readonly CompoundPolicy? _compound;
+    // Only the compound pickup owner supplies this policy, under the exact
+    // retained AfterObtained invocation. Legacy Supports remains unchanged.
+    internal sealed class CompoundPolicy
+    {
+        internal Func<bool> Authority=()=>false;
+        internal bool GainGold,LoseGold,Hp;
+        internal int Capacity=0;
+        internal Func<CardModel,bool>? Upgrade,Added;
+        internal Func<bool>? Modifying;
+        internal Action? BeforeMutation;
+    }
     private readonly Func<bool> _owner;
     private readonly int _thread=System.Environment.CurrentManagedThreadId;
     private readonly Harmony _hooks=new("sts.bridge.relic.effects."+Guid.NewGuid().ToString("N"));
@@ -62,10 +74,11 @@ internal sealed partial class PinnedAutomaticRelicEffects : IDisposable
         relic.GetType()==typeof(FakeMango)||relic.GetType()==typeof(FakeLeesWaffle));
     internal PinnedAutomaticRelicEffects(Player player,RelicModel relic,Func<bool> owner):this(player,relic,owner,null,null){}
     internal PinnedAutomaticRelicEffects(Player player,Func<bool> owner,Func<CardModel,bool> addedCard,Func<bool> modifyingCard):this(player,null,owner,addedCard,modifyingCard){}
-    private PinnedAutomaticRelicEffects(Player player,RelicModel? relic,Func<bool> owner,Func<CardModel,bool>? addedCard,Func<bool>? modifyingCard)
+    internal PinnedAutomaticRelicEffects(Player player,RelicModel relic,Func<bool> owner,CompoundPolicy compound):this(player,relic,owner,compound.Added,compound.Modifying,compound){}
+    private PinnedAutomaticRelicEffects(Player player,RelicModel? relic,Func<bool> owner,Func<CardModel,bool>? addedCard,Func<bool>? modifyingCard,CompoundPolicy? compound=null)
     {
-        _player=player;_relic=relic;_owner=owner;_expected=new(player);_addedCard=addedCard;_modifyingCard=modifyingCard;
-        Require((relic is not null?Supports(relic)&&ReferenceEquals(relic.Owner,player)&&player.Relics.Contains(relic):addedCard is not null)&&owner());
+        _player=player;_relic=relic;_owner=owner;_expected=new(player);_addedCard=addedCard;_modifyingCard=modifyingCard;_compound=compound;
+        Require((relic is not null?(Supports(relic)||compound is not null)&&ReferenceEquals(relic.Owner,player)&&player.Relics.Contains(relic):addedCard is not null)&&owner());
         try {
             Patch(typeof(Player).GetProperty("Gold")!.SetMethod!,nameof(GoldPrefix),nameof(GoldPostfix));
             Patch(player.Creature.GetType().GetMethod("SetCurrentHpInternal")!,nameof(HpPrefix),nameof(HpPostfix));
@@ -75,7 +88,7 @@ internal sealed partial class PinnedAutomaticRelicEffects : IDisposable
             // can be inlined before its hook is installed. Observe the actual
             // model mutation without enumerating the native target sequence.
             Patch(typeof(CardModel).GetMethod("UpgradeInternal",Type.EmptyTypes)!,nameof(UpgradePrefix),nameof(UpgradePostfix));
-            if((relic?.GetType()==typeof(OldCoin)||addedCard is not null)&&player.Relics.Any(r=>r.GetType()==typeof(DragonFruit)))
+            if((GoldEffect||addedCard is not null)&&player.Relics.Any(r=>r.GetType()==typeof(DragonFruit)))
                 Patch(typeof(DragonFruit).GetMethod("AfterGoldGained")!,nameof(GoldHpPrefix),nameof(GoldHpPostfix));
             if(addedCard is not null)PatchCardAddEffects();
         } catch {_failed=true;Dispose();throw;}
@@ -83,24 +96,28 @@ internal sealed partial class PinnedAutomaticRelicEffects : IDisposable
     internal PinnedAutomaticRelicEffects? Enter() { Require(Valid());var old=Scope.Value;Require(old is null);Scope.Value=this;return old; }
     internal static void Exit(PinnedAutomaticRelicEffects? old)=>Scope.Value=old;
     internal bool Valid()=>!_failed&&!_disposed&&System.Environment.CurrentManagedThreadId==_thread&&_owner()&&_expected.Same(new(_player))&&ExactHooks();
-    private bool HpEffect => _relic?.GetType()==typeof(Strawberry)||_relic?.GetType()==typeof(Pear)||_relic?.GetType()==typeof(Mango)||_relic?.GetType()==typeof(LeesWaffle)||_relic?.GetType()==typeof(FakeMango)||_relic?.GetType()==typeof(FakeLeesWaffle);
-    private static PinnedAutomaticRelicEffects? Begin() {var s=Scope.Value;if(s is not null)s.Require(s.Valid()&&++s._calls<=64);return s;}
+    private bool GoldEffect=>_relic?.GetType()==typeof(OldCoin)||_compound?.GainGold==true;
+    private bool HpEffect => _compound?.Hp==true||_relic?.GetType()==typeof(Strawberry)||_relic?.GetType()==typeof(Pear)||_relic?.GetType()==typeof(Mango)||_relic?.GetType()==typeof(LeesWaffle)||_relic?.GetType()==typeof(FakeMango)||_relic?.GetType()==typeof(FakeLeesWaffle);
+    private static PinnedAutomaticRelicEffects? Begin()
+    {var s=Scope.Value;if(s is not null){s.Require(s._compound is null||s._compound.Authority());s._compound?.BeforeMutation?.Invoke();s.Require(s.Valid()&&++s._calls<=64);}return s;}
     private static void GoldPrefix(Player __instance,int __0,out PinnedAutomaticRelicEffects? __state)
-    {__state=Begin();if(__state is {} s)s.Require((s._relic?.GetType()==typeof(OldCoin)||s.CardGoldEffect)&&ReferenceEquals(__instance,s._player)&&__0>=s._expected.Gold);}
+    {__state=Begin();if(__state is {} s)s.Require(ReferenceEquals(__instance,s._player)&&
+        ((s.GoldEffect||s.CardGoldEffect)&&__0>=s._expected.Gold||s._compound?.LoseGold==true&&__0>=0&&__0<=s._expected.Gold));}
     private static void GoldPostfix(PinnedAutomaticRelicEffects? __state) {if(__state is {} s)s.Accept("gold");}
     private static void HpPrefix(object __instance,decimal __0,out PinnedAutomaticRelicEffects? __state)
-    {__state=Begin();if(__state is {} s)s.Require((s.HpEffect||s.CardHpEffect||(s._relic?.GetType()==typeof(OldCoin)||s.CardGoldEffect)&&GoldHpSource.Value is {} source&&s._expected.Relics.Any(r=>ReferenceEquals(r.Model,source)))&&ReferenceEquals(__instance,s._player.Creature)&&__0>=0);}
+    {__state=Begin();if(__state is {} s)s.Require((s.HpEffect||s.CardHpEffect||(s.GoldEffect||s.CardGoldEffect)&&GoldHpSource.Value is {} source&&s._expected.Relics.Any(r=>ReferenceEquals(r.Model,source)))&&ReferenceEquals(__instance,s._player.Creature)&&__0>=0);}
     private static void HpPostfix(PinnedAutomaticRelicEffects? __state) {if(__state is {} s)s.Accept("hp");}
     private static void GoldHpPrefix(DragonFruit __instance,Player __0,out DragonFruit? __state)
     {
         __state=GoldHpSource.Value;var s=Scope.Value;if(s is null)return;
-        s.Require(s.Valid()&&(s._relic?.GetType()==typeof(OldCoin)||s.CardGoldEffect)&&__state is null&&ReferenceEquals(__0,s._player)&&
+        s.Require(s.Valid()&&(s.GoldEffect||s.CardGoldEffect)&&__state is null&&ReferenceEquals(__0,s._player)&&
             ReferenceEquals(__instance.Owner,s._player)&&s._expected.Relics.Any(r=>ReferenceEquals(r.Model,__instance)));
         GoldHpSource.Value=__instance;
     }
     private static void GoldHpPostfix(DragonFruit? __state){if(Scope.Value is not null)GoldHpSource.Value=__state;}
     private static void CapacityPrefix(Player __instance,int __0,out PinnedAutomaticRelicEffects? __state)
-    {__state=Begin();if(__state is {} s)s.Require(s._relic?.GetType()==typeof(PotionBelt)&&ReferenceEquals(__instance,s._player)&&__0==2);}
+    {__state=Begin();if(__state is {} s)s.Require(ReferenceEquals(__instance,s._player)&&
+        (s._relic?.GetType()==typeof(PotionBelt)&&__0==2||s._compound?.Capacity>0&&__0==s._compound.Capacity));}
     private static void CapacityPostfix(PinnedAutomaticRelicEffects? __state) {if(__state is {} s)s.Accept("capacity");}
     private static void UpgradePrefix(CardModel __instance,out PinnedAutomaticRelicEffects? __state)
     {
@@ -109,7 +126,7 @@ internal sealed partial class PinnedAutomaticRelicEffects : IDisposable
         // binds the actual returned model; no existing deck card may change.
         if(s._addedCard is not null&&s._modifyingCard?.Invoke()==true&&ReferenceEquals(__instance.Owner,s._player)&&
             ReferenceEquals(__instance.RunState,s._player.RunState)&&!s._expected.Deck.Any(c=>ReferenceEquals(c.Model,__instance))){__state=null;return;}
-        s.Require((s._relic?.GetType()==typeof(WarPaint)||s._relic?.GetType()==typeof(Whetstone))&&s._expected.Deck.Any(c=>ReferenceEquals(c.Model,__instance))&&__instance.IsUpgradable);
+        s.Require((s._relic?.GetType()==typeof(WarPaint)||s._relic?.GetType()==typeof(Whetstone)||s._compound?.Upgrade?.Invoke(__instance)==true)&&s._expected.Deck.Any(c=>ReferenceEquals(c.Model,__instance))&&__instance.IsUpgradable);
     }
     private static void UpgradePostfix(CardModel __instance,PinnedAutomaticRelicEffects? __state) {if(__state is {} s)s.Accept("upgrade",__instance);}
     private void Accept(string kind,CardModel? upgraded=null)
@@ -118,7 +135,7 @@ internal sealed partial class PinnedAutomaticRelicEffects : IDisposable
         Require(_owner()&&ReferenceEquals(next.Run,before.Run)&&next.Relics.SequenceEqual(before.Relics));
         Require(kind=="gold"||next.Gold==before.Gold);
         Require(kind=="hp"||next.Hp==before.Hp&&next.MaxHp==before.MaxHp);
-        Require(kind=="capacity" ? next.Potions.Length==before.Potions.Length+2&&next.Potions.Take(before.Potions.Length).SequenceEqual(before.Potions)&&next.Potions.Skip(before.Potions.Length).All(p=>p.Model is null):next.Potions.SequenceEqual(before.Potions));
+        Require(kind=="capacity" ? next.Potions.Length==before.Potions.Length+(_compound?.Capacity??2)&&next.Potions.Take(before.Potions.Length).SequenceEqual(before.Potions)&&next.Potions.Skip(before.Potions.Length).All(p=>p.Model is null):next.Potions.SequenceEqual(before.Potions));
         Require(next.Deck.Length==before.Deck.Length);
         for(int i=0;i<before.Deck.Length;i++) {
             var old=before.Deck[i];var card=next.Deck[i];

@@ -132,6 +132,7 @@
     <Compile Include="../native_tests/FullRewardFixtures.cs" />
     <Compile Include="../native_tests/CompoundRewardFixtures.cs" />
     <Compile Include="../native_tests/CompoundOfferFixtures.cs" />
+    <Compile Include="../native_tests/CompoundAutomaticFixtures.cs" />
     <Compile Include="../../rooms/shop/native/PinnedShopEffectDispatch.cs" />
     <Compile Include="../../rooms/rest/native/RestRewardContinuation.cs" />
     <Compile Include="../../rooms/rest/native/RestNativeState.cs" />
@@ -145,5 +146,6 @@
     <Compile Include="../native/GenericEventCompoundRewards.cs" />
     <Compile Include="../native/GenericEventCompoundRewards.Pickups.cs" />
     <Compile Include="../native/GenericEventCompoundRewards.Offers.cs" />
+    <Compile Include="../native/GenericEventCompoundRewards.Automatic.cs" />
   </ItemGroup>
 </Project>
