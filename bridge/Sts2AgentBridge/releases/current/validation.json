@@ -3,6 +3,7 @@
   "elapsed_times": {
     "fix_review_seconds": 41,
     "focused_validation_seconds": 7.598,
+    "live_cleanup_verified_by_utc": "2026-09-25 14:34:33 UTC",
     "note": "Implementation, review and checks overlapped; exclusive implementation, release-preparation and user-wait times were not measured.",
     "previous_live_cleanup_verified_by_utc": "2026-09-25 14:09:44 UTC",
     "release_gate_seconds": 313.965,
@@ -479,10 +480,52 @@
     "verified_by_utc": "2026-09-25 14:24:10 UTC"
   },
   "live": {
-    "planned_scope": "Continue the saved assisted run and retest a relic-granting Sacrifice; no fresh campaign required and no retained public corpus.",
+    "accepted": 4,
+    "actions": [
+      "claim_gold",
+      "open_reward",
+      "sacrifice_card_reward",
+      "leave_rewards"
+    ],
+    "approval_preflight": "Initial execution rejected before dispatch over duplicate-mutation concern. Read-only restored-state checks established a fresh action; subsequent guarded invocation approved. No uncertain receipt retry or adoption.",
+    "attempted": 4,
+    "cleanup": {
+      "base_file_count": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "game_process_running": false,
+      "generated_files_removed": 4,
+      "normal_quit": true,
+      "overlay_count": 0,
+      "port_accepting": false,
+      "quarantined_state_sha256": "32c7a1d2185f35d3fad6a7d6f0f795d9522e43431a6d5003a2539c87ebd50fc2",
+      "status": "passed",
+      "verified_by_utc": "2026-09-25 14:34:33 UTC"
+    },
+    "entry": "Native Continue restored the checkpoint before the prior unresolved action; new session 0/0/0, no pending action, gold 466, Wing counter 1, Whetstone absent. Read-only verified and strict one-use preconditions required.",
+    "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md",
+    "outcome": {
+      "kind": "truncated",
+      "reason": "external_stop",
+      "schema": "sts_run_outcome_v1"
+    },
+    "pending": false,
     "profile": 3,
-    "status": "awaiting_manual_launch",
-    "target_game_executed": false
+    "reads": 5,
+    "reconciled": 4,
+    "recorded_live_corpus": false,
+    "result": {
+      "deck_count": 7,
+      "gold": 485,
+      "hp": 86,
+      "map_actionable": true,
+      "max_hp": 88,
+      "paels_wing_display_counter": 0,
+      "whetstone_obtained": true
+    },
+    "scope": "Saved-run Whetstone-granting Sacrifice, gold and map return; no fresh campaign.",
+    "stale_rejections": 0,
+    "status": "passed",
+    "target_game_executed": true
   },
   "previous_release": {
     "install_inputs": "/private/tmp/sts-bridge-gbhdyd9q/previous-install-inputs",
@@ -595,7 +638,7 @@
       "2026-09-25 14:14:26 UTC"
     ],
     "reviewer": "semantic_review",
-    "scope": "Actual mutation boundary, ownership, eligibility, inventory effects, no target enumeration/RNG access, and cleanup. Original live failing predicate remains inference pending retest.",
+    "scope": "Actual mutation boundary, ownership, eligibility, inventory effects, no target enumeration/RNG access, and cleanup. Original live failing predicate remains inference; subsequent live retest passed.",
     "source_investigation_utc": [
       "2026-09-25 14:10:09 UTC",
       "2026-09-25 14:11:35 UTC"

@@ -65,7 +65,8 @@ Alternatives, shop effects and shared event reward tests passed in 7.598 seconds
 (`/private/tmp/sts-bridge-r_ry81oh`). Independent semantic review found no blocker
 (14:13:45–14:14:26 UTC, 41 seconds), following an 86-second source investigation.
 The original live failing predicate was not captured at this finer boundary;
-inlining remains the source-supported explanation pending a live retest.
+inlining remains a source-supported explanation rather than a captured JIT trace.
+The corrected saved-run retest below now demonstrates successful reconciliation.
 
 ## Cleanup and timing
 
@@ -81,3 +82,36 @@ includes setup, tests and initial diagnosis; exclusive execution and user-wait
 times were not measured. Clean installation removal does not change the failed
 gameplay reconciliation. Subsequent packages must retain this result under its
 original artifact identity.
+
+## Corrected Whetstone retest
+
+The user manually reopened Profile 3. Native Continue restored the reward checkpoint
+before the prior unresolved action: HP 86/88, gold 466, deck 7, Pael's Wing counter 1,
+and no Whetstone. A read-only preflight established a new bridge session with
+0/0/0 actions and no pending action. An initial automatic approval rejection
+prevented execution because the preceding session had an uncertain mutation; the
+fresh checkpoint and strict one-use preconditions established that the corrected
+test would not duplicate that mutation. The subsequently approved invocation ran
+once, without receipt retry or adoption.
+
+- Source: `887c1da81cf36a0d524973e93dd8e20832595244`.
+- Manifest SHA-256: `1f83ded88af136170f2c1191bf28371aa435c9ab1616c011357fa64140e6f7e6`.
+- DLL SHA-256: `e796ec18a1244355734d431d62996357a29a930ba31839f411dd26614bdc929b`.
+- Evidence root: `/private/tmp/sts-bridge-gbhdyd9q`; 85 release groups passed in 313.965 seconds.
+- Installed state SHA-256: `446c391ed56282d22d1facc1886c4a6a93cbc92be965f3cb7b1b40f729392c6a`.
+
+The exact sequence `claim_gold → open_reward → sacrifice_card_reward → leave_rewards`
+passed: **4 attempted / 4 accepted / 4 reconciled**, five reads, zero stale rejections,
+no pending action. The shared host stopped at the actionable map with
+`truncated/external_stop`. Whetstone was present, Pael's Wing displayed 0, gold
+was 485, HP remained 86/88, and the deck remained seven cards. No console setup
+was needed for this retest and no public trajectory corpus was retained.
+
+Normal Save and Quit, game Quit, stopped-process/closed-listener verification and
+exact owned quarantine/purge completed by **14:34:33 UTC**. Four generated files
+were removed, all 429 base files remained unchanged, and no overlays remained.
+Quarantine state SHA-256 was
+`32c7a1d2185f35d3fad6a7d6f0f795d9522e43431a6d5003a2539c87ebd50fc2`;
+the base SHA-256 remained `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Live execution and user-wait durations were not measured separately. This is one
+representative relic-granting Sacrifice, not all relic callbacks or a full campaign.

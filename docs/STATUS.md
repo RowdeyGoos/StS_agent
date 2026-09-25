@@ -36,9 +36,10 @@ automatic relic effects, Cauldron/Orrery rewards and shared event reward childre
 An opt-in public live journal is implemented; no live corpus was collected for
 this development. The [broader live batch](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md)
 demonstrated reroll, map potion use/discard, chest claiming, potion-owned hand and
-optional offers, and the first Sacrifice. A second Sacrifice visibly granted
-Whetstone but failed reconciliation at **36/36/35** actions. Its upgrade-observer
-correction passes focused checks and still needs a live retest. Prior rest
+optional offers, and the first Sacrifice. The corrected Whetstone-granting
+Sacrifice passed its saved-run retest: **4/4/4 actions**, five reads and an actionable
+map, with no pending action. The ledger preserves the preceding failed artifact
+and its **36/36/35** counts. Prior rest
 cancellation and potion-reward evidence retains its separate package identity.
 
 ## Supported interactions
@@ -230,8 +231,8 @@ These are **not an implementation queue or required live-test checklist**:
 - Full-producer empty-chest completion, automatic pickup effects, shop removal
   cancel/Cauldron/Orrery and shared event reward children, plus an ending test.
   Representative hand/optional offers, potion use/discard and potion-owned choices,
-  chest claiming, reroll and first Sacrifice passed live. Whetstone on the second
-  Sacrifice exposed a reconciliation failure; the correction needs a live retest.
+  chest claiming, reroll and Sacrifice passed live, including the corrected
+  Whetstone-granting second Sacrifice.
 - Expanded terminal schemas 9–10: the representative ten-entry screen passed live.
   The wider 32-entry bound and 65-action card-menu sequence remain fixture/socket
   evidence, without a separately identified ordinary 32-entry gameplay caller.
@@ -265,8 +266,9 @@ It binds 461 source/test inputs across 52 projects, source `887c1da`, feature
 tests, 1,628 router checks, 13,984 native event checks and 656 rest checks.
 Independent semantic review is clear. The Whetstone correction observes the
 actual model upgrade instead of a potentially inlined command wrapper. The exact
-package is installed with 429 unchanged base files and two verified owned overlays;
-its saved-run live retest awaits manual launch.
+saved-run Whetstone retest passed **4/4/4 actions**, five reads and map return.
+Normal quit and owned cleanup completed by **14:34:33 UTC**: four generated files
+removed, zero overlays, all 429 base files unchanged.
 
 The preceding package `32d721e8…`, source `6c04327`, completed 35 actions before
 Whetstone's second-Sacrifice reconciliation failed on action 36. The

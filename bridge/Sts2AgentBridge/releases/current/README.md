@@ -25,13 +25,16 @@ previous broad Python result and its focused corrections remain separately bound
 The correction observes `CardModel.UpgradeInternal` during an owned relic pickup,
 avoiding the potentially inlined command wrapper. Exact card identity, upgrade
 eligibility, scope, +1 effect, unchanged survivors and cleanup are still required.
-The old implementation failed a native-shaped Whetstone regression. The actual
-live failing predicate remains an inference until the saved-run retest.
+The old implementation failed a native-shaped Whetstone regression. The original
+live failing predicate remains an inference; the corrected saved-run retest passed.
 
-The exact package is installed for that manual-launch Profile 3 retest: **429
-unchanged base files and two verified owned overlays**. No profile/save/history/
-Cloud filesystem content was accessed and no live trajectory corpus was collected.
-**This corrected package has not yet been demonstrated live.**
+The corrected package passed the manual-launch Profile 3 Whetstone Sacrifice
+retest: **4/4/4 actions**, five reads, no stale rejection or pending action, and
+an actionable map. Native Continue restored the pre-action checkpoint, verified
+read-only before input. Normal quit and owned cleanup completed by **14:34:33 UTC**:
+four generated files removed, all 429 base files unchanged and zero overlays.
+No profile/save/history/Cloud filesystem content was accessed and no live trajectory
+corpus was collected.
 
 The previous package `32d721e8…`, source `6c04327`, passed the representative
 reroll, map potion use/discard, chest claim and potion-owned hand/optional choices.
