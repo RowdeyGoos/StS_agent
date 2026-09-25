@@ -198,10 +198,19 @@ The original versioned controllers retain their semantics. New native owners
 verify exact tasks, inventory effects and nested receipts before handoff; failed
 or unresolved cleanup still stops the host.
 
-Neow's Bones is a concrete remaining compound-pickup boundary: it obtains a
-mandatory series of relics and subsequently adds curses. The full producer stops
-before selecting that parent option. Ordinary shared reward support does not
-establish this caller, arbitrary nested pickup effects or all event branches.
+Neow's Bones remains a concrete implementation gap. Its two mandatory relic
+rewards can themselves open more rewards (Lost Coffer, Kaleidoscope, Small Capsule),
+card offers/bundles (Lead Paperweight, Massive Scroll, Hefty Tablet, Scroll Boxes),
+or deck selectors (New Leaf, Precise Scissors, Pomander). It then adds one curse
+through a native insertion task; the preview is visual only. The full producer
+continues to reject its actionable parent before input.
+
+The next extension needs one retained event owner with nested reward/pickup/selector
+continuations and exact ancestor screen/stack bindings. Each child must be certified
+before the outer callback's later mutations; the last reward can close and insert
+the curse before another host read. Reusing the existing controllers under their
+actual pickup task comes before removing the guard. Ordinary shared rewards do
+not establish this compound caller or arbitrary nested effects.
 
 ### Contract limits without a confirmed missing gameplay caller
 
@@ -219,9 +228,9 @@ These are **not an implementation queue or required live-test checklist**:
 - Resume-time card/selector reward screens and multi-item/relic reward screens:
   no concrete Resume caller identified. Dummy Setting1 offers one potion, Setting2
   upgrades automatically, and Setting3 obtains a relic directly.
-- Nested pickup selectors inside event/terminal rewards, multiple independent
-  selector children per callback, and broader post-selector deck changes beyond
-  current one-grant support: require an actual caller before new implementation.
+- Nested pickup selectors outside the identified Neow's Bones chain, multiple
+  independent selector children per callback, and broader post-selector deck
+  changes beyond current one-grant support still require a concrete caller.
 - Required direct card offers: v1 exists in fixtures, but the inspected Lead
   Paperweight/Massive Scroll callers are optional v2; there is no required-v1
   gameplay case to schedule yet.
