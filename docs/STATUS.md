@@ -271,31 +271,27 @@ supplies dated source candidates rather than a current implementation checklist.
 ## Release and latest evidence
 
 The current [release manifest](../bridge/Sts2AgentBridge/releases/current/bridge.json)
-is **`bc0767b1035808cf89020126cc727191526bf208d88d81e8c32b9b1f03b8a662`**.
-It binds 463 source/test inputs across 52 projects, source `d9eda0d`,
-diagnostic correction `9b80088` and broader feature `cc9fa81`. The gate passed
-**85 groups in 309.499 seconds**, including 168 client tests,
-1,639 router checks, 13,986 native event checks and 656 rest checks.
-Independent semantic review found no blocker. The full producer now follows native
-handling of absent event-description localization entries. The pinned English
-ancient table has no Neow initial/done description; dialogue is displayed separately.
-The actual parent-projection regression failed before the correction and passes
-with missing/existing/null descriptions, exact commands and zero-input accounting.
-Existing formatting errors and unsupported compound pickups still stop before input.
-The saved-run retest passed Neow projection and accepted Lost Coffer; native Loot
-showed Flex Potion and Add a card. The next read stopped at `read_native_failed`:
-**1 attempted / 1 accepted / 0 reconciled**, 35 reads and one pending parent action.
-The production event-response classifier omitted `full_rewards_v1`; no reward
-action ran or uncertain mutation was retried. Normal quit and exact cleanup finished
-by **16:26:04 UTC**, with four generated files removed, zero overlays and all 429
-base files unchanged. The game is stopped and the owned installation is absent.
+is **`2d9a256032206ea0117c6caef38fad54a7180a2b635f7821d2982660fcff9c23`**.
+It binds 464 source/test inputs across 52 projects, source `b55c51d`.
+The gate passed **85 groups in 313.361 seconds**, including 168 client
+tests, 1,639 router checks, 211 event wire cases, 13,986 native event
+checks and 656 rest checks. Independent semantic review found no blocker.
+The production event-response validator now recognizes the existing full-reward
+contract. Its regression reproduced the missing boundary before the fix and now
+checks actual wire messages, phase-specific actions and malformed inputs. Waiting
+and completed children retain their parent owner until event reconciliation;
+failed receipts still stop. These fixtures do not establish live reward acceptance.
+The corrected package is installed and verified by **16:41:55 UTC**, with two
+exact overlays and all 429 base files unchanged. It awaits manual Profile 3 launch
+for the saved-run retest.
 
-The preceding manifest `7b6bb85e…`, source `af80a77`, identified the ancient travel
-guard. The next test used native `act 1` in the saved campaign, passed native
-admission and stopped at `read_context_failed`: **0/0/0**, 34 reads, no decision
-or pending action. Normal quit and exact cleanup finished by **15:56:14 UTC**:
-four generated files removed, zero overlays and all 429 base files unchanged.
-The failed test retains its original release identity in Git `9f221b6` and the
+The preceding manifest `bc0767b1…`, source `d9eda0d`, passed Neow projection and
+accepted Lost Coffer. Native Loot displayed Flex Potion and Add a card, then
+`read_native_failed` stopped at **1 attempted / 1 accepted / 0 reconciled**,
+35 reads and a pending parent action. No reward action ran or uncertain mutation
+was retried. Normal quit and exact cleanup finished by **16:26:04 UTC**, with four
+generated files removed, zero overlays and all 429 base files unchanged. The result
+retains its original release identity in Git `ca440d3` and the
 [live ledger](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md). Full-producer Lost Coffer
 reward acceptance remains open.
 
