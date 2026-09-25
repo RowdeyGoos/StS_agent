@@ -60,7 +60,9 @@ internal sealed class PinnedCombatCardChoiceAdapter : ICombatCardChoiceAdapter
         if (!Valid(overlays)) return null;
         if (overlays.Peek() is NChooseACardSelectionScreen offer)
             return new PinnedCombatCardOfferAdapter(run, overlays, offer);
-        if (overlays.Peek() is not NCombatPileCardSelectScreen screen) return null;
+        if (overlays.Peek() is not NCombatPileCardSelectScreen screen)
+            return overlays.ScreenCount == 0 && NPlayerHand.Instance is { IsInCardSelection: true } hand
+                ? new PinnedCombatHandChoiceAdapter(run, hand) : null;
         CombatManager? manager = CombatManager.Instance;
         CombatState? combat = manager?.DebugOnlyGetState();
         Check(manager is not null && manager.IsInProgress && !manager.IsOverOrEnding &&
@@ -187,6 +189,8 @@ internal sealed class PinnedCombatCardOfferAdapter : ICombatCardChoiceAdapter
     private readonly string[] _keys;
     private readonly int[] _levels;
     private readonly ulong _openedTicks;
+    private readonly bool _canSkip;
+    private readonly NChoiceSelectionSkipButton? _skip;
     private bool _disposed;
 
     private static T Field<T>(object value, string name, Type? owner = null) =>
@@ -210,8 +214,10 @@ internal sealed class PinnedCombatCardOfferAdapter : ICombatCardChoiceAdapter
         _offered = Field<IReadOnlyList<CardModel>>(screen, "_cards");
         _task = Field<TaskCompletionSource<IEnumerable<CardModel>>>(screen, "_completionSource").Task;
         _openedTicks = Field<ulong>(screen, "_openedTicks");
+        _canSkip = Field<bool>(screen, "_canSkip");
+        _skip = _canSkip ? screen.GetNodeOrNull<NChoiceSelectionSkipButton>("SkipButton") : null;
         Check(Valid(_row) && Valid(_peek) && !_task.IsCompleted && _offered.Count is >= 1 and <= 3 &&
-            !Field<bool>(screen, "_canSkip") && !Field<bool>(screen, "_screenComplete") && !Field<bool>(screen, "_cardSelected"));
+            (!_canSkip || Valid(_skip)) && !Field<bool>(screen, "_screenComplete") && !Field<bool>(screen, "_cardSelected"));
         _holders = _row.GetChildren().OfType<NGridCardHolder>().Take(4).ToArray();
         Check(_row.GetChildCount() == _offered.Count && _holders.Length == _offered.Count &&
             _holders.All(h => Valid(h) && h.GetType() == typeof(NGridCardHolder)));
@@ -237,7 +243,7 @@ internal sealed class PinnedCombatCardOfferAdapter : ICombatCardChoiceAdapter
         bool succeeded = _task.IsCompletedSuccessfully;
         object[] result = succeeded ? _task.Result.Take(4).Cast<object>().ToArray() : Array.Empty<object>();
         if (closed)
-            return new(_screen, "offer", 1, 1, false, false, true, succeeded,
+            return new(_screen, "offer", _canSkip ? 0 : 1, 1, false, false, true, succeeded,
                 _task.IsFaulted || _task.IsCanceled, Array.Empty<ChoiceCard>(), result, false);
         Check(_manager.IsInProgress && !_manager.IsOverOrEnding && _overlays.ScreenCount == 1 &&
             ReferenceEquals(_overlays.Peek(), _screen) && Valid(_screen) && Valid(_row) && Valid(_peek) &&
@@ -245,7 +251,8 @@ internal sealed class PinnedCombatCardOfferAdapter : ICombatCardChoiceAdapter
             ReferenceEquals(_screen.GetNodeOrNull<NPeekButton>("%PeekButton"), _peek) &&
             ReferenceEquals(Field<IReadOnlyList<CardModel>>(_screen, "_cards"), _offered) &&
             ReferenceEquals(Field<TaskCompletionSource<IEnumerable<CardModel>>>(_screen, "_completionSource").Task, _task) &&
-            Field<ulong>(_screen, "_openedTicks") == _openedTicks && !Field<bool>(_screen, "_canSkip") &&
+            Field<ulong>(_screen, "_openedTicks") == _openedTicks && Field<bool>(_screen, "_canSkip") == _canSkip &&
+            (!_canSkip || Valid(_skip) && ReferenceEquals(_screen.GetNodeOrNull<NChoiceSelectionSkipButton>("SkipButton"), _skip)) &&
             _offered.Count == _models.Length && _row.GetChildCount() == _holders.Length);
         var holders = _row.GetChildren().OfType<NGridCardHolder>().Take(4).ToArray();
         Check(holders.Length == _holders.Length);
@@ -266,8 +273,8 @@ internal sealed class PinnedCombatCardOfferAdapter : ICombatCardChoiceAdapter
             !Field<bool>(_screen, "_cardSelected") && ActiveScreenContext.Instance.IsCurrent(_screen) &&
             !_peek.IsPeeking && _screen.IsVisibleInTree() &&
             _row.IsVisibleInTree() && Time.GetTicksMsec() >= _openedTicks && Time.GetTicksMsec() - _openedTicks > 350;
-        return new(_screen, "offer", 1, 1, false, ready, false, succeeded,
-            _task.IsFaulted || _task.IsCanceled, cards, result, false);
+        return new(_screen, "offer", _canSkip ? 0 : 1, 1, false, ready, false, succeeded,
+            _task.IsFaulted || _task.IsCanceled, cards, result, ready && _canSkip && _skip!.IsVisibleInTree() && _skip.IsEnabled);
     }
     public void Toggle(int slot)
     {
@@ -278,6 +285,10 @@ internal sealed class PinnedCombatCardOfferAdapter : ICombatCardChoiceAdapter
         // adapter, while the owner-thread capture still binds this exact holder.
         Check(_holders[slot].EmitSignal(NCardHolder.SignalName.Pressed, _holders[slot]) == Error.Ok);
     }
-    public void Confirm() => throw new InvalidOperationException("native_offer_has_no_confirmation");
+    public void Confirm()
+    {
+        var fresh = Capture(); Check(fresh.Ready && fresh.ConfirmEnabled && _canSkip);
+        _skip!.ForceClick();
+    }
     public void Dispose() => _disposed = true;
 }

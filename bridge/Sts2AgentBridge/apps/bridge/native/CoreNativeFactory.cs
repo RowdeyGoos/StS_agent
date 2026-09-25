@@ -19,7 +19,12 @@ internal static class CoreNativeFactory
             choice, combat.BeginObservedCombat, () => { try { reward.Dispose(); } finally { combat.Dispose(); } });
         core.BindPotions(new CombatPotions(combat));
         core.BindAgent(new AgentPublicReader(reward, choice));
-        core.BindCampaign(new CampaignNavigation(),new PublicRewardActionService(new PinnedPublicRewardActionApplier(reward,screen=>new CampaignRewardTransition(screen))));
+        core.BindCampaign(new CampaignNavigation(),new PublicRewardActionService(new PinnedPublicRewardActionApplier(reward,screen=>new CampaignRewardTransition(screen))),
+            full=>{
+                reward.AlternativesFactory=full?(parent,screen)=>new Sts2AgentBridge.Items.Native.PinnedRewardAlternatives(parent,screen):null;
+                reward.InventoryFactory=full?player=>new Sts2AgentBridge.Items.Native.PinnedRewardInventory(player):null;
+                reward.RelicEffectFactory=full?Sts2AgentBridge.Items.Native.PinnedRelicRewardEffect.Create:null;
+            });
         var router = new BridgeRouter(core, (capability, session) => new NativeBridgeModule(capability, session));
         router.BindFullAgent(new FullAgentSession(new FullNativeBackend(router, reward, choice), nonce));
         return router;

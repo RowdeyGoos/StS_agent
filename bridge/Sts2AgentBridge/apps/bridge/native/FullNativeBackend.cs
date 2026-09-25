@@ -29,19 +29,19 @@ internal sealed partial class FullNativeBackend : IFullAgentBackend
     private readonly List<FullCommand> _commands = new();
     private BridgeRequest? _parent, _child;
     private BridgeRequest? _eventOrigin;
-    private string _family = "navigation";
+    private string _family = "navigation", _potionReturn = "combat";
     private string? _source;
     private bool _inChoice, _disposed;
     internal FullNativeBackend(BridgeRouter router, PinnedPublicRewardDecisionReader rewards, CombatCardChoiceService choice)
     { _router = router; _rewards = rewards; _choice = choice; }
 
     private static string Route(string family, bool post = false) => family switch {
-        "navigation" => post ? CampaignRoutes.Action : CampaignRoutes.Decision,
-        "reward" => post ? CampaignRoutes.RewardAction : CampaignRoutes.RewardDecision,
-        "potion" => post ? CombatPotionRoutes.Action : CombatPotionRoutes.Decision,
-        "choice" => post ? CombatCardChoiceService.ActionRouteV3 : CombatCardChoiceService.DecisionRouteV3,
+        "navigation" => post ? CampaignRoutes.FullAction : CampaignRoutes.FullDecision,
+        "reward" => post ? CampaignRoutes.FullRewardAction : CampaignRoutes.FullRewardDecision,
+        "potion" => post ? CombatPotionRoutes.FullAction : CombatPotionRoutes.FullDecision,
+        "choice" => post ? CombatCardChoiceService.ActionRouteV4 : CombatCardChoiceService.DecisionRouteV4,
         "rest" => post ? RestInteractiveSession.FullActionRoute : RestInteractiveSession.FullDecisionRoute,
-        "shop" => post ? ShopInteractiveSession.ActionRoute : ShopInteractiveSession.DecisionRoute,
+        "shop" => post ? ShopInteractiveSession.FullActionRoute : ShopInteractiveSession.FullDecisionRoute,
         "event" => "/probe/generic-event-v7/public/" + (post ? "action" : "decision"),
         "resume" => CoreBridgeModule.EventCombatRoute,
         "resume_item" => post ? CoreBridgeModule.ResumeItemAction : CoreBridgeModule.ResumeItemRead,
@@ -114,11 +114,14 @@ internal sealed partial class FullNativeBackend : IFullAgentBackend
             }
             if (status == "waiting")
             {
-                if (family == "combat" && _parent is not null)
+                if (family is "combat" or "potion" && _parent is not null &&
+                    !(family=="potion"&&_parent.Action?.StartsWith("discard:",StringComparison.Ordinal)==true))
                 {
                     using var choice = ReadWire("choice");
+                    _inChoice = _choice.IsActive;
                     if (Text(choice.RootElement, "status") == "ready")
-                    { _inChoice = true; return Ready("choice", choice.RootElement); }
+                    { Require(_inChoice); return Ready("choice", choice.RootElement); }
+                    Require(Text(choice.RootElement, "status") == "waiting");
                 }
                 return Waiting();
             }
@@ -126,7 +129,7 @@ internal sealed partial class FullNativeBackend : IFullAgentBackend
             {
                 Require(status == "resolved" && _parent is not null &&
                     Text(wire, "decision_id") == _parent.Decision && Text(wire, "action_id") == _parent.Action);
-                Settle(ref _parent); _family = "combat"; continue;
+                Settle(ref _parent); _family = _potionReturn; continue;
             }
             if (status == "complete")
             {
@@ -160,6 +163,7 @@ internal sealed partial class FullNativeBackend : IFullAgentBackend
     private FullCapture Ready(string family, JsonElement wire)
     {
         FullReadFailure.At(FullReadStage.Run, () => { _state.Begin(); return true; }); _commands.Clear();
+        AdoptAcquisitions();
         // Allocate run identities first, including map targets and deck cards.
         var run = FullReadFailure.At(FullReadStage.Run, () => _state.PublicRun(_history));
         var context = FullReadFailure.At(FullReadStage.Context, () => family switch {
@@ -199,13 +203,13 @@ internal sealed partial class FullNativeBackend : IFullAgentBackend
             Require(Text(root, "status") == "accepted" && Text(root, "decision_id") == request.Decision && Text(root, "action_id") == request.Action);
             _pending.Add(FullCompletion.For(request), (JsonObject)command.Candidate.DeepClone());
             if (request.Capability == Capability.Events && !request.IsChild) _eventOrigin = request;
-            if (request.Path is RestInteractiveSession.FullActionRoute or ShopInteractiveSession.ActionRoute || request.Capability == Capability.Events || CoreBridgeModule.IsResumeItem(request)) { }
+            if (request.Path is RestInteractiveSession.FullActionRoute or ShopInteractiveSession.FullActionRoute || request.Capability == Capability.Events || CoreBridgeModule.IsResumeItem(request)) { }
             else if (_inChoice) { Require(_child is null); _child = request; }
             else
             {
                 Require(_parent is null); _parent = request;
                 _source = command.Candidate["subject"]?.GetValue<string>();
-                if (request.Path == CombatPotionRoutes.Action) _family = "potion";
+                if (request.Path == CombatPotionRoutes.FullAction) { _potionReturn = _family; _family = "potion"; }
             }
         }
         return reply;

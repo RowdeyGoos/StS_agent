@@ -53,9 +53,12 @@ internal sealed class PinnedShopRemovalDispatch : IShopV1RemovalDispatch
     private int _gold,_used,_potionCapacity;
     private bool _cleanupFailed;
     private readonly int _price;
+    private readonly bool _interactive;
+    private PinnedDeckCardChoice? _choice;
+    private bool _cancelled, _choiceSelected;
     internal PinnedShopRemovalDispatch(MerchantCardRemovalEntry entry,MerchantInventory inventory,Player player,
-        NOverlayStack overlays,IShopV1NativeDispatch purchase,Func<bool> context,Func<int> counter)
-    { _entry=entry;_inventory=inventory;_player=player;_overlays=overlays;_purchase=purchase;_context=context;_counter=counter;_price=entry.Cost; }
+        NOverlayStack overlays,IShopV1NativeDispatch purchase,Func<bool> context,Func<int> counter,bool interactive=false)
+    { _entry=entry;_inventory=inventory;_player=player;_overlays=overlays;_purchase=purchase;_context=context;_counter=counter;_price=entry.Cost;_interactive=interactive; }
     public void SelectTarget(ShopV1DeckCardBinding card)
     {
         Require(!_invoked&&!_disposed&&_target is null&&card.ModelIdentity is CardModel);
@@ -85,6 +88,7 @@ internal sealed class PinnedShopRemovalDispatch : IShopV1RemovalDispatch
         }
         Require(!_failed&&_wrapperSeen&&_screenSeen&&_wrapper is not null&&Valid(_screen)&&_overlays.ScreenCount==1&&ReferenceEquals(_overlays.Peek(),_screen));
         _selection=_screen!.CardsSelected();Require(_selection is not null&&!_selection.IsCompleted);
+        if(_interactive)_choice=new(_screen,_overlays,_domain,()=>Context()&&(_choice?.ConfirmationDispatched==true||BeforeEffect()),null,0,1,1,true);
     }
     private static void WrapperPrefix(MerchantCardRemovalEntry __instance,MerchantInventory __0,bool __1,bool __2,out PinnedShopRemovalDispatch? __state)
     {
@@ -108,6 +112,13 @@ internal sealed class PinnedShopRemovalDispatch : IShopV1RemovalDispatch
     internal void Advance()
     {
         Require(_invoked&&!_disposed&&!_failed&&Context()&&_wrapper is not null&&_selection is not null);
+        if(_interactive) {
+            Require(!_wrapper!.IsFaulted&&!_wrapper.IsCanceled&&!_selection!.IsFaulted&&!_selection.IsCanceled);
+            if(_choice!.Completed){Require(_overlays.ScreenCount==0||OwnsForeground);return;}
+            var view=_choice.Read();
+            if(!_choiceSelected&&view is not null){_choice.Apply("select",_target);_choiceSelected=true;}
+            return;
+        }
         Require(!_wrapper!.IsFaulted&&!_wrapper.IsCanceled&&(!_wrapper.IsCompleted||_wrapper.Result));
         Require(!_selection!.IsFaulted&&!_selection.IsCanceled);
         if(_confirmed) {
@@ -156,10 +167,26 @@ internal sealed class PinnedShopRemovalDispatch : IShopV1RemovalDispatch
         if(!_confirm!.IsVisibleInTree()||!_confirm.IsEnabled)return;
         Require(BeforeEffect()&&_target!.IsRemovable);_confirmed=true;_confirm.ForceClick();Require(Context());
     }
+    internal DeckChoiceView? ReadChoice() {
+        Require(_interactive&&_invoked&&!_disposed&&!_failed);Advance();
+        var view=_choice!.Read();
+        return view is not null&&view.Selected.Length==1&&ReferenceEquals(view.Selected[0],_target)?view:null;
+    }
+    internal void ApplyChoice(string operation) {
+        Require(ReadChoice() is not null&&operation is "confirm" or "cancel");
+        if(operation=="confirm")_confirmed=true;else _cancelled=true;
+        _choice!.Apply(operation);
+    }
     public ShopV1Completion Completion => _disposed?ShopV1Completion.Invalid:ReadCompletion();
     private ShopV1Completion ReadCompletion()
     {
             if(_failed)return ShopV1Completion.Invalid;
+            if(_interactive&&_cancelled) {
+                if(!BeforeEffect()||_wrapper?.IsFaulted==true||_wrapper?.IsCanceled==true||_selection?.IsFaulted==true||_selection?.IsCanceled==true)return ShopV1Completion.Invalid;
+                if(_wrapper?.IsCompletedSuccessfully!=true||_selection?.IsCompletedSuccessfully!=true)return ShopV1Completion.Pending;
+                return !_wrapper.Result&&!_selection.Result.Any()&&_choice!.Cancelled&&_overlays.ScreenCount==0&&
+                    _purchase.Completion==ShopV1Completion.Pending?ShopV1Completion.Cancelled:ShopV1Completion.Invalid;
+            }
             if(_wrapper?.IsCanceled==true||_wrapper?.IsFaulted==true||_wrapper?.IsCompletedSuccessfully==true&&!_wrapper.Result)return ShopV1Completion.Invalid;
             if(_selection?.IsCanceled==true||_selection?.IsFaulted==true||_selection?.IsCompletedSuccessfully==true&&(!_confirmed||!SelectedExactly()))return ShopV1Completion.Invalid;
             if(_purchase.Completion is ShopV1Completion.Invalid or ShopV1Completion.Failed)return ShopV1Completion.Invalid;
@@ -178,7 +205,7 @@ internal sealed class PinnedShopRemovalDispatch : IShopV1RemovalDispatch
     {
         if(_disposed){if(_cleanupFailed)throw new InvalidOperationException("Removal cleanup remains uncertain.");return;}
         _disposed=true;_cleanupFailed=_invoked;
-        try{if(_invoked)_cleanupFailed=ReadCompletion()!=ShopV1Completion.Succeeded;}catch{_cleanupFailed=true;}
+        try{if(_invoked)_cleanupFailed=ReadCompletion() is not (ShopV1Completion.Succeeded or ShopV1Completion.Cancelled);}catch{_cleanupFailed=true;}
         try{_purchase.Dispose();}catch{_cleanupFailed=true;throw;}
         if(_cleanupFailed)throw new InvalidOperationException("Native removal has not completed; cleanup is uncertain.");
     }

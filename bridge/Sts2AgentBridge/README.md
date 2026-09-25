@@ -27,9 +27,13 @@ Start with [support and known limits](../../docs/STATUS.md). This guide owns
 | Combat discard/exhaust choice | `/probe/combat-choice-v1/public/decision` and `action` |
 | Combat pile choice, including visible Draw | `/probe/combat-choice-v2/public/decision` and `action`; same exclusive owner |
 | Campaign combat choices, including mandatory offered cards | `/probe/combat-choice-v3/public/decision` and `action`; same exclusive owner |
+| Full-producer hand and optional combat choices | `/probe/combat-choice-v4/public/decision` and `action`; same exclusive owner |
+| Full-producer native potion use/discard | `/probe/potions-v2/public/decision` and `action`; includes owned selectors and AnyTime use at the map |
+| Full-producer reward alternatives | `/probe/reward-v3/public/decision` and `action`; native reroll/sacrifice and certified automatic pickup effects |
 | Potion/relic collection | `/probe/item-v1/public/item-decision` and `item-action` |
 | Shop, standard room flows and additional rest options | `/probe/room-flows-v1/public/decision` and `action` |
 | Interactive rest options, selectors and Heal rewards | `/probe/rest-v3/public/decision` and `action`; the same exclusive room module |
+| Full-producer rest/shop/treasure continuation | `/probe/rest-v4/public/*`, `/probe/shop-v8/public/*`, `/probe/campaign-v3/public/*`; extends the existing owners |
 | Standalone card selection | `/card-selection-v1/parent`, `parent/action`, `child`, `child/action` |
 | Generic events and their children | `/probe/generic-event-v7/public/decision` and `action` |
 
@@ -185,9 +189,9 @@ identities. Retain its printed SHA-256 separately. Failure cannot emit an accept
 release manifest. Keep one [current release record](releases/current/README.md);
 Git retains earlier records. Development corrections do not need manual freezing.
 
-The release also binds the actual `game.agent.contracts`, `game.agent.policy`
-and `game.agent.full_policy` sources consumed by the live agent client. They remain shared repository modules;
-there is no copied bridge policy. Changing either invalidates release verification.
+The release also binds the actual `game.agent.contracts`, public policies and
+live-recording dependencies consumed by the live client. They remain shared
+repository modules; changing a bound source invalidates release verification.
 
 To place accepted artifacts in the fixed install-input directory:
 
@@ -236,6 +240,17 @@ controller budgets. This is an implemented candidate awaiting live acceptance;
 its [explicit coverage and gaps](../../docs/AGENT_CONTRACT.md#native-full-run-v2-candidate)
 are narrower than the full headless engine. It retains bounded summaries and
 actual outcomes, with no mutation retries.
+
+Optional public recording requires all three flags:
+`--public-trajectory /ABS/attempt.live.jsonl --trajectory-split test --trajectory-setup controlled`.
+Splits are `train`, `validation` or `test`; setup is `normal`, `assisted`,
+`controlled` or `resumed`. The file contains public decisions/actions and aggregate
+completion counts, without transport bindings or private game state. It uses a
+separate live schema rather than claiming headless transition equivalence. A
+checksummed final file is published exclusively only after settled completion;
+failed/interrupted attempts remain `.partial`. Recording is disabled by default.
+Obtain explicit live-data retention authorization before enabling it; ordinary
+bridge development does not authorize a retained live corpus.
 
 `--capability agent` uses the same public-only chooser as the headless adapter.
 It handles supported combat, nested card selection and rewards, then stops at an

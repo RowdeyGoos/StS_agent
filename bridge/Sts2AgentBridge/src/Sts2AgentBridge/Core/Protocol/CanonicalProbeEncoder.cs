@@ -334,7 +334,7 @@ public static class CanonicalProbeEncoder
         if(snapshot.ModifiedGoldRewards&&!snapshot.MaxHpRewards)throw new ArgumentException("Modified gold schema needs max HP fields.",nameof(snapshot));
         if(snapshot.ExpandedRewards&&!snapshot.ModifiedGoldRewards)throw new ArgumentException("Expanded rewards need current effect fields.",nameof(snapshot));
         if(snapshot.FakeMangoRewards&&!snapshot.ExpandedRewards)throw new ArgumentException("Fake Mango needs current reward fields.",nameof(snapshot));
-        builder.Append(snapshot.FakeMangoRewards ? "10" : snapshot.ExpandedRewards ? "9" : snapshot.ModifiedGoldRewards ? "8" : snapshot.MaxHpRewards ? "7" : snapshot.HealingRewards ? "6" : snapshot.CapacityRewards ? "5" : snapshot.PotionSlots is not null ? "4" : items ? "3" : special ? "2" : "1");
+        builder.Append(System.Linq.Enumerable.Any(snapshot.LegalActions,a=>a is "reroll" or "sacrifice") ? "11" : snapshot.FakeMangoRewards ? "10" : snapshot.ExpandedRewards ? "9" : snapshot.ModifiedGoldRewards ? "8" : snapshot.MaxHpRewards ? "7" : snapshot.HealingRewards ? "6" : snapshot.CapacityRewards ? "5" : snapshot.PotionSlots is not null ? "4" : items ? "3" : special ? "2" : "1");
         builder.Append(",\"status\":\"ready\",\"decision_kind\":\"reward\",\"actionable\":true,\"decision_id\":\"");
         builder.Append(snapshot.DecisionId);
         builder.Append("\",\"decision_revision\":");
@@ -1149,6 +1149,8 @@ public static class CanonicalProbeEncoder
         PublicRewardActionKind.OpenCard => "open_card",
         PublicRewardActionKind.ChooseCard => "choose_card",
         PublicRewardActionKind.SkipCard => "skip_card",
+        PublicRewardActionKind.Reroll => "reroll_reward",
+        PublicRewardActionKind.Sacrifice => "sacrifice_reward",
         PublicRewardActionKind.Proceed => "proceed",
         _ => throw new ArgumentOutOfRangeException(nameof(kind)),
     };
@@ -1164,6 +1166,10 @@ public static class CanonicalProbeEncoder
     {
         switch (action.Kind)
         {
+            case PublicRewardActionKind.Reroll:
+            case PublicRewardActionKind.Sacrifice:
+                if(parent)throw new ArgumentException("Alternative requires an open card reward.",nameof(snapshot));
+                return;
             case PublicRewardActionKind.DiscardPotion:
                 if(!parent||snapshot.PotionSlots is not {} potions||potions.Count==0||potions.Count>8||
                     System.Linq.Enumerable.Any(potions,p=>p is null)||action.PotionSlot<0||action.PotionSlot>=potions.Count||

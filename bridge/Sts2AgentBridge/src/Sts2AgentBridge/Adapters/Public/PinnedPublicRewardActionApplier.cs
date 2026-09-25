@@ -54,10 +54,22 @@ public sealed class PinnedPublicRewardActionApplier : IPublicRewardActionApplier
             PublicRewardActionKind.CollectItem => ApplyParentReward(request, snapshot, claimGold: false),
             PublicRewardActionKind.ChooseCard => ApplyCardChoice(request, snapshot),
             PublicRewardActionKind.SkipCard => ApplyCardSkip(request, snapshot),
+            PublicRewardActionKind.Reroll or PublicRewardActionKind.Sacrifice => ApplyAlternative(request, snapshot),
             PublicRewardActionKind.DiscardPotion => ApplyDiscard(request,snapshot),
             PublicRewardActionKind.Proceed => ApplyProceed(request, snapshot),
             _ => Result(PublicRewardActionApplyOutcome.InvalidAction, request),
         };
+    }
+
+    private PublicRewardActionApplyResult ApplyAlternative(PublicRewardActionRequest request,PublicRewardDecisionSnapshot snapshot)
+    {
+        var alternative=_reader.Alternatives;
+        if(alternative is null||_session.ActiveCardReward is not {} parent)return Result(PublicRewardActionApplyOutcome.StaleDecision,request);
+        var pending=new PinnedPublicRewardPendingMutation(request.Kind,snapshot.Player,parent);
+        var failure=_session.Begin(request.DecisionId,pending);
+        if(failure.HasValue)return Result(failure.Value,request);
+        alternative.Dispatch(request.ActionId);
+        return Result(PublicRewardActionApplyOutcome.Accepted,request);
     }
 
     private PublicRewardActionApplyResult ApplyParentReward(
@@ -90,7 +102,7 @@ public sealed class PinnedPublicRewardActionApplier : IPublicRewardActionApplier
         }
         PinnedPublicItemRewardClaim? item=null;
         if(request.Kind==PublicRewardActionKind.CollectItem) {
-            item=new PinnedPublicItemRewardClaim(target.Reward);
+            item=_reader.ItemClaim(target.Reward);
             if(!item.HasCapacity||!item.Valid(false))return Result(PublicRewardActionApplyOutcome.StaleDecision,request);
         }
         PinnedPublicGoldRewardClaim? gold=null;
@@ -107,7 +119,7 @@ public sealed class PinnedPublicRewardActionApplier : IPublicRewardActionApplier
             return Result(reservationFailure.Value, request);
         }
 
-        target.Button.ForceClick();
+        if(item is null)target.Button.ForceClick();else item.Invoke(target.Button.ForceClick);
         return Result(PublicRewardActionApplyOutcome.Accepted, request);
     }
 

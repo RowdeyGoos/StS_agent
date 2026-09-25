@@ -1,5 +1,8 @@
 // Authored inert fixtures. The production build separately checks native types.
 using System;
+using System.Linq;
+using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Entities.TreasureRelicPicking;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -9,6 +12,7 @@ using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
 using MegaCrit.Sts2.Core.Rooms;
 namespace Godot {
+ public static class Time { public static ulong GetTicksMsec()=>10000; }
  public enum Error {Ok,Failed}
  public class GodotObject {public bool Valid=true;public static bool IsInstanceValid(GodotObject? o)=>o?.Valid==true;}
  public class Node:GodotObject {public readonly List<Node> Children=new();public int GetChildCount(bool _)=>Children.Count;public Node GetChild(int index,bool _)=>Children[index];}
@@ -42,13 +46,17 @@ namespace MegaCrit.Sts2.Core.Nodes.Rooms {
   public MegaCrit.Sts2.Core.Nodes.GodotExtensions.NButton ChestButton=>_chestButton;
   public void Bind(MegaCrit.Sts2.Core.Runs.RunState run) {
    _runState=run;_room=(TreasureRoom)run.CurrentRoom!;
+   var relics=MegaCrit.Sts2.Core.Runs.RunManager.Instance.TreasureRoomRelicSynchronizer.CurrentRelics;
+   if(relics is {Count:>0})_relicCollection.SingleplayerRelicHolder.Relic.Model=relics[0];else _relicCollection.SingleplayerRelicHolder.Visible=false;
+   _relicCollection.SingleplayerRelicHolder.Released=()=>MegaCrit.Sts2.Core.Runs.RunManager.Instance.ActionQueueSynchronizer.RequestEnqueue(new MegaCrit.Sts2.Core.GameActions.PickRelicAction(run.Players[0],0));
    _chestButton.Released=()=>{_=OpenChest();_chestButton.IsEnabled=false;};
    ProceedButton.Released=()=>{Skips++;var manager=MegaCrit.Sts2.Core.Runs.RunManager.Instance;
-    manager.ActionQueueSynchronizer.RequestEnqueue(SkipAction?.Invoke()??new MegaCrit.Sts2.Core.GameActions.PickRelicAction(_runState.Players[0],null));
+    if(ProceedButton.IsSkip)manager.ActionQueueSynchronizer.RequestEnqueue(SkipAction?.Invoke()??new MegaCrit.Sts2.Core.GameActions.PickRelicAction(_runState.Players[0],null));
     if(CompleteOpenOnSkip)OpenGate.TrySetResult();_=manager.ProceedFromTerminalRewardsScreen();};
   }
   public void ShowSkip(){ProceedButton.Visible=ProceedButton.IsEnabled=true;DelayGate.TrySetResult();}
   public void MarkOpened()=>_hasChestBeenOpened=true;
+  public void FinishClaim(){_isRelicCollectionOpen=false;ProceedButton.IsSkip=false;ProceedButton.Visible=ProceedButton.IsEnabled=true;if(MegaCrit.Sts2.Core.Runs.RunManager.Instance.TreasureRoomRelicSynchronizer.CurrentRelics is null or {Count:0})DelayGate.TrySetCanceled();OpenGate.TrySetResult();}
   [MethodImpl(MethodImplOptions.NoInlining)]private Task OpenChest() {
    Opens++;_hasChestBeenOpened=_isRelicCollectionOpen=true;ProceedButton.IsSkip=true;
    _=RelicFtueCheck();_=EnableSkipAfterDelay();OnOpen?.Invoke();return OpenGate.Task;
@@ -63,14 +71,41 @@ namespace MegaCrit.Sts2.Core.Nodes.Rooms {
 }
 namespace MegaCrit.Sts2.Core.Nodes.Screens.TreasureRoomRelic {
  public sealed class NTreasureRoomRelicCollection:Godot.Control {
+  private ulong _openedTicks=1;
+  public NTreasureRoomRelicHolder SingleplayerRelicHolder=new();
   public readonly TaskCompletionSource Began=new(),Finished=new();
+  public void Award(Player player,RelicModel model) { _=AnimateRelicAwards(new(){new(){player=player,relic=model}}); }
+  public void Empty(){_=AnimateRelicAwards(new());}
+  [MethodImpl(MethodImplOptions.NoInlining)]private Task AnimateRelicAwards(List<RelicPickingResult> results) {
+   _=Godot.Time.GetTicksMsec()-_openedTicks;Began.SetResult();
+   foreach(var result in results){var clone=result.relic.ToMutable();_=MegaCrit.Sts2.Core.Commands.RelicCmd.Obtain(clone,result.player!);}
+   Finished.SetResult();NRun.Instance!.TreasureRoom!.FinishClaim();return Task.CompletedTask;
+  }
   public Task RelicPickingBegan()=>Began.Task;public Task RelicPickingFinished()=>Finished.Task;
  }
 }
+namespace MegaCrit.Sts2.Core.Nodes.Screens.TreasureRoomRelic {
+ public sealed class NRelic {public RelicModel Model=new();}
+ public sealed class NTreasureRoomRelicHolder:MegaCrit.Sts2.Core.Nodes.GodotExtensions.NButton {public NRelic Relic=new();public int Index;}
+}
+namespace MegaCrit.Sts2.Core.Nodes.Screens.ScreenContext {
+ public sealed class ActiveScreenContext {public static ActiveScreenContext Instance=new();public object? Blocker;public bool IsCurrent(object value)=>ReferenceEquals(value,Blocker??NRun.Instance?.TreasureRoom);}
+}
+namespace MegaCrit.Sts2.Core.Models {
+ public class RelicModel {public Player? Owner;public Func<Task>? Effect;[MethodImpl(MethodImplOptions.NoInlining)]public RelicModel ToMutable()=>new(){Effect=Effect};}
+}
+namespace MegaCrit.Sts2.Core.Entities.TreasureRelicPicking {
+ public enum RelicPickingResultType {Given,Skipped}
+ public sealed class RelicPickingResult {public RelicPickingResultType type;public RelicModel relic=null!;public Player? player;public object? fight;}
+}
+namespace MegaCrit.Sts2.Core.Commands {
+ public static class RelicCmd {[MethodImpl(MethodImplOptions.NoInlining)]public static async Task<RelicModel> Obtain(RelicModel relic,Player player,int index=-1){relic.Owner=player;player.Relics.Add(relic);if(relic.Effect is {} effect)await effect();return relic;}}
+}
 namespace MegaCrit.Sts2.Core.Multiplayer.Game {
  public sealed class TreasureRoomRelicSynchronizer {
-  private bool _singleplayerSkipped;public object? CurrentRelics=new();public bool Skipped=>_singleplayerSkipped;
-  public void OnPicked(Player player,int? index){if(index is null)_singleplayerSkipped=true;}
+  private bool _singleplayerSkipped;public List<RelicModel>? CurrentRelics=new(){new()};public bool Skipped=>_singleplayerSkipped;
+  public void OnPicked(Player player,int? index){if(index is null)_singleplayerSkipped=true;else {NRun.Instance!.TreasureRoom!.Collection.Award(player,CurrentRelics![index.Value]);CurrentRelics=null;}}
+  [MethodImpl(MethodImplOptions.NoInlining)]public void CompleteWithNoRelics(){NRun.Instance!.TreasureRoom!.Collection.Empty();CurrentRelics=null;}
  }
 }
 namespace MegaCrit.Sts2.Core.Nodes {
@@ -91,7 +126,7 @@ namespace MegaCrit.Sts2.Core.Entities.Players {
  public sealed class Creature {public int CurrentHp=10000,MaxHp=10000;}
  public sealed record ModelId(string Entry);
  public sealed class Character {public ModelId Id=new("IRONCLAD");}
- public sealed class Player {public Creature Creature=new();public Character Character=new();}
+ public sealed class Player {public List<RelicModel> Relics=new();public Creature Creature=new();public Character Character=new();}
 }
 namespace MegaCrit.Sts2.Core.Rooms {
  public enum RoomType {Boss,Monster,Map,Event,Treasure}
@@ -139,7 +174,7 @@ namespace MegaCrit.Sts2.Core.GameActions.Multiplayer {
 }
 namespace MegaCrit.Sts2.Core.Combat {public sealed class CombatManager {public static CombatManager? Instance;public bool IsInProgress,IsOverOrEnding;}}
 namespace Sts2AgentBridge.Core.Public {public interface IPublicRewardTransition:IDisposable {void Dispatch();string Poll();}}
-namespace Sts2AgentBridge.Unified {internal sealed record BridgeRequest(bool IsPost,string? Decision=null,string? Action=null);internal sealed record ModuleReply(byte[] Body,bool Terminal=false);}
+namespace Sts2AgentBridge.Unified {internal sealed record BridgeRequest(bool IsPost,string? Decision=null,string? Action=null,string Path=CampaignRoutes.Decision);internal sealed record ModuleReply(byte[] Body,bool Terminal=false);}
 namespace Sts2AgentBridge.Successors.RoomFlowsV1.Shop.Native {
  public sealed class PinnedShopV1NativeAdapter:IShopV1NativeAdapter {
   public static IShopV1NativeAdapter Current=null!;

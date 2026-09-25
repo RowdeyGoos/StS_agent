@@ -13,6 +13,15 @@
     <Compile Include="../../rooms/shop/core/ShopV1Session.cs" />
     <Compile Include="../../rooms/shop/core/ShopV1CanonicalEncoder.cs" />
     <Compile Include="RestRewardFixtures.cs" />
+    <Compile Include="RewardAlternativeFixtures.cs" />
+    <Compile Include="RewardAlternativeStubs.cs" />
+    <Compile Include="../../items/native/PinnedAutomaticRelicEffects.cs" />
+    <Compile Include="../../items/native/PinnedRewardAlternatives.cs" />
+    <Compile Include="../../items/native/PinnedRewardInventory.cs" />
+    <Compile Include="../../items/native/PinnedRelicRewardEffect.cs" />
+    <Compile Include="ShopEffectFixtures.cs" />
+    <Compile Include="FullRewardFixtures.cs" />
+    <Compile Include="../../rooms/shop/native/PinnedShopEffectDispatch.cs" />
     <Compile Include="../../rooms/rest/native/RestRewardContinuation.cs" />
     <Compile Include="../../rooms/rest/native/RestNativeState.cs" />
     <Compile Include="MerchantFightFixtures.cs" />
@@ -72,6 +81,7 @@
     <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicItemRewardClaim.cs" />
     <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicPotionDiscard.cs" />
     <Compile Include="TargetStubs.cs" />
+    <Compile Include="../native/GenericEventFullRewards.cs" />
     <Compile Include="../native/GenericEventV7Binding.cs" Link="Native/GenericEventV7Binding.cs" />
     <Compile Include="../native/GenericEventV7CombatHandoff.cs" Link="Native/GenericEventV7CombatHandoff.cs" />
     <Compile Include="../native/GenericEventV7CardAdapter.cs" Link="Native/GenericEventV7CardAdapter.cs" />

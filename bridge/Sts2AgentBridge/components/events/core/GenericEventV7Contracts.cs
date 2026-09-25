@@ -79,6 +79,7 @@ public sealed class GenericEventV7Child
         Kind="card_offer";ContractVersion=offerVersion;
     }
     public GenericEventV7Child(int ordinal,string decision,string action,GenericEventV7ItemPolicyAdmission policy):this(ordinal,decision,action,policy.OfferCount) {Kind="item_policy";ContractVersion="item_policy_v1";}
+    public GenericEventV7Child(int ordinal,string decision,string action,GenericEventV7FullRewardsAdmission rewards):this(ordinal,decision,action,rewards.OfferCount) {Kind="full_rewards";ContractVersion="full_rewards_v1";}
     public GenericEventV7Child(int ordinal,string decision,string action,GenericEventV7ResultsAdmission results) {
         if(!results.IsSupported)throw new ArgumentException("Results bounds.");
         Ordinal=ordinal;ParentDecisionId=decision;ParentActionId=action;Kind="card_results";ContractVersion="card_results_v1";OfferCount=results.CardCount;Operation="";CommitMode="";

@@ -14,6 +14,7 @@ internal static partial class Program
         JsonNode.Parse(s.Handle(true, view["decision_id"]!.GetValue<string>(), action))!.AsObject();
     private static void ShopInteractiveCases()
     {
+        ShopInteractiveCancellationCase();
         foreach (string mode in new[] { "purchase", "closed_leave", "stale", "inspect_open", "inspect_buy", "lost_open", "changed_inventory", "pending_purchase" })
         {
             NModalContainer.Instance = null;
@@ -75,5 +76,32 @@ internal static partial class Program
                 ActiveScreenContext.Instance = new();
             }
         }
+    }
+    private static void ShopInteractiveCancellationCase()
+    {
+        NModalContainer.Instance = null;
+        MegaCrit.Sts2.Core.Nodes.NRun.Instance = new() { GlobalUi = new() { CapstoneContainer = new() } };
+        var room = new NMerchantRoom(); var inventory = new NMerchantInventory();
+        ActiveScreenContext.Instance = new() { Current = inventory };
+        var f = new MultiplePurchaseFixture(1) { RoomOverride = room, InventoryOverride = inventory, Delay = true };
+        f.Offers[0].Kind = Sts2AgentBridge.Successors.RoomFlowsV1.Shop.ShopV1OfferKind.Removal;
+        f.Deck.Add(new(new object(), "REMOVE", 0, true));
+        f.OnClosed = () => ActiveScreenContext.Instance.Current = room;
+        using var session = new ShopInteractiveSession("0123456789abcdef0123456789abcdef", f, true);
+        var before = ShopRead(session);
+        Check(ShopApply(session, before, "remove:1")["status"]!.GetValue<string>() == "accepted", "v8 removal starts once");
+        Check(ShopRead(session)["status"]!.GetValue<string>() == "waiting", "v8 waits for owned removal result");
+        f.Offers[0].State = Sts2AgentBridge.Successors.RoomFlowsV1.Shop.ShopV1Completion.Cancelled;
+        var cancelled = ShopRead(session);
+        Check(cancelled["status"]!.GetValue<string>() == "ready" && cancelled["completed"]![0]!["result"]!.GetValue<string>() == "cancelled", "cancel returns a usable shop");
+        Check(cancelled["decision_id"]!.GetValue<string>() != before["decision_id"]!.GetValue<string>() && f.Gold == 100 && f.Deck.Count == 2, "cancel keeps inventory and changes decision identity");
+        f.Delay = false;
+        Check(ShopApply(session, cancelled, "remove:1")["status"]!.GetValue<string>() == "accepted", "new explicit removal is legal after cancel");
+        var removed = ShopRead(session);
+        Check(removed["status"]!.GetValue<string>() == "ready" && removed["completed"]!.AsArray().Count == 2 && f.Gold == 90 && f.Deck.Count == 1, "second removal settles once");
+        Check(ShopApply(session, removed, "inventory:close")["status"]!.GetValue<string>() == "accepted", "shop remains usable after cancelled then completed removal");
+        var closed = ShopRead(session);
+        Check(ShopApply(session, closed, "leave")["status"]!.GetValue<string>() == "accepted" && ShopRead(session)["status"]!.GetValue<string>() == "complete", "cancellation does not prevent clean handoff");
+        ActiveScreenContext.Instance = new();
     }
 }

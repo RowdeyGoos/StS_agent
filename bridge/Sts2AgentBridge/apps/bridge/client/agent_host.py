@@ -205,8 +205,9 @@ class LiveAdapter:
 
 
 def run_agent(request, *, policy=None, full=False, dispatch_map=False, stop_at_map=False, clock=time.monotonic, sleep=time.sleep,
-              decision_limit=256, seconds=180.0):
+              decision_limit=256, seconds=180.0, recorder=None):
     """Run a bounded shared-policy case; optionally stop at a reconciled map."""
+    require(recorder is None or full, "recording_requires_full_agent")
     adapter = LiveAdapter(request, full=full)
     policy = policy or (choose_full_action if full else choose_action)
     deadline = clock() + seconds
@@ -224,6 +225,8 @@ def run_agent(request, *, policy=None, full=False, dispatch_map=False, stop_at_m
             if isinstance(frame, c.RunOutcome):
                 outcome, status, code = c.to_dict(frame), 'resolved', None
                 break
+            if recorder is not None:
+                recorder.observe(frame.decision, adapter.counts)
             kinds.add(frame.decision.context.kind)
             if (isinstance(frame.decision.context, c.MapChoice) and not dispatch_map or
                     full and stop_at_map and frame.decision.context.kind == 'map'):
@@ -237,6 +240,8 @@ def run_agent(request, *, policy=None, full=False, dispatch_map=False, stop_at_m
             require(candidate in frame.decision.candidates, 'policy_action')
             require(clock() < deadline, 'deadline')
             report = adapter.step(frame.binding, candidate.ref)
+            if recorder is not None:
+                recorder.action(candidate, report, adapter.counts)
             if report.status == 'rejected' and report.reason == 'stale_decision':
                 stale += 1
                 require(stale <= 3, 'stale_limit')
@@ -251,6 +256,18 @@ def run_agent(request, *, policy=None, full=False, dispatch_map=False, stop_at_m
         code = str(error)
     except Exception:
         code = 'adapter_failure'
+    except BaseException:
+        if recorder is not None:
+            recorder.abort()
+        raise
+    if recorder is not None:
+        try:
+            if status == 'resolved' and not adapter.pending and outcome is not None:
+                recorder.finish(c.from_dict(outcome), adapter.counts)
+        except Exception:
+            status, code = 'failed', 'recording_failed'
+        finally:
+            recorder.abort()
     return {'schema_version': 1, 'status': status, 'code': code, 'outcome': outcome,
             'decisions': decisions, 'reads': adapter.reads, 'stale_rejections': stale,
             'attempted': adapter.attempted, 'accepted': adapter.counts[1], 'reconciled': adapter.counts[2],

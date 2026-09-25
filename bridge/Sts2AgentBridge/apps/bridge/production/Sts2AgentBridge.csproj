@@ -7,9 +7,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../../../components/items/native/PinnedPotionCapacity.cs" />
+    <Compile Include="../../../components/items/native/PinnedAutomaticRelicEffects.cs" />
+    <Compile Include="../../../components/items/native/PinnedRewardAlternatives.cs" />
+    <Compile Include="../../../components/items/native/PinnedRewardInventory.cs" />
+    <Compile Include="../../../components/items/native/PinnedRelicRewardEffect.cs" />
     <Compile Include="../../../components/items/native/PinnedPotionDiscard.cs" />
       <Compile Include="../../../components/cards/combat/CombatCardChoiceService.cs" />
   <Compile Include="../../../components/cards/combat_native/PinnedCombatCardChoiceAdapter.cs" />
+  <Compile Include="../../../components/cards/combat_native/PinnedCombatHandChoiceAdapter.cs" />
 <Compile Include="../../../components/events/diagnostics/GenericEventDiagnosticCode.cs" />
     <Compile Include="../../../components/events/diagnostics/GenericEventDiagnosticCodec.cs" />
     <Compile Include="../compatibility/CardSelectionTerminalClassifier.cs" />
@@ -24,6 +29,8 @@
     <Compile Include="../native/CombatPotions.cs" />
     <Compile Include="../native/CampaignNavigation.cs" />
     <Compile Include="../native/CampaignTreasureTransition.cs" />
+    <Compile Include="../native/CampaignTreasureClaim.cs" />
+    <Compile Include="../native/CampaignTreasureEmpty.cs" />
     <Compile Include="../native/CampaignRewardTransition.cs" />
     <Compile Include="../native/CampaignShopTransition.cs" />
     <Compile Include="../runtime/CampaignContracts.cs" />
@@ -80,6 +87,7 @@
     <Compile Include="../../../components/events/core/GenericEventV7CardRewardSetSession.cs" />
     <Compile Include="../../../components/events/core/GenericEventV7NativeContracts.cs" />
     <Compile Include="../../../components/events/core/GenericEventV7Session.cs" />
+    <Compile Include="../../../components/events/native/GenericEventFullRewards.cs" />
     <Compile Include="../../../components/events/native/GenericEventV7Binding.cs" />
     <Compile Include="../../../components/events/native/GenericEventV7CombatHandoff.cs" />
     <Compile Include="../../../components/events/native/GenericEventV7CardAdapter.cs" />
@@ -139,6 +147,7 @@
     <Compile Include="../../../components/rooms/shop/native/PinnedShopRemovalDispatch.cs" />
     <Compile Include="../../../components/rooms/shop/native/PinnedDeckCardChoice.cs" />
     <Compile Include="../../../components/rooms/shop/native/PinnedShopPickupDispatch.cs" />
+    <Compile Include="../../../components/rooms/shop/native/PinnedShopEffectDispatch.cs" />
     <Compile Include="../../../components/rooms/shop/native/ShopInteractiveSession.cs" />
     <Compile Include="../../../components/rooms/wire/RoomFlowWireCodec.cs" />
     <Compile Include="../../../components/rooms/wire/RoomFlowWireService.cs" />

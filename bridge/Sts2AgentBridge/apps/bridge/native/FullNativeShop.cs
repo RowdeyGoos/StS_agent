@@ -20,6 +20,12 @@ internal sealed partial class FullNativeBackend
         Require(ReferenceEquals(native.Surface.PlayerIdentity, _state.Player));
         _state.Bind(native.Surface.RoomIdentity ?? throw new AgentUnsupported()); _state.Bind(native.Surface.InventoryModelIdentity ?? throw new AgentUnsupported()); _state.Bind(native.Surface.InventoryNodeIdentity ?? throw new AgentUnsupported());
         string phase = Text(wire, "phase")!;
+        if(phase=="rewards") {
+            var rewards=owner.RewardSource as Sts2AgentBridge.Rooms.Rest.RestRewardContinuation??throw new AgentUnsupported();
+            return RewardContext((rewards.Reader??throw new AgentUnsupported()).InteractionSession,owner.RewardDecision,Text(wire,"screen_kind")=="card_reward",
+                wire.GetProperty("legal_actions").EnumerateArray().Select(a=>a.GetString()![7..]),
+                (action,kind,subject,target)=>Command("shop",decision,"reward:"+action,kind,subject,target));
+        }
         var children = new List<JsonObject>(); var offers = new Dictionary<int, string>();
         if (native.Choice is {} choice)
         {
@@ -28,10 +34,10 @@ internal sealed partial class FullNativeBackend
             {
                 string[] parts = action.Split(':');
                 Command("shop", decision, action, parts[0] switch { "select" => "choose_relic_card", "deselect" => "deselect_relic_card",
-                    "confirm" => "confirm_relic_selection", "cancel" => "cancel_selection", _ => throw new AgentUnsupported() },
+                    "confirm" => phase=="removal_confirmation"?"confirm_selection":"confirm_relic_selection", "cancel" => "cancel_selection", _ => throw new AgentUnsupported() },
                     parts.Length == 2 ? _state.Ref("card", choice.Domain[int.Parse(parts[1])]) : null);
             }
-            return Node("relic_choice", "card_grid", fields: new (string, object?)[] { ("minimum", choice.Minimum), ("maximum", choice.Maximum), ("cancelable", choice.Cancelable) },
+            return Node(phase=="removal_confirmation"?"shop_removal":"relic_choice", "card_grid", fields: new (string, object?)[] { ("minimum", choice.Minimum), ("maximum", choice.Maximum), ("cancelable", choice.Cancelable) },
                 links: new[] { ("options", choice.Domain.Select(c => _state.Ref("card", c))), ("selected", choice.Selected.Select(c => _state.Ref("card", c))) });
         }
         foreach (var offer in native.Surface.Offers)

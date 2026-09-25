@@ -140,7 +140,7 @@ namespace MegaCrit.Sts2.Core.Models
  public void EnqueueManualUse(object? target){IsQueued=true;MegaCrit.Sts2.Core.Runs.RunManager.Instance!.ActionQueueSynchronizer.RequestEnqueue((MegaCrit.Sts2.Core.GameActions.GameAction)new MegaCrit.Sts2.Core.GameActions.UsePotionAction(this));}
  public MegaCrit.Sts2.Core.Entities.Players.Player? Owner; public bool IsQueued, HasBeenRemovedFromState; public ModelId Id {get;}=new(); }
     public class FixtureDynamicVar {public decimal BaseValue {get;set;}public int IntValue {get;set;}=2;}
-    public class RelicModel : AbstractModel {public bool IsMelted {get;set;}public virtual Task AfterObtained()=>Task.CompletedTask;public System.Collections.Generic.Dictionary<string,FixtureDynamicVar> DynamicVars {get;}=new();public Player? Owner {get;set;} public ModelId Id {get;}=new(); }
+    public class RelicModel : AbstractModel {public bool IsMelted {get;set;}[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]public virtual Task AfterObtained()=>Task.CompletedTask;public System.Collections.Generic.Dictionary<string,FixtureDynamicVar> DynamicVars {get;}=new();public Player? Owner {get;set;} public ModelId Id {get;}=new(); }
     public class AbstractModel {
  public virtual decimal ModifyGoldGained(Player player,decimal amount)=>amount;
  public virtual Task AfterModifyingGoldGained(Player player,decimal amount)=>Task.CompletedTask;
@@ -176,8 +176,8 @@ namespace MegaCrit.Sts2.Core.Entities.Players
 {
     using MegaCrit.Sts2.Core.Models;
     public sealed class Deck : MegaCrit.Sts2.Core.Entities.Cards.CardPile {}
-    public sealed class Creature { public MegaCrit.Sts2.Core.Combat.CombatState? CombatState {get;set;}  public int CurrentHp=80,MaxHp=80; }
-    public sealed class Player { public bool CanRemovePotions=true; public List<RelicModel> Relics {get;}=new(); public Creature Creature {get;}=new();public int Gold {get;set;}=99; public int MaxPotionCount {get;set;}=3; public List<PotionModel?> PotionSlots {get;}=new(){null,null,null}; public Deck Deck { get; } = new(); private MegaCrit.Sts2.Core.Runs.IRunState _run=new MegaCrit.Sts2.Core.Runs.FixtureRunState(); public bool ThrowRunState {get;set;} public MegaCrit.Sts2.Core.Runs.IRunState RunState {get=>ThrowRunState?throw new InvalidOperationException("fixture getter"):_run;set=>_run=value;} }
+    public sealed partial class Creature { public MegaCrit.Sts2.Core.Combat.CombatState? CombatState {get;set;}  public int CurrentHp=80,MaxHp=80; }
+    public sealed partial class Player { public bool CanRemovePotions=true; public List<RelicModel> Relics {get;}=new(); public Creature Creature {get;}=new();private int _gold=99;public int Gold {get=>_gold;[System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]set=>_gold=value;} public int MaxPotionCount {get;set;}=3; public List<PotionModel?> PotionSlots {get;}=new(){null,null,null}; public Deck Deck { get; } = new(); private MegaCrit.Sts2.Core.Runs.IRunState _run=new MegaCrit.Sts2.Core.Runs.FixtureRunState(); public bool ThrowRunState {get;set;} public MegaCrit.Sts2.Core.Runs.IRunState RunState {get=>ThrowRunState?throw new InvalidOperationException("fixture getter"):_run;set=>_run=value;} }
 }
 
 namespace MegaCrit.Sts2.Core.Entities.RestSite
@@ -550,7 +550,7 @@ namespace MegaCrit.Sts2.Core.Commands
 {
     using MegaCrit.Sts2.Core.Entities.Cards;
     using MegaCrit.Sts2.Core.Models;
-    public static class CardCmd
+    public static partial class CardCmd
     {
         public static Func<IEnumerable<CardTransformation>,MegaCrit.Sts2.Core.Random.Rng,MegaCrit.Sts2.Core.Nodes.CommonUi.CardPreviewStyle,Task<IEnumerable<CardPileAddResult>>>? Handler;
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
@@ -584,7 +584,7 @@ namespace MegaCrit.Sts2.Core.Rewards
     }
     public class GoldReward:Reward {public int Amount {get;set;}}
     public class SpecialCardReward:Reward {private CardModel _card;public SpecialCardReward(CardModel card,Player player){_card=card;Player=player;RewardsSetIndex=4;} public void ReplaceCard(CardModel card)=>_card=card;}
-    public class CardReward:Reward {
+    public partial class CardReward:Reward {
         private MegaCrit.Sts2.Core.Nodes.Screens.CardSelection.NCardRewardSelectionScreen? _currentlyShownScreen;
         public void BindMenu(MegaCrit.Sts2.Core.Nodes.Screens.CardSelection.NCardRewardSelectionScreen screen) => _currentlyShownScreen = screen;
         public object? FixtureMenu => _currentlyShownScreen;
@@ -651,7 +651,7 @@ namespace MegaCrit.Sts2.Core.Nodes.Rewards
     }
 }
 
-namespace MegaCrit.Sts2.Core.Entities.Rewards { public enum PostAlternateCardRewardAction {None,Skip} }
+namespace MegaCrit.Sts2.Core.Entities.Rewards { public enum PostAlternateCardRewardAction {None,EndSelectionAndDoNotCompleteReward,EndSelectionAndCompleteReward,DoNothing,Skip=EndSelectionAndDoNotCompleteReward} }
 namespace MegaCrit.Sts2.Core.Entities.CardRewardAlternatives {
     using MegaCrit.Sts2.Core.Entities.Rewards;
     public class CardRewardAlternative {
@@ -668,7 +668,7 @@ namespace MegaCrit.Sts2.Core.Nodes.Screens.CardSelection {
     using MegaCrit.Sts2.Core.Entities.CardRewardAlternatives;
     using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
     public class NCardRewardAlternativeButton:Control {public bool IsEnabled {get;set;}=true;public Action? Clicked;public void ForceClick()=>Clicked?.Invoke();}
-    public class NCardRewardSelectionScreen:Control {
+    public partial class NCardRewardSelectionScreen:Control {
         private IReadOnlyList<CardCreationResult> _options=Array.Empty<CardCreationResult>();
         private IReadOnlyList<CardRewardAlternative> _extraOptions=Array.Empty<CardRewardAlternative>();
         private TaskCompletionSource<int?> _completionSource=new();
@@ -820,7 +820,7 @@ namespace MegaCrit.Sts2.Core.GameActions.Multiplayer {
  }
 }
 
-namespace MegaCrit.Sts2.Core.Models.Relics { public sealed class PotionBelt:RelicModel {public PotionBelt(){Id.Entry="POTION_BELT";DynamicVars["PotionSlots"]=new();}} }
+namespace MegaCrit.Sts2.Core.Models.Relics { public sealed partial class PotionBelt:RelicModel {public PotionBelt(){Id.Entry="POTION_BELT";DynamicVars["PotionSlots"]=new();}} }
 
 namespace MegaCrit.Sts2.Core.Multiplayer.Game {
  public sealed class ActChangeSynchronizer {

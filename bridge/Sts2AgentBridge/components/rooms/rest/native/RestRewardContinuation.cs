@@ -40,17 +40,25 @@ internal sealed class RestRewardContinuation : IDisposable
     private Task? _offer;
     private RestNativeState? _beforeDismiss;
     private PinnedPublicItemRewardClaim[] _unclaimed = Array.Empty<PinnedPublicItemRewardClaim>();
-    private string? _pending;
+    private string? _pending, _settledAction;
     private int _pendingRevision;
     private bool _dismissed, _complete, _disposed, _failed;
+    private readonly Func<PinnedPublicRewardParentTarget,NCardRewardSelectionScreen,IPinnedRewardAlternatives>? _alternatives;
+    private readonly Func<Player,IPinnedRewardInventory>? _inventory;
+    private readonly Func<Reward,IPinnedRelicRewardEffect?>? _relicEffect;
+    private readonly bool _disallowSkipping;
     internal PinnedPublicRewardDecisionReader? Reader => _reader;
     internal bool Completed => _complete;
-    internal RestRewardContinuation(RewardsSet set, Player player, NOverlayStack overlays, Func<bool> context)
+    internal RestRewardContinuation(RewardsSet set, Player player, NOverlayStack overlays, Func<bool> context,
+        Func<PinnedPublicRewardParentTarget,NCardRewardSelectionScreen,IPinnedRewardAlternatives>? alternatives=null,
+        Func<Player,IPinnedRewardInventory>? inventory=null,
+        Func<Reward,IPinnedRelicRewardEffect?>? relicEffect=null)
     {
+        _alternatives=alternatives;_inventory=inventory;_relicEffect=relicEffect;_disallowSkipping=set.DisallowSkipping;
         _set = set; _player = player; _overlays = overlays; _context = context;
         _manager = RunManager.Instance ?? throw new InvalidOperationException("rest_reward_manager");
         _run = player.RunState; _synchronizer = _manager.RewardsSetSynchronizer;
-        Require(context() && ReferenceEquals(set.Player, player) && !set.DisallowSkipping &&
+        Require(context() && ReferenceEquals(set.Player, player) && (!set.DisallowSkipping || relicEffect is not null) &&
             RewardsSet.testSelector is null && overlays.ScreenCount == 0 && OwnerBound() && Stack().Count == 0);
     }
     internal void Offering(Task task) { Require(_offer is null && task is not null); _offer = task; }
@@ -66,8 +74,11 @@ internal sealed class RestRewardContinuation : IDisposable
         Require(OwnerBound());
         Require(_rewards.Distinct(ReferenceEqualityComparer.Instance).Count() == _rewards.Length &&
             _rewards.All(r => ReferenceEquals(r.Player, _player) && r.ParentRewardSet is null &&
-                (r.GetType() == typeof(CardReward) || r.GetType() == typeof(PotionReward)) && r.IsPopulated && !r.SuccessfullySelected));
+                (r.GetType() == typeof(CardReward) || r.GetType() == typeof(PotionReward) || _relicEffect is not null && (r.GetType()==typeof(GoldReward)||r.GetType()==typeof(RelicReward)||r.GetType()==typeof(SpecialCardReward))) && r.IsPopulated && !r.SuccessfullySelected));
         _reader = new(screen, Scope, Closed, overlayDepth: 1);
+        _reader.AlternativesFactory=_alternatives;
+        _reader.InventoryFactory=_inventory;
+        _reader.RelicEffectFactory=_relicEffect;
         _applier = new(_reader);
     }
     private bool Top(Control screen, int depth) => GodotObject.IsInstanceValid(screen) && _overlays.ScreenCount == depth &&
@@ -84,7 +95,7 @@ internal sealed class RestRewardContinuation : IDisposable
         ReferenceEquals(_player.RunState, _run) && ReferenceEquals(_manager.RewardsSetSynchronizer, _synchronizer) && ReferenceEquals(Field(_set, "_synchronizer"), _synchronizer) &&
         (_screen is null || ReferenceEquals(Field(_screen, "_rewardsSet"), _set) && ReferenceEquals(Field(_screen, "_runState"), _run) && Field(_screen, "_isTerminal") is false);
     private bool Scope() => !_failed && !_disposed && _context() && OwnerBound() && ReferenceEquals(_set.Player, _player) &&
-        !_set.DisallowSkipping && RewardsSet.testSelector is null && _offer?.IsFaulted != true && _offer?.IsCanceled != true &&
+        _set.DisallowSkipping==_disallowSkipping && RewardsSet.testSelector is null && _offer?.IsFaulted != true && _offer?.IsCanceled != true &&
         (_rewards is null || _set.Rewards.SequenceEqual(_rewards)) &&
         (Closed() || _screen is not null && (Top(_screen, 1) || _overlays.Peek() is NCardRewardSelectionScreen menu && MenuScope(menu)));
     private bool MenuScope(NCardRewardSelectionScreen menu)
@@ -114,12 +125,13 @@ internal sealed class RestRewardContinuation : IDisposable
         Require(view.Status != PublicDecisionStatus.Unsupported);
         if (view.Status == PublicDecisionStatus.Complete)
         {
-            Require(_complete || _pending is not null && (_pending.StartsWith("choose:", StringComparison.Ordinal) || _pending.StartsWith("collect:", StringComparison.Ordinal)) && Closed() &&
+            string? settled=_pending??_settledAction;
+            Require(_complete || settled is not null && (settled.StartsWith("choose:", StringComparison.Ordinal) || settled.StartsWith("collect:", StringComparison.Ordinal) || settled.StartsWith("claim:", StringComparison.Ordinal) || settled.StartsWith("take:", StringComparison.Ordinal) || settled=="sacrifice") && Closed() &&
                 _rewards!.All(r => r.SuccessfullySelected));
             _pending = null; _complete = true;
         }
         if (view.Status == PublicDecisionStatus.Ready && _pending is not null)
-        { Require(view.DecisionRevision > _pendingRevision && _reader.InteractionSession.Pending is null); _pending = null; }
+        { Require(view.DecisionRevision > _pendingRevision && _reader.InteractionSession.Pending is null); _settledAction=_pending; _pending = null; }
         if (view.Status == PublicDecisionStatus.Ready && view.ScreenKind == "rewards")
         {
             _menu = null; _menuReward = null;
@@ -129,7 +141,7 @@ internal sealed class RestRewardContinuation : IDisposable
         }
         return view;
     }
-    internal bool CanDismiss(PublicRewardDecisionSnapshot view) => !_dismissed && !_complete &&
+    internal bool CanDismiss(PublicRewardDecisionSnapshot view) => !_disallowSkipping && !_dismissed && !_complete &&
         view.Status == PublicDecisionStatus.Ready && view.ScreenKind == "rewards" &&
         _reader!.InteractionSession.Pending is null && OwnsStackTop() && Top(_screen!, 1) &&
         _proceed is not null && GodotObject.IsInstanceValid(_proceed) && _proceed.IsVisibleInTree() && _proceed.IsEnabled;
@@ -156,8 +168,9 @@ internal sealed class RestRewardContinuation : IDisposable
     private void Require(bool condition) { if (!condition) { _failed = true; throw new InvalidOperationException("rest_reward_boundary"); } }
     public void Dispose()
     {
-        if (_disposed) { Require(_complete); return; }
-        _reader?.Dispose(); _disposed = true;
-        Require(_complete);
+        if (_disposed) { Require(_complete && !_failed); return; }
+        try { _reader?.Dispose(); Require(_complete && !_failed); }
+        catch { _failed=true; throw; }
+        finally { _disposed=true; }
     }
 }

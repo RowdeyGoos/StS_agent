@@ -90,7 +90,7 @@ namespace MegaCrit.Sts2.Core.Runs
 }
 namespace MegaCrit.Sts2.Core.Nodes
 {
-    public class NRun : Godot.Control { public static NRun? Instance; public GlobalUi GlobalUi = new(); }
+    public class NRun : Godot.Control { public static NRun? Instance; public MegaCrit.Sts2.Core.Nodes.Rooms.NCombatRoom? CombatRoom; public GlobalUi GlobalUi = new(); }
     public class GlobalUi { public MegaCrit.Sts2.Core.Nodes.Screens.Overlays.NOverlayStack Overlays = new(); public MapScreen MapScreen = new(); }
     public class MapScreen : Godot.Control { public bool IsOpen, IsTraveling; }
 }
@@ -102,7 +102,7 @@ namespace MegaCrit.Sts2.Core.Nodes.Screens.ScreenContext
 {
     public class ActiveScreenContext {
         public static ActiveScreenContext Instance = new(); public object? Blocker;
-        public bool IsCurrent(object screen) => ReferenceEquals(Blocker ?? MegaCrit.Sts2.Core.Nodes.Screens.Overlays.NOverlayStack.Instance?.Peek(), screen);
+        public bool IsCurrent(object screen) => ReferenceEquals(Blocker ?? MegaCrit.Sts2.Core.Nodes.Screens.Overlays.NOverlayStack.Instance?.Peek() ?? MegaCrit.Sts2.Core.Nodes.Rooms.NCombatRoom.Instance, screen);
     }
 }
 namespace MegaCrit.Sts2.Core.Nodes.Cards
@@ -117,6 +117,7 @@ namespace MegaCrit.Sts2.Core.Nodes.Cards
 }
 namespace MegaCrit.Sts2.Core.Nodes.CommonUi
 {
+    public class NChoiceSelectionSkipButton : NConfirmButton { }
     public class NConfirmButton : Godot.Control { public bool IsEnabled = true; public Action Click = () => { }; public int Calls; public void ForceClick() { Calls++; Click(); } }
 }
 namespace MegaCrit.Sts2.Core.Nodes.Combat { public class NPeekButton : Godot.Control { public bool IsPeeking; } }
@@ -125,6 +126,9 @@ namespace MegaCrit.Sts2.Core.Nodes.Cards.Holders
     public class Hitbox : Godot.Control { public bool IsEnabled = true; }
     public class NCardHolder : Godot.Control
     {
+        public MegaCrit.Sts2.Core.Nodes.Cards.NCard? CardNode;
+        public Hitbox Hitbox = new(); public Action Click = () => { }; public int Calls;
+        public virtual Godot.Error EmitSignal(string signal, NCardHolder holder) { if(signal != SignalName.Pressed || !ReferenceEquals(holder,this)) throw new Exception(); Calls++; Click(); return Godot.Error.Ok; }
         public static class SignalName { public static string Pressed = "pressed"; }
         private bool _isClickable = true;
         public void SetClickable(bool value) => _isClickable = value;
@@ -132,13 +136,11 @@ namespace MegaCrit.Sts2.Core.Nodes.Cards.Holders
     public class NGridCardHolder : NCardHolder
     {
         public MegaCrit.Sts2.Core.Models.CardModel CardModel = null!;
-        public MegaCrit.Sts2.Core.Nodes.Cards.NCard? CardNode;
-        public Hitbox Hitbox = new(); public Action Click = () => { }; public int Calls;
         public int SignalCalls, QueuedCalls;
         public Action? DeferredInput;
         public bool DeferInput;
         public Godot.Error SignalError = Godot.Error.Ok;
-        public Godot.Error EmitSignal(string signal, NCardHolder holder) {
+        public override Godot.Error EmitSignal(string signal, NCardHolder holder) {
             if (signal != SignalName.Pressed || !ReferenceEquals(holder, this)) throw new Exception();
             Calls++; SignalCalls++; Click(); return SignalError;
         }
@@ -178,4 +180,67 @@ namespace MegaCrit.Sts2.Core.Nodes.Screens.CardSelection
         public HashSet<CardModel> Selected => _selectedCards;
         public void Init(CardPile pile, CardSelectorPrefs prefs) { _pile = pile; _prefs = prefs; }
     }
+}
+
+namespace MegaCrit.Sts2.Core.Nodes.Cards.Holders {
+ public class NHandCardHolder : NCardHolder { }
+ public class NSelectedHandCardHolder : NCardHolder { }
+}
+namespace MegaCrit.Sts2.Core.Nodes.Cards {
+ public class NUpgradePreview : Godot.Control {
+  public MegaCrit.Sts2.Core.Models.CardModel? Card;
+  public Godot.Control DefaultFocusedControl = null!;
+ }
+}
+namespace MegaCrit.Sts2.Core.Nodes.Combat {
+ using MegaCrit.Sts2.Core.Models;
+ using MegaCrit.Sts2.Core.Nodes.Cards;
+ using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
+ using MegaCrit.Sts2.Core.Nodes.CommonUi;
+ using MegaCrit.Sts2.Core.CardSelection;
+ public class NSelectedHandCardContainer : Godot.Control { public List<NSelectedHandCardHolder> Holders=new(); }
+ public class NPlayerHand : Godot.Control {
+  public static NPlayerHand? Instance;
+  public enum Mode { None, Play, SimpleSelect, UpgradeSelect }
+  public Mode CurrentMode=Mode.SimpleSelect;
+  public bool IsInCardSelection => CurrentMode is Mode.SimpleSelect or Mode.UpgradeSelect;
+  public NPeekButton PeekButton=new();
+  public List<NHandCardHolder> ActiveHolders=new();
+  private CardSelectorPrefs _prefs;
+  private object? _currentSelectionFilter;
+  private TaskCompletionSource<IEnumerable<CardModel>> _selectionCompletionSource=new();
+  private readonly List<CardModel> _selectedCards=new();
+  private readonly NConfirmButton _selectModeConfirmButton=new();
+  private readonly NSelectedHandCardContainer _selectedHandCardContainer=new();
+  private readonly NUpgradePreview _upgradePreview=new();
+  public NConfirmButton Confirm => _selectModeConfirmButton;
+  public NSelectedHandCardContainer Selected => _selectedHandCardContainer;
+  public void Init(CardModel[] cards,CardSelectorPrefs prefs,bool upgrade=false) {
+   _prefs=prefs;_currentSelectionFilter=null;CurrentMode=upgrade?Mode.UpgradeSelect:Mode.SimpleSelect;
+   foreach(var card in cards) Add(card);
+   Confirm.Click=()=>Finish(_selectedCards.ToArray());Refresh();
+  }
+  public void ReplaceTask()=>_selectionCompletionSource=new();
+  public void Finish(CardModel[] cards){_selectionCompletionSource.SetResult(cards);CurrentMode=Mode.Play;}
+  private void Add(CardModel card,NCard? node=null) {
+   var h=new NHandCardHolder{CardNode=node??new NCard{Model=card}};ActiveHolders.Add(h);
+   h.Click=()=> {
+    _selectedCards.Add(card); ActiveHolders.Remove(h);
+    NCard returning=h.CardNode!;
+    Action deselect=()=>{_selectedCards.Remove(card);_selectedHandCardContainer.Holders.RemoveAll(x=>ReferenceEquals(x.CardNode?.Model,card));_upgradePreview.Card=null;Add(card,returning);Refresh();};
+    if(CurrentMode==Mode.UpgradeSelect){_upgradePreview.Card=card;returning=new NCard{Model=card};_upgradePreview.DefaultFocusedControl=new NCardHolder{CardNode=returning,Click=deselect};}
+    else _selectedHandCardContainer.Holders.Add(new NSelectedHandCardHolder{CardNode=h.CardNode,Click=deselect});
+    Refresh();
+   };
+  }
+  private void Refresh()=>Confirm.IsEnabled=_selectedCards.Count>=_prefs.MinSelect&&_selectedCards.Count<=_prefs.MaxSelect;
+ }
+}
+
+namespace MegaCrit.Sts2.Core.Nodes.Rooms {
+ public class NCombatRoom : Godot.Control {
+  public static NCombatRoom? Instance;
+  public UiState Ui=new();
+  public class UiState {public MegaCrit.Sts2.Core.Nodes.Combat.NPlayerHand Hand=null!;}
+ }
 }

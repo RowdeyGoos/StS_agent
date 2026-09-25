@@ -8,7 +8,7 @@ using Sts2AgentBridge.Successors.CardSelectionV1;
 using Sts2AgentBridge.Successors.ItemV1;
 using Sts2AgentBridge.Successors.GenericEventV7;
 
-internal static class GenericEventV7WireTests
+internal static partial class GenericEventV7WireTests
 {
     private const string Nonce = "0123456789abcdef0123456789abcdef";
     private static readonly string ParentId = new('a', 64), ChildId = new('b', 64);
@@ -400,7 +400,7 @@ internal static class GenericEventV7WireTests
             Play(service,"select:0");Play(service,"confirm");f.ReadTag="card_selection_v1";Error(Read(service),"internal_failure");Check(f.ParentApplies==1,"no next parent");
         });
         Case("explicit G7 routes",()=>Check(GenericEventV7WireService.DecisionRoute=="/probe/generic-event-v7/public/decision"&&GenericEventV7WireService.ActionRoute=="/probe/generic-event-v7/public/action","exact routes"));
-        ItemCases();VariableTransformCases();
+        ItemCases();VariableTransformCases();FullRewardCases();
         Console.WriteLine(JsonSerializer.Serialize(new { schema_version = 1, status = "passed", suite = "generic_event_v7_wire", check_count = _checks }));
         return 0;
     }

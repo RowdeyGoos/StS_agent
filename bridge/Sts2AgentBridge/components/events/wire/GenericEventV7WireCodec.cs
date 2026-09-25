@@ -111,8 +111,8 @@ internal static class GenericEventV7WireCodec
         }else if(value is GenericEventV7RewardReceipt r){w.WriteString("session_nonce",r.SessionNonce);w.WriteString("decision_id",r.DecisionId);w.WriteString("action_id",r.ActionId);w.WriteString("outcome",r.Outcome);}else throw new InvalidOperationException();
         w.WriteEndObject();
     });
-    internal static byte[] CardResults(object value) => Encode(w=>{
-        w.WriteStartObject();w.WriteString("version","card_results_v1");
+    internal static byte[] CardResults(object value,string version="card_results_v1") => Encode(w=>{
+        w.WriteStartObject();w.WriteString("version",version);
         if(value is GenericEventV7RewardRead p) {
             w.WriteString("session_nonce",p.SessionNonce);w.WriteString("status",p.Status);w.WriteString("phase",p.Phase);w.WriteString("decision_id",p.DecisionId);
             w.WriteStartArray("cards");foreach(var c in p.Cards){w.WriteStartObject();w.WriteNumber("slot",c.Slot);w.WriteString("key",c.Key);w.WriteNumber("upgrade_level",c.UpgradeLevel);w.WriteEndObject();}w.WriteEndArray();
@@ -181,7 +181,7 @@ internal static class GenericEventV7WireCodec
         w.WriteStartObject("child"); w.WriteNumber("ordinal", c.Ordinal);
         w.WriteString("parent_decision_id", c.ParentDecisionId); w.WriteString("parent_action_id", c.ParentActionId);
         w.WriteString("kind", c.Kind); w.WriteString("contract_version", c.ContractVersion);
-        if (c.Kind is "item" or "card_reward" or "card_offer" or "card_results" or "crystal_sphere" or "abandon_confirmation" or "item_policy") { w.WriteNumber("offer_count", c.OfferCount); w.WriteEndObject(); return; }
+        if (c.Kind is "item" or "card_reward" or "card_offer" or "card_results" or "crystal_sphere" or "abandon_confirmation" or "item_policy" or "full_rewards") { w.WriteNumber("offer_count", c.OfferCount); w.WriteEndObject(); return; }
         w.WriteString("operation", c.Operation); w.WriteNumber("min_select", c.MinSelect);
         w.WriteNumber("max_select", c.MaxSelect); w.WriteString("commit_mode", c.CommitMode);
         w.WriteNumber("domain_count", c.DomainCount); w.WriteEndObject();

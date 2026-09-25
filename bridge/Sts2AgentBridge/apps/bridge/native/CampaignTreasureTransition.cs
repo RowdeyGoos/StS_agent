@@ -21,7 +21,7 @@ namespace Sts2AgentBridge.Unified;
 // Native single-player Skip leaves that UI task dormant forever. Reconcile its
 // exact waiting state plus the completed Skip action/Proceed task; never invent
 // completion. Reads never open the chest, enable Skip, or dispatch input.
-internal sealed class CampaignTreasureTransition : IDisposable
+internal sealed partial class CampaignTreasureTransition : IDisposable
 {
     private const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
     private static readonly MethodInfo Open = typeof(NTreasureRoom).GetMethod("OpenChest", Private)!;
@@ -44,7 +44,7 @@ internal sealed class CampaignTreasureTransition : IDisposable
     private readonly NProceedButton _skip;
     private readonly NTreasureRoomRelicCollection _collection;
     private readonly TreasureRoomRelicSynchronizer _synchronizer;
-    private readonly object _relics;
+    private readonly object? _relics;
     private readonly Task _pickingBegan, _pickingFinished;
     private readonly RunState _run;
     private readonly RunManager _manager;
@@ -58,8 +58,9 @@ internal sealed class CampaignTreasureTransition : IDisposable
     private bool _dispatching, _openCalled, _started, _skipped, _complete, _failed, _disposed, _cleanupFailed;
     internal bool Active => _started && !_complete;
 
-    internal CampaignTreasureTransition(NTreasureRoom screen)
+    internal CampaignTreasureTransition(NTreasureRoom screen, bool full = false)
     {
+        _full = full;
         _screen = screen; _manager = RunManager.Instance; _queue = _manager.ActionQueueSynchronizer;
         _run = _manager.DebugOnlyGetState() ?? throw new InvalidOperationException("Missing treasure run.");
         _node = NRun.Instance ?? throw new InvalidOperationException("Missing treasure node.");
@@ -69,11 +70,13 @@ internal sealed class CampaignTreasureTransition : IDisposable
         _skip = screen.ProceedButton;
         _collection = Collection.GetValue(screen) as NTreasureRoomRelicCollection ?? throw new InvalidOperationException("Missing relic collection.");
         _synchronizer = _manager.TreasureRoomRelicSynchronizer;
-        _relics = _synchronizer.CurrentRelics ?? throw new InvalidOperationException("Missing treasure offerings.");
+        _relics = _synchronizer.CurrentRelics;
+        _empty = full && _synchronizer.CurrentRelics is null or {Count:0};
+        Require(_relics is not null||_empty);
         _pickingBegan = _collection.RelicPickingBegan(); _pickingFinished = _collection.RelicPickingFinished();
         Context(); Require(Opened.GetValue(_screen) is false && Choosing.GetValue(_screen) is false && Enabled(_chest));
     }
-    private void Require(bool value) { if (!value) { _failed = true; throw new InvalidOperationException("Campaign treasure ownership failed."); } }
+    private void Require([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)] bool value) { if (!value) { _failed = true; throw new InvalidOperationException("Campaign treasure ownership failed."); } }
     private static bool Enabled(NButton button) => GodotObject.IsInstanceValid(button) && button.IsVisibleInTree() && button.IsEnabled;
     private void Context()
     {
@@ -87,19 +90,23 @@ internal sealed class CampaignTreasureTransition : IDisposable
             GodotObject.IsInstanceValid(_screen) && _screen.IsVisibleInTree() && ReferenceEquals(Room.GetValue(_screen), _room) &&
             ReferenceEquals(Run.GetValue(_screen), _run) && ReferenceEquals(Chest.GetValue(_screen), _chest) &&
             ReferenceEquals(Collection.GetValue(_screen), _collection) && GodotObject.IsInstanceValid(_collection) &&
-            ReferenceEquals(_manager.TreasureRoomRelicSynchronizer, _synchronizer) && ReferenceEquals(_synchronizer.CurrentRelics, _relics) &&
+            ReferenceEquals(_manager.TreasureRoomRelicSynchronizer, _synchronizer) &&
+            (ReferenceEquals(_synchronizer.CurrentRelics, _relics) || (_claimStarted && _awardTask is not null || _empty&&_emptySeen) && _synchronizer.CurrentRelics is null) &&
             ReferenceEquals(_collection.RelicPickingBegan(), _pickingBegan) && ReferenceEquals(_collection.RelicPickingFinished(), _pickingFinished) &&
-            !_pickingBegan.IsCompleted && !_pickingFinished.IsCompleted && (_skipped || Skipped.GetValue(_synchronizer) is false) &&
+            (_claimStarted || _empty&&_emptySeen || !_pickingBegan.IsCompleted && !_pickingFinished.IsCompleted) && (_skipped || Skipped.GetValue(_synchronizer) is false) &&
             ReferenceEquals(_screen.ProceedButton, _skip) && _node.GlobalUi.Overlays.ScreenCount == 0 &&
             NModalContainer.Instance?.OpenModal is null && NCapstoneContainer.Instance is not { InUse: true } &&
-            !_node.GlobalUi.MapScreen.IsTraveling && (_skipped || !_node.GlobalUi.MapScreen.IsOpen));
+            !_node.GlobalUi.MapScreen.IsTraveling && (_skipped || _leavingClaim || !_node.GlobalUi.MapScreen.IsOpen));
     }
     internal string Read()
     {
         Context();
         if (!_started) { Require(Opened.GetValue(_screen) is false && Choosing.GetValue(_screen) is false && Enabled(_chest)); return "open_chest"; }
         Require(ReferenceEquals(_owner, this) && _openTask is not null);
-        foreach (var task in new[] { _openTask, _delayTask, _ftueTask }) Require(task?.IsFaulted != true && task?.IsCanceled != true);
+        foreach (var task in new[] { _openTask, _ftueTask }) Require(task?.IsFaulted != true && task?.IsCanceled != true);
+        Require(_delayTask?.IsFaulted!=true&&(_delayTask?.IsCanceled!=true||_empty&&_emptySeen&&_pickingBegan.IsCompletedSuccessfully));
+        if (_empty) return ReadEmpty();
+        if (_claimStarted) return ReadClaim();
         if (_skipped) {
             string destination = _leave!.Poll();
             if (destination == "waiting") return "waiting";
@@ -113,11 +120,21 @@ internal sealed class CampaignTreasureTransition : IDisposable
         if (Opened.GetValue(_screen) is not true || Choosing.GetValue(_screen) is not true ||
             _delayTask?.IsCompletedSuccessfully != true || _ftueTask?.IsCompletedSuccessfully != true) return "waiting";
         Require(_skip.IsSkip);
-        return Enabled(_skip) ? "skip_relic" : "waiting";
+        if (!Enabled(_skip)) return "waiting";
+        if (_full) { CaptureRelic(); return "relic"; }
+        return "skip_relic";
     }
     internal void Apply(string action)
     {
-        Require(Read() == action && action is "open_chest" or "skip_relic");
+        string phase = Read();
+        Require(phase == action && action is "open_chest" or "skip_relic" ||
+            _full && (phase == "relic" && action is "claim_relic" or "skip_relic" || phase == "proceed" && action == "proceed"));
+        if (action == "claim_relic") { Claim(); return; }
+        if (action == "proceed") {
+            _leavingClaim = true;
+            _leave = new CampaignRewardTransition(_screen, () => { Context(); return true; });
+            _leave.Dispatch(); return;
+        }
         if (action == "skip_relic") {
             _leave = new CampaignRewardTransition(_screen, () => { Context(); return true; });
             _skipped = true;
@@ -128,6 +145,7 @@ internal sealed class CampaignTreasureTransition : IDisposable
         foreach (var target in new[] { Open, Delay, Ftue }) Require(target is not null && !(Harmony.GetPatchInfo(target)?.Owners.Any() ?? false));
         _owner = this; _started = true;
         try {
+            if(_empty)InstallEmpty();
             foreach (var target in new[] { Open, Delay, Ftue }) _harmony.Patch(target,
                 new HarmonyMethod(typeof(CampaignTreasureTransition).GetMethod(nameof(BeforeTask), BindingFlags.Static | BindingFlags.NonPublic)),
                 new HarmonyMethod(typeof(CampaignTreasureTransition).GetMethod(nameof(AfterTask), BindingFlags.Static | BindingFlags.NonPublic)));
@@ -158,7 +176,7 @@ internal sealed class CampaignTreasureTransition : IDisposable
         catch { _failed = true; _complete = false; }
         _disposed = true;
         try {
-            try { _leave?.Dispose(); }
+            try { try {_leave?.Dispose();} finally {try {CleanupClaim();} finally {CleanupEmpty();}} }
             finally {
 #if CAMPAIGN_TEST_SEAM
                 BeforeCleanupForTest?.Invoke();

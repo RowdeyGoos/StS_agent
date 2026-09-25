@@ -180,6 +180,9 @@ def parse_args(argv=None):
     parser.add_argument('--campaign-setup', choices=('controlled_extra_hp','normal_hp'), help='Campaign: declare the manually prepared Ironclad A0 entry. No native reset or setup mutations are performed by the controller.')
     parser.add_argument('--campaign-entry', choices=('fresh', 'resume'), help='Campaign entry: fresh (default) requires the first-act event/map; resume attaches after native Continue and records only this segment, never full-campaign acceptance.')
     parser.add_argument('--agent-dispatch-map', action='store_true', help='Agent: dispatch one advertised map node and stop after native completion; otherwise stop at the actionable map.')
+    parser.add_argument('--public-trajectory', type=Path, help='Opt in to retaining validated public observations/actions in a new .live.jsonl file; no native tokens or raw responses are retained.')
+    parser.add_argument('--trajectory-split', choices=('train', 'validation', 'test'))
+    parser.add_argument('--trajectory-setup', choices=('normal', 'assisted', 'controlled', 'resumed'))
     parser.add_argument('--agent-stop-at-map', action='store_true', help='Full agent: stop at the next actionable map after all accepted actions reconcile.')
     parser.add_argument('--shop-max-purchases', type=int, choices=range(9), default=1, help='Maximum shop purchases, 0 to 8; zero leaves without buying.')
     parser.add_argument('--event-potion-policy', choices=('skip-full','skip-all','replace-first','stop-on-full'), default='skip-full')
@@ -202,6 +205,11 @@ def parse_args(argv=None):
     parser.add_argument('--rest-selection-policy', choices=('choose', 'cancel', 'preview-cancel'), help='Interactive rest: choose and confirm, cancel immediately, or select then cancel from the preview.')
     parser.add_argument('--rest-cook-slots', type=int, nargs=2, metavar=('FIRST', 'SECOND'), help='Cook: two increasing original deck slots (0–63); default is the first two removable cards.')
     args = parser.parse_args(argv)
+    if args.public_trajectory is not None:
+        if args.capability != 'full-agent' or args.trajectory_split is None or args.trajectory_setup is None or not args.public_trajectory.name.endswith('.live.jsonl'):
+            parser.error('--public-trajectory requires full-agent, a .live.jsonl path, --trajectory-split and --trajectory-setup')
+    elif args.trajectory_split is not None or args.trajectory_setup is not None:
+        parser.error('Trajectory metadata requires --public-trajectory')
     if args.agent_stop_at_map and args.capability != 'full-agent':
         parser.error('--agent-stop-at-map requires --capability full-agent')
     if (args.capability == 'campaign') != (args.campaign_setup is not None):
@@ -223,6 +231,7 @@ def main():
     args = parse_args()
     credential = bytearray()
     client = None
+    recorder = None
     result = {'status': 'failed', 'code': 'client_preflight_failed'}
     try:
         sys.path.insert(0, str(ROOT))
@@ -247,7 +256,11 @@ def main():
                 progress=lambda stage: print(json.dumps({'campaign_progress': stage}, separators=(',', ':')), file=sys.stderr, flush=True))
         elif args.capability in ('agent', 'full-agent'):
             host = load('unified_agent_host', 'apps/bridge/client/agent_host.py')
-            result = host.run_agent(client.exchange, full=args.capability == 'full-agent', dispatch_map=args.agent_dispatch_map, stop_at_map=args.agent_stop_at_map,
+            if args.public_trajectory is not None:
+                from game.agent.live_recording import LiveTrajectoryWriter
+                recorder = LiveTrajectoryWriter(args.public_trajectory, release_sha256=args.release_sha256,
+                                                split=args.trajectory_split, setup=args.trajectory_setup)
+            result = host.run_agent(client.exchange, recorder=recorder, full=args.capability == 'full-agent' , dispatch_map=args.agent_dispatch_map, stop_at_map=args.agent_stop_at_map,
                                     decision_limit=8192 if args.capability == 'full-agent' else 256,
                                     seconds=5400.0 if args.capability == 'full-agent' else 180.0)
         elif args.capability in ('combat', 'combat-map', 'combat-choice', 'rewards'):
@@ -305,6 +318,8 @@ def main():
     except Exception:
         result = {'status': 'failed', 'code': 'client_failed'}
     finally:
+        if recorder is not None:
+            recorder.abort()
         if client is not None:
             result = retain_read_diagnostic(result, client)
             client.close()

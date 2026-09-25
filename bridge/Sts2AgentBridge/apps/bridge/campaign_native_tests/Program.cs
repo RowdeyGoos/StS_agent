@@ -184,6 +184,50 @@ internal static class Program
             MegaCrit.Sts2.Core.Nodes.Screens.Capstones.NCapstoneContainer.Instance=null;
         }
     }
+    private static void TreasureClaims() {
+        foreach(string mode in new[]{"empty_list","empty_null","empty_foreign_sync","empty_inventory","empty_pending"}) {
+            var f=new Fixture();f.Node.GlobalUi.Overlays.Screens.Clear();f.Run.CurrentRoom=new TreasureRoom();
+            f.Manager.TreasureRoomRelicSynchronizer.CurrentRelics=mode=="empty_null"?null:new();
+            var chest=new NTreasureRoom();f.Node.TreasureRoom=chest;chest.Bind(f.Run);
+            var transition=new CampaignTreasureTransition(chest,true);transition.Apply("open_chest");
+            Check(transition.Read()=="waiting","empty chest waits for native animation");
+            if(mode=="empty_foreign_sync")f.Manager.TreasureRoomRelicSynchronizer=new();
+            if(mode=="empty_inventory")f.Player.Relics.Add(new());
+            if(mode is "empty_list" or "empty_null") {
+                f.Manager.TreasureRoomRelicSynchronizer.CompleteWithNoRelics();
+                Check(chest.DelayGate.Task.IsCanceled,"native empty animation cancels unfinished Skip delay");
+                Check(transition.Read()=="proceed"&&f.Player.Relics.Count==0,"empty chest exposes native Proceed without a claim");
+                transition.Apply("proceed");Check(transition.Read()=="map","empty chest returns to map without skip vote");
+                transition.Dispose();transition.Dispose();
+            } else {
+                if(mode!="empty_pending")Check(Throws(()=>transition.Read()),"empty chest rejects changed ownership or inventory");
+                Check(Throws(transition.Dispose)&&Throws(transition.Dispose),"unresolved empty chest cannot hand off");
+            }
+        }
+        foreach(string mode in new[]{"success","pending_effect","foreign_holder","foreign_model","modal","queued_owner_lost","queued_synchronizer","queued_holder","cancelled_action","foreign_result"}) {
+            var f=new Fixture();f.Node.GlobalUi.Overlays.Screens.Clear();f.Run.CurrentRoom=new TreasureRoom();
+            var chest=new NTreasureRoom();f.Node.TreasureRoom=chest;chest.Bind(f.Run);
+            var effect=new TaskCompletionSource();if(mode=="pending_effect")f.Manager.TreasureRoomRelicSynchronizer.CurrentRelics![0].Effect=()=>effect.Task;
+            var t=new CampaignTreasureTransition(chest,true);t.Apply("open_chest");chest.ShowSkip();Check(t.Read()=="relic","full chest offers claim");
+            GameAction? queued=null;bool success=mode is "success" or "pending_effect";
+            if(mode=="foreign_holder")chest.Collection.SingleplayerRelicHolder=new();
+            if(mode=="foreign_model")chest.Collection.SingleplayerRelicHolder.Relic.Model=new();
+            if(mode=="modal")NModalContainer.Instance=new(){OpenModal=new()};
+            if(mode is "foreign_holder" or "foreign_model" or "modal") Check(Throws(()=>t.Apply("claim_relic"))&&f.Player.Relics.Count==0,"changed claim target rejected before mutation");
+            else {
+                if(!success)f.Manager.ActionQueueSynchronizer.Enqueue=a=>queued=a;
+                t.Apply("claim_relic");
+                if(mode=="pending_effect"){Check(t.Read()=="waiting"&&chest.OpenGate.Task.IsCompleted,"chest animation cannot certify pending relic effect");effect.SetResult();}
+                if(mode=="queued_owner_lost"){f.Run.CurrentRoom=new TreasureRoom();Check(Throws(()=>queued!.Execute())&&f.Player.Relics.Count==0,"queued claim rechecks room");}
+                if(mode=="queued_synchronizer"){((PickRelicAction)queued!).TestSynchronizer=new();Check(Throws(()=>queued.Execute())&&f.Player.Relics.Count==0,"foreign queued synchronizer rejected");}
+                if(mode=="queued_holder"){chest.Collection.SingleplayerRelicHolder=new();Check(Throws(()=>queued!.Execute())&&f.Player.Relics.Count==0,"replaced queued holder rejected");}
+                if(mode=="cancelled_action"){queued!.Cancel();Check(Throws(()=>t.Read()),"cancelled claim stays failed");}
+                if(mode=="foreign_result"){f.Manager.TreasureRoomRelicSynchronizer.CurrentRelics![0]=new();Check(Throws(()=>queued!.Execute()),"queued offer model rechecked");Check(Throws(()=>t.Read())&&f.Player.Relics.Count==0,"foreign native award rejected");}
+                if(success){Check(t.Read()=="proceed"&&f.Player.Relics.Count==1,"exact claim and obtain finish");t.Apply("proceed");Check(t.Read()=="map","claim leaves without skip vote");}
+            }
+            Check(Throws(t.Dispose)!=success,"claim cleanup reflects settlement");NModalContainer.Instance=null;
+        }
+    }
     private static void CleanupFailure() {
         var chestFixture=new Fixture();chestFixture.Node.GlobalUi.Overlays.Screens.Clear();chestFixture.Run.CurrentRoom=new TreasureRoom();
         var chest=new NTreasureRoom();chestFixture.Node.TreasureRoom=chest;chest.Bind(chestFixture.Run);
@@ -289,5 +333,5 @@ internal static class Program
             if(guard=="tutorial")Check(Throws(guarded.Dispose),"tutorial unresolved cleanup remains failed");
         }
     }
-    private static void Main(){Transitions();Admission();Navigation();TreasureOwnership();MapIdentity();Shops();RewardMapRouting();CleanupFailure();Console.WriteLine("campaign native checks: "+_checks);}
+    private static void Main(){Transitions();Admission();Navigation();TreasureOwnership();MapIdentity();Shops();RewardMapRouting();TreasureClaims();CleanupFailure();Console.WriteLine("campaign native checks: "+_checks);}
 }

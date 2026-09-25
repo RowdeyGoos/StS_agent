@@ -69,6 +69,12 @@ internal sealed class FullNativeState : IDisposable
         }
         return reference;
     }
+    internal void Adopt(string kind, object offer, object model)
+    {
+        string reference = Ref(kind, offer); var map = _refs[kind];
+        Require(!map.TryGetValue(model, out var existing) || existing == reference);
+        map[model] = reference;
+    }
     internal JsonObject Card(CardModel card)
     { Bind(card); return FullNativeDisplay.Card(card, Ref("card", card)); }
     internal JsonObject Relic(RelicModel relic)

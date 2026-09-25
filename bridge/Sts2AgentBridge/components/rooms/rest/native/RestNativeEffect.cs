@@ -20,6 +20,7 @@ using MegaCrit.Sts2.Core.Nodes.Screens.Overlays;
 using MegaCrit.Sts2.Core.Rewards;
 using MegaCrit.Sts2.Core.Runs;
 using Sts2AgentBridge.Successors.RoomFlowsV1.Shop.Native;
+using Sts2AgentBridge.Adapters.Public;
 
 namespace Sts2AgentBridge.Rooms.Rest;
 
@@ -39,6 +40,8 @@ internal sealed class RestNativeEffect : IDisposable
     private readonly NOverlayStack _overlays;
     private readonly Func<bool> _context;
     private readonly bool _interactive;
+    private readonly Func<PinnedPublicRewardParentTarget,NCardRewardSelectionScreen,IPinnedRewardAlternatives>? _alternatives;
+    private readonly Func<Player,IPinnedRewardInventory>? _inventory;
     private CardModel[] _chosen = Array.Empty<CardModel>();
     private RestNativeState? _selectorBefore;
     private PinnedDeckCardChoice? _choice;
@@ -50,8 +53,9 @@ internal sealed class RestNativeEffect : IDisposable
     private readonly List<CardModel> _cloneInputs = new();
     private readonly List<Task<CardPileAddResult>> _insertions = new();
 
-    internal RestNativeEffect(RestSiteOption option, string action, RestNativeState before, NOverlayStack overlays, Func<bool> context, bool interactive = false)
-    { _interactive = interactive; _option = option; _action = action; _before = before; _player = before.Player; _overlays = overlays; _context = context; }
+    internal RestNativeEffect(RestSiteOption option, string action, RestNativeState before, NOverlayStack overlays, Func<bool> context, bool interactive = false,
+        Func<PinnedPublicRewardParentTarget,NCardRewardSelectionScreen,IPinnedRewardAlternatives>? alternatives=null,Func<Player,IPinnedRewardInventory>? inventory=null)
+    { _interactive = interactive; _option = option; _action = action; _before = before; _player = before.Player; _overlays = overlays; _context = context; _alternatives=alternatives;_inventory=inventory; }
     private void Require([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)] bool value) { if (!value) { _failed = true; throw new InvalidOperationException("rest_effect_boundary"); } }
     private bool Context() => !_failed && !_disposed && System.Environment.CurrentManagedThreadId == _thread &&
         ReferenceEquals(Active, this) && ReferenceEquals(_player.RunState, _before.RunState) && _context();
@@ -113,7 +117,7 @@ internal sealed class RestNativeEffect : IDisposable
         if (__state is {} s)
         {
             s.Require(s.Context() && s._action == "heal" && s.Rewards is null);
-            s.Rewards = new(__instance, s._player, s._overlays, s.Context);
+            s.Rewards = new(__instance, s._player, s._overlays, s.Context,s._alternatives,s._inventory);
         }
     }
     private static void OfferPostfix(Task __result, RestNativeEffect? __state)

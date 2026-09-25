@@ -3,6 +3,7 @@
   <ItemGroup>
     <Compile Include="../combat/CombatCardChoiceService.cs" />
     <Compile Include="../combat_native/PinnedCombatCardChoiceAdapter.cs" />
+    <Compile Include="../combat_native/PinnedCombatHandChoiceAdapter.cs" />
     <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicCombatDecisionReader.cs" />
     <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedPublicCombatActionApplier.cs" />
     <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicCombatDecision.cs" />
@@ -14,6 +15,7 @@
     <Compile Include="CombatIdentityFixtures.cs" />
     <Compile Include="CombatExecutionFixtures.cs" />
     <Compile Include="CombatOfferFixtures.cs" />
+    <Compile Include="CombatHandFixtures.cs" />
     <Compile Include="TargetStubs.cs" /><Compile Include="Program.cs" />
   </ItemGroup>
 </Project>

@@ -34,9 +34,9 @@ internal sealed class PinnedPublicRewardParentTarget
 
     public Reward Reward { get; }
 
-    public PublicRewardItem Projection { get; }
+    public PublicRewardItem Projection { get; internal set; }
 
-    public IReadOnlyList<CardModel> OfferedCards { get; }
+    public IReadOnlyList<CardModel> OfferedCards { get; internal set; }
     internal PinnedPublicGoldRewardClaim? Gold {get;set;}
 }
 
@@ -280,10 +280,18 @@ internal sealed class PinnedPublicRewardInteractionSession
         _goldTargets[reward]=(_decisionRevision,button,claim);return claim;
     }
     internal bool UsesItemIndices => _itemDomain is not null;
-    internal bool SettledItemsValid() {
+    internal bool SettledItemsValid(int certifiedCapacity=-1) {
         var growth=_pending?.Item;
-        int capacity=growth is {PotionCapacityGain:>0} && growth.Valid(true)?growth.ResultCapacity:-1;
+        int capacity=growth is {PotionCapacityGain:>0} && growth.Valid(true)?growth.ResultCapacity:certifiedCapacity;
         return _settledItems.TrueForAll(item=>item.SettledValid(capacity));
+    }
+    internal void AcceptCapacity(int capacity) {
+        if(capacity is <0 or >8)throw new InvalidOperationException("Reward capacity unavailable.");
+        foreach(var settled in _settledItems)settled.AcceptCapacity(capacity);
+        if(_initialPotions is not null) {
+            if(capacity<_initialPotions.Length)throw new InvalidOperationException("Reward capacity regressed.");
+            Array.Resize(ref _initialPotions,capacity);Array.Resize(ref _initialPotionKeys,capacity);
+        }
     }
     internal void SettleItem(PinnedPublicItemRewardClaim item) {
         item.Settle();

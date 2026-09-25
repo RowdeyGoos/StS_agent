@@ -38,7 +38,7 @@ internal sealed class CampaignRewardTransition : IPublicRewardTransition
 #endif
     private readonly Harmony _harmony = new("sts2.agent.campaign.reward."+Guid.NewGuid().ToString("N"));
     private readonly Control _screen;
-    private readonly bool _treasure;
+    private readonly bool _treasure, _treasureSkip;
     private readonly Func<bool>? _treasureContext;
     private readonly NProceedButton _button;
     private readonly NRun _node;
@@ -65,7 +65,7 @@ internal sealed class CampaignRewardTransition : IPublicRewardTransition
     internal CampaignRewardTransition(NTreasureRoom room,Func<bool> ownerContext):this(room,room.ProceedButton,true,ownerContext) { }
     private CampaignRewardTransition(Control screen,NProceedButton button,bool treasure,Func<bool>? ownerContext=null)
     {
-        _treasure=treasure;_treasureContext=ownerContext;
+        _treasure=treasure;_treasureSkip=treasure&&button.IsSkip;_treasureContext=ownerContext;
         _screen=screen;_manager=RunManager.Instance;_run=_manager.DebugOnlyGetState()??throw new InvalidOperationException("Missing run.");_node=NRun.Instance??throw new InvalidOperationException("Missing run node.");
         _queue=_manager.ActionQueueSynchronizer;
         if(_run is null||_node is null||_run.Players.Count!=1)throw new InvalidOperationException("Campaign run unavailable.");
@@ -99,7 +99,7 @@ internal sealed class CampaignRewardTransition : IPublicRewardTransition
             _dispatching=true;
             Require(_button.EmitSignal(NClickableControl.SignalName.Released,_button)==Error.Ok);
         } catch {_failed=true;throw;} finally {_dispatching=false;}
-        Require(_nextAct?_vote is not null:_task is not null&&(!_treasure||_vote is not null));
+        Require(_nextAct?_vote is not null:_task is not null&&(!_treasureSkip||_vote is not null));
     }
     private void Patch(MethodInfo target,string prefix,string? postfix=null)=>_harmony.Patch(target,
         new HarmonyMethod(typeof(CampaignRewardTransition).GetMethod(prefix,BindingFlags.Static|BindingFlags.NonPublic)),
@@ -107,7 +107,7 @@ internal sealed class CampaignRewardTransition : IPublicRewardTransition
     private static void BeforeQueue(ActionQueueSynchronizer __instance,GameAction action)
     {
         var o=_owner!;o.Require(o._dispatching&&o.Context()&&o._vote is null&&ReferenceEquals(__instance,o._manager.ActionQueueSynchronizer));
-        if(o._treasure)o.Require(!o._nextAct&&action.GetType()==typeof(PickRelicAction)&&
+        if(o._treasure)o.Require(o._treasureSkip&&!o._nextAct&&action.GetType()==typeof(PickRelicAction)&&
             ReferenceEquals(PickPlayer.GetValue(action),o._player)&&PickIndex.GetValue(action) is null&&((PickRelicAction)action).TestSynchronizer is null);
         else o.Require(o._nextAct&&action.GetType()==typeof(VoteToMoveToNextActAction)&&ReferenceEquals(VotePlayer.GetValue(action),o._player));
         o._vote=action;action.BeforeExecuted+=o.BeforeVote;action.BeforeCancelled+=o.CancelVote;

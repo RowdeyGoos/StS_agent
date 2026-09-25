@@ -4,6 +4,8 @@
     <Compile Include="../runtime/CampaignContracts.cs" />
     <Compile Include="../native/CampaignNavigation.cs" />
     <Compile Include="../native/CampaignTreasureTransition.cs" />
+    <Compile Include="../native/CampaignTreasureClaim.cs" />
+    <Compile Include="../native/CampaignTreasureEmpty.cs" />
     <Compile Include="../native/CampaignRewardTransition.cs" />
     <Compile Include="../native/CampaignShopTransition.cs" />
     <Compile Include="../../../components/rooms/shop/tests/MultiplePurchaseFixture.cs" />

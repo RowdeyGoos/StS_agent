@@ -23,8 +23,9 @@ namespace Sts2AgentBridge.Successors.RoomFlowsV1.Shop.Native;
 /// </summary>
 public sealed class PinnedShopV1NativeAdapter : IShopV1NativeAdapter
 {
-    private readonly bool _interactive;
-    public PinnedShopV1NativeAdapter(bool interactive = false) => _interactive = interactive;
+    private readonly bool _interactive, _interactiveRemoval;
+    internal Func<Player,RelicModel,NOverlayStack,IShopV1NativeDispatch,Func<bool>,int,IShopV1ObservedDispatch?>? FullPickupFactory;
+    public PinnedShopV1NativeAdapter(bool interactive = false, bool interactiveRemoval = false) { _interactive = interactive; _interactiveRemoval = interactiveRemoval; }
     public ShopV1SurfaceCapture CaptureSurface()
     {
         if (!TryContext(out ShopContext? context))
@@ -42,7 +43,7 @@ public sealed class PinnedShopV1NativeAdapter : IShopV1NativeAdapter
 
         var offers = new List<ShopV1NativeOffer>();
         if (context.InventoryNode.IsOpen &&
-            !TryOffers(context, offers, _interactive))
+            !TryOffers(context, offers, _interactive, _interactiveRemoval, FullPickupFactory))
             return ShopV1SurfaceCapture.Unsupported();
 
         return new ShopV1SurfaceCapture(
@@ -77,6 +78,7 @@ public sealed class PinnedShopV1NativeAdapter : IShopV1NativeAdapter
             removal.Advance();
         }
         if(pending.PurchaseDispatch is PinnedShopPickupDispatch pickup)pickup.Advance();
+        if(pending.PurchaseDispatch is IShopV1ObservedDispatch effect)effect.Advance();
         if (!TryCopyDeck(context.Player, out List<ShopV1DeckCardBinding> deck) ||
             !TryCopyPotionSlots(context.Player, out var potions) ||
             !TryCopyRelics(context.Player, out var relics) ||
@@ -104,7 +106,7 @@ public sealed class PinnedShopV1NativeAdapter : IShopV1NativeAdapter
             context.InventoryModel, context.Player, context.Map,
             context.RoomNode.IsVisibleInTree(),
             context.InventoryNode.IsVisibleInTree(), context.InventoryNode.IsOpen,
-            blocked && !(pending.PurchaseDispatch is PinnedShopRemovalDispatch ownedRemoval && ownedRemoval.OwnsForeground) && !(pending.PurchaseDispatch is PinnedShopPickupDispatch ownedPickup && ownedPickup.OwnsForeground), context.Map.IsOpen, context.Map.IsTravelEnabled,
+            blocked && !(pending.PurchaseDispatch is PinnedShopRemovalDispatch ownedRemoval && ownedRemoval.OwnsForeground) && !(pending.PurchaseDispatch is PinnedShopPickupDispatch ownedPickup && ownedPickup.OwnsForeground) && !(pending.PurchaseDispatch is IShopV1ObservedDispatch ownedEffect&&ownedEffect.OwnsForeground), context.Map.IsOpen, context.Map.IsTravelEnabled,
             context.Map.IsTraveling, context.Player.Gold, deck, merchant, proceed,
             targetPresent, targetSlot, targetEntry, targetStocked, targetModel,
             pending.PurchaseDispatch?.Completion ?? ShopV1Completion.Pending, potions, relics);
@@ -178,7 +180,8 @@ public sealed class PinnedShopV1NativeAdapter : IShopV1NativeAdapter
         new(control, control.IsVisibleInTree(), control.IsEnabled, dispatch);
 
     private static bool TryOffers(
-        ShopContext context, List<ShopV1NativeOffer> offers, bool interactive)
+        ShopContext context, List<ShopV1NativeOffer> offers, bool interactive, bool interactiveRemoval,
+        Func<Player,RelicModel,NOverlayStack,IShopV1NativeDispatch,Func<bool>,int,IShopV1ObservedDispatch?>? fullPickup)
     {
         var inventory=context.InventoryNode;var player=context.Player;
         int slotIndex = 0;
@@ -226,7 +229,11 @@ public sealed class PinnedShopV1NativeAdapter : IShopV1NativeAdapter
                     RelicModel? relic = relicEntry.Model;
                     if (relic is null || !ShopRelicRules.Ready(relicEntry, player)) return false;
                     key = relic.Id.Entry;
-                    if (ShopRelicRules.TryEffect(relic, out capacityGain) || PinnedShopPickupDispatch.Supports(relic)) {
+                    if(fullPickup is not null&&RemovalContext(context)) {
+                        dispatch=fullPickup(player,relic,context.Overlays!,new PinnedPurchaseDispatch(relicEntry,relicSlot),()=>RemovalContext(context),relicEntry.Cost);
+                        if(dispatch is not null)model=relic;
+                    }
+                    if (dispatch is null&&(ShopRelicRules.TryEffect(relic, out capacityGain) || PinnedShopPickupDispatch.Supports(relic))) {
                         model = relic;
                         dispatch = new PinnedPurchaseDispatch(relicEntry, relicSlot);
                         if(PinnedShopPickupDispatch.Supports(relic)) {
@@ -259,7 +266,7 @@ public sealed class PinnedShopV1NativeAdapter : IShopV1NativeAdapter
                 if(stocked && RemovalContext(context) && ShopPotionOwnership.LocalEntry(removalEntry,player) &&
                     player.Deck.Cards.Count(c=>c.IsRemovable) is >=1 and <=64)
                     dispatch=new PinnedShopRemovalDispatch(removalEntry,context.InventoryModel,player,context.Overlays!,
-                        new PinnedPurchaseDispatch(removalEntry,removalSlot),()=>RemovalContext(context),()=>player.ExtraFields.CardShopRemovalsUsed);
+                        new PinnedPurchaseDispatch(removalEntry,removalSlot),()=>RemovalContext(context),()=>player.ExtraFields.CardShopRemovalsUsed, interactiveRemoval);
             }
             else
             {

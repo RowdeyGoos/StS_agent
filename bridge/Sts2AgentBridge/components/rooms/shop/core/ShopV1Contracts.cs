@@ -72,7 +72,7 @@ public sealed class ShopV1ReconciledAction
         string sessionNonce,
         string decisionId,
         string actionId,
-        string kind)
+        string kind, string result="reconciled")
     {
         FlowKind = ShopV1Constants.FlowKind;
         SessionNonce = sessionNonce;
@@ -80,7 +80,7 @@ public sealed class ShopV1ReconciledAction
         DecisionId = decisionId;
         ActionId = actionId;
         Kind = kind;
-        Result = "reconciled";
+        Result = result;
     }
 
     public string FlowKind { get; }
@@ -178,6 +178,7 @@ public enum ShopV1Completion
     Succeeded = 2,
     Failed = 3,
     Invalid = 4,
+    Cancelled = 5,
 }
 
 public enum ShopV1ActionKind
@@ -205,6 +206,19 @@ public interface IShopV1RestockDispatch : IShopV1NativeDispatch
 }
 
 public interface IShopV1AbortableDispatch { void Abort(); }
+
+// A full pickup owns its native automatic effect and any reward continuation.
+// The original shop still owns price, offer generation, receipt and handoff.
+public sealed record ShopRewardView(bool Ready, bool Complete, string Decision, int Revision, string ScreenKind, IReadOnlyList<string> Actions);
+public interface IShopV1ObservedDispatch : IShopV1RestockDispatch, IShopV1AbortableDispatch
+{
+    void Advance();
+    bool OwnsForeground { get; }
+    bool Verify(ShopV1PendingProbe probe, ShopV1PendingCapture capture);
+    ShopRewardView? ReadRewards();
+    void ApplyReward(string decision, string action);
+    object? RewardSource { get; }
+}
 
 public interface IShopV1PickupDispatch : IShopV1NativeDispatch
 {

@@ -50,6 +50,7 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
     private readonly HashSet<object> _commandTasks=new(ReferenceEqualityComparer.Instance);
     private readonly HashSet<object> _itemIdentities=new(ReferenceEqualityComparer.Instance);
     private readonly HashSet<object> _tasks=new(ReferenceEqualityComparer.Instance);
+    internal Func<GenericEventV7Binding,MegaCrit.Sts2.Core.Rewards.RewardsSet,IGenericFullRewardSession>? FullRewardsFactory;
     internal GenericEventV7Binding InspectPending(string decision, string action)
     {
         if (_disposed || System.Environment.CurrentManagedThreadId != _thread || _pending is not {} binding ||
@@ -106,6 +107,16 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
                 if(sphere.Completed)return sphere.CaptureExit();
                 b.Admission??=new GenericEventV7SphereAdmission(new object());
                 return new("child",false,Array.Empty<GenericEventV7NativeOption>(),sphere.Screen,b.Admission);
+            }
+            if(b.FullRewards is {} fullRewards) {
+                var captured=fullRewards.Read();
+                if(captured.Status=="waiting")return Fixed("waiting");
+                if(captured.Status=="resolved"&&fullRewards.Screen is null){fullRewards.Dispose();b.FullRewards=null;b.RequestSeen=false;}
+                else {
+                if(captured.Status!="ready"||fullRewards.Screen is null)return Fixed("unsupported");
+                b.Admission??=new GenericEventV7FullRewardsAdmission(new object(),fullRewards.OfferCount);
+                return new("child",false,Array.Empty<GenericEventV7NativeOption>(),fullRewards.Screen,b.Admission);
+                }
             }
             if(b.Combat is {} combat) {
                 var status=combat.Capture(out diagnostic);
@@ -267,6 +278,7 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
         if(_disposed||_pending is not null||_pendingDialogue is not null||candidateIdentity is not OptionBinding c||
             !_options.TryGetValue(c.Button,out var owned)||!ReferenceEquals(owned,c))throw new InvalidOperationException("Unowned option.");
         _pending=new GenericEventV7Binding(_run!,_player!,_room!,_map!,_overlays!,_layout!,_event!,c.Option,c.Button,nonce,decisionId,actionId);
+        _pending.FullRewardsFactory=FullRewardsFactory;
         _pending.ObservedPreviewClones=_previewClones;
         _pending.ObservedUpgradeClones=_upgradeClones;
         _pending.ObservedCommandTasks=_commandTasks;
@@ -278,6 +290,10 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
     public IGenericEventV7ChildSession CreateChild(object admissionIdentity)
     {
         var b=_pending;
+        if(b?.FullRewards is {} full) {
+            if(_childCreated||b.Admission is not GenericEventV7FullRewardsAdmission admission||!ReferenceEquals(admission.Identity,admissionIdentity)||full.Read().Status!="ready"||full.Screen is null||!_screens.Add(full.Screen))throw new InvalidOperationException("Unowned full reward child.");
+            _childCreated=true;return full;
+        }
         if(b?.Abandon is {} popup) {
             if(_childCreated||b.Admission is not GenericEventV7AbandonAdmission admission||!ReferenceEquals(admission.Identity,admissionIdentity)||popup.Read().Status!="ready")throw new InvalidOperationException("Unowned popup child.");
             _childCreated=true;return popup;
@@ -353,6 +369,7 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
         }
         if(_pending is null||_pending.Failed||_pending.ChosenTask?.IsCompletedSuccessfully!=true)
             throw new InvalidOperationException("Parent callback is incomplete.");
+        _pending.FullRewards?.Dispose();
         if(_pending.Sphere is {Completed:true,Exited:false})return;
         if(_pending.Sphere is {Exited:true} exitedSphere)exitedSphere.DisposeOwner();
         if(_pending.Abandon is {} popup) {
@@ -371,7 +388,7 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
         if(_customCleanupError is not null)throw new InvalidOperationException("Custom screen cleanup previously failed.",_customCleanupError);
         if(_disposed)return;
         if(System.Environment.CurrentManagedThreadId!=_thread)throw new InvalidOperationException("Owner thread cleanup required.");
-        Exception? customCleanup=null;try{_merchant?.Dispose();_pending?.Sphere?.DisposeOwner();_pending?.Abandon?.DisposeOwner();_pending?.Terminal?.Dispose();_pending?.ItemPolicy?.Dispose();}catch(Exception error){customCleanup=error;_customCleanupError=error;}
+        Exception? customCleanup=null;try{_merchant?.Dispose();_pending?.Sphere?.DisposeOwner();_pending?.Abandon?.DisposeOwner();_pending?.Terminal?.Dispose();_pending?.ItemPolicy?.Dispose();_pending?.FullRewards?.Dispose();}catch(Exception error){customCleanup=error;_customCleanupError=error;}
         if(_pending is not null)GenericEventV7Hooks.Close(_pending);
         _hooks.Dispose();_disposed=true;
         if(customCleanup is not null)throw new InvalidOperationException("Custom screen cleanup failed.",customCleanup);

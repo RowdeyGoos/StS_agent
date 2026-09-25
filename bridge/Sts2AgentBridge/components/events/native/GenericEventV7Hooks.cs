@@ -426,12 +426,16 @@ public sealed class GenericEventV7Hooks : IDisposable
             if(!b.ItemContextValid()||b.RequestSeen||Request.Value is not null||
                 !ReferenceEquals(__instance.Player,b.Player)||RewardsSet.testSelector is not null)
             {FailItem(b);return;}
-            b.RequestSeen=true;b.Item=new GenericEventV7ItemState(b,__instance);Request.Value=b;
+            b.RequestSeen=true;
+            if(b.FullRewardsFactory is {} factory&&b.Combat?.Resumes!=true)b.FullRewards=factory(b,__instance);
+            else b.Item=new GenericEventV7ItemState(b,__instance);
+            Request.Value=b;
         }
         catch{FailItem(b);}
     }
     private static void ItemOfferPostfix(Task __result,State? __state)
     {
+        if(__state?.Binding?.FullRewards is {} full){try{full.Offering(__result);}catch{FailItem(__state.Binding);}RestoreRequest(__state);return;}
         if(__state?.Binding?.Sphere is {} sphere){try{sphere.Offering(__result);}catch{FailItem(__state.Binding);}RestoreRequest(__state);return;}
         if(__state?.Binding is {} b&&!b.Failed)
         {if(b.Item is not {} item||item.OfferTask is not null||__result is null)FailItem(b);else item.OfferTask=__result;}
@@ -443,6 +447,7 @@ public sealed class GenericEventV7Hooks : IDisposable
     {
         var b=Request.Value;__state=new State{Binding=b};
         if(b is null){FailItem(null);return;}
+        if(b.FullRewards is {} full){try{if(!ReferenceEquals(Parent.Value,b))throw new InvalidOperationException();full.ScreenEntering(__0,__1,__2);}catch{FailItem(b);}return;}
         if(b.Sphere is {} sphere){try{sphere.RewardScreenEntering(__0,__1,__2);}catch{FailItem(b);}return;}
         try
         {
@@ -456,6 +461,7 @@ public sealed class GenericEventV7Hooks : IDisposable
     private static void ItemScreenPostfix(NRewardsScreen __result,State? __state)
     {
         if(__state?.Binding is not {} b||b.Failed)return;
+        if(b.FullRewards is {} full){try{full.ScreenEntered(__result);}catch{FailItem(b);}return;}
         if(b.Sphere is {} sphere){try{sphere.RewardsShown(__result);}catch{FailItem(b);}return;}
         try
         {
@@ -470,6 +476,7 @@ public sealed class GenericEventV7Hooks : IDisposable
     private static void ItemCollectionPrefix(NRewardButton __instance,out State __state)
     {
         var item=CollectionScope.Value;__state=new State{Binding=item?.Binding,Item=item};
+        if(_armed?.FullRewards is {} full){__state.Binding=_armed;try{full.CollectionEntering(__instance);}catch{FailItem(_armed);}return;}
         if(_armed?.Sphere is {} sphere){__state.Binding=_armed;try{sphere.CollectionEntering(__instance);}catch{FailItem(_armed);}return;}
         if(item is null){FailItem(null);return;}
         try
@@ -482,6 +489,7 @@ public sealed class GenericEventV7Hooks : IDisposable
     }
     private static void ItemCollectionPostfix(Task __result,State? __state)
     {
+        if(__state?.Binding?.FullRewards is {} full){try{full.CollectionReturned(__result);}catch{FailItem(__state.Binding);}return;}
         if(__state?.Binding?.Sphere is {} sphere){try{sphere.CollectionReturned(__result);}catch{FailItem(__state.Binding);}return;}
         if(__state?.Binding is {} b&&!b.Failed)
         {if(__state?.Item is not {} item||!item.CollectionEntered||item.CollectionTask is not null||__result is null)FailItem(b);else item.CollectionTask=__result;}
@@ -490,11 +498,13 @@ public sealed class GenericEventV7Hooks : IDisposable
     {if(__exception is not null&&__state?.Binding is {} b)FailItem(b);}
     private static void CardMenuPrefix(IReadOnlyList<CardCreationResult> __0,IReadOnlyList<CardRewardAlternative> __1,out State __state) {
         var item=CollectionScope.Value;__state=new State{Binding=item?.Binding,Item=item};
+        if(_armed?.FullRewards is {} full){__state.Binding=_armed;try{full.MenuEntering(__0,__1);}catch{FailItem(_armed);}return;}
         if(_armed?.Sphere is {} sphere){__state.Binding=_armed;try{sphere.MenuEntering();}catch{FailItem(_armed);}return;}
         if(item?.CardReward is not {} reward){FailItem(item?.Binding);return;}
         try{if(!item.Context()||!item.CollectionEntered)throw new InvalidOperationException();reward.MenuEntering(__0,__1);}catch{FailItem(item.Binding);}
     }
     private static void CardMenuPostfix(NCardRewardSelectionScreen __result,State? __state) {
+        if(__state?.Binding?.FullRewards is {} full){try{full.MenuEntered(__result);}catch{FailItem(__state.Binding);}return;}
         if(__state?.Binding?.Sphere is {} sphere){try{sphere.MenuShown(__result);}catch{FailItem(__state.Binding);}return;}
         if(__state?.Item is not {} item||item.Binding.Failed)return;
         try{item.CardReward!.MenuEntered(__result);}catch{FailItem(item.Binding);}
@@ -502,11 +512,13 @@ public sealed class GenericEventV7Hooks : IDisposable
     private static void CardMenuFinalizer(Exception? __exception,State? __state)=>ItemCollectionFinalizer(__exception,__state);
     private static void CardMenuTaskPrefix(NCardRewardSelectionScreen __instance,out State __state) {
         var item=CollectionScope.Value;__state=new State{Binding=item?.Binding,Item=item};
+        if(_armed?.FullRewards is {} full){__state.Binding=_armed;try{full.TaskEntering(__instance);}catch{FailItem(_armed);}return;}
         if(_armed?.Sphere is {} sphere){__state.Binding=_armed;try{sphere.MenuTaskEntering(__instance);}catch{FailItem(_armed);}return;}
         if(item?.CardReward is not {} reward){FailItem(item?.Binding);return;}
         try{if(!item.Context())throw new InvalidOperationException();reward.TaskEntering(__instance);}catch{FailItem(item.Binding);}
     }
     private static void CardMenuTaskPostfix(Task<int?> __result,State? __state) {
+        if(__state?.Binding?.FullRewards is {} full){try{full.TaskEntered(__result);}catch{FailItem(__state.Binding);}return;}
         if(__state?.Binding?.Sphere is {} sphere){try{sphere.MenuTaskReturned(__result);}catch{FailItem(__state.Binding);}return;}
         if(__state?.Item is not {} item||item.Binding.Failed)return;
         try{item.CardReward!.TaskEntered(__result);}catch{FailItem(item.Binding);}

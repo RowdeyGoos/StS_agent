@@ -43,6 +43,7 @@ internal static class Program
         CombatIdentityFixtures.Run(Check);
         CombatExecutionFixtures.Run(Check);
         CombatOfferFixtures.Run(Check);
+        CombatHandFixtures.Run(Check);
         Console.WriteLine("{\"status\":\"passed\",\"suite\":\"combat_choice_native\",\"checks\":" + _checks + "}");
     }
     private static void OptionalAndMultiple()

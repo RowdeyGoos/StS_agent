@@ -26,6 +26,8 @@ public enum PublicRewardActionKind
     ClaimSpecialCard = 6,
     CollectItem = 7,
     DiscardPotion = 8,
+    Reroll = 9,
+    Sacrifice = 10,
 }
 
 public readonly record struct PublicRewardActionRequest(
@@ -61,6 +63,10 @@ public readonly record struct PublicRewardActionRequest(
                 PublicRewardActionKind.SkipCard,
                 -1,
                 -1);
+            return true;
+        }
+        if(actionId is "reroll" or "sacrifice") {
+            request=new(decisionId,actionId,actionId=="reroll"?PublicRewardActionKind.Reroll:PublicRewardActionKind.Sacrifice,-1,-1);
             return true;
         }
         if (string.Equals(actionId, ProceedActionId, StringComparison.Ordinal) ||

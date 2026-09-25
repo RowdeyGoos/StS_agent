@@ -599,12 +599,29 @@ public sealed class ShopV1Session : IRoomFlowSession
             return FailUnsupported();
         }
 
+        if(probe.Kind==ShopV1ActionKind.PurchaseRelic&&probe.PurchaseDispatch is IShopV1ObservedDispatch observed) {
+            if(!observed.Verify(probe,capture))return FailUnsupported();
+            if(capture.Completion!=ShopV1Completion.Succeeded)return PendingOrTimeout();
+            var certified=observed.Restocked;
+            if(certified is null) {
+                if(capture.TargetStocked||capture.TargetModelIdentity is not null)return FailUnsupported();
+            } else {
+                if(!capture.TargetStocked||!ReferenceEquals(capture.TargetModelIdentity,certified.ModelIdentity)||
+                    _purchasedModels.Contains(certified.ModelIdentity)||!RoomFlowIdentity.IsStableKey(certified.StableKey)||certified.Price<0||
+                    ContainsIdentity(capture.Deck,certified.ModelIdentity)||ContainsRelic(capture.Relics,certified.ModelIdentity)||ContainsPotion(capture.PotionSlots,certified.ModelIdentity))return FailUnsupported();
+                _restocked[probe.TargetEntryIdentity!]=certified;
+            }
+            return Resolve(pending,capture,"purchase_relic");
+        }
+
         if(probe.Kind==ShopV1ActionKind.RemoveCard) {
             bool same=SameDeck(probe.BeforeDeck,capture.Deck), removed=ExactRemoval(probe.BeforeDeck,capture.Deck,probe.TargetModelIdentity!);
             bool paid=(long)capture.Gold==(long)probe.BeforeGold-probe.DisplayedPrice;
             if(!SamePotions(probe.BeforePotions,capture.PotionSlots)||!SameRelics(probe.BeforeRelics,capture.Relics)||
                 (!same&&!removed)||capture.Gold!=probe.BeforeGold&&!paid||capture.TargetModelIdentity is not null||
                 removed&&!paid||!capture.TargetStocked&&(!removed||!paid))return FailUnsupported();
+            if(capture.Completion==ShopV1Completion.Cancelled)
+                return same&&capture.Gold==probe.BeforeGold&&capture.TargetStocked?Resolve(pending,capture,"remove_card","cancelled"):FailUnsupported();
             if(capture.Completion==ShopV1Completion.Succeeded)
                 return removed&&paid&&!capture.TargetStocked?Resolve(pending,capture,"remove_card"):FailUnsupported();
             return PendingOrTimeout();
@@ -714,7 +731,7 @@ public sealed class ShopV1Session : IRoomFlowSession
     private IRoomFlowReadValue Resolve(
         PendingAction pending,
         ShopV1PendingCapture capture,
-        string kind)
+        string kind, string result="reconciled")
     {
         if (pending.Probe.PurchaseDispatch is not null)
         {
@@ -738,8 +755,17 @@ public sealed class ShopV1Session : IRoomFlowSession
                 _inside = wasInside;
             }
         }
+        if (pending.Probe.Kind == ShopV1ActionKind.RemoveCard && result == "cancelled")
+        {
+            // The certified cancellation did not consume this offer. Keep the
+            // old decision reserved, but allow a new explicit removal request.
+            _purchasedEntries.Remove(pending.Probe.TargetEntryIdentity!);
+            // Retain model history: this card may have been bought earlier in
+            // this shop, and must not be accepted as a later restock.
+            _purchases--;
+        }
         _priorResult = new ShopV1ReconciledAction(
-            _sessionNonce, pending.Probe.DecisionId, pending.Probe.ActionId, kind);
+            _sessionNonce, pending.Probe.DecisionId, pending.Probe.ActionId, kind, result);
         _pending = null;
         _accepted = false;
         _pendingReads = 0;

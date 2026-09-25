@@ -1,0 +1,133 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Threading;
+using Godot;
+using HarmonyLib;
+using MegaCrit.Sts2.Core.Commands;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Models.Relics;
+
+namespace Sts2AgentBridge.Items.Native;
+
+// Observe the native automatic effect, without reading or predicting a relic
+// pool or random target. Only calls inside the retained AfterObtained invocation
+// may advance the expected public inventory.
+internal sealed class PinnedAutomaticRelicEffects : IDisposable
+{
+    internal sealed record Card(CardModel Model, string Key, int Level, EnchantmentModel? Enchantment, string? EnchantmentKey, decimal Amount);
+    internal sealed class State
+    {
+        internal readonly Player Player;
+        internal readonly object Run;
+        internal readonly Card[] Deck;
+        internal readonly (RelicModel Model, string Key)[] Relics;
+        internal readonly (PotionModel? Model, string? Key)[] Potions;
+        internal readonly int Gold, Hp, MaxHp;
+        internal State(Player player)
+        {
+            Player=player; Run=player.RunState; Deck=player.Deck.Cards.Select(Copy).ToArray();
+            Relics=player.Relics.Select(r=>(r,r.Id.Entry)).ToArray(); Potions=player.PotionSlots.Select(p=>(p,p?.Id.Entry)).ToArray();
+            Gold=player.Gold; Hp=player.Creature.CurrentHp; MaxHp=player.Creature.MaxHp;
+            if(Deck.Length>512||Relics.Length>128||Potions.Length>8||Gold<0||Hp<0||MaxHp<Hp||
+                Deck.Select(c=>c.Model).Distinct(ReferenceEqualityComparer.Instance).Count()!=Deck.Length||
+                Relics.Select(r=>r.Model).Distinct(ReferenceEqualityComparer.Instance).Count()!=Relics.Length||
+                Deck.Any(c=>!ReferenceEquals(c.Model.Owner,player)||!ReferenceEquals(c.Model.RunState,Run))||
+                Relics.Any(r=>!ReferenceEquals(r.Model.Owner,player))||Potions.Any(p=>p.Model is {} m&&!ReferenceEquals(m.Owner,player)))
+                throw new InvalidOperationException("relic_public_inventory");
+        }
+        internal bool Same(State b) => ReferenceEquals(Player,b.Player)&&ReferenceEquals(Run,b.Run)&&Gold==b.Gold&&Hp==b.Hp&&MaxHp==b.MaxHp&&
+            Deck.SequenceEqual(b.Deck)&&Relics.SequenceEqual(b.Relics)&&Potions.SequenceEqual(b.Potions);
+        internal bool AddedRelic(State b, RelicModel relic) => ReferenceEquals(Player,b.Player)&&ReferenceEquals(Run,b.Run)&&Gold==b.Gold&&Hp==b.Hp&&MaxHp==b.MaxHp&&
+            Deck.SequenceEqual(b.Deck)&&Potions.SequenceEqual(b.Potions)&&b.Relics.Length==Relics.Length+1&&Relics.SequenceEqual(b.Relics.Take(Relics.Length))&&ReferenceEquals(b.Relics[^1].Model,relic);
+    }
+    private static Card Copy(CardModel c)=>new(c,c.Id.Entry,c.CurrentUpgradeLevel,c.Enchantment,c.Enchantment?.Id.Entry,c.Enchantment?.Amount??0);
+    private static readonly AsyncLocal<PinnedAutomaticRelicEffects?> Scope=new();
+    private static readonly AsyncLocal<DragonFruit?> GoldHpSource=new();
+    private readonly Player _player;
+    private readonly RelicModel _relic;
+    private readonly Func<bool> _owner;
+    private readonly int _thread=System.Environment.CurrentManagedThreadId;
+    private readonly Harmony _hooks=new("sts.bridge.relic.effects."+Guid.NewGuid().ToString("N"));
+    private readonly List<MethodInfo> _targets=new();
+    private State _expected;
+    private bool _failed,_disposed,_cleanupFailed;
+    private int _calls;
+    internal static bool Supports(RelicModel relic) => relic.GetType().Assembly==typeof(RelicModel).Assembly&&
+        (relic.GetType().GetMethod("AfterObtained",Type.EmptyTypes)?.DeclaringType==typeof(RelicModel)||
+        relic.GetType()==typeof(PotionBelt)||relic.GetType()==typeof(Strawberry)||relic.GetType()==typeof(Pear)||relic.GetType()==typeof(Mango)||
+        relic.GetType()==typeof(LeesWaffle)||relic.GetType()==typeof(OldCoin)||relic.GetType()==typeof(WarPaint)||relic.GetType()==typeof(Whetstone)||relic.GetType()==typeof(BeltBuckle)||
+        relic.GetType()==typeof(FakeMango)||relic.GetType()==typeof(FakeLeesWaffle));
+    internal PinnedAutomaticRelicEffects(Player player,RelicModel relic,Func<bool> owner)
+    {
+        _player=player;_relic=relic;_owner=owner;_expected=new(player);
+        Require(Supports(relic)&&ReferenceEquals(relic.Owner,player)&&player.Relics.Contains(relic)&&owner());
+        try {
+            Patch(typeof(Player).GetProperty("Gold")!.SetMethod!,nameof(GoldPrefix),nameof(GoldPostfix));
+            Patch(player.Creature.GetType().GetMethod("SetCurrentHpInternal")!,nameof(HpPrefix),nameof(HpPostfix));
+            Patch(player.Creature.GetType().GetMethod("SetMaxHpInternal")!,nameof(HpPrefix),nameof(HpPostfix));
+            Patch(typeof(Player).GetMethod("AddToMaxPotionCount")!,nameof(CapacityPrefix),nameof(CapacityPostfix));
+            Patch(typeof(CardCmd).GetMethods().Single(m=>m.Name=="Upgrade"&&m.GetParameters()[0].ParameterType==typeof(CardModel)),nameof(UpgradePrefix),nameof(UpgradePostfix));
+            if(relic.GetType()==typeof(OldCoin)&&player.Relics.Any(r=>r.GetType()==typeof(DragonFruit)))
+                Patch(typeof(DragonFruit).GetMethod("AfterGoldGained")!,nameof(GoldHpPrefix),nameof(GoldHpPostfix));
+        } catch {_failed=true;Dispose();throw;}
+    }
+    internal PinnedAutomaticRelicEffects? Enter() { Require(Valid());var old=Scope.Value;Require(old is null);Scope.Value=this;return old; }
+    internal static void Exit(PinnedAutomaticRelicEffects? old)=>Scope.Value=old;
+    internal bool Valid()=>!_failed&&!_disposed&&System.Environment.CurrentManagedThreadId==_thread&&_owner()&&_expected.Same(new(_player))&&ExactHooks();
+    private bool HpEffect => _relic.GetType()==typeof(Strawberry)||_relic.GetType()==typeof(Pear)||_relic.GetType()==typeof(Mango)||_relic.GetType()==typeof(LeesWaffle)||_relic.GetType()==typeof(FakeMango)||_relic.GetType()==typeof(FakeLeesWaffle);
+    private static PinnedAutomaticRelicEffects? Begin() {var s=Scope.Value;if(s is not null)s.Require(s.Valid()&&++s._calls<=64);return s;}
+    private static void GoldPrefix(Player __instance,int __0,out PinnedAutomaticRelicEffects? __state)
+    {__state=Begin();if(__state is {} s)s.Require(s._relic.GetType()==typeof(OldCoin)&&ReferenceEquals(__instance,s._player)&&__0>=s._expected.Gold);}
+    private static void GoldPostfix(PinnedAutomaticRelicEffects? __state) {if(__state is {} s)s.Accept("gold");}
+    private static void HpPrefix(object __instance,decimal __0,out PinnedAutomaticRelicEffects? __state)
+    {__state=Begin();if(__state is {} s)s.Require((s.HpEffect||s._relic.GetType()==typeof(OldCoin)&&GoldHpSource.Value is {} source&&s._expected.Relics.Any(r=>ReferenceEquals(r.Model,source)))&&ReferenceEquals(__instance,s._player.Creature)&&__0>=0);}
+    private static void HpPostfix(PinnedAutomaticRelicEffects? __state) {if(__state is {} s)s.Accept("hp");}
+    private static void GoldHpPrefix(DragonFruit __instance,Player __0,out DragonFruit? __state)
+    {
+        __state=GoldHpSource.Value;var s=Scope.Value;if(s is null)return;
+        s.Require(s.Valid()&&s._relic.GetType()==typeof(OldCoin)&&__state is null&&ReferenceEquals(__0,s._player)&&
+            ReferenceEquals(__instance.Owner,s._player)&&s._expected.Relics.Any(r=>ReferenceEquals(r.Model,__instance)));
+        GoldHpSource.Value=__instance;
+    }
+    private static void GoldHpPostfix(DragonFruit? __state){if(Scope.Value is not null)GoldHpSource.Value=__state;}
+    private static void CapacityPrefix(Player __instance,int __0,out PinnedAutomaticRelicEffects? __state)
+    {__state=Begin();if(__state is {} s)s.Require(s._relic.GetType()==typeof(PotionBelt)&&ReferenceEquals(__instance,s._player)&&__0==2);}
+    private static void CapacityPostfix(PinnedAutomaticRelicEffects? __state) {if(__state is {} s)s.Accept("capacity");}
+    private static void UpgradePrefix(CardModel __0,out PinnedAutomaticRelicEffects? __state)
+    {__state=Begin();if(__state is {} s)s.Require((s._relic.GetType()==typeof(WarPaint)||s._relic.GetType()==typeof(Whetstone))&&s._expected.Deck.Any(c=>ReferenceEquals(c.Model,__0))&&__0.IsUpgradable);}
+    private static void UpgradePostfix(CardModel __0,PinnedAutomaticRelicEffects? __state) {if(__state is {} s)s.Accept("upgrade",__0);}
+    private void Accept(string kind,CardModel? upgraded=null)
+    {
+        var next=new State(_player);var before=_expected;
+        Require(_owner()&&ReferenceEquals(next.Run,before.Run)&&next.Relics.SequenceEqual(before.Relics));
+        Require(kind=="gold"||next.Gold==before.Gold);
+        Require(kind=="hp"||next.Hp==before.Hp&&next.MaxHp==before.MaxHp);
+        Require(kind=="capacity" ? next.Potions.Length==before.Potions.Length+2&&next.Potions.Take(before.Potions.Length).SequenceEqual(before.Potions)&&next.Potions.Skip(before.Potions.Length).All(p=>p.Model is null):next.Potions.SequenceEqual(before.Potions));
+        Require(next.Deck.Length==before.Deck.Length);
+        for(int i=0;i<before.Deck.Length;i++) {
+            var old=before.Deck[i];var card=next.Deck[i];
+            Require(kind=="upgrade"&&ReferenceEquals(old.Model,upgraded)
+                ? ReferenceEquals(old.Model,card.Model)&&old.Key==card.Key&&card.Level==old.Level+1&&old.Enchantment==card.Enchantment&&old.EnchantmentKey==card.EnchantmentKey&&old.Amount==card.Amount
+                : old==card);
+        }
+        _expected=next;
+    }
+    private void Patch(MethodInfo method,string prefix,string postfix)
+    {
+        Require(method is not null&&method.GetMethodBody() is not null&&!(Harmony.GetPatchInfo(method)?.Owners.Any()??false));
+        _targets.Add(method);_hooks.Patch(method,new HarmonyMethod(typeof(PinnedAutomaticRelicEffects),prefix),new HarmonyMethod(typeof(PinnedAutomaticRelicEffects),postfix));
+    }
+    private bool ExactHooks()=>_targets.All(m=>Harmony.GetPatchInfo(m) is {} p&&p.Owners.Count==1&&p.Owners.Contains(_hooks.Id));
+    private void Require([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)] bool condition){if(!condition){_failed=true;throw new InvalidOperationException("relic_effect_boundary");}}
+    public void Dispose()
+    {
+        if(_disposed){if(_cleanupFailed)throw new InvalidOperationException("relic_effect_cleanup");return;}_disposed=true;
+        try {
+            _hooks.UnpatchAll(_hooks.Id);
+            if(_targets.Any(m=>Harmony.GetPatchInfo(m)?.Owners.Contains(_hooks.Id)==true))throw new InvalidOperationException("relic_effect_cleanup");
+        }catch{_cleanupFailed=true;throw;}
+    }
+}

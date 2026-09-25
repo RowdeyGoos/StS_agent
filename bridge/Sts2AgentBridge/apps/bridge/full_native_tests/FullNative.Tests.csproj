@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+ <PropertyGroup><TargetFramework>net9.0</TargetFramework><OutputType>Exe</OutputType><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
+ <ItemGroup>
+  <Compile Include="../native/FullNativeBackend.cs" />
+  <Compile Include="../runtime/FullAgentContracts.cs" /><Compile Include="../runtime/FullPublicGraph.cs" />
+  <Compile Include="../runtime/CampaignContracts.cs" /><Compile Include="../runtime/CombatPotionContracts.cs" />
+  <Compile Include="../../../components/cards/combat/CombatCardChoiceService.cs" />
+  <Compile Include="Fixture.cs" /><Compile Include="Program.cs" />
+ </ItemGroup>
+</Project>

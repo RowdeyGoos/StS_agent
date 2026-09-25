@@ -27,18 +27,27 @@ internal sealed class CampaignNavigation : ICampaignNavigation
     private string? _pendingDecision, _completed;
     private readonly HashSet<string> _used=new(StringComparer.Ordinal);
     private bool _stopped;
+    private bool? _full;
+    private object? _legalRoom, _legalNode, _legalSurface;
+    private readonly Dictionary<string,string> _legal = new(StringComparer.Ordinal);
+    internal MegaCrit.Sts2.Core.Models.RelicModel? OfferedRelic => _treasure?.OfferedRelic;
+    internal object OfferIdentity => _treasure!.OfferIdentity;
+    internal readonly List<(object Offer, MegaCrit.Sts2.Core.Models.RelicModel Relic)> Acquisitions = new();
     public bool Active=>_pending is not null||_treasure?.Active==true;
     public ModuleReply Handle(BridgeRequest request)
     {
         if(_stopped)return Fault();
         try {
+            bool full = request.Path is CampaignRoutes.FullDecision or CampaignRoutes.FullAction;
+            _full ??= full; if (_full != full) return Fault();
             if(request.IsPost) {
                 if(_pending is not null||request.Action is null||_run is null||
-                    !_rooms.TryGetValue(_run.CurrentRoom!,out var actions)||!actions.TryGetValue(request.Action,out var decision)||
+                    !_legal.TryGetValue(request.Action,out var decision)||
                     decision!=request.Decision||_used.Contains(decision))return Fault();
                 var node=NRun.Instance;
-                if(!Context()||node is null||node.GlobalUi.MapScreen.IsOpen)return Fault();
-                if(_treasure is not null&&request.Action is "open_chest" or "skip_relic") {
+                if(!Context()||node is null||node.GlobalUi.MapScreen.IsOpen||!ReferenceEquals(_legalRoom,_run.CurrentRoom)||
+                    !ReferenceEquals(_legalNode,node)||!ReferenceEquals(_legalSurface,_treasure is null?(object?)node.MerchantRoom:node.TreasureRoom))return Fault();
+                if(_treasure is not null&&request.Action is "open_chest" or "skip_relic" or "claim_relic" or "proceed") {
                     _used.Add(decision);_pendingDecision=decision;
                     _treasure.Apply(request.Action);
                     return Receipt(decision,request.Action);
@@ -61,8 +70,10 @@ internal sealed class CampaignNavigation : ICampaignNavigation
             }
             if(_treasure is not null) {
                 string phase=_treasure.Read();
+                if(_treasure.ObtainedRelic is {} obtained&&!Acquisitions.Exists(a=>ReferenceEquals(a.Offer,_treasure.OfferIdentity)))
+                    Acquisitions.Add((_treasure.OfferIdentity,obtained));
                 if(phase=="waiting")return View("waiting","treasure");
-                if(phase is "skip_relic" or "map"&&_pendingDecision is not null) {_completed=_pendingDecision;_pendingDecision=null;}
+                if(phase is "skip_relic" or "relic" or "proceed" or "map"&&_pendingDecision is not null) {_completed=_pendingDecision;_pendingDecision=null;}
                 if(phase=="map") {_treasure.Dispose();_treasure=null;}
                 else return View("ready","treasure",phase);
             }
@@ -86,7 +97,7 @@ internal sealed class CampaignNavigation : ICampaignNavigation
             if(run.RestSiteRoom is {} rest&&rest.IsVisibleInTree())return View("ready","rest");
             if(run.MerchantRoom is {} shop&&shop.IsVisibleInTree())return View("ready","shop");
             if(run.TreasureRoom is {} chest&&chest.IsVisibleInTree()) {
-                _treasure=new CampaignTreasureTransition(chest);
+                _treasure=new CampaignTreasureTransition(chest, _full == true);
                 return View("ready","treasure",_treasure.Read());
             }
             return View("waiting","unknown");
@@ -98,8 +109,11 @@ internal sealed class CampaignNavigation : ICampaignNavigation
     private ModuleReply View(string status,string surface,string? action=null)
     {
         string? decision=null;
+        _legal.Clear();
+        string[] legal=Array.Empty<string>();
         if(status=="ready"&&(surface=="treasure"||surface=="shop"&&NRun.Instance?.MerchantRoom?.Inventory.IsOpen==false)) {
             object room=_run!.CurrentRoom!;
+            _legalRoom=room;_legalNode=NRun.Instance;_legalSurface=surface=="treasure"?(object?)NRun.Instance?.TreasureRoom:NRun.Instance?.MerchantRoom;
             if(!_rooms.TryGetValue(room,out var actions)) {
                 if(_rooms.Count>=80)return Fault();
                 _rooms.Add(room,actions=new(StringComparer.Ordinal));
@@ -107,15 +121,17 @@ internal sealed class CampaignNavigation : ICampaignNavigation
             action??="proceed";
             if(!actions.TryGetValue(action,out decision))actions.Add(action,decision=Convert.ToHexString(System.Security.Cryptography.RandomNumberGenerator.GetBytes(32)).ToLowerInvariant());
             if(_used.Contains(decision))return Fault();
+            legal=action=="relic"?new[]{"claim_relic","skip_relic"}:new[]{action};
+            foreach(string choice in legal)_legal.Add(choice,decision);
         }
         var player=_run?.Players[0];
-        return new(JsonSerializer.SerializeToUtf8Bytes(new{schema_version=1,protocol="campaign_v2",status,surface,run_id=_id,
+        return new(JsonSerializer.SerializeToUtf8Bytes(new{schema_version=1,protocol=_full==true?"campaign_v3":"campaign_v2",status,surface,run_id=_id,
             act_index=_run?.CurrentActIndex,floor=_run?.TotalFloor,character=player?.Character.Id.Entry.ToLowerInvariant(),
             ascension=_run?.AscensionLevel,room_kind=_run?.CurrentRoom?.RoomType.ToString().ToLowerInvariant(),
             hp=player?.Creature.CurrentHp,max_hp=player?.Creature.MaxHp,
-            decision_id=decision,legal_actions=decision is null?Array.Empty<string>():new[]{action!},completed_decision_id=_completed}));
+            decision_id=decision,legal_actions=legal,completed_decision_id=_completed}));
     }
-    private static ModuleReply Receipt(string decision,string action)=>new(JsonSerializer.SerializeToUtf8Bytes(new{schema_version=1,protocol="campaign_v2",status="accepted",decision_id=decision,action_id=action}));
-    private ModuleReply Fault(){_stopped=true;return new(JsonSerializer.SerializeToUtf8Bytes(new{schema_version=1,protocol="campaign_v2",status="failed",code=_treasure is null?"campaign_context_failed":"campaign_treasure_failed"}),Terminal:true);}
+    private ModuleReply Receipt(string decision,string action)=>new(JsonSerializer.SerializeToUtf8Bytes(new{schema_version=1,protocol=_full==true?"campaign_v3":"campaign_v2",status="accepted",decision_id=decision,action_id=action}));
+    private ModuleReply Fault(){_stopped=true;return new(JsonSerializer.SerializeToUtf8Bytes(new{schema_version=1,protocol=_full==true?"campaign_v3":"campaign_v2",status="failed",code=_treasure is null?"campaign_context_failed":"campaign_treasure_failed"}),Terminal:true);}
     public void Dispose(){_stopped=true;try{_pending?.Dispose();}finally{_treasure?.Dispose();}}
 }

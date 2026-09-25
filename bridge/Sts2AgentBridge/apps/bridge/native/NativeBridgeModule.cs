@@ -47,11 +47,14 @@ internal sealed class NativeBridgeModule : IBridgeModule
     }
     private void Initialize(BridgeRequest first)
     {
-        if (Capability == Capability.Rooms && first.Path == ShopInteractiveSession.DecisionRoute)
+        if (Capability == Capability.Rooms && first.Path is ShopInteractiveSession.DecisionRoute or ShopInteractiveSession.FullDecisionRoute)
         {
             if (!PinnedGenericEventHarmonyGuard.Verify()) throw new InvalidOperationException("Native dependency mismatch.");
-            _restInteractive = true; _restPrefix = "/probe/shop-v7/";
-            var shop = new ShopInteractiveSession(_nonce, new PinnedShopV1NativeAdapter(interactive: true)); _cleanup = shop.Dispose; ObservationSource = shop;
+            bool full=first.Path==ShopInteractiveSession.FullDecisionRoute;
+            _restInteractive = true; _restPrefix = full?"/probe/shop-v8/":"/probe/shop-v7/";
+            var shopNative = new PinnedShopV1NativeAdapter(interactive: true, interactiveRemoval: full);
+            if(full)shopNative.FullPickupFactory=PinnedShopEffectDispatch.Create;
+            var shop = new ShopInteractiveSession(_nonce, shopNative,full); _cleanup = shop.Dispose; ObservationSource = shop;
             _handle = request => {
                 byte[] body = shop.Handle(request.IsPost, request.Decision, request.Action);
                 using var json = JsonDocument.Parse(body); string? status = Text(json.RootElement, "status");
@@ -64,7 +67,13 @@ internal sealed class NativeBridgeModule : IBridgeModule
             if (!PinnedGenericEventHarmonyGuard.Verify()) throw new InvalidOperationException("Native dependency mismatch.");
             _restInteractive = true;
             _restPrefix = first.Path == RestInteractiveSession.DecisionRoute ? "/probe/rest-v3/" : "/probe/rest-v4/";
-            var rest = new RestInteractiveSession(_nonce, leave: first.Path == RestInteractiveSession.FullDecisionRoute ? new FullNativeRestLeave() : null); _cleanup = rest.Dispose;
+            bool full=first.Path==RestInteractiveSession.FullDecisionRoute;
+            var native=new PinnedRestV2NativeAdapter(interactive:true);
+            if(full) {
+                native.RewardAlternatives=(parent,screen)=>new Sts2AgentBridge.Items.Native.PinnedRewardAlternatives(parent,screen);
+                native.RewardInventory=player=>new Sts2AgentBridge.Items.Native.PinnedRewardInventory(player);
+            }
+            var rest = new RestInteractiveSession(_nonce,native,leave:full?new FullNativeRestLeave():null); _cleanup = rest.Dispose;
             ObservationSource = rest;
             _handle = request =>
             {

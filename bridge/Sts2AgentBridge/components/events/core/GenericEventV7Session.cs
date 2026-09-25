@@ -70,7 +70,7 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
         {
             if (!_resolvedDelivered) return Observation("child", "child");
             _card.Dispose(); _card = null;
-            _effects = (_child!.Kind is "card_results" or "crystal_sphere" or "abandon_confirmation"||_child.ContractVersion=="card_offer_v2")?"unverified":_child.Kind is "item" or "item_policy" ? "item_effect_verified" : "card_effect_verified";
+            _effects = (_child!.Kind is "card_results" or "crystal_sphere" or "abandon_confirmation" or "full_rewards"||_child.ContractVersion=="card_offer_v2")?"unverified":_child.Kind is "item" or "item_policy" ? "item_effect_verified" : "card_effect_verified";
             _child = null;
             Reconcile(_abandoned?"run_abandoned":"child_completed");
             if(_abandoned){_destination="run_abandoned";_complete=true;return Observation("complete",_destination);}
@@ -95,6 +95,7 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
                     GenericEventV7CardAdmission c => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,c.Operation,c.MinSelect,c.MaxSelect,c.CommitMode,c.DomainCount),
                     GenericEventV7AbandonAdmission a => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,a),
                     GenericEventV7SphereAdmission s => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,s),
+                    GenericEventV7FullRewardsAdmission r => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,r),
                     GenericEventV7ResultsAdmission r => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,r),
                     GenericEventV7OfferAdmission o => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,o.OfferCount,o.Bundle?"bundle_offer_v1":o.CanSkip?"card_offer_v2":"card_offer_v1"),
                     GenericEventV7RewardAdmission r => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,r.OfferCount,true,r.Mixed),
@@ -194,7 +195,7 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
                 var read=reward.Read();_childReconciled=_completedChildActions+read.PriorResults.Count;
                 if(read.Status=="unsupported")Fail();
                 if(read.Status=="resolved"&&_child!.Kind=="abandon_confirmation")_abandoned=read.Phase=="abandoned";
-                if(read.Status=="resolved"){if(!_resolvedDelivered){if(_child!.Kind=="item_policy")_completedItemChildren++;else if(_child.Kind is not ("crystal_sphere" or "abandon_confirmation"))_completedCardChildren++;}_resolvedDelivered=true;}
+                if(read.Status=="resolved"){if(!_resolvedDelivered){if(_child!.Kind=="item_policy")_completedItemChildren++;else if(_child.Kind is not ("crystal_sphere" or "abandon_confirmation" or "full_rewards"))_completedCardChildren++;}_resolvedDelivered=true;}
                 return new GenericEventV7RewardChildRead(read,ChildContract());
             }
             if (_card is IGenericEventV7ItemChildSession item) {
@@ -315,13 +316,13 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
         action == _child.ParentActionId && ordinal == _child.Ordinal;
     private string ChildContract() => _child?.ContractVersion ?? "card_selection_v1";
     private bool TypedChild() => _card is not null && _child is not null && _card.ContractVersion == ChildContract() &&
-        (_child.Kind is "card_reward" or "card_offer" or "card_results" or "crystal_sphere" or "abandon_confirmation" or "item_policy" ? _card is IGenericEventV7RewardChildSession && _card is not IGenericEventV7CardChildSession && _card is not IGenericEventV7ItemChildSession : _child.Kind == "item" ? _card is IGenericEventV7ItemChildSession && _card is not IGenericEventV7CardChildSession :
+        (_child.Kind is "card_reward" or "card_offer" or "card_results" or "crystal_sphere" or "abandon_confirmation" or "item_policy" or "full_rewards" ? _card is IGenericEventV7RewardChildSession && _card is not IGenericEventV7CardChildSession && _card is not IGenericEventV7ItemChildSession : _child.Kind == "item" ? _card is IGenericEventV7ItemChildSession && _card is not IGenericEventV7CardChildSession :
             _card is IGenericEventV7CardChildSession && _card is not IGenericEventV7ItemChildSession);
-    private GenericEventV7ChildRead ChildFailure() => _child?.Kind is "card_reward" or "card_offer" or "card_results" or "crystal_sphere" or "abandon_confirmation" or "item_policy" ? new GenericEventV7RewardChildRead(new(_nonce,"unsupported","unsupported","",Array.Empty<GenericEventV7RewardCard>(),false,Array.Empty<string>(),Array.Empty<GenericEventV7PriorResult>(),null,ItemPolicy:_child?.Kind=="item_policy"?new(Array.Empty<GenericEventV7ItemPolicyOffer>(),Array.Empty<string?>(),false):null),ChildContract()) : _child?.Kind == "item"
+    private GenericEventV7ChildRead ChildFailure() => _child?.Kind is "card_reward" or "card_offer" or "card_results" or "crystal_sphere" or "abandon_confirmation" or "item_policy" or "full_rewards" ? new GenericEventV7RewardChildRead(new(_nonce,"unsupported","unsupported","",Array.Empty<GenericEventV7RewardCard>(),false,Array.Empty<string>(),Array.Empty<GenericEventV7PriorResult>(),null,ItemPolicy:_child?.Kind=="item_policy"?new(Array.Empty<GenericEventV7ItemPolicyOffer>(),Array.Empty<string?>(),false):null),ChildContract()) : _child?.Kind == "item"
         ? new GenericEventV7ItemRead(_child!.OfferCount>1 ? new GenericEventV7ItemSetRead(_nonce,"unsupported",_child.OfferCount,Array.AsReadOnly(_itemResults.ToArray()),null) : ItemV1Observation.Fixed(_nonce,"unsupported"),ChildContract())
         : new GenericEventV7CardRead(ChildContract(),CardSelectionV1Observation.Fixed(
             _nonce,"unsupported","unsupported",Array.Empty<CardSelectionV1ActionResult>()));
-    private GenericEventV7ChildApply ApplyFailure(string outcome,string? decision,string? action) => _child?.Kind is "card_reward" or "card_offer" or "card_results" or "crystal_sphere" or "abandon_confirmation" or "item_policy" ? new GenericEventV7RewardChildApply(new(_nonce,decision??"",action??"",outcome),ChildContract()) : _child?.Kind == "item"
+    private GenericEventV7ChildApply ApplyFailure(string outcome,string? decision,string? action) => _child?.Kind is "card_reward" or "card_offer" or "card_results" or "crystal_sphere" or "abandon_confirmation" or "item_policy" or "full_rewards" ? new GenericEventV7RewardChildApply(new(_nonce,decision??"",action??"",outcome),ChildContract()) : _child?.Kind == "item"
         ? new GenericEventV7ItemApply(new ItemV1ApplyFailure(_nonce,outcome),ChildContract())
         : new GenericEventV7CardApply(ChildContract(),new CardSelectionV1ApplyFailure(_nonce,outcome));
     private void Reconcile(string result)

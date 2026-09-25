@@ -8,7 +8,7 @@ using System.Text.Json;
 namespace Sts2AgentBridge.Cards.Combat;
 
 internal sealed record ChoiceCard(object Model, object Holder, string Key, int UpgradeLevel,
-    bool Selected, bool Enabled);
+    bool Selected, bool Enabled, object? NativeHolder = null);
 internal sealed record ChoiceSurface(object Identity, string Pile, int MinSelect, int MaxSelect,
     bool ManualConfirmation, bool Ready, bool Closed, bool TaskSucceeded, bool TaskFailed,
     ChoiceCard[] Cards, object[] Result, bool ConfirmEnabled, object[]? SelectedOrder = null, bool Cancelable = false);
@@ -30,7 +30,9 @@ internal sealed class CombatCardChoiceService : IDisposable
     internal const string ActionRouteV2 = "/probe/combat-choice-v2/public/action";
     internal const string DecisionRouteV3 = "/probe/combat-choice-v3/public/decision";
     internal const string ActionRouteV3 = "/probe/combat-choice-v3/public/action";
-    internal static int Version(string path) => path is DecisionRouteV3 or ActionRouteV3 ? 3 : path is DecisionRouteV2 or ActionRouteV2 ? 2 : 1;
+    internal const string DecisionRouteV4 = "/probe/combat-choice-v4/public/decision";
+    internal const string ActionRouteV4 = "/probe/combat-choice-v4/public/action";
+    internal static int Version(string path) => path is DecisionRouteV4 or ActionRouteV4 ? 4 : path is DecisionRouteV3 or ActionRouteV3 ? 3 : path is DecisionRouteV2 or ActionRouteV2 ? 2 : 1;
     private readonly Func<ICombatCardChoiceAdapter?> _factory;
     private readonly string _nonce;
     private readonly int _thread = Environment.CurrentManagedThreadId;
@@ -67,7 +69,7 @@ internal sealed class CombatCardChoiceService : IDisposable
 
     private bool BindVersion(int version)
     {
-        if (version is not (1 or 2 or 3) || _adapter is not null && !_done && _version != version) return false;
+        if (version is not (1 or 2 or 3 or 4) || _adapter is not null && !_done && _version != version) return false;
         _version = version;
         return true;
     }
@@ -92,13 +94,13 @@ internal sealed class CombatCardChoiceService : IDisposable
                 Require(_seen.Add(_initial.Identity) && !_initial.Closed && !_initial.TaskSucceeded && !_initial.TaskFailed,
                     "choice_not_fresh");
                 Require((_initial.Pile is "discard" or "exhaust" || _version >= 2 && _initial.Pile == "draw" ||
-                    _version == 3 && _initial.Pile == "offer") && _initial.Cards.Length is >= 1 and <= 64 &&
-                    _initial.MinSelect >= 0 && _initial.MaxSelect is >= 1 and <= 8 &&
+                    _version >= 3 && _initial.Pile == "offer" || _version == 4 && _initial.Pile == "hand") && _initial.Cards.Length is >= 1 and <= 64 &&
+                    _initial.MinSelect >= 0 && _initial.MaxSelect >= 1 && _initial.MaxSelect <= (_version == 4 ? 64 : 8) &&
                     _initial.MinSelect <= _initial.MaxSelect && _initial.MaxSelect <= _initial.Cards.Length &&
                     _initial.Cards.All(c => !c.Selected), "unsupported_choice");
                 Require(_initial.Pile != "offer" || _initial.Cards.Length <= 3 &&
-                    _initial.MinSelect == 1 && _initial.MaxSelect == 1 && !_initial.ManualConfirmation &&
-                    !_initial.Cancelable && !_initial.ConfirmEnabled, "unsupported_choice");
+                    (_initial.MinSelect == 1 || _version == 4 && _initial.MinSelect == 0) && _initial.MaxSelect == 1 && !_initial.ManualConfirmation &&
+                    !_initial.Cancelable && (_version == 4 || !_initial.ConfirmEnabled), "unsupported_choice");
                 Require(_initial.Cards.Select(c => c.Model).Distinct(ReferenceEqualityComparer.Instance).Count() == _initial.Cards.Length &&
                     _initial.Cards.Select(c => c.Holder).Distinct(ReferenceEqualityComparer.Instance).Count() == _initial.Cards.Length &&
                     _initial.Cards.All(c => c.Model is not null && c.Holder is not null && c.Key.Length is >= 1 and <= 96 &&
@@ -115,7 +117,7 @@ internal sealed class CombatCardChoiceService : IDisposable
             Require(ReferenceEquals(surface.Identity, _initial!.Identity) && surface.Pile == _initial.Pile &&
                 surface.MinSelect == _initial.MinSelect && surface.MaxSelect == _initial.MaxSelect &&
                 surface.ManualConfirmation == _initial.ManualConfirmation && !surface.TaskFailed &&
-                (_initial.Pile != "offer" || !surface.Cancelable && !surface.ConfirmEnabled), "choice_identity_changed");
+                (surface.Cancelable == _initial.Cancelable && (_initial.Pile != "offer" || _version == 4 || !surface.ConfirmEnabled)), "choice_identity_changed");
             if (surface.Closed || surface.TaskSucceeded)
             {
                 Require(_pending is not null && _expected is not null &&
@@ -182,7 +184,7 @@ internal sealed class CombatCardChoiceService : IDisposable
                 return Fail("stale_or_illegal_choice");
         }
         finally { if (!fresh.Terminal) Array.Clear(fresh.Body); }
-        if (++_attempted > 32) return Fail("choice_action_limit");
+        if (++_attempted > (_version == 4 ? 256 : 32)) return Fail("choice_action_limit");
         _expected = _selected.ToArray();
         if (Slot(action, out int slot, out bool deselect))
             _expected = deselect ? _selected.Where(i => i != slot).ToArray() : _selected.Append(slot).Order().ToArray();

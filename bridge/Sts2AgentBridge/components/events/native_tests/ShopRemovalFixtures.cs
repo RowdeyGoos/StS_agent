@@ -24,6 +24,7 @@ internal static partial class Program
     private static void ShopRemovalCases()
     {
         ShopRemovalCompletionOrderingCases();
+        ShopRemovalCancellationCases();
         foreach(int count in new[]{1,3,64}) {
             using var f=new ShopRemoveFixture(count);f.Begin();
             Check(f.Entry.Subscribers==1&&f.Selects==0&&f.Confirms==0,"removal only opens owned selector");
@@ -112,6 +113,21 @@ internal static partial class Program
             f.Dispatch.Dispose();f.Dispatch.Dispose();Check(f.Entry.Subscribers==0,"ordered completion releases callback");
         }
     }
+    private static void ShopRemovalCancellationCases() {
+        foreach(string mode in new[]{"confirm","cancel","changed_gold","changed_counter","foreign_screen"}) {
+            using var f=new ShopRemoveFixture(3,true);f.Begin();
+            DeckChoiceView? view=null;for(int i=0;i<8&&view is null;i++){f.Dispatch.Advance();view=f.Dispatch.ReadChoice();}
+            Check(view is not null&&f.Selects==1&&f.Confirms==0,"interactive removal previews requested card without paying");
+            if(mode=="changed_gold")f.Player.Gold--;
+            if(mode=="changed_counter")f.Used++;
+            if(mode=="foreign_screen")MegaCrit.Sts2.Core.Nodes.Screens.ScreenContext.ActiveScreenContext.Instance.Current=new();
+            if(mode is "changed_gold" or "changed_counter" or "foreign_screen") {ShopRemoveThrows(()=>f.Dispatch.ApplyChoice("cancel"));Check(f.Confirms==0&&f.Cancels==0,"changed removal cannot dispatch cancel");continue;}
+            f.Dispatch.ApplyChoice(mode);for(int i=0;i<8&&f.Dispatch.Completion==ShopV1Completion.Pending;i++)f.Dispatch.Advance();
+            Check(f.Dispatch.Completion==(mode=="cancel"?ShopV1Completion.Cancelled:ShopV1Completion.Succeeded),"exact interactive removal completion");
+            Check(mode=="cancel"?f.Player.Gold==100&&f.Used==0&&f.Player.Deck.Cards.Count==3&&f.Cancels==1:f.Player.Gold==90&&f.Used==1&&f.Confirms==1,"cancel conserves deck/gold/counter");
+            f.Dispatch.Dispose();Check(f.Entry.Subscribers==0,"interactive removal detaches after exact result");
+        }
+    }
     private static void ShopRemoveThrows(Action action){bool threw=false;try{action();}catch(InvalidOperationException){threw=true;}Check(threw,"removal fails explicitly");}
     private sealed class ShopRemoveFixture:IDisposable
     {
@@ -124,14 +140,20 @@ internal static partial class Program
         internal readonly TaskCompletionSource<IEnumerable<CardModel>> Observer=new();internal readonly TaskCompletionSource WrapperGate=new();
         internal readonly CardModel[] Cards;internal CardModel Target=>Cards[^1];
         internal readonly PinnedShopRemovalDispatch Dispatch;internal readonly RemovePurchase Purchase;
-        internal int Selects,Confirms,Used;internal bool Context=true,Delay,DelayObserver,DelayWrapper,CounterThrows;internal string Mode="";
-        internal ShopRemoveFixture(int count) {
+        internal int Selects,Confirms,Used,Cancels;internal bool Context=true,Delay,DelayObserver,DelayWrapper,CounterThrows;internal string Mode="";
+        internal ShopRemoveFixture(int count,bool interactive=false) {
             NModalContainer.Instance=null;MegaCrit.Sts2.Core.Nodes.NRun.Instance=new(){GlobalUi=new(){CapstoneContainer=new()}};CardSelectCmd.Selector=null;
             Cards=Enumerable.Range(0,count).Select(i=>{var c=new CardModel{Owner=Player,IsRemovable=true};c.Id.Entry="CARD_"+i;return c;}).ToArray();Player.Deck.Cards.AddRange(Cards);
             Inventory=new(){Player=Player};Entry.SetPlayer(Player);Screen.SelectionTask=Selection.Task;
             MegaCrit.Sts2.Core.Nodes.Screens.ScreenContext.ActiveScreenContext.Instance=new(){Current=Screen};
             Screen.SelectionTaskFactory=call=>DelayObserver&&call==2?Observer.Task:Selection.Task;
             Screen.Bind("%CardGrid",Grid);Screen.Bind("%PreviewContainer",PreviewContainer);PreviewContainer.Bind("%Cards",PreviewCards);PreviewContainer.Bind("%PreviewConfirm",Confirm);
+            if(interactive){
+                var back=new NBackButton();var previewBack=new NBackButton();var openPreview=new NConfirmButton();
+                Screen.Bind("%Close",back);Screen.Bind("%Confirm",openPreview);PreviewContainer.Bind("%PreviewCancel",previewBack);
+                back.Clicked=()=>{Cancels++;Selection.SetResult(Array.Empty<CardModel>());Overlays.Screens.Clear();};
+                previewBack.Clicked=()=>{PreviewContainer.Visible=false;PreviewCards.Children.Clear();};
+            }
             // Reverse display order to establish identity rather than a deck/grid index assumption.
             foreach(var card in Cards.Reverse()) {
                 var holder=new NGridCardHolder{CardModel=card,CardNode=new NCard{Model=card,CardHighlight=new NCardHighlight{Material=new ShaderMaterial()}},Hitbox=new NClickableControl{IsEnabled=true}};
@@ -150,7 +172,7 @@ internal static partial class Program
                 if(Mode=="callback_modal")NModalContainer.Instance=new(){OpenModal=new object()};if(Mode=="callback_context")Context=false;
                 Entry.Complete(PurchaseStatus.Success);if(DelayWrapper)await WrapperGate.Task;return true;
             };
-            Purchase=new RemovePurchase(this);Dispatch=new(Entry,Inventory,Player,Overlays,Purchase,()=>Context,()=>CounterThrows?throw new InvalidOperationException("counter unavailable"):Used);
+            Purchase=new RemovePurchase(this);Dispatch=new(Entry,Inventory,Player,Overlays,Purchase,()=>Context,()=>CounterThrows?throw new InvalidOperationException("counter unavailable"):Used,interactive);
         }
         internal void Begin(){Dispatch.SelectTarget(new(Target,Target.Id.Entry,Target.CurrentUpgradeLevel,true));Dispatch.Invoke();}
         public void Dispose(){try{Dispatch.Dispose();}catch(InvalidOperationException){}NModalContainer.Instance=null;MegaCrit.Sts2.Core.Nodes.NRun.Instance=_previousRun;NDeckCardSelectScreen.Factory=null;}

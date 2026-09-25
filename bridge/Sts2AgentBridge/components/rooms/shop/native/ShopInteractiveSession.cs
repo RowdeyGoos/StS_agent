@@ -19,6 +19,14 @@ namespace Sts2AgentBridge.Successors.RoomFlowsV1.Shop.Native;
 internal sealed class ShopInteractiveSession : IDisposable
 {
     internal const string DecisionRoute = "/probe/shop-v7/public/decision", ActionRoute = "/probe/shop-v7/public/action";
+    internal const string FullDecisionRoute="/probe/shop-v8/public/decision", FullActionRoute="/probe/shop-v8/public/action";
+    private readonly bool _full;
+    private PinnedShopRemovalDispatch? _removal;
+    private IShopV1ObservedDispatch? _effect;
+    private ShopRewardView? _reward;
+    internal object? RewardSource=>_effect?.RewardSource;
+    internal string RewardDecision=>_reward?.Decision??throw new InvalidOperationException("Shop reward unavailable.");
+    private int _rewardRevision;
     private readonly string _nonce;
     private readonly IShopV1NativeAdapter _native;
     private readonly int _thread = Environment.CurrentManagedThreadId;
@@ -33,7 +41,7 @@ internal sealed class ShopInteractiveSession : IDisposable
     private string? _parentDecision, _parentAction, _innerDecision, _innerAction, _childDecision, _childAction;
     private bool _opening, _inside, _failed, _disposed, _dispatching;
     private int _reads, _actions, _revision;
-    internal ShopInteractiveSession(string nonce, IShopV1NativeAdapter native) { _nonce = nonce; _native = native; }
+    internal ShopInteractiveSession(string nonce, IShopV1NativeAdapter native, bool full=false) { _nonce = nonce; _native = native; _full=full; }
     private void Require([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)] bool ok)
     { if (!ok) { _failed = true; throw new InvalidOperationException("shop_interactive_boundary"); } }
     internal (ShopV1SurfaceCapture Surface, DeckChoiceView? Choice, ShopV1Observation? Core) Inspect(string decision)
@@ -54,7 +62,7 @@ internal sealed class ShopInteractiveSession : IDisposable
         finally { _inside = false; }
     }
     private JsonObject Value(string status, string phase) => new() {
-        ["schema_version"] = 7, ["capability"] = "shop_v7", ["session_nonce"] = _nonce,
+        ["schema_version"] = _full?8:7, ["capability"] = _full?"shop_v8":"shop_v7", ["session_nonce"] = _nonce,
         ["status"] = status, ["phase"] = phase, ["completed"] = _completed.DeepClone() };
     private JsonObject Ready(string phase, IEnumerable<string> actions, JsonObject fields)
     {
@@ -99,30 +107,39 @@ internal sealed class ShopInteractiveSession : IDisposable
         }
         _view = _core.Read() as ShopV1Observation ?? throw new InvalidOperationException("Shop read unavailable.");
         Require(_view.Status is "ready" or "waiting" or "complete");
-        if (_parentDecision is not null && _view.PriorResults.Any(r => r.DecisionId == _innerDecision && r.ActionId == _innerAction && r.Result == "reconciled"))
+        if (_parentDecision is not null && _view.PriorResults.Any(r => r.DecisionId == _innerDecision && r.ActionId == _innerAction && r.Result is "reconciled" or "cancelled"))
         {
-            if (_childDecision is not null) { Require(_childAction is "confirm" or "cancel"); SettleChild(); }
-            Settle(_parentDecision, _parentAction!); _parentDecision = _parentAction = _innerDecision = _innerAction = null; _pickup = null; _choice = null;
+            if (_childDecision is not null) { Require(_childAction is "confirm" or "cancel" || _childAction!.StartsWith("reward:",StringComparison.Ordinal)); SettleChild(); }
+            Settle(_parentDecision, _parentAction!,_view.PriorResults.Single(r=>r.DecisionId==_innerDecision&&r.ActionId==_innerAction).Result); _parentDecision = _parentAction = _innerDecision = _innerAction = null; _pickup = null; _removal=null; _choice = null;_effect=null;_reward=null;
         }
         if (_view.Status == "complete") { Require(_parentDecision is null && _childDecision is null); return _terminal = Value("complete", "map"); }
         if (_view.Status == "waiting")
         {
+            _effect=_full?_core.PendingPurchase as IShopV1ObservedDispatch:null;
+            if(_effect is not null) {
+                _reward=_effect.ReadRewards();
+                if(_reward is null)return Value("waiting","purchase");
+                if(_childDecision is not null&&(_reward.Complete||_reward.Ready&&_reward.Revision>_rewardRevision))SettleChild();
+                if(!_reward.Ready||_reward.Complete)return Value("waiting","rewards");
+                return Ready("rewards",_reward.Actions.Select(a=>"reward:"+a),new JsonObject {["screen_kind"]=_reward.ScreenKind,["reward_decision"]=_reward.Decision});
+            }
             _pickup = _core.PendingPurchase as PinnedShopPickupDispatch;
-            if (_pickup is null) return Value("waiting", "purchase");
-            _choice = _pickup.ReadChoice();
+            _removal = _full ? _core.PendingPurchase as PinnedShopRemovalDispatch : null;
+            if (_pickup is null && _removal is null) return Value("waiting", "purchase");
+            _choice = _removal is not null ? _removal.ReadChoice() : _pickup!.ReadChoice();
             if (_choice is null) return Value("waiting", "selection");
             if (_childDecision is not null)
             {
                 Require(_expected is not null && _choice.Selected.SequenceEqual(_expected)); SettleChild();
             }
             var legal = new List<string>();
-            for (int i = 0; i < _choice.Domain.Length; i++)
+            for (int i = 0; _removal is null && i < _choice.Domain.Length; i++)
                 if (_choice.Selected.Contains(_choice.Domain[i])) legal.Add("deselect:" + i);
                 else if (_choice.Selected.Length < _choice.Maximum) legal.Add("select:" + i);
             if (_choice.Selected.Length >= _choice.Minimum) legal.Add("confirm");
             if (_choice.Cancelable) legal.Add("cancel");
             Require(legal.Count > 0);
-            return Ready("selection", legal, new JsonObject {
+            return Ready(_removal is null ? "selection" : "removal_confirmation", legal, new JsonObject {
                 ["minimum"] = _choice.Minimum, ["maximum"] = _choice.Maximum, ["cancelable"] = _choice.Cancelable,
                 ["cards"] = new JsonArray(_choice.Domain.Select(c => (JsonNode?)new JsonObject { ["key"] = c.Id.Entry, ["upgrade_level"] = c.CurrentUpgradeLevel }).ToArray()),
                 ["selected"] = new JsonArray(_choice.Selected.Select(c => (JsonNode?)JsonValue.Create(Array.IndexOf(_choice.Domain, c))).ToArray()) });
@@ -149,12 +166,17 @@ internal sealed class ShopInteractiveSession : IDisposable
             _entrance = _surface; _parentDecision = decision; _parentAction = action; _opening = true; _dispatching = true;
             _surface!.MerchantControl!.Dispatch!();
         }
-        else if (phase == "selection")
+        else if(phase=="rewards") {
+            Require(_childDecision is null&&_effect is not null&&_reward is not null&&action!.StartsWith("reward:",StringComparison.Ordinal));
+            _childDecision=decision;_childAction=action;_rewardRevision=_reward.Revision;_dispatching=true;
+            _effect.ApplyReward(_reward.Decision,action![7..]);
+        }
+        else if (phase is "selection" or "removal_confirmation")
         {
-            Require(_childDecision is null && _choice is not null && _pickup is not null);
+            Require(_childDecision is null && _choice is not null && (_pickup is not null || _removal is not null));
             string[] parts = action!.Split(':'); CardModel? card = parts.Length == 2 ? _choice.Domain[int.Parse(parts[1])] : null;
             _expected = parts[0] switch { "select" => _choice.Selected.Append(card!).ToArray(), "deselect" => _choice.Selected.Where(c => !ReferenceEquals(c, card)).ToArray(), _ => null };
-            _childDecision = decision; _childAction = action; _dispatching = true; _pickup.ApplyChoice(parts[0], card);
+            _childDecision = decision; _childAction = action; _dispatching = true; if(_removal is not null)_removal.ApplyChoice(parts[0]);else _pickup!.ApplyChoice(parts[0], card);
         }
         else
         {
@@ -177,8 +199,8 @@ internal sealed class ShopInteractiveSession : IDisposable
         a.Deck.Count == b.Deck.Count && a.Deck.Zip(b.Deck).All(p => ReferenceEquals(p.First.ModelIdentity, p.Second.ModelIdentity) && p.First.StableKey == p.Second.StableKey && p.First.UpgradeLevel == p.Second.UpgradeLevel) &&
         a.PotionSlots.Count == b.PotionSlots.Count && a.PotionSlots.Zip(b.PotionSlots).All(p => ReferenceEquals(p.First.ModelIdentity, p.Second.ModelIdentity) && p.First.StableKey == p.Second.StableKey) &&
         a.Relics.Count == b.Relics.Count && a.Relics.Zip(b.Relics).All(p => ReferenceEquals(p.First.ModelIdentity, p.Second.ModelIdentity) && p.First.StableKey == p.Second.StableKey);
-    private void Settle(string decision, string action)
-    { _completed.Add(new JsonObject { ["decision_id"] = decision, ["action_id"] = action, ["result"] = "reconciled" }); _revision++; }
+    private void Settle(string decision, string action, string result="reconciled")
+    { _completed.Add(new JsonObject { ["decision_id"] = decision, ["action_id"] = action, ["result"] = result }); _revision++; }
     private void SettleChild() { Settle(_childDecision!, _childAction!); _childDecision = _childAction = null; _expected = null; }
     public void Dispose()
     {

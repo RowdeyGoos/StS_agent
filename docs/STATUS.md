@@ -1,6 +1,6 @@
 # Bridge support and status
 
-Updated 2026-09-25 for interactive rest live validation and the v2 shared-interface candidate; other capability review remains
+Updated 2026-09-25 for broader native v2 implementation and interactive rest live validation; other capability review remains
 2026-09-19 against bridge source, pinned native game IL and retained evidence. Latest live
 session: **2026-09-25**. This is the authoritative summary of bridge support;
 [usage](../bridge/Sts2AgentBridge/README.md), [technical contracts](GENERIC_EVENTS.md),
@@ -30,8 +30,11 @@ are verified. Final Proceed does not erase earlier verified child results.
 The new native `agent_v2` / `full_run_v2` candidate connects rich observations and
 nested decisions to the same public-only chooser as headless. Its first controlled
 rest/card-reward/map path passed live; broader v2 acceptance remains open. Its [coverage and remaining gaps](AGENT_CONTRACT.md#native-full-run-v2-candidate)
-include supported rest/shop/event continuations, while general potions, hand
-selectors, treasure claims, reward rerolls and live public recording remain open.
+now include hand/optional combat choices, general potion use/discard and owned
+selectors, chest claims/empty chests, reward reroll/sacrifice, shop removal cancel,
+automatic relic effects, Cauldron/Orrery rewards and shared event reward children.
+An opt-in public live journal is implemented; no live corpus was collected for
+this development. These additions have offline evidence and await live acceptance.
 The v2 test completed four actions without pending work; prior rest cancellation
 and potion-reward evidence retains its separate package identity.
 
@@ -181,8 +184,20 @@ extend standalone rest/shop contracts.
 Native Smith/Cook cancellation and rest-triggered Dream Catcher/Tiny Mailbox
 rewards now have interactive adapters and ownership/effect checks. Representative
 cancellation, reward collection and card Skip passed live on 2026-09-25.
-These changes do not complete the
-broader shared native public interface, which remains under implementation.
+These changes have separate live evidence from the newer full-producer extensions.
+
+### Broader native v2 implementation
+
+The candidate implements the named hand-selector, potion, treasure, reward,
+shop and recording gaps in the [full-producer contract](AGENT_CONTRACT.md#native-full-run-v2-candidate).
+The original versioned controllers retain their semantics. New native owners
+verify exact tasks, inventory effects and nested receipts before handoff; failed
+or unresolved cleanup still stops the host.
+
+Neow's Bones is a concrete remaining compound-pickup boundary: it obtains a
+mandatory series of relics and subsequently adds curses. The full producer stops
+before selecting that parent option. Ordinary shared reward support does not
+establish this caller, arbitrary nested pickup effects or all event branches.
 
 ### Contract limits without a confirmed missing gameplay caller
 
@@ -209,6 +224,11 @@ These are **not an implementation queue or required live-test checklist**:
 
 ### Implemented, but still needing representative live evidence
 
+- Full-producer hand/optional offers, potion use/discard and potion-owned choices,
+  chest relic/empty-chest completion, reward reroll/sacrifice, automatic pickup
+  effects, shop removal cancel/Cauldron/Orrery and shared event reward children.
+  Native-shaped fixtures establish ownership/settlement boundaries; the new
+  producer still needs representative live interactions and an ending test.
 - Expanded terminal schemas 9–10: the representative ten-entry screen passed live.
   The wider 32-entry bound and 65-action card-menu sequence remain fixture/socket
   evidence, without a separately identified ordinary 32-entry gameplay caller.

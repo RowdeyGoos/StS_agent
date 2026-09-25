@@ -104,3 +104,9 @@ public static class GenericEventV7SphereRules {
         Enumerable.Range(0,8).Any(i=>action=="reward:claim:"+i||action=="reward:collect:"+i||action=="reward:open:"+i)||
         Enumerable.Range(0,5).Any(i=>action=="reward:choose:"+i);
 }
+
+public static class GenericEventV7FullRewardRules {
+    public static bool Action(string? action)=>action is "dismiss" or "skip_card" or "reroll" or "sacrifice" ||
+        Enumerable.Range(0,8).Any(i=>action=="claim:"+i||action=="collect:"+i||action=="open:"+i||action=="discard:"+i||action=="take:"+i)||
+        Enumerable.Range(0,5).Any(i=>action=="choose:"+i);
+}

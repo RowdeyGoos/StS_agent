@@ -30,7 +30,9 @@ internal sealed class CoreBridgeModule : IDisposable
     private ICombatPotions? _potions;
     internal void BindPotions(ICombatPotions potions) => _potions = potions;
     private IPublicRewardActionService? _campaignRewardApply;
-    internal void BindCampaign(ICampaignNavigation navigation, IPublicRewardActionService rewards) {_campaign=navigation;_campaignRewardApply=rewards;}
+    private Action<bool>? _rewardMode;
+    internal void BindCampaign(ICampaignNavigation navigation, IPublicRewardActionService rewards, Action<bool>? rewardMode=null) {_campaign=navigation;_campaignRewardApply=rewards;_rewardMode=rewardMode;}
+    public object? ObservationSource => _campaign;
     internal bool HasPendingAction => _potions?.Active == true || _pendingPath is not null || _choice.IsActive || _combatScope is not null || _agent?.Active == true || _campaign?.Active == true;
     internal void BindAgent(IAgentPublicReader reader) => _agent = new(reader, HandleLegacy, _correlation);
     internal void BindCombatScope(Func<bool> scope,Func<string>? resume=null,string? eventNonce=null,Func<ResumeDiagnostic>? resumeDiagnostic=null) {
@@ -71,20 +73,22 @@ internal sealed class CoreBridgeModule : IDisposable
     internal static bool IsValidAction(BridgeRequest r) => r.Path switch
     {
         CombatPotionRoutes.Action => CombatPotionRoutes.IsAction(r.Decision, r.Action),
+        CombatPotionRoutes.FullAction => CombatPotionRoutes.IsFullAction(r.Decision, r.Action),
         "/probe/v0/public/combat-action" => PublicCombatActionRequest.TryCreate(r.Decision!, r.Action!, out _),
-        "/probe/v0/public/reward-action" or CampaignRoutes.RewardAction => PublicRewardActionRequest.TryCreate(r.Decision!, r.Action!, out _),
+        "/probe/v0/public/reward-action" or CampaignRoutes.RewardAction or CampaignRoutes.FullRewardAction => PublicRewardActionRequest.TryCreate(r.Decision!, r.Action!, out _),
+        CampaignRoutes.FullAction => Sts2AgentBridge.Successors.ItemV1.ItemV1CanonicalEncoder.IsCanonicalDecisionId(r.Decision)&&r.Action is "proceed" or "open_chest" or "skip_relic" or "claim_relic",
         CampaignRoutes.Action => Sts2AgentBridge.Successors.ItemV1.ItemV1CanonicalEncoder.IsCanonicalDecisionId(r.Decision)&&r.Action is "proceed" or "open_chest" or "skip_relic",
         "/probe/v0/public/map-action" => PublicMapActionRequest.TryCreate(r.Decision!, r.Action!, out _),
         "/probe/v0/public/room-action" => PublicRoomActionRequest.TryCreate(r.Decision!, r.Action!, out _),
         ResumeItemAction => Sts2AgentBridge.Successors.ItemV1.ItemV1CanonicalEncoder.IsCanonicalDecisionId(r.Decision)&&
             (Sts2AgentBridge.Successors.ItemWireV1.ItemWireV1Protocol.IsCanonicalActionId(r.Action,out _)||r.Action=="skip_remaining"||r.Action is {Length:9}&&r.Action.StartsWith("discard:",StringComparison.Ordinal)&&r.Action[8] is >= '0' and <= '7'),
-        CombatCardChoiceService.ActionRoute or CombatCardChoiceService.ActionRouteV2 or CombatCardChoiceService.ActionRouteV3 => CombatCardChoiceService.IsAction(r.Decision, r.Action),
+        CombatCardChoiceService.ActionRoute or CombatCardChoiceService.ActionRouteV2 or CombatCardChoiceService.ActionRouteV3 or CombatCardChoiceService.ActionRouteV4 => CombatCardChoiceService.IsAction(r.Decision, r.Action),
         AgentSession.ActionRoute => AgentSession.IsAction(r.Decision, r.Action),
         _ => false,
     };
     internal ModuleReply Handle(BridgeRequest r)
     {
-        if(r.Path is CampaignRoutes.Decision or CampaignRoutes.Action) {
+        if(r.Path is CampaignRoutes.Decision or CampaignRoutes.Action or CampaignRoutes.FullDecision or CampaignRoutes.FullAction) {
             if(_potions?.Active==true||_campaign is null||_pendingPath is not null||_choice.IsActive||_combatScope is not null||_agent?.Active==true)return Busy();
             return _campaign.Handle(r);
         }
@@ -112,7 +116,17 @@ internal sealed class CoreBridgeModule : IDisposable
         // An event fight may end inside a potion effect. Reconcile that exact
         // action before consulting or releasing its outer event continuation.
         if (_potions?.Active == true) {
-            if (r.Path == CombatPotionRoutes.Decision) return Potion(r);
+            if (r.Path is CombatPotionRoutes.Decision or CombatPotionRoutes.FullDecision) {
+                if (_choice.IsActive) return Busy();
+                return Potion(r);
+            }
+            if (_potions is IFullPotions && r.Path is CombatCardChoiceService.DecisionRouteV4 or CombatCardChoiceService.ActionRouteV4) {
+                if (_potions is not IFullPotions { ChoiceOwnerAlive: true }) return Fault();
+                if (!_choice.IsActive && _potions is not IFullPotions { AllowsChoices: true })
+                    return r.IsPost ? Busy() : new(JsonSerializer.SerializeToUtf8Bytes(new { status = "waiting" }));
+                var choice = r.IsPost ? _choice.Apply(r.Decision!, r.Action!, 4) : _choice.Read(4);
+                return new(choice.Body, Terminal: choice.Terminal);
+            }
             if (r.Path == EventCombatRoute && _combatResume is not null) return ResumeRead("waiting");
             return Busy();
         }
@@ -128,7 +142,7 @@ internal sealed class CoreBridgeModule : IDisposable
                 if(resumed is not ("combat" or "waiting" or "item" or "resumed"))return ResumeFault();
                 if(resumed!="combat") {
                     if(r.Path=="/probe/v0/public/combat-decision")return new(CanonicalProbeEncoder.EncodePublicCombatDecisionBody(PublicCombatDecisionSnapshot.Waiting()));
-                    if(r.Path is CombatCardChoiceService.DecisionRoute or CombatCardChoiceService.DecisionRouteV2 or CombatCardChoiceService.DecisionRouteV3) {var choice=_choice.Read(CombatCardChoiceService.Version(r.Path));return new(choice.Body,Terminal:choice.Terminal);}
+                    if(r.Path is CombatCardChoiceService.DecisionRoute or CombatCardChoiceService.DecisionRouteV2 or CombatCardChoiceService.DecisionRouteV3 or CombatCardChoiceService.DecisionRouteV4) {var choice=_choice.Read(CombatCardChoiceService.Version(r.Path));return new(choice.Body,Terminal:choice.Terminal);}
                     // A combat-to-event switch can occur between a ready read and POST.
                     // This reply proves no command was queued; the host may observe resume.
                     if(r.IsPost&&r.Path=="/probe/v0/public/combat-action")return new(JsonSerializer.SerializeToUtf8Bytes(new {
@@ -138,9 +152,9 @@ internal sealed class CoreBridgeModule : IDisposable
                 }
             }
             if(!_combatScope())return Fault();
-            if(r.Path is not (CombatPotionRoutes.Decision or CombatPotionRoutes.Action or "/probe/v0/public/combat-decision" or "/probe/v0/public/combat-action" or CombatCardChoiceService.DecisionRoute or CombatCardChoiceService.ActionRoute or CombatCardChoiceService.DecisionRouteV2 or CombatCardChoiceService.DecisionRouteV3 or CombatCardChoiceService.ActionRouteV2 or CombatCardChoiceService.ActionRouteV3))return Busy();
+            if(r.Path is not (CombatPotionRoutes.Decision or CombatPotionRoutes.Action or CombatPotionRoutes.FullDecision or CombatPotionRoutes.FullAction or "/probe/v0/public/combat-decision" or "/probe/v0/public/combat-action" or CombatCardChoiceService.DecisionRoute or CombatCardChoiceService.ActionRoute or CombatCardChoiceService.DecisionRouteV2 or CombatCardChoiceService.DecisionRouteV3 or CombatCardChoiceService.DecisionRouteV4 or CombatCardChoiceService.ActionRouteV2 or CombatCardChoiceService.ActionRouteV3 or CombatCardChoiceService.ActionRouteV4))return Busy();
         }
-        if (r.Path is CombatCardChoiceService.DecisionRoute or CombatCardChoiceService.ActionRoute or CombatCardChoiceService.DecisionRouteV2 or CombatCardChoiceService.DecisionRouteV3 or CombatCardChoiceService.ActionRouteV2 or CombatCardChoiceService.ActionRouteV3)
+        if (r.Path is CombatCardChoiceService.DecisionRoute or CombatCardChoiceService.ActionRoute or CombatCardChoiceService.DecisionRouteV2 or CombatCardChoiceService.DecisionRouteV3 or CombatCardChoiceService.DecisionRouteV4 or CombatCardChoiceService.ActionRouteV2 or CombatCardChoiceService.ActionRouteV3 or CombatCardChoiceService.ActionRouteV4)
         {
             if (_pendingPath is not null && _pendingPath != "/probe/v0/public/combat-decision")
                 return Busy();
@@ -150,7 +164,7 @@ internal sealed class CoreBridgeModule : IDisposable
         }
         if (_choice.IsActive || _pendingPath is not null && (r.IsPost || r.Path != _pendingPath))
             return Busy();
-        if (r.Path is CombatPotionRoutes.Decision or CombatPotionRoutes.Action) return Potion(r);
+        if (r.Path is CombatPotionRoutes.Decision or CombatPotionRoutes.Action or CombatPotionRoutes.FullDecision or CombatPotionRoutes.FullAction) return Potion(r);
         byte[] body;
         switch (r.Path)
         {
@@ -169,13 +183,17 @@ internal sealed class CoreBridgeModule : IDisposable
                 body = CanonicalProbeEncoder.EncodePublicCombatActionBody(combatResult); break;
             case "/probe/v0/public/reward-decision":
             case CampaignRoutes.RewardDecision:
+            case CampaignRoutes.FullRewardDecision:
+                _rewardMode?.Invoke(r.Path==CampaignRoutes.FullRewardDecision);
                 var reward = _rewardRead.Read();
                 if (!reward.IsSuccess) return Fault();
-                body = CanonicalProbeEncoder.EncodePublicRewardDecisionBody(reward.Snapshot,r.Path==CampaignRoutes.RewardDecision); break;
+                body = CanonicalProbeEncoder.EncodePublicRewardDecisionBody(reward.Snapshot,r.Path is CampaignRoutes.RewardDecision or CampaignRoutes.FullRewardDecision); break;
             case "/probe/v0/public/reward-action":
             case CampaignRoutes.RewardAction:
+            case CampaignRoutes.FullRewardAction:
+                _rewardMode?.Invoke(r.Path==CampaignRoutes.FullRewardAction);
                 if (!PublicRewardActionRequest.TryCreate(r.Decision!, r.Action!, out var rewardAction)) return Fault();
-                var service=r.Path==CampaignRoutes.RewardAction?_campaignRewardApply:_rewardApply;
+                var service=r.Path is CampaignRoutes.RewardAction or CampaignRoutes.FullRewardAction?_campaignRewardApply:_rewardApply;
                 if(service is null)return Fault();
                 var rewardResult = service.Apply(rewardAction);
                 if (rewardResult.IsBackendFault) return Fault();
@@ -217,7 +235,7 @@ internal sealed class CoreBridgeModule : IDisposable
                         root.GetProperty("reason").GetString() == "stale_decision";
                     return new(body, Terminal: !stale, StaleWithoutMutation: stale);
                 }
-                _pendingPath = r.Path==CampaignRoutes.RewardAction?CampaignRoutes.RewardDecision:r.Path.Replace("-action", "-decision");
+                _pendingPath = r.Path==CampaignRoutes.FullRewardAction?CampaignRoutes.FullRewardDecision:r.Path==CampaignRoutes.RewardAction?CampaignRoutes.RewardDecision:r.Path.Replace("-action", "-decision");
                 _pendingDecision = r.Decision;
             }
             else if (_pendingPath == r.Path)
@@ -233,7 +251,10 @@ internal sealed class CoreBridgeModule : IDisposable
     }
     private ModuleReply Potion(BridgeRequest r) {
         if (_potions is null) return Fault();
-        var reply = r.IsPost ? _potions.Apply(r.Decision!, r.Action!) : _potions.Read();
+        bool full = r.Path is CombatPotionRoutes.FullDecision or CombatPotionRoutes.FullAction;
+        if (full && _potions is not IFullPotions) return Fault();
+        var reply = full ? (r.IsPost ? ((IFullPotions)_potions).ApplyFull(r.Decision!, r.Action!) : ((IFullPotions)_potions).ReadFull())
+            : r.IsPost ? _potions.Apply(r.Decision!, r.Action!) : _potions.Read();
         return new(reply.Body, Terminal: reply.Terminal, StaleWithoutMutation: reply.StaleWithoutMutation);
     }
     private ModuleReply ResumeFault() {

@@ -214,6 +214,14 @@ class Gate:
                 event_commands.append(("test:" + project, command))
             else:
                 self.run("test:" + project, command)
+        if self.component in ("all", "events"):
+            for name, option in (("events:reward_alternatives_native", "--reward-alternatives"),
+                                 ("events:shop_effects_native", "--shop-effects"),
+                                 ("events:full_rewards_native", "--full-event-rewards")):
+                # Focused development reuses the same inert native executable.
+                # Its full invocation already covers these in a release gate.
+                if self.selected(name) and self.only:
+                    event_commands.append((name, [self.dotnet, str(self.build("components/events/native_tests/GenericEventV7.Native.Tests.csproj")), option]))
         if self.component in ("all", "events") and self.selected("events:host_native"):
             command = [sys.executable, "-B", str(self.source / "components/events/integration_tests/test_generic_event_integration.py"),
                 "--dotnet", self.dotnet, "--fixture", str(self.build("components/events/integration/Sts2AgentBridge.GenericEventV7.Integration.csproj")),

@@ -529,19 +529,26 @@ private. Revealed Sphere cells retain their visible rarity/gold-size variant.
 | Family | Candidate implementation | Remaining native boundary |
 | --- | --- | --- |
 | Combat/map | Rich public graph over existing exact legal card/end-turn/map requests | Up to six living combat targets in the original executor; broader content interactions still need live checks |
-| Combat card choices | Existing discard, exhaust, draw and mandatory offer owners | Hand selection and optional combat offers are not supported |
-| Potions | The existing 15 combat potion types, with exact target and use-task settlement | General potion use, potion-driven selectors and outside-combat use remain open |
-| Rewards | Existing 32-row terminal rewards, visible Special Card rewards, item claims, discard/Skip/Proceed; event-owned reward continuation | Reroll/sacrifice and arbitrary nested pickup families remain open |
-| Rest | Native options, Smith/Cook toggles/confirmation/cancel, Heal rewards and separately reconciled Leave; supported pickup choices use `relic_choice` | Existing reward/pickup bounds remain; no multiplayer Mend |
-| Shop | Explicit Open/Close/Leave, displayed stock/prices, purchases, precommitted exact removal, and interactive supported relic pickups | Removal popup cancellation and broader pickup effects remain open |
-| Events/Ancients | Existing parent options and supported card/result/item/reward/offer/Sphere/abandon children; combat and owned item resumption | Existing caller/selector/effect boundaries remain; no all-branch claim |
-| Treasure/ending | Existing chest Open/Skip and act/Architect continuation | Treasure relic claiming remains open; the v2 ending needs live validation |
+| Combat card choices | `combat_choice_v4`: discard, exhaust, draw, hand selection, mandatory and optional offers; exact native selection task and parent ownership | At most 64 cards and 256 selection inputs; native selectors outside these families remain unsupported |
+| Potions | `potions_v2`: pinned native combat/AnyTime use, exact targets, potion-owned selectors, native generation/automatic-consumption effects, and general discard including automatic-only potions | Outside-combat actions require an actionable foreground map; eight slots and six living targets. Automatic-only potions never advertise manual use |
+| Rewards | `reward_v3`: existing 32-row terminal rewards plus visible native reroll/sacrifice controls, exact card/item/special-card claims, and certified automatic relic pickup effects | Arbitrary nested relic pickups and multiple independent selectors remain outside the certified effect families |
+| Rest | `rest_v4`: native options, Smith/Cook toggles/confirmation/cancel, Heal rewards with shared reward alternatives, and separately reconciled Leave; supported pickup choices use `relic_choice` | Existing reward/pickup bounds remain; no multiplayer Mend |
+| Shop | `shop_v8`: Open/Close/Leave, stock/prices, purchases, removal confirmation/cancel, existing pickup selectors, certified automatic relic effects, and Cauldron/Orrery reward decisions | Eight purchases per visit; arbitrary pickup callbacks remain unsupported. Every nested reward receipt precedes the purchase receipt |
+| Events/Ancients | Existing children plus a full-producer `full_rewards_v1` child: card/gold/potion/relic/Special Card rewards, native alternatives and mandatory reward sets; combat and owned item resumption | Eight reward rows and 40 child inputs within existing event budgets. Neow's Bones chains mandatory relic pickups and later curse additions; the full producer rejects its actionable parent before input |
+| Treasure/ending | `campaign_v3`: native chest Open, offered relic Claim or Skip, separate Proceed, and certified empty-chest completion; existing act/Architect continuation | Native Open/award/picking tasks must finish before handoff; broader pickup effects and the v2 ending need live validation |
 
 The same `game.agent.full_policy.choose_action` runs through
 `--capability full-agent`. `--agent-stop-at-map` ends a controlled case only at an
 actionable map with no pending actions and reports `truncated/external_stop`.
-Neither that stop nor an unsupported surface is a victory. The live host currently
-retains bounded summaries; public trajectory recording through this producer is
-still outstanding. The demonstrated rest/card-reward/map path is recorded in
+Neither that stop nor an unsupported surface is a victory. Optional
+`sts_public_live_trajectory_v1` recording retains validated public observations,
+chosen candidates, execution reports, aggregate attempted/accepted/reconciled
+counts and the final outcome in a separate `.live.jsonl` format. It excludes
+transport bindings and private state, requires an explicit release identity,
+data split and setup label, and publishes only a settled, checksummed journal.
+Interrupted or uncertain runs retain an unpublished `.partial`; they are not
+headless training transitions. Recording is off by default, and using it on live
+user data requires explicit retention authorization under the live guide.
+The demonstrated rest/card-reward/map path is recorded in
 [current status](STATUS.md#release-and-latest-evidence). Synthetic protocol/native-owner
 checks do not establish full native projection equivalence or broader live acceptance.

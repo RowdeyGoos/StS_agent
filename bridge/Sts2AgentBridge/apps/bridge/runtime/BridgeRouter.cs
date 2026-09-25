@@ -55,7 +55,7 @@ internal sealed class BridgeRouter : IDisposable
     private int _sessions;
     private bool _failed, _disposed, _resumingCombat;
     private FullAgentSession? _full;
-    internal object? ActiveObservationSource => _active?.ObservationSource;
+    internal object? ActiveObservationSource => _active?.ObservationSource ?? _core.ObservationSource;
     internal void BindFullAgent(FullAgentSession session)
     { if (_full is not null || _sessions != 0 || _core.HasPendingAction) throw new InvalidOperationException("Late full-agent binding."); _full = session; }
 

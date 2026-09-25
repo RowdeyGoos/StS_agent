@@ -15,6 +15,11 @@ namespace Sts2AgentBridge.Unified;
 
 internal sealed partial class FullNativeBackend
 {
+    private void AdoptAcquisitions()
+    {
+        if (_router.ActiveObservationSource is CampaignNavigation navigation)
+            foreach (var acquired in navigation.Acquisitions) _state.Adopt("relic", acquired.Offer, acquired.Relic);
+    }
     private JsonObject Combat(JsonElement wire)
     {
         var context = _state.PublicCombat();
@@ -32,16 +37,20 @@ internal sealed partial class FullNativeBackend
                     target.ValueKind == JsonValueKind.Null ? null : _state.Ref("enemy", enemies[target.GetInt32()]));
             }
         }
+        PotionCommands(enemies);
+        return context;
+    }
+    private void PotionCommands(MegaCrit.Sts2.Core.Entities.Creatures.Creature[] enemies)
+    {
         using var potions = ReadWire("potion");
         Require(Text(potions.RootElement, "status") == "ready");
         foreach (var action in potions.RootElement.GetProperty("legal_actions").EnumerateArray())
         {
             string id = action.GetString()!; string[] parts = id.Split(':');
             var potion = _state.Player.PotionSlots[int.Parse(parts[1])] ?? throw new AgentUnsupported();
-            Command("potion", Text(potions.RootElement, "decision_id")!, id, "use_potion", _state.Ref("potion", potion),
+            Command("potion", Text(potions.RootElement, "decision_id")!, id, parts[0]=="discard"?"discard_potion":"use_potion", _state.Ref("potion", potion),
                 parts.Length == 3 ? _state.Ref("enemy", enemies[int.Parse(parts[2])]) : null);
         }
-        return context;
     }
 
     private JsonObject Selection(JsonElement wire)
@@ -52,7 +61,7 @@ internal sealed partial class FullNativeBackend
         var cards = new List<JsonObject>();
         foreach (var card in surface.Cards)
         {
-            _state.Bind(card.Model); _state.Bind(card.Holder);
+            _state.Bind(card.Model); _state.Bind(card.Holder); if (card.NativeHolder is not null) _state.Bind(card.NativeHolder);
             Require(card.Model is CardModel);
             if (surface.Pile == "offer") cards.Add(_state.Card((CardModel)card.Model));
         }
@@ -87,6 +96,7 @@ internal sealed partial class FullNativeBackend
             string reference = _state.Ref("node", point!); reachable.Add(reference);
             Command("map", Text(wire, "decision_id")!, Text(action, "action_id")!, "choose_map_node", reference);
         }
+        PotionCommands(Array.Empty<MegaCrit.Sts2.Core.Entities.Creatures.Creature>());
         return Node("map", links: new[] { ("reachable", (IEnumerable<string>)reachable) });
     }
 
@@ -144,6 +154,8 @@ internal sealed partial class FullNativeBackend
                 case "take": command(action, "choose_reward_card", subjects[int.Parse(parts[1])].Ref, offers[int.Parse(parts[1])]); break;
                 case "choose": command(action, "choose_reward_card", subjects[0].Ref, offers[int.Parse(parts[1])]); break;
                 case "skip_card": command(action, "skip_reward", subjects[0].Ref, null); break;
+                case "reroll": command(action, "reroll_card_reward", subjects[0].Ref, null); break;
+                case "sacrifice": command(action, "sacrifice_card_reward", subjects[0].Ref, null); break;
                 case "proceed": case "dismiss": command(action, "leave_rewards", null, null); break;
                 case "discard":
                     var potion = _state.Player.PotionSlots[int.Parse(parts[1])] ?? throw new AgentUnsupported();
@@ -218,13 +230,18 @@ internal sealed partial class FullNativeBackend
     {
         string surface = Text(wire, "surface")!;
         Require(surface is "treasure" or "shop");
+        RelicModel? relic = wire.GetProperty("legal_actions").EnumerateArray().Any(a => a.GetString() == "claim_relic")
+            ? (_router.ActiveObservationSource as CampaignNavigation)?.OfferedRelic ?? throw new AgentUnsupported() : null;
+        string? relicRef = relic is null ? null : _state.Ref("relic", ((CampaignNavigation)_router.ActiveObservationSource!).OfferIdentity);
+        if (relic is not null) _state.Bind(relic);
         foreach (var row in wire.GetProperty("legal_actions").EnumerateArray())
         {
             string action = row.GetString()!;
             Command("navigation", Text(wire, "decision_id")!, action, action switch {
-                "open_chest" => "open_chest", "skip_relic" => "leave_treasure", "proceed" when surface == "shop" => "leave_shop",
-                _ => throw new AgentUnsupported() });
+                "open_chest" => "open_chest", "skip_relic" => "leave_treasure", "claim_relic" => "claim_treasure_relic",
+                "proceed" when surface == "treasure" => "leave_treasure", "proceed" when surface == "shop" => "leave_shop",
+                _ => throw new AgentUnsupported() }, action == "claim_relic" ? relicRef : null);
         }
-        return Node(surface);
+        return Node(surface, children: relic is null ? Array.Empty<JsonObject>() : new[] { FullNativeDisplay.Relic(relic, relicRef!) });
     }
 }

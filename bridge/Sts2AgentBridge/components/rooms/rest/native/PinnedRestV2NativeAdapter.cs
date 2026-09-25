@@ -16,6 +16,8 @@ using Sts2AgentBridge.Successors.RoomFlowsV1.Shop.Native;
 using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.RestSite;
 using MegaCrit.Sts2.Core.Nodes.Rooms;
+using Sts2AgentBridge.Adapters.Public;
+using MegaCrit.Sts2.Core.Nodes.Screens.CardSelection;
 
 namespace Sts2AgentBridge.Rooms.Rest;
 
@@ -23,6 +25,8 @@ namespace Sts2AgentBridge.Rooms.Rest;
 // alter relics directly. The hook is exclusive and owned until verified removal.
 public sealed class PinnedRestV2NativeAdapter : IRestV2NativeAdapter
 {
+    internal Func<PinnedPublicRewardParentTarget,NCardRewardSelectionScreen,IPinnedRewardAlternatives>? RewardAlternatives;
+    internal Func<Player,IPinnedRewardInventory>? RewardInventory;
     private const string Owner = "sts2-agent-bridge.rest-v2";
     private static PinnedRestV2NativeAdapter? _active;
     private readonly int _thread = Environment.CurrentManagedThreadId;
@@ -143,7 +147,7 @@ public sealed class PinnedRestV2NativeAdapter : IRestV2NativeAdapter
                     ReferenceEquals(_room.Characters[0].Player, _player) && ReferenceEquals(run.GlobalUi.MapScreen, surface.Map) &&
                     !run.GlobalUi.MapScreen.IsOpen && !run.GlobalUi.MapScreen.IsTraveling && ReferenceEquals(run.GlobalUi.Overlays, _overlays) &&
                     (!_interactive || ReferenceEquals(ActiveScreenContext.Instance.GetCurrentScreen(),
-                        run.GlobalUi.Overlays.ScreenCount == 0 ? (object)_room : run.GlobalUi.Overlays.Peek())), _interactive);
+                        run.GlobalUi.Overlays.ScreenCount == 0 ? (object)_room : run.GlobalUi.Overlays.Peek())), _interactive,RewardAlternatives,RewardInventory);
             _effect.Install();
         }
         _dispatched = true; // Reserve before native input; incomplete disposal is never a handoff.

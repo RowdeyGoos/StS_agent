@@ -18,9 +18,27 @@ using MegaCrit.Sts2.Core.Nodes.Screens.Map;
 using MegaCrit.Sts2.Core.Nodes.Screens.Overlays;
 using MegaCrit.Sts2.Core.Nodes.Screens.CardSelection;
 using MegaCrit.Sts2.Core.Runs;
+using MegaCrit.Sts2.Core.Nodes.Screens;
+using MegaCrit.Sts2.Core.Rewards;
 using Sts2AgentBridge.Successors.CardSelectionV1;
 using Sts2AgentBridge.Successors.CardSelectionV1.Native;
 namespace Sts2AgentBridge.Successors.GenericEventV7.Native;
+
+internal interface IGenericFullRewardSession : IGenericEventV7RewardChildSession
+{
+    NRewardsScreen? Screen {get;}
+    int OfferCount {get;}
+    bool InNativeScope {get;}
+    void Offering(Task task);
+    void ScreenEntering(RewardsSet set,bool terminal,IRunState run);
+    void ScreenEntered(NRewardsScreen screen);
+    void CollectionEntering(MegaCrit.Sts2.Core.Nodes.Rewards.NRewardButton button);
+    void CollectionReturned(Task task);
+    void MenuEntering(IReadOnlyList<CardCreationResult> cards,IReadOnlyList<MegaCrit.Sts2.Core.Entities.CardRewardAlternatives.CardRewardAlternative> options);
+    void MenuEntered(NCardRewardSelectionScreen screen);
+    void TaskEntering(NCardRewardSelectionScreen screen);
+    void TaskEntered(Task<int?> task);
+}
 
 internal sealed class GenericEventV7Binding
 {
@@ -67,6 +85,8 @@ internal sealed class GenericEventV7Binding
     internal Task? ChosenTask;
     internal GenericEventV7Terminal? Terminal;
     internal GenericEventV7ItemPolicySession? ItemPolicy;
+    internal Func<GenericEventV7Binding,RewardsSet,IGenericFullRewardSession>? FullRewardsFactory;
+    internal IGenericFullRewardSession? FullRewards;
     internal Task? ItemParentTask=>Combat?.Resumes==true?Combat.ResumeTask:ChosenTask;
     internal bool ItemContextValid()=>Combat?.Resumes==true?GenericEventV7Hooks.OwnsResume(this)&&Combat.ItemContextValid():!Closed&&GenericEventV7Hooks.Owns(this)&&ContextValid(false);
     internal Task<IEnumerable<CardModel>>? RequestTask;

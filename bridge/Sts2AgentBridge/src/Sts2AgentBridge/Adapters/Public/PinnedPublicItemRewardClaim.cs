@@ -12,6 +12,14 @@ using MegaCrit.Sts2.Core.Runs;
 
 namespace Sts2AgentBridge.Adapters.Public;
 
+internal interface IPinnedRelicRewardEffect : IDisposable
+{
+    void Invoke(Action input);
+    bool Valid(bool inserted);
+    bool Completed {get;}
+    bool MatchesPlayer(PublicRewardPlayer before,PublicRewardPlayer after);
+}
+
 // Standard terminal reward collection shares the core reward owner. It cannot
 // open a standalone item session while that owner's action is pending.
 internal sealed class PinnedPublicItemRewardClaim
@@ -65,7 +73,7 @@ internal sealed class PinnedPublicItemRewardClaim
     internal int HealAmount {get;}
     internal int MaxHpGain {get;}
     internal bool MatchesPlayer(PublicRewardPlayer before,PublicRewardPlayer after)=>
-        (long)before.MaxHp+MaxHpGain<=int.MaxValue &&
+        _effect is not null ? _effect.MatchesPlayer(before,after) : (long)before.MaxHp+MaxHpGain<=int.MaxValue &&
         after==before with {MaxHp=before.MaxHp+MaxHpGain,Hp=(int)Math.Min((long)before.Hp+HealAmount,(long)before.MaxHp+MaxHpGain)};
     internal int PotionCapacityGain {get;}
     internal int ResultCapacity=>_potions.Length+PotionCapacityGain;
@@ -80,15 +88,17 @@ internal sealed class PinnedPublicItemRewardClaim
     private readonly string[] _relicKeys;
     private readonly (CardModel Card,string Key,int Level,object? Enchantment,int Amount)[] _deck;
     private int _settledSlot=-1;
-    internal PinnedPublicItemRewardClaim(Reward reward)
+    private readonly IPinnedRelicRewardEffect? _effect;
+    internal PinnedPublicItemRewardClaim(Reward reward,Func<Reward,IPinnedRelicRewardEffect?>? factory=null)
     {
         _reward=reward;_player=reward.Player;_run=_player.RunState;
         _node=NRun.Instance??throw new InvalidOperationException("Item reward run unavailable.");
         _model=Model(reward)??throw new InvalidOperationException("Item reward unpopulated.");
         _key=Key(_model)!;PotionCapacityGain=CapacityGain(reward);MaxHpGain=MaximumHpGain(reward);HealAmount=HealingAmount(reward);
+        _effect=factory?.Invoke(reward);
         // The pinned game caps max HP at 999,999,999 and heals only the actual
         // gain. This contract admits exact gains, never a capped gain.
-        if(MaxHpGain>0&&(long)_player.Creature.MaxHp+MaxHpGain>999999999)
+        if(_effect is null&&MaxHpGain>0&&(long)_player.Creature.MaxHp+MaxHpGain>999999999)
             throw new InvalidOperationException("Max HP reward exceeds supported range.");
         if(_model is RelicModel {Owner:not null})throw new InvalidOperationException("Offered relic already owned.");
         if(!ValidKey(_key)||!Slots(_player,out _potions)||_player.Relics.Count>512||_player.Deck.Cards.Count>512)
@@ -112,6 +122,7 @@ internal sealed class PinnedPublicItemRewardClaim
     private object? Claimed => _reward is PotionReward p?p.ClaimedPotion:((RelicReward)_reward).ClaimedRelic;
     internal bool Valid(bool inserted, int discardedSlot = -1)
     {
+        if(_effect is not null)return Identity()&&discardedSlot<0&&_effect.Valid(inserted);
         if(!Identity()||!Slots(_player,out var potions)||potions.Length!=_potions.Length+(inserted?PotionCapacityGain:0)||_player.Deck.Cards.Count!=_deck.Length)return false;
         for(int i=0;i<_deck.Length;i++) {
             var old=_deck[i];var card=_player.Deck.Cards[i];
@@ -140,10 +151,13 @@ internal sealed class PinnedPublicItemRewardClaim
     }
     internal bool UnclaimedAfterDiscard(int slot) => !_reward.SuccessfullySelected && Claimed is null && Valid(false,slot);
     internal bool Unclaimed => !_reward.SuccessfullySelected && Claimed is null && Valid(false);
-    internal bool Completed => _reward.SuccessfullySelected&&ReferenceEquals(Claimed,_model)&&Valid(true);
+    internal bool Completed => _reward.SuccessfullySelected&&ReferenceEquals(Claimed,_model)&&Valid(true)&&(_effect?.Completed??true);
+    internal void Invoke(Action input){if(_effect is null)input();else _effect.Invoke(input);}
+    internal void Cleanup()=>_effect?.Dispose();
     internal void Settle()
     {
         if(!Completed)throw new InvalidOperationException("Item reward not reconciled.");
+        Cleanup();
         _settledCapacity=_player.MaxPotionCount;
         if(_model is PotionModel)_settledSlot=Array.FindIndex(_player.PotionSlots.ToArray(),p=>ReferenceEquals(p,_model));
     }

@@ -364,6 +364,9 @@ internal static partial class Program
         if(args.SequenceEqual(new[]{"--card-offers"})){OfferTests();Console.WriteLine("card offer checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--event-surfaces"})){SurfaceTests();Console.WriteLine("event surface checks: "+_checks);return;}
 #if TERMINAL_REWARD_TESTS
+        if(args.SequenceEqual(new[]{"--reward-alternatives"})){RewardAlternativeCases();Console.WriteLine("reward alternative checks: "+_checks);return;}
+        if(args.SequenceEqual(new[]{"--full-event-rewards"})){FullRewardCases();Console.WriteLine("full event reward checks: "+_checks);return;}
+        if(args.SequenceEqual(new[]{"--shop-effects"})){ShopEffectCases();Console.WriteLine("shop effect checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--rest-rewards"})){RestRewardCases();Console.WriteLine("rest reward checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--empty-rewards"})){EmptyTerminalRewardCases();Console.WriteLine("empty terminal reward checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--fake-mango"})){FakeMangoRewardCases();Console.WriteLine("Fake Mango checks: "+_checks);return;}
@@ -506,13 +509,15 @@ internal static partial class Program
         MultiEnchantmentTests();
 #if TERMINAL_REWARD_TESTS
         ShopInteractiveCases();
+        ShopEffectCases();
+        FullRewardCases();
 #endif
         ItemSetTests();EventCapacityCases(); ItemPolicyCases();MerchantScreenCases();ShopPotionOwnershipCases();ShopRelicCases();ShopPickupCases();MerchantFightCases();ShopRemovalCases();SphereCases();AbandonPopupCases();TerminalCases();
         AutomaticRemovalTests();CardRewardTests();
         CardRewardSetTests();
         CombatHandoffCases();OwnershipDiagnosticCases();
 #if TERMINAL_REWARD_TESTS
-        EmbeddedCombatCases();SpecialCardCases();CombatItemCases();RestRewardCases();
+        EmbeddedCombatCases();SpecialCardCases();CombatItemCases();RestRewardCases();RewardAlternativeCases();
 #endif
         CombatResumeCases();FinishedProceedCases();ResumeItemCases();
         Console.WriteLine("generic native checks: "+_checks);

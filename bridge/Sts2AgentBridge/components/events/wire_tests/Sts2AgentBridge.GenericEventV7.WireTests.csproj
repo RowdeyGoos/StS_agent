@@ -20,6 +20,7 @@
     <Compile Include="../wire/CardTransformV2WireCodec.cs" />
 
     <Compile Include="GenericEventV7WireTests.cs" />
+    <Compile Include="FullRewardWireTests.cs" />
     <Compile Include="../core/GenericEventV7Contracts.cs" />
     <Compile Include="../core/GenericEventV7NativeContracts.cs" />
     <Compile Include="../core/GenericEventV7CardRewardSession.cs" />

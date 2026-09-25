@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes;
 using MegaCrit.Sts2.Core.Nodes.Cards;
+using MegaCrit.Sts2.Core.Nodes.CommonUi;
 using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
 using MegaCrit.Sts2.Core.Nodes.Combat;
 using MegaCrit.Sts2.Core.Nodes.Screens.CardSelection;
@@ -38,6 +39,7 @@ internal sealed class CombatOfferFixture
         Cards = Enumerable.Range(0, count).Select(i => new CardModel { Owner = Player,
             Id = new ModelId { Entry = i == 0 ? "DISINTEGRATION" : "MIND_ROT" } }).ToArray();
         Screen.Init(Cards, skip); Screen.Nodes["CardRow"] = Row; Screen.Nodes["%PeekButton"] = Peek;
+        Screen.Nodes["SkipButton"] = new NChoiceSelectionSkipButton { Click=()=> { Screen.Result(Array.Empty<CardModel>()); if(!KeepOpen) Run.GlobalUi.Overlays.Top=null; } };
         Holders = Cards.Select(c => new NGridCardHolder { CardModel = c, CardNode = new NCard { Model = c }, DeferInput = true }).ToArray();
         Row.Children.AddRange(Holders);
         foreach (var holder in Holders)
@@ -101,6 +103,15 @@ internal static class CombatOfferFixtures
             NRun.Instance = f.Run; NOverlayStack.Instance = f.Run.GlobalUi.Overlays; CombatManager.Instance = f.Manager;
             check(f.Service.Read(3).Terminal && f.Holders.Sum(h=>h.Calls) == 0, "unsupported offer shape stops without input");
         }
+        foreach(bool take in new[]{false,true}) {
+            var f=new CombatOfferFixture(skip:true);var v=f.Read(4);
+            check(v.GetProperty("min_select").GetInt32()==0 && v.GetProperty("legal_actions").EnumerateArray().Any(a=>a.GetString()=="confirm"),"v4 optional offer skip advertised");
+            check(!f.Service.Apply(v.GetProperty("decision_id").GetString()!,take?"select:1":"confirm",4).Terminal,"optional offer input");
+            var result=f.Read(4);check(result.GetProperty("status").GetString()=="complete" && result.GetProperty("selected_slots").GetArrayLength()==(take?1:0),"optional offer exact selected or empty result");
+        }
+        var skipBlocked=new CombatOfferFixture(skip:true);var skipId=skipBlocked.Read(4).GetProperty("decision_id").GetString()!;
+        ((NChoiceSelectionSkipButton)skipBlocked.Screen.Nodes["SkipButton"]).IsEnabled=false;
+        check(skipBlocked.Service.Apply(skipId,"confirm",4).Terminal,"skip disabled before dispatch rejects");
         var delay = new CombatOfferFixture(); Time.Ticks=350;
         check(delay.Read().GetProperty("status").GetString() == "waiting", "native opening cooldown enforced");
         Time.Ticks=351; delay.Peek.IsPeeking=true;
