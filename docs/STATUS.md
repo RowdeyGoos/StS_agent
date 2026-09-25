@@ -256,25 +256,30 @@ supplies dated source candidates rather than a current implementation checklist.
 ## Release and latest evidence
 
 The current [release manifest](../bridge/Sts2AgentBridge/releases/current/bridge.json)
-is **`812c148b2cf224a3fd5a0d77c35be4f5e9cbbe07e1373123330e3e3c65a10364`**.
-It binds 439 source/test inputs across 51 projects, source `53e2255`, feature
-`49a6de1`. The gate passed **83 groups in 317.947 seconds**, including 164 client
-tests, 1,628 router checks, 13,372 native checks and 656 rest checks. Independent
-semantic review is clear. The controlled Profile 3 v2 rest/card-reward/map test
-passed: **4/4/4 actions**, 27 reads, no stale rejection or pending action. The
+is **`32d721e8f6f680d6fc0eeccfe90eeb5926dcbe17ac605cab43b89b36561ec314`**.
+It binds 461 source/test inputs across 52 projects, source `6c04327`, feature
+`cc9fa81`. The gate passed **85 groups in 319.717 seconds**, including 168 client
+tests, 1,628 router checks, 13,930 native event checks and 656 rest checks.
+Independent semantic review is clear. The exact package is installed for bounded
+Profile 3 checks after manual launch; all 429 base files remain unchanged and
+the two installed overlay files match the release. **New live acceptance is pending.**
+
+The previous manifest `812c148b…`, source `53e2255`, passed the controlled
+Profile 3 v2 rest/card-reward/map test: **4/4/4 actions**, 27 reads, no stale
+rejection or pending action. Its original record remains in Git `8a75686`. The
 shared policy healed HP **45/83 → 69/83**, increased the deck **6 → 7**, and stopped
 at the actionable map with `truncated/external_stop`. Normal quit and exact owned
 cleanup completed by **11:02:21 UTC**: four generated files removed, all 429 base
-files unchanged and zero overlays. The installation is now absent.
+files unchanged and zero overlays. That evidence retains its original package identity.
 
 The preceding diagnostic package stopped at the saved rest site with
 `read_context_failed` before any policy action (0/0/0, one read). A regression
 reproduced the cause: the shared reader cleared a response buffer while its JSON
-document still borrowed that memory. The current correction gives the document
+document still borrowed that memory. That correction gives the document
 its own storage before clearing the source. The diagnostic run ended with normal
 quit and complete owned cleanup: four files removed, all 429 base files unchanged,
 zero overlays by 10:09:24 UTC, recorded in Git `53e2255`.
-**Broader native v2 coverage and campaign acceptance remain outstanding.** The
+**Broader native v2 live coverage and campaign acceptance remain outstanding.** The
 [release record](../bridge/Sts2AgentBridge/releases/current/README.md) retains exact
 source/package, review, validation and installation identities.
 

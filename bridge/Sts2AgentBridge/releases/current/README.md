@@ -1,58 +1,57 @@
 # Current unified release
 
-This directory binds the current package to its source and validation.
-[Current status](../../../../docs/STATUS.md#release-and-latest-evidence) owns live
-support; [bridge usage](../../README.md#client-modes) owns commands.
+This directory binds the broader native `agent_v2` package to its source and
+validation. [Current status](../../../../docs/STATUS.md#release-and-latest-evidence)
+owns live support; [bridge usage](../../README.md#client-modes) owns commands.
 
 | Record | Meaning |
 | --- | --- |
 | [bridge.json](bridge.json) | Exact source/test, toolchain, reference, binary and package identities |
-| [validation.json](validation.json) | Release checks, independent review, installation and live status |
+| [validation.json](validation.json) | Release checks, review intervals, installation and live status |
 
-Manifest SHA-256: `812c148b2cf224a3fd5a0d77c35be4f5e9cbbe07e1373123330e3e3c65a10364`.
-It binds **439 inputs across 51 projects**, source `53e2255`, feature `49a6de1`.
-DLL: **1,567,744 bytes**, SHA-256
-`2d4a719865ee4037b6ebbb0a39b5b8c1619504df8a0c55a1719c9c02d45c79c5`.
+Manifest SHA-256: `32d721e8f6f680d6fc0eeccfe90eeb5926dcbe17ac605cab43b89b36561ec314`.
+It binds **461 inputs across 52 projects**, source `6c04327`, feature `cc9fa81`.
+DLL: **1,682,432 bytes**, SHA-256
+`470e6b75f5d57ceefa706c86ca62e5ad264de203f8b3300a3f183c6ffcac3fc8`.
 
-The final release gate passed **83 groups in 317.947 seconds**, including
+The final release gate passed **85 groups in 319.717 seconds**, including
 reproducible builds, native metadata/dependency checks, packaging and disposable
-installation/cleanup. It includes **164 client tests**, **1,628 router checks**,
-**13,372 native regression checks**, **656 rest checks**, and the actual-listener
-full-graph/2,048-slot/nested-receipt test. These are offline checks. The focused
-router suite passed in 13.443 seconds; independent semantic review passed in
-23 seconds. The earlier full Python result remains historical evidence for its
-original source; affected checks and the release gate ran for this correction.
+installation/cleanup. It includes **168 client tests**, **1,628 router checks**,
+**13,930 native event checks**, **656 rest checks**, **252 campaign checks** and
+**179 potion checks**. Independent semantic review passed after corrections;
+measured review intervals and focused checks are retained in `validation.json`.
+The broad Python suite completed in **1,872.05 seconds**: **8,181 passed**, two
+initial failures and two existing Gymnasium warnings. The sandbox socket case
+passed outside the sandbox; the outdated release fixture passed after correction.
+Both affected suites also passed in the final release gate. The original broad
+result and focused reruns remain recorded separately.
 
-The shared native reader previously cleared its response array while the parsed
-JSON document still borrowed that array. Status/property lookup then failed before
-any policy action. The regression reproduced this failure with the old code.
-The correction parses into independently owned document storage, clears the source
-buffer on every path, and retains caller disposal. Malformed and terminal replies
-remain failures; dispatch and mutation retry rules are unchanged.
+The package adds hand/optional combat selections, native potion use/discard and
+potion-owned selectors, chest claiming and empty-chest completion, reward
+reroll/sacrifice and certified automatic relic effects, shop removal cancellation,
+Cauldron/Orrery reward decisions, shared event reward children, and opt-in public
+live recording. Parent completion waits for exact native tasks, individual child
+receipts and successful cleanup. Legacy versioned controllers retain their scope.
 
-The corrected package passed the controlled Profile 3 shared-policy rest test on
-**2026-09-25**. After manual launch and health initialization before native Continue,
-`full-agent --agent-stop-at-map` completed **4 attempted / 4 accepted / 4 reconciled
-actions in 27 reads**, with zero stale rejections and nothing pending. The result
-was `truncated/external_stop` at an actionable map, with decision kinds `rest` and
-`map`. Native UI confirmed HP **45/83 → 69/83**, deck **6 → 7**, and unchanged
-399 gold. This demonstrates the healed rest/card-reward/map path through the same
-public-only chooser as headless; it is not a full campaign acceptance.
+These additions have **offline evidence**. The exact package is installed for
+bounded Profile 3 checks following manual launch. The installation verification
+passed with **429 unchanged base files and two owned overlay files**. No profile,
+save, history or Cloud content was accessed during development, and no live
+trajectory corpus was collected. New live acceptance remains pending.
 
-Normal Save and Quit and game Quit completed, followed by stopped process/closed
-listener checks, exact quarantine/purge of four owned files and verification of
-all **429 unchanged base files with zero overlays**, by **11:02:21 UTC**.
-The installation is now absent. The installation identity and exact result remain
-in `validation.json`. The [native candidate boundary](../../../../docs/AGENT_CONTRACT.md#native-full-run-v2-candidate)
-and remaining potion, hand-selector, treasure, pickup and recording gaps remain.
+The [native candidate boundary](../../../../docs/AGENT_CONTRACT.md#native-full-run-v2-candidate)
+remains explicit. Neow's Bones needs a compound relic-pickup/curse continuation;
+the full producer rejects its actionable parent before input. Arbitrary nested
+pickup callbacks and complete native campaign acceptance are not established.
 
-The preceding diagnostic manifest `7be74f7e…`, source `1989124`, stopped at the
-saved rest site with `read_context_failed` (**0/0/0**, one read). Native Save and
-Quit followed by normal Quit preserved the run. Process/listener shutdown,
-four-file owned cleanup and 429 unchanged base files with zero overlays were
-verified by **2026-09-25 10:09:24 UTC**. Its exact live record is in Git `53e2255`;
-it is not repinned to this corrected package.
+The previous manifest `812c148b…`, source `53e2255`, passed the shared-policy
+rest/card-reward/map path on 2026-09-25: **4/4/4 actions**, 27 reads, no pending
+action, HP **45/83 → 69/83**, deck **6 → 7**, gold unchanged at 399, and
+`truncated/external_stop` at the map. Normal quit and exact four-file cleanup
+finished by **11:02:21 UTC**, with 429 unchanged base files and zero overlays.
+Its original record is preserved in Git `8a75686` and in the evidence directory;
+that live result is not repinned to this package.
 
-Current evidence and the preserved prior package/record are under
-`/private/tmp/sts-bridge-qqc_ae6w`. Current install inputs are at
+Current evidence and the preserved previous package/record are under
+`/private/tmp/sts-bridge-d2n3wh6m`. Current install inputs are at
 `/private/tmp/sts-unified-bridge-release`.
