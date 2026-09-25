@@ -115,3 +115,35 @@ Quarantine state SHA-256 was
 the base SHA-256 remained `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
 Live execution and user-wait durations were not measured separately. This is one
 representative relic-granting Sacrifice, not all relic callbacks or a full campaign.
+
+## Shop-removal preview cancellation
+
+The same corrected package was reinstalled and the user manually launched Profile 3.
+This is a separate process from the Whetstone retest, with its own action counts.
+The release manifest remained `1f83ded88af136170f2c1191bf28371aa435c9ab1616c011357fa64140e6f7e6`;
+installed state was `a5f0267b7f89d502220c4c98e86c7192d72dedf3c120795b370fc75d4eb3aa1d`.
+Installation verification at 14:44:36 UTC found two exact owned overlays and all
+429 base files unchanged.
+
+Native Continue restored HP 86/88, gold 466 and the seven-card deck. The native
+console command `room shop` established the test room before the first full-agent
+observation. An initial mistyped `oom shop` was explicitly rejected by the game
+without mutation; the correctly typed command then succeeded. No cards, gold or
+HP were granted for this case.
+
+The sequence `open_shop → choose_shop_removal → cancel_selection → close_shop → leave_shop`
+passed: **5 attempted / 5 accepted / 5 reconciled**, seven reads, zero stale
+rejections and no pending action. The exact public deck identities/definitions and
+gold remained unchanged throughout cancellation. The host stopped at an actionable
+map with `truncated/external_stop`; HP remained 86/88, gold 466 and deck count seven.
+This establishes cancellation of the preselected removal preview, not arbitrary
+interactive multi-selection. No live trajectory corpus was retained.
+
+Normal Save and Quit, game Quit, stopped-process/closed-listener verification and
+exact owned quarantine/purge completed by **14:54:07 UTC**. Four generated files
+were removed, no overlays remained, and all 429 base files remained unchanged at
+SHA-256 `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Quarantine state was `75cc3f0fac1937b700aacf07612dbb7a474d28ebdf601f2fbe433b2bac1cec92`.
+Execution and user-wait durations were not measured separately. The planned Lost
+Coffer check was deferred to a fresh bridge process because this process retained
+its reconciled shop-to-map owner; no unrelated event was attached to that owner.

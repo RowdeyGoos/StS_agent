@@ -1,4 +1,66 @@
 {
+  "additional_live_tests": [
+    {
+      "accepted": 5,
+      "actions": [
+        "open_shop",
+        "choose_shop_removal",
+        "cancel_selection",
+        "close_shop",
+        "leave_shop"
+      ],
+      "attempted": 5,
+      "case": "shop_removal_preview_cancel",
+      "cleanup": {
+        "base_file_count": 429,
+        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+        "game_process_running": false,
+        "generated_files_removed": 4,
+        "normal_quit": true,
+        "overlay_count": 0,
+        "port_accepting": false,
+        "quarantined_state_sha256": "75cc3f0fac1937b700aacf07612dbb7a474d28ebdf601f2fbe433b2bac1cec92",
+        "status": "passed",
+        "verified_by_utc": "2026-09-25 14:54:07 UTC"
+      },
+      "installation": {
+        "phase": "installed",
+        "state_sha256": "a5f0267b7f89d502220c4c98e86c7192d72dedf3c120795b370fc75d4eb3aa1d",
+        "status": "passed"
+      },
+      "installation_verification": {
+        "base_file_count": 429,
+        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+        "overlay_count": 2,
+        "status": "passed",
+        "verified_by_utc": "2026-09-25 14:44:36 UTC"
+      },
+      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md",
+      "outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "pending": false,
+      "profile": 3,
+      "reads": 7,
+      "reconciled": 5,
+      "recorded_live_corpus": false,
+      "release_manifest_sha256": "1f83ded88af136170f2c1191bf28371aa435c9ab1616c011357fa64140e6f7e6",
+      "result": {
+        "deck_count": 7,
+        "gold": 466,
+        "gold_and_exact_deck_unchanged": true,
+        "hp": 86,
+        "map_actionable": true,
+        "max_hp": 88
+      },
+      "scope": "Continue the saved run, native console room shop before full-agent attachment; removal preview cancellation followed by inventory close, Leave and actionable map.",
+      "stale_rejections": 0,
+      "status": "passed",
+      "target_game_executed": true
+    }
+  ],
   "change": "Observe CardModel.UpgradeInternal during certified relic pickup effects instead of the potentially inlined CardCmd forwarding overload.",
   "elapsed_times": {
     "fix_review_seconds": 41,
@@ -502,6 +564,7 @@
       "verified_by_utc": "2026-09-25 14:34:33 UTC"
     },
     "entry": "Native Continue restored the checkpoint before the prior unresolved action; new session 0/0/0, no pending action, gold 466, Wing counter 1, Whetstone absent. Read-only verified and strict one-use preconditions required.",
+    "installed_state_sha256": "446c391ed56282d22d1facc1886c4a6a93cbc92be965f3cb7b1b40f729392c6a",
     "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md",
     "outcome": {
       "kind": "truncated",
@@ -526,6 +589,25 @@
     "stale_rejections": 0,
     "status": "passed",
     "target_game_executed": true
+  },
+  "next_live_preparation": {
+    "installation": {
+      "phase": "installed",
+      "state_sha256": "3098285400f093f2eeb9ca415c34bbe2a51d64cd41cfee21095eb1a454ca3a44",
+      "status": "passed"
+    },
+    "profile": 3,
+    "release_manifest_sha256": "1f83ded88af136170f2c1191bf28371aa435c9ab1616c011357fa64140e6f7e6",
+    "scope": "Continue the saved campaign for the bounded Lost Coffer shared-reward check in a fresh bridge process; no new campaign or public corpus.",
+    "status": "awaiting_manual_launch",
+    "target_game_executed": false,
+    "verification": {
+      "base_file_count": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "overlay_count": 2,
+      "status": "passed",
+      "verified_by_utc": "2026-09-25 14:54:38 UTC"
+    }
   },
   "previous_release": {
     "install_inputs": "/private/tmp/sts-bridge-gbhdyd9q/previous-install-inputs",
@@ -625,6 +707,16 @@
     "router_checks": 1628
   },
   "release_manifest_sha256": "1f83ded88af136170f2c1191bf28371aa435c9ab1616c011357fa64140e6f7e6",
+  "remaining_gap_source_review": {
+    "reviewer": "semantic_review",
+    "scope": "Concrete Neow nested reward/selector callers, existing child completion versus outer callback, ancestor stack identity and synchronous last-reward-to-curse ordering. No blocker found in ordinary Lost Coffer path; guard remains. Not acceptance of a compound implementation.",
+    "seconds": 279,
+    "status": "source_review_only",
+    "utc": [
+      "2026-09-25 14:37:56 UTC",
+      "2026-09-25 14:42:35 UTC"
+    ]
+  },
   "remaining_limits": [
     "Neows Bones compound mandatory relic pickups followed by curses: actionable full-producer parent rejected before input.",
     "Arbitrary nested relic pickup callbacks and multiple independent selector children remain outside the certified effect families.",

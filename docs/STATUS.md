@@ -38,7 +38,8 @@ this development. The [broader live batch](evidence/FULL_AGENT_BRIDGE_LIVE_2026_
 demonstrated reroll, map potion use/discard, chest claiming, potion-owned hand and
 optional offers, and the first Sacrifice. The corrected Whetstone-granting
 Sacrifice passed its saved-run retest: **4/4/4 actions**, five reads and an actionable
-map, with no pending action. The ledger preserves the preceding failed artifact
+map, with no pending action. Full-producer shop-removal preview cancellation also
+passed: **5/5/5 actions**, unchanged gold/deck and map return. The ledger preserves the preceding failed artifact
 and its **36/36/35** counts. Prior rest
 cancellation and potion-reward evidence retains its separate package identity.
 
@@ -57,7 +58,7 @@ cancellation and potion-reward evidence retains its separate package identity.
 | Map and room handoffs | Public legal map actions and bounded event/combat-to-map verification | Representative map/next-room transitions demonstrated; composite `*-map` clients verify the map but do not select a node |
 | Rest | Heal/Proceed and Smith (one card); Lift, Kindle, Dig, Cook, Clone and Hatch. Packaged `rest_v3` exposes selector cancellation and Heal-owned rewards | Ordinary Heal/Smith, Smith/Cook immediate and preview cancellation, Dream Catcher card collect/Skip, and Tiny Mailbox two-potion collection demonstrated. Successful effects of the six additional actions remain offline only |
 | Shop purchases | Cards, potions, supported passive relics, Potion Belt +2 slots; 0–8 purchases, kind policy, gold reserve and callback-certified restock | Seven-card/one-potion visit and three restocked potion purchases with original-potion replacement demonstrated. Passive relics, capacity and other policy variants need live coverage |
-| Shop removal | Exact selected original, price/effect reconciliation, then separate inventory close and Leave | Demonstrated through map return; removing a card does not itself leave the shop |
+| Shop removal | Exact selected original, price/effect reconciliation, preview cancellation, then separate inventory close and Leave | Removal and full-producer preview cancellation demonstrated through map return; cancellation retained exact deck and gold |
 | Shop pickup selectors | Dolly’s Mirror, Gnarled Hammer, Kifuda, Punch Dagger and Royal Stamp; exact native clone/enchantment selection | Implemented and offline tested; live coverage open. Other pickup callbacks are not generally supported |
 
 ### Native rest-site actions
@@ -237,11 +238,12 @@ These are **not an implementation queue or required live-test checklist**:
 
 ### Implemented, but still needing representative live evidence
 
-- Full-producer empty-chest completion, automatic pickup effects, shop removal
-  cancel/Cauldron/Orrery and shared event reward children, plus an ending test.
+- Full-producer empty-chest completion, automatic pickup effects, shop
+  Cauldron/Orrery and shared event reward children, plus an ending test.
   Representative hand/optional offers, potion use/discard and potion-owned choices,
   chest claiming, reroll and Sacrifice passed live, including the corrected
-  Whetstone-granting second Sacrifice.
+  Whetstone-granting second Sacrifice. Shop-removal preview cancellation also
+  passed, with unchanged deck/gold and map return.
 - Expanded terminal schemas 9–10: the representative ten-entry screen passed live.
   The wider 32-entry bound and 65-action card-menu sequence remain fixture/socket
   evidence, without a separately identified ordinary 32-entry gameplay caller.
@@ -278,6 +280,12 @@ actual model upgrade instead of a potentially inlined command wrapper. The exact
 saved-run Whetstone retest passed **4/4/4 actions**, five reads and map return.
 Normal quit and owned cleanup completed by **14:34:33 UTC**: four generated files
 removed, zero overlays, all 429 base files unchanged.
+The same package passed shop-removal preview cancellation: **5/5/5 actions**,
+seven reads, unchanged deck/gold and map return. Normal quit and exact cleanup
+completed by **14:54:07 UTC**, with four generated files removed and all 429 base
+files unchanged. It was reinstalled for a separate Lost Coffer reward check;
+installation was verified by **14:54:38 UTC**, with two exact owned overlays.
+That next check awaits manual launch on the saved campaign.
 
 The preceding package `32d721e8…`, source `6c04327`, completed 35 actions before
 Whetstone's second-Sacrifice reconciliation failed on action 36. The
