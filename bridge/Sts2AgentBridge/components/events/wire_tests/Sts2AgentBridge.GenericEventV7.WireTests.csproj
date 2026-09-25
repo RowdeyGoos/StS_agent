@@ -21,6 +21,12 @@
 
     <Compile Include="GenericEventV7WireTests.cs" />
     <Compile Include="FullRewardWireTests.cs" />
+    <Compile Include="FullRewardBoundaryTests.cs" />
+    <Compile Include="../../../apps/bridge/compatibility/GenericEventTerminalClassifier.cs" />
+    <Compile Include="../transport/GenericEventTransportContracts.cs" />
+    <Compile Include="../transport/GenericEventTransportProtocol.cs" />
+    <Compile Include="../diagnostics/GenericEventDiagnosticCode.cs" />
+    <Compile Include="../diagnostics/GenericEventDiagnosticCodec.cs" />
     <Compile Include="../core/GenericEventV7Contracts.cs" />
     <Compile Include="../core/GenericEventV7NativeContracts.cs" />
     <Compile Include="../core/GenericEventV7CardRewardSession.cs" />

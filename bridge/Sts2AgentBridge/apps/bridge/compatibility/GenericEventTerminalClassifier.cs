@@ -51,6 +51,7 @@ internal static class GenericEventTerminalClassifier
                 else if (!Null(child) && Text(child,"kind")=="item_policy") return ItemPolicy(payload,nonce,true);
                 else if (!Null(child) && Text(child,"kind")=="abandon_confirmation") return Abandon(payload,nonce,true);
                 else if (!Null(child) && Text(child,"kind")=="crystal_sphere") return Sphere(payload,nonce,true);
+                else if (!Null(child) && Text(child,"kind")=="full_rewards") return FullRewards(payload,nonce,true);
                 else if (!Null(child) && Text(child,"kind")=="card_results") return Results(payload,child,nonce,true);
                 else if (!Null(child) && Text(child,"kind")=="card_offer") return Offer(payload,child,nonce,true);
                 else if (!Null(child) && Text(child,"kind")=="card_reward") return Reward(payload,child,nonce,true);
@@ -80,6 +81,7 @@ internal static class GenericEventTerminalClassifier
                 if (!Null(child) && Text(child,"kind")=="item_policy") return ItemPolicy(payload,nonce,false);
                 if (!Null(child) && Text(child,"kind")=="abandon_confirmation") return Abandon(payload,nonce,false);
                 if (!Null(child) && Text(child,"kind")=="crystal_sphere") return Sphere(payload,nonce,false);
+                if (!Null(child) && Text(child,"kind")=="full_rewards") return FullRewards(payload,nonce,false);
                 if (!Null(child) && Text(child,"kind")=="card_results") return Results(payload,child,nonce,false);
                 if (!Null(child) && Text(child,"kind")=="card_offer") return Offer(payload,child,nonce,false);
                 if (!Null(child) && Text(child,"kind")=="card_reward") return Reward(payload,child,nonce,false);
@@ -102,13 +104,14 @@ internal static class GenericEventTerminalClassifier
         finally { if(canonical is not null) Array.Clear(canonical); }
     }
     private static bool Child(JsonElement value) {
-        bool item=Text(value,"kind") is "item" or "card_reward" or "card_offer" or "card_results" or "crystal_sphere" or "abandon_confirmation" or "item_policy";
+        bool item=Text(value,"kind") is "item" or "card_reward" or "card_offer" or "card_results" or "crystal_sphere" or "abandon_confirmation" or "item_policy" or "full_rewards";
         if(!Keys(value,item?new[]{"ordinal","parent_decision_id","parent_action_id","kind","contract_version","offer_count"}:
             new[]{"ordinal","parent_decision_id","parent_action_id","kind","contract_version","operation","min_select","max_select","commit_mode","domain_count"}) ||
             value.GetProperty("ordinal").GetInt32() is <1 or >4 || !Hex(Text(value,"parent_decision_id"),64) ||
             !GenericEventTransportRequestParser.ParentActionValue(Encoding.ASCII.GetBytes(Text(value,"parent_action_id")??"")))return false;
         if(item) {
             int count=value.GetProperty("offer_count").GetInt32();
+            if(Text(value,"kind")=="full_rewards")return count is >=1 and <=8&&Text(value,"contract_version")=="full_rewards_v1";
             if(Text(value,"kind")=="item_policy")return count is >=1 and <=8&&Text(value,"contract_version")=="item_policy_v1";
             if(Text(value,"kind")=="abandon_confirmation")return count==2&&Text(value,"contract_version")=="abandon_confirmation_v1";
             if(Text(value,"kind")=="crystal_sphere")return count==121&&Text(value,"contract_version")=="crystal_sphere_v1";
@@ -198,6 +201,48 @@ internal static class GenericEventTerminalClassifier
             if(!Keys(r,"slot","kind","key","amount","cards")||r.GetProperty("slot").GetInt32()!=slot++||Text(r,"kind") is not ("gold" or "card" or "potion" or "relic")||r.GetProperty("amount").GetInt32()<0||Text(r,"key")!=""&&!Sts2AgentBridge.Successors.ItemV1.ItemV1CanonicalEncoder.IsStableKey(Text(r,"key")))return TerminalClassification.Invalid;
             var cards=r.GetProperty("cards");if(cards.ValueKind!=JsonValueKind.Array||cards.GetArrayLength()>5)return TerminalClassification.Invalid;
             int index=0;foreach(var c in cards.EnumerateArray())if(!Keys(c,"slot","key","upgrade_level")||c.GetProperty("slot").GetInt32()!=index++||!Sts2AgentBridge.Successors.ItemV1.ItemV1CanonicalEncoder.IsStableKey(Text(c,"key"))||c.GetProperty("upgrade_level").GetInt32()<0)return TerminalClassification.Invalid;
+        }
+        return TerminalClassification.NonTerminal;
+    }
+    private static TerminalClassification FullRewards(JsonElement p, string nonce, bool apply)
+    {
+        if (p.ValueKind != JsonValueKind.Object || Text(p,"version") != "full_rewards_v1" || Text(p,"session_nonce") != nonce)
+            return TerminalClassification.Invalid;
+        if (apply) {
+            if (!Keys(p,"version","session_nonce","decision_id","action_id","outcome") ||
+                !Hex(Text(p,"decision_id"),64) || !GenericEventV7FullRewardRules.Action(Text(p,"action_id")))
+                return TerminalClassification.Invalid;
+            return Text(p,"outcome") switch {
+                "accepted" => TerminalClassification.NonTerminal,
+                "rejected" or "unsupported" or "uncertain" => TerminalClassification.Terminal,
+                _ => TerminalClassification.Invalid };
+        }
+        if (!Keys(p,"version","session_nonce","status","phase","decision_id","cards","legal_actions","prior_results"))
+            return TerminalClassification.Invalid;
+        var cards = p.GetProperty("cards"); var actions = p.GetProperty("legal_actions"); var history = p.GetProperty("prior_results");
+        if (cards.ValueKind != JsonValueKind.Array || cards.GetArrayLength() != 0 || actions.ValueKind != JsonValueKind.Array ||
+            history.ValueKind != JsonValueKind.Array || history.GetArrayLength() > 40) return TerminalClassification.Invalid;
+        var decisions = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var h in history.EnumerateArray())
+            if (!Keys(h,"decision_id","action_id","result") || !Hex(Text(h,"decision_id"),64) ||
+                !decisions.Add(Text(h,"decision_id")!) || !GenericEventV7FullRewardRules.Action(Text(h,"action_id")) || Text(h,"result") != "completed")
+                return TerminalClassification.Invalid;
+        string? status = Text(p,"status"), phase = Text(p,"phase");
+        if (status != "ready") {
+            if (Text(p,"decision_id") != "" || actions.GetArrayLength() != 0) return TerminalClassification.Invalid;
+            return (status,phase) switch {
+                ("waiting","waiting") or ("resolved","complete") => TerminalClassification.NonTerminal,
+                ("unsupported","unsupported") => TerminalClassification.Terminal,
+                _ => TerminalClassification.Invalid };
+        }
+        if (phase is not ("rewards" or "card_reward") || !Hex(Text(p,"decision_id"),64) || actions.GetArrayLength() is < 1 or > 66)
+            return TerminalClassification.Invalid;
+        var unique = new HashSet<string>(StringComparer.Ordinal);
+        foreach (var entry in actions.EnumerateArray()) {
+            string? action = entry.GetString();
+            if (!GenericEventV7FullRewardRules.Action(action) || !unique.Add(action!)) return TerminalClassification.Invalid;
+            bool cardAction = action!.StartsWith("choose:",StringComparison.Ordinal) || action is "skip_card" or "reroll" or "sacrifice";
+            if (cardAction != (phase == "card_reward")) return TerminalClassification.Invalid;
         }
         return TerminalClassification.NonTerminal;
     }

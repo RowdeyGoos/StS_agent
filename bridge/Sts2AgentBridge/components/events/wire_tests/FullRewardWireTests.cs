@@ -7,6 +7,7 @@ internal static partial class GenericEventV7WireTests
 {
     private static void FullRewardCases()
     {
+        FullRewardBoundaryCases();
         Case("full reward protocol preserves receipts and phases",()=>{
             using var f=new FullRewardsFake();using var wire=new GenericEventV7WireService(Nonce,f);ItemStart(wire);
             foreach(var action in f.Actions) {
@@ -26,8 +27,9 @@ internal static partial class GenericEventV7WireTests
     }
     private sealed class FullRewardsFake:IGenericEventV7Session
     {
-        internal readonly string[] Actions={"claim:0","collect:1","take:2","discard:0","open:3","reroll","sacrifice","dismiss"};
+        internal readonly string[] Actions={"claim:0","collect:1","take:2","discard:0","open:3","reroll","sacrifice","choose:4","open:3","skip_card","dismiss"};
         internal string Mutation="";
+        internal string Status="ready", Outcome="accepted";
         private bool _parent,_delivered;
         private readonly List<GenericEventV7PriorResult> _history=new();
         private string Id=>(_history.Count+1).ToString("x64");
@@ -44,13 +46,14 @@ internal static partial class GenericEventV7WireTests
         public GenericEventV7ChildRead ReadChild(string? pd,string? pa,int ordinal)
         {
             bool done=_history.Count==Actions.Length||Mutation=="early";
-            string phase=Mutation=="phase"?"card_reward":_history.Count is 5 or 6?"card_reward":"rewards";
+            string phase=Mutation=="phase"?"card_reward":_history.Count is 5 or 6 or 7 or 9?"card_reward":"rewards";
             var history=_history.ToArray();if(Mutation=="history")history[0]=new(history[0].DecisionId,"collect:0","completed");
             if(Mutation=="early")history=Array.Empty<GenericEventV7PriorResult>();
+            if(Status!="ready")return new GenericEventV7RewardChildRead(new(Nonce,Status,Status,"",Array.Empty<GenericEventV7RewardCard>(),false,Array.Empty<string>(),history,null),"full_rewards_v1");
             if(done)_delivered=true;
             return new GenericEventV7RewardChildRead(new(Nonce,done?"resolved":"ready",done?"complete":phase,done?"":Id,Array.Empty<GenericEventV7RewardCard>(),false,done?Array.Empty<string>():new[]{Actions[_history.Count]},history,null),"full_rewards_v1");
         }
-        public GenericEventV7ChildApply ApplyChild(string? pd,string? pa,int ordinal,string? decision,string? action){_history.Add(new(decision!,action!,"completed"));return new GenericEventV7RewardChildApply(new(Nonce,decision!,action!,"accepted"),"full_rewards_v1");}
+        public GenericEventV7ChildApply ApplyChild(string? pd,string? pa,int ordinal,string? decision,string? action){if(Outcome=="accepted")_history.Add(new(decision!,action!,"completed"));return new GenericEventV7RewardChildApply(new(Nonce,decision!,action!,Outcome),"full_rewards_v1");}
         public void Dispose(){}
     }
 }
