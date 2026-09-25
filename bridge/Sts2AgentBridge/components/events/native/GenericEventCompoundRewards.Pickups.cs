@@ -38,7 +38,7 @@ internal sealed partial class GenericEventCompoundRewards
         {
             _owner=owner;RewardFrame=frame;_reward=reward;_relic=reward.Relic??throw new InvalidOperationException("compound_reward_unpopulated");_before=new(reward.Player);
             owner.Require(owner.Context()&&_relic is not null&&_relic.Owner is null&&
-                (PinnedAutomaticRelicEffects.Supports(_relic)||Named(_relic,"Kaleidoscope","LostCoffer","SmallCapsule")||OfferRelic(_relic)||AutomaticNeow(_relic)||DeckRelic(_relic)));
+                (PinnedAutomaticRelicEffects.Supports(_relic)||Named(_relic,"Kaleidoscope","LostCoffer","SmallCapsule")||OfferRelic(_relic)||AutomaticNeow(_relic)||DeckRelic(_relic)||Named(_relic,"LargeCapsule","PhialHolster")));
         }
         public void Invoke(Action input)
         {
@@ -82,6 +82,8 @@ internal sealed partial class GenericEventCompoundRewards
     }
     private bool AllowChild(PinnedRelicPickupChain.Frame parent,RelicModel child)
     {
+        if(_alternatives.Values.SingleOrDefault(a=>ReferenceEquals(a.Parent,parent)) is {} alternative)return alternative.Allow(child);
+        if(Named(parent.Relic,"LargeCapsule"))return PinnedAutomaticRelicEffects.Supports(child);
         if(!Named(parent.Relic,"SmallCapsule"))return false;
         var frame=Native.Value;
         return frame is not null&&ReferenceEquals(frame.Pickup,parent)&&frame.Pending is not null&&
@@ -91,6 +93,8 @@ internal sealed partial class GenericEventCompoundRewards
     {
         Require(Context()&&(frame.Parent is null||Expected(frame.Parent).Same(frame.Before)));
         _expected.Add(frame,new(_binding.Player));
+        if(Named(frame.Relic,"LargeCapsule")){var capsule=new CapsulePickup(this,frame);_capsules.Add(frame,capsule);return capsule.Enter();}
+        if(Named(frame.Relic,"PhialHolster")){var phial=new PhialPickup(this,frame);_phials.Add(frame,phial);return phial.Enter();}
         if(DeckRelic(frame.Relic)){var deck=new DeckLeaf(this,CurrentFrame(),frame);_decks.Add(deck);return deck.Enter();}
         if(AutomaticNeow(frame.Relic)){var automatic=new AutomaticPickup(this,frame);_neowAutomatic.Add(frame,automatic);return automatic.Enter();}
         if(!PinnedAutomaticRelicEffects.Supports(frame.Relic))return new Lease(()=>{});
@@ -99,7 +103,8 @@ internal sealed partial class GenericEventCompoundRewards
     }
     private void BeforePickupAdvance(PinnedRelicPickupChain.Frame frame)=>frame.Owner.BeforeAdvance(frame);
     private bool PickupEffectsValid(PinnedRelicPickupChain.Frame frame)=>Context()&&
-        (_decks.SingleOrDefault(d=>ReferenceEquals(d.Pickup,frame)) is {} deck?deck.Validate():
+        (_capsules.TryGetValue(frame,out var capsule)?capsule.Valid():_phials.TryGetValue(frame,out var phial)?phial.Valid():
+        _decks.SingleOrDefault(d=>ReferenceEquals(d.Pickup,frame)) is {} deck?deck.Validate():
         _automatic.TryGetValue(frame,out var observer)?observer.Valid():
         _neowAutomatic.TryGetValue(frame,out var automatic)?automatic.Valid():
         _offers.SingleOrDefault(o=>ReferenceEquals(o.Pickup,frame)) is {} offer?offer.Validate():Expected(frame).Same(new(_binding.Player)));
@@ -107,7 +112,9 @@ internal sealed partial class GenericEventCompoundRewards
     {if(_automatic.TryGetValue(frame,out var effect)){effect.Dispose();_automatic.Remove(frame);}
         _offers.SingleOrDefault(o=>ReferenceEquals(o.Pickup,frame))?.CleanupEffects();
         _decks.SingleOrDefault(d=>ReferenceEquals(d.Pickup,frame))?.CleanupEffects();
-        if(_neowAutomatic.TryGetValue(frame,out var automatic))automatic.Dispose();}
+        if(_neowAutomatic.TryGetValue(frame,out var automatic))automatic.Dispose();
+        if(_capsules.TryGetValue(frame,out var capsule))capsule.Dispose();
+        if(_phials.TryGetValue(frame,out var phial))phial.Dispose();}
     private void PickupCertified(PinnedRelicPickupChain.Frame frame)
     {if(frame.Parent is {} parent)_expected[parent]=frame.Certificate!;}
     private void AcceptRewardCertificate(PinnedRelicPickupChain.Frame pickup,RewardFrame frame)
@@ -117,6 +124,8 @@ internal sealed partial class GenericEventCompoundRewards
         Exception? failure=null;
         foreach(var chain in _chains)try{chain.Dispose();}catch(Exception error){failure??=error;}
         foreach(var effect in _neowAutomatic.Values)try{effect.Dispose();}catch(Exception error){failure??=error;}
+        foreach(var effect in _capsules.Values)try{effect.Dispose();}catch(Exception error){failure??=error;}
+        foreach(var effect in _phials.Values)try{effect.Dispose();}catch(Exception error){failure??=error;}
         if(failure is not null)throw new InvalidOperationException("compound_pickup_cleanup",failure);
     }
     private void ReleaseSettledPickups(){foreach(var effect in _effects)effect.Release();}

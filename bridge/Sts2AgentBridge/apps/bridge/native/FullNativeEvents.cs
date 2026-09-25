@@ -51,6 +51,13 @@ internal sealed partial class FullNativeBackend
         Require(ReferenceEquals(binding.Player, _state.Player) && ReferenceEquals(binding.EventModel, model));
         _state.Bind(binding); string kind = Text(child, "kind")!;
         if (kind == "full_rewards") {
+            if(binding.FullRewards is GenericEventCompoundRewards compound) {
+                var choice=EventCompoundChoice(child,payload,compound);if(choice is not null)return choice;
+                var nested=compound.Inspect(Text(payload,"decision_id")!);
+                return RewardContext(nested.Session,nested.View.DecisionId,nested.View.ScreenKind=="card_reward",
+                    payload.GetProperty("legal_actions").EnumerateArray().Select(a=>a.GetString()!),
+                    (action,semantic,subject,target)=>EventCommand(child,payload,action,semantic,subject,target));
+            }
             var full=binding.FullRewards as GenericEventFullRewards ?? throw new AgentUnsupported();
             var rewards=full.Inspect(Text(payload,"decision_id")!);
             return RewardContext(rewards.Session,rewards.View.DecisionId,rewards.View.ScreenKind=="card_reward",

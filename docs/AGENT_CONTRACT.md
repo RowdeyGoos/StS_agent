@@ -538,8 +538,24 @@ private. Revealed Sphere cells retain their visible rarity/gold-size variant.
 | Rewards | `reward_v3`: existing 32-row terminal rewards plus visible native reroll/sacrifice controls, exact card/item/special-card claims, and certified automatic relic pickup effects | Arbitrary nested relic pickups and multiple independent selectors remain outside the certified effect families |
 | Rest | `rest_v4`: native options, Smith/Cook toggles/confirmation/cancel, Heal rewards with shared reward alternatives, and separately reconciled Leave; supported pickup choices use `relic_choice` | Existing reward/pickup bounds remain; no multiplayer Mend |
 | Shop | `shop_v8`: Open/Close/Leave, stock/prices, purchases, removal confirmation/cancel, existing pickup selectors, certified automatic relic effects, and Cauldron/Orrery reward decisions | Eight purchases per visit; arbitrary pickup callbacks remain unsupported. Every nested reward receipt precedes the purchase receipt |
-| Events/Ancients | Existing children plus a full-producer `full_rewards_v1` child: card/gold/potion/relic/Special Card rewards, native alternatives and mandatory reward sets; combat and owned item resumption | Eight reward rows and 40 child inputs within existing event budgets. Neow's Bones chains mandatory relic pickups and later curse additions; the full producer rejects its actionable parent before input |
+| Events/Ancients | Existing children plus `full_rewards_v1` shared rewards and a Neow’s Bones `full_rewards_v2` compound child: nested reward sets, offers/bundles, deck choices, observed pickup effects, nested Sacrifice and the final curse; combat and owned item resumption | Eight rows per reward set, at most five compound sets and 40 child inputs within the 52-total-action event budget. Arbitrary nested pickup/selector callbacks remain unsupported. Compound Neow support is fixture-tested, not yet released or live-demonstrated |
 | Treasure/ending | `campaign_v3`: native chest Open, offered relic Claim or Skip, separate Proceed, and certified empty-chest completion; existing act/Architect continuation | Native Open/award/picking tasks must finish before handoff; broader pickup effects and the v2 ending need live validation |
+
+The Neow compound child retains exact native offer, collection, pickup and
+card-command tasks under one event owner. `full_rewards_v2` adds `card_offer`,
+`bundle_offer`, `bundle_preview`, `deck_remove`, `deck_upgrade` and `deck_transform`
+phases to ordinary reward/card-menu phases. Generated options enter the public graph
+only after their owned screen is visible. Deck choices reference the current public
+deck; card offers carry the visible native card descriptions. Existing semantic
+actions dispatch against the immutable child decision and its original native
+binding; no new fixed-space action vocabulary is required. Ordered completed
+receipt prefixes preserve enclosing actions that still await a child or final
+curse. Completion requires all native tasks, effects and closing screens to settle;
+a read/action/cleanup failure stops the host. The owner also enforces 2,048 reads
+and a five-minute deadline. Only the pinned Neow’s Bones parent admits this owner;
+ordinary events retain the v1 child contract. Nested Sacrifice retains its exact
+Pael’s Wing callback while the existing compound pickup chain certifies any granted
+relic; it does not install a competing pickup observer or omit the visible action.
 
 The same `game.agent.full_policy.choose_action` runs through
 `--capability full-agent`. `--agent-stop-at-map` ends a controlled case only at an

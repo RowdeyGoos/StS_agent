@@ -480,9 +480,9 @@ data are not retained. Diagnostics do not relax stop/cleanup behavior.
 ## Rest options
 
 Use `--capability rest --rest-option lift|kindle|dig|cook|clone|hatch` with the
-unified client's usual release/installation arguments. These additions are
-implemented and validated offline in source; the existing release is unchanged.
-Build/package the combined bridge before installing through the normal workflow.
+unified client's usual release/installation arguments. These additions are included
+in the current combined package. Their successful effects remain offline-tested;
+Cook cancellation has separate live evidence in [current status](../../docs/STATUS.md).
 
 Cook removes the first two removable originals by default. Add
 `--rest-cook-slots 0 3` to choose specific **zero-based original deck slots**, in

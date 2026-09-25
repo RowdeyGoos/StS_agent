@@ -99,13 +99,31 @@ internal sealed class PinnedRelicPickupChain : IDisposable
     // never adopt an ambient or already-completed pickup.
     internal void InvokeChildInput(Frame parent,Action input)
     {
+        using var scope=EnterChildContinuation(parent);
+        try {input();Require(Context()&&Hooks());}
+        catch{_failed=true;throw;}
+    }
+    // A native alternative callback may resume under the collection's captured
+    // execution context. Reenter at that exact callback, not at its UI click.
+    internal IDisposable EnterChildContinuation(Frame parent)
+    {
         Require(Context()&&_invoked&&Hooks()&&Scope.Value is null&&Dispatch.Value is null&&
             ReferenceEquals(parent.Owner,this)&&_frames.Contains(parent)&&parent.Entered&&parent.Certificate is null&&
             parent.AfterTask is {IsCompleted:false}&&parent.ObtainTask is {IsCompleted:false});
         Scope.Value=parent;
-        try {input();Require(Context()&&Hooks());}
-        catch{_failed=true;throw;}
-        finally{Scope.Value=null;}
+        return new ContinuationScope(this,parent);
+    }
+    private sealed class ContinuationScope:IDisposable
+    {
+        private PinnedRelicPickupChain? _owner;
+        private readonly Frame _parent;
+        internal ContinuationScope(PinnedRelicPickupChain owner,Frame parent){_owner=owner;_parent=parent;}
+        public void Dispose()
+        {
+            if(_owner is not {} owner)return;_owner=null;
+            try{owner.Require(owner.Context()&&owner.Hooks()&&ReferenceEquals(Scope.Value,_parent));}
+            finally{Scope.Value=null;}
+        }
     }
     // Call before a parent's next native effect (for example Large Capsule's
     // card addition). A pending/faulted predecessor never becomes a handoff.

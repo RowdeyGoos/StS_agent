@@ -69,7 +69,7 @@ internal static partial class Program
                     else if(DirectRemoval)player.Deck.Cards.Remove(target);
                     else await CardPileCmd.RemoveFromDeck(target);
                 }
-                if(kind=="shears")player.Creature.SetCurrentHpInternal(player.Creature.CurrentHp-16);
+                if(kind=="shears")player.Creature.LoseHpInternal(16,default);
                 if(DelayCompletion)await Completion.Task;
                 if(Fault)throw new InvalidOperationException("deck pickup fault");
             };
@@ -89,15 +89,18 @@ internal static partial class Program
             CardTransformation.Generator=card=>NewCard("TRANSFORMED_"+card.Id.Entry);
             CardCmd.Handler=async(values,rng,_)=>{
                 var rows=new List<CardPileAddResult>();
+                var generated=new List<(CardModel Card,int Index)>();
                 foreach(var value in values) {
-                    var initial=value.GetReplacement(rng);player.Deck.Cards.Remove(value.Original);
-                    List<AbstractModel>? modifications=null;
+                    int index=player.Deck.Cards.IndexOf(value.Original);var initial=value.GetReplacement(rng);player.Deck.Cards.Remove(value.Original);generated.Add((initial,index));
+                }
+                foreach(var row in generated.OrderBy(v=>v.Index)) {
+                    var initial=row.Card;List<AbstractModel>? modifications=null;
                     var final=MegaCrit.Sts2.Core.Hooks.Hook.ModifyCardBeingAddedToDeck(player.RunState,initial,ref modifications);
                     player.Deck.AddInternal(final,-1,false);
                     if(DelayMutation)await Mutation.Task;
                     rows.Add(new(){success=true,cardAdded=WrongTransformResult?NewCard("FOREIGN_RESULT"):final});
                 }
-                return rows;
+                return rows.Count==0?Array.Empty<CardPileAddResult>():rows;
             };
         }
         private async Task<IEnumerable<CardModel>> Select(CardSelectorPrefs prefs,string kind)

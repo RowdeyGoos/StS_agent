@@ -54,7 +54,7 @@ internal sealed partial class PinnedAutomaticRelicEffects : IDisposable
     internal sealed class CompoundPolicy
     {
         internal Func<bool> Authority=()=>false;
-        internal bool GainGold,LoseGold,Hp;
+        internal bool GainGold,LoseGold,Hp,Damage;
         internal int Capacity=0;
         internal Func<CardModel,bool>? Upgrade,Added;
         internal Func<bool>? Modifying;
@@ -83,6 +83,7 @@ internal sealed partial class PinnedAutomaticRelicEffects : IDisposable
             Patch(typeof(Player).GetProperty("Gold")!.SetMethod!,nameof(GoldPrefix),nameof(GoldPostfix));
             Patch(player.Creature.GetType().GetMethod("SetCurrentHpInternal")!,nameof(HpPrefix),nameof(HpPostfix));
             Patch(player.Creature.GetType().GetMethod("SetMaxHpInternal")!,nameof(HpPrefix),nameof(HpPostfix));
+            if(compound?.Damage==true)Patch(player.Creature.GetType().GetMethod("LoseHpInternal")!,nameof(DamagePrefix),nameof(DamagePostfix));
             Patch(typeof(Player).GetMethod("AddToMaxPotionCount")!,nameof(CapacityPrefix),nameof(CapacityPostfix));
             // CardCmd's single-card overload is a tiny forwarding wrapper and
             // can be inlined before its hook is installed. Observe the actual
@@ -107,6 +108,20 @@ internal sealed partial class PinnedAutomaticRelicEffects : IDisposable
     private static void HpPrefix(object __instance,decimal __0,out PinnedAutomaticRelicEffects? __state)
     {__state=Begin();if(__state is {} s)s.Require((s.HpEffect||s.CardHpEffect||(s.GoldEffect||s.CardGoldEffect)&&GoldHpSource.Value is {} source&&s._expected.Relics.Any(r=>ReferenceEquals(r.Model,source)))&&ReferenceEquals(__instance,s._player.Creature)&&__0>=0);}
     private static void HpPostfix(PinnedAutomaticRelicEffects? __state) {if(__state is {} s)s.Accept("hp");}
+    private sealed record Damage(PinnedAutomaticRelicEffects Owner,int Hp,int MaxHp,decimal Amount);
+    private static void DamagePrefix(object __instance,decimal __0,out Damage? __state)
+    {
+        __state=null;var owner=Begin();if(owner is null)return;
+        owner.Require(owner._compound?.Damage==true&&ReferenceEquals(__instance,owner._player.Creature)&&__0>=0);
+        __state=new(owner,owner._expected.Hp,owner._expected.MaxHp,__0);
+    }
+    private static void DamagePostfix(Damage? __state)
+    {
+        if(__state is not {} call)return;var owner=call.Owner;
+        owner.Require(owner._player.Creature.MaxHp==call.MaxHp&&
+            owner._player.Creature.CurrentHp==Math.Max(call.Hp-(int)Math.Min(call.Amount,999999999m),0));
+        owner.Accept("hp");
+    }
     private static void GoldHpPrefix(DragonFruit __instance,Player __0,out DragonFruit? __state)
     {
         __state=GoldHpSource.Value;var s=Scope.Value;if(s is null)return;

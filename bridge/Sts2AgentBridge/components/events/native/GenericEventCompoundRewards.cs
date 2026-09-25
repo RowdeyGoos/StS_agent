@@ -50,7 +50,7 @@ internal sealed partial class GenericEventCompoundRewards : IGenericFullRewardSe
             Owner=owner;Set=set;Parent=parent;Pickup=pickup;Before=new(owner._binding.Player);
             var ancestors=parent is null?Array.Empty<RewardFrame>():owner.Path(parent);
             Controller=new(set,owner._binding.Player,owner._binding.Overlays,owner.Context,
-                (target,screen)=>new PinnedRewardAlternatives(target,screen),p=>new PinnedRewardInventory(p),
+                (target,screen)=>new PinnedRewardAlternatives(target,screen,pickup is null?null:()=>new AlternativePickup(owner,this)),p=>new PinnedRewardInventory(p),
                 reward=>owner.Effect(this,reward),ancestors.Select(f=>f.Set).ToArray(),ancestors.Select(f=>(Control)f.Screen!).ToArray());
         }
     }
@@ -111,7 +111,7 @@ internal sealed partial class GenericEventCompoundRewards : IGenericFullRewardSe
         }
     }
     private bool Context()=>!_failed&&!_disposed&&!_binding.Failed&&Environment.CurrentManagedThreadId==_thread&&
-        Environment.TickCount64<=_deadline&&ReferenceEquals(Active,this)&&RemovalHooksValid()&&_binding.ItemContextValid()&&ReferenceEquals(_binding.Option.Relic,_optionRelic)&&
+        Environment.TickCount64<=_deadline&&ReferenceEquals(Active,this)&&RemovalHooksValid()&&PotionHooksValid()&&_binding.ItemContextValid()&&ReferenceEquals(_binding.Option.Relic,_optionRelic)&&
         _binding.ChosenTask?.IsFaulted!=true&&_binding.ChosenTask?.IsCanceled!=true&&
         ReferenceEquals(RunManager.Instance?.RewardsSetSynchronizer,_synchronizer)&&
         Harmony.GetPatchInfo(_completeMethod) is {} patches&&patches.Owners.Count==1&&patches.Owners.Contains(_hooks.Id);
@@ -231,9 +231,7 @@ internal sealed partial class GenericEventCompoundRewards : IGenericFullRewardSe
             if(current.Pickup is {} pickup)_expected[pickup]=new(_binding.Player);
             while(_history.Count<_receipts.Count&&_receipts[_history.Count].Done){var r=_receipts[_history.Count];_history.Add(new(r.Decision,r.Action,"completed"));}
         }
-        // Sacrifice currently owns its own Obtain observer. A nested pickup
-        // already owns that boundary, so it cannot offer this input safely.
-        var actions=current.View.LegalActions.Where(a=>a!="proceed"&&(a!="sacrifice"||current.Pickup is null)).ToList();if(current.Controller.CanDismiss(current.View))actions.Add("dismiss");
+        var actions=current.View.LegalActions.Where(a=>a!="proceed").ToList();if(current.Controller.CanDismiss(current.View))actions.Add("dismiss");
         Require(actions.Count>0&&actions.All(a=>GenericEventV7FullRewardRules.PhaseAction(current.View.ScreenKind,a,true)));
         Publish(current,current.View.DecisionId);return Value("ready",current.View.ScreenKind,actions);
     }
@@ -260,7 +258,9 @@ internal sealed partial class GenericEventCompoundRewards : IGenericFullRewardSe
         }catch{Fail();return Reply("uncertain");}finally{_inside=false;}
     }
     internal (PinnedPublicRewardInteractionSession Session,PublicRewardDecisionSnapshot View) Inspect(string decision)
-    {var read=Read();Require(read.Status=="ready"&&read.DecisionId==decision&&_published is not null);return(_published!.Controller.Reader!.InteractionSession,_published.View);}
+    {var read=Read();Require(read.Status=="ready"&&read.DecisionId==decision&&_published is not null&&_publishedOffer is null&&_publishedDeck is null);return(_published!.Controller.Reader!.InteractionSession,_published.View);}
+    internal (OfferLeaf? Offer,DeckLeaf? Deck) InspectChoice(string decision)
+    {var read=Read();Require(read.Status=="ready"&&read.DecisionId==decision&&_published is not null);return(_publishedOffer,_publishedDeck);}
     public void Dispose()
     {
         if(_disposed){Require(_complete&&!_failed);return;}
@@ -272,7 +272,7 @@ internal sealed partial class GenericEventCompoundRewards : IGenericFullRewardSe
         try{DisposeDecks();}catch(Exception error){failure??=error;}
         try{_tailAdds?.Dispose();}catch(Exception error){failure??=error;}
         try{_tailEffects?.Dispose();}catch(Exception error){failure??=error;}
-        try{_hooks.UnpatchAll(_hooks.Id);Require(Harmony.GetPatchInfo(_completeMethod)?.Owners.Contains(_hooks.Id)!=true&&(_removeMethod is null||Harmony.GetPatchInfo(_removeMethod)?.Owners.Contains(_hooks.Id)!=true));}catch(Exception error){failure??=error;}
+        try{_hooks.UnpatchAll(_hooks.Id);Require(Harmony.GetPatchInfo(_completeMethod)?.Owners.Contains(_hooks.Id)!=true&&new[]{_removeMethod,_procureMethod,_potionInsertMethod}.Where(m=>m is not null).All(m=>Harmony.GetPatchInfo(m!)?.Owners.Contains(_hooks.Id)!=true));}catch(Exception error){failure??=error;}
         _disposed=true;if(failure is not null){Fail();throw new InvalidOperationException("compound_reward_cleanup",failure);}Active=null;
     }
 }

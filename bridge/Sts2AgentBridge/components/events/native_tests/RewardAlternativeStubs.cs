@@ -29,8 +29,11 @@ namespace MegaCrit.Sts2.Core.Models.Relics {
     public sealed class PaelsWing:RelicModel {
         public int RewardsSacrificed;
         public RelicModel Grant=new OldCoin();
+        public Func<Task>? BeforeSacrifice,AfterSacrifice;
+        public bool PreventGrant;
         public PaelsWing(){Id.Entry="PAELS_WING";DynamicVars["Sacrifices"]=new(){IntValue=2};}
-        [MethodImpl(MethodImplOptions.NoInlining)]public async Task OnSacrifice(){RewardsSacrificed++;if(RewardsSacrificed%2==0)await MegaCrit.Sts2.Core.Commands.RelicCmd.Obtain(Grant,Owner!);}
+        [MethodImpl(MethodImplOptions.NoInlining)]public async Task OnSacrifice(){if(BeforeSacrifice is not null)await BeforeSacrifice();RewardsSacrificed++;
+            if(RewardsSacrificed%2==0&&!PreventGrant)await MegaCrit.Sts2.Core.Commands.RelicCmd.Obtain(Grant,Owner!);if(AfterSacrifice is not null)await AfterSacrifice();}
     }
     public sealed class OldCoin:RelicModel {
         public Task Gate=Task.CompletedTask;

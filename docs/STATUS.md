@@ -140,7 +140,7 @@ extend standalone rest/shop contracts.
 | --- | --- | --- |
 | Event potion/relic rewards | Singleton or 2–8 ordered items; supported exact pickup effects | Singleton and Potion Courier three-potion collection demonstrated; other counts/relic sets offline only |
 | Mixed event rewards | 2–8 card/potion/relic entries; use advertised order, native card Skip/final dismissal | Lost Coffer choose and Skip demonstrated; other orders/counts offline only |
-| Full-producer event rewards | `full_rewards_v1`: shared visible reward actions retained under the event owner | Lost Coffer potion replacement, card choice and event/map return passed 6/6/6; other callers and alternatives retain separate evidence limits |
+| Full-producer event rewards | `full_rewards_v1` shared rewards; source `full_rewards_v2` retains Neow’s Bones nested pickups, visible choices and final curse under one event owner | Lost Coffer potion replacement, card choice and event/map return passed 6/6/6. Compound Neow support is unshipped and fixture-only; other callers and alternatives retain separate evidence limits |
 | Full-inventory event/resume policies | `item_policy_v1`: skip-full, skip-all, protected original-potion replacement, stop-on-full; capacity-first collection | Courier full-belt skip/three replacements, Lost Coffer card plus potion skip/replacement, and Dummy resume skip/replacement demonstrated. Capacity-first paths need live coverage |
 | Terminal Strawberry pickup | Exact native type/key/+7 max HP/+7 HP, ready schema 7 | Saved floor-8 native retest passed: five reward actions reconciled and reached the map; max HP 2,064→2,071 |
 | Modified terminal gold | Bowler Hat final integer gain, ready schema 8 in source | Saved floor-15 retest passed: printed 20 gold yielded and reconciled 25 gold (492 → 517), then reached the map |
@@ -200,93 +200,38 @@ The original versioned controllers retain their semantics. New native owners
 verify exact tasks, inventory effects and nested receipts before handoff; failed
 or unresolved cleanup still stops the host.
 
-Neow's Bones remains a concrete implementation gap. Its two mandatory relic
-rewards can themselves open more rewards (Lost Coffer, Kaleidoscope, Small Capsule),
-card offers/bundles (Lead Paperweight, Massive Scroll, Hefty Tablet, Scroll Boxes),
-or deck selectors (New Leaf, Precise Scissors, Pomander). It then adds one curse
-through a native insertion task; the preview is visual only. The full producer
-continues to reject its actionable parent before input.
+Neow's Bones now has a production-connected `full_rewards_v2` compound owner.
+Its two mandatory relics retain their actual pickup tasks and nested screens through
+reward sets, card offers, bundles, remove/upgrade/transform choices and the final
+curse addition. The shared policy sees only the current visible choice. Completed
+children retain ordered receipts while their enclosing pickup remains pending;
+retiring screens cannot reclaim a later sibling's input.
 
-The next extension needs one retained event owner with nested reward/pickup/selector
-continuations and exact ancestor screen/stack bindings. Each child must be certified
-before the outer callback's later mutations; the last reward can close and insert
-the curse before another host read. Reusing the existing controllers under their
-actual pickup task comes before removing the guard. Ordinary shared rewards do
-not establish this compound caller or arbitrary nested effects.
+The pinned Neow pool is covered by these effect families: ordinary passive pickups;
+Small Capsule/Lost Coffer/Kaleidoscope reward sets; Lead Paperweight/Massive Scroll/
+Hefty Tablet/Scroll Boxes offers; Precise Scissors/Precarious Shears/Pomander/New Leaf
+selectors; and the remaining scalar, upgrade, card-add, transform and potion
+pickups, including Large Capsule, Leafy Poultice and Phial Holster. Actual command
+results and callbacks certify effects, including prevented card/potion grants and
+native Egg upgrades. Unknown callbacks or unrelated inventory changes still stop.
 
-Shared-controller groundwork is now implemented in source: exact ancestor overlay
-bindings for deck choices and card offers, transform-preview input, and reward-effect
-certification before native completion resumes an outer callback. Certified frames
-retain their exact closing screens independently of foreground input authority.
-Regressions cover delayed callbacks, parent-first overlay retirement, retained card
-menus and replacement-screen rejection. Focused reward checks passed in 8.286 s;
-the full native fixture, direct-input fixture and offer integration selection passed
-eight check groups in 143.349 s. Independent semantic review found no remaining
-blocker after the closing-order corrections. This is unshipped groundwork, not
-Neow's Bones support; the compound owner and its native effect/task bindings remain
-to be connected before the parent guard can be removed.
+This new compound support is **implemented and fixture-tested, not yet released
+or demonstrated live**. The final focused owner/alternative regressions passed
+four groups in 49.605 s. Public projection and parent/wire checks also passed.
+Independent semantic review found no remaining blocker after nested Sacrifice
+was connected to the existing pickup chain; every visible alternative is retained.
+The final release
+validation is pending. These checks use native-shaped fixtures, not a live Neow
+interaction or display/localization acceptance.
 
-The groundwork also retains actual `RelicCmd.Obtain` invocation trees, including
-sequential pickups, shared completed callbacks and later reward inputs under the
-exact waiting pickup. A predecessor must certify its effects and release its
-observers before the next pickup or parent effect. `full_rewards_v2` now describes
-nested offer/bundle/deck-choice phases and ordered receipt prefixes while an outer
-pickup remains pending; it keeps the existing 40-child/52-total action bounds.
-The production HTTP parser accepts bounded deselection actions, with child-version
-validation downstream. Focused wire/native checks passed five groups in 8.967 s;
-the corrected budget/HTTP cases passed in 1.632 s and the production build in
-1.779 s. Independent semantic reviews found no remaining blocker in these two
-pieces. No compound native producer or new released package is claimed by them.
-
-A compound reward owner now connects those pieces for ordinary automatic pickups
-and nested reward sets (Small Capsule, Lost Coffer and Kaleidoscope). One event
-admission retains all native collection tasks, closing overlays and ordered input
-receipts, including when the outer screen retires before the last inner collection.
-Constructor failure removes its otherwise unreachable observer; failed active owners
-still stop the host. Nested Sacrifice is withheld because its current observer would
-conflict with the enclosing pickup owner. Focused native checks passed three groups
-in 10.334 s, production compilation passed two groups in 1.791 s, and independent
-semantic review cleared the corrected slice. The production factory and Neow's Bones
-guard remain unchanged: card offers/selectors still need their actual effect
-bindings before this owner can be released.
-
-The compound owner now retains actual card-add tasks, forwarding calls, modified
-card identities and insertion callbacks. It verifies the final Neow's Bones curse
-before completing the parent, including delayed tasks and card-triggered gold/HP
-effects. Missing, duplicate, wrong-type and failed additions stop the owner.
-Focused native cases passed three groups in 14.554 s; native/direct-input/offer
-integration passed eight groups in 151.635 s and production compilation passed
-two groups in 1.866 s. Independent semantic review cleared the journal, callback
-effects and curse integration. These changes are unshipped; production admission
-of Neow's Bones remains guarded.
-
-Nested card offers now connect Lead Paperweight, Massive Scroll and Hefty Tablet,
-plus Scroll Boxes' bundle preview/confirmation, to their actual pickup task.
-The enclosing reward retains ordered receipts through Skip, modified/prevented
-card additions, delayed tasks and closing screens. Hefty Tablet's Injury and the
-later parent curse have separate native addition proofs. Focused/native-input/offer
-integration passed eight groups in 37.997 s; the production build passed two in
-1.835 s. Independent semantic review found no blocker. This remains unshipped:
-deck selectors and remaining automatic Neow pickups are not connected yet.
-
-The compound owner also handles Golden Pearl, Nutritious Oyster, Silken Tress,
-Arcane Scroll, Neow's Torment, Cursed Pearl and Neow's Talisman. Their retained
-native pickup tasks own scalar changes, actual generated additions and exact
-basic-card upgrades. Arcane Scroll accepts native Egg upgrades of generated
-options before insertion while rejecting changes to existing deck cards.
-Focused cases passed three groups in 21.781 s; native/direct-input fixtures
-passed five groups in 155.564 s and compilation two groups in 2.222 s.
-Independent semantic review cleared the Egg correction. These named pickups are
-still unshipped, with production Neow's Bones admission guarded.
-
-Precise Scissors, Precarious Shears, Pomander and New Leaf now retain their
-actual selector requests, policy selection and removal/upgrade/transform effects
-inside the compound owner. Automatic short-deck selection, delayed native commands,
-closing screens and later sibling rewards have focused regressions. Retired
-selectors/offers/reward frames no longer reclaim a sibling's overlay. The corrected
-focused suite passed three groups in 36.995 s and production compilation two in
-1.848 s; independent semantic review cleared the slice (5m39s plus a 7s recheck).
-This remains unshipped, with the production factory and Neow's Bones guard unchanged.
+The compound owner admits at most five reward sets, eight rows per set, 40 child
+inputs, 2,048 reads and five minutes within the existing 52-total-action event
+budget. Only Neow's Bones selects this owner; other full-producer events keep
+`full_rewards_v1`. Nested Sacrifice retains the exact Pael’s Wing callback and
+certifies its actual automatic relic pickup or unchanged no-grant inventory before
+completion. Arbitrary nested relics and unrelated selector chains remain
+unsupported; this does not broaden standalone shop/rest contracts.
+[Shared contract](AGENT_CONTRACT.md#native-full-run-v2-candidate).
 
 ### Contract limits without a confirmed missing gameplay caller
 
@@ -313,8 +258,9 @@ These are **not an implementation queue or required live-test checklist**:
 
 ### Implemented, but still needing representative live evidence
 
-- Full-producer empty-chest completion, automatic pickup effects, shop
-  Cauldron/Orrery and additional shared event reward callers, plus an ending test.
+- Full-producer Neow’s Bones compound rewards, empty-chest completion, automatic
+  pickup effects, shop Cauldron/Orrery and additional shared event reward callers,
+  plus an ending test.
   Representative hand/optional offers, potion use/discard and potion-owned choices,
   chest claiming, reroll and Sacrifice passed live, including the corrected
   Whetstone-granting second Sacrifice. Shop-removal preview cancellation also

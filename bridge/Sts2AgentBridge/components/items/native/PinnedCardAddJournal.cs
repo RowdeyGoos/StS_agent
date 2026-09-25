@@ -66,6 +66,7 @@ internal sealed class PinnedCardAddJournal : IDisposable
     private readonly Func<IReadOnlyList<CardModel>,bool> _authorize;
     private readonly Action<PinnedAutomaticRelicEffects.State,PinnedAutomaticRelicEffects.State> _inserted;
     private readonly Func<IDisposable>? _enterEffects;
+    private readonly Action? _prepareRoot;
     private readonly Harmony _hooks=new("sts.bridge.card.add."+Guid.NewGuid().ToString("N"));
     private readonly List<MethodInfo> _targets=new();
     private readonly List<Operation> _operations=new();
@@ -78,9 +79,9 @@ internal sealed class PinnedCardAddJournal : IDisposable
     internal bool OwnsAddedCard(CardModel card)=>InNativeScope&&Scope.Value!.Operation.Entries.Any(e=>e.Inserted is not null&&ReferenceEquals(e.Final,card));
     internal IReadOnlyList<Operation> Operations=>_operations;
     internal PinnedCardAddJournal(Player player,Func<bool> context,Func<IReadOnlyList<CardModel>,bool> authorize,
-        Action<PinnedAutomaticRelicEffects.State,PinnedAutomaticRelicEffects.State> inserted,Func<IDisposable>? enterEffects=null)
+        Action<PinnedAutomaticRelicEffects.State,PinnedAutomaticRelicEffects.State> inserted,Func<IDisposable>? enterEffects=null,Action? prepareRoot=null)
     {
-        _player=player;_run=player.RunState;_context=context;_authorize=authorize;_inserted=inserted;_enterEffects=enterEffects;_deck=new PinnedAutomaticRelicEffects.State(player).Deck;
+        _player=player;_run=player.RunState;_context=context;_authorize=authorize;_inserted=inserted;_enterEffects=enterEffects;_prepareRoot=prepareRoot;_deck=new PinnedAutomaticRelicEffects.State(player).Deck;
         Require(Active is null&&Scope.Value is null&&context());Active=this;
         try {
             foreach(var method in AddMethods) {
@@ -98,6 +99,14 @@ internal sealed class PinnedCardAddJournal : IDisposable
         System.Environment.CurrentManagedThreadId==_thread&&ReferenceEquals(_player.RunState,_run)&&
         _targets.All(m=>Harmony.GetPatchInfo(m) is {} p&&p.Owners.Count==1&&p.Owners.Contains(_hooks.Id));
     private static PinnedAutomaticRelicEffects.Card Copy(CardModel card)=>new(card,card.Id.Entry,card.CurrentUpgradeLevel,card.Enchantment,card.Enchantment?.Id.Entry,card.Enchantment?.Amount??0);
+    // A retained parent may begin adding only after separately certified child
+    // pickups. The parent supplies that exact inventory certificate once.
+    internal void ContinueFrom(PinnedAutomaticRelicEffects.State certificate)
+    {
+        Require(_prepareRoot is not null&&Context()&&Scope.Value is null&&_operations.Count==0&&
+            ReferenceEquals(certificate.Player,_player)&&certificate.Same(new(_player)));
+        _deck=certificate.Deck.ToArray();
+    }
     private bool Owned(CardModel card)=>ReferenceEquals(card.Owner,_player)&&ReferenceEquals(card.RunState,_run)&&card.Id.Entry.Length>0&&card.CurrentUpgradeLevel>=0;
     private bool Deck()=>_player.Deck.Cards.Select(Copy).SequenceEqual(_deck);
     private void Require([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)] bool good){if(!good){_failed=true;throw new InvalidOperationException("card_add_boundary");}}
@@ -106,6 +115,7 @@ internal sealed class PinnedCardAddJournal : IDisposable
     {
         __state=null;var owner=Active;if(owner is null)return;
         try {
+            owner.Require(owner.Context());if(Scope.Value is null)owner._prepareRoot?.Invoke();
             owner.Require(owner.Context()&&owner.Deck()&&__2==CardPilePosition.Bottom&&__3 is null&&!__4);
             int kind=Array.FindIndex(AddMethods,m=>Equals(m,__originalMethod));owner.Require(kind>=0);
             owner.Require(kind is 0 or 2?__1 is PileType.Deck:ReferenceEquals(__1,owner._player.Deck));

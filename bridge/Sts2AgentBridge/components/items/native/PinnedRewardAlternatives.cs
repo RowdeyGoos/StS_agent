@@ -23,6 +23,13 @@ using Sts2AgentBridge.Adapters.Public;
 
 namespace Sts2AgentBridge.Items.Native;
 
+internal interface IPinnedAlternativePickup:IDisposable
+{
+    IDisposable EnterCallback();
+    bool Complete(bool expectsRelic);
+    int CertifiedCapacity {get;}
+}
+
 // Bind the already-created native menu. Generating alternatives here would run
 // gameplay hooks again. Reroll and Sacrifice retain their actual callback Tasks.
 internal sealed class PinnedRewardAlternatives : IPinnedRewardAlternatives
@@ -50,15 +57,20 @@ internal sealed class PinnedRewardAlternatives : IPinnedRewardAlternatives
     private Task<RelicModel>? _obtain;
     private RelicModel? _relic;
     private PinnedAutomaticRelicEffects? _effects;
+    private readonly Func<IPinnedAlternativePickup>? _pickupFactory;
+    private IPinnedAlternativePickup? _pickup;
+    private IDisposable? _pickupScope;
     private Task? _effectTask;
     private int _sacrificed;
     private long _deadline;
     private bool _invoked,_entered,_rerolled,_complete,_failed,_disposed;
     public IReadOnlyList<CardModel> RerolledCards {get;private set;}=Array.Empty<CardModel>();
-    public int CertifiedCapacity=>_invoked&&Owner()&&_relic?.GetType()==typeof(PotionBelt)&&_effects?.Valid()==true?_player.PotionSlots.Count:-1;
+    public int CertifiedCapacity=>_invoked&&Owner()?(_pickup?.CertifiedCapacity??
+        (_relic?.GetType()==typeof(PotionBelt)&&_effects?.Valid()==true?_player.PotionSlots.Count:-1)):-1;
     private static object? Field(object value,string name)=>value.GetType().GetField(name,BindingFlags.Instance|BindingFlags.NonPublic)?.GetValue(value);
-    internal PinnedRewardAlternatives(PinnedPublicRewardParentTarget parent,NCardRewardSelectionScreen screen)
+    internal PinnedRewardAlternatives(PinnedPublicRewardParentTarget parent,NCardRewardSelectionScreen screen,Func<IPinnedAlternativePickup>? pickupFactory=null)
     {
+        _pickupFactory=pickupFactory;
         _reward=(CardReward)parent.Reward;_screen=screen;_player=_reward.Player;_manager=RunManager.Instance??throw new InvalidOperationException("reward_manager");_node=NRun.Instance!;
         _run=_player.RunState;_room=_player.RunState.CurrentRoom!;_before=new(_player);_cards=parent.OfferedCards.ToArray();
         _options=((IReadOnlyList<CardRewardAlternative>)Field(screen,"_extraOptions")!).ToArray();
@@ -102,9 +114,12 @@ internal sealed class PinnedRewardAlternatives : IPinnedRewardAlternatives
         _invoked=true;_deadline=System.Environment.TickCount64+15000;Active=this;
         if(_chosen.OnSelect.Target is PaelsWing wing)_sacrificed=wing.RewardsSacrificed;
         try {
-            Patch(_chosen.OnSelect.Method,nameof(CallbackPrefix),nameof(CallbackPostfix));
+            Patch(_chosen.OnSelect.Method,nameof(CallbackPrefix),nameof(CallbackPostfix),nameof(CallbackFinalizer));
             if(action=="reroll")Patch(typeof(CardReward).GetMethod("Reroll")!,nameof(RerollPrefix),nameof(RerollPostfix));
-            else Patch(typeof(RelicCmd).GetMethod("Obtain",new[]{typeof(RelicModel),typeof(Player),typeof(int)})!,nameof(ObtainPrefix),nameof(ObtainPostfix));
+            else {
+                _pickup=_pickupFactory?.Invoke();
+                if(_pickup is null)Patch(typeof(RelicCmd).GetMethod("Obtain",new[]{typeof(RelicModel),typeof(Player),typeof(int)})!,nameof(ObtainPrefix),nameof(ObtainPostfix));
+            }
             _buttons[index].ForceClick();Require(!_failed);
         } catch {_failed=true;throw;}
     }
@@ -113,10 +128,14 @@ internal sealed class PinnedRewardAlternatives : IPinnedRewardAlternatives
         __state=Active;if(__state is not {} s)return;
         s.Require(s.Owner()&&s.Foreground()&&!s._entered&&ReferenceEquals(__instance,s._chosen!.OnSelect.Target)&&s._selection.Task.IsCompletedSuccessfully&&
             s._selection.Task.Result==s._cards.Length+Array.IndexOf(s._options,s._chosen)&&s._before.Same(new(s._player))&&Scope.Value is null);
-        s._entered=true;Scope.Value=s;
+        s._entered=true;Scope.Value=s;s._pickupScope=s._pickup?.EnterCallback();
     }
     private static void CallbackPostfix(Task __result,PinnedRewardAlternatives? __state)
-    {if(__state is {} s){Scope.Value=null;s.Require(__result is not null);s._callback=__result;}}
+    {if(__state is {} s){try{s.Require(__result is not null);s._callback=__result;}finally{s.ExitCallback();}}}
+    private static void CallbackFinalizer(Exception? __exception,PinnedRewardAlternatives? __state)
+    {if(__state is {} s){if(__exception is not null)s._failed=true;s.ExitCallback();}}
+    private void ExitCallback()
+    {var scope=_pickupScope;_pickupScope=null;try{scope?.Dispose();}finally{Scope.Value=null;}}
     private static void RerollPrefix(CardReward __instance,out PinnedRewardAlternatives? __state)
     {__state=Scope.Value;if(__state is {} s)s.Require(s.Owner()&&ReferenceEquals(__instance,s._reward)&&!s._rerolled&&__instance.CanReroll);}
     private static void RerollPostfix(PinnedRewardAlternatives? __state)
@@ -151,15 +170,17 @@ internal sealed class PinnedRewardAlternatives : IPinnedRewardAlternatives
             var wing=(PaelsWing)_chosen.OnSelect.Target!;
             Require(ReferenceEquals(wing.Owner,_player)&&wing.RewardsSacrificed==_sacrificed+1);
             bool gains=wing.RewardsSacrificed%wing.DynamicVars["Sacrifices"].IntValue==0;
-            Require(gains ? _relic is not null&&_obtain?.IsCompletedSuccessfully==true&&ReferenceEquals(_obtain.Result,_relic)&&_effectTask?.IsCompletedSuccessfully==true&&_effects?.Valid()==true : _relic is null&&_before.Same(new(_player)));
+            if(_pickup is {} pickup)Require(pickup.Complete(gains));
+            else Require(gains ? _relic is not null&&_obtain?.IsCompletedSuccessfully==true&&ReferenceEquals(_obtain.Result,_relic)&&_effectTask?.IsCompletedSuccessfully==true&&_effects?.Valid()==true : _relic is null&&_before.Same(new(_player)));
             if(!_reward.SuccessfullySelected)return false;
         }
         _complete=true;return true;
     }
-    private void Patch(MethodInfo method,string prefix,string postfix)
+    private void Patch(MethodInfo method,string prefix,string postfix,string? finalizer=null)
     {
         Require(method is not null&&method.GetMethodBody() is not null&&!(Harmony.GetPatchInfo(method)?.Owners.Any()??false));
-        _targets.Add(method);_hooks.Patch(method,new HarmonyMethod(typeof(PinnedRewardAlternatives),prefix),new HarmonyMethod(typeof(PinnedRewardAlternatives),postfix));
+        _targets.Add(method);_hooks.Patch(method,new HarmonyMethod(typeof(PinnedRewardAlternatives),prefix),new HarmonyMethod(typeof(PinnedRewardAlternatives),postfix),
+            finalizer:finalizer is null?null:new HarmonyMethod(typeof(PinnedRewardAlternatives),finalizer));
     }
     private bool ExactHooks()=>_targets.All(m=>Harmony.GetPatchInfo(m) is {} p&&p.Owners.Count==1&&p.Owners.Contains(_hooks.Id));
     private void Require([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)] bool condition){if(!condition){_failed=true;throw new InvalidOperationException("reward_alternative_boundary");}}
@@ -168,7 +189,8 @@ internal sealed class PinnedRewardAlternatives : IPinnedRewardAlternatives
         if(_disposed){Require(!_failed);return;}
         bool clean=!_failed&&(!_invoked||_complete);
         _disposed=true;
-        try {try {_effects?.Dispose();}finally {_hooks.UnpatchAll(_hooks.Id);Require(!_targets.Any(m=>Harmony.GetPatchInfo(m)?.Owners.Contains(_hooks.Id)==true));}}
+        try {try {try {_effects?.Dispose();}finally{_pickup?.Dispose();}}
+            finally {_hooks.UnpatchAll(_hooks.Id);Require(!_targets.Any(m=>Harmony.GetPatchInfo(m)?.Owners.Contains(_hooks.Id)==true));}}
         catch {_failed=true;throw;}
         finally {if(clean&&!_failed&&ReferenceEquals(Active,this))Active=null;}
         Require(clean);

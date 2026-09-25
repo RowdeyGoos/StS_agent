@@ -53,17 +53,18 @@ internal static partial class Program
         internal readonly Dictionary<RewardsSet,NRewardsScreen> Screens=new();
         internal readonly Dictionary<RewardsSet,RestRewardsFixture.Synchronizer.Entry> Entries=new();
         internal readonly List<NRewardButton> Buttons=new();
+        internal PaelsWing? Wing;
         internal bool DelayChild,ChildFault,ForeignTail;
-        internal CompoundRewardFixture(bool sibling=false,bool cardReward=false,string? tail=null)
+        internal CompoundRewardFixture(bool sibling=false,bool cardReward=false,string? tail=null,bool smallCard=false)
         {
             foreach(var c in World.Cards)c.Owner=World.Player;
             RunManager.Instance=new(){State=(RunState)World.Player.RunState,RewardsSetSynchronizer=Sync};
             MegaCrit.Sts2.Core.Combat.CombatManager.Instance=new();NModalContainer.Instance=null;
             ActiveScreenContext.Instance=new(){Current=World.Room};
             Root=NewSet();Child=NewSet();
-            RelicModel capsule=cardReward?new LostCoffer{Handler=()=>Child.Offer()}:new SmallCapsule{Handler=()=>Child.Offer()};
+            RelicModel capsule=cardReward&&!smallCard?new LostCoffer{Handler=()=>Child.Offer()}:new SmallCapsule{Handler=()=>Child.Offer()};
             Add(Root,capsule);if(sibling||tail is not null)Add(Root,new OldCoin());
-            if(cardReward)AddCard();else {Add(Child,new OldCoin());Add(Child,new RelicModel());}
+            if(cardReward){if(smallCard)Add(Child,new OldCoin());AddCard();}else {Add(Child,new OldCoin());Add(Child,new RelicModel());}
             World.Adapter.FullRewardsFactory=(binding,set)=>new GenericEventCompoundRewards(binding,set);
             NRewardsScreen.Factory=(set,_,_)=>{var screen=Screens[set];World.Overlays.Screens.Add(screen);ActiveScreenContext.Instance.Current=screen;return screen;};
             var neow=tail is not null?new NeowsBones():null;World.Room.Layout.OptionButtons[0].Option.Relic=neow;
@@ -88,9 +89,9 @@ internal static partial class Program
         private void AddCard()
         {
             var card=new CardModel{Owner=World.Player};card.Id.Entry="NESTED_CARD";
-            var reward=new CardReward{Player=World.Player,RewardsSetIndex=0};var cards=new[]{new CardCreationResult(card)};
+            var reward=new CardReward{Player=World.Player,RewardsSetIndex=Child.Rewards.Count};var cards=new[]{new CardCreationResult(card)};
             reward.Setup(cards.ToList());Child.Rewards.Add(reward);
-            var wing=new PaelsWing{Owner=World.Player,RewardsSacrificed=1};World.Player.Relics.Add(wing);
+            var wing=new PaelsWing{Owner=World.Player,RewardsSacrificed=1};Wing=wing;World.Player.Relics.Add(wing);
             var options=new[]{new CardRewardAlternative("Skip",PostAlternateCardRewardAction.EndSelectionAndDoNotCompleteReward),
                 new CardRewardAlternative("SACRIFICE",PostAlternateCardRewardAction.EndSelectionAndCompleteReward){OnSelect=wing.OnSacrifice}};
             var menu=new NCardRewardSelectionScreen();var row=new Control();menu.Bind("UI/CardRow",row);menu.Children.Add(row);
@@ -99,8 +100,9 @@ internal static partial class Program
             NCardRewardSelectionScreen.Factory=(_,_)=>{World.Overlays.Screens.Add(menu);ActiveScreenContext.Instance.Current=menu;return menu;};
             var button=new NRewardButton{Reward=reward,Handler=async()=>{
                 NCardRewardSelectionScreen.ShowScreen(cards,options);reward.BindMenu(menu);
-                var index=await menu.OptionSelected();Check(index==0,"nested fixture chooses the card");
-                World.Player.Deck.Cards.Add(card);reward.SuccessfullySelected=true;
+                var index=await menu.OptionSelected();
+                if(index==0){World.Player.Deck.Cards.Add(card);reward.SuccessfullySelected=true;}
+                else {var option=options[index!.Value-cards.Length];await option.OnSelect();reward.SuccessfullySelected=option.AfterSelected==PostAlternateCardRewardAction.EndSelectionAndCompleteReward;}
                 World.Overlays.Screens.Remove(menu);ActiveScreenContext.Instance.Current=Screens[Child];
                 Sync.Complete(Entries[Child],RestRewardsFixture.Synchronizer.CompleteState.Completed);
                 World.Overlays.Screens.Remove(Screens[Child]);ActiveScreenContext.Instance.Current=World.Overlays.Screens.LastOrDefault()??(Control)World.Room;
@@ -134,7 +136,18 @@ internal static partial class Program
             Screens[set].Children.Add(button);Buttons.Add(button);
         }
         internal GenericEventV7Observation Start()=>World.Start();
-        internal GenericEventV7RewardRead Read(GenericEventV7Observation c)=>((GenericEventV7RewardChildRead)World.Session.ReadChild(c.Child!.ParentDecisionId,c.Child.ParentActionId,c.Child.Ordinal)).Value;
+        internal GenericEventV7RewardRead Read(GenericEventV7Observation c)
+        {
+            var read=((GenericEventV7RewardChildRead)World.Session.ReadChild(c.Child!.ParentDecisionId,c.Child.ParentActionId,c.Child.Ordinal)).Value;
+            if(read.Status=="ready"&&(read.Phase.StartsWith("deck_")||read.Phase is "card_offer" or "bundle_offer" or "bundle_preview")) {
+                var binding=World.Adapter.InspectPending(c.Child.ParentDecisionId,c.Child.ParentActionId);
+                var owner=(GenericEventCompoundRewards)binding.FullRewards!;
+                var before=new Sts2AgentBridge.Items.Native.PinnedAutomaticRelicEffects.State(World.Player);
+                var projection=new Sts2AgentBridge.Unified.FullNativeBackend().Project(World.Player,c.Child,read,owner);
+                Check(projection.Actions.SequenceEqual(read.LegalActions)&&before.Same(new(World.Player)),"actual compound projection preserves complete action order and inventory");
+            }
+            return read;
+        }
         internal GenericEventV7RewardRead Act(GenericEventV7Observation c,string action)
         {
             var read=Read(c);Check(read.Status=="ready"&&read.LegalActions.Contains(action),"compound legal "+action+" "+read.Status);
@@ -151,9 +164,12 @@ internal static partial class Program
             // separate processes after checking exact hook removal.
             var method=typeof(RestRewardsFixture.Synchronizer).GetMethod("CompleteRewardsSet",BindingFlags.Instance|BindingFlags.NonPublic)!;
             Check(!(HarmonyLib.Harmony.GetPatchInfo(method)?.Owners.Any()??false),"compound completion observer removed");
+            foreach(var hooked in new[]{typeof(RelicCmd).GetMethod("Obtain")!,typeof(PaelsWing).GetMethod("OnSacrifice")!})
+                Check(!(HarmonyLib.Harmony.GetPatchInfo(hooked)?.Owners.Any()??false),"compound pickup/alternative observer removed");
             typeof(GenericEventCompoundRewards).GetField("Active",BindingFlags.Static|BindingFlags.NonPublic)!.SetValue(null,null);
             typeof(Sts2AgentBridge.Items.Native.PinnedRelicPickupChain).GetField("Active",BindingFlags.Static|BindingFlags.NonPublic)!.SetValue(null,null);
             typeof(Sts2AgentBridge.Items.Native.PinnedCardAddJournal).GetField("Active",BindingFlags.Static|BindingFlags.NonPublic)!.SetValue(null,null);
+            typeof(Sts2AgentBridge.Items.Native.PinnedRewardAlternatives).GetField("Active",BindingFlags.Static|BindingFlags.NonPublic)!.SetValue(null,null);
         }
     }
     private static void CompoundRewardCases()
@@ -161,6 +177,7 @@ internal static partial class Program
         CompoundOfferCases();
         CompoundAutomaticCases();
         CompoundDeckCases();
+        CompoundRemainingCases();
         foreach(string tail in new[]{"curse","scalar","delayed","chosen","fault","missing","wrong_type","two"}) {
             using var f=new CompoundRewardFixture(tail:tail);var c=f.Start();Check(c.Child is not null,"compound tail admission "+tail+" "+System.Text.Json.JsonSerializer.Serialize(c));
             f.Act(c,"collect:0");f.Act(c,"collect:0");f.Act(c,"collect:1");
@@ -176,12 +193,11 @@ internal static partial class Program
         }
         using(var nested=new CompoundRewardFixture(cardReward:true)) {
             var child=nested.Start();nested.Act(child,"collect:0");var offer=nested.Act(child,"open:0");
-            Check(offer.Status=="ready"&&offer.Phase=="card_reward"&&!offer.LegalActions.Contains("sacrifice")&&offer.LegalActions.Contains("choose:0"),
-                "nested reward does not advertise conflicting Sacrifice owner");
-            var refused=(GenericEventV7RewardChildApply)nested.World.Session.ApplyChild(child.Child!.ParentDecisionId,child.Child.ParentActionId,child.Child.Ordinal,offer.DecisionId,"sacrifice");
-            Check(refused.Value.Outcome=="rejected","nested Sacrifice cannot bypass published legality");
-            Check(nested.Act(child,"choose:0").Status=="resolved","nested card can finish after unsupported alternative rejected");
+            Check(offer.Status=="ready"&&offer.Phase=="card_reward"&&offer.LegalActions.Contains("sacrifice")&&offer.LegalActions.Contains("choose:0"),
+                "nested reward advertises every native alternative");
+            Check(nested.Act(child,"choose:0").Status=="resolved","nested card can finish without using the alternate");
         }
+        CompoundSacrificeCases();
         using(var rejected=new CompoundRewardFixture()) {
             rejected.World.Adapter.FullRewardsFactory=(binding,set)=>{set.Player=null!;return new GenericEventCompoundRewards(binding,set);};
             var before=rejected.World.Session.Read();rejected.World.Session.Apply(before.DecisionId,"choose:0");
@@ -204,6 +220,45 @@ internal static partial class Program
             if(mode is "fault" or "foreign_tail"){Check(last.Status is "unsupported" or "waiting","failed child/tail cannot complete parent");continue;}
             Check(last.Status=="resolved"&&last.PriorResults.Count==(mode=="sibling"?4:3),"exact compound receipts resolve after all tasks and overlays");
             var parent=f.World.Session.Read();Check(parent.ParentReconciled==1&&parent.ChildEpisodes==1&&parent.ChildAccepted==parent.ChildReconciled,"one event child retains complete invocation tree");
+        }
+    }
+    private static void CompoundSacrificeCases()
+    {
+        foreach(string mode in new[]{"no_grant","passive","gold","upgrade","capacity","delayed","before_delayed","fault","missing","double","foreign","wrong_callback","curse","small"}) {
+            using var f=new CompoundRewardFixture(cardReward:true,tail:mode=="curse"?"curse":null,smallCard:mode=="small");
+            var player=f.World.Player;var wing=f.Wing!;int deck=player.Deck.Cards.Count,gold=player.Gold,slots=player.PotionSlots.Count;
+            if(mode=="no_grant")wing.RewardsSacrificed=0;
+            if(mode=="passive")wing.Grant=new RelicModel();
+            if(mode=="upgrade"){wing.Grant=new Whetstone();foreach(var card in player.Deck.Cards)card.Type=1;}
+            if(mode is "capacity" or "small")wing.Grant=new PotionBelt();
+            if(mode is "delayed" or "fault")((OldCoin)wing.Grant).Gate=f.Delay.Task;
+            if(mode=="before_delayed")wing.BeforeSacrifice=()=>f.Delay.Task;
+            if(mode=="missing")wing.PreventGrant=true;
+            if(mode=="double")wing.AfterSacrifice=async()=>{await RelicCmd.Obtain(new OldCoin(),player);};
+            if(mode=="foreign")wing.AfterSacrifice=()=>{player.Gold++;return Task.CompletedTask;};
+            var c=f.Start();f.Act(c,"collect:0");if(mode=="small")f.Act(c,"collect:0");var offer=f.Act(c,mode=="small"?"open:1":"open:0");
+            Check(offer.LegalActions.Contains("sacrifice"),"compound Sacrifice stays public "+mode);
+            if(mode=="wrong_callback") {
+                // A different instance may not enter the retained callback.
+                var other=new PaelsWing{Owner=player};
+                wing.AfterSacrifice=()=>other.OnSacrifice();
+            }
+            var receipt=(GenericEventV7RewardChildApply)f.World.Session.ApplyChild(c.Child!.ParentDecisionId,c.Child.ParentActionId,c.Child.Ordinal,offer.DecisionId,"sacrifice");
+            Check(receipt.Value.Outcome is "accepted" or "uncertain","Sacrifice dispatched once "+mode);
+            var after=f.Read(c);
+            if(mode is "delayed" or "before_delayed" or "fault") {
+                Check(after.Status=="waiting"&&f.World.Session.Read().ParentReconciled==0,"Sacrifice retains actual callback/pickup task "+mode);
+                if(mode=="fault")f.Delay.SetException(new InvalidOperationException("fixture Sacrifice fault"));else f.Delay.SetResult();after=f.Read(c);
+            }
+            bool supported=mode is "no_grant" or "passive" or "gold" or "upgrade" or "capacity" or "delayed" or "before_delayed" or "curse" or "small";
+            if(!supported){Check(after.Status=="unsupported"&&f.World.Session.Read().ParentReconciled==0,"invalid Sacrifice cannot complete parent "+mode);continue;}
+            if(mode=="curse"){Check(after.Status=="ready","nested Sacrifice releases before root sibling");after=f.Act(c,"collect:1");}
+            Check(after.Status=="resolved"&&f.World.Session.Read().ParentReconciled==1,"compound Sacrifice and parent complete "+mode+" "+after.Status);
+            Check(player.Deck.Cards.Count==deck+(mode=="curse"?1:0),"Sacrifice never takes the displayed card "+mode);
+            Check(player.Gold==gold+(mode is "gold" or "delayed" or "before_delayed" or "small"?300:mode=="curse"?600:0),"exact Sacrifice gold "+mode);
+            Check(player.PotionSlots.Count==slots+(mode is "capacity" or "small"?2:0),"exact Sacrifice capacity "+mode);
+            if(mode=="upgrade")Check(player.Deck.Cards.Take(2).All(card=>card.CurrentUpgradeLevel==1),"Sacrifice's Whetstone upgrades certified");
+            Check(after.PriorResults.Count==(mode is "curse" or "small"?4:3),"ordered receipts include Sacrifice "+mode);
         }
     }
 }

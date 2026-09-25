@@ -18,7 +18,7 @@ namespace Sts2AgentBridge.Successors.GenericEventV7.Native;
 
 internal sealed partial class GenericEventCompoundRewards
 {
-    private static bool DeckRelic(RelicModel relic)=>Named(relic,"PreciseScissors","PrecariousShears","Pomander","NewLeaf");
+    private static bool DeckRelic(RelicModel relic)=>Named(relic,"PreciseScissors","PrecariousShears","Pomander","NewLeaf","LeafyPoultice");
     private readonly List<DeckLeaf> _decks=new();
     private DeckLeaf? _publishedDeck;
     internal sealed class DeckLeaf:IPinnedClosingOverlay
@@ -27,6 +27,7 @@ internal sealed partial class GenericEventCompoundRewards
         internal readonly RewardFrame Reward;
         internal readonly PinnedRelicPickupChain.Frame Pickup;
         internal readonly string Kind;
+        private bool Automatic=>Named(Pickup.Relic,"LeafyPoultice");
         internal readonly PinnedAutomaticRelicEffects.State Before;
         internal readonly CardModel[] Eligible;
         internal readonly List<(string Kind,Task<IEnumerable<CardModel>>? Task)> Requests=new();
@@ -52,8 +53,14 @@ internal sealed partial class GenericEventCompoundRewards
         internal DeckLeaf(GenericEventCompoundRewards owner,RewardFrame reward,PinnedRelicPickupChain.Frame pickup)
         {
             Owner=owner;Reward=reward;Pickup=pickup;Before=new(owner._binding.Player);
-            Kind=Named(pickup.Relic,"Pomander")?"upgrade":Named(pickup.Relic,"NewLeaf")?"transform":"remove";
+            Kind=Named(pickup.Relic,"Pomander")?"upgrade":Named(pickup.Relic,"NewLeaf","LeafyPoultice")?"transform":"remove";
             Eligible=Before.Deck.Select(c=>c.Model).Where(c=>Kind=="upgrade"?c.IsUpgradable:Kind=="transform"?(int)c.Type!=6&&c.IsTransformable:c.IsRemovable).ToArray();
+            if(Automatic) {
+                var basics=Before.Deck.Select(c=>c.Model).Where(c=>Rarity(c)=="Basic").ToArray();
+                Eligible=new[]{basics.FirstOrDefault(c=>Tagged(c,"Strike")),basics.FirstOrDefault(c=>Tagged(c,"Defend"))}
+                    .Where(c=>c is not null).Cast<CardModel>().Distinct<CardModel>(ReferenceEqualityComparer.Instance).ToArray();
+                Selected=Eligible.ToArray();
+            }
             if(Kind=="remove")Eligible=Eligible.OrderBy(c=>(int)c.Type==5?-1:Array.FindIndex(Before.Deck,d=>ReferenceEquals(d.Model,c))).ToArray();
             Ancestors=new(owner._binding.Overlays,owner.Path(reward).Select(f=>(Control)f.Screen!).ToArray());
         }
@@ -62,7 +69,7 @@ internal sealed partial class GenericEventCompoundRewards
             if(Kind=="remove")Owner.ObserveRemovals();
             var policy=new PinnedAutomaticRelicEffects.CompoundPolicy {
                 Authority=()=>ReferenceEquals(Owner.NativePickup,Pickup)&&Pickup.Certificate is null,
-                Hp=Named(Pickup.Relic,"PrecariousShears"),
+                Hp=Named(Pickup.Relic,"PrecariousShears","LeafyPoultice"),Damage=Named(Pickup.Relic,"PrecariousShears","LeafyPoultice"),
                 Added=c=>Transform?.AddedCard(c)==true,Modifying=()=>Transform?.InModification==true,
                 BeforeMutation=AdvanceDeck,
                 Upgrade=c=>Kind=="upgrade"&&PrepareSelected()&&Selected!.Contains(c)&&_upgraded.Add(c)
@@ -71,7 +78,7 @@ internal sealed partial class GenericEventCompoundRewards
         }
         internal int Request(Player player,CardSelectorPrefs prefs,string source,object? filter)
         {
-            Owner.Require(ReferenceEquals(player,Owner._binding.Player)&&ReferenceEquals(Owner.NativePickup,Pickup)&&
+            Owner.Require(!Automatic&&ReferenceEquals(player,Owner._binding.Player)&&ReferenceEquals(Owner.NativePickup,Pickup)&&
                 ReferenceEquals(Owner.CurrentFrame(),Reward)&&!EffectCertified&&Screen is null&&Effects!.Valid());
             if(Requests.Count==0) {
                 Owner.Require(source==Kind||Kind=="remove"&&source=="generic");
@@ -103,6 +110,7 @@ internal sealed partial class GenericEventCompoundRewards
         }
         private bool PrepareSelected()
         {
+            if(Automatic)return Selected is not null;
             Owner.Require(Requests.Count is >=1 and <=2&&Requests.All(r=>r.Task?.IsFaulted!=true&&r.Task?.IsCanceled!=true));
             if(Requests.Any(r=>r.Task?.IsCompletedSuccessfully!=true))return false;
             var expected=Choice is not null?(Choice.ConfirmationDispatched?Choice.Selected:null):Eligible.Length<=Prefs.MinSelect?Eligible:null;
@@ -116,10 +124,10 @@ internal sealed partial class GenericEventCompoundRewards
         }
         internal GenericEventV7TransformState Transformation()
         {
-            Owner.Require(Kind=="transform"&&ReferenceEquals(Owner.NativePickup,Pickup)&&PrepareSelected()&&Selected!.Length>0);
+            Owner.Require(Kind=="transform"&&ReferenceEquals(Owner.NativePickup,Pickup)&&PrepareSelected()&&(Automatic||Selected!.Length>0));
             if(Transform is null) {
                 Transform=new(Owner._binding.Player,Before.Run,Owner.Context,Owner.Fail,GenericEventV7Binding.CopyDeck(Owner._binding.Player),Eligible,
-                    Selected!.Length,Prefs.MaxSelect,AdvanceDeck);
+                    Selected!.Length,Automatic?Math.Max(1,Selected.Length):Prefs.MaxSelect,AdvanceDeck);
                 Transform.Reserve(Selected);
             }
             return Transform;
@@ -127,7 +135,7 @@ internal sealed partial class GenericEventCompoundRewards
         private void AdvanceDeck()
         {
             if(Kind=="upgrade"){Owner.Require(Effects!.Valid());return;}
-            if(Requests.Count==0||!PrepareSelected()){Owner.Require(Effects!.Valid());return;}
+            if(!Automatic&&Requests.Count==0||!PrepareSelected()){Owner.Require(Effects!.Valid());return;}
             Owner.Require(Removals.All(r=>r.Task?.IsFaulted!=true&&r.Task?.IsCanceled!=true));
             var removed=Kind=="remove"?Removals.Select(r=>(object)r.Card).Where(c=>!Owner._binding.Player.Deck.Cards.Any(d=>ReferenceEquals(c,d))).ToArray():
                 Transform?.Capture().RemovedOriginals.ToArray()??Array.Empty<object>();
@@ -145,7 +153,7 @@ internal sealed partial class GenericEventCompoundRewards
             Owner.Require(PrepareSelected()&&Effects.CardEffectsCompleted);
             if(Kind=="remove")Owner.Require(Removals.Count==Selected!.Length&&Removals.All(r=>r.Task?.IsCompletedSuccessfully==true)&&Selected.All(c=>!Owner._binding.Player.Deck.Cards.Contains(c)));
             if(Kind=="upgrade")Owner.Require(Selected!.All(c=>c.CurrentUpgradeLevel==Before.Deck.Single(d=>ReferenceEquals(d.Model,c)).Level+1));
-            if(Kind=="transform")Owner.Require(Selected!.Length==0?Transform is null:Transform?.Complete==true);
+            if(Kind=="transform")Owner.Require(!Automatic&&Selected!.Length==0?Transform is null:Transform?.Complete==true);
             Owner.Require(Screen is null?Ancestors.Bare:Ancestors.Bare||Ancestors.Matches(Screen));
             _certificate=new(Owner._binding.Player);Owner._expected[Pickup]=_certificate;return true;
         }

@@ -87,6 +87,14 @@ internal sealed partial class PinnedAutomaticRelicEffects
             before.Potions.SequenceEqual(after.Potions)&&witness(before.Deck,after.Deck));
         _expected=after;
     }
+    internal void CertifyPotions(State before,(PotionModel? Model,string? Key)[] expected)
+    {
+        var after=new State(_player);
+        Require(!_failed&&!_disposed&&_owner()&&ExactHooks()&&ReferenceEquals(Scope.Value,this)&&_expected.Same(before)&&
+            ReferenceEquals(before.Run,after.Run)&&before.Gold==after.Gold&&before.Hp==after.Hp&&before.MaxHp==after.MaxHp&&
+            before.Relics.SequenceEqual(after.Relics)&&before.Deck.SequenceEqual(after.Deck)&&after.Potions.SequenceEqual(expected));
+        _expected=after;
+    }
     internal bool CardEffectsCompleted
     {
         get {

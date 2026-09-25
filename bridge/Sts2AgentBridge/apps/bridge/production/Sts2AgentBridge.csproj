@@ -59,6 +59,7 @@
   <Compile Include="../native/FullNativeEventParent.cs" />
     <Compile Include="../native/FullNativeCoreProjection.cs" />
     <Compile Include="../native/FullNativeEvents.cs" />
+    <Compile Include="../native/FullNativeCompoundRewards.cs" />
     <Compile Include="../native/FullNativeRestLeave.cs" />
     <Compile Include="../native/FullNativeShop.cs" />
     <Compile Include="../native/AgentPublicReader.cs" />
@@ -97,6 +98,9 @@
     <Compile Include="../../../components/events/native/GenericEventCompoundRewards.Pickups.cs" />
     <Compile Include="../../../components/events/native/GenericEventCompoundRewards.Offers.cs" />
     <Compile Include="../../../components/events/native/GenericEventCompoundRewards.Deck.cs" />
+    <Compile Include="../../../components/events/native/GenericEventCompoundRewards.Capsule.cs" />
+    <Compile Include="../../../components/events/native/GenericEventCompoundRewards.Potions.cs" />
+    <Compile Include="../../../components/events/native/GenericEventCompoundRewards.Alternatives.cs" />
     <Compile Include="../../../components/events/native/GenericEventCompoundRewards.Automatic.cs" />
     <Compile Include="../../../components/events/native/GenericEventV7Binding.cs" />
     <Compile Include="../../../components/events/native/GenericEventV7CombatHandoff.cs" />

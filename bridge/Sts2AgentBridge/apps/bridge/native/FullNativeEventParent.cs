@@ -47,7 +47,8 @@ internal sealed partial class FullNativeBackend
         var run = _state.PublicRun(_history);
         var source = _router.ActiveObservationSource is ValueTuple<PinnedGenericEventV7NativeAdapter, GenericEventV7Session> pair
             ? pair : throw new AgentUnsupported();
-        source.Item1.FullRewardsFactory ??= (binding,set) => new GenericEventFullRewards(binding,set);
+        source.Item1.FullRewardsFactory ??= (binding,set) => binding.Option.Relic is MegaCrit.Sts2.Core.Models.Relics.NeowsBones
+            ? new GenericEventCompoundRewards(binding,set) : new GenericEventFullRewards(binding,set);
         var room = _state.Run.CurrentRoom as EventRoom ?? throw new AgentUnsupported();
         _state.Bind(room); _state.Bind(room.LocalMutableEvent);
         var context = status == "ready" ? EventParent(source.Item1, source.Item2, parent, room.LocalMutableEvent) : EventChild(source.Item1, wire, room.LocalMutableEvent);
@@ -89,10 +90,6 @@ internal sealed partial class FullNativeBackend
             Require(Text(row, "stable_id") == option.StableId && Text(row, "rendered_text") == option.RenderedText);
             string reference = _state.Ref("option", option.Identity);
             var displayed = adapter.InspectOption(option.Identity);
-            // This relic chains mandatory relic pickups and later curse additions;
-            // the ordinary Offer owner cannot certify that compound parent.
-            // Reject the complete frame before choosing an irreversible option.
-            Require(!legal.Contains(Text(row,"action_id")) || displayed?.Relic is not MegaCrit.Sts2.Core.Models.Relics.NeowsBones);
             var details = displayed?.HoverTips.Select(FullNativeDisplay.Hover).ToList() ?? new List<JsonObject>();
             if (displayed?.Relic is {} relic) details.Add(_state.Relic(relic));
             options.Add(Node("option", option.StableId.ToLowerInvariant(), reference, new (string, object?)[] {

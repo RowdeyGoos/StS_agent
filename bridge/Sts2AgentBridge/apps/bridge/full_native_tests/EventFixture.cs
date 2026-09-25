@@ -46,10 +46,13 @@ namespace MegaCrit.Sts2.Core.Models.Relics { internal sealed class NeowsBones : 
 namespace MegaCrit.Sts2.Core.Rooms { internal sealed class EventRoom { public EventModel LocalMutableEvent = null!; } }
 namespace Sts2AgentBridge.Successors.GenericEventV7.Native
 {
-    internal sealed class GenericEventFullRewards { internal GenericEventFullRewards(object binding, object set) {} }
+    internal interface IGenericFullRewardSession {}
+    internal sealed class GenericEventV7Binding {internal EventOption Option=new();}
+    internal sealed class GenericEventFullRewards:IGenericFullRewardSession { internal GenericEventFullRewards(GenericEventV7Binding binding, object set) {} }
+    internal sealed class GenericEventCompoundRewards:IGenericFullRewardSession { internal GenericEventCompoundRewards(GenericEventV7Binding binding, object set) {} }
     internal sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAdapter
     {
-        internal Func<object, object, GenericEventFullRewards>? FullRewardsFactory;
+        internal Func<GenericEventV7Binding, object, IGenericFullRewardSession>? FullRewardsFactory;
         internal readonly List<GenericEventV7NativeOption> Options = new();
         internal readonly Dictionary<object, EventOption> Displayed = new();
         internal int Inputs;
@@ -154,9 +157,12 @@ internal static partial class Program
             var router = new Sts2AgentBridge.Unified.BridgeRouter(false, new RelicModel[] { new MegaCrit.Sts2.Core.Models.Relics.NeowsBones() });
             using var backend = new Sts2AgentBridge.Unified.FullNativeBackend(router, new Sts2AgentBridge.Adapters.Public.PinnedPublicRewardDecisionReader(), router.Choice);
             backend.SetEvent(new AncientEventModel());
-            bool rejected = false;
-            try { backend.Read(); } catch (Sts2AgentBridge.Unified.FullReadFailure e) { rejected = e.Code == "read_context_failed"; }
-            Check(rejected && router.EventAdapter!.Inputs == 0, "unsupported compound pickup still rejects before input");
+            var frame=backend.Read();Validate(frame.Observation!);
+            Check(frame.Status=="ready"&&frame.Commands.Length==1&&router.EventAdapter!.Inputs==0,"compound ancient parent is visible before any input");
+            var factory=router.EventAdapter!.FullRewardsFactory!;
+            Check(factory(new GenericEventV7Binding{Option=new(){Relic=new MegaCrit.Sts2.Core.Models.Relics.NeowsBones()}},new()) is GenericEventCompoundRewards&&
+                factory(new GenericEventV7Binding{Option=new(){Relic=new RelicModel()}},new()) is GenericEventFullRewards,
+                "only actual Neows Bones selects compound native reward ownership");
             router.EventWire!.Dispose();
         }
         foreach (bool titleFailure in new[] { false, true })
