@@ -235,15 +235,22 @@ supplies dated source candidates rather than a current implementation checklist.
 ## Release and latest evidence
 
 The current [release manifest](../bridge/Sts2AgentBridge/releases/current/bridge.json)
-is **`3e5a097e4ace0ba01ffb63f2cea67854bfc5c1d322a76ac7c043421443a09064`**. It binds 439 source/test inputs across 51 projects,
-source `a39c40f`, feature `49a6de1`. The gate passed **83 groups in 313.512 seconds**,
-including **13,372 native checks**, **656 rest checks**, **1,600 router checks** and
-18 rest Python/C# scenarios. The first live v2 read stopped at the saved rest site before any policy action
-(0/0/0, one read). The host retained only `native_failure`; observation diagnosis
-remains open. Normal quit and complete owned cleanup left all 429 base files
-unchanged with zero overlays.
-**Native v2 live acceptance remains outstanding.** The [release record](../bridge/Sts2AgentBridge/releases/current/README.md)
-retains the exact source/package, review, validation and installation identities.
+is **`7be74f7e95ad55e39e3b333eacc17547d7b888edf7cfef13d6ac1a3821bde5ce`**.
+It binds 439 source/test inputs across 51 projects, source `1989124`, feature
+`49a6de1`. The gate passed **83 groups in 311.142 seconds**, including 164 client
+tests, 1,624 router checks, 13,372 native checks and 656 rest checks. Independent
+semantic review is clear. This diagnostic candidate is installed and verified
+against all 429 unchanged base files, awaiting manual Profile 3 launch.
+
+The first live v2 read on the preceding `3e5a097e…` package stopped at the saved
+rest site before any policy action (0/0/0, one read). The host retained only
+`native_failure`. The current correction preserves closed read-stage categories
+and validated counts; **the underlying observation failure remains unresolved**.
+The failed attempt ended with normal quit and complete owned cleanup: four files
+removed, all 429 base files unchanged and zero overlays, recorded in Git `39e2267`.
+**Native v2 live acceptance remains outstanding.** The
+[release record](../bridge/Sts2AgentBridge/releases/current/README.md) retains exact
+source/package, review, validation and installation identities.
 
 The previous rest manifest was `1926afc8…`, source `ff3cb5f` (feature `24f620d`),
 recorded in Git `4f8b633`. Its controlled Profile 3 checks passed on **2026-09-25**:
