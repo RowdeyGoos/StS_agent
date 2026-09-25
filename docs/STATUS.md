@@ -259,16 +259,22 @@ supplies dated source candidates rather than a current implementation checklist.
 ## Release and latest evidence
 
 The current [release manifest](../bridge/Sts2AgentBridge/releases/current/bridge.json)
-is **`32d721e8f6f680d6fc0eeccfe90eeb5926dcbe17ac605cab43b89b36561ec314`**.
-It binds 461 source/test inputs across 52 projects, source `6c04327`, feature
-`cc9fa81`. The gate passed **85 groups in 319.717 seconds**, including 168 client
-tests, 1,628 router checks, 13,930 native event checks and 656 rest checks.
-Independent semantic review was clear. The bounded Profile 3 batch completed
-35 actions before Whetstone's Sacrifice reconciliation failed on action 36.
-The [live ledger](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md) records each case.
-Normal quit and owned cleanup finished by **14:09:44 UTC**: four generated files
-removed, all 429 base files unchanged and zero overlays. A narrow upgrade-observer
-correction is validated locally and awaits a new release and live retest.
+is **`1f83ded88af136170f2c1191bf28371aa435c9ab1616c011357fa64140e6f7e6`**.
+It binds 461 source/test inputs across 52 projects, source `887c1da`, feature
+`cc9fa81`. The gate passed **85 groups in 313.965 seconds**, including 168 client
+tests, 1,628 router checks, 13,984 native event checks and 656 rest checks.
+Independent semantic review is clear. The Whetstone correction observes the
+actual model upgrade instead of a potentially inlined command wrapper. The exact
+package is installed with 429 unchanged base files and two verified owned overlays;
+its saved-run live retest awaits manual launch.
+
+The preceding package `32d721e8…`, source `6c04327`, completed 35 actions before
+Whetstone's second-Sacrifice reconciliation failed on action 36. The
+[live ledger](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md) retains each result
+under that artifact. No mutation was retried. Normal quit and cleanup finished
+by **14:09:44 UTC**: four generated files removed, all 429 base files unchanged,
+zero overlays. Its record is preserved in Git `887c1da`; this result is not
+repinned to the corrected package.
 
 The previous manifest `812c148b…`, source `53e2255`, passed the controlled
 Profile 3 v2 rest/card-reward/map test: **4/4/4 actions**, 27 reads, no stale
