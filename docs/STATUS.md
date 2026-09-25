@@ -183,8 +183,8 @@ extend standalone rest/shop contracts.
 - **Full-producer shop purchase:** Red Mask at 172 gold stopped with
   `uncertain_dispatch`, **1 attempted / 0 accepted / 0 reconciled**. A regression
   reproduced an inherited pickup-method hook failure before purchase input. The
-  declaring-method correction passed focused checks and independent review;
-  its release and saved-merchant retest are pending. The
+  declaring-method correction passed focused checks, independent review and the
+  release gate; its saved-merchant retest is pending. The
   [original live stop](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#red-mask-shop-purchase-stopped-before-acceptance)
   retains its uncertain result and exact cleanup.
 - **Selectors:** direct input requires allocated native holders. Optional zero
@@ -309,18 +309,25 @@ supplies dated source candidates rather than a current implementation checklist.
 ## Release and latest evidence
 
 The current [release manifest](../bridge/Sts2AgentBridge/releases/current/bridge.json)
-is **`18169693a3ea87ca93c5513024e3e7dab9f62d2e1a0f2cc8a9fccf63c5394660`**.
-It binds 485 source/test inputs across 52 projects, source `7bd3e09`.
-The gate passed **85 groups in 361.201 seconds**, including 168 client
-tests, 1,639 router checks, 229 event wire cases, 16,750 native event
+is **`e47f0514d5d7b142d247425f3aad227e9bdbe662b491f33809b36ab7c9e8e383`**.
+It binds 485 source/test inputs across 52 projects, source `c599a9f`.
+The gate passed **85 groups in 362.357 seconds**, including 168 client
+tests, 1,639 router checks, 229 event wire cases, 16,829 native event
 checks and 656 rest checks. Independent semantic review found no
-remaining blocker. Its controlled Neow’s Bones test passed **7 attempted / 7 accepted /
-7 reconciled**, 53 controller reads, zero stale rejections and no pending action.
-Large Capsule, Lost Coffer, nested Sacrifice and final Decay completed before map
-return. Normal save/quit and exact cleanup were verified by **20:49:48 UTC**:
-installation absent, four generated files removed, zero overlays and all 429 base
-files unchanged. The [live ledger](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neows-bones-compound-rewards-passed)
-records setup, observed effects and remaining branch limits.
+remaining blocker. The inherited shop pickup correction is included; its saved
+merchant retest awaits manual launch. Installation passed by **21:28:08 UTC**,
+with two exact owned overlays and all 429 base files unchanged.
+
+The preceding manifest `18169693…`, source `7bd3e09`, passed Neow’s Bones:
+**7 attempted / 7 accepted / 7 reconciled**, 53 controller reads, no stale rejection
+or pending action, and map return. Its later Red Mask purchase stopped with
+`uncertain_dispatch` at **1 attempted / 0 accepted / 0 reconciled**, one controller
+read and a pending action. The policy did not retry it. The inherited-method
+regression reproduced a hook failure before purchase input; live UI still showed
+466 gold and Red Mask in stock. Normal save/quit and exact cleanup finished by
+**21:13:24 UTC**: four generated files removed, zero overlays and all 429 base files
+unchanged. These results remain bound to their original artifact in Git `c599a9f`
+and the [live ledger](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md).
 
 The preceding manifest `2d9a2560…`, source `b55c51d`, passed Lost Coffer:
 **6 attempted / 6 accepted / 6 reconciled**, 42 reads, no stale rejection or pending
