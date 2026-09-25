@@ -42,9 +42,11 @@ map, with no pending action. Full-producer shop-removal preview cancellation als
 passed: **5/5/5 actions**, unchanged gold/deck and map return. Neow’s Bones then
 passed its Large Capsule/Lost Coffer chain, nested Sacrifice and final curse:
 **7/7/7 actions**, 53 controller reads and map return with no pending action.
-The ledger preserves the preceding failed artifact
-and its **36/36/35** counts. Prior rest
-cancellation and potion-reward evidence retains its separate package identity.
+The corrected full-producer Red Mask purchase also passed: **3/3/3 actions**, four
+controller reads, exact payment/pickup and map return. The ledger preserves the
+earlier Whetstone failure at **36/36/35** and shop failure at **1/0/0** under their
+original artifacts. Prior rest cancellation and potion-reward evidence retains
+its separate package identity.
 
 ## Supported interactions
 
@@ -60,7 +62,7 @@ cancellation and potion-reward evidence retains its separate package identity.
 | Combat card choices | Owned discard/exhaust selections, including optional zero confirmation; v2 adds visible Draw grids; v3 adds mandatory one-card offers | Neow’s Fury zero/two-card choices and resumed victory demonstrated. Repeated Séance Draw selections and enclosing victories passed through Act 3. Three Knowledge Demon offers reconciled, followed by its boss victory and the ending. Other fixed/exhaust callers remain offline only |
 | Map and room handoffs | Public legal map actions and bounded event/combat-to-map verification | Representative map/next-room transitions demonstrated; composite `*-map` clients verify the map but do not select a node |
 | Rest | Heal/Proceed and Smith (one card); Lift, Kindle, Dig, Cook, Clone and Hatch. Packaged `rest_v3` exposes selector cancellation and Heal-owned rewards | Ordinary Heal/Smith, Smith/Cook immediate and preview cancellation, Dream Catcher card collect/Skip, and Tiny Mailbox two-potion collection demonstrated. Successful effects of the six additional actions remain offline only |
-| Shop purchases | Cards, potions, supported passive relics, Potion Belt +2 slots; 0–8 purchases, kind policy, gold reserve and callback-certified restock | Seven-card/one-potion visit and three restocked potion purchases with original-potion replacement demonstrated. Passive relics, capacity and other policy variants need live coverage |
+| Shop purchases | Cards, potions, supported passive relics, Potion Belt +2 slots; 0–8 purchases, kind policy, gold reserve and callback-certified restock | Seven-card/one-potion visit and three restocked potion purchases with original-potion replacement demonstrated. The full-producer Red Mask passive pickup passed 3/3/3 through map return; capacity, pickup selectors and other policy variants need live coverage |
 | Shop removal | Exact selected original, price/effect reconciliation, preview cancellation, then separate inventory close and Leave | Removal and full-producer preview cancellation demonstrated through map return; cancellation retained exact deck and gold |
 | Shop pickup selectors | Dolly’s Mirror, Gnarled Hammer, Kifuda, Punch Dagger and Royal Stamp; exact native clone/enchantment selection | Implemented and offline tested; live coverage open. Other pickup callbacks are not generally supported |
 
@@ -180,13 +182,11 @@ extend standalone rest/shop contracts.
 - **Native ownership:** modules remain exclusive until reconciliation and successful
   disposal. Uncertain mutations or failed cleanup stop the host; no mutation retries.
   Only a known `stale_decision` with `mutation_state: none` permits bounded re-observation.
-- **Full-producer shop purchase:** Red Mask at 172 gold stopped with
-  `uncertain_dispatch`, **1 attempted / 0 accepted / 0 reconciled**. A regression
-  reproduced an inherited pickup-method hook failure before purchase input. The
-  declaring-method correction passed focused checks, independent review and the
-  release gate; its saved-merchant retest is pending. The
-  [original live stop](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#red-mask-shop-purchase-stopped-before-acceptance)
-  retains its uncertain result and exact cleanup.
+- **Corrected shop pickup hook:** inherited passive relic callbacks now use their
+  declared method for hook ownership, installation and cleanup. The Red Mask retest
+  passed **3/3/3** with exact payment/pickup and map return. The
+  [original 1/0/0 live stop](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#red-mask-shop-purchase-stopped-before-acceptance)
+  retains its uncertain result and separate artifact; no mutation was retried.
 - **Selectors:** direct input requires allocated native holders. Optional zero
   confirmation is supported on specific contracts; it is not native cancellation.
 - **Evidence boundary:** supported child effects do not certify all automatic parent
@@ -287,8 +287,9 @@ These are **not an implementation queue or required live-test checklist**:
   evidence, without a separately identified ordinary 32-entry gameplay caller.
 - Selectorless removal: one-card Dark Door passed live. Empty domains, retained
   Eternal cards, other callers and adversarial variants remain fixture evidence.
-- Shop passive relic/Potion Belt purchases, all five pickup selectors, and remaining
-  zero-buy/kind/gold-reserve variants.
+- Shop Potion Belt purchases, all five pickup selectors, and remaining
+  zero-buy/kind/gold-reserve variants. The inherited passive Red Mask purchase
+  passed through the full producer; other pickup effects remain separate cases.
 - Capacity-first Potion Belt collection in terminal, event and resume reward flows.
   The demonstrated terminal pickup verifies +2 capacity and retained potions;
   full-inventory ordering and the event/resume variants remain separate tests.
@@ -314,9 +315,16 @@ It binds 485 source/test inputs across 52 projects, source `c599a9f`.
 The gate passed **85 groups in 362.357 seconds**, including 168 client
 tests, 1,639 router checks, 229 event wire cases, 16,829 native event
 checks and 656 rest checks. Independent semantic review found no
-remaining blocker. The inherited shop pickup correction is included; its saved
-merchant retest awaits manual launch. Installation passed by **21:28:08 UTC**,
-with two exact owned overlays and all 429 base files unchanged.
+remaining blocker. Its controlled Red Mask retest passed **3 attempted / 3 accepted /
+3 reconciled**, four controller reads, zero stale rejections and no pending action.
+Gold changed 466 to 294; exactly one Red Mask was appended, with HP 88/88, the
+eleven-card deck and all three potions unchanged. Purchase, Close and Leave
+completed through an actionable map. One preflight and one post-run public read
+are separate from the four controller reads. Normal Save and Quit, game Quit and
+exact cleanup passed by **21:33:04 UTC**: installation absent, four generated files
+removed, zero overlays and all 429 base files unchanged. The
+[live ledger](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#red-mask-corrected-shop-purchase-passed)
+binds this representative passive purchase to its tested package.
 
 The preceding manifest `18169693…`, source `7bd3e09`, passed Neow’s Bones:
 **7 attempted / 7 accepted / 7 reconciled**, 53 controller reads, no stale rejection

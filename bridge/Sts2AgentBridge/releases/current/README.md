@@ -27,9 +27,19 @@ Original broad Python results remain separately bound; no new broad Python run i
 Harmony now receives the declared pickup method for inherited callbacks; ownership
 and cleanup inspect that same method. Fixtures cover actual inherited passive
 relics, delayed completion and a conflicting patch rejected before purchase input.
-Installation passed by **21:28:08 UTC**, with two exact owned overlays and all
-429 base files unchanged. The saved merchant retest awaits manual Profile 3 launch.
-These source and fixture results do not establish native gameplay acceptance.
+The controlled Profile 3 retest passed: **3 attempted / 3 accepted / 3 reconciled**,
+four controller reads and no pending action. The policy purchased Red Mask for
+172 gold, closed the shop and returned to an actionable map. Exact pickup and
+payment settled; HP, deck and potions stayed unchanged. A separate preflight read
+and final inventory read are excluded from the four controller reads.
+The [live ledger](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#red-mask-corrected-shop-purchase-passed)
+records setup and limits; Cauldron/Orrery and other pickup families remain separate.
+
+Normal Save and Quit, game Quit and exact owned cleanup passed by **21:33:04 UTC**:
+four generated files removed, zero overlays and all 429 base files unchanged.
+The tested installed state was
+`17a45939f15e3e376cdb8c782f061989d316415ce62993b3ba153e69e0cc66e7`.
+Installation is now absent; the validated package is retained.
 
 The preceding manifest `18169693…`, source `7bd3e09`, passed Neow’s Bones:
 **7 attempted / 7 accepted / 7 reconciled**, 53 controller reads and map return.

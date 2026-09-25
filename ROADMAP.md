@@ -1,7 +1,7 @@
 # Roadmap
 
-Priorities updated 2026-09-24 after campaign acceptance. This file owns priorities; [current status](docs/STATUS.md)
-owns capability and evidence. Follow [AGENTS.md](AGENTS.md) for the development
+Priorities updated 2026-09-25. This file owns priorities;
+[current status](docs/STATUS.md) owns capability and evidence. Follow [AGENTS.md](AGENTS.md) for the development
 process. Completed packets and old campaign instructions are historical references.
 
 ## Immediate priorities
@@ -16,11 +16,9 @@ another fresh campaign is not an acceptance requirement. See the
    Custom screens, Trial abandonment Cancel/Confirm, event combat/reward/map paths,
    Dummy victory with automatic upgrades, terminal potion policies and assisted
    Fake Merchant seven-relic collection now have live results. Remaining targets
-   include shop passive/Potion Belt purchases and pickup selectors, capacity-first
+   include shop Potion Belt purchases and pickup selectors, capacity-first
    terminal/event/resume rewards, Sphere tool/reward variants, and a true multi-card
    upgrade selector. Dummy’s automatic upgrades do not establish selector coverage.
-   The original Merchant reward list can exceed the eight-entry reader limit;
-   handling that full screen is distinct from the demonstrated assisted collection.
    Choose a concrete native caller and observable outcome before extending a mechanism.
    [Current status](docs/STATUS.md) owns exact evidence and practical limits.
 2. **Exercise remaining handoff variants in useful live runs.**
@@ -39,11 +37,11 @@ multi-upgrade or unallocated cards, rather than repeating their geometry checks.
 
 [Current status](docs/STATUS.md#implementation-gaps-versus-remaining-live-tests)
 owns the missing-feature list, separately from implemented capabilities awaiting
-live coverage. The confirmed gaps include rest selector cancellation,
-additional Dig pickup follow-ups and wider reward-screen bounds. Unsupported selector/pickup shapes without a concrete caller
-are explicitly separated from that list; multi-card Smith is not a native gameplay
-requirement in the pinned assembly. This documentation cleanup does not
-promote every unsupported variant into an immediate priority.
+live coverage. Rest selector cancellation, wider terminal reward screens and the
+named full-producer pickup paths are implemented; representative coverage remains
+the immediate priority. Unsupported selector/pickup shapes without a concrete
+caller stay outside that queue. Multi-card Smith is not a native gameplay
+requirement in the pinned assembly.
 
 Use the [research map](docs/EVENT_INTERACTION_MAP.md) for source-backed callers;
 its historical gap matrix is not a current task queue. Variable upgrades, enchantment

@@ -452,3 +452,55 @@ were unchanged at SHA-256
 No profile/save/history/Cloud filesystem content was accessed, no live trajectory
 corpus was retained and no uncertain mutation was retried. Separate setup,
 execution, diagnosis, cleanup and user-wait durations were not measured.
+
+## Red Mask: corrected shop purchase passed
+
+The corrected release is
+`e47f0514d5d7b142d247425f3aad227e9bdbe662b491f33809b36ab7c9e8e383`, source
+`c599a9f65f755378ad69945e08481d8af93664d5`. The final release gate passed **85 groups
+in 362.357 seconds**, binding 485 source/test inputs across 52 projects. Its DLL
+is 1,793,024 bytes, SHA-256
+`59a89110df5da538603b02e6b1a73796971e139ab6733d5490203a911c0e6f1b`.
+Evidence is under `/private/tmp/sts-bridge-5hudfwrd`; the prior exact release record
+and install inputs remain there. The focused regression and independent review
+are recorded with the preceding failure above; no new broad Python run is claimed.
+
+Installation was verified by **21:28:08 UTC** under state
+`17a45939f15e3e376cdb8c782f061989d316415ce62993b3ba153e69e0cc66e7`, with two exact
+owned overlays and all 429 base files unchanged. The user manually opened Profile 3.
+Runtime, health and pinned release/build compatibility checks passed. Continue
+restored the completed Neow checkpoint, not the debug-created merchant. Native
+`room shop` recreated the same merchant before attaching the full producer; the
+inventory was opened using the UI and the console closed. No new HP, gold, cards
+or potions were granted. One public preflight read confirmed Red Mask at 172 gold,
+zero action counts and no pending work. Cauldron/Orrery were absent from stock.
+
+The bounded policy completed `buy_shop_item`, `close_shop`, `leave_shop` with
+**3 attempted / 3 accepted / 3 reconciled**, three decisions, **four controller
+reads**, zero stale rejections and no pending action. Its `truncated/external_stop`
+outcome is the intended stop at an actionable map; no next node was selected.
+Gold changed **466 to 294**, the exact original relic prefix was retained and
+one Red Mask appended (21 to 22 relics). HP stayed 88/88, the eleven-card deck
+retained its original identities, and all three original potions were unchanged.
+
+One separate final public observation verified the same inventory, counts 3/3/3,
+no pending action and the actionable map. This read and the preflight read are
+excluded from the four controller reads. Native UI showed 294 gold, the appended
+Red Mask, eleven cards and the map. Final verification was complete by
+**21:31:43 UTC**. No uncertain mutation was retried; this new artifact/process
+result does not reconcile the preceding failed artifact's 1/0/0 action.
+
+Normal Save and Quit returned to the Profile 3 main menu with Continue available,
+then normal Quit stopped the game and listener. Exact owned quarantine/purge and
+unchanged-base verification passed by **21:33:04 UTC**. Quarantine state was
+`bff9343b084ffc92e4f3dc02a1477513a665d7bc0d193b71b3241763a4d82c1d`.
+Four generated files were removed, zero overlays remained and all 429 base files
+were unchanged at SHA-256
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+
+This demonstrates one inherited passive-relic purchase through the full producer,
+including exact payment, pickup, inventory close and map handoff. Capacity changes,
+Cauldron/Orrery rewards, pickup selectors and other automatic-effect families
+remain separate cases. No profile/save/history/Cloud filesystem content was
+accessed and no live trajectory corpus was retained. Separate setup, execution,
+cleanup and user-wait durations were not measured.

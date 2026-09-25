@@ -4,7 +4,9 @@
     "final_semantic_review_seconds": 319,
     "focused_validation_seconds": 8.34,
     "installation_verified_by_utc": "2026-09-25 21:28:08 UTC",
-    "note": "Implementation, review and validation overlapped. Separate implementation, release preparation and user-wait durations were not measured.",
+    "live_cleanup_verified_by_utc": "2026-09-25 21:33:04 UTC",
+    "live_final_inventory_verified_by_utc": "2026-09-25 21:31:43 UTC",
+    "note": "Implementation, review and focused validation overlapped. Separate implementation, release preparation, live setup/execution/cleanup and user-wait durations were not measured.",
     "previous_live_cleanup_verified_by_utc": "2026-09-25 21:13:24 UTC",
     "release_gate_seconds": 362.357
   },
@@ -463,13 +465,53 @@
   "installation": {
     "base_file_count": 429,
     "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-    "overlay_count": 2,
-    "phase": "installed",
-    "state_sha256": "17a45939f15e3e376cdb8c782f061989d316415ce62993b3ba153e69e0cc66e7",
+    "overlay_count": 0,
+    "phase": "absent",
+    "previous_installed_state_sha256": "17a45939f15e3e376cdb8c782f061989d316415ce62993b3ba153e69e0cc66e7",
     "status": "passed",
-    "verified_by_utc": "2026-09-25 21:28:08 UTC"
+    "verified_by_utc": "2026-09-25 21:33:04 UTC"
   },
   "live": {
+    "accepted": 3,
+    "actions": [
+      "buy_shop_item",
+      "close_shop",
+      "leave_shop"
+    ],
+    "after": {
+      "actionable_map": true,
+      "deck_count": 11,
+      "gold": 294,
+      "hp": 88,
+      "max_hp": 88,
+      "new_relic": "red_mask",
+      "potion_count": 3,
+      "relic_count": 22
+    },
+    "attempted": 3,
+    "before": {
+      "deck_count": 11,
+      "gold": 466,
+      "hp": 88,
+      "max_hp": 88,
+      "potion_count": 3,
+      "relic_count": 21
+    },
+    "case": "red_mask_full_producer_shop_purchase",
+    "cleanup": {
+      "base_file_count": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "game_process_running": false,
+      "generated_files_removed": 4,
+      "normal_quit": true,
+      "overlay_count": 0,
+      "port_accepting": false,
+      "quarantined_state_sha256": "bff9343b084ffc92e4f3dc02a1477513a665d7bc0d193b71b3241763a4d82c1d",
+      "status": "passed",
+      "verified_by_utc": "2026-09-25 21:33:04 UTC"
+    },
+    "decisions": 3,
+    "effect_verified": true,
     "installation": {
       "base_file_count": 429,
       "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
@@ -479,10 +521,25 @@
       "status": "passed",
       "verified_by_utc": "2026-09-25 21:28:08 UTC"
     },
+    "inventory_verification": "Exact prior relic prefix retained with one Red Mask appended; original deck and potion references/definitions and HP/max HP unchanged. The post-run public observation confirmed counts 3/3/3 and no pending work. Native UI confirmed 294 gold, Red Mask, eleven cards and map return.",
+    "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#red-mask-corrected-shop-purchase-passed",
+    "limits": "One inherited passive-relic purchase through the full producer. Cauldron/Orrery were absent; capacity changes, pickup selectors and other automatic effect families remain separate cases. This new process and artifact do not reconcile the preceding failed attempt.",
+    "outcome": {
+      "kind": "truncated",
+      "reason": "external_stop",
+      "schema": "sts_run_outcome_v1"
+    },
+    "pending": false,
+    "preflight_public_reads": 1,
+    "reads": 4,
+    "reconciled": 3,
     "recorded_live_corpus": false,
-    "scope": "Continue the saved Profile 3 merchant, verify Red Mask stock and price, then purchase it once and verify payment, exact pickup, inventory close and actionable-map return.",
-    "status": "awaiting_manual_launch",
-    "target_game_executed": false
+    "setup": "User manually opened Profile 3. Continue restored the completed Neow checkpoint rather than the debug merchant. Native room shop prepared the same merchant before full-producer attachment; inventory opened through UI. No extra HP, gold, cards or potions were granted. One public read confirmed Red Mask at 172 gold and zero action counts.",
+    "stale_rejections": 0,
+    "status": "passed",
+    "target_game_executed": true,
+    "verification_reads": 1,
+    "verified_by_utc": "2026-09-25 21:31:43 UTC"
   },
   "previous_release": {
     "additional_live_tests": [
