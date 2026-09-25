@@ -271,28 +271,31 @@ supplies dated source candidates rather than a current implementation checklist.
 ## Release and latest evidence
 
 The current [release manifest](../bridge/Sts2AgentBridge/releases/current/bridge.json)
-is **`7b6bb85e09e5c10b07ccc2c6b016bea99c8c0a6fd3183a27e77f1fc6755106db`**.
-It binds 461 source/test inputs across 52 projects, source `af80a77`,
+is **`bc0767b1035808cf89020126cc727191526bf208d88d81e8c32b9b1f03b8a662`**.
+It binds 463 source/test inputs across 52 projects, source `d9eda0d`,
 diagnostic correction `9b80088` and broader feature `cc9fa81`. The gate passed
-**85 groups in 310.87 seconds**, including 168 client tests,
+**85 groups in 309.499 seconds**, including 168 client tests,
 1,639 router checks, 13,986 native event checks and 656 rest checks.
-Independent semantic review found no blocker. The full-agent boundary now preserves
-closed native-event failure reasons, wiped response buffers, terminal ownership
-and separate attempted/accepted/reconciled counts. The existing ancient travel
-guard reports its own category. The next live Lost Coffer check identified
-`read_native_event_parent_travel`: **0/0/0**, 34 reads, no decision or pending
-action. Debug event-room entry also retains enabled travel. No option or reward
-action ran. Normal quit and exact cleanup finished by **15:49:13 UTC**, with four
-generated files removed, zero overlays and unchanged base files. The same package's
-next test used native `act 1` within the saved campaign before preparing Lost Coffer.
-It passed that native travel guard, then stopped at `read_context_failed` with
-**0/0/0**, 34 reads, no decision and no pending action. This category still covers
-run initialization and event projection; the precise cause is under investigation.
-Normal quit and exact cleanup finished by **15:56:14 UTC**: four generated files
-removed, zero overlays and all 429 base files unchanged. The game is stopped and
-the bridge installation is absent. Full-producer reward acceptance remains open.
+Independent semantic review found no blocker. The full producer now follows native
+handling of absent event-description localization entries. The pinned English
+ancient table has no Neow initial/done description; dialogue is displayed separately.
+The actual parent-projection regression failed before the correction and passes
+with missing/existing/null descriptions, exact commands and zero-input accounting.
+Existing formatting errors and unsupported compound pickups still stop before input.
+The corrected package is installed, verified by **16:18:32 UTC** with two exact
+overlays and all 429 base files unchanged. It awaits manual Profile 3 launch for
+the saved-run retest.
 
-Under the preceding manifest `1f83ded8…`, source `887c1da`, Whetstone Sacrifice
+The preceding manifest `7b6bb85e…`, source `af80a77`, identified the ancient travel
+guard. The next test used native `act 1` in the saved campaign, passed native
+admission and stopped at `read_context_failed`: **0/0/0**, 34 reads, no decision
+or pending action. Normal quit and exact cleanup finished by **15:56:14 UTC**:
+four generated files removed, zero overlays and all 429 base files unchanged.
+The failed test retains its original release identity in Git `9f221b6` and the
+[live ledger](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md). Full-producer Lost Coffer
+reward acceptance remains open.
+
+Under the earlier manifest `1f83ded8…`, source `887c1da`, Whetstone Sacrifice
 passed **4/4/4 actions**, five reads and map return. Shop-removal preview
 cancellation also passed **5/5/5**, seven reads, unchanged deck/gold and map return.
 Both later Lost Coffer setups stopped before policy input: **0/0/0**, 34 reads and
@@ -303,7 +306,7 @@ and all 429 base files unchanged. These results remain bound to their original
 artifact in Git `7e23b4e` and the live ledger; the diagnostic change does not turn
 them into acceptance.
 
-The preceding package `32d721e8…`, source `6c04327`, completed 35 actions before
+The earlier package `32d721e8…`, source `6c04327`, completed 35 actions before
 Whetstone's second-Sacrifice reconciliation failed on action 36. The
 [live ledger](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md) retains each result
 under that artifact. No mutation was retried. Normal quit and cleanup finished
