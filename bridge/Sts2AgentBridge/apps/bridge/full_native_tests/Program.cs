@@ -1,7 +1,7 @@
 using System;
 using Sts2AgentBridge.Unified;
 using Sts2AgentBridge.Adapters.Public;
-internal static class Program {
+internal static partial class Program {
  static void Check(bool ok,string why){if(!ok)throw new Exception(why);}
  static void Main(){foreach(bool potion in new[]{false,true}){
   var router=new BridgeRouter(potion);var backend=new FullNativeBackend(router,new PinnedPublicRewardDecisionReader(),router.Choice);
@@ -16,5 +16,6 @@ internal static class Program {
   var parent=backend.Read();backend.Apply(parent.Commands[0].Request);
   var waiting=backend.Read();Check(waiting.Status=="waiting"&&!router.Choice.IsActive&&router.Adapter.Captures==0,"queued discard never probes or adopts a selector");
   router.Adapter.Done=true;var after=backend.Read();Check(after.Status=="ready"&&after.Completed.Length==1&&router.ParentPosts==1,"discard parent settles once after native completion");backend.Dispose();}
- Console.WriteLine("full native coordinator: delayed card and potion child ownership passed");}
+ EventParentCases();
+ Console.WriteLine("full native coordinator: delayed card/potion ownership and real event-parent projection passed");}
 }

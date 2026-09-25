@@ -52,6 +52,7 @@
     <Compile Include="../native/FullNativeDisplay.cs" />
     <Compile Include="../native/FullNativeState.cs" />
     <Compile Include="../native/FullNativeBackend.cs" />
+  <Compile Include="../native/FullNativeEventParent.cs" />
     <Compile Include="../native/FullNativeCoreProjection.cs" />
     <Compile Include="../native/FullNativeEvents.cs" />
     <Compile Include="../native/FullNativeRestLeave.cs" />

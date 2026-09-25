@@ -2,11 +2,13 @@
  <PropertyGroup><TargetFramework>net9.0</TargetFramework><OutputType>Exe</OutputType><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
  <ItemGroup>
   <Compile Include="../native/FullNativeBackend.cs" />
+  <Compile Include="../native/FullNativeEventParent.cs" />
   <Compile Include="../runtime/FullAgentContracts.cs" /><Compile Include="../runtime/FullPublicGraph.cs" />
   <Compile Include="../runtime/CampaignContracts.cs" /><Compile Include="../runtime/CombatPotionContracts.cs" />
   <Compile Include="../../../components/cards/combat/CombatCardChoiceService.cs" />
   <Compile Include="../../../components/events/diagnostics/GenericEventDiagnosticCode.cs" />
   <Compile Include="../../../components/events/diagnostics/GenericEventDiagnosticCodec.cs" />
-  <Compile Include="Fixture.cs" /><Compile Include="Program.cs" />
+  <Compile Include="Fixture.cs" /><Compile Include="EventFixture.cs" /><Compile Include="Program.cs" />
+  <ProjectReference Include="../../../components/events/wire/GenericEventV7.Wire.csproj" />
  </ItemGroup>
 </Project>

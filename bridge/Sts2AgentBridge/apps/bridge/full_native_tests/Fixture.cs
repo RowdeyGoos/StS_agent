@@ -1,5 +1,5 @@
-// The production coordinator and choice service execute here. Native projection
-// and module endpoints are authored seams; this does not execute game assemblies.
+// The production coordinator, choice service and event-parent reader execute
+// here. Native objects and other projections are authored seams; no game runs.
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +20,7 @@ namespace Sts2AgentBridge.Unified {
  internal record struct ModuleReply(byte[] Body,bool Terminal=false,bool StaleWithoutMutation=false,
   GenericEventDiagnosticCode Diagnostic=GenericEventDiagnosticCode.NotCaptured,bool EventDiagnostic=false);
  internal static class CoreBridgeModule {internal const string EventCombatRoute="/resume",ResumeItemAction="/resume/item/action",ResumeItemRead="/resume/item/read"; internal static bool IsResumeItem(BridgeRequest request)=>false;}
- internal sealed class FullNativeState:IDisposable {
+ internal sealed partial class FullNativeState:IDisposable {
   internal static void Require(bool ok){if(!ok)throw new AgentUnsupported();}
   internal object[] Bindings=>Array.Empty<object>();internal void Begin(){}
   internal JsonObject PublicRun(List<JsonObject> history)=>Node("run",fields:new(string,object?)[]{("hp",80),("max_hp",80)});
@@ -29,7 +29,7 @@ namespace Sts2AgentBridge.Unified {
  internal sealed partial class FullNativeBackend {
   private void AdoptAcquisitions() {}
   private bool _eventResume=false;
-  private FullCapture ReadEvent()=>throw new AgentUnsupported();private FullCapture ReadResumeItem()=>throw new AgentUnsupported();
+  private FullCapture ReadResumeItem()=>throw new AgentUnsupported();
   private JsonObject Combat(JsonElement wire){Command(_router.Potion?"potion":"combat",Text(wire,"decision_id")!,_router.Discard?"discard:0":"end_turn",_router.Discard?"discard_potion":"end_turn");return Node("combat");}
   private JsonObject Selection(JsonElement wire){Command("choice",Text(wire,"decision_id")!,"select:0","select_card");return Node("combat");}
   private JsonObject Rewards(JsonElement wire)=>throw new AgentUnsupported();private JsonObject Map(JsonElement wire)=>throw new AgentUnsupported();
@@ -41,12 +41,13 @@ namespace Sts2AgentBridge.Unified {
   public void Toggle(int slot){if(slot!=0)throw new Exception();Inputs++;Done=true;}
   public void Confirm()=>throw new Exception();public void Dispose(){}
  }
- internal sealed class BridgeRouter {
+ internal sealed partial class BridgeRouter {
   internal readonly bool Potion,Discard;internal readonly CombatCardChoiceService Choice;internal readonly DelayedChoice Adapter=new();
   internal int ParentPosts,ParentReadsWhileChildOwned;private bool _started;
   internal BridgeRouter(bool potion,bool discard=false){Potion=potion;Discard=discard;Choice=new(()=>Adapter.Done?null:Adapter,"coordinator");}
   private static ModuleReply Json(object value)=>new(JsonSerializer.SerializeToUtf8Bytes(value));
   internal ModuleReply Dispatch(BridgeRequest r){
+   if(EventWire is not null)return DispatchEvent(r);
    if(r.Path==CampaignRoutes.FullDecision)return Json(new{status="ready",surface="combat"});
    if(r.Path is CombatCardChoiceService.DecisionRouteV4 or CombatCardChoiceService.ActionRouteV4){var reply=r.IsPost?Choice.Apply(r.Decision!,r.Action!,4):Choice.Read(4);return new(reply.Body,reply.Terminal);}
    if(Choice.IsActive){ParentReadsWhileChildOwned++;return Json(new{status="failed",code="capability_busy"});}
