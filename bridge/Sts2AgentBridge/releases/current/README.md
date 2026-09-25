@@ -43,7 +43,12 @@ completed by **14:54:07 UTC**: four generated files removed, zero overlays and a
 The reward behavior remains untested. Cleanup completed by **15:13:49 UTC**;
 the unchanged package is reinstalled for corrected event-room setup, with two
 verified overlays and unchanged base files (15:14:15 UTC). It awaits manual launch
-on the saved campaign. The live ledger retains the setup and diagnostic limits.
+on the saved campaign. That corrected event-room setup subsequently stopped at
+the same **0/0/0**, 34-read boundary. The earlier setup explanation is insufficient;
+exact cause remains unknown. Normal quit and exact cleanup finished by **15:23:45
+UTC**, leaving zero overlays and unchanged base files. The shared reader's dropped
+event diagnostic is being corrected separately. The live ledger preserves both
+results under this package identity.
 
 The previous package `32d721e8…`, source `6c04327`, passed the representative
 reroll, map potion use/discard, chest claim and potion-owned hand/optional choices.

@@ -178,3 +178,28 @@ Quarantine state was `0b55bbb050c9ca21f8b24903697573c55aa000ed8936849f87b52ddc42
 Work resumed at 15:07:23 UTC; setup, diagnosis, execution and cleanup overlapped,
 and their separate durations were not measured. No user-data files or retained
 public trajectory corpus were accessed.
+
+## Lost Coffer event-room setup: same read stop
+
+The next fresh Profile 3 process used the same manifest and installed state
+`ca10969454347174e890d6e2eda7ccfdab0d4d59734724ca00ec09195664f3d2`.
+Native Continue restored the checkpoint; `room event` cleared the old reward
+overlay, then `ancient NEOW LOST_COFFER` displayed the intended option. No shop or
+potion setup action occurred. Neow healed HP 86/88 to 88/88; gold stayed 466 and the
+deck seven. No event choice or dialogue action was dispatched by the host.
+
+The result was again `read_native_failed`, **0/0/0**, 34 reads, no decision and no
+pending action. This shows the preceding shop-travel explanation is insufficient;
+the exact live rejection remains unknown. Inspection found that the shared
+`FullAgentWire.Read` boundary discards the terminal event reply's existing bounded
+diagnostic. A separate correction will retain that reason without relaxing the
+native guard. Neither attempt establishes Lost Coffer reward acceptance.
+
+Normal Save and Quit/game Quit and verified exact cleanup finished by
+**15:23:45 UTC**: stopped process/listener, four generated files removed, zero
+overlays and all 429 base files unchanged at
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Quarantine state was `1104f79a06f360e593c5d95a6954037d9fff003432f7c24c101bcab52c9409b5`.
+Work resumed at 15:18:32 UTC; separate setup, execution and cleanup durations were
+not measured. No profile/save/history/Cloud filesystem content was accessed, and
+no public trajectory corpus was retained.

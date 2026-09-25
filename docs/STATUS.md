@@ -288,8 +288,12 @@ action (**0/0/0**, 34 reads): shop-based setup retained map-travel state incompa
 with the ancient entry guard. That source-supported setup diagnosis is separate
 from live reward acceptance, which remains open. Cleanup finished by **15:13:49 UTC**;
 the same package was reinstalled and verified by **15:14:15 UTC**, with two exact
-owned overlays and unchanged base files. Corrected event-room setup awaits manual
-launch on the saved campaign.
+owned overlays and unchanged base files. The corrected event-room setup also
+stopped at **0/0/0**, 34 reads, with `read_native_failed`; the shop-travel explanation
+is insufficient. Exact live cause remains unknown because the shared reader drops
+the terminal event diagnostic. Normal quit and complete owned cleanup finished by
+**15:23:45 UTC**, with unchanged base files and zero overlays. A diagnostic
+correction is being validated before another Lost Coffer attempt.
 
 The preceding package `32d721e8…`, source `6c04327`, completed 35 actions before
 Whetstone's second-Sacrifice reconciliation failed on action 36. The
