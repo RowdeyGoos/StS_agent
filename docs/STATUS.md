@@ -260,6 +260,15 @@ two groups in 1.866 s. Independent semantic review cleared the journal, callback
 effects and curse integration. These changes are unshipped; production admission
 of Neow's Bones remains guarded.
 
+Nested card offers now connect Lead Paperweight, Massive Scroll and Hefty Tablet,
+plus Scroll Boxes' bundle preview/confirmation, to their actual pickup task.
+The enclosing reward retains ordered receipts through Skip, modified/prevented
+card additions, delayed tasks and closing screens. Hefty Tablet's Injury and the
+later parent curse have separate native addition proofs. Focused/native-input/offer
+integration passed eight groups in 37.997 s; the production build passed two in
+1.835 s. Independent semantic review found no blocker. This remains unshipped:
+deck selectors and remaining automatic Neow pickups are not connected yet.
+
 ### Contract limits without a confirmed missing gameplay caller
 
 These are **not an implementation queue or required live-test checklist**:

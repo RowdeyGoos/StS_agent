@@ -186,7 +186,7 @@ internal sealed partial class GenericEventCompoundRewards : IGenericFullRewardSe
     }
     private IPinnedClosingOverlay[] ClosingDescendants(RewardFrame frame)=>_frames.Where(f=>!ReferenceEquals(f,frame)&&Path(f).Contains(frame)&&f.Controller.EffectCertified&&
             f.Screen is not null&&!f.Controller.Ancestors.Closed(f.Screen))
-        .Select(f=>(IPinnedClosingOverlay)f.Controller).ToArray();
+        .Select(f=>(IPinnedClosingOverlay)f.Controller).Concat(ClosingOffers(frame)).ToArray();
     private void BeforeRewardCertificate(RewardFrame frame){foreach(var effect in _effects.Where(e=>ReferenceEquals(e.RewardFrame,frame)&&e.Active))Require(effect.Completed);}
     private void RewardCertified(RewardFrame frame)
     {if(frame.Pickup is {} pickup)AcceptRewardCertificate(pickup,frame);if(ReferenceEquals(frame,Root))PrepareParentTail();}
@@ -203,6 +203,7 @@ internal sealed partial class GenericEventCompoundRewards : IGenericFullRewardSe
         ReleaseSettledPickups();
         if(_tailEffects is not null)Require(_tailEffects.Valid());
         if(_complete)return Value("resolved","complete");
+        ReadOffers();
         foreach(var frame in _frames)Require(frame.Offer?.IsFaulted!=true&&frame.Offer?.IsCanceled!=true&&
             frame.Collections.All(t=>!t.IsFaulted&&!t.IsCanceled)&&frame.MenuTask?.IsFaulted!=true&&frame.MenuTask?.IsCanceled!=true);
         foreach(var frame in _frames.Where(f=>f.Certificate is not null)) {
@@ -211,7 +212,7 @@ internal sealed partial class GenericEventCompoundRewards : IGenericFullRewardSe
         }
         while(_history.Count<_receipts.Count&&_receipts[_history.Count].Done){var r=_receipts[_history.Count];_history.Add(new(r.Decision,r.Action,"completed"));}
         if(Root.Controller.Completed) {
-            if(_frames.Any(f=>!f.Controller.Completed||f.Collections.Any(t=>!t.IsCompletedSuccessfully))||_binding.ChosenTask?.IsCompletedSuccessfully!=true||!ParentTailComplete())return Value("waiting","waiting");
+            if(_frames.Any(f=>!f.Controller.Completed||f.Collections.Any(t=>!t.IsCompletedSuccessfully))||_offers.Any(o=>o.View?.Status!="resolved")||_binding.ChosenTask?.IsCompletedSuccessfully!=true||!ParentTailComplete())return Value("waiting","waiting");
             Require(_receipts.Count==_history.Count);_complete=true;return Value("resolved","complete");
         }
         if(_frames.Any(f=>f.Certificate is not null&&!f.Controller.Completed))return Value("waiting","waiting");
@@ -238,7 +239,7 @@ internal sealed partial class GenericEventCompoundRewards : IGenericFullRewardSe
     }
     private void Publish(RewardFrame frame,string nativeDecision)
     {
-        _published=frame;
+        _published=frame;_publishedOffer=null;
         _decision=Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(ContractVersion+":"+_binding.Nonce+":"+_frames.IndexOf(frame)+":"+_generation+":"+nativeDecision))).ToLowerInvariant();
     }
     public GenericEventV7RewardReceipt Apply(string? decision,string? action)
@@ -267,6 +268,7 @@ internal sealed partial class GenericEventCompoundRewards : IGenericFullRewardSe
         try{Require(!_inside&&_complete&&Context());}catch(Exception error){failure=error;}
         foreach(var frame in _frames.AsEnumerable().Reverse())try{frame.Controller.Dispose();}catch(Exception error){failure??=error;}
         try{DisposePickups();}catch(Exception error){failure??=error;}
+        try{DisposeOffers();}catch(Exception error){failure??=error;}
         try{_tailAdds?.Dispose();}catch(Exception error){failure??=error;}
         try{_tailEffects?.Dispose();}catch(Exception error){failure??=error;}
         try{_hooks.UnpatchAll(_hooks.Id);Require(Harmony.GetPatchInfo(_completeMethod)?.Owners.Contains(_hooks.Id)!=true);}catch(Exception error){failure??=error;}

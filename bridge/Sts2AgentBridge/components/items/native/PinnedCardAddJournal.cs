@@ -211,6 +211,7 @@ internal sealed class PinnedCardAddJournal : IDisposable
     }
     internal bool Completed
     {get{try{return Context()&&_operations.Count>0&&_operations.All(Certify)&&Deck();}catch{Fail();throw;}}}
+    internal bool Valid()=>Context()&&Deck()&&_operations.All(o=>o.Calls.All(c=>c.Task?.IsFaulted!=true&&c.Task?.IsCanceled!=true));
     private void Unpatch(){_hooks.UnpatchAll(_hooks.Id);if(_targets.Any(m=>Harmony.GetPatchInfo(m)?.Owners.Contains(_hooks.Id)==true))throw new InvalidOperationException("card_add_cleanup");}
     public void Dispose()
     {

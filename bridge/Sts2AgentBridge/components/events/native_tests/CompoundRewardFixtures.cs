@@ -120,7 +120,7 @@ internal static partial class Program
             if(relic.Id.Entry.Length==0)relic.Id.Entry="PASSIVE";
             var reward=new RelicReward{Player=World.Player,Relic=relic,RewardsSetIndex=set.Rewards.Count};set.Rewards.Add(reward);
             var button=new NRewardButton{Reward=reward,Handler=async()=>{
-                reward.ClaimedRelic=await RelicCmd.Obtain(relic,World.Player);reward.SuccessfullySelected=true;
+                reward.ClaimedRelic=await RelicCmd.Obtain(reward.Relic!,World.Player);reward.SuccessfullySelected=true;
                 if(set.Rewards.All(r=>r.SuccessfullySelected)) {
                     Sync.Complete(Entries[set],RestRewardsFixture.Synchronizer.CompleteState.Completed);
                     // Completing the inner set resumes and retires the outer UI
@@ -158,6 +158,7 @@ internal static partial class Program
     }
     private static void CompoundRewardCases()
     {
+        CompoundOfferCases();
         foreach(string tail in new[]{"curse","scalar","delayed","chosen","fault","missing","wrong_type","two"}) {
             using var f=new CompoundRewardFixture(tail:tail);var c=f.Start();Check(c.Child is not null,"compound tail admission "+tail+" "+System.Text.Json.JsonSerializer.Serialize(c));
             f.Act(c,"collect:0");f.Act(c,"collect:0");f.Act(c,"collect:1");

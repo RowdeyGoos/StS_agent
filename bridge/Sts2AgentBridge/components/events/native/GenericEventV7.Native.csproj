@@ -57,5 +57,6 @@
     <Compile Include="GenericEventFullRewards.cs" />
     <Compile Include="GenericEventCompoundRewards.cs" />
     <Compile Include="GenericEventCompoundRewards.Pickups.cs" />
+    <Compile Include="GenericEventCompoundRewards.Offers.cs" />
   </ItemGroup>
 </Project>

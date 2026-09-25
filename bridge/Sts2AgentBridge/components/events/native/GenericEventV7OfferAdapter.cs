@@ -22,6 +22,7 @@ internal sealed class GenericEventV7OfferAdapter:IGenericEventV7OfferAdapter,IPi
     private readonly Func<bool> _owner;
     private readonly Func<Task?> _parentTask;
     private readonly Action _fail;
+    private readonly Func<bool,bool>? _deckProof;
     private readonly PinnedOverlayPrefix _ancestors;
     private GenericEventV7OfferCapture? _effectCertificate;
     internal readonly bool Bundle,CanSkip;
@@ -46,6 +47,8 @@ internal sealed class GenericEventV7OfferAdapter:IGenericEventV7OfferAdapter,IPi
     private int? _selected;private bool _confirmed,_disposed,_skipped;
     private int _added;
     internal int Count=>_models.Length;
+    internal bool Submitted=>(_selected is not null||_skipped)&&(!Bundle||_confirmed);
+    internal IReadOnlyList<CardModel> SelectedOriginals=>_selected is {} index?_models[index]:Array.Empty<CardModel>();
     public bool EffectCertified => _effectCertificate is not null && !_disposed;
     public bool ClosingOwnerValid => !_disposed && _owner() && !TaskFailed(_parentTask()) && !TaskFailed(RequestTask) && !TaskFailed(_selectorTask);
     public PinnedOverlayPrefix Ancestors => _ancestors;
@@ -60,8 +63,8 @@ internal sealed class GenericEventV7OfferAdapter:IGenericEventV7OfferAdapter,IPi
     // event owner and ancestor screens remain with the enclosing compound owner.
     internal GenericEventV7OfferAdapter(Player player, NOverlayStack overlays, Func<bool> owner,
         Func<Task?> parentTask, Action fail, object identity, IReadOnlyList<CardModel>[] offers,
-        bool bundle, bool canSkip, IReadOnlyList<Control>? ancestors = null) {
-        _player=player;_run=player.RunState;_owner=owner;_parentTask=parentTask;_fail=fail;_ancestors=new(overlays,ancestors);
+        bool bundle, bool canSkip, IReadOnlyList<Control>? ancestors = null, Func<bool,bool>? deckProof = null) {
+        _player=player;_run=player.RunState;_owner=owner;_parentTask=parentTask;_fail=fail;_ancestors=new(overlays,ancestors);_deckProof=deckProof;
         DomainIdentity=identity;Bundle=bundle;CanSkip=canSkip;_lists=offers;_models=offers.Select(o=>o.ToArray()).ToArray();
         _deck=GenericEventV7Binding.CopyDeck(player);
         if(bundle&&canSkip||Count<1||Count>(bundle?5:3)||_models.Any(o=>o.Length<1||o.Length>(bundle?8:1))||_deck.Length+_models.Max(o=>o.Length)+(canSkip?1:0)>512)throw new InvalidOperationException("Offer bounds.");
@@ -143,6 +146,7 @@ internal sealed class GenericEventV7OfferAdapter:IGenericEventV7OfferAdapter,IPi
         return true;
     }
     private bool Deck(bool complete) {
+        if(_deckProof is not null){Require(_deckProof(complete));return true;}
         var current=GenericEventV7Binding.CopyDeck(_player);var chosen=_selected is {} i?_cards[i]:Array.Empty<CardSelectionV1DeckCard>();
         int added=current.Length-_deck.Length;Require(added>=_added&&added>=0&&added<=chosen.Length+(CanSkip?1:0)&&((_selected is not null||_skipped)&&(!Bundle||_confirmed)||added==0));
         for(int j=0;j<_deck.Length;j++)Require(Same(current[j],_deck[j])&&current[j].ModelIdentity is CardModel model&&ReferenceEquals(model.Owner,_player)&&ReferenceEquals(model.RunState,_run));

@@ -314,6 +314,7 @@ public sealed class GenericEventV7Hooks : IDisposable
         internal GenericEventV7Binding? Previous;
         internal GenericEventV7ItemState? Item;
         internal GenericEventCompoundRewards.RewardFrame? CompoundReward;
+        internal GenericEventCompoundRewards.OfferLeaf? CompoundOffer;
         internal IDisposable? CompoundScope;
         internal bool Restored;
     }
@@ -994,6 +995,11 @@ public sealed class GenericEventV7Hooks : IDisposable
     }
     private static void OfferEntry(Player player,object domain,bool bundle,bool legal,out State state,bool canSkip=false) {
         state=new State{Previous=Request.Value};var b=Parent.Value;state.Binding=b;
+        if(_armed?.FullRewards is GenericEventCompoundRewards compound) {
+            state.Binding=_armed;
+            try{state.CompoundOffer=compound.EnterCardOffer(player,domain,bundle,canSkip,legal);Request.Value=_armed;}catch{FailItem(_armed);}
+            return;
+        }
         if(b is null){if(_armed is not null)_armed.Failed=true;return;}
         try {
             if(!legal||!Owns(b)||b.RequestSeen||b.Item is not null||!ReferenceEquals(player,b.Player)||!b.BindSelectionDeck())throw new InvalidOperationException();
@@ -1006,6 +1012,10 @@ public sealed class GenericEventV7Hooks : IDisposable
     private static void OfferRequestPostfix(Task<CardModel> __result,State? __state)=>OfferTask(__result,__state);
     private static void BundleRequestPostfix(Task<IEnumerable<CardModel>> __result,State? __state)=>OfferTask(__result,__state);
     private static void OfferTask(Task result,State? state) {
+        if(state?.CompoundOffer is {} leaf) {
+            try{if(leaf.Adapter.RequestTask is not null||result is null)throw new InvalidOperationException();leaf.Adapter.RequestTask=result;}
+            catch{FailItem(state.Binding);}finally{RestoreRequest(state);}return;
+        }
         if(state?.Binding is {} b&&!b.Failed) {
             if(b.Offer is null||b.Offer.RequestTask is not null||result is null)b.Failed=true;else b.Offer.RequestTask=result;
         }
@@ -1016,12 +1026,18 @@ public sealed class GenericEventV7Hooks : IDisposable
     private static void BundleScreenPrefix(IReadOnlyList<IReadOnlyList<CardModel>> __0,out State __state)=>OfferScreenEntry(__0,false,true,out __state);
     private static void OfferScreenEntry(object domain,bool canSkip,bool bundle,out State state) {
         var b=Request.Value;state=new State{Binding=b};
+        if(_armed?.FullRewards is GenericEventCompoundRewards compound) {
+            state.Binding=_armed;
+            try{if(!ReferenceEquals(b,_armed))throw new InvalidOperationException();state.CompoundOffer=compound.CardOfferScreen(domain,bundle,canSkip);}
+            catch{FailItem(_armed);}return;
+        }
         if(b is null){if(_armed is not null)_armed.Failed=true;return;}
         try {if(!Owns(b)||!ReferenceEquals(Parent.Value,b)||b.Offer is null||b.Offer.Bundle!=bundle)throw new InvalidOperationException();b.Offer.EnterScreen(domain,canSkip);}catch{b.Failed=true;}
     }
     private static void OfferScreenPostfix(NChooseACardSelectionScreen __result,State? __state)=>OfferScreenExit(__result,__state);
     private static void BundleScreenPostfix(NChooseABundleSelectionScreen __result,State? __state)=>OfferScreenExit(__result,__state);
     private static void OfferScreenExit(Godot.Control result,State? state) {
+        if(state?.CompoundOffer is {} leaf){try{leaf.Adapter.BindScreen(result);}catch{FailItem(state.Binding);}return;}
         if(state?.Binding is not {} b||b.Failed)return;try{b.Offer!.BindScreen(result);}catch{b.Failed=true;}
     }
     private static void OfferScreenFinalizer(Exception? __exception,State? __state)=>ScreenFinalizer(__exception,__state);
