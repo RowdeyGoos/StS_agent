@@ -1,176 +1,23 @@
 {
-  "additional_live_tests": [
-    {
-      "accepted": 5,
-      "actions": [
-        "open_shop",
-        "choose_shop_removal",
-        "cancel_selection",
-        "close_shop",
-        "leave_shop"
-      ],
-      "attempted": 5,
-      "case": "shop_removal_preview_cancel",
-      "cleanup": {
-        "base_file_count": 429,
-        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-        "game_process_running": false,
-        "generated_files_removed": 4,
-        "normal_quit": true,
-        "overlay_count": 0,
-        "port_accepting": false,
-        "quarantined_state_sha256": "75cc3f0fac1937b700aacf07612dbb7a474d28ebdf601f2fbe433b2bac1cec92",
-        "status": "passed",
-        "verified_by_utc": "2026-09-25 14:54:07 UTC"
-      },
-      "installation": {
-        "phase": "installed",
-        "state_sha256": "a5f0267b7f89d502220c4c98e86c7192d72dedf3c120795b370fc75d4eb3aa1d",
-        "status": "passed"
-      },
-      "installation_verification": {
-        "base_file_count": 429,
-        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-        "overlay_count": 2,
-        "status": "passed",
-        "verified_by_utc": "2026-09-25 14:44:36 UTC"
-      },
-      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md",
-      "outcome": {
-        "kind": "truncated",
-        "reason": "external_stop",
-        "schema": "sts_run_outcome_v1"
-      },
-      "pending": false,
-      "profile": 3,
-      "reads": 7,
-      "reconciled": 5,
-      "recorded_live_corpus": false,
-      "release_manifest_sha256": "1f83ded88af136170f2c1191bf28371aa435c9ab1616c011357fa64140e6f7e6",
-      "result": {
-        "deck_count": 7,
-        "gold": 466,
-        "gold_and_exact_deck_unchanged": true,
-        "hp": 86,
-        "map_actionable": true,
-        "max_hp": 88
-      },
-      "scope": "Continue the saved run, native console room shop before full-agent attachment; removal preview cancellation followed by inventory close, Leave and actionable map.",
-      "stale_rejections": 0,
-      "status": "passed",
-      "target_game_executed": true
-    },
-    {
-      "accepted": 0,
-      "actions": [],
-      "attempted": 0,
-      "case": "lost_coffer_setup_stop",
-      "cleanup": {
-        "base_file_count": 429,
-        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-        "game_process_running": false,
-        "generated_files_removed": 4,
-        "normal_quit": true,
-        "overlay_count": 0,
-        "port_accepting": false,
-        "quarantined_state_sha256": "0b55bbb050c9ca21f8b24903697573c55aa000ed8936849f87b52ddc42931ef0",
-        "status": "passed",
-        "verified_by_utc": "2026-09-25 15:13:49 UTC"
-      },
-      "code": "read_native_failed",
-      "decisions": 0,
-      "diagnosis": "Native NMerchantRoom._Ready enables map travel, while AncientConsoleCmd enters a room without resetting it; the ancient reader rejects enabled travel. This is a source-supported setup mismatch, not a captured fine-grained failure predicate. No Lost Coffer option was selected.",
-      "installation": {
-        "phase": "installed",
-        "state_sha256": "3098285400f093f2eeb9ca415c34bbe2a51d64cd41cfee21095eb1a454ca3a44",
-        "status": "passed"
-      },
-      "installation_verification": {
-        "base_file_count": 429,
-        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-        "overlay_count": 2,
-        "status": "passed",
-        "verified_by_utc": "2026-09-25 14:54:38 UTC"
-      },
-      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md",
-      "next_setup": "Use room event to clear the restored reward overlay before ancient NEOW LOST_COFFER in a fresh process; no shop entry, no full-agent observation until setup is complete.",
-      "outcome": null,
-      "pending": false,
-      "profile": 3,
-      "reads": 34,
-      "reconciled": 0,
-      "recorded_live_corpus": false,
-      "release_manifest_sha256": "1f83ded88af136170f2c1191bf28371aa435c9ab1616c011357fa64140e6f7e6",
-      "setup": "Native Continue restored combat rewards. Direct ancient command left that overlay present; room shop cleared it, followed by ancient NEOW LOST_COFFER. One setup UI Power Potion discard click had no observed inventory effect and was not repeated. Neow entry healed 86/88 to 88/88; gold 466 and deck seven unchanged.",
-      "stale_rejections": 0,
-      "status": "stopped_before_policy_action",
-      "target_game_executed": true
-    },
-    {
-      "accepted": 0,
-      "actions": [],
-      "attempted": 0,
-      "case": "lost_coffer_event_room_stop",
-      "cleanup": {
-        "base_file_count": 429,
-        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-        "game_process_running": false,
-        "generated_files_removed": 4,
-        "normal_quit": true,
-        "overlay_count": 0,
-        "port_accepting": false,
-        "quarantined_state_sha256": "1104f79a06f360e593c5d95a6954037d9fff003432f7c24c101bcab52c9409b5",
-        "status": "passed",
-        "verified_by_utc": "2026-09-25 15:23:45 UTC"
-      },
-      "code": "read_native_failed",
-      "decisions": 0,
-      "diagnosis": "Same read failure despite corrected event-room setup; the previous shop-travel explanation is insufficient. Shared FullAgentWire.Read discards the terminal event diagnostic. Exact live cause remains unknown.",
-      "installation": {
-        "phase": "installed",
-        "state_sha256": "ca10969454347174e890d6e2eda7ccfdab0d4d59734724ca00ec09195664f3d2",
-        "status": "passed"
-      },
-      "installation_verification": {
-        "base_file_count": 429,
-        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-        "overlay_count": 2,
-        "status": "passed",
-        "verified_by_utc": "2026-09-25 15:14:15 UTC"
-      },
-      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md",
-      "outcome": null,
-      "pending": false,
-      "profile": 3,
-      "reads": 34,
-      "reconciled": 0,
-      "recorded_live_corpus": false,
-      "release_manifest_sha256": "1f83ded88af136170f2c1191bf28371aa435c9ab1616c011357fa64140e6f7e6",
-      "setup": "Native Continue, room event to clear the old combat reward overlay, then ancient NEOW LOST_COFFER. Visible options ready; no shop or potion setup action. Neow healed HP 86/88 to 88/88; gold 466 and deck seven unchanged.",
-      "stale_rejections": 0,
-      "status": "stopped_before_policy_action",
-      "target_game_executed": true
-    }
-  ],
-  "change": "Observe CardModel.UpgradeInternal during certified relic pickup effects instead of the potentially inlined CardCmd forwarding overload.",
+  "change": "Preserve closed native-event failure diagnostics across the full-agent wire boundary, retaining terminal stop behavior, wiped response buffers and separate action counts. Label the existing ancient travel guard explicitly.",
+  "diagnostic_commit": "9b8008840e51c96c550015d8894800c52698b73d",
   "elapsed_times": {
-    "fix_review_seconds": 41,
-    "focused_validation_seconds": 7.598,
-    "live_cleanup_verified_by_utc": "2026-09-25 14:34:33 UTC",
-    "note": "Implementation, review and checks overlapped; exclusive implementation, release-preparation and user-wait times were not measured.",
-    "previous_live_cleanup_verified_by_utc": "2026-09-25 14:09:44 UTC",
-    "release_gate_seconds": 313.965,
-    "source_investigation_seconds": 86,
-    "turn_started_utc": "2026-09-25 13:50:24 UTC"
+    "fixture_validation_seconds": 1.355,
+    "focused_validation_seconds": 14.73,
+    "note": "Implementation, review and validation overlapped; separate implementation, release preparation and user-wait durations were not measured.",
+    "previous_live_cleanup_verified_by_utc": "2026-09-25 15:23:45 UTC",
+    "release_gate_seconds": 310.87,
+    "semantic_review_seconds": 142,
+    "turn_started_utc": "2026-09-25 15:18:32 UTC"
   },
-  "evidence_root": "/private/tmp/sts-bridge-gbhdyd9q",
+  "evidence_root": "/private/tmp/sts-bridge-5bjtuskj",
   "feature_commit": "cc9fa81c64631b1d246bda42eb17abfa96101dcc",
   "full_shared_native_interface_complete": false,
   "gate": {
     "checks": {
       "agent:paired": {
         "log": "log-078.txt",
-        "seconds": 0.153,
+        "seconds": 0.151,
         "status": "passed"
       },
       "apps/bridge/operations/check_live_runtime_fixtures.py": {
@@ -180,172 +27,172 @@
       },
       "apps/bridge/operations/manage_live_campaign_fixtures.py": {
         "log": "log-014.txt",
-        "seconds": 2.798,
+        "seconds": 2.81,
         "status": "passed"
       },
       "apps/bridge/operations/predecessor_conflict_fixtures.py": {
         "log": "log-015.txt",
-        "seconds": 0.846,
+        "seconds": 0.832,
         "status": "passed"
       },
       "build:apps/bridge/agent_native_tests/AgentNative.Tests.csproj": {
         "log": "log-017.txt",
-        "seconds": 1.153,
+        "seconds": 1.159,
         "status": "passed"
       },
       "build:apps/bridge/campaign_native_tests/CampaignNative.Tests.csproj": {
         "log": "log-019.txt",
-        "seconds": 3.266,
+        "seconds": 3.268,
         "status": "passed"
       },
       "build:apps/bridge/full_native_tests/FullNative.Tests.csproj": {
         "log": "log-021.txt",
-        "seconds": 1.11,
+        "seconds": 1.096,
         "status": "passed"
       },
       "build:apps/bridge/potion_native_tests/CombatPotions.Tests.csproj": {
         "log": "log-023.txt",
-        "seconds": 1.136,
+        "seconds": 1.126,
         "status": "passed"
       },
       "build:apps/bridge/production/Sts2AgentBridge.csproj": {
         "log": "log-001.txt",
-        "seconds": 1.611,
+        "seconds": 1.598,
         "status": "passed"
       },
       "build:apps/bridge/tests/Sts2AgentBridge.Unified.Tests.csproj": {
         "log": "log-025.txt",
-        "seconds": 1.382,
+        "seconds": 1.383,
         "status": "passed"
       },
       "build:apps/bridge/verifier/Sts2AgentBridge.Unified.Verifier.csproj": {
         "log": "log-080.txt",
-        "seconds": 1.082,
+        "seconds": 1.087,
         "status": "passed"
       },
       "build:components/cards/combat_tests/CombatCardChoice.Tests.csproj": {
         "log": "log-027.txt",
-        "seconds": 1.176,
+        "seconds": 1.23,
         "status": "passed"
       },
       "build:components/cards/completion_tests/Sts2AgentBridge.CardSelectionCompletionV1.Native.Tests.csproj": {
         "log": "log-029.txt",
-        "seconds": 1.155,
+        "seconds": 1.137,
         "status": "passed"
       },
       "build:components/cards/native_tests/Sts2AgentBridge.CardSelectionV1.Native.Tests.csproj": {
         "log": "log-031.txt",
-        "seconds": 1.873,
+        "seconds": 1.823,
         "status": "passed"
       },
       "build:components/cards/parent_native_adapter_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Adapter.Tests.csproj": {
         "log": "log-033.txt",
-        "seconds": 1.939,
+        "seconds": 1.934,
         "status": "passed"
       },
       "build:components/cards/parent_native_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Tests.csproj": {
         "log": "log-035.txt",
-        "seconds": 1.08,
+        "seconds": 1.056,
         "status": "passed"
       },
       "build:components/cards/parent_tests/Sts2AgentBridge.CardSelectionV1.Parent.Tests.csproj": {
         "log": "log-037.txt",
-        "seconds": 1.279,
+        "seconds": 1.266,
         "status": "passed"
       },
       "build:components/cards/tests/Sts2AgentBridge.CardSelectionV1.Core.Tests.csproj": {
         "log": "log-039.txt",
-        "seconds": 1.262,
+        "seconds": 1.268,
         "status": "passed"
       },
       "build:components/cards/wire_tests/Sts2AgentBridge.CardSelectionV1.Wire.Tests.csproj": {
         "log": "log-041.txt",
-        "seconds": 2.044,
+        "seconds": 1.98,
         "status": "passed"
       },
       "build:components/events/direct_input_tests/DirectTransformInput.Tests.csproj": {
         "log": "log-043.txt",
-        "seconds": 1.771,
+        "seconds": 1.723,
         "status": "passed"
       },
       "build:components/events/integration/GenericEventV7.Native.Integration.csproj": {
         "log": "log-071.txt",
-        "seconds": 2.667,
+        "seconds": 2.566,
         "status": "passed"
       },
       "build:components/events/integration/Sts2AgentBridge.GenericEventV7.Integration.csproj": {
         "log": "log-070.txt",
-        "seconds": 1.27,
+        "seconds": 1.264,
         "status": "passed"
       },
       "build:components/events/item_tests/GenericEventV7.Item.Tests.csproj": {
         "log": "log-045.txt",
-        "seconds": 1.953,
+        "seconds": 1.893,
         "status": "passed"
       },
       "build:components/events/native_tests/GenericEventV7.Native.Tests.csproj": {
         "log": "log-047.txt",
-        "seconds": 1.952,
+        "seconds": 1.917,
         "status": "passed"
       },
       "build:components/events/transform_tests/CardTransformV2.Tests.csproj": {
         "log": "log-048.txt",
-        "seconds": 1.257,
+        "seconds": 1.24,
         "status": "passed"
       },
       "build:components/events/wire_tests/Sts2AgentBridge.GenericEventV7.WireTests.csproj": {
         "log": "log-050.txt",
-        "seconds": 1.266,
+        "seconds": 1.242,
         "status": "passed"
       },
       "build:components/item_bootstrap/lifecycle_tests/Sts2AgentBridge.ItemV1.Bootstrap.Tests.csproj": {
         "log": "log-052.txt",
-        "seconds": 1.11,
+        "seconds": 1.109,
         "status": "passed"
       },
       "build:components/item_bootstrap/operator_tests/Sts2AgentBridge.ItemV1.Operator.Tests.csproj": {
         "log": "log-054.txt",
-        "seconds": 1.107,
+        "seconds": 1.097,
         "status": "passed"
       },
       "build:components/item_transport/runtime_tests/Sts2AgentBridge.ItemV1.Transport.Tests.csproj": {
         "log": "log-056.txt",
-        "seconds": 2.695,
+        "seconds": 2.68,
         "status": "passed"
       },
       "build:components/item_wire/producer_tests/Sts2AgentBridge.ItemV1.Wire.Tests.csproj": {
         "log": "log-058.txt",
-        "seconds": 1.32,
+        "seconds": 1.31,
         "status": "passed"
       },
       "build:components/items/tests/Sts2AgentBridge.ItemV1.Tests.csproj": {
         "log": "log-060.txt",
-        "seconds": 1.256,
+        "seconds": 1.242,
         "status": "passed"
       },
       "build:components/rooms/broker_tests/Sts2AgentBridge.RoomFlowsV1.Broker.Tests.csproj": {
         "log": "log-062.txt",
-        "seconds": 2.068,
+        "seconds": 2.041,
         "status": "passed"
       },
       "build:components/rooms/event/tests/Sts2AgentBridge.RoomFlowsV1.Event.Tests.csproj": {
         "log": "log-064.txt",
-        "seconds": 2.031,
+        "seconds": 1.982,
         "status": "passed"
       },
       "build:components/rooms/rest/tests/Sts2AgentBridge.RestV2.Tests.csproj": {
         "log": "log-066.txt",
-        "seconds": 3.009,
+        "seconds": 2.934,
         "status": "passed"
       },
       "build:components/rooms/shop/tests/Sts2AgentBridge.RoomFlowsV1.Shop.Tests.csproj": {
         "log": "log-068.txt",
-        "seconds": 1.355,
+        "seconds": 1.333,
         "status": "passed"
       },
       "cards:combat_host_native": {
         "log": "log-075.txt",
-        "seconds": 0.392,
+        "seconds": 0.387,
         "status": "passed"
       },
       "cards:host_wire": {
@@ -360,17 +207,17 @@
       },
       "client": {
         "log": "log-009.txt",
-        "seconds": 1.24,
+        "seconds": 1.284,
         "status": "passed"
       },
       "components/cards/host_tests": {
         "log": "log-003.txt",
-        "seconds": 0.052,
+        "seconds": 0.049,
         "status": "passed"
       },
       "components/events/host_tests": {
         "log": "log-004.txt",
-        "seconds": 2.34,
+        "seconds": 2.363,
         "status": "passed"
       },
       "components/item_transport/transport_tests": {
@@ -380,52 +227,52 @@
       },
       "components/item_wire/host_tests": {
         "log": "log-006.txt",
-        "seconds": 0.05,
+        "seconds": 0.051,
         "status": "passed"
       },
       "components/rooms/rest/host_tests": {
         "log": "log-007.txt",
-        "seconds": 0.047,
+        "seconds": 0.048,
         "status": "passed"
       },
       "core_client": {
         "log": "log-010.txt",
-        "seconds": 0.053,
+        "seconds": 0.052,
         "status": "passed"
       },
       "events:host_native": {
         "log": "log-073.txt",
-        "seconds": 72.743,
+        "seconds": 73.264,
         "status": "passed"
       },
       "package": {
         "log": "log-083.txt",
-        "seconds": 0.072,
+        "seconds": 0.074,
         "status": "passed"
       },
       "package_identity": {
         "log": "log-002.txt",
-        "seconds": 0.031,
+        "seconds": 0.03,
         "status": "passed"
       },
       "package_output": {
         "log": "log-085.txt",
-        "seconds": 0.029,
+        "seconds": 0.03,
         "status": "passed"
       },
       "production_surface": {
         "log": "log-081.txt",
-        "seconds": 0.052,
+        "seconds": 0.053,
         "status": "passed"
       },
       "production_surface_rejections": {
         "log": "log-082.txt",
-        "seconds": 0.076,
+        "seconds": 0.079,
         "status": "passed"
       },
       "reproducible_build": {
         "log": "log-079.txt",
-        "seconds": 1.602,
+        "seconds": 1.581,
         "status": "passed"
       },
       "reward_codec": {
@@ -435,12 +282,12 @@
       },
       "room_codec": {
         "log": "log-012.txt",
-        "seconds": 0.154,
+        "seconds": 0.149,
         "status": "passed"
       },
       "rooms:rest_host_native": {
         "log": "log-074.txt",
-        "seconds": 6.149,
+        "seconds": 6.181,
         "status": "passed"
       },
       "sdk": {
@@ -450,17 +297,17 @@
       },
       "shared_client:socket": {
         "log": "log-077.txt",
-        "seconds": 84.665,
+        "seconds": 83.529,
         "status": "passed"
       },
       "test:apps/bridge/agent_native_tests/AgentNative.Tests.csproj": {
         "log": "log-018.txt",
-        "seconds": 0.076,
+        "seconds": 0.075,
         "status": "passed"
       },
       "test:apps/bridge/campaign_native_tests/CampaignNative.Tests.csproj": {
         "log": "log-020.txt",
-        "seconds": 0.583,
+        "seconds": 0.477,
         "status": "passed"
       },
       "test:apps/bridge/full_native_tests/FullNative.Tests.csproj": {
@@ -470,22 +317,22 @@
       },
       "test:apps/bridge/potion_native_tests/CombatPotions.Tests.csproj": {
         "log": "log-024.txt",
-        "seconds": 0.35,
+        "seconds": 0.363,
         "status": "passed"
       },
       "test:apps/bridge/tests/Sts2AgentBridge.Unified.Tests.csproj": {
         "log": "log-026.txt",
-        "seconds": 11.841,
+        "seconds": 11.804,
         "status": "passed"
       },
       "test:components/cards/combat_tests/CombatCardChoice.Tests.csproj": {
         "log": "log-028.txt",
-        "seconds": 0.102,
+        "seconds": 0.106,
         "status": "passed"
       },
       "test:components/cards/completion_tests/Sts2AgentBridge.CardSelectionCompletionV1.Native.Tests.csproj": {
         "log": "log-030.txt",
-        "seconds": 0.055,
+        "seconds": 0.053,
         "status": "passed"
       },
       "test:components/cards/native_tests/Sts2AgentBridge.CardSelectionV1.Native.Tests.csproj": {
@@ -495,7 +342,7 @@
       },
       "test:components/cards/parent_native_adapter_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Adapter.Tests.csproj": {
         "log": "log-034.txt",
-        "seconds": 0.033,
+        "seconds": 0.032,
         "status": "passed"
       },
       "test:components/cards/parent_native_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Tests.csproj": {
@@ -520,7 +367,7 @@
       },
       "test:components/events/direct_input_tests/DirectTransformInput.Tests.csproj": {
         "log": "log-044.txt",
-        "seconds": 0.947,
+        "seconds": 1.056,
         "status": "passed"
       },
       "test:components/events/item_tests/GenericEventV7.Item.Tests.csproj": {
@@ -530,7 +377,7 @@
       },
       "test:components/events/native_tests/GenericEventV7.Native.Tests.csproj": {
         "log": "log-072.txt",
-        "seconds": 138.803,
+        "seconds": 137.611,
         "status": "passed"
       },
       "test:components/events/transform_tests/CardTransformV2.Tests.csproj": {
@@ -540,7 +387,7 @@
       },
       "test:components/events/wire_tests/Sts2AgentBridge.GenericEventV7.WireTests.csproj": {
         "log": "log-051.txt",
-        "seconds": 0.095,
+        "seconds": 0.094,
         "status": "passed"
       },
       "test:components/item_bootstrap/lifecycle_tests/Sts2AgentBridge.ItemV1.Bootstrap.Tests.csproj": {
@@ -550,12 +397,12 @@
       },
       "test:components/item_bootstrap/operator_tests/Sts2AgentBridge.ItemV1.Operator.Tests.csproj": {
         "log": "log-055.txt",
-        "seconds": 0.322,
+        "seconds": 0.207,
         "status": "passed"
       },
       "test:components/item_transport/runtime_tests/Sts2AgentBridge.ItemV1.Transport.Tests.csproj": {
         "log": "log-057.txt",
-        "seconds": 6.468,
+        "seconds": 6.466,
         "status": "passed"
       },
       "test:components/item_wire/producer_tests/Sts2AgentBridge.ItemV1.Wire.Tests.csproj": {
@@ -570,27 +417,27 @@
       },
       "test:components/rooms/broker_tests/Sts2AgentBridge.RoomFlowsV1.Broker.Tests.csproj": {
         "log": "log-063.txt",
-        "seconds": 0.042,
+        "seconds": 0.043,
         "status": "passed"
       },
       "test:components/rooms/event/tests/Sts2AgentBridge.RoomFlowsV1.Event.Tests.csproj": {
         "log": "log-065.txt",
-        "seconds": 0.039,
+        "seconds": 0.037,
         "status": "passed"
       },
       "test:components/rooms/rest/tests/Sts2AgentBridge.RestV2.Tests.csproj": {
         "log": "log-067.txt",
-        "seconds": 0.511,
+        "seconds": 0.479,
         "status": "passed"
       },
       "test:components/rooms/shop/tests/Sts2AgentBridge.RoomFlowsV1.Shop.Tests.csproj": {
         "log": "log-069.txt",
-        "seconds": 0.051,
+        "seconds": 0.05,
         "status": "passed"
       },
       "tests/maintenance": {
         "log": "log-008.txt",
-        "seconds": 1.143,
+        "seconds": 1.146,
         "status": "passed"
       }
     },
@@ -599,9 +446,9 @@
     "integration_jobs": 4,
     "live_campaign_started": false,
     "release_manifests": {
-      "bridge": "1f83ded88af136170f2c1191bf28371aa435c9ab1616c011357fa64140e6f7e6"
+      "bridge": "7b6bb85e09e5c10b07ccc2c6b016bea99c8c0a6fd3183a27e77f1fc6755106db"
     },
-    "seconds": 313.965,
+    "seconds": 310.87,
     "selected_checks": [],
     "source": {
       "files": 461,
@@ -616,76 +463,188 @@
     ]
   },
   "installation": {
-    "campaign_id": "UNIFIED-BRIDGE-V1",
-    "mode": "install",
-    "mods_parent_created": true,
     "phase": "installed",
-    "schema_version": 1,
-    "state_sha256": "446c391ed56282d22d1facc1886c4a6a93cbc92be965f3cb7b1b40f729392c6a",
+    "state_sha256": "3f601ed4551213f5453ca954379c370d7d8ae68ddac80cfd606ff2d728d7b642",
     "status": "passed"
   },
   "installation_verification": {
     "base_file_count": 429,
     "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-    "mode": "overlay",
     "overlay_count": 2,
     "status": "passed",
-    "verified_by_utc": "2026-09-25 14:24:10 UTC"
+    "verified_by_utc": "2026-09-25 15:41:32 UTC"
   },
   "live": {
-    "accepted": 4,
-    "actions": [
-      "claim_gold",
-      "open_reward",
-      "sacrifice_card_reward",
-      "leave_rewards"
-    ],
-    "approval_preflight": "Initial execution rejected before dispatch over duplicate-mutation concern. Read-only restored-state checks established a fresh action; subsequent guarded invocation approved. No uncertain receipt retry or adoption.",
-    "attempted": 4,
-    "cleanup": {
-      "base_file_count": 429,
-      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "game_process_running": false,
-      "generated_files_removed": 4,
-      "normal_quit": true,
-      "overlay_count": 0,
-      "port_accepting": false,
-      "quarantined_state_sha256": "32c7a1d2185f35d3fad6a7d6f0f795d9522e43431a6d5003a2539c87ebd50fc2",
-      "status": "passed",
-      "verified_by_utc": "2026-09-25 14:34:33 UTC"
-    },
-    "entry": "Native Continue restored the checkpoint before the prior unresolved action; new session 0/0/0, no pending action, gold 466, Wing counter 1, Whetstone absent. Read-only verified and strict one-use preconditions required.",
-    "installed_state_sha256": "446c391ed56282d22d1facc1886c4a6a93cbc92be965f3cb7b1b40f729392c6a",
-    "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md",
-    "outcome": {
-      "kind": "truncated",
-      "reason": "external_stop",
-      "schema": "sts_run_outcome_v1"
-    },
-    "pending": false,
-    "profile": 3,
-    "reads": 5,
-    "reconciled": 4,
     "recorded_live_corpus": false,
-    "result": {
-      "deck_count": 7,
-      "gold": 485,
-      "hp": 86,
-      "map_actionable": true,
-      "max_hp": 88,
-      "paels_wing_display_counter": 0,
-      "whetstone_obtained": true
-    },
-    "scope": "Saved-run Whetstone-granting Sacrifice, gold and map return; no fresh campaign.",
-    "stale_rejections": 0,
-    "status": "passed",
-    "target_game_executed": true
+    "scope": "Continue the saved Profile 3 campaign; establish Lost Coffer before full-agent attachment and retain the bounded diagnostic if entry fails.",
+    "status": "awaiting_manual_launch",
+    "target_game_executed": false
   },
   "previous_release": {
-    "install_inputs": "/private/tmp/sts-bridge-gbhdyd9q/previous-install-inputs",
+    "additional_live_tests": [
+      {
+        "accepted": 5,
+        "actions": [
+          "open_shop",
+          "choose_shop_removal",
+          "cancel_selection",
+          "close_shop",
+          "leave_shop"
+        ],
+        "attempted": 5,
+        "case": "shop_removal_preview_cancel",
+        "cleanup": {
+          "base_file_count": 429,
+          "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+          "game_process_running": false,
+          "generated_files_removed": 4,
+          "normal_quit": true,
+          "overlay_count": 0,
+          "port_accepting": false,
+          "quarantined_state_sha256": "75cc3f0fac1937b700aacf07612dbb7a474d28ebdf601f2fbe433b2bac1cec92",
+          "status": "passed",
+          "verified_by_utc": "2026-09-25 14:54:07 UTC"
+        },
+        "installation": {
+          "phase": "installed",
+          "state_sha256": "a5f0267b7f89d502220c4c98e86c7192d72dedf3c120795b370fc75d4eb3aa1d",
+          "status": "passed"
+        },
+        "installation_verification": {
+          "base_file_count": 429,
+          "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+          "overlay_count": 2,
+          "status": "passed",
+          "verified_by_utc": "2026-09-25 14:44:36 UTC"
+        },
+        "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md",
+        "outcome": {
+          "kind": "truncated",
+          "reason": "external_stop",
+          "schema": "sts_run_outcome_v1"
+        },
+        "pending": false,
+        "profile": 3,
+        "reads": 7,
+        "reconciled": 5,
+        "recorded_live_corpus": false,
+        "release_manifest_sha256": "1f83ded88af136170f2c1191bf28371aa435c9ab1616c011357fa64140e6f7e6",
+        "result": {
+          "deck_count": 7,
+          "gold": 466,
+          "gold_and_exact_deck_unchanged": true,
+          "hp": 86,
+          "map_actionable": true,
+          "max_hp": 88
+        },
+        "scope": "Continue the saved run, native console room shop before full-agent attachment; removal preview cancellation followed by inventory close, Leave and actionable map.",
+        "stale_rejections": 0,
+        "status": "passed",
+        "target_game_executed": true
+      },
+      {
+        "accepted": 0,
+        "actions": [],
+        "attempted": 0,
+        "case": "lost_coffer_setup_stop",
+        "cleanup": {
+          "base_file_count": 429,
+          "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+          "game_process_running": false,
+          "generated_files_removed": 4,
+          "normal_quit": true,
+          "overlay_count": 0,
+          "port_accepting": false,
+          "quarantined_state_sha256": "0b55bbb050c9ca21f8b24903697573c55aa000ed8936849f87b52ddc42931ef0",
+          "status": "passed",
+          "verified_by_utc": "2026-09-25 15:13:49 UTC"
+        },
+        "code": "read_native_failed",
+        "decisions": 0,
+        "diagnosis": "Native NMerchantRoom._Ready enables map travel, while AncientConsoleCmd enters a room without resetting it; the ancient reader rejects enabled travel. This is a source-supported setup mismatch, not a captured fine-grained failure predicate. No Lost Coffer option was selected.",
+        "installation": {
+          "phase": "installed",
+          "state_sha256": "3098285400f093f2eeb9ca415c34bbe2a51d64cd41cfee21095eb1a454ca3a44",
+          "status": "passed"
+        },
+        "installation_verification": {
+          "base_file_count": 429,
+          "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+          "overlay_count": 2,
+          "status": "passed",
+          "verified_by_utc": "2026-09-25 14:54:38 UTC"
+        },
+        "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md",
+        "next_setup": "Use room event to clear the restored reward overlay before ancient NEOW LOST_COFFER in a fresh process; no shop entry, no full-agent observation until setup is complete.",
+        "outcome": null,
+        "pending": false,
+        "profile": 3,
+        "reads": 34,
+        "reconciled": 0,
+        "recorded_live_corpus": false,
+        "release_manifest_sha256": "1f83ded88af136170f2c1191bf28371aa435c9ab1616c011357fa64140e6f7e6",
+        "setup": "Native Continue restored combat rewards. Direct ancient command left that overlay present; room shop cleared it, followed by ancient NEOW LOST_COFFER. One setup UI Power Potion discard click had no observed inventory effect and was not repeated. Neow entry healed 86/88 to 88/88; gold 466 and deck seven unchanged.",
+        "stale_rejections": 0,
+        "status": "stopped_before_policy_action",
+        "target_game_executed": true
+      },
+      {
+        "accepted": 0,
+        "actions": [],
+        "attempted": 0,
+        "case": "lost_coffer_event_room_stop",
+        "cleanup": {
+          "base_file_count": 429,
+          "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+          "game_process_running": false,
+          "generated_files_removed": 4,
+          "normal_quit": true,
+          "overlay_count": 0,
+          "port_accepting": false,
+          "quarantined_state_sha256": "1104f79a06f360e593c5d95a6954037d9fff003432f7c24c101bcab52c9409b5",
+          "status": "passed",
+          "verified_by_utc": "2026-09-25 15:23:45 UTC"
+        },
+        "code": "read_native_failed",
+        "decisions": 0,
+        "diagnosis": "Same read failure despite corrected event-room setup; the previous shop-travel explanation is insufficient. Shared FullAgentWire.Read discards the terminal event diagnostic. Exact live cause remains unknown.",
+        "installation": {
+          "phase": "installed",
+          "state_sha256": "ca10969454347174e890d6e2eda7ccfdab0d4d59734724ca00ec09195664f3d2",
+          "status": "passed"
+        },
+        "installation_verification": {
+          "base_file_count": 429,
+          "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+          "overlay_count": 2,
+          "status": "passed",
+          "verified_by_utc": "2026-09-25 15:14:15 UTC"
+        },
+        "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md",
+        "outcome": null,
+        "pending": false,
+        "profile": 3,
+        "reads": 34,
+        "reconciled": 0,
+        "recorded_live_corpus": false,
+        "release_manifest_sha256": "1f83ded88af136170f2c1191bf28371aa435c9ab1616c011357fa64140e6f7e6",
+        "setup": "Native Continue, room event to clear the old combat reward overlay, then ancient NEOW LOST_COFFER. Visible options ready; no shop or potion setup action. Neow healed HP 86/88 to 88/88; gold 466 and deck seven unchanged.",
+        "stale_rejections": 0,
+        "status": "stopped_before_policy_action",
+        "target_game_executed": true
+      }
+    ],
+    "install_inputs": "/private/tmp/sts-bridge-5bjtuskj/previous-install-inputs",
     "live": {
-      "accepted": 36,
-      "attempted": 36,
+      "accepted": 4,
+      "actions": [
+        "claim_gold",
+        "open_reward",
+        "sacrifice_card_reward",
+        "leave_rewards"
+      ],
+      "approval_preflight": "Initial execution rejected before dispatch over duplicate-mutation concern. Read-only restored-state checks established a fresh action; subsequent guarded invocation approved. No uncertain receipt retry or adoption.",
+      "attempted": 4,
       "cleanup": {
         "base_file_count": 429,
         "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
@@ -694,35 +653,41 @@
         "normal_quit": true,
         "overlay_count": 0,
         "port_accepting": false,
-        "quarantined_state_sha256": "bf83d500d73bd79d5691340cdeeb956b1cbf97ffa48802bdf25d69d5466baa2d",
+        "quarantined_state_sha256": "32c7a1d2185f35d3fad6a7d6f0f795d9522e43431a6d5003a2539c87ebd50fc2",
         "status": "passed",
-        "verified_by_utc": "2026-09-25 14:09:44 UTC"
+        "verified_by_utc": "2026-09-25 14:34:33 UTC"
       },
-      "code": "read_native_failed",
-      "entry": "Native Continue on existing assisted run; no full-campaign acceptance claim.",
-      "failure": "Second Sacrifice visibly granted Whetstone and closed the card menu, but remained unreconciled. No mutation retry.",
+      "entry": "Native Continue restored the checkpoint before the prior unresolved action; new session 0/0/0, no pending action, gold 466, Wing counter 1, Whetstone absent. Read-only verified and strict one-use preconditions required.",
+      "installed_state_sha256": "446c391ed56282d22d1facc1886c4a6a93cbc92be965f3cb7b1b40f729392c6a",
       "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md",
-      "passed_cases": [
-        "rest_reward_reroll_card_map",
-        "general_potion_discard",
-        "fruit_juice_at_map",
-        "treasure_open_claim_leave",
-        "gamblers_brew_hand_choice",
-        "skill_potion_card_offer",
-        "skill_potion_optional_skip",
-        "first_sacrifice_to_map"
-      ],
-      "pending": true,
+      "outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "pending": false,
       "profile": 3,
-      "reconciled": 35,
+      "reads": 5,
+      "reconciled": 4,
       "recorded_live_corpus": false,
-      "status": "stopped_on_unreconciled_sacrifice",
+      "result": {
+        "deck_count": 7,
+        "gold": 485,
+        "hp": 86,
+        "map_actionable": true,
+        "max_hp": 88,
+        "paels_wing_display_counter": 0,
+        "whetstone_obtained": true
+      },
+      "scope": "Saved-run Whetstone-granting Sacrifice, gold and map return; no fresh campaign.",
+      "stale_rejections": 0,
+      "status": "passed",
       "target_game_executed": true
     },
-    "manifest_sha256": "32d721e8f6f680d6fc0eeccfe90eeb5926dcbe17ac605cab43b89b36561ec314",
-    "record_copy": "/private/tmp/sts-bridge-gbhdyd9q/previous-release-record",
-    "record_git_commit": "887c1da81cf36a0d524973e93dd8e20832595244",
-    "source_commit": "6c043278311dac931903e4dc110f43e8264bac2f"
+    "manifest_sha256": "1f83ded88af136170f2c1191bf28371aa435c9ab1616c011357fa64140e6f7e6",
+    "record_copy": "/private/tmp/sts-bridge-5bjtuskj/previous-release-record",
+    "record_git_commit": "7e23b4e",
+    "source_commit": "887c1da81cf36a0d524973e93dd8e20832595244"
   },
   "python_integration": {
     "previous_broad_run": {
@@ -748,37 +713,49 @@
         "test": "tests/maintenance/test_release_support.py"
       }
     ],
-    "reason": "No Python implementation or test changes in this correction; all twelve bound shared Python sources match the previous release. Current bridge client/integration tests reran in this release gate.",
-    "record": "Previous release record in Git 887c1da81cf36a0d524973e93dd8e20832595244 and /private/tmp/sts-bridge-gbhdyd9q/previous-release-record/validation.json",
+    "reason": "Only the bridge client fixed diagnostic allowlist and its rejection fixtures changed; the release gate reran client and native integration checks. All twelve bound game.agent/shared Python sources match the preceding release. No new broad Python run is claimed.",
+    "record": "Original broad run and corrections retained in Git 887c1da81cf36a0d524973e93dd8e20832595244; preceding record in Git 7e23b4e and /private/tmp/sts-bridge-5bjtuskj/previous-release-record/validation.json",
     "status": "unaffected_evidence_retained"
   },
   "regression": {
     "after_fix": {
-      "root": "/private/tmp/sts-bridge-r_ry81oh",
+      "root": "/private/tmp/sts-bridge-2z71wjk1",
       "scope": [
-        "reward_alternatives_native",
-        "shop_effects_native",
-        "full_rewards_native"
+        "client",
+        "unified_router"
       ],
-      "seconds": 7.598,
+      "seconds": 14.73,
       "status": "passed"
     },
     "before_fix": {
-      "code": "reward_alternative_boundary",
-      "root": "/private/tmp/sts-bridge-9xof8ceh",
+      "assertion": "nested native event diagnostic survives shared read boundary ParentTravel",
+      "root": "/private/tmp/sts-bridge-zzf58vl7",
       "status": "failed_as_expected"
     },
-    "cases": "Whetstone zero/one/two eligible originals, unscoped upgrade rejection, repeated cleanup and exact model-hook removal."
+    "cases": "Closed diagnostic mapping, unknown-code normalization, source-buffer wiping, sticky stopped reads/actions, and accepted-but-unreconciled action counts with failed disposal. Native travel rejection performs no dialogue or option input. The final release gate includes the added pending-action and travel regressions.",
+    "earlier_release_attempt": {
+      "reason": "Full-native test fixture lacked the newly referenced diagnostic enum/codec and reply fields; fixture corrected without changing production behavior.",
+      "root": "/private/tmp/sts-bridge-c653vkgd",
+      "status": "failed"
+    },
+    "fixture_correction": {
+      "root": "/private/tmp/sts-bridge-y04cg435",
+      "scope": [
+        "full_native_coordinator"
+      ],
+      "seconds": 1.355,
+      "status": "passed"
+    }
   },
   "release_check_counts": {
     "campaign_native_checks": 252,
     "client_tests": 168,
-    "native_event_checks": 13984,
+    "native_event_checks": 13986,
     "potion_native_checks": 179,
     "rest_checks": 656,
-    "router_checks": 1628
+    "router_checks": 1639
   },
-  "release_manifest_sha256": "1f83ded88af136170f2c1191bf28371aa435c9ab1616c011357fa64140e6f7e6",
+  "release_manifest_sha256": "7b6bb85e09e5c10b07ccc2c6b016bea99c8c0a6fd3183a27e77f1fc6755106db",
   "remaining_gap_source_review": {
     "reviewer": "semantic_review",
     "scope": "Concrete Neow nested reward/selector callers, existing child completion versus outer callback, ancestor stack identity and synchronous last-reward-to-curse ordering. No blocker found in ordinary Lost Coffer path; guard remains. Not acceptance of a compound implementation.",
@@ -797,18 +774,15 @@
     "No claim of complete native/headless projection equivalence, all-branch content coverage or normal-HP policy strength."
   ],
   "semantic_review": {
-    "fix_review_utc": [
-      "2026-09-25 14:13:45 UTC",
-      "2026-09-25 14:14:26 UTC"
-    ],
     "reviewer": "semantic_review",
-    "scope": "Actual mutation boundary, ownership, eligibility, inventory effects, no target enumeration/RNG access, and cleanup. Original live failing predicate remains inference; subsequent live retest passed.",
-    "source_investigation_utc": [
-      "2026-09-25 14:10:09 UTC",
-      "2026-09-25 14:11:35 UTC"
-    ],
-    "status": "clear"
+    "scope": "Closed C#/Python diagnostic vocabulary, response confidentiality, terminal ownership, separate action counts and failed disposal. The travel change only labels the existing guard. No live Lost Coffer cause or reward acceptance inferred.",
+    "seconds": 142,
+    "status": "clear",
+    "utc": [
+      "2026-09-25 15:27:23 UTC",
+      "2026-09-25 15:29:45 UTC"
+    ]
   },
-  "source_commit": "887c1da81cf36a0d524973e93dd8e20832595244",
-  "user_data_access": "No profile/save/history/Cloud filesystem access; prior live test used authorized native UI controls. Public trajectory recording remained disabled."
+  "source_commit": "af80a7708c81f76ee963ec011481ff79066075e8",
+  "user_data_access": "No profile/save/history/Cloud filesystem access. No public live trajectory corpus collected."
 }

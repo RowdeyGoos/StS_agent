@@ -1,7 +1,7 @@
 # Current unified release
 
-This directory binds the broader native `agent_v2` package and Whetstone
-correction to their source and validation. [Current status](../../../../docs/STATUS.md#release-and-latest-evidence)
+This directory binds the native `agent_v2` event-diagnostic correction to its
+source and validation. [Current status](../../../../docs/STATUS.md#release-and-latest-evidence)
 owns live support; [bridge usage](../../README.md#client-modes) owns commands.
 
 | Record | Meaning |
@@ -9,55 +9,40 @@ owns live support; [bridge usage](../../README.md#client-modes) owns commands.
 | [bridge.json](bridge.json) | Exact source/test, toolchain, reference, binary and package identities |
 | [validation.json](validation.json) | Release checks, review, installation and separately bound live evidence |
 
-Manifest SHA-256: `1f83ded88af136170f2c1191bf28371aa435c9ab1616c011357fa64140e6f7e6`.
-It binds **461 inputs across 52 projects**, source `887c1da`, feature `cc9fa81`.
-DLL: **1,682,432 bytes**, SHA-256
-`e796ec18a1244355734d431d62996357a29a930ba31839f411dd26614bdc929b`.
+Manifest SHA-256: `7b6bb85e09e5c10b07ccc2c6b016bea99c8c0a6fd3183a27e77f1fc6755106db`.
+It binds **461 inputs across 52 projects**, source `af80a77`,
+diagnostic correction `9b80088`, broader feature `cc9fa81`.
+DLL: **1,682,944 bytes**, SHA-256
+`d377ff748800ba2bffc7c13b5729e4002b82f8e633b94a6b89d0d1a2064b7783`.
 
-The final release gate passed **85 groups in 313.965 seconds**, including
+The final release gate passed **85 groups in 310.87 seconds**, including
 reproducible builds, native metadata/dependency checks, packaging and disposable
-installation/cleanup. It includes **168 client tests**, **1,628 router checks**,
-**13,984 native event checks**, **656 rest checks**, **252 campaign checks** and
-**179 potion checks**. Focused reward/shop/event checks passed in 7.598 seconds;
-independent semantic review found no blocker. No Python behavior changed; the
-previous broad Python result and its focused corrections remain separately bound.
+installation/cleanup. It includes **168 client tests**, **1,639 router checks**,
+**13,986 native event checks**, **656 rest checks**, **252 campaign checks**
+and **179 potion checks**. Focused checks passed and independent semantic review
+found no blocker. An earlier gate stopped on a missing test-fixture dependency;
+the corrected fixture and complete gate passed. Earlier broad Python results and
+their focused corrections remain separately bound; no new broad run is claimed.
 
-The correction observes `CardModel.UpgradeInternal` during an owned relic pickup,
-avoiding the potentially inlined command wrapper. Exact card identity, upgrade
-eligibility, scope, +1 effect, unchanged survivors and cleanup are still required.
-The old implementation failed a native-shaped Whetstone regression. The original
-live failing predicate remains an inference; the corrected saved-run retest passed.
+The full-agent reader now retains the event adapter's closed failure reason,
+without parsing terminal response bodies or exposing native exception data.
+Failure still stops ownership; accepted but unreconciled actions remain pending,
+and failed disposal cannot become a clean handoff. The existing ancient travel
+guard now identifies itself. This diagnoses the next live stop; it does not
+establish the cause of the earlier Lost Coffer failures.
 
-The corrected package passed the manual-launch Profile 3 Whetstone Sacrifice
-retest: **4/4/4 actions**, five reads, no stale rejection or pending action, and
-an actionable map. Native Continue restored the pre-action checkpoint, verified
-read-only before input. Normal quit and owned cleanup completed by **14:34:33 UTC**:
-four generated files removed, all 429 base files unchanged and zero overlays.
-No profile/save/history/Cloud filesystem content was accessed and no live trajectory
-corpus was collected.
-The same package also passed shop-removal preview cancellation: **5/5/5 actions**,
-seven reads, unchanged deck/gold and map return. Normal quit and exact cleanup
-completed by **14:54:07 UTC**: four generated files removed, zero overlays and all
-429 base files unchanged. The next Lost Coffer test stopped before policy input
-(**0/0/0**, 34 reads) after shop-based setup retained incompatible map-travel state.
-The reward behavior remains untested. Cleanup completed by **15:13:49 UTC**;
-the unchanged package is reinstalled for corrected event-room setup, with two
-verified overlays and unchanged base files (15:14:15 UTC). It awaits manual launch
-on the saved campaign. That corrected event-room setup subsequently stopped at
-the same **0/0/0**, 34-read boundary. The earlier setup explanation is insufficient;
-exact cause remains unknown. Normal quit and exact cleanup finished by **15:23:45
-UTC**, leaving zero overlays and unchanged base files. The shared reader's dropped
-event diagnostic is being corrected separately. The live ledger preserves both
-results under this package identity.
+The preceding manifest `1f83ded8…`, source `887c1da`, passed Whetstone Sacrifice
+(**4/4/4**) and shop-removal preview cancellation (**5/5/5**). Its two Lost Coffer
+setups both stopped before policy input (**0/0/0**, 34 reads). Exact live cause and
+full-producer reward acceptance remain open. Normal quit and exact cleanup ended
+by **15:23:45 UTC**, with four generated files removed, zero overlays and all
+429 base files unchanged. Those live results retain their original package identity
+in Git `7e23b4e` and the [live ledger](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md).
 
-The previous package `32d721e8…`, source `6c04327`, passed the representative
-reroll, map potion use/discard, chest claim and potion-owned hand/optional choices.
-The second Sacrifice visibly granted Whetstone but failed reconciliation at
-**36/36/35** actions. No mutation was retried. Normal quit and four-file cleanup
-finished by **14:09:44 UTC**, with all 429 base files unchanged and zero overlays.
-The [live ledger](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md)
-retains that evidence under its original package identity; its record is in Git
-`887c1da` and in the current evidence directory.
+The current package is installed and awaits manual Profile 3 launch for the saved
+campaign's Lost Coffer check. Verification at **15:41:32 UTC** found two exact
+owned overlays and all 429 base files unchanged. No fresh campaign is required.
+No profile/save/history/Cloud filesystem content or live trajectory corpus was accessed.
 
 The [native candidate boundary](../../../../docs/AGENT_CONTRACT.md#native-full-run-v2-candidate)
 remains explicit. Neow's Bones needs a compound relic-pickup/curse continuation;
@@ -65,6 +50,7 @@ the full producer rejects its actionable parent before input. Shared event rewar
 shop extensions, empty chests, arbitrary nested pickups and a full v2 ending retain
 their documented live-evidence limits.
 
-Current evidence and the preserved previous package/record are under
-`/private/tmp/sts-bridge-gbhdyd9q`. Current install inputs are at
+Current evidence and the preceding release record are under
+`/private/tmp/sts-bridge-5bjtuskj`. Prior install inputs are retained in its
+`previous-install-inputs` directory; current install inputs use
 `/private/tmp/sts-unified-bridge-release`.

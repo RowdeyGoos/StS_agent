@@ -271,29 +271,28 @@ supplies dated source candidates rather than a current implementation checklist.
 ## Release and latest evidence
 
 The current [release manifest](../bridge/Sts2AgentBridge/releases/current/bridge.json)
-is **`1f83ded88af136170f2c1191bf28371aa435c9ab1616c011357fa64140e6f7e6`**.
-It binds 461 source/test inputs across 52 projects, source `887c1da`, feature
-`cc9fa81`. The gate passed **85 groups in 313.965 seconds**, including 168 client
-tests, 1,628 router checks, 13,984 native event checks and 656 rest checks.
-Independent semantic review is clear. The Whetstone correction observes the
-actual model upgrade instead of a potentially inlined command wrapper. The exact
-saved-run Whetstone retest passed **4/4/4 actions**, five reads and map return.
-Normal quit and owned cleanup completed by **14:34:33 UTC**: four generated files
-removed, zero overlays, all 429 base files unchanged.
-The same package passed shop-removal preview cancellation: **5/5/5 actions**,
-seven reads, unchanged deck/gold and map return. Normal quit and exact cleanup
-completed by **14:54:07 UTC**, with four generated files removed and all 429 base
-files unchanged. The following Lost Coffer attempt stopped before any policy
-action (**0/0/0**, 34 reads): shop-based setup retained map-travel state incompatible
-with the ancient entry guard. That source-supported setup diagnosis is separate
-from live reward acceptance, which remains open. Cleanup finished by **15:13:49 UTC**;
-the same package was reinstalled and verified by **15:14:15 UTC**, with two exact
-owned overlays and unchanged base files. The corrected event-room setup also
-stopped at **0/0/0**, 34 reads, with `read_native_failed`; the shop-travel explanation
-is insufficient. Exact live cause remains unknown because the shared reader drops
-the terminal event diagnostic. Normal quit and complete owned cleanup finished by
-**15:23:45 UTC**, with unchanged base files and zero overlays. A diagnostic
-correction is being validated before another Lost Coffer attempt.
+is **`7b6bb85e09e5c10b07ccc2c6b016bea99c8c0a6fd3183a27e77f1fc6755106db`**.
+It binds 461 source/test inputs across 52 projects, source `af80a77`,
+diagnostic correction `9b80088` and broader feature `cc9fa81`. The gate passed
+**85 groups in 310.87 seconds**, including 168 client tests,
+1,639 router checks, 13,986 native event checks and 656 rest checks.
+Independent semantic review found no blocker. The full-agent boundary now preserves
+closed native-event failure reasons, wiped response buffers, terminal ownership
+and separate attempted/accepted/reconciled counts. The existing ancient travel
+guard reports its own category. The package is installed and awaits manual launch
+for the saved-run Lost Coffer check; its reward path remains unaccepted. Verification
+at **15:41:32 UTC** found two exact owned overlays and all 429 base files unchanged.
+
+Under the preceding manifest `1f83ded8…`, source `887c1da`, Whetstone Sacrifice
+passed **4/4/4 actions**, five reads and map return. Shop-removal preview
+cancellation also passed **5/5/5**, seven reads, unchanged deck/gold and map return.
+Both later Lost Coffer setups stopped before policy input: **0/0/0**, 34 reads and
+`read_native_failed`. The second used an event room, so the earlier shop-travel
+explanation is insufficient. Exact cause remains unknown. Normal quit and exact
+cleanup finished by **15:23:45 UTC**: four generated files removed, zero overlays
+and all 429 base files unchanged. These results remain bound to their original
+artifact in Git `7e23b4e` and the live ledger; the diagnostic change does not turn
+them into acceptance.
 
 The preceding package `32d721e8…`, source `6c04327`, completed 35 actions before
 Whetstone's second-Sacrifice reconciliation failed on action 36. The
