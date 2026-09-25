@@ -104,18 +104,22 @@ internal static partial class Program {
         private readonly Queue<Action> _highlightUpdates = new();
         internal int Inputs, Clears, Commits, Cancels;
         private readonly List<CardModel> _selected = new();
-        internal InteractiveChoiceFixture(bool smith = false)
+        internal InteractiveChoiceFixture(bool smith = false, bool transform = false, bool nested = false)
         {
             Cards = Enumerable.Range(0, 3).Select(i => { var c = new CardModel { Owner = Player }; c.Id.Entry = "CARD_" + i; return c; }).ToArray();
             Player.Deck.Cards.AddRange(Cards);
-            Screen = smith ? new NDeckUpgradeSelectScreen() : new NDeckCardSelectScreen();
+            bool single = smith || transform;
+            Screen = transform ? new NDeckTransformSelectScreen() : smith ? new NDeckUpgradeSelectScreen() : new NDeckCardSelectScreen();
             Screen.SelectionTask = Task.Task;
             MegaCrit.Sts2.Core.Nodes.Screens.ScreenContext.ActiveScreenContext.Instance = new() { Current = Screen };
             Screen.Bind("%CardGrid", Grid); Screen.Bind("%Close", Back);
             Screen.Bind(smith ? "%UpgradeSinglePreviewContainer" : "%PreviewContainer", Container);
-            Container.Bind(smith ? "UpgradePreview" : "%Cards", smith ? new NUpgradePreview() : Preview);
-            Container.Bind(smith ? "Confirm" : "%PreviewConfirm", Confirm);
-            Container.Bind(smith ? "Cancel" : "%PreviewCancel", PreviewBack);
+            if (transform) {
+                var preview = new NTransformPreview(); preview.Bind("%Before", Preview); preview.Bind("%After", new Control());
+                Container.Bind("TransformPreview", preview);
+            } else Container.Bind(smith ? "UpgradePreview" : "%Cards", smith ? new NUpgradePreview() : Preview);
+            Container.Bind(single ? "Confirm" : "%PreviewConfirm", Confirm);
+            Container.Bind(single ? "Cancel" : "%PreviewCancel", PreviewBack);
             foreach (var card in Cards.Reverse())
             {
                 var material = new ShaderMaterial();
@@ -124,7 +128,7 @@ internal static partial class Program {
                     Inputs++;
                     if (_selected.Contains(card)) { _selected.Remove(card); Highlight(material, 0); }
                     else { _selected.Add(card); Highlight(material, BitConverter.Int32BitsToSingle(1033476506)); }
-                    if (_selected.Count == (smith ? 1 : 2))
+                    if (_selected.Count == (single ? 1 : 2))
                     {
                         Container.Visible = true; Back.IsEnabled = false;
                         if (smith) Container.GetNodeOrNull<NUpgradePreview>("UpgradePreview")!.Card = card;
@@ -138,8 +142,9 @@ internal static partial class Program {
                 foreach (var h in Grid.CurrentlyDisplayedCardHolders) Highlight((ShaderMaterial)h.CardNode!.CardHighlight.Material!, 0); };
             Back.Clicked = () => { Cancels++; Overlays.Screens.Clear(); Task.SetResult(Array.Empty<CardModel>()); };
             Confirm.Clicked = () => { Commits++; Overlays.Screens.Clear(); Task.SetResult(_selected.ToArray()); };
-            Overlays.Screens.Add(Screen);
-            Choice = new(Screen, Overlays, Cards, () => Context, null, 0, smith ? 1 : 2, smith ? 1 : 2, true, smith);
+            Control[] ancestors = nested ? new Control[] { new MegaCrit.Sts2.Core.Nodes.Screens.NRewardsScreen() } : Array.Empty<Control>();
+            Overlays.Screens.AddRange(ancestors); Overlays.Screens.Add(Screen);
+            Choice = new(Screen, Overlays, Cards, () => Context, null, 0, single ? 1 : 2, single ? 1 : 2, true, smith, ancestors, transform);
         }
         private void Highlight(ShaderMaterial material, float width)
         { if (DelayHighlights) _highlightUpdates.Enqueue(() => material.Width = width); else material.Width = width; }
@@ -154,6 +159,7 @@ internal static partial class Program {
     }
     private static void InteractiveChoiceCases()
     {
+        NestedDeckChoiceCases();
         foreach (bool smith in new[] { false, true }) foreach (bool preview in new[] { false, true })
         {
             var f = new InteractiveChoiceFixture(smith);
@@ -204,6 +210,30 @@ internal static partial class Program {
                 else f.Choice.Read();
             } catch (InvalidOperationException) { rejected = true; }
             Check(rejected && f.Inputs + f.Cancels + f.Commits == 0, "interactive boundary before input: " + mode);
+        }
+    }
+
+    private static void NestedDeckChoiceCases()
+    {
+        foreach (string kind in new[]{"remove","upgrade","transform"}) foreach(string mode in new[]{"complete","ancestor_swap","preview_swap"})
+        {
+            var f=new InteractiveChoiceFixture(smith:kind=="upgrade",transform:kind=="transform",nested:true);
+            f.Ready(); bool rejected=false;
+            if(mode=="ancestor_swap") {
+                f.Overlays.Screens[0]=new MegaCrit.Sts2.Core.Nodes.Screens.NRewardsScreen();
+                try{f.Apply("select",f.Cards[0]);}catch(InvalidOperationException){rejected=true;}
+                Check(rejected&&f.Inputs==0,"nested selector requires the exact ancestor before input: "+kind);continue;
+            }
+            f.Apply("select",f.Cards[0]);f.Ready();
+            if(kind=="remove"){f.Apply("select",f.Cards[1]);f.Ready();}
+            if(mode=="preview_swap") {
+                if(kind=="upgrade")f.Container.GetNodeOrNull<NUpgradePreview>("UpgradePreview")!.Card=f.Cards[2];
+                else ((NPreviewCardHolder)f.Preview.Children[0]).CardNode!.Model=f.Cards[2];
+                try{f.Apply("confirm");}catch(InvalidOperationException){rejected=true;}
+                Check(rejected&&f.Commits==0,"nested selector checks original preview identity: "+kind);continue;
+            }
+            f.Apply("confirm");f.Complete();
+            Check(f.Commits==1&&f.Task.Task.Result.SequenceEqual(f.Cards.Take(kind=="remove"?2:1)),"nested selector completes its exact native task: "+kind);
         }
     }
 

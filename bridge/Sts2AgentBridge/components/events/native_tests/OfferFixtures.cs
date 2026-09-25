@@ -193,4 +193,62 @@ internal static partial class Program {
         }
         foreach(int mode in new[]{0,1,2}){var adapter=new OfferProbe();var session=new GenericEventV7OfferSession(new string('e',32),false,1,adapter);adapter.OnDispose=()=>{try{if(mode==0)session.Read();else if(mode==1)session.Apply("bad","choose:0");else session.Dispose();}catch{}};bool failed=false;try{session.Dispose();}catch{failed=true;}Check(failed,"cleanup reentry failure");}
     }
+    private static void NestedOfferCases()
+    {
+        foreach (bool bundle in new[]{false,true}) foreach (string mode in new[]{"choose","ancestor_swap","early_certificate","retired_ancestors","retiring","foreign_closing","owner_lost"})
+        {
+            using var f=new OfferFixture(bundle);var w=f.World;
+            var ancestor=new MegaCrit.Sts2.Core.Nodes.Screens.NRewardsScreen();w.Overlays.Screens.Add(ancestor);
+            object domain=bundle?f.Offers:f.Offers.Select(o=>o[0]).ToArray();
+            Task? pickup=null;bool owner=true,failed=false;
+            var adapter=new Sts2AgentBridge.Successors.GenericEventV7.Native.GenericEventV7OfferAdapter(w.Player,w.Overlays,
+                ()=>owner&&!failed,()=>pickup,()=>failed=true,domain,f.Offers,bundle,false,new Control[]{ancestor});
+            adapter.EnterScreen(domain);
+            Task request;
+            if(bundle) {
+                var screen=NChooseABundleSelectionScreen.ShowScreen(f.Offers);adapter.BindScreen(screen);
+                async Task<IEnumerable<CardModel>> Request(){return (await screen.CardsSelected()).Single();}
+                request=Request();
+            } else {
+                var screen=NChooseACardSelectionScreen.ShowScreen((IReadOnlyList<CardModel>)domain,false);adapter.BindScreen(screen);
+                async Task<CardModel> Request(){return (await screen.CardsSelected()).Single();}
+                request=Request();
+            }
+            adapter.RequestTask=request;
+            var finish=new TaskCompletionSource();
+            async Task Pickup(){await request;var cards=bundle?((Task<IEnumerable<CardModel>>)request).Result:new[]{((Task<CardModel>)request).Result};foreach(var c in cards)w.Player.Deck.Cards.Add(c);await finish.Task;}
+            pickup=Pickup();
+            Check(adapter.Capture().Phase=="choose","nested offer exposes its actual generated choices");
+            if(mode=="ancestor_swap")w.Overlays.Screens[0]=new MegaCrit.Sts2.Core.Nodes.Screens.NRewardsScreen();
+            bool rejected=false;
+            try{adapter.Dispatch("choose:0");if(bundle)adapter.Dispatch("confirm");}catch(InvalidOperationException){rejected=true;}
+            if(mode=="ancestor_swap") {Check(rejected&&f.Choices==0,"offer ancestor replacement blocks input");adapter.Dispose();continue;}
+            Check(!rejected&&adapter.Capture().Phase=="waiting","offer waits for actual pickup task after selection");
+            if(mode=="early_certificate") {
+                try{adapter.CertifyNativeEffect();}catch(InvalidOperationException){rejected=true;}
+                Check(rejected&&!adapter.EffectCertified,"unfinished pickup cannot earn an effect certificate");adapter.Dispose();continue;
+            }
+            // Model an animation that retains the selected screen after its
+            // result task. Its exact identity must survive outer-first closing.
+            if(mode is "retiring" or "foreign_closing")w.Overlays.Screens.Add(f.Screen);
+            finish.SetResult();adapter.CertifyNativeEffect();
+            Check(adapter.EffectCertified,"actual completed pickup certifies its offered card effects");
+            if(mode=="retired_ancestors")w.Overlays.Screens.Clear();
+            var curse=w.NewCard("LATER_CURSE");w.Player.Deck.Cards.Add(curse);
+            if(mode is "retiring" or "foreign_closing") {
+                w.Overlays.Screens.Remove(ancestor);
+                Check(adapter.Capture().Phase=="waiting","certified offer waits after exact ancestor retires first");
+                if(mode=="foreign_closing") {
+                    w.Overlays.Screens[0]=new Control();
+                    Check(adapter.Capture().Phase=="unsupported","certificate cannot adopt a replacement closing screen");
+                    adapter.Dispose();continue;
+                }
+                w.Overlays.Screens.Remove(f.Screen);
+            }
+            if(mode=="owner_lost")owner=false;
+            Check(adapter.Capture().Phase==(mode=="owner_lost"?"unsupported":"complete"),"certified offer retains owner while ancestor may retire: "+mode);
+            adapter.Dispose();
+        }
+    }
+
 }

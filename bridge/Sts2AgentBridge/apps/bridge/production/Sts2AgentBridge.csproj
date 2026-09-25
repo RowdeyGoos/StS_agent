@@ -6,6 +6,7 @@
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedOverlayPrefix.cs" />
     <Compile Include="../../../components/items/native/PinnedPotionCapacity.cs" />
     <Compile Include="../../../components/items/native/PinnedAutomaticRelicEffects.cs" />
     <Compile Include="../../../components/items/native/PinnedRewardAlternatives.cs" />

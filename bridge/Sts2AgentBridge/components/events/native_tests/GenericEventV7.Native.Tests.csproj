@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup><TargetFramework>net9.0</TargetFramework><AssemblyName>GenericEventV7.Native.Tests</AssemblyName><OutputType>Exe</OutputType><EnableDefaultCompileItems>false</EnableDefaultCompileItems><DefineConstants>$(DefineConstants);TERMINAL_REWARD_TESTS</DefineConstants></PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedOverlayPrefix.cs" />
     <Compile Include="MerchantScreenFixtures.cs" />
     <Compile Include="MerchantScreenStubs.cs" />
     <Compile Include="ShopPickupStubs.cs" />

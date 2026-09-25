@@ -54,14 +54,17 @@ public sealed class PinnedPublicRewardDecisionReader : IPublicRewardDecisionRead
     private static readonly FieldInfo? TerminalScreen = typeof(NRewardsScreen).GetField("_isTerminal", BindingFlags.Instance | BindingFlags.NonPublic);
 
     private readonly Func<bool>? _nestedScope;
+    private readonly Func<bool>? _nestedCompletionScope;
     private readonly NRewardsScreen? _nestedScreen;
     private readonly Func<bool>? _nestedClosed;
     private readonly int _nestedDepth = 2;
     public PinnedPublicRewardDecisionReader(int maximumSessions = PublicRewardActionBudget.MaximumRewardSessionsPerProcess) { _session=new(maximumSessions); }
-    internal PinnedPublicRewardDecisionReader(NRewardsScreen screen,Func<bool> scope,Func<bool> closed,int overlayDepth = 2) : this()
+    internal PinnedPublicRewardDecisionReader(NRewardsScreen screen,Func<bool> scope,Func<bool> closed,int overlayDepth = 2,
+        Func<bool>? completionScope = null) : this()
     {
-        if (overlayDepth is < 1 or > 2) throw new ArgumentOutOfRangeException(nameof(overlayDepth));
+        if (overlayDepth is < 1 or > 5) throw new ArgumentOutOfRangeException(nameof(overlayDepth));
         _nestedDepth=overlayDepth;_nestedScreen=screen;_nestedScope=scope;_nestedClosed=closed;_session.ForceRewardOrdinals=true;
+        _nestedCompletionScope=completionScope;
     }
     internal PinnedPublicRewardInteractionSession InteractionSession => _session;
     internal Func<Player,IPinnedRewardInventory>? InventoryFactory {get;set;}
@@ -239,6 +242,31 @@ public sealed class PinnedPublicRewardDecisionReader : IPublicRewardDecisionRead
 
     // Offer completion can free the screen/buttons before the next read. The
     // owned nested caller verifies its collection Task; use retained effect data.
+    // Compound owners also call this before the native synchronizer completes
+    // their exact set. SetResult may resume a parent that immediately mutates
+    // inventory. This certifies effects only, never the still-running collection
+    // Task or native overlay cleanup; those remain the enclosing owner's duty.
+    internal PublicRewardDecisionSnapshot CertifyNativeCompletion()
+    {
+        if (_cleanupAttempted || _nestedScreen is null || (_nestedCompletionScope ?? _nestedScope)?.Invoke() != true ||
+            _session.IsUnsupported || _session.Player is null ||
+            !_session.SettledItemsValid(_alternatives?.CertifiedCapacity ?? -1) ||
+            _inventory is not null && !_inventory.Valid(_session.Pending))
+            return FailClosed();
+        if (_session.Pending is { Kind: PublicRewardActionKind.Sacrifice } alternate)
+        {
+            if (_alternatives is null || !_alternatives.Poll()) return FailClosed();
+            if (_alternatives.CertifiedCapacity >= 0) _session.AcceptCapacity(_alternatives.CertifiedCapacity);
+            _session.ResolveChoice(ProjectPlayer(_session.Player));
+            _alternatives.Dispose(); _alternatives = null;
+        }
+        else if (_session.Pending is {} pending) ReconcileNestedClosed(pending);
+        else return FailClosed();
+        if (_session.IsUnsupported || _session.Pending is not null) return FailClosed();
+        var result = PublicRewardDecisionSnapshot.Complete(ProjectPlayer(_session.Player), _session.DecisionRevision);
+        _inventory = null;
+        return result;
+    }
     private void ReconcileNestedClosed(PinnedPublicRewardPendingMutation pending) {
         var target=pending.ParentTarget;var player=_session.Player;
         if(target is null||player is null){FailClosed();return;}

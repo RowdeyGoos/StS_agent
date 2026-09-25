@@ -8,6 +8,7 @@
     <DefineConstants>GENERIC_EVENT_RELEASE_TEST_SEAM</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedOverlayPrefix.cs" />
     <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicCombatDecision.cs" />
     <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicRewardDecision.cs" />
     <Compile Include="../../../src/Sts2AgentBridge/Core/Public/PublicRewardAction.cs" />

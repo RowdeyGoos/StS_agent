@@ -13,6 +13,7 @@
     <Error Condition="'$(STS2GameDataDir)' != '' and !Exists('$(STS2GameDataDir)/GodotSharp.dll')" Text="Pinned GodotSharp.dll is missing." />
   </Target>
   <ItemGroup>
+    <Compile Include="../../../../src/Sts2AgentBridge/Adapters/Public/PinnedOverlayPrefix.cs" />
     <Compile Include="PinnedShopV1NativeAdapter.cs" />
     <Compile Include="ShopPotionOwnership.cs" />
     <Compile Include="ShopRelicRules.cs" />

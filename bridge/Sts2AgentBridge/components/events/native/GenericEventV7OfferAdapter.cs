@@ -5,6 +5,9 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Godot;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Entities.Players;
+using MegaCrit.Sts2.Core.Nodes.Screens.Overlays;
+using Sts2AgentBridge.Adapters.Public;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
 using MegaCrit.Sts2.Core.Nodes.CommonUi;
@@ -13,8 +16,14 @@ using Sts2AgentBridge.Successors.CardSelectionV1;
 namespace Sts2AgentBridge.Successors.GenericEventV7.Native;
 
 // Owns one native request and its exact generated models. No reward-set owner is fabricated.
-internal sealed class GenericEventV7OfferAdapter:IGenericEventV7OfferAdapter {
-    internal readonly GenericEventV7Binding Binding;
+internal sealed class GenericEventV7OfferAdapter:IGenericEventV7OfferAdapter,IPinnedClosingOverlay {
+    private readonly Player _player;
+    private readonly object _run;
+    private readonly Func<bool> _owner;
+    private readonly Func<Task?> _parentTask;
+    private readonly Action _fail;
+    private readonly PinnedOverlayPrefix _ancestors;
+    private GenericEventV7OfferCapture? _effectCertificate;
     internal readonly bool Bundle,CanSkip;
     internal readonly object DomainIdentity;
     private readonly IReadOnlyList<CardModel>[] _lists;
@@ -37,11 +46,24 @@ internal sealed class GenericEventV7OfferAdapter:IGenericEventV7OfferAdapter {
     private int? _selected;private bool _confirmed,_disposed,_skipped;
     private int _added;
     internal int Count=>_models.Length;
+    public bool EffectCertified => _effectCertificate is not null && !_disposed;
+    public bool ClosingOwnerValid => !_disposed && _owner() && !TaskFailed(_parentTask()) && !TaskFailed(RequestTask) && !TaskFailed(_selectorTask);
+    public PinnedOverlayPrefix Ancestors => _ancestors;
+    public IReadOnlyList<Control> ClosingScreens => Screen is null ? Array.Empty<Control>() : new Control[] { Screen };
     internal IReadOnlyList<CardModel> PublicOffer(int index)
     { Domain(); Require(index >= 0 && index < Count && Screen is not null && Screen.IsVisibleInTree()); return Array.AsReadOnly(_models[index]); }
-    internal GenericEventV7OfferAdapter(GenericEventV7Binding binding,object identity,IReadOnlyList<CardModel>[] offers,bool bundle,bool canSkip=false) {
-        Binding=binding;DomainIdentity=identity;Bundle=bundle;CanSkip=canSkip;_lists=offers;_models=offers.Select(o=>o.ToArray()).ToArray();
-        _deck=GenericEventV7Binding.CopyDeck(binding.Player);
+    internal GenericEventV7OfferAdapter(GenericEventV7Binding binding,object identity,IReadOnlyList<CardModel>[] offers,bool bundle,bool canSkip=false)
+        : this(binding.Player, binding.Overlays,
+            () => !binding.Failed && !binding.Closed && GenericEventV7Hooks.Owns(binding) && binding.ContextValid(false),
+            () => binding.ChosenTask, () => binding.Failed = true, identity, offers, bundle, canSkip) { }
+    // The same controls/results can belong to a real relic pickup task. Its
+    // event owner and ancestor screens remain with the enclosing compound owner.
+    internal GenericEventV7OfferAdapter(Player player, NOverlayStack overlays, Func<bool> owner,
+        Func<Task?> parentTask, Action fail, object identity, IReadOnlyList<CardModel>[] offers,
+        bool bundle, bool canSkip, IReadOnlyList<Control>? ancestors = null) {
+        _player=player;_run=player.RunState;_owner=owner;_parentTask=parentTask;_fail=fail;_ancestors=new(overlays,ancestors);
+        DomainIdentity=identity;Bundle=bundle;CanSkip=canSkip;_lists=offers;_models=offers.Select(o=>o.ToArray()).ToArray();
+        _deck=GenericEventV7Binding.CopyDeck(player);
         if(bundle&&canSkip||Count<1||Count>(bundle?5:3)||_models.Any(o=>o.Length<1||o.Length>(bundle?8:1))||_deck.Length+_models.Max(o=>o.Length)+(canSkip?1:0)>512)throw new InvalidOperationException("Offer bounds.");
         var all=_models.SelectMany(o=>o).ToArray();
         if(all.Distinct(ReferenceEqualityComparer.Instance).Count()!=all.Length||all.Any(c=>c is null||_deck.Any(d=>ReferenceEquals(d.ModelIdentity,c))))throw new InvalidOperationException("Ambiguous offers.");
@@ -52,16 +74,16 @@ internal sealed class GenericEventV7OfferAdapter:IGenericEventV7OfferAdapter {
     private static object? Field(object target,string name)=>target.GetType().GetField(name,BindingFlags.Instance|BindingFlags.NonPublic)?.GetValue(target);
     private static bool Valid(GodotObject? value)=>value is not null&&GodotObject.IsInstanceValid(value);
     private static bool Exact<T>(T? value)where T:GodotObject=>Valid(value)&&value!.GetType()==typeof(T);
-    private void Require(bool value){if(!value){Binding.Failed=true;throw new InvalidOperationException("Unowned card offer.");}}
+    private void Require([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)] bool value){if(!value){_fail();throw new InvalidOperationException("Unowned card offer.");}}
     private static bool Same(CardSelectionV1DeckCard a,CardSelectionV1DeckCard b)=>ReferenceEquals(a.ModelIdentity,b.ModelIdentity)&&a.StableKey==b.StableKey&&a.UpgradeLevel==b.UpgradeLevel&&CardSelectionV1Enchantment.Same(a.Enchantment,b.Enchantment);
     private void Domain() {
-        Require(!_disposed&&!Binding.Failed&&!Binding.Closed&&GenericEventV7Hooks.Owns(Binding)&&Binding.ContextValid(false));
+        Require(!_disposed&&_owner()&&ReferenceEquals(_player.RunState,_run));
         if(Bundle)Require(DomainIdentity is IReadOnlyList<IReadOnlyList<CardModel>> list&&list.Count==Count&&_lists.Where((o,i)=>!ReferenceEquals(o,list[i])).Any()==false);
         if(!Bundle)Require(DomainIdentity is IReadOnlyList<CardModel> flat&&flat.Count==Count&&!flat.Where((c,i)=>!ReferenceEquals(c,_models[i][0])).Any());
         for(int i=0;i<Count;i++) {
             Require(_lists[i].Count==_models[i].Length);
             for(int j=0;j<_models[i].Length;j++) {
-                var c=_models[i][j];Require(ReferenceEquals(_lists[i][j],c)&&ReferenceEquals(c.Owner,Binding.Player)&&ReferenceEquals(c.RunState,Binding.RunState)&&
+                var c=_models[i][j];Require(ReferenceEquals(_lists[i][j],c)&&ReferenceEquals(c.Owner,_player)&&ReferenceEquals(c.RunState,_run)&&
                     GenericEventV7ItemState.ValidKey(c.Id.Entry)&&c.CurrentUpgradeLevel>=0&&Same(_cards[i][j],new(c,c.Id.Entry,c.CurrentUpgradeLevel,GenericEventV7Binding.CopyEnchantment(c))));
             }
         }
@@ -121,12 +143,12 @@ internal sealed class GenericEventV7OfferAdapter:IGenericEventV7OfferAdapter {
         return true;
     }
     private bool Deck(bool complete) {
-        var current=GenericEventV7Binding.CopyDeck(Binding.Player);var chosen=_selected is {} i?_cards[i]:Array.Empty<CardSelectionV1DeckCard>();
+        var current=GenericEventV7Binding.CopyDeck(_player);var chosen=_selected is {} i?_cards[i]:Array.Empty<CardSelectionV1DeckCard>();
         int added=current.Length-_deck.Length;Require(added>=_added&&added>=0&&added<=chosen.Length+(CanSkip?1:0)&&((_selected is not null||_skipped)&&(!Bundle||_confirmed)||added==0));
-        for(int j=0;j<_deck.Length;j++)Require(Same(current[j],_deck[j])&&current[j].ModelIdentity is CardModel model&&ReferenceEquals(model.Owner,Binding.Player)&&ReferenceEquals(model.RunState,Binding.RunState));
+        for(int j=0;j<_deck.Length;j++)Require(Same(current[j],_deck[j])&&current[j].ModelIdentity is CardModel model&&ReferenceEquals(model.Owner,_player)&&ReferenceEquals(model.RunState,_run));
         for(int j=0;j<Math.Min(added,chosen.Length);j++)Require(Same(current[_deck.Length+j],chosen[j]));
         if(added>chosen.Length) {
-            var extra=current[^1];Require(extra.ModelIdentity is CardModel model&&ReferenceEquals(model.Owner,Binding.Player)&&ReferenceEquals(model.RunState,Binding.RunState)&&
+            var extra=current[^1];Require(extra.ModelIdentity is CardModel model&&ReferenceEquals(model.Owner,_player)&&ReferenceEquals(model.RunState,_run)&&
                 GenericEventV7ItemState.ValidKey(extra.StableKey)&&extra.UpgradeLevel>=0&&!_models.SelectMany(o=>o).Any(c=>ReferenceEquals(c,extra.ModelIdentity))&&
                 !_deck.Any(c=>ReferenceEquals(c.ModelIdentity,extra.ModelIdentity)));
             if(_additional is not null)Require(Same(_additional,extra));_additional=extra;
@@ -134,15 +156,27 @@ internal sealed class GenericEventV7OfferAdapter:IGenericEventV7OfferAdapter {
         _added=added;return !complete||added>=chosen.Length;
     }
     private bool TaskFailed(Task? task)=>task?.IsFaulted==true||task?.IsCanceled==true;
-    public GenericEventV7OfferCapture Capture() {
+    public GenericEventV7OfferCapture Capture() => Capture(false);
+    internal void CertifyNativeEffect() {
+        Require(_effectCertificate is null);
+        var capture = Capture(true);
+        Require(capture.Phase == "complete");
+        _effectCertificate = capture;
+    }
+    private GenericEventV7OfferCapture Capture(bool certifying) {
         try {
-            Domain();Require(!TaskFailed(RequestTask)&&!TaskFailed(Binding.ChosenTask)&&!TaskFailed(_selectorTask));
+            Require(!_disposed && _owner());
+            if (_effectCertificate is {} certificate) {
+                Require(Screen is not null && _ancestors.Retiring(Screen,Array.Empty<IPinnedClosingOverlay>()));
+                return _ancestors.Closed(Screen) ? certificate : new("waiting",Array.Empty<GenericEventV7Offer>());
+            }
+            Domain();Require(!TaskFailed(RequestTask)&&!TaskFailed(_parentTask())&&!TaskFailed(_selectorTask));
             Deck(false);
             if(Screen is null){Require(RequestTask?.IsCompleted!=true);return new("waiting",Array.Empty<GenericEventV7Offer>());}
             bool submitting=(_selected is not null||_skipped)&&(!Bundle||_confirmed);
             if(submitting) {
-                Require(Binding.Overlays.ScreenCount==0||Binding.Overlays.ScreenCount==1&&ReferenceEquals(Binding.Overlays.Peek(),Screen));
-                if(RequestTask?.IsCompletedSuccessfully!=true||Binding.ChosenTask?.IsCompletedSuccessfully!=true||_selectorTask?.IsCompletedSuccessfully!=true)return new("waiting",Array.Empty<GenericEventV7Offer>());
+                Require(_ancestors.Bare||_ancestors.Matches(Screen));
+                if(RequestTask?.IsCompletedSuccessfully!=true||_parentTask()?.IsCompletedSuccessfully!=true||_selectorTask?.IsCompletedSuccessfully!=true)return new("waiting",Array.Empty<GenericEventV7Offer>());
                 var chosen=_selected is {} selected?_models[selected]:Array.Empty<CardModel>();
                 if(Bundle) {
                     var result=((Task<IEnumerable<IReadOnlyList<CardModel>>>)_selectorTask).Result.Take(2).ToArray();Require(result.Length==1&&ReferenceEquals(result[0],_lists[_selected!.Value]));
@@ -150,9 +184,9 @@ internal sealed class GenericEventV7OfferAdapter:IGenericEventV7OfferAdapter {
                 }else {
                     var result=((Task<IEnumerable<CardModel>>)_selectorTask).Result.Take(2).ToArray();Require(_skipped?result.Length==0&&((Task<CardModel>)RequestTask).Result is null:result.Length==1&&ReferenceEquals(result[0],chosen[0])&&ReferenceEquals(((Task<CardModel>)RequestTask).Result,chosen[0]));
                 }
-                Require(Binding.Overlays.ScreenCount==0&&Deck(true));return new("complete",Array.Empty<GenericEventV7Offer>(),_additional is {} extra?new[]{new GenericEventV7RewardCard(0,extra.StableKey,extra.UpgradeLevel)}:Array.Empty<GenericEventV7RewardCard>());
+                Require((certifying||_ancestors.Bare)&&Deck(true));return new("complete",Array.Empty<GenericEventV7Offer>(),_additional is {} extra?new[]{new GenericEventV7RewardCard(0,extra.StableKey,extra.UpgradeLevel)}:Array.Empty<GenericEventV7RewardCard>());
             }
-            Require(Binding.Overlays.ScreenCount==1&&ReferenceEquals(Binding.Overlays.Peek(),Screen)&&RequestTask?.IsCompleted!=true);
+            Require(_ancestors.Matches(Screen)&&RequestTask?.IsCompleted!=true);
             if(!Controls())return new("waiting",Array.Empty<GenericEventV7Offer>());
             Require(_selectorTask?.IsCompleted==false);
             if(Bundle&&_selected is {} index) {
@@ -168,7 +202,7 @@ internal sealed class GenericEventV7OfferAdapter:IGenericEventV7OfferAdapter {
             }
             if(Bundle)Require(!_preview!.Visible&&_row!.Visible&&Field(Screen,"_selectedBundle") is null);
             return new("choose",_public);
-        }catch{Binding.Failed=true;return new("unsupported",Array.Empty<GenericEventV7Offer>());}
+        }catch{_fail();return new("unsupported",Array.Empty<GenericEventV7Offer>());}
     }
     public void Dispatch(string action) {
         var capture=Capture();

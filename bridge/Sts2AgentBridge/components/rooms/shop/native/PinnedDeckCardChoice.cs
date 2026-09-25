@@ -12,6 +12,7 @@ using MegaCrit.Sts2.Core.Nodes.Screens.CardSelection;
 using MegaCrit.Sts2.Core.Nodes.Screens.Overlays;
 using MegaCrit.Sts2.Core.Nodes.Screens.ScreenContext;
 using Sts2AgentBridge.Successors.CardSelectionV1.Native;
+using Sts2AgentBridge.Adapters.Public;
 
 namespace Sts2AgentBridge.Successors.RoomFlowsV1.Shop.Native;
 
@@ -25,11 +26,12 @@ internal sealed class PinnedDeckCardChoice
 {
     private readonly Control _screen;
     private readonly NOverlayStack _overlays;
+    private readonly PinnedOverlayPrefix _ancestors;
     private readonly CardModel[] _domain;
     private readonly Func<bool> _context;
     private readonly EnchantmentModel? _enchantment;
     private readonly int _amount, _minimum, _maximum;
-    private readonly bool _interactive, _cancelable, _upgrade;
+    private readonly bool _interactive, _cancelable, _upgrade, _transform;
     private readonly Task<IEnumerable<CardModel>> _selection;
     private NCardGrid? _grid;
     private NGridCardHolder[]? _holders;
@@ -50,7 +52,7 @@ internal sealed class PinnedDeckCardChoice
     internal bool CancellationDispatched => _cancelled;
     internal bool Cancelled => Completed && _cancelled;
     internal CardModel[] Selected => _selected.ToArray();
-    internal bool OwnsForeground => !_failed && Valid(_screen) && _overlays.ScreenCount == 1 && ReferenceEquals(_overlays.Peek(), _screen) &&
+    internal bool OwnsForeground => !_failed && Valid(_screen) && _ancestors.Matches(_screen) && ReferenceEquals(_overlays.Peek(), _screen) &&
         (!_interactive || ReferenceEquals(ActiveScreenContext.Instance.GetCurrentScreen(), _screen));
 
     // Retained legacy controller: its caller explicitly precommits the targets.
@@ -63,26 +65,30 @@ internal sealed class PinnedDeckCardChoice
     }
 
     internal PinnedDeckCardChoice(Control screen, NOverlayStack overlays, IReadOnlyList<CardModel> domain,
-        Func<bool> context, EnchantmentModel? enchantment, int amount, int minimum, int maximum, bool cancelable, bool upgrade = false)
-        : this(screen, overlays, domain, context, enchantment, amount, minimum, maximum, cancelable, true, upgrade) { }
+        Func<bool> context, EnchantmentModel? enchantment, int amount, int minimum, int maximum, bool cancelable, bool upgrade = false,
+        IReadOnlyList<Control>? ancestors = null, bool transform = false)
+        : this(screen, overlays, domain, context, enchantment, amount, minimum, maximum, cancelable, true, upgrade, ancestors, transform) { }
 
     private PinnedDeckCardChoice(Control screen, NOverlayStack overlays, IReadOnlyList<CardModel> domain,
-        Func<bool> context, EnchantmentModel? enchantment, int amount, int minimum, int maximum, bool cancelable, bool interactive, bool upgrade = false)
+        Func<bool> context, EnchantmentModel? enchantment, int amount, int minimum, int maximum, bool cancelable, bool interactive, bool upgrade = false,
+        IReadOnlyList<Control>? ancestors = null, bool transform = false)
     {
         _screen = screen; _overlays = overlays; _domain = domain.ToArray(); _context = context;
+        _ancestors = new(overlays, ancestors);
         _enchantment = enchantment; _amount = amount; _minimum = minimum; _maximum = maximum;
-        _cancelable = cancelable; _interactive = interactive; _upgrade = upgrade;
-        Require(screen.GetType() == (upgrade ? typeof(NDeckUpgradeSelectScreen) : enchantment is null ? typeof(NDeckCardSelectScreen) : typeof(NDeckEnchantSelectScreen)));
+        _cancelable = cancelable; _interactive = interactive; _upgrade = upgrade; _transform = transform;
+        Require(!transform || !upgrade && enchantment is null);
+        Require(screen.GetType() == (transform ? typeof(NDeckTransformSelectScreen) : upgrade ? typeof(NDeckUpgradeSelectScreen) : enchantment is null ? typeof(NDeckCardSelectScreen) : typeof(NDeckEnchantSelectScreen)));
         _selection = (Task<IEnumerable<CardModel>>)screen.GetType().GetMethod("CardsSelected", Type.EmptyTypes)!.Invoke(screen, null)!;
         Require(!_selection.IsCompleted && _domain.Length is >= 1 and <= 64 && _domain.Distinct(ReferenceEqualityComparer.Instance).Count() == _domain.Length &&
             minimum >= 0 && minimum <= maximum && maximum is >= 1 and <= 3 && (!upgrade || maximum == 1));
     }
 
     private string Container => _upgrade ? "%UpgradeSinglePreviewContainer" : _enchantment is null ? "%PreviewContainer" : _maximum == 1 ? "%EnchantSinglePreviewContainer" : "%EnchantMultiPreviewContainer";
-    private string Preview => _upgrade ? "UpgradePreview" : _enchantment is not null && _maximum == 1 ? "EnchantPreview" : _enchantment is null ? "%Cards" : "Cards";
-    private string Confirm => !_upgrade && _enchantment is null ? "%PreviewConfirm" : "Confirm";
-    private string OpenPreview => _enchantment is null ? "%Confirm" : "Confirm";
-    private string PreviewBack => !_upgrade && _enchantment is null ? "%PreviewCancel" : "Cancel";
+    private string Preview => _transform ? "TransformPreview" : _upgrade ? "UpgradePreview" : _enchantment is not null && _maximum == 1 ? "EnchantPreview" : _enchantment is null ? "%Cards" : "Cards";
+    private string Confirm => !_upgrade && !_transform && _enchantment is null ? "%PreviewConfirm" : "Confirm";
+    private string OpenPreview => !_transform && _enchantment is null ? "%Confirm" : "Confirm";
+    private string PreviewBack => !_upgrade && !_transform && _enchantment is null ? "%PreviewCancel" : "Cancel";
 
     internal void Advance() => Read();
 
@@ -233,7 +239,17 @@ internal sealed class PinnedDeckCardChoice
     private void CheckPreview()
     {
         var bindings = new List<object>();
-        if (_upgrade)
+        if (_transform)
+        {
+            Require(_preview is NTransformPreview);
+            var before = _preview!.GetNodeOrNull<Control>("%Before");
+            var after = _preview.GetNodeOrNull<Control>("%After");
+            Require(Valid(before) && Valid(after));
+            var originals = before!.GetChildren().Select(n => CheckHolder(n, bindings)).ToArray();
+            Require(originals.Length == _selected.Length && SameSet(originals, _selected));
+            bindings.Add(before); bindings.Add(after!);
+        }
+        else if (_upgrade)
         {
             Require(_selected.Length == 1 && _preview is NUpgradePreview p && ReferenceEquals(p.Card, _selected[0]));
             bindings.Add(_selected[0]);

@@ -214,6 +214,18 @@ the curse before another host read. Reusing the existing controllers under their
 actual pickup task comes before removing the guard. Ordinary shared rewards do
 not establish this compound caller or arbitrary nested effects.
 
+Shared-controller groundwork is now implemented in source: exact ancestor overlay
+bindings for deck choices and card offers, transform-preview input, and reward-effect
+certification before native completion resumes an outer callback. Certified frames
+retain their exact closing screens independently of foreground input authority.
+Regressions cover delayed callbacks, parent-first overlay retirement, retained card
+menus and replacement-screen rejection. Focused reward checks passed in 8.286 s;
+the full native fixture, direct-input fixture and offer integration selection passed
+eight check groups in 143.349 s. Independent semantic review found no remaining
+blocker after the closing-order corrections. This is unshipped groundwork, not
+Neow's Bones support; the compound owner and its native effect/task bindings remain
+to be connected before the parent guard can be removed.
+
 ### Contract limits without a confirmed missing gameplay caller
 
 These are **not an implementation queue or required live-test checklist**:
