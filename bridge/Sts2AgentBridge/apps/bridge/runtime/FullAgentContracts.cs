@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Sts2AgentBridge.Successors.GenericEventReleaseV5;
 
 namespace Sts2AgentBridge.Unified;
 
@@ -27,7 +28,11 @@ internal static class FullAgentWire
     {
         try
         {
-            if (reply.Terminal) throw new AgentUnsupported();
+            if (reply.Terminal)
+            {
+                if (reply.EventDiagnostic) throw FullReadFailure.NativeEvent(reply.Diagnostic);
+                throw new AgentUnsupported();
+            }
             // Parse(byte[]) retains that memory. Stream parsing gives the
             // document its own storage before the response buffer is wiped.
             using var input = new MemoryStream(reply.Body, writable: false);
@@ -43,6 +48,31 @@ internal enum FullReadStage { Native, Run, Deck, Relics, Potions, Map, Context, 
 internal sealed class FullReadFailure : Exception
 {
     internal string Code { get; }
+    private FullReadFailure(string code) => Code = code;
+    internal static FullReadFailure NativeEvent(GenericEventDiagnosticCode diagnostic)
+    {
+        // Only fixed failure/ownership categories cross the shared boundary.
+        // Never inspect the failed response body or expose exception messages.
+        var bounded = diagnostic switch {
+            GenericEventDiagnosticCode.NotCaptured or GenericEventDiagnosticCode.ParentReady or
+            GenericEventDiagnosticCode.ParentUnavailable or GenericEventDiagnosticCode.ParentWaiting or
+            GenericEventDiagnosticCode.ParentMap or GenericEventDiagnosticCode.ParentOverlay or
+            GenericEventDiagnosticCode.ParentLayout or GenericEventDiagnosticCode.ParentTravel or
+            GenericEventDiagnosticCode.ChildReady or GenericEventDiagnosticCode.MapReady or
+            GenericEventDiagnosticCode.CaptureDisposed or GenericEventDiagnosticCode.CaptureException or
+            GenericEventDiagnosticCode.PendingBindingFailed or GenericEventDiagnosticCode.PendingOwnership or
+            GenericEventDiagnosticCode.PendingContext or GenericEventDiagnosticCode.PendingTaskFailed or
+            GenericEventDiagnosticCode.PendingChosenEntry or GenericEventDiagnosticCode.PendingChosenTask or
+            GenericEventDiagnosticCode.PendingChosenCompletion or GenericEventDiagnosticCode.PendingRequestTask or
+            GenericEventDiagnosticCode.PendingScreen or GenericEventDiagnosticCode.PendingSelectorlessRequest or
+            GenericEventDiagnosticCode.PendingOverlay or GenericEventDiagnosticCode.PendingDeck or
+            GenericEventDiagnosticCode.PendingOffers or GenericEventDiagnosticCode.PendingProceed or
+            GenericEventDiagnosticCode.PendingOwnerBinding or GenericEventDiagnosticCode.PendingOwnerHooks or
+            GenericEventDiagnosticCode.PendingOwnerThread or GenericEventDiagnosticCode.PendingOwnerPatches => diagnostic,
+            _ => GenericEventDiagnosticCode.DiagnosticUnavailable
+        };
+        return new("read_native_event_" + GenericEventDiagnosticCodec.Encode(bounded));
+    }
     private FullReadFailure(FullReadStage stage) => Code = stage switch {
         FullReadStage.Native => "read_native_failed", FullReadStage.Run => "read_run_failed",
         FullReadStage.Deck => "read_deck_failed", FullReadStage.Relics => "read_relics_failed",

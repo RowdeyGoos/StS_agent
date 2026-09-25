@@ -228,7 +228,7 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
         if(!SupportedLayout(layout)||!layout!.IsVisibleInTree()) {diagnostic=_pending is null?GenericEventDiagnosticCode.ParentUnavailable:GenericEventDiagnosticCode.ParentWaiting;return _pending is null?Fixed("unsupported"):Fixed("waiting");}
         var options=new List<GenericEventV7NativeOption>(); EventModel? model=null;Player? player=null;
         if(layout is NAncientEventLayout ancient) {
-            if(map!.IsTravelEnabled)return Fixed("unsupported");
+            if(map!.IsTravelEnabled){diagnostic=GenericEventDiagnosticCode.ParentTravel;return Fixed("unsupported");}
             var frame=DialogueBinding.Capture(ancient);model=frame.Model;player=model.Owner;
             if(player is null||!BindWorld(run!,room,map!,overlays!,layout,model,player))return Fixed("unsupported");
             if(_pendingDialogue is {} pending) {

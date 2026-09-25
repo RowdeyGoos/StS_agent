@@ -16,6 +16,12 @@ internal static partial class Program
     }
     private static void OptionalEventTests()
     {
+        using(var f=new RewardFixture("ANCIENT_TRAVEL",0,15,15,manual:true,eventModel:new MegaCrit.Sts2.Core.Models.AncientEventModel())) {
+            var layout=AncientLayout(f.Room,f.Model);f.Map.IsTravelEnabled=true;
+            Check(f.Session.Read().Status=="unsupported"&&f.Adapter.LastDiagnostic.ToString()=="ParentTravel",
+                "ancient entry reports retained travel flag before input");
+            Check(layout.Advances==0&&f.OptionCalls==0,"ancient travel rejection never advances or chooses");
+        }
         foreach(int count in new[]{0,1,7,15}) {
             using var f=new RewardFixture("SEA_GLASS",0,15,15,manual:true,eventModel:new MegaCrit.Sts2.Core.Models.AncientEventModel());
             var layout=AncientLayout(f.Room,f.Model);

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Sts2AgentBridge.Unified;
+using Sts2AgentBridge.Successors.GenericEventReleaseV5;
 using static Sts2AgentBridge.Unified.FullPublicGraph;
 
 internal static class FullAgentSessionTests
@@ -104,6 +105,40 @@ internal static class FullAgentSessionTests
             Read(session);
             session.Handle(new(Capability.Core, FullAgentRoutes.Action, true, 0, 0, new string('a', 64), "action:0"));
             check(backend.Reads == reads && backend.Posts == 0, "read failure remains stopped " + stage);
+        }
+        foreach (var diagnostic in new[] { GenericEventDiagnosticCode.ParentTravel,
+            GenericEventDiagnosticCode.CaptureException, (GenericEventDiagnosticCode)999 })
+        {
+            byte[] body = "{\"private\":\"native sentinel must not escape\"}"u8.ToArray();
+            var backend = new Backend(); using var session = new FullAgentSession(backend, "fixture");
+            backend.Change = _ => FullReadFailure.At(FullReadStage.Context, () =>
+                FullReadFailure.At(FullReadStage.Native, () => FullAgentWire.Read(
+                    new(body, Terminal: true, Diagnostic: diagnostic, EventDiagnostic: true))));
+            var stopped = Read(session);
+            string expected = diagnostic == GenericEventDiagnosticCode.ParentTravel ? "parent_travel" :
+                diagnostic == GenericEventDiagnosticCode.CaptureException ? "capture_exception" : "diagnostic_unavailable";
+            check(stopped["code"]!.GetValue<string>() == "read_native_event_" + expected,
+                "nested native event diagnostic survives shared read boundary " + diagnostic);
+            check(body.All(b => b == 0) && !stopped.ToJsonString().Contains("sentinel") &&
+                stopped["attempted"]!.GetValue<int>() == 0 && backend.Posts == 0,
+                "event failure retains no body data and dispatches no action");
+            int reads = backend.Reads;
+            Read(session);
+            session.Handle(new(Capability.Core, FullAgentRoutes.Action, true, 0, 0, new string('a', 64), "action:0"));
+            check(backend.Reads == reads && backend.Posts == 0, "event diagnostic never permits retry");
+        }
+        {
+            var backend = new Backend(); var session = new FullAgentSession(backend, "fixture");
+            Apply(session, Read(session));
+            backend.Change = _ => FullReadFailure.At(FullReadStage.Native, () => FullAgentWire.Read(
+                new("{}"u8.ToArray(), Terminal: true, Diagnostic: GenericEventDiagnosticCode.PendingOwnerHooks, EventDiagnostic: true)));
+            var stopped = Read(session);
+            check(stopped["code"]!.GetValue<string>() == "read_native_event_pending_owner_hooks" &&
+                stopped["attempted"]!.GetValue<int>() == 1 && stopped["accepted"]!.GetValue<int>() == 1 &&
+                stopped["reconciled"]!.GetValue<int>() == 0 && stopped["pending"]!.GetValue<int>() == 1,
+                "event diagnostic preserves unresolved accepted action counts");
+            bool rejected = false; try { session.Dispose(); } catch { rejected = true; }
+            check(rejected && backend.Posts == 1,"event diagnostic cannot turn failed cleanup into a clean handoff");
         }
         foreach (string reference in new[] { "card:0", "option:2047", "cell:120", "private:0", "card:", "card:-1", "card:1\n", "card:1:2", "card:１" })
         {

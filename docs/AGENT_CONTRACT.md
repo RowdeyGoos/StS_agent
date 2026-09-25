@@ -507,6 +507,10 @@ Failed observations retain a closed read-stage category: native owner, run, deck
 relics, potions, map, context or graph validation. The host preserves the category
 and validated action counts, including pending actions, then stops. Unknown codes
 remain `native_failure`; exception messages and native data are never reported.
+Terminal event reads additionally preserve the existing bounded ownership or
+capture reason as `read_native_event_*`; unmapped event reasons become
+`read_native_event_diagnostic_unavailable`. This refines failure reporting without
+changing action semantics, response fields, counts, or the stopped state.
 
 The transport admits up to 2 MiB only on these two routes, at most 2,048 candidate
 slots, 8,192 action attempts and 131,072 reads. Existing controller limits also

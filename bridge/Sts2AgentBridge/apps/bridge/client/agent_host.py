@@ -31,6 +31,15 @@ FULL_FAILURE_CODES = frozenset({
     'unowned_completion', 'incomplete_run', 'invalid_public_graph', 'candidate_binding',
     'invalid_action', 'action_limit', 'duplicate_native_action', 'uncertain_dispatch', 'public_capacity',
     *(f'read_{stage}_failed' for stage in ('native', 'run', 'deck', 'relics', 'potions', 'map', 'context', 'graph')),
+    *(f'read_native_event_{reason}' for reason in (
+        'none', 'parent_ready', 'parent_unavailable', 'parent_waiting', 'parent_map',
+        'parent_overlay', 'parent_layout', 'parent_travel', 'child_ready', 'map_ready',
+        'capture_disposed', 'capture_exception', 'diagnostic_unavailable',
+        'pending_binding_failed', 'pending_ownership', 'pending_context', 'pending_task_failed',
+        'pending_chosen_entry', 'pending_chosen_task', 'pending_chosen_completion',
+        'pending_request_task', 'pending_screen', 'pending_selectorless_request',
+        'pending_overlay', 'pending_deck', 'pending_offers', 'pending_proceed',
+        'pending_owner_binding', 'pending_owner_hooks', 'pending_owner_thread', 'pending_owner_patches')),
 })
 
 

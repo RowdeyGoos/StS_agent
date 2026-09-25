@@ -59,7 +59,9 @@ class FullWire:
 
 class FullAgentTests(unittest.TestCase):
     def test_failure_categories_are_closed_and_preserve_validated_counts(self):
-        for category in (*sorted(host.FULL_FAILURE_CODES), 'private sentinel', ['read_deck_failed'], None):
+        for category in (*sorted(host.FULL_FAILURE_CODES), 'private sentinel',
+                         'read_native_event_private_sentinel', 'read_native_event_parent_travel\nsecret',
+                         ['read_deck_failed'], None):
             with self.subTest(category=category):
                 wire = FullWire()
                 def failure(row):
