@@ -238,8 +238,10 @@ The current [release manifest](../bridge/Sts2AgentBridge/releases/current/bridge
 is **`3e5a097e4ace0ba01ffb63f2cea67854bfc5c1d322a76ac7c043421443a09064`**. It binds 439 source/test inputs across 51 projects,
 source `a39c40f`, feature `49a6de1`. The gate passed **83 groups in 313.512 seconds**,
 including **13,372 native checks**, **656 rest checks**, **1,600 router checks** and
-18 rest Python/C# scenarios. The candidate is installed and its exact overlay is
-verified against all 429 unchanged base files; it awaits manual Profile 3 launch.
+18 rest Python/C# scenarios. The first live v2 read stopped at the saved rest site before any policy action
+(0/0/0, one read). The host retained only `native_failure`; observation diagnosis
+remains open. Normal quit and complete owned cleanup left all 429 base files
+unchanged with zero overlays.
 **Native v2 live acceptance remains outstanding.** The [release record](../bridge/Sts2AgentBridge/releases/current/README.md)
 retains the exact source/package, review, validation and installation identities.
 

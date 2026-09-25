@@ -31,11 +31,13 @@ information and stops on uncertainty. General potion/hand-selector coverage,
 treasure claiming, removal cancellation, reward rerolls and public live recording
 remain open. **This is not complete native coverage or live v2 acceptance.**
 
-The package is installed for the next controlled Profile 3 test, awaiting manual
-launch. Installation and exact overlay verification passed: the expected two
-package files are present and all **429 base files** remain unchanged. Owned state
-SHA-256: `b739d04f39fee68974a03a806b79c74550ea545c50acaa55588e3971af74a298`.
-No game action has been sent with this release. Cleanup follows the live test.
+The first controlled Profile 3 attempt stopped on its first shared-interface read
+at the saved rest site, before any policy action (**0/0/0**, one read). The host
+reported `native_failure` without retaining the native category, so the exact
+observation boundary remains unresolved. Native Save and Quit followed by normal
+Quit preserved the run. Process/listener shutdown, four-file owned cleanup and
+all **429 unchanged base files with zero overlays** were verified by
+**2026-09-25 09:43:22 UTC**. This package is no longer installed.
 
 The previous rest package and evidence remain bound to manifest `1926afc8…`, source
 `ff3cb5f`, and Git record `4f8b633`. Its Smith/Cook immediate/preview cancellation,

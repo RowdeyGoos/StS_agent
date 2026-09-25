@@ -482,12 +482,37 @@
     "status": "passed"
   },
   "live": {
-    "cleanup": "pending_after_live_test",
-    "manual_launch_required": true,
+    "cleanup": "complete",
+    "cleanup_result": {
+      "base_file_count": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "completed_by_utc": "2026-09-25T09:43:22Z",
+      "generated_files_removed": 4,
+      "overlay_count": 0,
+      "status": "passed"
+    },
+    "diagnosis": "The host discarded the native failure category; the exact observation boundary remains unresolved.",
+    "manual_launch_required": false,
     "profile": 3,
+    "result": {
+      "accepted": 0,
+      "attempted": 0,
+      "code": "native_failure",
+      "decision_kinds": [],
+      "decisions": 0,
+      "outcome": null,
+      "pending": false,
+      "reads": 1,
+      "reconciled": 0,
+      "schema_version": 1,
+      "stale_rejections": 0,
+      "status": "failed"
+    },
     "scope": "Bounded shared-policy observation/action and owned continuation tests; stop at a reconciled map. No campaign acceptance claim.",
-    "status": "awaiting_manual_launch",
-    "target_game_executed": false
+    "setup": "User manually opened Profile 3. Native Continue reached the saved rest site: HP 45/83, gold 399, six deck cards, Rest/Smith/Cook visible. No policy action dispatched.",
+    "shutdown": "Native Save and Quit, then Quit/Yes. Fresh stopped-process and closed-listener check passed (3 process samples, 2 port samples).",
+    "status": "failed_before_first_action",
+    "target_game_executed": true
   },
   "previous_release": {
     "install_inputs": "/private/tmp/sts-bridge-rul6heyh/previous-install-inputs",
