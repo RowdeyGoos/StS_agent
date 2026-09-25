@@ -111,7 +111,7 @@ internal sealed partial class GenericEventCompoundRewards : IGenericFullRewardSe
         }
     }
     private bool Context()=>!_failed&&!_disposed&&!_binding.Failed&&Environment.CurrentManagedThreadId==_thread&&
-        Environment.TickCount64<=_deadline&&ReferenceEquals(Active,this)&&_binding.ItemContextValid()&&ReferenceEquals(_binding.Option.Relic,_optionRelic)&&
+        Environment.TickCount64<=_deadline&&ReferenceEquals(Active,this)&&RemovalHooksValid()&&_binding.ItemContextValid()&&ReferenceEquals(_binding.Option.Relic,_optionRelic)&&
         _binding.ChosenTask?.IsFaulted!=true&&_binding.ChosenTask?.IsCanceled!=true&&
         ReferenceEquals(RunManager.Instance?.RewardsSetSynchronizer,_synchronizer)&&
         Harmony.GetPatchInfo(_completeMethod) is {} patches&&patches.Owners.Count==1&&patches.Owners.Contains(_hooks.Id);
@@ -184,9 +184,9 @@ internal sealed partial class GenericEventCompoundRewards : IGenericFullRewardSe
             owner.RewardCertified(frame);
         }catch{owner.Fail();throw;}
     }
-    private IPinnedClosingOverlay[] ClosingDescendants(RewardFrame frame)=>_frames.Where(f=>!ReferenceEquals(f,frame)&&Path(f).Contains(frame)&&f.Controller.EffectCertified&&
+    private IPinnedClosingOverlay[] ClosingDescendants(RewardFrame frame)=>_frames.Where(f=>!f.Controller.Completed&&!ReferenceEquals(f,frame)&&Path(f).Contains(frame)&&f.Controller.EffectCertified&&
             f.Screen is not null&&!f.Controller.Ancestors.Closed(f.Screen))
-        .Select(f=>(IPinnedClosingOverlay)f.Controller).Concat(ClosingOffers(frame)).ToArray();
+        .Select(f=>(IPinnedClosingOverlay)f.Controller).Concat(ClosingOffers(frame)).Concat(ClosingDecks(frame)).ToArray();
     private void BeforeRewardCertificate(RewardFrame frame){foreach(var effect in _effects.Where(e=>ReferenceEquals(e.RewardFrame,frame)&&e.Active))Require(effect.Completed);}
     private void RewardCertified(RewardFrame frame)
     {if(frame.Pickup is {} pickup)AcceptRewardCertificate(pickup,frame);if(ReferenceEquals(frame,Root))PrepareParentTail();}
@@ -203,16 +203,16 @@ internal sealed partial class GenericEventCompoundRewards : IGenericFullRewardSe
         ReleaseSettledPickups();
         if(_tailEffects is not null)Require(_tailEffects.Valid());
         if(_complete)return Value("resolved","complete");
-        ReadOffers();
+        ReadOffers();ReadDecks();
         foreach(var frame in _frames)Require(frame.Offer?.IsFaulted!=true&&frame.Offer?.IsCanceled!=true&&
             frame.Collections.All(t=>!t.IsFaulted&&!t.IsCanceled)&&frame.MenuTask?.IsFaulted!=true&&frame.MenuTask?.IsCanceled!=true);
         foreach(var frame in _frames.Where(f=>f.Certificate is not null)) {
-            frame.Controller.Read();
+            if(!frame.Controller.Completed)frame.Controller.Read();
             if(frame.Controller.Completed&&frame.Collections.All(t=>t.IsCompletedSuccessfully)&&frame.Pending is {} closing){closing.Done=true;frame.Pending=null;}
         }
         while(_history.Count<_receipts.Count&&_receipts[_history.Count].Done){var r=_receipts[_history.Count];_history.Add(new(r.Decision,r.Action,"completed"));}
         if(Root.Controller.Completed) {
-            if(_frames.Any(f=>!f.Controller.Completed||f.Collections.Any(t=>!t.IsCompletedSuccessfully))||_offers.Any(o=>o.View?.Status!="resolved")||_binding.ChosenTask?.IsCompletedSuccessfully!=true||!ParentTailComplete())return Value("waiting","waiting");
+            if(_frames.Any(f=>!f.Controller.Completed||f.Collections.Any(t=>!t.IsCompletedSuccessfully))||_offers.Any(o=>o.View?.Status!="resolved")||_decks.Any(d=>!d.Done)||_binding.ChosenTask?.IsCompletedSuccessfully!=true||!ParentTailComplete())return Value("waiting","waiting");
             Require(_receipts.Count==_history.Count);_complete=true;return Value("resolved","complete");
         }
         if(_frames.Any(f=>f.Certificate is not null&&!f.Controller.Completed))return Value("waiting","waiting");
@@ -239,7 +239,7 @@ internal sealed partial class GenericEventCompoundRewards : IGenericFullRewardSe
     }
     private void Publish(RewardFrame frame,string nativeDecision)
     {
-        _published=frame;_publishedOffer=null;
+        _published=frame;_publishedOffer=null;_publishedDeck=null;
         _decision=Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(ContractVersion+":"+_binding.Nonce+":"+_frames.IndexOf(frame)+":"+_generation+":"+nativeDecision))).ToLowerInvariant();
     }
     public GenericEventV7RewardReceipt Apply(string? decision,string? action)
@@ -269,9 +269,10 @@ internal sealed partial class GenericEventCompoundRewards : IGenericFullRewardSe
         foreach(var frame in _frames.AsEnumerable().Reverse())try{frame.Controller.Dispose();}catch(Exception error){failure??=error;}
         try{DisposePickups();}catch(Exception error){failure??=error;}
         try{DisposeOffers();}catch(Exception error){failure??=error;}
+        try{DisposeDecks();}catch(Exception error){failure??=error;}
         try{_tailAdds?.Dispose();}catch(Exception error){failure??=error;}
         try{_tailEffects?.Dispose();}catch(Exception error){failure??=error;}
-        try{_hooks.UnpatchAll(_hooks.Id);Require(Harmony.GetPatchInfo(_completeMethod)?.Owners.Contains(_hooks.Id)!=true);}catch(Exception error){failure??=error;}
+        try{_hooks.UnpatchAll(_hooks.Id);Require(Harmony.GetPatchInfo(_completeMethod)?.Owners.Contains(_hooks.Id)!=true&&(_removeMethod is null||Harmony.GetPatchInfo(_removeMethod)?.Owners.Contains(_hooks.Id)!=true));}catch(Exception error){failure??=error;}
         _disposed=true;if(failure is not null){Fail();throw new InvalidOperationException("compound_reward_cleanup",failure);}Active=null;
     }
 }

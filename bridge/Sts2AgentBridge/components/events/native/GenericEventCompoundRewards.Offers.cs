@@ -116,14 +116,14 @@ internal sealed partial class GenericEventCompoundRewards
     private void ReadOffers(){foreach(var leaf in _offers)leaf.Read();}
     private GenericEventV7RewardRead? ReadLeaf()
     {
-        var leaf=_offers.LastOrDefault(o=>o.View?.Status!="resolved");if(leaf is null)return null;
+        var leaf=_offers.LastOrDefault(o=>o.View?.Status!="resolved");if(leaf is null)return ReadDeckLeaf();
         Require(leaf.View is not null);if(leaf.View.Status=="waiting")return Value("waiting","waiting");
         Require(leaf.View.Status=="ready");Publish(leaf.Reward,"offer:"+_offers.IndexOf(leaf)+":"+leaf.View.DecisionId);_publishedOffer=leaf;
         return Value("ready",leaf.Adapter.Bundle?(leaf.View.Phase=="preview"?"bundle_preview":"bundle_offer"):"card_offer",leaf.View.LegalActions);
     }
     private bool ApplyLeaf(string decision,string action)
     {
-        if(_publishedOffer is not {} leaf)return false;
+        if(_publishedOffer is not {} leaf)return ApplyDeckLeaf(decision,action);
         Require(leaf.View?.Status=="ready"&&leaf.Reward.Pending is not null);
         var receipt=new Receipt(decision,action,0,leaf.Reward);_receipts.Add(receipt);leaf.Inputs.Add((receipt,leaf.View!.DecisionId,action));
         Native.Value=leaf.Reward;
@@ -131,7 +131,7 @@ internal sealed partial class GenericEventCompoundRewards
         finally{Native.Value=null;}
         ReleaseSettledPickups();return true;
     }
-    private IEnumerable<IPinnedClosingOverlay> ClosingOffers(RewardFrame frame)=>_offers.Where(o=>o.Adapter is not null&&o.Adapter.EffectCertified&&
+    private IEnumerable<IPinnedClosingOverlay> ClosingOffers(RewardFrame frame)=>_offers.Where(o=>o.View?.Status!="resolved"&&o.Adapter is not null&&o.Adapter.EffectCertified&&
         Path(o.Reward).Contains(frame)&&o.Adapter.Screen is {} screen&&!o.Adapter.Ancestors.Closed(screen)).Select(o=>(IPinnedClosingOverlay)o.Adapter);
     private void DisposeOffers()
     {

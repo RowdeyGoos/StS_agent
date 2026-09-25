@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Runs;
 using Sts2AgentBridge.Successors.CardSelectionV1;
@@ -12,23 +13,55 @@ namespace Sts2AgentBridge.Successors.GenericEventV7.Native;
 
 internal sealed class GenericEventV7TransformState
 {
-    private readonly GenericEventV7Binding _binding;
+    private readonly Player _player;
+    private readonly object _run;
+    private readonly Func<bool> _context,_matchesCurrentDeck;
+    private readonly Action _fail;
+    private readonly Action? _inventoryChanged;
+    private readonly CardSelectionV1DeckCard[] _deck;
+    private readonly CardModel[] _originals;
+    private readonly int _minimum,_maximum;
+    private readonly HashSet<object> _observedTasks,_observedClones;
+    private bool _failed;
     private object[]? _selected;
     private readonly List<Command> _commands=new();
     private readonly List<CardTransformV2Insertion> _insertions=new();
     private readonly List<object> _removed=new();
     private bool _closed;
-    internal GenericEventV7TransformState(GenericEventV7Binding binding)=>_binding=binding;
+    internal GenericEventV7TransformState(GenericEventV7Binding binding)
+        : this(binding.Player,binding.RunState,()=>!binding.Failed&&binding.MatchesChildBinding(),()=>binding.Failed=true,
+            binding.SelectionDeck,binding.Originals,binding.Prefs.MinSelect,binding.Prefs.MaxSelect,
+            binding.MatchesCurrentDeck,binding.ObservedCommandTasks,binding.ObservedPreviewClones,null) { }
+    internal GenericEventV7TransformState(Player player,object run,Func<bool> context,Action fail,
+        CardSelectionV1DeckCard[] deck,CardModel[] originals,int minimum,int maximum,Action inventoryChanged)
+        : this(player,run,context,fail,deck,originals,minimum,maximum,()=>SameDeck(player,deck),
+            new(ReferenceEqualityComparer.Instance),new(ReferenceEqualityComparer.Instance),inventoryChanged) { }
+    private GenericEventV7TransformState(Player player,object run,Func<bool> context,Action fail,
+        CardSelectionV1DeckCard[] deck,CardModel[] originals,int minimum,int maximum,Func<bool> matchesCurrentDeck,
+        HashSet<object> tasks,HashSet<object> clones,Action? inventoryChanged)
+    {
+        _player=player;_run=run;_context=context;_fail=fail;_deck=deck;_originals=originals;
+        _minimum=minimum;_maximum=maximum;_matchesCurrentDeck=matchesCurrentDeck;
+        _observedTasks=tasks;_observedClones=clones;_inventoryChanged=inventoryChanged;
+    }
+    private static bool SameDeck(Player player,CardSelectionV1DeckCard[] before)
+    {
+        var after=GenericEventV7Binding.CopyDeck(player);
+        return before.Length==after.Length&&before.Select((c,i)=>ReferenceEquals(c.ModelIdentity,after[i].ModelIdentity)&&c.StableKey==after[i].StableKey&&
+            c.UpgradeLevel==after[i].UpgradeLevel&&CardSelectionV1Enchantment.Same(c.Enchantment,after[i].Enchantment)).All(v=>v);
+    }
+    internal bool InModification=>_commands.LastOrDefault()?.PendingFinal is not null;
+    internal bool AddedCard(CardModel card)=>_insertions.Any(i=>ReferenceEquals(i.FinalIdentity,card));
     internal bool Authorized=>_selected is not null;
-    internal void Fail()=>_binding.Failed=true;
+    internal void Fail(){_failed=true;_fail();}
     internal void Close()=>_closed=true;
     private void Require(bool condition){if(!condition){Fail();throw new InvalidOperationException("Unowned transformation observation.");}}
-    private void Context()=>Require(!_closed&&!_binding.Failed&&_binding.MatchesChildBinding());
+    private void Context()=>Require(!_closed&&!_failed&&_context());
     internal void Reserve(IReadOnlyList<object> originals)
     {
-        Context();Require(_selected is null&&originals.Count>=_binding.Prefs.MinSelect&&originals.Count<=_binding.Prefs.MaxSelect&&_binding.MatchesCurrentDeck());
+        Context();Require(_selected is null&&originals.Count>=_minimum&&originals.Count<=_maximum&&_matchesCurrentDeck());
         var set=new HashSet<object>(ReferenceEqualityComparer.Instance);
-        foreach(var original in originals)Require(original is CardModel&&set.Add(original)&&_binding.Originals.Any(o=>ReferenceEquals(o,original)));
+        foreach(var original in originals)Require(original is CardModel&&set.Add(original)&&_originals.Any(o=>ReferenceEquals(o,original)));
         _selected=originals.ToArray();
     }
     internal Command Begin()
@@ -36,15 +69,15 @@ internal sealed class GenericEventV7TransformState
         Context();Require(Authorized&&_commands.Count<(_selected!.Length==0?1:8));
         Refresh();Require(_commands.Count==0||_commands[^1].State==CardTransformV2CommandState.Succeeded);
         Require(ExpectedDeck());
-        var command=new Command(this,GenericEventV7Binding.CopyDeck(_binding.Player));
-        if(_selected!.Length==0){Require(_binding.Prefs.MinSelect==0);command.Frozen=true;}_commands.Add(command);return command;
+        var command=new Command(this,GenericEventV7Binding.CopyDeck(_player));
+        if(_selected!.Length==0){Require(_minimum==0);command.Frozen=true;}_commands.Add(command);return command;
     }
     internal void BindTask(Command command,Task<IEnumerable<CardPileAddResult>> task)
-    {Context();Require(Current(command)&&task is not null&&command.Task is null&&_binding.ObservedCommandTasks.Count<32&&_binding.ObservedCommandTasks.Add(task));command.Task=task;Refresh();}
+    {Context();Require(Current(command)&&task is not null&&command.Task is null&&_observedTasks.Count<32&&_observedTasks.Add(task));command.Task=task;Refresh();}
     internal void CommandFault(Command command){command.State=CardTransformV2CommandState.Faulted;Fail();}
     private bool Current(Command command)=>_commands.Count>0&&ReferenceEquals(_commands[^1],command)&&ReferenceEquals(command.Owner,this);
-    private bool OwnedCard(CardModel? card)=>card is not null&&ReferenceEquals(card.Owner,_binding.Player)&&ReferenceEquals(card.RunState,_binding.RunState)&&CardSelectionV1NativeRules.IsStableKey(card.Id.Entry)&&card.CurrentUpgradeLevel>=0;
-    private bool Baseline(CardModel card)=>_binding.SelectionDeck.Any(c=>ReferenceEquals(c.ModelIdentity,card));
+    private bool OwnedCard(CardModel? card)=>card is not null&&ReferenceEquals(card.Owner,_player)&&ReferenceEquals(card.RunState,_run)&&CardSelectionV1NativeRules.IsStableKey(card.Id.Entry)&&card.CurrentUpgradeLevel>=0;
+    private bool Baseline(CardModel card)=>_deck.Any(c=>ReferenceEquals(c.ModelIdentity,card));
     internal CardModel ChoiceEntry(Command command,CardTransformation transformation)
     {
         Context();Require(Current(command)&&!command.Frozen&&command.PendingChoice is null&&command.Choices.Count<_selected!.Length);
@@ -58,13 +91,13 @@ internal sealed class GenericEventV7TransformState
     internal void ChoiceExit(Command command,CardModel original,CardModel initial)
     {
         Context();Require(Current(command)&&ReferenceEquals(command.PendingChoice,original)&&OwnedCard(initial)&&!Baseline(initial)&&
-            !_binding.ObservedPreviewClones.Contains(initial)&&_binding.ObservedPreviewClones.Count<64);
-        _binding.ObservedPreviewClones.Add(initial);
+            !_observedClones.Contains(initial)&&_observedClones.Count<64);
+        _observedClones.Add(initial);
         command.Choices.Add(new Choice(original,initial));command.PendingChoice=null;
     }
     internal Choice ModifyEntry(Command command,IRunState run,CardModel initial)
     {
-        Context();Require(Current(command)&&ReferenceEquals(run,_binding.RunState)&&command.PendingChoice is null&&command.PendingFinal is null&&command.PendingInsertion is null);
+        Context();Require(Current(command)&&ReferenceEquals(run,_run)&&command.PendingChoice is null&&command.PendingFinal is null&&command.PendingInsertion is null);
         if(!command.Frozen)
         {
             Require(command.Choices.Count>0&&Matches(command.Start,command.Choices.Select(c=>(object)c.Original),Array.Empty<CardTransformV2Insertion>()));
@@ -78,16 +111,16 @@ internal sealed class GenericEventV7TransformState
     internal void ModifyExit(Command command,Choice choice,CardModel final)
     {
         Context();Require(Current(command)&&ReferenceEquals(command.PendingFinal,choice)&&OwnedCard(final)&&!Baseline(final)&&ExpectedDeck()&&
-            (!ReferenceEquals(final,choice.Initial)?!_binding.ObservedPreviewClones.Contains(final):true)&&
+            (!ReferenceEquals(final,choice.Initial)?!_observedClones.Contains(final):true)&&
             !_commands.Any(c=>c.Choices.Any(x=>ReferenceEquals(x.Final,final))));
-        if(!ReferenceEquals(final,choice.Initial)){Require(_binding.ObservedPreviewClones.Count<64);_binding.ObservedPreviewClones.Add(final);}
+        if(!ReferenceEquals(final,choice.Initial)){Require(_observedClones.Count<64);_observedClones.Add(final);}
         choice.Final=final;choice.FinalKey=final.Id.Entry;choice.FinalLevel=final.CurrentUpgradeLevel;
         command.PendingFinal=null;command.PendingInsertion=choice;
     }
     internal Choice InsertionEntry(Command command,CardPile pile,CardModel final,int index,bool silent)
     {
         Context();var choice=command.PendingInsertion;
-        Require(Current(command)&&command.Frozen&&choice is not null&&!command.Inserting&&ReferenceEquals(pile,_binding.Player.Deck)&&
+        Require(Current(command)&&command.Frozen&&choice is not null&&!command.Inserting&&ReferenceEquals(pile,_player.Deck)&&
             ReferenceEquals(final,choice.Final)&&index==-1&&!silent&&ExpectedDeck()&&OwnedCard(final)&&
             final.Id.Entry==choice.FinalKey&&final.CurrentUpgradeLevel==choice.FinalLevel);
         command.Inserting=true;return choice!;
@@ -96,16 +129,16 @@ internal sealed class GenericEventV7TransformState
     {
         Context();Require(Current(command)&&command.Inserting&&ReferenceEquals(command.PendingInsertion,choice));
         var row=new CardTransformV2Insertion(_insertions.Count+1,choice.Original,choice.Final!,choice.FinalKey!,choice.FinalLevel);
-        Require(Matches(_binding.SelectionDeck,_removed,_insertions.Append(row)));
-        command.Insertions.Add(row);_insertions.Add(row);command.PendingInsertion=null;command.Inserting=false;
+        Require(Matches(_deck,_removed,_insertions.Append(row)));
+        command.Insertions.Add(row);_insertions.Add(row);command.PendingInsertion=null;command.Inserting=false;_inventoryChanged?.Invoke();
     }
-    private bool ExpectedDeck()=>Matches(_binding.SelectionDeck,_removed,_insertions);
+    private bool ExpectedDeck()=>Matches(_deck,_removed,_insertions);
     private bool Matches(IReadOnlyList<CardSelectionV1DeckCard> baseline,IEnumerable<object> removed,IEnumerable<CardTransformV2Insertion> inserted)
     {
         var remove=new HashSet<object>(removed,ReferenceEqualityComparer.Instance);
         var expected=baseline.Where(c=>!remove.Contains(c.ModelIdentity)).Select(c=>new CardSelectionV1DeckCard(c.ModelIdentity,c.StableKey,c.UpgradeLevel)).ToList();
         expected.AddRange(inserted.Select(c=>new CardSelectionV1DeckCard(c.FinalIdentity,c.FinalStableKey,c.FinalUpgradeLevel)));
-        var actual=GenericEventV7Binding.CopyDeck(_binding.Player);
+        var actual=GenericEventV7Binding.CopyDeck(_player);
         return actual.Length==expected.Count&&actual.All(c=>c.ModelIdentity is CardModel model&&OwnedCard(model))&&!actual.Where((c,i)=>!ReferenceEquals(c.ModelIdentity,expected[i].ModelIdentity)||c.StableKey!=expected[i].StableKey||c.UpgradeLevel!=expected[i].UpgradeLevel).Any();
     }
     private void Refresh()
@@ -118,7 +151,7 @@ internal sealed class GenericEventV7TransformState
             if(!task.IsCompletedSuccessfully){command.State=CardTransformV2CommandState.Faulted;Fail();continue;}
             Require(command.Frozen&&command.PendingChoice is null&&command.PendingFinal is null&&command.PendingInsertion is null&&!command.Inserting&&command.Insertions.Count==command.Choices.Count);
             Require(_selected!.Length==0 ? task.Result is CardPileAddResult[] {Length:0} : task.Result is List<CardPileAddResult>);
-            var result=(IReadOnlyList<CardPileAddResult>)task.Result;Require(result.Count==command.Insertions.Count&&result.Count<=_binding.Prefs.MaxSelect);
+            var result=(IReadOnlyList<CardPileAddResult>)task.Result;Require(result.Count==command.Insertions.Count&&result.Count<=_maximum);
             var rows=new List<CardTransformV2CommandResult>();
             for(int i=0;i<result.Count;i++)
             {var value=result[i];Require(value.success&&value.cardAdded is not null&&ReferenceEquals(value.cardAdded,command.Insertions[i].FinalIdentity));rows.Add(new(value.success,value.cardAdded!));}
@@ -131,7 +164,7 @@ internal sealed class GenericEventV7TransformState
         return new(_commands.Where(c=>c.Frozen).Select(c=>new CardTransformV2CommandWitness(c,c.Choices.Select(x=>(object)x.Original).ToArray(),c.State,true,c.Insertions.ToArray(),c.Results.ToArray())).ToArray(),_removed.ToArray(),_insertions.ToArray());
     }
     internal bool Complete
-    {get{Refresh();return Authorized&&!_binding.Failed&&_commands.Count>0&&_commands.All(c=>c.State==CardTransformV2CommandState.Succeeded)&&_removed.Count==_selected!.Length&&_insertions.Count==_selected.Length;}}
+    {get{Refresh();return Authorized&&!_failed&&_context()&&_commands.Count>0&&_commands.All(c=>c.State==CardTransformV2CommandState.Succeeded)&&_removed.Count==_selected!.Length&&_insertions.Count==_selected.Length;}}
     internal sealed class Command
     {
         internal readonly GenericEventV7TransformState Owner;

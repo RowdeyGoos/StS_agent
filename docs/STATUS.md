@@ -279,6 +279,15 @@ passed five groups in 155.564 s and compilation two groups in 2.222 s.
 Independent semantic review cleared the Egg correction. These named pickups are
 still unshipped, with production Neow's Bones admission guarded.
 
+Precise Scissors, Precarious Shears, Pomander and New Leaf now retain their
+actual selector requests, policy selection and removal/upgrade/transform effects
+inside the compound owner. Automatic short-deck selection, delayed native commands,
+closing screens and later sibling rewards have focused regressions. Retired
+selectors/offers/reward frames no longer reclaim a sibling's overlay. The corrected
+focused suite passed three groups in 36.995 s and production compilation two in
+1.848 s; independent semantic review cleared the slice (5m39s plus a 7s recheck).
+This remains unshipped, with the production factory and Neow's Bones guard unchanged.
+
 ### Contract limits without a confirmed missing gameplay caller
 
 These are **not an implementation queue or required live-test checklist**:

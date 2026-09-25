@@ -38,7 +38,7 @@ internal sealed partial class GenericEventCompoundRewards
         {
             _owner=owner;RewardFrame=frame;_reward=reward;_relic=reward.Relic??throw new InvalidOperationException("compound_reward_unpopulated");_before=new(reward.Player);
             owner.Require(owner.Context()&&_relic is not null&&_relic.Owner is null&&
-                (PinnedAutomaticRelicEffects.Supports(_relic)||Named(_relic,"Kaleidoscope","LostCoffer","SmallCapsule")||OfferRelic(_relic)||AutomaticNeow(_relic)));
+                (PinnedAutomaticRelicEffects.Supports(_relic)||Named(_relic,"Kaleidoscope","LostCoffer","SmallCapsule")||OfferRelic(_relic)||AutomaticNeow(_relic)||DeckRelic(_relic)));
         }
         public void Invoke(Action input)
         {
@@ -91,6 +91,7 @@ internal sealed partial class GenericEventCompoundRewards
     {
         Require(Context()&&(frame.Parent is null||Expected(frame.Parent).Same(frame.Before)));
         _expected.Add(frame,new(_binding.Player));
+        if(DeckRelic(frame.Relic)){var deck=new DeckLeaf(this,CurrentFrame(),frame);_decks.Add(deck);return deck.Enter();}
         if(AutomaticNeow(frame.Relic)){var automatic=new AutomaticPickup(this,frame);_neowAutomatic.Add(frame,automatic);return automatic.Enter();}
         if(!PinnedAutomaticRelicEffects.Supports(frame.Relic))return new Lease(()=>{});
         var effect=new PinnedAutomaticRelicEffects(_binding.Player,frame.Relic,Context);_automatic.Add(frame,effect);
@@ -98,12 +99,14 @@ internal sealed partial class GenericEventCompoundRewards
     }
     private void BeforePickupAdvance(PinnedRelicPickupChain.Frame frame)=>frame.Owner.BeforeAdvance(frame);
     private bool PickupEffectsValid(PinnedRelicPickupChain.Frame frame)=>Context()&&
-        (_automatic.TryGetValue(frame,out var observer)?observer.Valid():
+        (_decks.SingleOrDefault(d=>ReferenceEquals(d.Pickup,frame)) is {} deck?deck.Validate():
+        _automatic.TryGetValue(frame,out var observer)?observer.Valid():
         _neowAutomatic.TryGetValue(frame,out var automatic)?automatic.Valid():
         _offers.SingleOrDefault(o=>ReferenceEquals(o.Pickup,frame)) is {} offer?offer.Validate():Expected(frame).Same(new(_binding.Player)));
     private void CleanupPickupEffects(PinnedRelicPickupChain.Frame frame)
     {if(_automatic.TryGetValue(frame,out var effect)){effect.Dispose();_automatic.Remove(frame);}
         _offers.SingleOrDefault(o=>ReferenceEquals(o.Pickup,frame))?.CleanupEffects();
+        _decks.SingleOrDefault(d=>ReferenceEquals(d.Pickup,frame))?.CleanupEffects();
         if(_neowAutomatic.TryGetValue(frame,out var automatic))automatic.Dispose();}
     private void PickupCertified(PinnedRelicPickupChain.Frame frame)
     {if(frame.Parent is {} parent)_expected[parent]=frame.Certificate!;}

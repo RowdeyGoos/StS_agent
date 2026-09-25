@@ -315,6 +315,8 @@ public sealed class GenericEventV7Hooks : IDisposable
         internal GenericEventV7ItemState? Item;
         internal GenericEventCompoundRewards.RewardFrame? CompoundReward;
         internal GenericEventCompoundRewards.OfferLeaf? CompoundOffer;
+        internal GenericEventCompoundRewards.DeckLeaf? CompoundDeck;
+        internal int DeckRequestIndex;
         internal IDisposable? CompoundScope;
         internal bool Restored;
     }
@@ -593,8 +595,35 @@ public sealed class GenericEventV7Hooks : IDisposable
         else b.Screen=__result;
     }
     private static void EnchantScreenFinalizer(Exception? __exception,State? __state)=>ScreenFinalizer(__exception,__state);
+    private static bool CompoundDeckRequest(Player player,CardSelectorPrefs prefs,string kind,object? filter,out State state)
+    {
+        state=new State {Previous=Request.Value};
+        if(_armed?.FullRewards is not GenericEventCompoundRewards compound)return false;
+        state.Binding=_armed;
+        try {state.CompoundDeck=compound.DeckRequest(player,prefs,kind,filter,out state.DeckRequestIndex);Request.Value=_armed;}
+        catch {_armed.Failed=true;}
+        return true;
+    }
+    private static bool CompoundDeckScreen(IReadOnlyList<CardModel> cards,CardSelectorPrefs prefs,string kind,object? run,out State state)
+    {
+        state=new State {Binding=Request.Value};
+        if(_armed?.FullRewards is not GenericEventCompoundRewards compound)return false;
+        state.Binding=_armed;
+        try {
+            if(!ReferenceEquals(Request.Value,_armed))throw new InvalidOperationException("compound_selector_scope");
+            state.CompoundDeck=compound.DeckScreen(cards,prefs,kind,run);
+        }catch{_armed.Failed=true;}
+        return true;
+    }
+    private static bool CompoundDeckEntered(Godot.Control screen,State? state)
+    {
+        if(state?.CompoundDeck is not {} deck)return false;
+        try{if(state.Binding?.Failed!=true)deck.BindScreen(screen);}catch{state.Binding!.Failed=true;}
+        return true;
+    }
     private static void UpgradePrefix(Player __0, CardSelectorPrefs __1, out State __state)
     {
+        if(CompoundDeckRequest(__0,__1,"upgrade",null,out __state))return;
         __state = new State {Previous=Request.Value};
         var b = Parent.Value;
         if (b is null) { if (_armed is not null) _armed.Failed=true; return; }
@@ -611,6 +640,10 @@ public sealed class GenericEventV7Hooks : IDisposable
     }
     private static void UpgradePostfix(Task<IEnumerable<CardModel>> __result, State? __state)
     {
+        if(__state?.CompoundDeck is {} deck) {
+            try{if(__state.Binding?.Failed!=true)deck.Requested(__state.DeckRequestIndex,__result);}catch{__state.Binding!.Failed=true;}
+            finally{RestoreRequest(__state);}return;
+        }
         if (__state?.Binding is { } b && !b.Failed)
         { if (__result is null || b.RequestTask is not null) b.Failed=true; else b.RequestTask=__result; }
         RestoreRequest(__state);
@@ -621,6 +654,7 @@ public sealed class GenericEventV7Hooks : IDisposable
     { if (state is not null && !state.Restored) { Request.Value=state.Previous; state.Restored=true; } }
     private static void ScreenPrefix(IReadOnlyList<CardModel> __0, CardSelectorPrefs __1, IRunState __2, out State __state)
     {
+        if(CompoundDeckScreen(__0,__1,"upgrade",__2,out __state))return;
         __state=new State {Binding=Request.Value};
         var b = Request.Value;
         if (b is null) { if (_armed is not null) _armed.Failed=true; return; }
@@ -645,6 +679,7 @@ public sealed class GenericEventV7Hooks : IDisposable
     }
     private static void ScreenPostfix(NDeckUpgradeSelectScreen __result, State? __state)
     {
+        if(CompoundDeckEntered(__result,__state))return;
         if (__state?.Binding is { } b && !b.Failed)
         {
             if (__result is null || b.Screen is not null || __result.GetType()!=typeof(NDeckUpgradeSelectScreen)) b.Failed=true;
@@ -667,6 +702,7 @@ public sealed class GenericEventV7Hooks : IDisposable
     }
     private static void GenericDeckPrefix(Player __0,CardSelectorPrefs __1,Func<CardModel,bool>? __2,Func<CardModel,int>? __3,out State __state)
     {
+        if(CompoundDeckRequest(__0,__1,"generic",__2,out __state))return;
         __state=new State {Previous=Request.Value};var b=Parent.Value;
         // Removal forwards through FromDeckGeneric. Its outer request retains
         // ownership and its own completion task; do not admit a second child.
@@ -701,6 +737,7 @@ public sealed class GenericEventV7Hooks : IDisposable
     private static void GenericDeckFinalizer(Exception? __exception,State? __state)=>UpgradeFinalizer(__exception,__state);
     private static void RemovalPrefix(Player __0, CardSelectorPrefs __1, Func<CardModel,bool>? __2, out State __state)
     {
+        if(CompoundDeckRequest(__0,__1,"remove",__2,out __state))return;
         __state=new State {Previous=Request.Value};
         var b=Parent.Value;
         if(b is null) {if(_armed is not null)_armed.Failed=true;return;}
@@ -723,6 +760,7 @@ public sealed class GenericEventV7Hooks : IDisposable
     private static void RemovalFinalizer(Exception? __exception,State? __state)=>UpgradeFinalizer(__exception,__state);
     private static void RemovalScreenPrefix(IReadOnlyList<CardModel> __0,CardSelectorPrefs __1,out State __state)
     {
+        if(CompoundDeckScreen(__0,__1,"remove",null,out __state))return;
         __state=new State {Binding=Request.Value};var b=Request.Value;
         if(b is null){if(_armed is not null)_armed.Failed=true;return;}
         try
@@ -742,6 +780,7 @@ public sealed class GenericEventV7Hooks : IDisposable
     }
     private static void RemovalScreenPostfix(NDeckCardSelectScreen __result,State? __state)
     {
+        if(CompoundDeckEntered(__result,__state))return;
         if(__state?.Binding is not { } b||b.Failed)return;
         try
         {
@@ -847,6 +886,7 @@ public sealed class GenericEventV7Hooks : IDisposable
 
     private static void TransformRequestPrefix(Player __0,CardSelectorPrefs __1,Func<CardModel,CardTransformation>? __2,out State __state)
     {
+        if(CompoundDeckRequest(__0,__1,"transform",__2,out __state))return;
         __state=new State {Previous=Request.Value};var b=Parent.Value;
         if(b is null){if(_armed is not null)_armed.Failed=true;return;}
         __state.Binding=b;
@@ -865,6 +905,7 @@ public sealed class GenericEventV7Hooks : IDisposable
     private static void TransformRequestFinalizer(Exception? __exception,State? __state)=>UpgradeFinalizer(__exception,__state);
     private static void TransformScreenPrefix(IReadOnlyList<CardModel> __0,Func<CardModel,CardTransformation> __1,CardSelectorPrefs __2,out State __state)
     {
+        if(CompoundDeckScreen(__0,__2,"transform",null,out __state))return;
         __state=new State {Binding=Request.Value};var b=Request.Value;
         if(b is null){if(_armed is not null)_armed.Failed=true;return;}
         try
@@ -886,6 +927,7 @@ public sealed class GenericEventV7Hooks : IDisposable
     }
     private static void TransformScreenPostfix(NDeckTransformSelectScreen __result,State? __state)
     {
+        if(CompoundDeckEntered(__result,__state))return;
         if(__state?.Binding is not { } b||b.Failed)return;
         try
         {
@@ -904,6 +946,14 @@ public sealed class GenericEventV7Hooks : IDisposable
     private static void TransformCommandPrefix(out CommandObservation __state)
     {
         __state=new CommandObservation {Previous=CommandScope.Value};var b=Parent.Value;
+        if(_armed?.FullRewards is GenericEventCompoundRewards compound) {
+            try {
+                var nested=compound.NativeTransformation();__state.Owner=nested;
+                if(nested is null||CommandScope.Value is not null||!nested.Authorized)throw new InvalidOperationException("compound_transform_scope");
+                __state.Current=nested.Begin();CommandScope.Value=__state.Current;
+            }catch{_armed.Failed=true;__state.Owner?.Fail();}
+            return;
+        }
         var owner=b?.Transform??_armed?.Transform;
         if(owner is null)return;
         __state.Owner=owner;

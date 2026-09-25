@@ -30,6 +30,7 @@
     <Compile Include="CompoundRewardFixtures.cs" />
     <Compile Include="CompoundOfferFixtures.cs" />
     <Compile Include="CompoundAutomaticFixtures.cs" />
+    <Compile Include="CompoundDeckFixtures.cs" />
     <Compile Include="../../rooms/shop/native/PinnedShopEffectDispatch.cs" />
     <Compile Include="../../rooms/rest/native/RestRewardContinuation.cs" />
     <Compile Include="../../rooms/rest/native/RestNativeState.cs" />
@@ -94,6 +95,7 @@
     <Compile Include="../native/GenericEventCompoundRewards.cs" />
     <Compile Include="../native/GenericEventCompoundRewards.Pickups.cs" />
     <Compile Include="../native/GenericEventCompoundRewards.Offers.cs" />
+    <Compile Include="../native/GenericEventCompoundRewards.Deck.cs" />
     <Compile Include="../native/GenericEventCompoundRewards.Automatic.cs" />
     <Compile Include="../native/GenericEventV7Binding.cs" Link="Native/GenericEventV7Binding.cs" />
     <Compile Include="../native/GenericEventV7CombatHandoff.cs" Link="Native/GenericEventV7CombatHandoff.cs" />

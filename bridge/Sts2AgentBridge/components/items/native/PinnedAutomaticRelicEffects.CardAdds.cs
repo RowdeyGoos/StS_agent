@@ -77,6 +77,16 @@ internal sealed partial class PinnedAutomaticRelicEffects
             after.Deck.Length==before.Deck.Length+1&&after.Deck.Take(before.Deck.Length).SequenceEqual(before.Deck));
         _expected=after;
     }
+    // The caller supplies the exact retained selector/transform witness.
+    // Scalar and item changes cannot be absorbed by a deck-only certificate.
+    internal void CertifyDeck(Func<Card[],Card[],bool> witness)
+    {
+        var after=new State(_player);var before=_expected;
+        Require(!_failed&&!_disposed&&_owner()&&ExactHooks()&&ReferenceEquals(before.Run,after.Run)&&
+            before.Gold==after.Gold&&before.Hp==after.Hp&&before.MaxHp==after.MaxHp&&before.Relics.SequenceEqual(after.Relics)&&
+            before.Potions.SequenceEqual(after.Potions)&&witness(before.Deck,after.Deck));
+        _expected=after;
+    }
     internal bool CardEffectsCompleted
     {
         get {
