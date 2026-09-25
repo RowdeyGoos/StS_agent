@@ -226,6 +226,18 @@ blocker after the closing-order corrections. This is unshipped groundwork, not
 Neow's Bones support; the compound owner and its native effect/task bindings remain
 to be connected before the parent guard can be removed.
 
+The groundwork also retains actual `RelicCmd.Obtain` invocation trees, including
+sequential pickups, shared completed callbacks and later reward inputs under the
+exact waiting pickup. A predecessor must certify its effects and release its
+observers before the next pickup or parent effect. `full_rewards_v2` now describes
+nested offer/bundle/deck-choice phases and ordered receipt prefixes while an outer
+pickup remains pending; it keeps the existing 40-child/52-total action bounds.
+The production HTTP parser accepts bounded deselection actions, with child-version
+validation downstream. Focused wire/native checks passed five groups in 8.967 s;
+the corrected budget/HTTP cases passed in 1.632 s and the production build in
+1.779 s. Independent semantic reviews found no remaining blocker in these two
+pieces. No compound native producer or new released package is claimed by them.
+
 ### Contract limits without a confirmed missing gameplay caller
 
 These are **not an implementation queue or required live-test checklist**:

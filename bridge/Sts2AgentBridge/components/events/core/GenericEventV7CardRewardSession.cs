@@ -109,4 +109,15 @@ public static class GenericEventV7FullRewardRules {
     public static bool Action(string? action)=>action is "dismiss" or "skip_card" or "reroll" or "sacrifice" ||
         Enumerable.Range(0,8).Any(i=>action=="claim:"+i||action=="collect:"+i||action=="open:"+i||action=="discard:"+i||action=="take:"+i)||
         Enumerable.Range(0,5).Any(i=>action=="choose:"+i);
+    public static bool CompoundAction(string? action)=>Action(action)||action is "confirm" or "cancel" or "skip"||
+        Enumerable.Range(0,64).Any(i=>action=="select:"+i||action=="deselect:"+i);
+    public static bool PhaseAction(string? phase,string? action,bool compound=false)=>phase switch {
+        "rewards"=>Action(action)&&action is not ("skip_card" or "reroll" or "sacrifice")&&!action!.StartsWith("choose:",StringComparison.Ordinal),
+        "card_reward"=>Action(action)&&(action!.StartsWith("choose:",StringComparison.Ordinal)||action is "skip_card" or "reroll" or "sacrifice"),
+        "card_offer" when compound=>action=="skip"||Enumerable.Range(0,3).Any(i=>action=="choose:"+i),
+        "bundle_offer" when compound=>Enumerable.Range(0,5).Any(i=>action=="choose:"+i),
+        "bundle_preview" when compound=>action=="confirm",
+        "deck_remove" or "deck_upgrade" or "deck_transform" when compound=>CompoundAction(action)&&
+            (action is "confirm" or "cancel"||action!.StartsWith("select:",StringComparison.Ordinal)||action.StartsWith("deselect:",StringComparison.Ordinal)),
+        _=>false};
 }

@@ -51,7 +51,7 @@ internal static class GenericEventTerminalClassifier
                 else if (!Null(child) && Text(child,"kind")=="item_policy") return ItemPolicy(payload,nonce,true);
                 else if (!Null(child) && Text(child,"kind")=="abandon_confirmation") return Abandon(payload,nonce,true);
                 else if (!Null(child) && Text(child,"kind")=="crystal_sphere") return Sphere(payload,nonce,true);
-                else if (!Null(child) && Text(child,"kind")=="full_rewards") return FullRewards(payload,nonce,true);
+                else if (!Null(child) && Text(child,"kind")=="full_rewards") return FullRewards(payload,child,nonce,true);
                 else if (!Null(child) && Text(child,"kind")=="card_results") return Results(payload,child,nonce,true);
                 else if (!Null(child) && Text(child,"kind")=="card_offer") return Offer(payload,child,nonce,true);
                 else if (!Null(child) && Text(child,"kind")=="card_reward") return Reward(payload,child,nonce,true);
@@ -81,7 +81,7 @@ internal static class GenericEventTerminalClassifier
                 if (!Null(child) && Text(child,"kind")=="item_policy") return ItemPolicy(payload,nonce,false);
                 if (!Null(child) && Text(child,"kind")=="abandon_confirmation") return Abandon(payload,nonce,false);
                 if (!Null(child) && Text(child,"kind")=="crystal_sphere") return Sphere(payload,nonce,false);
-                if (!Null(child) && Text(child,"kind")=="full_rewards") return FullRewards(payload,nonce,false);
+                if (!Null(child) && Text(child,"kind")=="full_rewards") return FullRewards(payload,child,nonce,false);
                 if (!Null(child) && Text(child,"kind")=="card_results") return Results(payload,child,nonce,false);
                 if (!Null(child) && Text(child,"kind")=="card_offer") return Offer(payload,child,nonce,false);
                 if (!Null(child) && Text(child,"kind")=="card_reward") return Reward(payload,child,nonce,false);
@@ -111,7 +111,7 @@ internal static class GenericEventTerminalClassifier
             !GenericEventTransportRequestParser.ParentActionValue(Encoding.ASCII.GetBytes(Text(value,"parent_action_id")??"")))return false;
         if(item) {
             int count=value.GetProperty("offer_count").GetInt32();
-            if(Text(value,"kind")=="full_rewards")return count is >=1 and <=8&&Text(value,"contract_version")=="full_rewards_v1";
+            if(Text(value,"kind")=="full_rewards")return count is >=1 and <=8&&Text(value,"contract_version") is "full_rewards_v1" or "full_rewards_v2";
             if(Text(value,"kind")=="item_policy")return count is >=1 and <=8&&Text(value,"contract_version")=="item_policy_v1";
             if(Text(value,"kind")=="abandon_confirmation")return count==2&&Text(value,"contract_version")=="abandon_confirmation_v1";
             if(Text(value,"kind")=="crystal_sphere")return count==121&&Text(value,"contract_version")=="crystal_sphere_v1";
@@ -204,13 +204,15 @@ internal static class GenericEventTerminalClassifier
         }
         return TerminalClassification.NonTerminal;
     }
-    private static TerminalClassification FullRewards(JsonElement p, string nonce, bool apply)
+    private static TerminalClassification FullRewards(JsonElement p, JsonElement child, string nonce, bool apply)
     {
-        if (p.ValueKind != JsonValueKind.Object || Text(p,"version") != "full_rewards_v1" || Text(p,"session_nonce") != nonce)
+        bool compound=Text(child,"contract_version")=="full_rewards_v2";
+        bool Action(string? action)=>compound?GenericEventV7FullRewardRules.CompoundAction(action):GenericEventV7FullRewardRules.Action(action);
+        if (p.ValueKind != JsonValueKind.Object || Text(p,"version") != Text(child,"contract_version") || Text(p,"session_nonce") != nonce)
             return TerminalClassification.Invalid;
         if (apply) {
             if (!Keys(p,"version","session_nonce","decision_id","action_id","outcome") ||
-                !Hex(Text(p,"decision_id"),64) || !GenericEventV7FullRewardRules.Action(Text(p,"action_id")))
+                !Hex(Text(p,"decision_id"),64) || !Action(Text(p,"action_id")))
                 return TerminalClassification.Invalid;
             return Text(p,"outcome") switch {
                 "accepted" => TerminalClassification.NonTerminal,
@@ -225,7 +227,7 @@ internal static class GenericEventTerminalClassifier
         var decisions = new HashSet<string>(StringComparer.Ordinal);
         foreach (var h in history.EnumerateArray())
             if (!Keys(h,"decision_id","action_id","result") || !Hex(Text(h,"decision_id"),64) ||
-                !decisions.Add(Text(h,"decision_id")!) || !GenericEventV7FullRewardRules.Action(Text(h,"action_id")) || Text(h,"result") != "completed")
+                !decisions.Add(Text(h,"decision_id")!) || !Action(Text(h,"action_id")) || Text(h,"result") != "completed")
                 return TerminalClassification.Invalid;
         string? status = Text(p,"status"), phase = Text(p,"phase");
         if (status != "ready") {
@@ -235,14 +237,13 @@ internal static class GenericEventTerminalClassifier
                 ("unsupported","unsupported") => TerminalClassification.Terminal,
                 _ => TerminalClassification.Invalid };
         }
-        if (phase is not ("rewards" or "card_reward") || !Hex(Text(p,"decision_id"),64) || actions.GetArrayLength() is < 1 or > 66)
+        if (!Hex(Text(p,"decision_id"),64) || actions.GetArrayLength() is < 1 or > 66)
             return TerminalClassification.Invalid;
         var unique = new HashSet<string>(StringComparer.Ordinal);
         foreach (var entry in actions.EnumerateArray()) {
             string? action = entry.GetString();
-            if (!GenericEventV7FullRewardRules.Action(action) || !unique.Add(action!)) return TerminalClassification.Invalid;
-            bool cardAction = action!.StartsWith("choose:",StringComparison.Ordinal) || action is "skip_card" or "reroll" or "sacrifice";
-            if (cardAction != (phase == "card_reward")) return TerminalClassification.Invalid;
+            if (!Action(action) || !unique.Add(action!)) return TerminalClassification.Invalid;
+            if (!GenericEventV7FullRewardRules.PhaseAction(phase,action,compound)) return TerminalClassification.Invalid;
         }
         return TerminalClassification.NonTerminal;
     }

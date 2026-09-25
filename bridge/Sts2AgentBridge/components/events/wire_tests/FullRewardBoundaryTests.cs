@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Sts2AgentBridge.Successors.GenericEventReleaseV10;
@@ -22,6 +23,17 @@ internal static partial class GenericEventV7WireTests
 
     private static void FullRewardBoundaryCases()
     {
+        foreach(var action in new[]{"deselect:0","deselect:63","deselect:64","deselect:00","select:63","select:64"})
+            Case("compound transport selector grammar "+action,()=>{
+                var head=Encoding.ASCII.GetBytes("POST /probe/generic-event-v7/public/action HTTP/1.1\r\nHost: 127.0.0.1:43117\r\nAuthorization: Bearer "+new string('a',64)+
+                    "\r\nAccept: application/json\r\nX-Sts2-Decision-Id: "+new string('b',64)+"\r\nX-Sts2-Action-Id: "+action+
+                    "\r\nX-Sts2-Child-Ordinal: 1\r\nX-Sts2-Parent-Decision-Id: "+ParentId+"\r\nX-Sts2-Parent-Action-Id: choose:0\r\nConnection: close\r\n\r\n");
+                bool parsed=GenericEventTransportRequestParser.TryParse(head,GenericEventReleaseSelection.Generic,out var request);
+                Check(parsed==(action is "deselect:0" or "deselect:63" or "select:63"),"exact bounded selector grammar at HTTP ingress");
+                if(parsed)Check(request.Route==GenericEventTransportRoute.ChildPost&&Encoding.ASCII.GetString(head,request.ActionOffset,request.ActionLength)==action,
+                    "native action retained through parsing");
+                Array.Clear(head);
+            });
         Case("full reward wire lifecycle retains parent ownership at the production boundary", () => {
             using var f = new FullRewardsFake(); using var wire = new GenericEventV7WireService(Nonce, f);
             FullBoundary(FullRead(wire), GenericEventTransportRoute.DecisionGet);
@@ -63,6 +75,8 @@ internal static partial class GenericEventV7WireTests
         }
         var get = GenericEventTransportRoute.DecisionGet;
         Reject("descriptor version", ready, get, r => r["child"]!["contract_version"] = "card_results_v1");
+        Reject("descriptor-only compound upgrade", ready, get, r => r["child"]!["contract_version"] = "full_rewards_v2");
+        Reject("payload-only compound upgrade", ready, get, r => r["payload"]!["version"] = "full_rewards_v2");
         foreach (int count in new[] { 0, 9 }) Reject("descriptor count " + count, ready, get, r => r["child"]!["offer_count"] = count);
         Reject("descriptor lineage", ready, get, r => r["child"]!["parent_decision_id"] = "bad");
         Reject("descriptor parent action", ready, get, r => r["child"]!["parent_action_id"] = "dismiss");
@@ -85,6 +99,7 @@ internal static partial class GenericEventV7WireTests
         byte[] receipt = FullPost(service, Request(id, fixture.Actions[0], 1, ParentId, "choose:0"));
         var post = GenericEventTransportRoute.ChildPost;
         Reject("receipt version", receipt, post, r => r["payload"]!["version"] = "card_results_v1");
+        Reject("receipt-only compound upgrade", receipt, post, r => r["payload"]!["version"] = "full_rewards_v2");
         Reject("receipt nonce", receipt, post, r => r["payload"]!["session_nonce"] = new string('f', 32));
         Reject("receipt decision", receipt, post, r => r["payload"]!["decision_id"] = "");
         Reject("receipt action", receipt, post, r => r["payload"]!["action_id"] = "claim:8");
@@ -102,5 +117,17 @@ internal static partial class GenericEventV7WireTests
         });
         FullBoundary(settled, get);
         Array.Clear(ready);
+        using var compoundFixture=new FullRewardsFake(compound:true);using var compoundService=new GenericEventV7WireService(Nonce,compoundFixture);ItemStart(compoundService);
+        byte[] compoundReady=FullRead(compoundService);
+        FullBoundary(compoundReady.ToArray(),get);
+        Reject("compound descriptor downgrade",compoundReady,get,r=>r["child"]!["contract_version"]="full_rewards_v1");
+        Reject("compound payload downgrade",compoundReady,get,r=>r["payload"]!["version"]="full_rewards_v1");
+        Reject("compound phase mismatch",compoundReady,get,r=>r["payload"]!["phase"]="bundle_preview");
+        var compoundId=Decode(compoundReady).GetProperty("payload").GetProperty("decision_id").GetString()!;
+        FullBoundary(FullPost(compoundService,Request(compoundId,"collect:0",1,ParentId,"choose:0")),post);
+        var selecting=FullRead(compoundService);FullBoundary(selecting.ToArray(),get);
+        Reject("compound selector bound",selecting,get,r=>r["payload"]!["legal_actions"]![0]="select:64");
+        Reject("compound selector noncanonical slot",selecting,get,r=>r["payload"]!["legal_actions"]![0]="select:00");
+        Reject("compound selector wrong operation",selecting,get,r=>r["payload"]!["legal_actions"]![0]="collect:0");
     }
 }

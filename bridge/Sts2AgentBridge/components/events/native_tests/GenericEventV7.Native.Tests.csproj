@@ -17,6 +17,8 @@
     <Compile Include="RewardAlternativeFixtures.cs" />
     <Compile Include="RewardAlternativeStubs.cs" />
     <Compile Include="../../items/native/PinnedAutomaticRelicEffects.cs" />
+    <Compile Include="../../items/native/PinnedRelicPickupChain.cs" />
+    <Compile Include="RelicPickupChainFixtures.cs" />
     <Compile Include="../../items/native/PinnedRewardAlternatives.cs" />
     <Compile Include="../../items/native/PinnedRewardInventory.cs" />
     <Compile Include="../../items/native/PinnedRelicRewardEffect.cs" />

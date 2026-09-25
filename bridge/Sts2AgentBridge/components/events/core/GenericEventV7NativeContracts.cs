@@ -40,7 +40,7 @@ public abstract record GenericEventV7Admission(object Identity) {
     public bool IsSupported => Identity is not null && (this switch {
         GenericEventV7CardAdmission c => GenericEventV7Families.Supports(c.Operation,c.MinSelect,c.MaxSelect,c.CommitMode,c.DomainCount),
         GenericEventV7SphereAdmission => true,
-        GenericEventV7FullRewardsAdmission r => r.OfferCount is >=1 and <=8,
+        GenericEventV7FullRewardsAdmission r => r.OfferCount is >=1 and <=8 && r.ContractVersion is "full_rewards_v1" or "full_rewards_v2",
         GenericEventV7AbandonAdmission => true,
         GenericEventV7ResultsAdmission r => r.CardCount is >=1 and <=64,
         GenericEventV7OfferAdmission o => o.OfferCount is >=1 and <=5 && (!o.CanSkip || !o.Bundle && o.OfferCount<=3),
@@ -53,7 +53,7 @@ public sealed record GenericEventV7CardAdmission(object AdmissionIdentity, strin
     int MinSelect, int MaxSelect, string CommitMode, int DomainCount) : GenericEventV7Admission(AdmissionIdentity);
 public sealed record GenericEventV7AbandonAdmission(object AdmissionIdentity):GenericEventV7Admission(AdmissionIdentity);
 public sealed record GenericEventV7SphereAdmission(object AdmissionIdentity):GenericEventV7Admission(AdmissionIdentity);
-public sealed record GenericEventV7FullRewardsAdmission(object AdmissionIdentity,int OfferCount):GenericEventV7Admission(AdmissionIdentity);
+public sealed record GenericEventV7FullRewardsAdmission(object AdmissionIdentity,int OfferCount,string ContractVersion="full_rewards_v1"):GenericEventV7Admission(AdmissionIdentity);
 public sealed record GenericEventV7ResultsAdmission(object AdmissionIdentity,int CardCount):GenericEventV7Admission(AdmissionIdentity);
 public sealed record GenericEventV7OfferAdmission(object AdmissionIdentity,int OfferCount,bool Bundle,bool CanSkip=false):GenericEventV7Admission(AdmissionIdentity);
 public sealed record GenericEventV7RewardAdmission(object AdmissionIdentity,int OfferCount=1,bool Mixed=false) : GenericEventV7Admission(AdmissionIdentity);

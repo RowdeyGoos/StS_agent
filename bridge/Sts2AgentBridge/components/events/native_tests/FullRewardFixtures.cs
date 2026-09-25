@@ -100,6 +100,7 @@ internal static partial class Program
     }
     private static void FullRewardCases()
     {
+        RelicPickupChainCases();
         NestedRewardBoundaryCases();
         NestedOfferCases();
         NestedRewardCascadeCase(false);

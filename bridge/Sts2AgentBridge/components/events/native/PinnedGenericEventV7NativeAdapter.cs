@@ -114,7 +114,7 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
                 if(captured.Status=="resolved"&&fullRewards.Screen is null){fullRewards.Dispose();b.FullRewards=null;b.RequestSeen=false;}
                 else {
                 if(captured.Status!="ready"||fullRewards.Screen is null)return Fixed("unsupported");
-                b.Admission??=new GenericEventV7FullRewardsAdmission(new object(),fullRewards.OfferCount);
+                b.Admission??=new GenericEventV7FullRewardsAdmission(new object(),fullRewards.OfferCount,fullRewards.ContractVersion);
                 return new("child",false,Array.Empty<GenericEventV7NativeOption>(),fullRewards.Screen,b.Admission);
                 }
             }
