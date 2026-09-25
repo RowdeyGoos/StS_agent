@@ -1,8 +1,52 @@
 {
+  "additional_live_tests": [
+    {
+      "accepted": 0,
+      "actions": [
+        "buy_shop_item"
+      ],
+      "attempted": 1,
+      "case": "red_mask_full_producer_shop_purchase",
+      "cleanup": {
+        "base_file_count": 429,
+        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+        "game_process_running": false,
+        "generated_files_removed": 4,
+        "normal_quit": true,
+        "overlay_count": 0,
+        "port_accepting": false,
+        "quarantined_state_sha256": "522671646878aa25cbc046dfe49be9174f47af2a97a2a8d3e677f9be44d8a3d1",
+        "status": "passed",
+        "verified_by_utc": "2026-09-25 21:13:24 UTC"
+      },
+      "code": "uncertain_dispatch",
+      "decisions": 0,
+      "diagnosis": "RedMask inherits RelicModel.AfterObtained. Shop observer passed its reflected inherited MethodInfo directly to Harmony. Added inherited-passive fixture reproduced the exact declared-method ArgumentException before purchase dispatch; the live exception itself was not retained.",
+      "installation": {
+        "phase": "installed",
+        "state_sha256": "c659a490f51a7767b6ace155679b91ef4ace9e85ec51b5e3f75979ed87270e84",
+        "status": "passed",
+        "verified_by_utc": "2026-09-25 21:06:46 UTC"
+      },
+      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#red-mask-shop-purchase-stopped-before-acceptance",
+      "observed": "One purchase attempted, no accepted receipt. Native UI still showed 466 gold, Red Mask in stock, HP 88/88 and eleven cards. No mutation retried; this visual observation does not resolve the uncertain action.",
+      "pending": true,
+      "preflight_public_reads": 1,
+      "reads": 1,
+      "reconciled": 0,
+      "recorded_live_corpus": false,
+      "regression_reproduction": "/private/tmp/sts-bridge-ldp5vk1s/log-003.txt",
+      "setup": "Manual Profile 3 Continue restored Neow at HP 88/88, gold 466, eleven cards and three potions. Native room shop created merchant before policy attachment; inventory opened using UI. Public inspection confirmed supported Red Mask at 172 gold. Cauldron/Orrery not in stock.",
+      "stale_rejections": 0,
+      "status": "failed",
+      "target_game_executed": true
+    }
+  ],
   "change": "Connect Neows Bones to one full_rewards_v2 compound owner: retained nested reward/card/bundle/deck decisions, exact native pickup and card-command effects, chain-backed nested Sacrifice and final curse completion. Project visible choices through existing full_run_v2 actions.",
   "elapsed_times": {
     "final_semantic_review_seconds": 137,
     "installation_verified_by_utc": "2026-09-25 20:38:49 UTC",
+    "latest_live_cleanup_verified_by_utc": "2026-09-25 21:13:24 UTC",
     "live_cleanup_verified_by_utc": "2026-09-25 20:49:48 UTC",
     "live_final_inventory_verified_by_utc": "2026-09-25 20:45:00 UTC",
     "live_work_resumed_at_utc": "2026-09-25 20:40:20 UTC",
@@ -472,9 +516,9 @@
     "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
     "overlay_count": 0,
     "phase": "absent",
-    "previous_installed_state_sha256": "920640b5ab3231f5925feb91a5dd7b967dd5e0a395d412c7ef30d90efa273163",
+    "previous_installed_state_sha256": "c659a490f51a7767b6ace155679b91ef4ace9e85ec51b5e3f75979ed87270e84",
     "status": "passed",
-    "verified_by_utc": "2026-09-25 20:49:48 UTC"
+    "verified_by_utc": "2026-09-25 21:13:24 UTC"
   },
   "live": {
     "accepted": 7,

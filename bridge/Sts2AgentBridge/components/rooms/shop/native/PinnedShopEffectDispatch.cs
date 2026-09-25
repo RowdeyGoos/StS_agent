@@ -130,7 +130,17 @@ internal sealed class PinnedShopEffectDispatch : IShopV1ObservedDispatch
             capture.PotionSlots.Count==now.Potions.Length&&capture.PotionSlots.Select((p,i)=>ReferenceEquals(p.ModelIdentity,now.Potions[i].Model)&&p.StableKey==now.Potions[i].Key).All(x=>x);
     }
     private void Patch(MethodInfo method,string prefix,string postfix)
-    {Require(method is not null&&method.GetMethodBody() is not null&&!(Harmony.GetPatchInfo(method)?.Owners.Any()??false));_targets.Add(method);_hooks.Patch(method,new HarmonyMethod(typeof(PinnedShopEffectDispatch),prefix),new HarmonyMethod(typeof(PinnedShopEffectDispatch),postfix));}
+    {
+        Require(method is not null);
+        // Passive relics inherit AfterObtained. Harmony requires its declaring
+        // type, and ownership/cleanup must inspect that same method identity.
+        method=method.DeclaringType!.GetMethod(method.Name,
+            BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Static|BindingFlags.Instance|BindingFlags.DeclaredOnly,
+            null,method.GetParameters().Select(p=>p.ParameterType).ToArray(),null)!;
+        Require(method is not null&&method.GetMethodBody() is not null&&!(Harmony.GetPatchInfo(method)?.Owners.Any()??false));
+        _targets.Add(method);
+        _hooks.Patch(method,new HarmonyMethod(typeof(PinnedShopEffectDispatch),prefix),new HarmonyMethod(typeof(PinnedShopEffectDispatch),postfix));
+    }
     private bool ExactHooks()=>_targets.All(m=>Harmony.GetPatchInfo(m) is {} p&&p.Owners.Count==1&&p.Owners.Contains(_hooks.Id));
     private void Require([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)] bool condition){if(!condition){Abort();throw new InvalidOperationException("shop_effect_boundary");}}
     public void Abort()=>_failed=true;

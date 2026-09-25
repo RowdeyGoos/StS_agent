@@ -180,6 +180,13 @@ extend standalone rest/shop contracts.
 - **Native ownership:** modules remain exclusive until reconciliation and successful
   disposal. Uncertain mutations or failed cleanup stop the host; no mutation retries.
   Only a known `stale_decision` with `mutation_state: none` permits bounded re-observation.
+- **Full-producer shop purchase:** Red Mask at 172 gold stopped with
+  `uncertain_dispatch`, **1 attempted / 0 accepted / 0 reconciled**. A regression
+  reproduced an inherited pickup-method hook failure before purchase input. The
+  declaring-method correction passed focused checks and independent review;
+  its release and saved-merchant retest are pending. The
+  [original live stop](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#red-mask-shop-purchase-stopped-before-acceptance)
+  retains its uncertain result and exact cleanup.
 - **Selectors:** direct input requires allocated native holders. Optional zero
   confirmation is supported on specific contracts; it is not native cancellation.
 - **Evidence boundary:** supported child effects do not certify all automatic parent

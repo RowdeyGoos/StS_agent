@@ -396,3 +396,59 @@ Four generated files were removed, zero overlays remained and all 429 base files
 were unchanged at SHA-256
 `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
 Separate setup, execution, cleanup and user-wait durations were not measured.
+
+## Red Mask: shop purchase stopped before acceptance
+
+The unchanged `18169693a3ea87ca93c5513024e3e7dab9f62d2e1a0f2cc8a9fccf63c5394660`
+release, source `7bd3e09de0e262b3cb75c8854bb0456ad2fbb011`, was reinstalled under
+state `c659a490f51a7767b6ace155679b91ef4ace9e85ec51b5e3f75979ed87270e84`.
+Installation verification passed by **21:06:46 UTC**: two exact owned overlays
+and all 429 base files unchanged. One read-only verification invocation used a
+wrong package filename and stopped before checking; the corrected versioned
+filename passed. The user manually launched Profile 3. Runtime, health and pinned
+build/release compatibility checks passed.
+
+Continue restored the completed Neow checkpoint at HP 88/88, gold 466, eleven
+cards and three potions. Native `room shop` created a merchant before the first
+full-producer read; the inventory was opened through the UI. No additional HP,
+gold, cards or potions were granted. One public preflight read confirmed legal
+Red Mask stock at 172 gold, with zero action counts and no pending action. Cauldron
+and Orrery were absent from the visible stock. The bounded policy was prepared to
+buy Red Mask once, verify its exact insertion and gold debit, close the inventory
+and leave to the map.
+
+The first `buy_shop_item` returned **`uncertain_dispatch`**, **1 attempted /
+0 accepted / 0 reconciled**, one controller read, zero completed decisions and
+zero stale rejections; the host reported pending work. The separate preflight
+read is excluded from that read count. Native UI still showed 466 gold, Red Mask
+for sale, HP 88/88 and eleven cards. This is an observation, not a successful
+reconciliation or permission to retry. No further policy action ran.
+
+Source inspection found that Red Mask inherits `RelicModel.AfterObtained` and
+the shop observer tries to patch a method reflected through the derived type.
+An added inherited-passive fixture reproduced Harmony's declared-method
+`ArgumentException` before the inner purchase input at
+`/private/tmp/sts-bridge-ldp5vk1s/log-003.txt`. The preceding fixture used the base
+relic class directly and missed this boundary. This is a reproduced code defect
+consistent with the live stop; the live exception itself was not retained. The
+correction resolves the declaring method before checking hook ownership, patching
+and retaining the cleanup target. Its new artifact and retest are separate evidence.
+
+The focused correction check passed five groups in **8.34 seconds** under
+`/private/tmp/sts-bridge-c8_on36z`, including the shop effect and shop core suites.
+Cases cover inherited synchronous/delayed callbacks, the full shop owner,
+declared-hook cleanup and foreign-hook rejection before purchase input.
+Independent semantic review found no remaining blocker in **319 seconds**,
+21:14:31–21:19:50 UTC. These source/fixture results do not resolve the old live
+attempt or establish acceptance of the corrected package.
+
+Normal Save and Quit returned to the Profile 3 menu with Continue available, then
+normal Quit stopped the process and listener. Exact cleanup passed by
+**21:13:24 UTC**. Quarantine state was
+`522671646878aa25cbc046dfe49be9174f47af2a97a2a8d3e677f9be44d8a3d1`.
+Four generated files were removed, zero overlays remained and all 429 base files
+were unchanged at SHA-256
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+No profile/save/history/Cloud filesystem content was accessed, no live trajectory
+corpus was retained and no uncertain mutation was retried. Separate setup,
+execution, diagnosis, cleanup and user-wait durations were not measured.

@@ -24,6 +24,7 @@ using Sts2AgentBridge.Successors.ItemV1;
 
 internal static partial class Program
 {
+    private static void ShopForeignPickupPrefix() { }
     private sealed class ShopEffectsFixture:IDisposable
     {
         internal readonly Fixture World=new("SHOP_EFFECT");
@@ -43,7 +44,7 @@ internal static partial class Program
             if(initialPotion){var potion=new PotionModel{Owner=World.Player};potion.Id.Entry="KEPT";World.Player.PotionSlots[0]=potion;}
             RunManager.Instance=new(){State=(RunState)World.Player.RunState,RewardsSetSynchronizer=Sync};
             ActiveScreenContext.Instance=new(){Current=World.Room};NModalContainer.Instance=null;
-            Relic=kind switch{"cauldron"=>new Cauldron(),"orrery"=>new Orrery(),"mango"=>new Mango(),"paint"=>new WarPaint(),"passive"=>new RelicModel(),_=>new OldCoin()};
+            Relic=kind switch{"cauldron"=>new Cauldron(),"orrery"=>new Orrery(),"mango"=>new Mango(),"paint"=>new WarPaint(),"passive"=>new RelicModel(),"inherited_passive"=>new PassiveShopRelic(),_=>new OldCoin()};
             Relic.Id.Entry=kind.ToUpperInvariant();
             if(kind=="dragon")World.Player.Relics.Add(new DragonFruit{Owner=World.Player});
             Set=new(){Player=World.Player};Set.BindSynchronizer(Sync);Screen.BindRewards(Set,World.Player.RunState,false);
@@ -88,7 +89,25 @@ internal static partial class Program
     private static void ShopEffectCases()
     {
         ShopEffectSessionCases();
-        foreach(string kind in new[]{"passive","mango","paint","coin","dragon"})foreach(bool delayed in new[]{false,true}) {
+        using(var f=new ShopEffectsFixture("inherited_passive"))
+        {
+            var method=typeof(RelicModel).GetMethod("AfterObtained")!;
+            var foreign=new HarmonyLib.Harmony("fixture.shop.foreign."+Guid.NewGuid().ToString("N"));
+            foreign.Patch(method,new HarmonyLib.HarmonyMethod(typeof(Program),nameof(ShopForeignPickupPrefix)));
+            try
+            {
+                bool rejected=false;try{f.Dispatch.Invoke();}catch(InvalidOperationException){rejected=true;}
+                Check(rejected&&f.Purchase.Task is null&&f.World.Player.Gold==100&&f.Relic.Owner is null,"inherited foreign pickup hook rejects before purchase input");
+                for(int i=0;i<2;i++)
+                {
+                    rejected=false;try{f.Dispatch.Dispose();}catch(InvalidOperationException){rejected=true;}
+                    Check(rejected&&f.Purchase.Disposed,"failed inherited hook ownership remains stopped after cleanup");
+                }
+                Check(HarmonyLib.Harmony.GetPatchInfo(method)?.Owners.SequenceEqual(new[]{foreign.Id})==true,"shop cleanup preserves the foreign declared hook");
+            }
+            finally {foreign.UnpatchAll(foreign.Id);}
+        }
+        foreach(string kind in new[]{"passive","inherited_passive","mango","paint","coin","dragon"})foreach(bool delayed in new[]{false,true}) {
             using var f=new ShopEffectsFixture(kind,delayed);int hp=f.World.Player.Creature.MaxHp;
             f.Dispatch.Invoke();if(delayed){Check(f.Dispatch.Completion==ShopV1Completion.Pending,"shop effect waits for payment");f.Purchase.Delay!.SetResult();}
             Check(f.Dispatch.Completion==ShopV1Completion.Succeeded,"automatic native shop effect settles "+kind);
@@ -96,7 +115,10 @@ internal static partial class Program
             if(kind=="mango")Check(f.World.Player.Creature.MaxHp==hp+14,"native HP effect observed");
             if(kind=="dragon")Check(f.World.Player.Creature.MaxHp==hp+1,"gold-triggered HP effect observed");
             if(kind=="paint")Check(f.World.Cards.Take(2).All(c=>c.CurrentUpgradeLevel==1),"native automatic upgrades observed");
+            var declared=f.Relic.GetType().GetMethod("AfterObtained")!.DeclaringType!.GetMethod("AfterObtained")!;
+            Check(HarmonyLib.Harmony.GetPatchInfo(declared) is {} hooks&&hooks.Owners.Count==1&&hooks.Owners.Single().StartsWith("sts.bridge.shop.effect.",StringComparison.Ordinal),"shop owns the declared pickup method before disposal");
             f.Dispatch.Dispose();f.Dispatch.Dispose();Check(f.Purchase.Disposed,"automatic shop cleanup complete");
+            Check(!(HarmonyLib.Harmony.GetPatchInfo(declared)?.Owners.Any()??false),"declared pickup hook removed after shop completion");
         }
         foreach(string kind in new[]{"cauldron","orrery"})foreach(bool dismiss in new[]{false,true}) {
             using var f=new ShopEffectsFixture(kind);int deck=f.World.Player.Deck.Cards.Count;
@@ -172,7 +194,7 @@ internal static partial class Program
     }
     private static void ShopEffectSessionCases()
     {
-        foreach(string kind in new[]{"coin","cauldron","orrery"})foreach(bool dismiss in new[]{false,true})
+        foreach(string kind in new[]{"passive","inherited_passive","coin","cauldron","orrery"})foreach(bool dismiss in new[]{false,true})
         {
             using var fixture=new ShopEffectsFixture(kind);
             var adapter=new ShopEffectAdapter(fixture);
@@ -187,7 +209,7 @@ internal static partial class Program
             Check(Apply(view,"buy:relic:0")["status"]!.GetValue<string>()=="accepted","v8 native relic purchase accepted");
             int children=0;
             view=ShopRead(session);
-            if(kind!="coin")
+            if(kind is "cauldron" or "orrery")
             {
                 Check(view["phase"]!.GetValue<string>()=="rewards"&&view["completed"]!.AsArray().Count==0,"shop purchase remains pending behind native rewards");
                 for(int i=0;i<(dismiss?1:5);i++)
