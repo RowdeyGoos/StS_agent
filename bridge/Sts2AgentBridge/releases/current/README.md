@@ -31,13 +31,28 @@ changed menus, late responses and uncertain input cannot become clean completion
 Independent review is clear; measured review intervals and corrections are in
 `validation.json`.
 
-**Installed and verified; live rest tests pending.** At **22:24:52 UTC on
-2026-09-24**, the owned overlay/configuration matched the package, both overlay
-files were present, and all **429 base files** were unchanged. The user was asked
-to launch manually on Profile 3 at the main menu. No controller is running and
-this release has not yet dispatched a native action. Owned cleanup remains due
-after the tests. This is offline implementation evidence, not live acceptance or
-completion of the full shared native interface.
+**Representative rest tests passed live on 2026-09-25.** After manual launch on
+Profile 3 and native Continue, controlled relic grants and native map entry
+established the rest sites. Smith and Cook both canceled before selection and
+after selecting their previews, preserving the deck and restoring all options.
+Heal collected Dream Catcher's card and Tiny Mailbox's two potions. A separate
+Dream Catcher offer passed card Skip followed by explicit parent dismissal.
+
+| Case | Attempted / accepted / reconciled | Reads |
+| --- | --- | --- |
+| Smith immediate cancellation | 2 / 2 / 2 | 4 |
+| Smith preview cancellation | 3 / 3 / 3 | 13 |
+| Cook immediate cancellation | 2 / 2 / 2 | 4 |
+| Cook preview cancellation | 4 / 4 / 4 | 22 |
+| Heal card + two potion rewards | 5 / 5 / 5 | 30 |
+| Heal card Skip + parent dismissal | 4 / 4 / 4 | 29 |
+
+The collected rewards increased the deck from five to six cards and the belt
+from one to three potions. Skip preserved both counts. Both Heal cases returned
+to native Proceed. By **07:11:34 UTC**, normal quit and owned cleanup passed:
+game/listener stopped, four generated files removed, zero overlays, and all
+**429 base files** unchanged. This does not complete the full shared native
+interface or establish other rest/relic variants.
 
 An initial gate caught a shared-fixture compilation mismatch; the next caught an
 unintended regex dependency. Both were corrected and focused checks passed before

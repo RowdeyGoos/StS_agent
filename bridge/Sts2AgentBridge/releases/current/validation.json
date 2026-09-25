@@ -468,8 +468,115 @@
     "path": "/private/tmp/sts-unified-bridge-release"
   },
   "live": {
-    "authenticated_health": null,
-    "cleanup": "pending live checks; no native action dispatched by this release yet",
+    "authenticated_health": {
+      "correlation_id": "243e8f93cd2d47ea2783c52276d7c0c9",
+      "lifecycle_state": "running",
+      "schema_version": 1
+    },
+    "cases": {
+      "cook-cancel": {
+        "accepted": 2,
+        "attempted": 2,
+        "capability": "rest_v3",
+        "code": null,
+        "outcome": "cancelled",
+        "reads": 4,
+        "reconciled": 2,
+        "schema_version": 3,
+        "status": "resolved"
+      },
+      "cook-preview-cancel": {
+        "accepted": 4,
+        "attempted": 4,
+        "capability": "rest_v3",
+        "code": null,
+        "outcome": "cancelled",
+        "reads": 22,
+        "reconciled": 4,
+        "schema_version": 3,
+        "status": "resolved"
+      },
+      "heal-rewards": {
+        "accepted": 5,
+        "attempted": 5,
+        "capability": "rest_v3",
+        "code": null,
+        "outcome": "reconciled",
+        "reads": 30,
+        "reconciled": 5,
+        "schema_version": 3,
+        "status": "resolved"
+      },
+      "heal-skip": {
+        "accepted": 4,
+        "attempted": 4,
+        "capability": "rest_v3",
+        "code": null,
+        "outcome": "reconciled",
+        "reads": 29,
+        "reconciled": 4,
+        "schema_version": 3,
+        "status": "resolved"
+      },
+      "smith-cancel": {
+        "accepted": 2,
+        "attempted": 2,
+        "capability": "rest_v3",
+        "code": null,
+        "outcome": "cancelled",
+        "reads": 4,
+        "reconciled": 2,
+        "schema_version": 3,
+        "status": "resolved"
+      },
+      "smith-preview-cancel": {
+        "accepted": 3,
+        "attempted": 3,
+        "capability": "rest_v3",
+        "code": null,
+        "outcome": "cancelled",
+        "reads": 13,
+        "reconciled": 3,
+        "schema_version": 3,
+        "status": "resolved"
+      }
+    },
+    "cleanup": {
+      "base": {
+        "base_file_count": 429,
+        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+        "mode": "base",
+        "overlay_count": 0,
+        "schema_version": 1,
+        "status": "passed"
+      },
+      "purge": {
+        "campaign_id": "UNIFIED-BRIDGE-V1",
+        "generated_files_removed": 4,
+        "mode": "purge",
+        "phase": "absent",
+        "schema_version": 1,
+        "status": "passed"
+      },
+      "quarantine": {
+        "campaign_id": "UNIFIED-BRIDGE-V1",
+        "mode": "quarantine",
+        "phase": "quarantined",
+        "schema_version": 1,
+        "state_sha256": "a1cbf7e9b741c6ec58846d2ee1d773a5e7455e1014bc93aa8f86f4fdf96cc65c",
+        "status": "passed"
+      },
+      "stopped": {
+        "game_process_running": false,
+        "mode": "wait-stopped",
+        "port_accepting": false,
+        "port_samples": 2,
+        "process_samples": 50,
+        "schema_version": 1,
+        "status": "passed"
+      }
+    },
+    "cleanup_completed_by_utc": "2026-09-25T07:11:34Z",
     "controller_running": false,
     "install_result": {
       "campaign_id": "UNIFIED-BRIDGE-V1",
@@ -495,8 +602,43 @@
       "Cook cancellation and original deck/HP retention",
       "Heal-owned Dream Catcher card and Tiny Mailbox potion rewards"
     ],
-    "status": "installed_awaiting_manual_launch",
-    "target_game_executed": false,
+    "scope": "Controlled Smith/Cook immediate and selected-preview cancellation; Heal with Dream Catcher plus Tiny Mailbox collection; separate Dream Catcher Skip and explicit parent dismissal. No full shared-policy or whole-campaign claim.",
+    "setup_observation": {
+      "added_relics": [
+        "MEAT_CLEAVER",
+        "DREAM_CATCHER",
+        "TINY_MAILBOX"
+      ],
+      "debug_travel_disabled_after_tests": true,
+      "deck_before": 5,
+      "entry": "native Continue restored Tea Master checkpoint; native console relic grants and debug travel into real map rest nodes",
+      "gold": 399,
+      "hp_before": 21,
+      "mailbox_removed_before_card_skip": true,
+      "max_hp": 83,
+      "potions_before": 1,
+      "profile": 3
+    },
+    "status": "passed",
+    "target_game_executed": true,
+    "tested_on": "2026-09-25",
+    "ui_observations": {
+      "cancellations": "same five-card deck and all three rest options restored",
+      "heal_collect": {
+        "deck_count": 6,
+        "gold": 399,
+        "hp": 45,
+        "native_proceed_visible": true,
+        "potion_count": 3
+      },
+      "heal_skip": {
+        "deck_count": 6,
+        "gold": 399,
+        "hp": 69,
+        "native_proceed_visible": true,
+        "potion_count": 3
+      }
+    },
     "user_setup": "Manually open Profile 3 at the main menu and keep it foreground; use native Continue for the saved controlled test run.",
     "verified_by_utc": "2026-09-24T22:24:52Z"
   },

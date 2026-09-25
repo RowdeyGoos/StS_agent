@@ -1,8 +1,8 @@
 # Bridge support and status
 
-Updated 2026-09-25 for interactive rest implementation; other capability review remains
+Updated 2026-09-25 for interactive rest live validation; other capability review remains
 2026-09-19 against bridge source, pinned native game IL and retained evidence. Latest live
-session: **2026-09-24**. This is the authoritative summary of bridge support;
+session: **2026-09-25**. This is the authoritative summary of bridge support;
 [usage](../bridge/Sts2AgentBridge/README.md), [technical contracts](GENERIC_EVENTS.md),
 [caller evidence](EVENT_COVERAGE.md) and [priorities](../ROADMAP.md) have separate roles.
 
@@ -40,7 +40,7 @@ are verified. Final Proceed does not erase earlier verified child results.
 | Visible infinite enemy HP | Combat schema 2 represents the native infinity display with null numeric HP; campaign v6 conserves potions and ends turns when all enemies are infinite | Saved Waterfall Giant retest passed: 25/25/25 combat actions, native victory, rewards and Act 2 entry. The same controller continued through both remaining bosses and the native ending |
 | Combat card choices | Owned discard/exhaust selections, including optional zero confirmation; v2 adds visible Draw grids; v3 adds mandatory one-card offers | Neow’s Fury zero/two-card choices and resumed victory demonstrated. Repeated Séance Draw selections and enclosing victories passed through Act 3. Three Knowledge Demon offers reconciled, followed by its boss victory and the ending. Other fixed/exhaust callers remain offline only |
 | Map and room handoffs | Public legal map actions and bounded event/combat-to-map verification | Representative map/next-room transitions demonstrated; composite `*-map` clients verify the map but do not select a node |
-| Rest | Heal/Proceed and Smith (one card); Lift, Kindle, Dig, Cook, Clone and Hatch. Packaged `rest_v3` exposes selector cancellation and Heal-owned rewards | Ordinary Heal/Smith demonstrated. Interactive selectors, cancellation, triggered rewards and the six additional actions are offline only; see below |
+| Rest | Heal/Proceed and Smith (one card); Lift, Kindle, Dig, Cook, Clone and Hatch. Packaged `rest_v3` exposes selector cancellation and Heal-owned rewards | Ordinary Heal/Smith, Smith/Cook immediate and preview cancellation, Dream Catcher card collect/Skip, and Tiny Mailbox two-potion collection demonstrated. Successful effects of the six additional actions remain offline only |
 | Shop purchases | Cards, potions, supported passive relics, Potion Belt +2 slots; 0–8 purchases, kind policy, gold reserve and callback-certified restock | Seven-card/one-potion visit and three restocked potion purchases with original-potion replacement demonstrated. Passive relics, capacity and other policy variants need live coverage |
 | Shop removal | Exact selected original, price/effect reconciliation, then separate inventory close and Leave | Demonstrated through map return; removing a card does not itself leave the shop |
 | Shop pickup selectors | Dolly’s Mirror, Gnarled Hammer, Kifuda, Punch Dagger and Royal Stamp; exact native clone/enchantment selection | Implemented and offline tested; live coverage open. Other pickup callbacks are not generally supported |
@@ -54,18 +54,19 @@ The new rest flow has its own native effect and selector checks.
 
 | Option | Native source / trigger | Native behavior | Bridge |
 | --- | --- | --- | --- |
-| Heal | Default rest option | Heal, then run rest hooks and any generated rewards | Ordinary Heal/Proceed demonstrated; `rest_v3` supports Dream Catcher and Tiny Mailbox rewards offline |
-| Smith | Default rest option | Select and upgrade **one** card | Ordinary upgrade demonstrated; `rest_v3` exposes select/deselect/confirm/cancel, offline only |
+| Heal | Default rest option | Heal, then run rest hooks and any generated rewards | Ordinary Heal/Proceed, Dream Catcher card collect/Skip and Tiny Mailbox potion collection demonstrated |
+| Smith | Default rest option | Select and upgrade **one** card | Ordinary upgrade and `rest_v3` cancellation before selection/from preview demonstrated; deselection remains offline only |
 | Dig | Shovel | Obtain a relic directly, including its pickup callback | Implemented in source; exact new relic and callback completion. One owned deck/enchantment selector of up to three cards; other follow-up surfaces stop |
 | Lift | Girya, fewer than three lifts | Increase its lift counter, granting Strength in later combats | Included in the current package; exact +1 and native task completion checked offline. No live demonstration |
-| Cook | Meat Cleaver | Remove two cards, gain nine max HP; native selection can be canceled | Exact original pair and +9 max HP supported offline. `rest_v3` exposes individual choices and cancellation |
+| Cook | Meat Cleaver | Remove two cards, gain nine max HP; native selection can be canceled | Immediate and two-card preview cancellation demonstrated. Successful removal/+9 max HP remains offline only |
 | Clone | Pael’s Growth | Copy the deck’s Clone-enchanted cards | Implemented in source; scoped native insertion results, including add-time upgrades |
 | Kindle | Pumpkin Candle | Add five to its remaining combat counter | Included in the current package; exact +5 and native task completion checked offline. No live demonstration |
 | Hatch | Byrdonis Egg card | Obtain Byrdpip and transform every egg into Byrd Swoop | Implemented in source; exact relic and all egg transformations |
 | Mend | Generated only with multiple players | Target and heal another player | Outside the current single-player bridge scope |
 
 The six new options use `rest_v2` on the existing room-flow routes. They are
-implemented, validated offline and included in the current package, **without live demonstration**. A flow
+implemented, validated offline and included in the current package. Their successful
+effects remain **without live demonstration**; Cook cancellation passed live. A flow
 starts with at most 64 deck cards, executes one option, waits for the native effect
 and rest continuation, verifies hook removal, then returns at the rest site without
 pressing Proceed. Remaining Miniature Tent choices stay available for the next
@@ -85,8 +86,8 @@ Smith/Cook cancellation verifies the unchanged deck/inventory and restored optio
 controls. Heal owns the exact reward set and card menu: taking the last reward can
 close it automatically, while card Skip returns to the reward parent for separate
 dismissal. Unopened card offers are hidden. Full-belt replacement and arbitrary
-additional reward kinds remain outside this route. This increment is not yet a
-live demonstration or the native `full_run_v2` producer.
+additional reward kinds remain outside this route. Representative cancellation and
+reward collection/Skip cases passed live; this is not the native `full_run_v2` producer.
 [Usage and contract](../bridge/Sts2AgentBridge/README.md#rest-options)
 
 **Smith correction:** its constructor sets `SmithCount = 1`. An assembly-wide
@@ -167,11 +168,12 @@ extend standalone rest/shop contracts.
 
 ## Implementation gaps versus remaining live tests
 
-### Confirmed rest gaps implemented, awaiting live validation
+### Confirmed rest gaps implemented and demonstrated
 
 Native Smith/Cook cancellation and rest-triggered Dream Catcher/Tiny Mailbox
-rewards now have interactive adapters and offline ownership/effect checks.
-Representative live validation remains open. These changes do not complete the
+rewards now have interactive adapters and ownership/effect checks. Representative
+cancellation, reward collection and card Skip passed live on 2026-09-25.
+These changes do not complete the
 broader shared native public interface, which remains under implementation.
 
 ### Contract limits without a confirmed missing gameplay caller
@@ -230,12 +232,14 @@ is **`1926afc8917efd6b27165057d412bb63bd33a2bfed4ba6570773ca19083e54e5`**.
 It binds 423 exact source/test inputs across 51 projects, committed in `ff3cb5f`
 (rest feature `24f620d`). The final gate passed **83 groups in 307.672 seconds**,
 including **12,925 native checks**, 625 rest checks, 22 rest host tests and 18
-Python/C# rest scenarios. Independent semantic review is clear. The package is
-installed and its two overlay files and unchanged 429 base files were verified
-by **22:24:52 UTC on 2026-09-24**. The user has been asked to launch manually on
-Profile 3 for saved-run cancellation/reward checks. No rest live acceptance is
-claimed; cleanup remains due after those checks. Full shared native observations
-and policy orchestration remain in progress.
+Python/C# rest scenarios. Independent semantic review is clear. The controlled
+Profile 3 live checks passed on **2026-09-25**: Smith/Cook immediate and preview
+cancellation, Heal-owned card/two-potion collection, and separate card Skip/parent
+dismissal. All **20/20/20 actions** reconciled across 102 reads. Normal quit and
+owned cleanup completed by **07:11:34 UTC**: process/listener stopped, four generated
+files removed, zero overlays and all 429 base files unchanged. Detailed case counts
+are in the [release record](../bridge/Sts2AgentBridge/releases/current/README.md).
+Full shared native observations and policy orchestration remain in progress.
 
 The prior automatic-removal release was
 **`308e9683a74a3d60ef2071e3dd6f97583e2ace1adb2494778a9aaee73e89105e`**,

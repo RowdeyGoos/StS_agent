@@ -444,9 +444,11 @@ Ancients and the ending; expose nested selections to the same policy callback;
 and retain exact parent/child ownership, version negotiation, reconciliation and
 public-only recording. Native Smith/Cook cancellation and Dream Catcher/Tiny
 Mailbox reward continuation now have an interactive room-module implementation
-and offline checks. Each native child is separately exposed to its callback;
-the controlled rest client is not yet connected to the full shared policy, and
-representative live validation remains open. The Dig pool audit found no
+and offline checks. Each native child is separately exposed to its callback.
+Representative live checks passed on 2026-09-25: immediate/preview cancellation
+for both options, combined card/potion collection, and separate card Skip/parent
+dismissal, with 20/20/20 actions and complete owned cleanup. The controlled rest
+client is not yet connected to the full shared policy. The Dig pool audit found no
 normal-game pickup-screen caller among its Common/Uncommon/Rare relics; broader
 injected pickup screens remain a contract limit.
 These changes belong in the existing native modules, router and client. Completion
