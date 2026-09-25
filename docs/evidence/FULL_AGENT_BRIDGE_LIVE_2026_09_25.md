@@ -238,3 +238,29 @@ Lost Coffer before attaching the full agent. Pinned `ActConsoleCmd` invokes
 `RunManager.EnterAct`, which clears screens and invokes `SetActInternal`; that
 regenerates the act map and calls `SetTravelEnabled(false)`. No production guard
 or package change is needed for that setup. This preparation is not yet live evidence.
+
+## Lost Coffer: native admission passed; full projection stopped
+
+The same `7b6bb85e…` release, source `af80a77`, was manually launched on Profile 3
+under installed state `f8a6c2c5b9ff0bee71c4ee7b5a9b40c9e5ea37f5bec99fa14d366ee88f27739a`.
+Health passed at **15:52:25 UTC**. Continue restored the combat reward checkpoint.
+Native `act 1` rebuilt the act map inside the saved campaign and entered Neow;
+`ancient NEOW LOST_COFFER` then displayed Lost Coffer, Neow's Torment and Cursed
+Pearl. HP settled at 88/88, gold 466 and deck seven. The console was closed before
+attaching the full producer. A native save notification was visible after act reset;
+the next Continue must be inspected instead of assuming the previous checkpoint.
+
+The test stopped with **`read_context_failed`**, **0 attempted / 0 accepted /
+0 reconciled**, 34 reads, no decision and no pending action. Native event admission
+now passed the travel guard. The remaining category covers run initialization and
+event projection; it does not identify a particular formatting or binding failure.
+No dialogue, relic or reward action ran, and no mutation was retried. Lost Coffer
+reward acceptance remains open.
+
+Normal Save and Quit/game Quit and exact owned cleanup finished by **15:56:14 UTC**.
+The game process and listener were stopped, four generated files removed, zero
+overlays remained and all 429 base files were unchanged at SHA-256
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Quarantine state was `9ecc39d58f34b839df352f858c11ea0f67b34dbefa5bb303cdb2140b3fa6b695`.
+Separate execution and cleanup durations were not measured. No profile/save/history/
+Cloud filesystem content was accessed and no public trajectory corpus was retained.

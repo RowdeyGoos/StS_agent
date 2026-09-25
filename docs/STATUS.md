@@ -283,11 +283,14 @@ guard reports its own category. The next live Lost Coffer check identified
 `read_native_event_parent_travel`: **0/0/0**, 34 reads, no decision or pending
 action. Debug event-room entry also retains enabled travel. No option or reward
 action ran. Normal quit and exact cleanup finished by **15:49:13 UTC**, with four
-generated files removed, zero overlays and unchanged base files. The same package
-is reinstalled, verified by **15:49:47 UTC** with two exact overlays and unchanged
-base files. It awaits manual launch; next setup uses native `act 1` within the saved
-campaign to rebuild the act map and disable travel before Lost Coffer. Full-producer
-reward acceptance remains open.
+generated files removed, zero overlays and unchanged base files. The same package's
+next test used native `act 1` within the saved campaign before preparing Lost Coffer.
+It passed that native travel guard, then stopped at `read_context_failed` with
+**0/0/0**, 34 reads, no decision and no pending action. This category still covers
+run initialization and event projection; the precise cause is under investigation.
+Normal quit and exact cleanup finished by **15:56:14 UTC**: four generated files
+removed, zero overlays and all 429 base files unchanged. The game is stopped and
+the bridge installation is absent. Full-producer reward acceptance remains open.
 
 Under the preceding manifest `1f83ded8…`, source `887c1da`, Whetstone Sacrifice
 passed **4/4/4 actions**, five reads and map return. Shop-removal preview

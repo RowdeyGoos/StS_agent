@@ -45,12 +45,14 @@ retains enabled map travel. No option or reward action ran. Normal quit and owne
 cleanup completed by **15:49:13 UTC**: four generated files removed, zero overlays
 and unchanged base files. This confirms the rejected boundary, not reward acceptance.
 
-The same validated package is reinstalled, verified at **15:49:47 UTC** with two
-exact owned overlays and all 429 base files unchanged. It awaits manual Profile 3
-launch. The next setup uses native `act 1` within the saved campaign to clear
-screens, rebuild the act map and disable travel before creating Lost Coffer.
-No new campaign is required. No profile/save/history/Cloud filesystem content or
-live trajectory corpus was accessed.
+The next test used native `act 1` within the saved campaign, then prepared Lost
+Coffer. It passed the travel guard but stopped at `read_context_failed` with
+**0/0/0**, 34 reads, no decision and no pending action. The exact run/event
+projection failure remains under investigation. Normal quit and exact cleanup
+finished by **15:56:14 UTC**: four generated files removed, zero overlays and all
+429 base files unchanged. The game is stopped and the bridge installation is
+absent. No profile/save/history/Cloud filesystem content or live trajectory corpus
+was accessed.
 
 The [native candidate boundary](../../../../docs/AGENT_CONTRACT.md#native-full-run-v2-candidate)
 remains explicit. Neow's Bones needs a compound relic-pickup/curse continuation;
