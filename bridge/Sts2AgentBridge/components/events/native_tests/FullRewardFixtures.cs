@@ -37,14 +37,16 @@ internal static partial class Program
         internal PaelsWing? Wing;
         internal bool DelayCallback,DelayCollection;
         internal Action? AfterCollection;
-        internal FullRewardFixture(string kind="card",int count=1,bool mandatory=false)
+        private readonly bool _compound;
+        internal FullRewardFixture(string kind="card",int count=1,bool mandatory=false,bool compound=false)
         {
+            _compound=compound;
             foreach(var c in World.Cards)c.Owner=World.Player;
             RunManager.Instance=new(){State=(RunState)World.Player.RunState,RewardsSetSynchronizer=Sync};
             MegaCrit.Sts2.Core.Combat.CombatManager.Instance=new();NModalContainer.Instance=null;
             ActiveScreenContext.Instance=new(){Current=World.Room};
             Set=new(){Player=World.Player,DisallowSkipping=mandatory};Set.BindSynchronizer(Sync);Screen.BindRewards(Set,World.Player.RunState,false);
-            World.Adapter.FullRewardsFactory=(binding,set)=>new GenericEventFullRewards(binding,set);
+            World.Adapter.FullRewardsFactory=(binding,set)=>compound?new GenericEventCompoundRewards(binding,set):new GenericEventFullRewards(binding,set);
             World.Room.Layout.OptionButtons[0].Option.Callback=async()=>{await Set.Offer();if(DelayCallback)await Callback.Task;World.Model.IsFinished=true;World.Room.Layout.OptionButtons.Clear();World.AddOption(new(){TextKey="PROCEED",IsProceed=true,Callback=()=>{World.Map.IsOpen=true;World.Map.IsTravelEnabled=true;return Task.CompletedTask;}});};
             for(int i=0;i<count;i++) {
                 Reward reward;
@@ -68,7 +70,7 @@ internal static partial class Program
             Screen.BindProceed(new NProceedButton{IsEnabled=!mandatory,Clicked=Close});
             NRewardsScreen.Factory=(_,_,_)=>{World.Overlays.Screens.Add(Screen);ActiveScreenContext.Instance.Current=Screen;return Screen;};
             NCardRewardSelectionScreen.Factory=(_,_)=>{Populate();World.Overlays.Screens.Add(Menu);ActiveScreenContext.Instance.Current=Menu;return Menu;};
-            Set.OfferHandler=()=>{if(count==0)return Task.CompletedTask;Sync.Current.rewardsStack.Add(new(){set=Set});NRewardsScreen.ShowScreen(Set,false,World.Player.RunState);return Finish.Task;};
+            Set.OfferHandler=()=>{if(count==0)return Task.CompletedTask;Sync.Current.rewardsStack.Add(new(){set=Set,completionSource=Finish});NRewardsScreen.ShowScreen(Set,false,World.Player.RunState);return Finish.Task;};
         }
         private void SetCards(string prefix,CardReward reward){Cards=Enumerable.Range(0,3).Select(i=>{var c=new CardModel{Owner=World.Player};c.Id.Entry=prefix+"_"+i;return c;}).ToArray();reward.Setup(Cards.Select(c=>new CardCreationResult(c)).ToList());}
         private void Populate()
@@ -92,7 +94,7 @@ internal static partial class Program
             if(DelayCollection)await Collection.Task;
             if(Set.Rewards.All(r=>r.SuccessfullySelected))Close();
         }
-        private void Close(){World.Overlays.Screens.Clear();Sync.Current.rewardsStack.Clear();ActiveScreenContext.Instance.Current=World.Room;Finish.TrySetResult();}
+        private void Close(){if(_compound)Sync.Complete(Sync.Current.rewardsStack.Single(e=>ReferenceEquals(e.set,Set)),Set.Rewards.All(r=>r.SuccessfullySelected)?RestRewardsFixture.Synchronizer.CompleteState.Completed:RestRewardsFixture.Synchronizer.CompleteState.Skipped);World.Overlays.Screens.Clear();Sync.Current.rewardsStack.Clear();ActiveScreenContext.Instance.Current=World.Room;Finish.TrySetResult();}
         internal GenericEventV7Observation Start()=>World.Start();
         internal GenericEventV7RewardRead Read(GenericEventV7Observation c)=>((GenericEventV7RewardChildRead)World.Session.ReadChild(c.Child!.ParentDecisionId,c.Child.ParentActionId,c.Child.Ordinal)).Value;
         internal GenericEventV7RewardRead Act(GenericEventV7Observation c,string action){var view=Read(c);Check(view.Status=="ready"&&view.LegalActions.Contains(action),"full event legal "+action+" "+view.Status+"/"+view.Phase);var result=(GenericEventV7RewardChildApply)World.Session.ApplyChild(c.Child!.ParentDecisionId,c.Child.ParentActionId,c.Child.Ordinal,view.DecisionId,action);Check(result.Value.Outcome=="accepted","full event accepted "+action+" "+result.Value.Outcome);return Read(c);}
@@ -100,6 +102,16 @@ internal static partial class Program
     }
     private static void FullRewardCases()
     {
+        foreach(string kind in new[]{"card","reroll","sacrifice","relic","special","potion"}) {
+            using var f=new FullRewardFixture(kind,compound:true);var c=f.Start();
+            Check(c.Child?.ContractVersion=="full_rewards_v2","compound root admission "+kind+" "+c.Status);
+            GenericEventV7RewardRead done;
+            if(kind is "card" or "reroll" or "sacrifice"){f.Act(c,"open:0");if(kind=="reroll")f.Act(c,"reroll");done=f.Act(c,kind=="sacrifice"?"sacrifice":"choose:1");}
+            else done=f.Act(c,kind=="special"?"take:0":"collect:0");
+            Check(done.Status=="resolved","compound simple root resolves "+kind+" "+done.Status);
+            Check(f.World.Session.Read().ParentReconciled==1,"compound parent waits for native root completion");
+        }
+        CompoundRewardCases();
         RelicPickupChainCases();
         NestedRewardBoundaryCases();
         NestedOfferCases();

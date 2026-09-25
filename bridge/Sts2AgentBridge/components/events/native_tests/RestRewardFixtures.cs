@@ -21,10 +21,14 @@ internal static partial class Program
     {
         internal sealed class Synchronizer
         {
-            internal sealed class Entry { public RewardsSet set = null!; }
+            internal sealed class Entry { public RewardsSet set = null!; internal TaskCompletionSource? completionSource; }
             internal sealed class State { public List<Entry> rewardsStack = new(); }
+            internal enum CompleteState { Completed,Skipped }
             internal readonly State Current = new();
             private State GetRewardStateForPlayer(MegaCrit.Sts2.Core.Entities.Players.Player player) => Current;
+            internal void Complete(Entry entry,CompleteState state)=>CompleteRewardsSet(entry,state);
+            [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+            private void CompleteRewardsSet(Entry entry,CompleteState state){Current.rewardsStack.Remove(entry);entry.completionSource!.SetResult();}
         }
         internal readonly Synchronizer Sync = new();
         internal readonly Fixture World = new("REST_REWARDS");

@@ -238,6 +238,18 @@ the corrected budget/HTTP cases passed in 1.632 s and the production build in
 1.779 s. Independent semantic reviews found no remaining blocker in these two
 pieces. No compound native producer or new released package is claimed by them.
 
+A compound reward owner now connects those pieces for ordinary automatic pickups
+and nested reward sets (Small Capsule, Lost Coffer and Kaleidoscope). One event
+admission retains all native collection tasks, closing overlays and ordered input
+receipts, including when the outer screen retires before the last inner collection.
+Constructor failure removes its otherwise unreachable observer; failed active owners
+still stop the host. Nested Sacrifice is withheld because its current observer would
+conflict with the enclosing pickup owner. Focused native checks passed three groups
+in 10.334 s, production compilation passed two groups in 1.791 s, and independent
+semantic review cleared the corrected slice. The production factory and Neow's Bones
+guard remain unchanged: card offers/selectors and the final curse still need their
+actual effect bindings before this owner can be released.
+
 ### Contract limits without a confirmed missing gameplay caller
 
 These are **not an implementation queue or required live-test checklist**:
