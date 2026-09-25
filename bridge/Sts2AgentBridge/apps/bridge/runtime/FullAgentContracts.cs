@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Sts2AgentBridge.Unified;
@@ -17,6 +19,22 @@ internal interface IFullAgentBackend : IDisposable
 {
     FullCapture Read();
     ModuleReply Apply(BridgeRequest command);
+}
+
+internal static class FullAgentWire
+{
+    internal static JsonDocument Read(ModuleReply reply)
+    {
+        try
+        {
+            if (reply.Terminal) throw new AgentUnsupported();
+            // Parse(byte[]) retains that memory. Stream parsing gives the
+            // document its own storage before the response buffer is wiped.
+            using var input = new MemoryStream(reply.Body, writable: false);
+            return JsonDocument.Parse(input);
+        }
+        finally { Array.Clear(reply.Body); }
+    }
 }
 
 // Closed read-stage categories only: never expose exception messages, native

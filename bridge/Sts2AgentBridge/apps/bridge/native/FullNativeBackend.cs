@@ -50,12 +50,8 @@ internal sealed partial class FullNativeBackend : IFullAgentBackend
     };
     private static BridgeRequest Request(string family, bool post = false, string? decision = null, string? action = null) =>
         new(family is "rest" or "shop" ? Capability.Rooms : family == "event" ? Capability.Events : Capability.Core, Route(family, post), post, 0, 0, decision, action);
-    private JsonDocument ReadWire(string family) => FullReadFailure.At(FullReadStage.Native, () =>
-    {
-        var reply = _router.Dispatch(Request(family));
-        try { Require(!reply.Terminal); return JsonDocument.Parse(reply.Body); }
-        finally { Array.Clear(reply.Body); }
-    });
+    private JsonDocument ReadWire(string family) => FullReadFailure.At(FullReadStage.Native,
+        () => FullAgentWire.Read(_router.Dispatch(Request(family))));
     private static string? Text(JsonElement value, string key) => value.TryGetProperty(key, out var field) && field.ValueKind == JsonValueKind.String ? field.GetString() : null;
     private FullCapture Waiting() => new("waiting", null, Array.Empty<FullCommand>(), Array.Empty<object>(), _completed.ToArray());
     private FullCapture Complete(string outcome) => new("complete", null, Array.Empty<FullCommand>(), Array.Empty<object>(), _completed.ToArray(), outcome);

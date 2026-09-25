@@ -73,6 +73,23 @@ internal static class FullAgentSessionTests
         session.Handle(new(Capability.Core, FullAgentRoutes.Action, true, 0, 0, observation["decision_id"]!.GetValue<string>(), "action:0"));
     internal static void Run(Action<bool, string> check)
     {
+        {
+            byte[] body = "{\"status\":\"ready\",\"surface\":\"rest\",\"completed\":[],\"options\":[{\"kind\":\"smith\",\"enabled\":true}]}"u8.ToArray();
+            using var wire = FullAgentWire.Read(new(body));
+            check(body.All(b => b == 0), "native response source buffer cleared");
+            check(wire.RootElement.GetProperty("status").GetString() == "ready" &&
+                wire.RootElement.GetProperty("surface").GetString() == "rest" &&
+                wire.RootElement.GetProperty("options")[0].GetProperty("enabled").GetBoolean(),
+                "native response document owns bytes after source wipe");
+        }
+        foreach (bool terminal in new[] { false, true })
+        {
+            byte[] body = terminal ? "{\"status\":\"failed\"}"u8.ToArray() : "{\"status\":\"ready\"} {}"u8.ToArray();
+            bool rejected = false;
+            try { using var wire = FullAgentWire.Read(new(body, Terminal: terminal)); }
+            catch (Exception error) when (error is JsonException or AgentUnsupported) { rejected = true; }
+            check(rejected && body.All(b => b == 0), "failed native reply clears its source buffer");
+        }
         foreach (var stage in Enum.GetValues<FullReadStage>())
         {
             var backend = new Backend(); using var session = new FullAgentSession(backend, "fixture");

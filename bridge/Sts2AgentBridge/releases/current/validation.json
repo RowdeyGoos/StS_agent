@@ -470,13 +470,38 @@
     "status": "passed"
   },
   "live": {
-    "cleanup": "pending_after_live_test",
-    "manual_launch_required": true,
+    "cleanup": "complete",
+    "cleanup_result": {
+      "base_file_count": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "completed_by_utc": "2026-09-25T10:09:24Z",
+      "generated_files_removed": 4,
+      "overlay_count": 0,
+      "status": "passed"
+    },
+    "diagnosis": "FullNativeBackend.ReadWire cleared the response array while JsonDocument still borrowed that memory. The old implementation reproduced missing status fields in /private/tmp/sts-bridge-2tgab9xp; the corrected owned-document regression passed in /private/tmp/sts-bridge-0649pkbj (13.443 seconds). This package itself is not corrected.",
+    "manual_launch_required": false,
     "profile": 3,
+    "result": {
+      "accepted": 0,
+      "attempted": 0,
+      "code": "read_context_failed",
+      "decision_kinds": [],
+      "decisions": 0,
+      "outcome": null,
+      "pending": false,
+      "reads": 1,
+      "reconciled": 0,
+      "schema_version": 1,
+      "stale_rejections": 0,
+      "status": "failed"
+    },
     "scope": "Continue the saved rest site, retain the first shared-interface read category, and stop at a reconciled map if supported. No mutation retry or campaign acceptance claim.",
-    "status": "awaiting_manual_launch",
-    "target_game_executed": false,
-    "underlying_observation_failure_status": "unresolved"
+    "setup": "Manual Profile 3 launch, native Continue, saved rest with HP 45/83, gold 399 and six cards.",
+    "shutdown": "Native Save and Quit then Quit/Yes; fresh stopped process and closed listener (3 process samples, 2 port samples).",
+    "status": "failed_before_first_action",
+    "target_game_executed": true,
+    "underlying_observation_failure_status": "diagnosed_buffer_lifetime"
   },
   "previous_release": {
     "cleanup": "Native normal quit; process/listener stopped, four bridge-owned files purged, zero overlays, 429 base files unchanged.",

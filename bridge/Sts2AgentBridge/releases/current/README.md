@@ -26,15 +26,17 @@ for source `a39c40f`; this correction reran affected checks and the release gate
 This correction retains closed observation failure categories and validated
 action counts. It reports which read boundary failed without exposing exception
 messages or native data. Failure still stops the host without a mutation retry.
-**The underlying live observation failure is not yet diagnosed or verified fixed.**
+The diagnostic test identified `read_context_failed` before any action. Source
+inspection and a failing regression identified a borrowed JSON buffer being
+cleared before its fields were read. This package itself remains uncorrected.
 The [native candidate boundary](../../../../docs/AGENT_CONTRACT.md#native-full-run-v2-candidate)
 and remaining potion, hand-selector, treasure, pickup and recording gaps remain.
 
-The package is installed for another controlled Profile 3 test, awaiting manual
-launch. Installation and overlay verification passed: two owned package files
-and all **429 unchanged base files**. Owned state SHA-256:
-`2facdb7850d71ee5b53e689fe6b6c07b45f7bd1ebac7bff407f1b8e965226f79`.
-No game action has been sent with this release. Cleanup follows the live test.
+The diagnostic Profile 3 test stopped on its first read (**0/0/0**, one read).
+Native Continue reached the same saved rest site. Save and Quit followed by
+normal Quit preserved the run. Process/listener shutdown, four-file owned cleanup
+and all **429 unchanged base files with zero overlays** were verified by
+**2026-09-25 10:09:24 UTC**. This package is no longer installed.
 
 The previous manifest `3e5a097e…`, source `a39c40f`, stopped on its first shared
 read at the saved rest site, before any policy action (**0/0/0**, one read).

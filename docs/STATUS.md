@@ -239,13 +239,17 @@ is **`7be74f7e95ad55e39e3b333eacc17547d7b888edf7cfef13d6ac1a3821bde5ce`**.
 It binds 439 source/test inputs across 51 projects, source `1989124`, feature
 `49a6de1`. The gate passed **83 groups in 311.142 seconds**, including 164 client
 tests, 1,624 router checks, 13,372 native checks and 656 rest checks. Independent
-semantic review is clear. This diagnostic candidate is installed and verified
-against all 429 unchanged base files, awaiting manual Profile 3 launch.
+semantic review is clear. The diagnostic candidate stopped before any action with `read_context_failed`
+on the saved rest site (0/0/0, one read). Normal quit and complete owned cleanup
+left all 429 base files unchanged with zero overlays by 10:09:24 UTC.
 
 The first live v2 read on the preceding `3e5a097e…` package stopped at the saved
 rest site before any policy action (0/0/0, one read). The host retained only
 `native_failure`. The current correction preserves closed read-stage categories
-and validated counts; **the underlying observation failure remains unresolved**.
+and validated counts. A source inspection and regression reproduced the cause:
+the shared native reader cleared a response buffer while its JSON document still
+borrowed that memory. A correction is undergoing release preparation; its native
+shared-policy behavior still needs live validation.
 The failed attempt ended with normal quit and complete owned cleanup: four files
 removed, all 429 base files unchanged and zero overlays, recorded in Git `39e2267`.
 **Native v2 live acceptance remains outstanding.** The
