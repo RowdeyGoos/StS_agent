@@ -24,7 +24,7 @@ namespace Sts2AgentBridge.Successors.RoomFlowsV1.Shop.Native;
 public sealed class PinnedShopV1NativeAdapter : IShopV1NativeAdapter
 {
     private readonly bool _interactive, _interactiveRemoval;
-    internal Func<Player,RelicModel,NOverlayStack,IShopV1NativeDispatch,Func<bool>,int,IShopV1ObservedDispatch?>? FullPickupFactory;
+    internal Func<Player,RelicModel,NOverlayStack,IShopV1NativeDispatch,Func<bool>,int,IShopV1ObservedDispatch?>? FullPickupFactory = null;
     public PinnedShopV1NativeAdapter(bool interactive = false, bool interactiveRemoval = false) { _interactive = interactive; _interactiveRemoval = interactiveRemoval; }
     public ShopV1SurfaceCapture CaptureSurface()
     {

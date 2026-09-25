@@ -6,8 +6,19 @@ using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Nodes.Screens.Overlays;
 using MegaCrit.Sts2.Core.Rewards;
 using Sts2AgentBridge.Core.Public;
+using Sts2AgentBridge.Adapters.Public;
+using MegaCrit.Sts2.Core.Nodes.Screens.CardSelection;
 
 namespace Sts2AgentBridge.Core.Public { public enum PublicDecisionStatus { Ready = 1, Waiting = 2, Unsupported = 3, Complete = 4 } }
+// This assembly exercises rest ownership with an inert reward child. The full
+// reward adapters and their injected factories run in the native event suite.
+namespace Sts2AgentBridge.Adapters.Public
+{
+    internal sealed class PinnedPublicRewardParentTarget { }
+    internal interface IPinnedRewardAlternatives { }
+    internal interface IPinnedRewardInventory { }
+}
+namespace MegaCrit.Sts2.Core.Nodes.Screens.CardSelection { internal sealed class NCardRewardSelectionScreen : Control { } }
 namespace MegaCrit.Sts2.Core.Rewards
 {
     public class RewardsSet
@@ -42,7 +53,13 @@ namespace Sts2AgentBridge.Rooms.Rest
         private Task? _task;
         private readonly Func<bool> _context;
         internal bool Completed { get; private set; }
-        internal RestRewardContinuation(RewardsSet set, Player player, NOverlayStack overlays, Func<bool> context) { _context = context; }
+        internal RestRewardContinuation(RewardsSet set, Player player, NOverlayStack overlays, Func<bool> context,
+            Func<PinnedPublicRewardParentTarget,NCardRewardSelectionScreen,IPinnedRewardAlternatives>? alternatives=null,
+            Func<Player,IPinnedRewardInventory>? inventory=null)
+        {
+            if(alternatives is not null || inventory is not null) throw new InvalidOperationException("Full reward factories require the real native reward fixture.");
+            _context = context;
+        }
         internal void Offering(Task task) => _task = task;
         internal void ScreenEntering(RewardsSet set, bool terminal, object run) { }
         internal void ScreenEntered(MegaCrit.Sts2.Core.Nodes.Screens.NRewardsScreen screen) { }

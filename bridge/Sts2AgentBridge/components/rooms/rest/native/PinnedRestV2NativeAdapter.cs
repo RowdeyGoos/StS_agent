@@ -25,8 +25,8 @@ namespace Sts2AgentBridge.Rooms.Rest;
 // alter relics directly. The hook is exclusive and owned until verified removal.
 public sealed class PinnedRestV2NativeAdapter : IRestV2NativeAdapter
 {
-    internal Func<PinnedPublicRewardParentTarget,NCardRewardSelectionScreen,IPinnedRewardAlternatives>? RewardAlternatives;
-    internal Func<Player,IPinnedRewardInventory>? RewardInventory;
+    internal Func<PinnedPublicRewardParentTarget,NCardRewardSelectionScreen,IPinnedRewardAlternatives>? RewardAlternatives = null;
+    internal Func<Player,IPinnedRewardInventory>? RewardInventory = null;
     private const string Owner = "sts2-agent-bridge.rest-v2";
     private static PinnedRestV2NativeAdapter? _active;
     private readonly int _thread = Environment.CurrentManagedThreadId;
