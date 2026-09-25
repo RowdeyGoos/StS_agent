@@ -5,6 +5,8 @@
   <Compile Include="../runtime/FullAgentContracts.cs" /><Compile Include="../runtime/FullPublicGraph.cs" />
   <Compile Include="../runtime/CampaignContracts.cs" /><Compile Include="../runtime/CombatPotionContracts.cs" />
   <Compile Include="../../../components/cards/combat/CombatCardChoiceService.cs" />
+  <Compile Include="../../../components/events/diagnostics/GenericEventDiagnosticCode.cs" />
+  <Compile Include="../../../components/events/diagnostics/GenericEventDiagnosticCodec.cs" />
   <Compile Include="Fixture.cs" /><Compile Include="Program.cs" />
  </ItemGroup>
 </Project>

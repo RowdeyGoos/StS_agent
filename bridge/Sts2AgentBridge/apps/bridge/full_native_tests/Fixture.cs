@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Sts2AgentBridge.Cards.Combat;
+using Sts2AgentBridge.Successors.GenericEventReleaseV5;
 using static Sts2AgentBridge.Unified.FullPublicGraph;
 namespace MegaCrit.Sts2.Core.Combat { internal sealed class Unused {} }
 namespace MegaCrit.Sts2.Core.Models { internal sealed class Unused {} }
@@ -16,7 +17,8 @@ namespace Sts2AgentBridge.Unified {
  internal class AgentUnsupported:Exception {}
  internal enum Capability {Core,Rooms,Events}
  internal record BridgeRequest(Capability Capability,string Path,bool IsPost,int AuthorizationOffset,int AuthorizationLength,string? Decision=null,string? Action=null,int ChildOrdinal=0,string? ParentDecision=null,string? ParentAction=null) {internal bool IsChild=>ChildOrdinal!=0;}
- internal record struct ModuleReply(byte[] Body,bool Terminal=false,bool StaleWithoutMutation=false);
+ internal record struct ModuleReply(byte[] Body,bool Terminal=false,bool StaleWithoutMutation=false,
+  GenericEventDiagnosticCode Diagnostic=GenericEventDiagnosticCode.NotCaptured,bool EventDiagnostic=false);
  internal static class CoreBridgeModule {internal const string EventCombatRoute="/resume",ResumeItemAction="/resume/item/action",ResumeItemRead="/resume/item/read"; internal static bool IsResumeItem(BridgeRequest request)=>false;}
  internal sealed class FullNativeState:IDisposable {
   internal static void Require(bool ok){if(!ok)throw new AgentUnsupported();}
