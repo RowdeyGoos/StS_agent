@@ -30,12 +30,20 @@ The correction parses into independently owned document storage, clears the sour
 buffer on every path, and retains caller disposal. Malformed and terminal replies
 remain failures; dispatch and mutation retry rules are unchanged.
 
-The corrected package is installed for another controlled Profile 3 test,
-awaiting manual launch. Installation and overlay verification passed: two owned
-package files and all **429 unchanged base files**. Owned state SHA-256:
-`130320cbf951f5a502b2f3192d85a95a68bf86080ffea4a5655a641fba7f9662`.
-No game action has been sent with this release. **Live validation is still pending.**
-Cleanup follows the live test. The [native candidate boundary](../../../../docs/AGENT_CONTRACT.md#native-full-run-v2-candidate)
+The corrected package passed the controlled Profile 3 shared-policy rest test on
+**2026-09-25**. After manual launch and health initialization before native Continue,
+`full-agent --agent-stop-at-map` completed **4 attempted / 4 accepted / 4 reconciled
+actions in 27 reads**, with zero stale rejections and nothing pending. The result
+was `truncated/external_stop` at an actionable map, with decision kinds `rest` and
+`map`. Native UI confirmed HP **45/83 → 69/83**, deck **6 → 7**, and unchanged
+399 gold. This demonstrates the healed rest/card-reward/map path through the same
+public-only chooser as headless; it is not a full campaign acceptance.
+
+Normal Save and Quit and game Quit completed, followed by stopped process/closed
+listener checks, exact quarantine/purge of four owned files and verification of
+all **429 unchanged base files with zero overlays**, by **11:02:21 UTC**.
+The installation is now absent. The installation identity and exact result remain
+in `validation.json`. The [native candidate boundary](../../../../docs/AGENT_CONTRACT.md#native-full-run-v2-candidate)
 and remaining potion, hand-selector, treasure, pickup and recording gaps remain.
 
 The preceding diagnostic manifest `7be74f7e…`, source `1989124`, stopped at the

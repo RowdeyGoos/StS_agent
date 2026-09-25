@@ -28,11 +28,12 @@ parent effects generally remain `unverified` even when a child effect and map re
 are verified. Final Proceed does not erase earlier verified child results.
 
 The new native `agent_v2` / `full_run_v2` candidate connects rich observations and
-nested decisions to the same public-only chooser as headless. It is being validated;
-there is **no v2 live acceptance yet**. Its [coverage and remaining gaps](AGENT_CONTRACT.md#native-full-run-v2-candidate)
+nested decisions to the same public-only chooser as headless. Its first controlled
+rest/card-reward/map path passed live; broader v2 acceptance remains open. Its [coverage and remaining gaps](AGENT_CONTRACT.md#native-full-run-v2-candidate)
 include supported rest/shop/event continuations, while general potions, hand
 selectors, treasure claims, reward rerolls and live public recording remain open.
-The latest live evidence remains the completed rest tests on the previous package.
+The v2 test completed four actions without pending work; prior rest cancellation
+and potion-reward evidence retains its separate package identity.
 
 ## Supported interactions
 
@@ -239,8 +240,12 @@ is **`812c148b2cf224a3fd5a0d77c35be4f5e9cbbe07e1373123330e3e3c65a10364`**.
 It binds 439 source/test inputs across 51 projects, source `53e2255`, feature
 `49a6de1`. The gate passed **83 groups in 317.947 seconds**, including 164 client
 tests, 1,628 router checks, 13,372 native checks and 656 rest checks. Independent
-semantic review is clear. The corrected package is installed and verified against
-all 429 unchanged base files, awaiting manual Profile 3 launch.
+semantic review is clear. The controlled Profile 3 v2 rest/card-reward/map test
+passed: **4/4/4 actions**, 27 reads, no stale rejection or pending action. The
+shared policy healed HP **45/83 → 69/83**, increased the deck **6 → 7**, and stopped
+at the actionable map with `truncated/external_stop`. Normal quit and exact owned
+cleanup completed by **11:02:21 UTC**: four generated files removed, all 429 base
+files unchanged and zero overlays. The installation is now absent.
 
 The preceding diagnostic package stopped at the saved rest site with
 `read_context_failed` before any policy action (0/0/0, one read). A regression
@@ -249,7 +254,7 @@ document still borrowed that memory. The current correction gives the document
 its own storage before clearing the source. The diagnostic run ended with normal
 quit and complete owned cleanup: four files removed, all 429 base files unchanged,
 zero overlays by 10:09:24 UTC, recorded in Git `53e2255`.
-**Native v2 live acceptance remains outstanding.** The
+**Broader native v2 coverage and campaign acceptance remain outstanding.** The
 [release record](../bridge/Sts2AgentBridge/releases/current/README.md) retains exact
 source/package, review, validation and installation identities.
 

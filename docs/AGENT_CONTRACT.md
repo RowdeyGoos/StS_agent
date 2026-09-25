@@ -480,8 +480,9 @@ the stated interface coverage; they do not enumerate every content permutation.
 ### Native full-run v2 candidate
 
 The opt-in `agent_v2` producer is implemented in the single production bridge and
-is undergoing controlled live validation. It does **not** yet establish complete
-native command coverage. `agent_v1` retains its original semantics and evidence.
+has passed a controlled shared-policy rest/card-reward/map test (4/4/4 actions,
+27 reads, no pending work). It does **not** yet establish complete native command
+coverage or campaign acceptance. `agent_v1` retains its original semantics and evidence.
 
 [`FullNativeBackend`](../bridge/Sts2AgentBridge/apps/bridge/native/FullNativeBackend.cs)
 builds the same immutable graph and semantic candidates used by the headless
@@ -541,5 +542,6 @@ The same `game.agent.full_policy.choose_action` runs through
 actionable map with no pending actions and reports `truncated/external_stop`.
 Neither that stop nor an unsupported surface is a victory. The live host currently
 retains bounded summaries; public trajectory recording through this producer is
-still outstanding. Synthetic protocol/native-owner checks are not full native
-projection equivalence or live acceptance.
+still outstanding. The demonstrated rest/card-reward/map path is recorded in
+[current status](STATUS.md#release-and-latest-evidence). Synthetic protocol/native-owner
+checks do not establish full native projection equivalence or broader live acceptance.

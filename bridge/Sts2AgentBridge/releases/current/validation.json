@@ -469,13 +469,64 @@
     "status": "passed"
   },
   "live": {
-    "cleanup": "pending_after_live_test",
-    "manual_launch_required": true,
-    "observation_failure_status": "buffer_lifetime_corrected_offline_live_validation_pending",
+    "cleanup": {
+      "base_file_count": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "completed_by_utc": "2026-09-25T11:02:21Z",
+      "generated_files_removed": 4,
+      "normal_save_and_quit": true,
+      "overlay_count": 0,
+      "phase": "absent",
+      "quarantined_state_sha256": "065c1f1637b4b57e54d0fba8f99f53b83b4ec7db9ac3c0d3e69c695e01d0d300",
+      "runtime": {
+        "game_process_running": false,
+        "port_accepting": false,
+        "port_samples": 2,
+        "process_samples": 3
+      },
+      "status": "passed"
+    },
+    "launch": "Manual launch on Profile 3; core health observer initialized before native Continue.",
+    "observation_failure_status": "buffer_lifetime_correction_passed_live",
     "profile": 3,
-    "scope": "Continue the saved rest site with the shared policy and stop at a reconciled map. No campaign acceptance claim.",
-    "status": "awaiting_manual_launch",
-    "target_game_executed": false
+    "result": {
+      "accepted": 4,
+      "attempted": 4,
+      "code": null,
+      "decision_kinds": [
+        "map",
+        "rest"
+      ],
+      "decisions": 4,
+      "outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "pending": false,
+      "reads": 27,
+      "reconciled": 4,
+      "schema_version": 1,
+      "stale_rejections": 0,
+      "status": "resolved"
+    },
+    "scope": "Shared full_run_v2 policy continued the saved rest site, healed, collected a card and stopped at the next actionable map. No campaign or all-surface acceptance claim.",
+    "status": "passed_controlled_rest_to_map",
+    "target_game_executed": true,
+    "visible_after": {
+      "deck_count": 7,
+      "gold": 399,
+      "hp": 69,
+      "max_hp": 83,
+      "surface": "map"
+    },
+    "visible_before": {
+      "deck_count": 6,
+      "gold": 399,
+      "hp": 45,
+      "max_hp": 83,
+      "surface": "rest"
+    }
   },
   "previous_release": {
     "cleanup": "Normal quit, stopped process and closed listener, four bridge-owned files removed, all 429 base files unchanged and zero overlays by 2026-09-25 10:09:24 UTC.",
@@ -503,7 +554,7 @@
     "Shop removal popup cancellation and broader relic pickups",
     "Reward reroll and sacrifice",
     "Public live trajectory recording",
-    "Native v2 live projection and shared-policy campaign acceptance"
+    "Native v2 projection beyond the demonstrated rest/reward/map path and shared-policy campaign acceptance"
   ],
   "semantic_review": {
     "reviewer": "/root/semantic_review",
