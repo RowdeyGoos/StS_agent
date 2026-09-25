@@ -102,6 +102,7 @@ internal static partial class Program
     }
     private static void FullRewardCases()
     {
+        CardAddJournalCases();
         foreach(string kind in new[]{"card","reroll","sacrifice","relic","special","potion"}) {
             using var f=new FullRewardFixture(kind,compound:true);var c=f.Start();
             Check(c.Child?.ContractVersion=="full_rewards_v2","compound root admission "+kind+" "+c.Status);

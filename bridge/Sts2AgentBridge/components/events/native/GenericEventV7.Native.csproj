@@ -43,4 +43,19 @@
     <Reference Include="sts2"><HintPath>$(STS2GameDataDir)/sts2.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="GodotSharp"><HintPath>$(STS2GameDataDir)/GodotSharp.dll</HintPath><Private>false</Private></Reference>
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="../../../src/Sts2AgentBridge/Adapters/Public/PinnedOverlayPrefix.cs" />
+    <Compile Include="../../items/native/PinnedAutomaticRelicEffects.cs" />
+    <Compile Include="../../items/native/PinnedAutomaticRelicEffects.CardAdds.cs" />
+    <Compile Include="../../items/native/PinnedRelicPickupChain.cs" />
+    <Compile Include="../../items/native/PinnedCardAddJournal.cs" />
+    <Compile Include="../../items/native/PinnedRewardAlternatives.cs" />
+    <Compile Include="../../items/native/PinnedRewardInventory.cs" />
+    <Compile Include="../../items/native/PinnedRelicRewardEffect.cs" />
+    <Compile Include="../../rooms/rest/native/RestRewardContinuation.cs" />
+    <Compile Include="../../rooms/rest/native/RestNativeState.cs" />
+    <Compile Include="GenericEventFullRewards.cs" />
+    <Compile Include="GenericEventCompoundRewards.cs" />
+    <Compile Include="GenericEventCompoundRewards.Pickups.cs" />
+  </ItemGroup>
 </Project>

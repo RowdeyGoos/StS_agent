@@ -31,7 +31,7 @@ namespace MegaCrit.Sts2.Core.Nodes.Events.Custom.CrystalSphere {
 
 namespace MegaCrit.Sts2.Core.Models.Cards { public sealed class Doubt:CardModel { } }
 namespace MegaCrit.Sts2.Core.Commands {
-    public static class CardPileCmd {
+    public static partial class CardPileCmd {
         public static async Task<MegaCrit.Sts2.Core.Models.CardModel> AddCurseToDeck<T>(Player player) where T:MegaCrit.Sts2.Core.Models.CardModel,new() {var card=new T{Owner=player};card.Id.Entry="DOUBT";var result=await AddCursesToDeck(new[]{card},player);return System.Linq.Enumerable.First(result).cardAdded;}
         [MethodImpl(MethodImplOptions.NoInlining)]public static Task<System.Collections.Generic.IEnumerable<MegaCrit.Sts2.Core.Entities.Cards.CardPileAddResult>> AddCursesToDeck(System.Collections.Generic.IEnumerable<MegaCrit.Sts2.Core.Models.CardModel> cards,Player player) {
             var results=new System.Collections.Generic.List<MegaCrit.Sts2.Core.Entities.Cards.CardPileAddResult>();foreach(var card in cards){player.Deck.Cards.Add(card);results.Add(new(){success=true,cardAdded=card});}return Task.FromResult<System.Collections.Generic.IEnumerable<MegaCrit.Sts2.Core.Entities.Cards.CardPileAddResult>>(results);

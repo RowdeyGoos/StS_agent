@@ -37,6 +37,10 @@ namespace MegaCrit.Sts2.Core.Models.Relics
         public LostCoffer(){Id.Entry="LOST_COFFER";}
         [MethodImpl(MethodImplOptions.NoInlining)]public override Task AfterObtained()=>Handler();
     }
+    public sealed class NeowsBones:RelicModel
+    {
+        public NeowsBones(){Id.Entry="NEOWS_BONES";DynamicVars["Curses"]=new(){IntValue=1};}
+    }
 }
 internal static partial class Program
 {
@@ -50,7 +54,7 @@ internal static partial class Program
         internal readonly Dictionary<RewardsSet,RestRewardsFixture.Synchronizer.Entry> Entries=new();
         internal readonly List<NRewardButton> Buttons=new();
         internal bool DelayChild,ChildFault,ForeignTail;
-        internal CompoundRewardFixture(bool sibling=false,bool cardReward=false)
+        internal CompoundRewardFixture(bool sibling=false,bool cardReward=false,string? tail=null)
         {
             foreach(var c in World.Cards)c.Owner=World.Player;
             RunManager.Instance=new(){State=(RunState)World.Player.RunState,RewardsSetSynchronizer=Sync};
@@ -58,13 +62,25 @@ internal static partial class Program
             ActiveScreenContext.Instance=new(){Current=World.Room};
             Root=NewSet();Child=NewSet();
             RelicModel capsule=cardReward?new LostCoffer{Handler=()=>Child.Offer()}:new SmallCapsule{Handler=()=>Child.Offer()};
-            Add(Root,capsule);if(sibling)Add(Root,new OldCoin());
+            Add(Root,capsule);if(sibling||tail is not null)Add(Root,new OldCoin());
             if(cardReward)AddCard();else {Add(Child,new OldCoin());Add(Child,new RelicModel());}
             World.Adapter.FullRewardsFactory=(binding,set)=>new GenericEventCompoundRewards(binding,set);
             NRewardsScreen.Factory=(set,_,_)=>{var screen=Screens[set];World.Overlays.Screens.Add(screen);ActiveScreenContext.Instance.Current=screen;return screen;};
+            var neow=tail is not null?new NeowsBones():null;World.Room.Layout.OptionButtons[0].Option.Relic=neow;
+            if(tail=="scalar")World.Player.Relics.Add(new LuckyFysh{Owner=World.Player});
+            if(tail is "delayed" or "fault")CardPileCmd.AfterAdded=_=>Delay.Task;
+            if(tail=="scalar")CardPileCmd.AfterAdded=card=>World.Player.Relics.OfType<LuckyFysh>().Single().AfterCardChangedPiles(card,(PileType)0,null);
             World.Room.Layout.OptionButtons[0].Option.Callback=async()=>{
+                if(neow is not null){neow.Owner=World.Player;World.Player.Relics.Add(neow);}
                 await Root.Offer();
                 if(ForeignTail)World.Player.Gold++;
+                if(tail is not null&&tail!="missing") {
+                    for(int i=0;i<(tail=="two"?2:1);i++) {
+                        var curse=new CardModel{Owner=World.Player,Type=tail=="wrong_type"?1:5};curse.Id.Entry="CURSE_"+i;
+                        await CardPileCmd.Add(curse,PileType.Deck);
+                    }
+                    if(tail=="chosen")await Delay.Task;
+                }
                 World.Model.IsFinished=true;World.Room.Layout.OptionButtons.Clear();
                 World.AddOption(new(){TextKey="PROCEED",IsProceed=true,Callback=()=>Task.CompletedTask});
             };
@@ -130,16 +146,31 @@ internal static partial class Program
             try{World.Dispose();}catch(InvalidOperationException){}
             NRewardsScreen.Factory=null;
             NCardRewardSelectionScreen.Factory=null;
+            CardPileCmd.AfterAdded=null;
             // Failed production owners stop their process; fixture cases model
             // separate processes after checking exact hook removal.
             var method=typeof(RestRewardsFixture.Synchronizer).GetMethod("CompleteRewardsSet",BindingFlags.Instance|BindingFlags.NonPublic)!;
             Check(!(HarmonyLib.Harmony.GetPatchInfo(method)?.Owners.Any()??false),"compound completion observer removed");
             typeof(GenericEventCompoundRewards).GetField("Active",BindingFlags.Static|BindingFlags.NonPublic)!.SetValue(null,null);
             typeof(Sts2AgentBridge.Items.Native.PinnedRelicPickupChain).GetField("Active",BindingFlags.Static|BindingFlags.NonPublic)!.SetValue(null,null);
+            typeof(Sts2AgentBridge.Items.Native.PinnedCardAddJournal).GetField("Active",BindingFlags.Static|BindingFlags.NonPublic)!.SetValue(null,null);
         }
     }
     private static void CompoundRewardCases()
     {
+        foreach(string tail in new[]{"curse","scalar","delayed","chosen","fault","missing","wrong_type","two"}) {
+            using var f=new CompoundRewardFixture(tail:tail);var c=f.Start();Check(c.Child is not null,"compound tail admission "+tail+" "+System.Text.Json.JsonSerializer.Serialize(c));
+            f.Act(c,"collect:0");f.Act(c,"collect:0");f.Act(c,"collect:1");
+            var before=f.Read(c);var receipt=(GenericEventV7RewardChildApply)f.World.Session.ApplyChild(c.Child!.ParentDecisionId,c.Child.ParentActionId,c.Child.Ordinal,before.DecisionId,"collect:1");
+            Check(receipt.Value.Outcome is "accepted" or "uncertain","last native collection was dispatched once");var ending=f.Read(c);
+            if(tail is "delayed" or "chosen" or "fault") {
+                Check(ending.Status=="waiting"&&f.World.Session.Read().ParentReconciled==0,"curse Add and Chosen task both retained: "+tail);
+                if(tail=="fault")f.Delay.SetException(new InvalidOperationException("curse callback fault"));else f.Delay.SetResult();ending=f.Read(c);
+            }
+            bool supported=tail is "curse" or "scalar" or "delayed" or "chosen";
+            Check(ending.Status==(supported?"resolved":"unsupported"),"exact parent curse task and identity: "+tail+" "+ending.Status);
+            if(supported)Check(f.World.Player.Deck.Cards.Last().Id.Entry=="CURSE_0"&&f.World.Session.Read().ParentReconciled==1,"curse completes before parent reconciliation");
+        }
         using(var nested=new CompoundRewardFixture(cardReward:true)) {
             var child=nested.Start();nested.Act(child,"collect:0");var offer=nested.Act(child,"open:0");
             Check(offer.Status=="ready"&&offer.Phase=="card_reward"&&!offer.LegalActions.Contains("sacrifice")&&offer.LegalActions.Contains("choose:0"),

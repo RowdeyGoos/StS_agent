@@ -110,4 +110,38 @@
     </Reference>
   </ItemGroup>
 <ItemGroup><Compile Include="../../rooms/shop/core/ShopV1Contracts.cs" /><Compile Include="../../rooms/common/RoomFlowContracts.cs" /></ItemGroup>
+  <ItemGroup>
+    <Compile Include="../native_tests/ShopInteractiveFixtures.cs" />
+    <Compile Include="../../rooms/shop/native/ShopInteractiveSession.cs" />
+    <Compile Include="../../rooms/shop/tests/MultiplePurchaseFixture.cs" />
+    <Compile Include="../../rooms/shop/core/ShopV1Session.cs" />
+    <Compile Include="../../rooms/shop/core/ShopV1CanonicalEncoder.cs" />
+    <Compile Include="../native_tests/RestRewardFixtures.cs" />
+    <Compile Include="../native_tests/RewardAlternativeFixtures.cs" />
+    <Compile Include="../native_tests/RewardAlternativeStubs.cs" />
+    <Compile Include="../../items/native/PinnedAutomaticRelicEffects.cs" />
+    <Compile Include="../../items/native/PinnedAutomaticRelicEffects.CardAdds.cs" />
+    <Compile Include="../../items/native/PinnedRelicPickupChain.cs" />
+    <Compile Include="../../items/native/PinnedCardAddJournal.cs" />
+    <Compile Include="../native_tests/CardAddJournalFixtures.cs" />
+    <Compile Include="../native_tests/RelicPickupChainFixtures.cs" />
+    <Compile Include="../../items/native/PinnedRewardAlternatives.cs" />
+    <Compile Include="../../items/native/PinnedRewardInventory.cs" />
+    <Compile Include="../../items/native/PinnedRelicRewardEffect.cs" />
+    <Compile Include="../native_tests/ShopEffectFixtures.cs" />
+    <Compile Include="../native_tests/FullRewardFixtures.cs" />
+    <Compile Include="../native_tests/CompoundRewardFixtures.cs" />
+    <Compile Include="../../rooms/shop/native/PinnedShopEffectDispatch.cs" />
+    <Compile Include="../../rooms/rest/native/RestRewardContinuation.cs" />
+    <Compile Include="../../rooms/rest/native/RestNativeState.cs" />
+    <Compile Include="../native_tests/SpecialCardFixtures.cs" />
+    <Compile Include="../native_tests/EmbeddedCombatFixtures.cs" />
+    <Compile Include="../native_tests/CombatItemFixtures.cs" />
+    <Compile Include="../native_tests/PotionDiscardFixtures.cs" />
+    <Compile Include="../native_tests/PotionCapacityFixtures.cs" />
+    <Compile Include="../native_tests/HealingRewardFixtures.cs" />
+    <Compile Include="../native/GenericEventFullRewards.cs" />
+    <Compile Include="../native/GenericEventCompoundRewards.cs" />
+    <Compile Include="../native/GenericEventCompoundRewards.Pickups.cs" />
+  </ItemGroup>
 </Project>

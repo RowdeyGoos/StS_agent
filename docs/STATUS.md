@@ -247,8 +247,18 @@ still stop the host. Nested Sacrifice is withheld because its current observer w
 conflict with the enclosing pickup owner. Focused native checks passed three groups
 in 10.334 s, production compilation passed two groups in 1.791 s, and independent
 semantic review cleared the corrected slice. The production factory and Neow's Bones
-guard remain unchanged: card offers/selectors and the final curse still need their
-actual effect bindings before this owner can be released.
+guard remain unchanged: card offers/selectors still need their actual effect
+bindings before this owner can be released.
+
+The compound owner now retains actual card-add tasks, forwarding calls, modified
+card identities and insertion callbacks. It verifies the final Neow's Bones curse
+before completing the parent, including delayed tasks and card-triggered gold/HP
+effects. Missing, duplicate, wrong-type and failed additions stop the owner.
+Focused native cases passed three groups in 14.554 s; native/direct-input/offer
+integration passed eight groups in 151.635 s and production compilation passed
+two groups in 1.866 s. Independent semantic review cleared the journal, callback
+effects and curse integration. These changes are unshipped; production admission
+of Neow's Bones remains guarded.
 
 ### Contract limits without a confirmed missing gameplay caller
 

@@ -106,7 +106,29 @@ internal sealed partial class GenericEventCompoundRewards
     {Require(ReferenceEquals(frame.Pickup,pickup)&&frame.Controller.EffectCertified&&frame.Certificate is not null);_expected[pickup]=frame.Certificate!;}
     private void DisposePickups(){foreach(var chain in _chains)chain.Dispose();}
     private void ReleaseSettledPickups(){foreach(var effect in _effects)effect.Release();}
-    private bool ParentTailComplete()=>Root.Certificate is {} certificate&&certificate.Same(new(_binding.Player));
+    private PinnedCardAddJournal? _tailAdds;
+    private PinnedAutomaticRelicEffects? _tailEffects;
+    private RelicModel? _tailRelic;
+    private void PrepareParentTail()
+    {
+        if(_binding.Option.Relic is not {} relic||!Named(relic,"NeowsBones"))return;
+        Require(_tailAdds is null&&Root.Certificate is not null&&ReferenceEquals(relic.Owner,_binding.Player)&&
+            _binding.Player.Relics.Count(r=>ReferenceEquals(r,relic))==1&&relic.DynamicVars["Curses"].IntValue==1&&
+            Root.Set.DisallowSkipping&&Root.Set.Rewards.Count==2&&Root.Set.Rewards.All(r=>r is RelicReward&&r.SuccessfullySelected));
+        _tailRelic=relic;
+        _tailEffects=new(_binding.Player,Context,c=>_tailAdds?.OwnsAddedCard(c)==true,()=>_tailAdds?.InModification==true);
+        _tailAdds=new(_binding.Player,Context,cards=>
+            GenericEventV7Hooks.InChosenScope(_binding)&&ReferenceEquals(_binding.Option.Relic,_tailRelic)&&
+            NativePickup is null&&_binding.ChosenTask?.IsCompleted!=true&&_tailEffects.Valid()&&
+            _tailAdds!.Operations.Count==0&&cards.Count==1&&(int)cards[0].Type==5,
+            _tailEffects.CertifyDeckAppend,_tailEffects.EnterLease);
+    }
+    private bool ParentTailComplete()
+    {
+        if(_tailAdds is null){Require(Root.Certificate is {} certificate&&certificate.Same(new(_binding.Player)));return true;}
+        Require(ReferenceEquals(_binding.Option.Relic,_tailRelic)&&_tailAdds.Operations.Count==1&&_tailAdds.Completed&&_tailEffects!.CardEffectsCompleted);
+        return true;
+    }
     private GenericEventV7RewardRead? ReadLeaf()=>null;
     private bool ApplyLeaf(string decision,string action)=>false;
 }

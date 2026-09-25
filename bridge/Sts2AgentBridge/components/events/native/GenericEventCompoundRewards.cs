@@ -71,6 +71,7 @@ internal sealed partial class GenericEventCompoundRewards : IGenericFullRewardSe
     private static readonly AsyncLocal<RewardFrame?> Native=new();
     private static GenericEventCompoundRewards? Active;
     private readonly GenericEventV7Binding _binding;
+    private readonly RelicModel? _optionRelic;
     private readonly List<RewardFrame> _frames=new();
     private readonly List<Receipt> _receipts=new();
     private readonly List<GenericEventV7PriorResult> _history=new();
@@ -90,7 +91,7 @@ internal sealed partial class GenericEventCompoundRewards : IGenericFullRewardSe
     public bool InNativeScope=>Native.Value?.Owner==this;
     internal GenericEventCompoundRewards(GenericEventV7Binding binding,RewardsSet set)
     {
-        _binding=binding;Require(Active is null&&binding.ItemContextValid());
+        _binding=binding;_optionRelic=binding.Option.Relic;Require(Active is null&&binding.ItemContextValid());
         _synchronizer=RunManager.Instance!.RewardsSetSynchronizer;
         _completeMethod=_synchronizer.GetType().GetMethod("CompleteRewardsSet",BindingFlags.Instance|BindingFlags.NonPublic)!;
         Require(_completeMethod is not null&&_completeMethod.GetParameters().Length==2&&_completeMethod.ReturnType==typeof(void)&&
@@ -110,7 +111,7 @@ internal sealed partial class GenericEventCompoundRewards : IGenericFullRewardSe
         }
     }
     private bool Context()=>!_failed&&!_disposed&&!_binding.Failed&&Environment.CurrentManagedThreadId==_thread&&
-        Environment.TickCount64<=_deadline&&ReferenceEquals(Active,this)&&_binding.ItemContextValid()&&
+        Environment.TickCount64<=_deadline&&ReferenceEquals(Active,this)&&_binding.ItemContextValid()&&ReferenceEquals(_binding.Option.Relic,_optionRelic)&&
         _binding.ChosenTask?.IsFaulted!=true&&_binding.ChosenTask?.IsCanceled!=true&&
         ReferenceEquals(RunManager.Instance?.RewardsSetSynchronizer,_synchronizer)&&
         Harmony.GetPatchInfo(_completeMethod) is {} patches&&patches.Owners.Count==1&&patches.Owners.Contains(_hooks.Id);
@@ -188,7 +189,7 @@ internal sealed partial class GenericEventCompoundRewards : IGenericFullRewardSe
         .Select(f=>(IPinnedClosingOverlay)f.Controller).ToArray();
     private void BeforeRewardCertificate(RewardFrame frame){foreach(var effect in _effects.Where(e=>ReferenceEquals(e.RewardFrame,frame)&&e.Active))Require(effect.Completed);}
     private void RewardCertified(RewardFrame frame)
-    {if(frame.Pickup is {} pickup)AcceptRewardCertificate(pickup,frame);}
+    {if(frame.Pickup is {} pickup)AcceptRewardCertificate(pickup,frame);if(ReferenceEquals(frame,Root))PrepareParentTail();}
     private GenericEventV7RewardRead Value(string status,string phase,IReadOnlyList<string>? actions=null)=>new(_binding.Nonce,status,phase,status=="ready"?_decision!:"",
         Array.Empty<GenericEventV7RewardCard>(),false,actions??Array.Empty<string>(),_history.ToArray(),null);
     public GenericEventV7RewardRead Read()
@@ -200,6 +201,7 @@ internal sealed partial class GenericEventCompoundRewards : IGenericFullRewardSe
     {
         Require(Context()&&++_reads<=2048);
         ReleaseSettledPickups();
+        if(_tailEffects is not null)Require(_tailEffects.Valid());
         if(_complete)return Value("resolved","complete");
         foreach(var frame in _frames)Require(frame.Offer?.IsFaulted!=true&&frame.Offer?.IsCanceled!=true&&
             frame.Collections.All(t=>!t.IsFaulted&&!t.IsCanceled)&&frame.MenuTask?.IsFaulted!=true&&frame.MenuTask?.IsCanceled!=true);
@@ -265,6 +267,8 @@ internal sealed partial class GenericEventCompoundRewards : IGenericFullRewardSe
         try{Require(!_inside&&_complete&&Context());}catch(Exception error){failure=error;}
         foreach(var frame in _frames.AsEnumerable().Reverse())try{frame.Controller.Dispose();}catch(Exception error){failure??=error;}
         try{DisposePickups();}catch(Exception error){failure??=error;}
+        try{_tailAdds?.Dispose();}catch(Exception error){failure??=error;}
+        try{_tailEffects?.Dispose();}catch(Exception error){failure??=error;}
         try{_hooks.UnpatchAll(_hooks.Id);Require(Harmony.GetPatchInfo(_completeMethod)?.Owners.Contains(_hooks.Id)!=true);}catch(Exception error){failure??=error;}
         _disposed=true;if(failure is not null){Fail();throw new InvalidOperationException("compound_reward_cleanup",failure);}Active=null;
     }

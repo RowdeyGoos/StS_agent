@@ -190,6 +190,7 @@ public sealed class GenericEventV7Hooks : IDisposable
         _armed = binding;
     }
     internal static bool Owns(GenericEventV7Binding binding)=>OwnershipDiagnostic(binding)==G.NotCaptured;
+    internal static bool InChosenScope(GenericEventV7Binding binding)=>ReferenceEquals(Parent.Value,binding)&&Owns(binding);
     internal static G OwnershipDiagnostic(GenericEventV7Binding binding) {
         if(!ReferenceEquals(_armed,binding))return G.PendingOwnerBinding;
         if(_installed is null||_installed._disposed)return G.PendingOwnerHooks;
@@ -924,6 +925,7 @@ public sealed class GenericEventV7Hooks : IDisposable
     {if(state is not null&&!state.Restored){CommandScope.Value=state.Previous;state.Restored=true;}}
     private sealed class TransformObservation
     {
+        internal Sts2AgentBridge.Items.Native.PinnedCardAddJournal.Observation? Addition;
         internal GenericEventV7TransformState? Owner;
         internal GenericEventV7TransformState.Command? Command;
         internal CardModel? Original;
@@ -948,20 +950,29 @@ public sealed class GenericEventV7Hooks : IDisposable
     {if(__exception is not null)__state?.Owner?.Fail();}
     private static void TransformModifyPrefix(IRunState __0,CardModel __1,out TransformObservation __state)
     {
+        if(Sts2AgentBridge.Items.Native.PinnedCardAddJournal.IsActive) {
+            __state=new TransformObservation{Addition=Sts2AgentBridge.Items.Native.PinnedCardAddJournal.ModifyEntry(__0,__1)};return;
+        }
         __state=ObserveTransform();if(__state.Command is not { } c)return;
         try{__state.Choice=__state.Owner!.ModifyEntry(c,__0,__1);}catch{__state.Owner!.Fail();}
     }
     private static void TransformModifyPostfix(CardModel __result,TransformObservation? __state)
-    {if(__state?.Command is not { } c||__state.Choice is null)return;try{__state.Owner!.ModifyExit(c,__state.Choice,__result);}catch{__state.Owner!.Fail();}}
-    private static void TransformModifyFinalizer(Exception? __exception,TransformObservation? __state)=>TransformChoiceFinalizer(__exception,__state);
+    {if(__state?.Addition is {} add){Sts2AgentBridge.Items.Native.PinnedCardAddJournal.ModifyExit(add,__result);return;}
+        if(__state?.Command is not { } c||__state.Choice is null)return;try{__state.Owner!.ModifyExit(c,__state.Choice,__result);}catch{__state.Owner!.Fail();}}
+    private static void TransformModifyFinalizer(Exception? __exception,TransformObservation? __state)
+    {if(__exception is not null)__state?.Addition?.Owner.Fail();TransformChoiceFinalizer(__exception,__state);}
     private static void TransformInsertPrefix(CardPile __instance,CardModel __0,int __1,bool __2,out TransformObservation __state)
     {
+        if(Sts2AgentBridge.Items.Native.PinnedCardAddJournal.IsActive) {
+            __state=new TransformObservation{Addition=Sts2AgentBridge.Items.Native.PinnedCardAddJournal.InsertEntry(__instance,__0,__1,__2)};return;
+        }
         __state=ObserveTransform();if(__state.Command is not { } c)return;
         try{__state.Choice=__state.Owner!.InsertionEntry(c,__instance,__0,__1,__2);}catch{__state.Owner!.Fail();}
     }
     private static void TransformInsertPostfix(TransformObservation? __state)
-    {if(__state?.Command is not { } c||__state.Choice is null)return;try{__state.Owner!.InsertionExit(c,__state.Choice);}catch{__state.Owner!.Fail();}}
-    private static void TransformInsertFinalizer(Exception? __exception,TransformObservation? __state)=>TransformChoiceFinalizer(__exception,__state);
+    {if(__state?.Addition is {} add){Sts2AgentBridge.Items.Native.PinnedCardAddJournal.InsertExit(add);return;}
+        if(__state?.Command is not { } c||__state.Choice is null)return;try{__state.Owner!.InsertionExit(c,__state.Choice);}catch{__state.Owner!.Fail();}}
+    private static void TransformInsertFinalizer(Exception? __exception,TransformObservation? __state)=>TransformModifyFinalizer(__exception,__state);
     private static void ResultsScreenPrefix(List<CardPileAddResult> __0,out State __state) {
         var b=Parent.Value;__state=new State{Binding=b};
         if(b is null){if(_armed is not null)_armed.Failed=true;return;}

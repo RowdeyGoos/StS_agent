@@ -191,6 +191,7 @@ namespace MegaCrit.Sts2.Core.Entities.RestSite
 namespace MegaCrit.Sts2.Core.Events
 {
     public sealed class EventOption {
+        public MegaCrit.Sts2.Core.Models.RelicModel? Relic {get;set;}
         public string TextKey { get; set; } = string.Empty;
         public bool IsProceed {get;set;} public bool IsLocked {get;set;} public bool DisableOnChosen {get;set;} public bool WasChosen {get;set;}
         public Func<MegaCrit.Sts2.Core.Entities.Players.Player,bool>? WillKillPlayer {get;set;}
