@@ -50,7 +50,7 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
     private readonly HashSet<object> _commandTasks=new(ReferenceEqualityComparer.Instance);
     private readonly HashSet<object> _itemIdentities=new(ReferenceEqualityComparer.Instance);
     private readonly HashSet<object> _tasks=new(ReferenceEqualityComparer.Instance);
-    internal Func<GenericEventV7Binding,MegaCrit.Sts2.Core.Rewards.RewardsSet,IGenericFullRewardSession>? FullRewardsFactory;
+    internal Func<GenericEventV7Binding,MegaCrit.Sts2.Core.Rewards.RewardsSet,IGenericFullRewardSession>? FullRewardsFactory = null;
     internal GenericEventV7Binding InspectPending(string decision, string action)
     {
         if (_disposed || System.Environment.CurrentManagedThreadId != _thread || _pending is not {} binding ||

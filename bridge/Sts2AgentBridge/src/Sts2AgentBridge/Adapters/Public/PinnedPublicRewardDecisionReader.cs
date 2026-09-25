@@ -42,7 +42,7 @@ public sealed class PinnedPublicRewardDecisionReader : IPublicRewardDecisionRead
     private const int MaximumCardsPerReward = 5;
 
     private readonly PinnedPublicRewardInteractionSession _session;
-    internal Func<PinnedPublicRewardParentTarget,NCardRewardSelectionScreen,IPinnedRewardAlternatives>? AlternativesFactory;
+    internal Func<PinnedPublicRewardParentTarget,NCardRewardSelectionScreen,IPinnedRewardAlternatives>? AlternativesFactory = null;
     private IPinnedRewardAlternatives? _alternatives;
     internal IPinnedRewardAlternatives? Alternatives => _alternatives;
     private PublicRewardDecisionSnapshot? _campaignComplete;
