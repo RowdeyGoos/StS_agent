@@ -82,19 +82,20 @@ internal sealed class FullNativeState : IDisposable
     internal JsonObject PublicRun(IEnumerable<JsonObject> history)
     {
         Require(Player.Deck.Cards.Count <= 128 && Player.Relics.Count <= 128 && Player.PotionSlots.Count <= 8);
-        var deck = Player.Deck.Cards.Select(card => (Card: card, View: FullNativeDisplay.Card(card)))
-            .OrderBy(row => Signature(row.View), StringComparer.Ordinal).ToArray();
+        var deck = FullReadFailure.At(FullReadStage.Deck, () => Player.Deck.Cards.Select(card => (Card: card, View: FullNativeDisplay.Card(card)))
+            .OrderBy(row => Signature(row.View), StringComparer.Ordinal).ToArray());
         foreach (var row in deck) { Bind(row.Card); row.View["ref"] = Ref("card", row.Card); }
-        var potions = Player.PotionSlots.Select((potion, index) => Node("potion_slot",
+        var relics = FullReadFailure.At(FullReadStage.Relics, () => Player.Relics.Select(Relic).ToArray());
+        var potions = FullReadFailure.At(FullReadStage.Potions, () => Player.PotionSlots.Select((potion, index) => Node("potion_slot",
             fields: new (string, object?)[] { ("index", index) },
-            children: potion is null ? Array.Empty<JsonObject>() : new[] { Potion(potion) }));
+            children: potion is null ? Array.Empty<JsonObject>() : new[] { Potion(potion) })).ToArray());
         return Node("run", fields: new (string, object?)[] {
             ("character", Player.Character.Id.Entry.ToLowerInvariant()), ("ascension", Run.AscensionLevel),
             ("act", Run.CurrentActIndex + 1), ("floor", Run.TotalFloor), ("hp", Player.Creature.CurrentHp),
             ("max_hp", Player.Creature.MaxHp), ("gold", Player.Gold) }, children: new[] {
-                Node("deck", children: deck.Select(row => row.View)), Node("relics", children: Player.Relics.Select(Relic)),
+                Node("deck", children: deck.Select(row => row.View)), Node("relics", children: relics),
                 Node("potions", fields: new (string, object?)[] { ("capacity", Player.PotionSlots.Count) }, children: potions),
-                PublicMap(), Node("history", fields: new (string, object?)[] { ("coverage", "attachment") },
+                FullReadFailure.At(FullReadStage.Map, PublicMap), Node("history", fields: new (string, object?)[] { ("coverage", "attachment") },
                     children: history.Select(n => (JsonObject)n.DeepClone())) });
     }
 

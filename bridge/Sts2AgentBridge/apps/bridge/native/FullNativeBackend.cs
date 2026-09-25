@@ -50,12 +50,12 @@ internal sealed partial class FullNativeBackend : IFullAgentBackend
     };
     private static BridgeRequest Request(string family, bool post = false, string? decision = null, string? action = null) =>
         new(family is "rest" or "shop" ? Capability.Rooms : family == "event" ? Capability.Events : Capability.Core, Route(family, post), post, 0, 0, decision, action);
-    private JsonDocument ReadWire(string family)
+    private JsonDocument ReadWire(string family) => FullReadFailure.At(FullReadStage.Native, () =>
     {
         var reply = _router.Dispatch(Request(family));
         try { Require(!reply.Terminal); return JsonDocument.Parse(reply.Body); }
         finally { Array.Clear(reply.Body); }
-    }
+    });
     private static string? Text(JsonElement value, string key) => value.TryGetProperty(key, out var field) && field.ValueKind == JsonValueKind.String ? field.GetString() : null;
     private FullCapture Waiting() => new("waiting", null, Array.Empty<FullCommand>(), Array.Empty<object>(), _completed.ToArray());
     private FullCapture Complete(string outcome) => new("complete", null, Array.Empty<FullCommand>(), Array.Empty<object>(), _completed.ToArray(), outcome);
@@ -75,7 +75,8 @@ internal sealed partial class FullNativeBackend : IFullAgentBackend
     private void Settle(ref BridgeRequest? request)
     { if (request is not null) Settle(request); request = null; }
 
-    public FullCapture Read()
+    public FullCapture Read() => FullReadFailure.At(FullReadStage.Context, ReadCore);
+    private FullCapture ReadCore()
     {
         Require(!_disposed); _completed.Clear();
         for (int transition = 0; transition < 8; transition++)
@@ -162,14 +163,14 @@ internal sealed partial class FullNativeBackend : IFullAgentBackend
     }
     private FullCapture Ready(string family, JsonElement wire)
     {
-        _state.Begin(); _commands.Clear();
+        FullReadFailure.At(FullReadStage.Run, () => { _state.Begin(); return true; }); _commands.Clear();
         // Allocate run identities first, including map targets and deck cards.
-        var run = _state.PublicRun(_history);
-        var context = family switch {
+        var run = FullReadFailure.At(FullReadStage.Run, () => _state.PublicRun(_history));
+        var context = FullReadFailure.At(FullReadStage.Context, () => family switch {
             "combat" => Combat(wire), "choice" => Selection(wire), "reward" => Rewards(wire),
             "map" => Map(wire), "rest" => Rest(wire), "shop" => Shop(wire), "navigation" => Navigation(wire),
             _ => throw new AgentUnsupported()
-        };
+        });
         Require(_commands.Count is > 0 and <= FullAgentRoutes.MaximumCandidates);
         return new("ready", Decision(run, context, _commands.Select(c => (JsonObject)c.Candidate.DeepClone())),
             _commands.ToArray(), _state.Bindings, _completed.ToArray());

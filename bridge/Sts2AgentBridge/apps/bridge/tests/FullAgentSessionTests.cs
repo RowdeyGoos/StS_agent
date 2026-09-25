@@ -73,6 +73,21 @@ internal static class FullAgentSessionTests
         session.Handle(new(Capability.Core, FullAgentRoutes.Action, true, 0, 0, observation["decision_id"]!.GetValue<string>(), "action:0"));
     internal static void Run(Action<bool, string> check)
     {
+        foreach (var stage in Enum.GetValues<FullReadStage>())
+        {
+            var backend = new Backend(); using var session = new FullAgentSession(backend, "fixture");
+            backend.Change = _ => FullReadFailure.At(FullReadStage.Run, () => FullReadFailure.At<bool>(stage,
+                () => throw new InvalidOperationException("private sentinel must not escape")));
+            var stopped = Read(session);
+            check(stopped["code"]!.GetValue<string>() == "read_" + stage.ToString().ToLowerInvariant() + "_failed",
+                "innermost read boundary retained " + stage);
+            check(!stopped.ToJsonString().Contains("sentinel") && backend.Posts == 0 &&
+                stopped["accepted"]!.GetValue<int>() == 0, "read diagnostic is bounded and nonmutating " + stage);
+            int reads = backend.Reads;
+            Read(session);
+            session.Handle(new(Capability.Core, FullAgentRoutes.Action, true, 0, 0, new string('a', 64), "action:0"));
+            check(backend.Reads == reads && backend.Posts == 0, "read failure remains stopped " + stage);
+        }
         foreach (string reference in new[] { "card:0", "option:2047", "cell:120", "private:0", "card:", "card:-1", "card:1\n", "card:1:2", "card:１" })
         {
             var graph = Decision(Node("run", children: new[] { Node("card", reference: reference) }), Node("combat"), new[] { Candidate(0, "end_turn") });

@@ -29,6 +29,7 @@ internal sealed class FullAgentSession : IDisposable
         if (_inside || _failed || _disposed || Environment.CurrentManagedThreadId != _thread) return Stop("agent_stopped");
         _inside = true; _started = true;
         try { return request.IsPost ? Apply(request) : Read(); }
+        catch (FullReadFailure error) { return Stop(error.Code); }
         catch (AgentUnsupported) { return Stop("unsupported_public_surface"); }
         catch { return Stop("agent_boundary_failed"); }
         finally { _inside = false; }
@@ -54,7 +55,7 @@ internal sealed class FullAgentSession : IDisposable
         }
         if (fresh.Status != "ready" || fresh.Observation is null || fresh.Commands.Length is < 1 or > FullAgentRoutes.MaximumCandidates)
             return Stop(fresh.Code ?? "unsupported_public_surface");
-        FullPublicGraph.Validate(fresh.Observation);
+        FullReadFailure.At(FullReadStage.Graph, () => { FullPublicGraph.Validate(fresh.Observation); return true; });
         // The native backend builds this graph from explicit public fields in
         // the same owner frame as the existing command observation.
         var candidates = fresh.Observation["candidates"]?.AsArray();

@@ -58,6 +58,36 @@ class FullWire:
 
 
 class FullAgentTests(unittest.TestCase):
+    def test_failure_categories_are_closed_and_preserve_validated_counts(self):
+        for category in (*sorted(host.FULL_FAILURE_CODES), 'private sentinel', ['read_deck_failed'], None):
+            with self.subTest(category=category):
+                wire = FullWire()
+                def failure(row):
+                    if wire.stage == 2 and row['status'] == 'ready':
+                        row.update(status='failed', code=category, observation=None, decision_id=None,
+                                   reconciled=1, pending=1)
+                    return row
+                wire.corrupt = failure
+                result = host.run_agent(wire.request, full=True)
+                expected = category if type(category) is str and category in host.FULL_FAILURE_CODES else 'native_failure'
+                self.assertEqual(result['code'], expected)
+                self.assertEqual((result['attempted'], result['accepted'], result['reconciled'], result['pending']), (2, 2, 1, True))
+                self.assertEqual(len(wire.posts), 2)
+                self.assertNotIn('private sentinel', json.dumps(result))
+                self.assertTrue(all(not any(buffer) for buffer in wire.buffers))
+
+    def test_failure_diagnostic_does_not_accept_regressed_counts(self):
+        wire = FullWire()
+        def failure(row):
+            if wire.stage == 2 and row['status'] == 'ready':
+                row.update(status='failed', code='read_deck_failed', observation=None, decision_id=None,
+                           attempted=1, accepted=1, reconciled=0, pending=1)
+            return row
+        wire.corrupt = failure
+        result = host.run_agent(wire.request, full=True)
+        self.assertEqual(result['code'], 'counts_regressed')
+        self.assertEqual(len(wire.posts), 2)
+
     def test_controlled_map_stop_waits_for_all_owned_actions(self):
         wire = FullWire()
         result = host.run_agent(wire.request, full=True, stop_at_map=True)

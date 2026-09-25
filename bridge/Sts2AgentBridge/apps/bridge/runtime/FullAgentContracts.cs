@@ -19,6 +19,27 @@ internal interface IFullAgentBackend : IDisposable
     ModuleReply Apply(BridgeRequest command);
 }
 
+// Closed read-stage categories only: never expose exception messages, native
+// objects, tokens or user data when an observation cannot be constructed.
+internal enum FullReadStage { Native, Run, Deck, Relics, Potions, Map, Context, Graph }
+internal sealed class FullReadFailure : Exception
+{
+    internal string Code { get; }
+    private FullReadFailure(FullReadStage stage) => Code = stage switch {
+        FullReadStage.Native => "read_native_failed", FullReadStage.Run => "read_run_failed",
+        FullReadStage.Deck => "read_deck_failed", FullReadStage.Relics => "read_relics_failed",
+        FullReadStage.Potions => "read_potions_failed", FullReadStage.Map => "read_map_failed",
+        FullReadStage.Context => "read_context_failed", FullReadStage.Graph => "read_graph_failed",
+        _ => "agent_boundary_failed"
+    };
+    internal static T At<T>(FullReadStage stage, Func<T> read)
+    {
+        try { return read(); }
+        catch (FullReadFailure) { throw; }
+        catch { throw new FullReadFailure(stage); }
+    }
+}
+
 internal static class FullAgentRoutes
 {
     internal const string Decision = "/probe/agent-v2/public/decision", Action = "/probe/agent-v2/public/action";

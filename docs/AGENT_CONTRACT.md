@@ -502,6 +502,11 @@ settle older actions before accepting or rejecting the next action. Uncertainty
 stops execution without a mutation retry. Terminal outcomes are retained without
 reading a new run: `victory`, `defeat` or `run_abandoned` (public outcome `abandoned`).
 
+Failed observations retain a closed read-stage category: native owner, run, deck,
+relics, potions, map, context or graph validation. The host preserves the category
+and validated action counts, including pending actions, then stops. Unknown codes
+remain `native_failure`; exception messages and native data are never reported.
+
 The transport admits up to 2 MiB only on these two routes, at most 2,048 candidate
 slots, 8,192 action attempts and 131,072 reads. Existing controller limits also
 apply. The graph is bounded to depth 24, 32,768 nodes and 8,192 characters per

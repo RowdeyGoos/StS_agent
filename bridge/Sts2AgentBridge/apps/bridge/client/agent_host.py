@@ -26,6 +26,12 @@ FIELDS = {'schema_version', 'protocol', 'status', 'decision_id', 'action_id', 'o
           'code', 'outcome', 'attempted', 'accepted', 'reconciled', 'parent_pending', 'child_pending'}
 REJECTION_FIELDS = {'schema_version', 'protocol', 'status', 'mutation_state', 'reason',
                     'decision_id', 'action_id', 'attempted', 'accepted', 'reconciled'}
+FULL_FAILURE_CODES = frozenset({
+    'agent_stopped', 'unsupported_public_surface', 'agent_boundary_failed', 'read_limit',
+    'unowned_completion', 'incomplete_run', 'invalid_public_graph', 'candidate_binding',
+    'invalid_action', 'action_limit', 'duplicate_native_action', 'uncertain_dispatch', 'public_capacity',
+    *(f'read_{stage}_failed' for stage in ('native', 'run', 'deck', 'relics', 'potions', 'map', 'context', 'graph')),
+})
 
 
 class AgentFailure(ValueError):
@@ -106,6 +112,11 @@ class LiveAdapter:
                 next_pending = value['parent_pending'] or value['child_pending']
             self._frame = self._token = None
             if status in ('unsupported', 'failed'):
+                if self.full:
+                    self._counts(value)
+                    self.pending = next_pending
+                    code = value['code']
+                    raise AgentFailure(code if type(code) is str and code in FULL_FAILURE_CODES else 'native_failure')
                 raise AgentFailure('unsupported_profile' if status == 'unsupported' else 'native_failure')
             require(value['code'] is None and value['action_id'] is None, 'read_fields')
             counts = tuple(value[name] for name in ('attempted', 'accepted', 'reconciled'))
