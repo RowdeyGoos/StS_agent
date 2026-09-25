@@ -27,11 +27,17 @@ The compound owner retains both mandatory relic pickups, generated reward sets,
 card offers/bundles, remove/upgrade/transform choices, automatic effects and the
 final curse. Nested Sacrifice uses the same pickup owner and stays visible to the
 policy. Actual native tasks, inventory certificates and ordered receipts must
-settle before handoff. These source and fixture results are not live acceptance.
-The package is installed and awaits a manual Profile 3 launch for its first
-controlled Neow’s Bones test; no fresh campaign is required. Installation checks
-verified the exact two owned overlay files and all 429 unchanged base files.
-Installed state SHA-256:
+settle before handoff. Its controlled Profile 3 Neow’s Bones test passed:
+**7 attempted / 7 accepted / 7 reconciled**, 53 controller reads, no stale rejection
+or pending action. Large Capsule’s pickups/additions, Lost Coffer’s nested
+Sacrifice granting Regal Pillow, final Decay and event/map return completed.
+Other compound branches retain fixture-only evidence. The
+[live ledger](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neows-bones-compound-rewards-passed)
+records the exact setup, effects and installed identity.
+
+Normal Save and Quit, game Quit and exact owned cleanup were verified by
+**20:49:48 UTC**. Installation is absent: four generated files removed, zero
+overlays and all 429 base files unchanged. The tested installed state was
 `920640b5ab3231f5925feb91a5dd7b967dd5e0a395d412c7ef30d90efa273163`.
 
 The preceding manifest `2d9a2560…`, source `b55c51d`, passed Lost Coffer:

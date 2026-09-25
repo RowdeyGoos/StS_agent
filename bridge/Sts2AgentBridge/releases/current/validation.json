@@ -3,7 +3,10 @@
   "elapsed_times": {
     "final_semantic_review_seconds": 137,
     "installation_verified_by_utc": "2026-09-25 20:38:49 UTC",
-    "note": "Implementation, inspection and focused validation overlapped. Separate implementation, release preparation and user-wait durations were not measured.",
+    "live_cleanup_verified_by_utc": "2026-09-25 20:49:48 UTC",
+    "live_final_inventory_verified_by_utc": "2026-09-25 20:45:00 UTC",
+    "live_work_resumed_at_utc": "2026-09-25 20:40:20 UTC",
+    "note": "Implementation, inspection and focused validation overlapped. Separate implementation, release preparation, live setup/execution/cleanup and user-wait durations were not measured.",
     "previous_live_cleanup_verified_by_utc": "2026-09-25 16:58:22 UTC",
     "release_gate_seconds": 361.201
   },
@@ -467,14 +470,38 @@
   "installation": {
     "base_file_count": 429,
     "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-    "credential_content_read": false,
-    "overlay_count": 2,
-    "phase": "installed",
-    "state_sha256": "920640b5ab3231f5925feb91a5dd7b967dd5e0a395d412c7ef30d90efa273163",
+    "overlay_count": 0,
+    "phase": "absent",
+    "previous_installed_state_sha256": "920640b5ab3231f5925feb91a5dd7b967dd5e0a395d412c7ef30d90efa273163",
     "status": "passed",
-    "verified_by_utc": "2026-09-25 20:38:49 UTC"
+    "verified_by_utc": "2026-09-25 20:49:48 UTC"
   },
   "live": {
+    "accepted": 7,
+    "actions": [
+      "choose_ancient_relic",
+      "claim_relic",
+      "claim_relic",
+      "open_reward",
+      "sacrifice_card_reward",
+      "leave_rewards",
+      "leave_event"
+    ],
+    "attempted": 7,
+    "case": "neows_bones_compound_rewards",
+    "cleanup": {
+      "base_file_count": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "game_process_running": false,
+      "generated_files_removed": 4,
+      "normal_quit": true,
+      "overlay_count": 0,
+      "port_accepting": false,
+      "quarantined_state_sha256": "c8b9d217f8b6307a7937eaa67255c3e558fef65f6ee33fde732e065241cd7ebf",
+      "status": "passed",
+      "verified_by_utc": "2026-09-25 20:49:48 UTC"
+    },
+    "decisions": 7,
     "installation": {
       "base_file_count": 429,
       "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
@@ -485,10 +512,70 @@
       "status": "passed",
       "verified_by_utc": "2026-09-25 20:38:49 UTC"
     },
+    "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neows-bones-compound-rewards-passed",
+    "limit": "One controlled Large Capsule/Lost Coffer chain with nested Sacrifice. Other Neow outcomes, offer/bundle/deck selectors, potion procurement, natural Ancient entry and full-campaign acceptance remain separate evidence limits.",
+    "observed": {
+      "appended_relics": [
+        "neows_bones",
+        "large_capsule",
+        "toxic_egg",
+        "whetstone",
+        "lost_coffer",
+        "regal_pillow"
+      ],
+      "deck_count": {
+        "after": 11,
+        "before": 8
+      },
+      "duplicate_relic_note": "Second Lost Coffer confirmed in full public inventory; helper name-set difference alone omits duplicates.",
+      "final_curse": "decay",
+      "gold": "466 unchanged",
+      "hp": "88/88 unchanged",
+      "large_capsule_cards": [
+        "strike",
+        "defend+"
+      ],
+      "native_verification": "All pickup tasks, automatic effects including Whetstone upgrades and add-time Egg upgrade, nested receipts, final curse and event parent reconciled.",
+      "nested_sacrifice_grant": "regal_pillow",
+      "paels_wing_display_counter": {
+        "after": 0,
+        "before": 1
+      },
+      "potions": "Full belt retained; remaining potion reward left unclaimed. No use, discard or collection.",
+      "relic_count": {
+        "after": 21,
+        "before": 15
+      },
+      "root_generated_relics": [
+        "large_capsule",
+        "lost_coffer"
+      ]
+    },
+    "outcome": {
+      "kind": "truncated",
+      "reason": "external_stop"
+    },
+    "pending": false,
+    "post_run_verification": {
+      "actionable_map": true,
+      "additional_observations": 2,
+      "counts": {
+        "accepted": 7,
+        "attempted": 7,
+        "reconciled": 7
+      },
+      "note": "One immediate verification and one later read-only inventory check, separate from controller reads. Native deck UI also inspected.",
+      "pending": false,
+      "verified_by_utc": "2026-09-25 20:45:00 UTC"
+    },
+    "reads": 53,
+    "reconciled": 7,
     "recorded_live_corpus": false,
     "scope": "Continue the saved Profile 3 campaign, prepare Neows Bones using native controls before attaching the full producer, and verify the mandatory rewards, actual generated follow-ups, final curse and event/map return.",
-    "status": "awaiting_manual_launch",
-    "target_game_executed": false
+    "setup": "Manual Profile 3 Continue restored Neow at HP 88/88, gold 466, eight cards and three potions. Native ancient NEOW NEOWS_BONES forced the visible option once before full-producer attachment. Console closed; no act reset, fresh campaign or additional HP/card/potion assistance.",
+    "stale_rejections": 0,
+    "status": "passed",
+    "target_game_executed": true
   },
   "previous_release": {
     "additional_live_tests": [
@@ -656,7 +743,7 @@
   "remaining_limits": [
     "Arbitrary nested relic pickup callbacks and unrelated selector chains remain outside the named pinned effect families.",
     "Existing per-controller bounds and pinned single-player native surface restrictions remain.",
-    "Compound Neow, remaining shop/rest/pickup paths, empty chests and the full-producer ending require representative live acceptance.",
+    "Other compound Neow branches, remaining shop/rest/pickup paths, empty chests and the full-producer ending require representative live acceptance.",
     "No claim of complete native/headless projection equivalence, all-branch content coverage or normal-HP policy strength."
   ],
   "semantic_review": {

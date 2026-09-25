@@ -1,10 +1,20 @@
 # Event caller evidence index
 
-Updated 2026-09-24; latest live evidence is September 24. Use
+Updated 2026-09-25; latest live evidence is September 25. Use
 [bridge status](STATUS.md) for current support and gaps, and
 [generic event contracts](GENERIC_EVENTS.md) for exact semantics. This page maps
 **named tested paths to their evidence**. It is not an event allowlist or a second
 family support matrix. No row establishes every branch of an event.
+
+## September 25 shared full-producer events
+
+The [full-agent ledger](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md) binds each
+controlled Profile 3 case to its own release, setup, counters and cleanup.
+
+| Caller/path | Recorded result | Qualification |
+| --- | --- | --- |
+| Neow/Lost Coffer | Potion replacement, card choice and event/map return passed at 6/6/6 | Console-forced option; uses the shared full producer, with its original release identity retained |
+| [Neow/Neow’s Bones](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neows-bones-compound-rewards-passed) | Large Capsule’s Toxic Egg/Whetstone and Strike/Defend+ additions, Lost Coffer’s nested Sacrifice granting Regal Pillow, final Decay and map return passed at 7/7/7 | Full belt left the potion reward unclaimed. Other generated relics, selectors, offers and potion-procurement branches remain separate evidence limits; natural entry was not tested |
 
 ## September 24 campaign ending
 

@@ -336,3 +336,63 @@ zero overlays remained and all 429 base files were unchanged at SHA-256
 Quarantine state was `8029c09b85a11f51009dd986f280ec1211e40b3623b02c5a2e067204e2acc858`.
 Separate execution and cleanup durations were not measured. No profile/save/history/
 Cloud filesystem content was accessed and no public trajectory corpus was retained.
+
+## Neow's Bones: compound rewards passed
+
+Manifest `18169693a3ea87ca93c5513024e3e7dab9f62d2e1a0f2cc8a9fccf63c5394660`,
+source `7bd3e09de0e262b3cb75c8854bb0456ad2fbb011`, was manually launched on Profile 3
+under installed state `920640b5ab3231f5925feb91a5dd7b967dd5e0a395d412c7ef30d90efa273163`.
+DLL SHA-256 was `03060d01d2086d10bf38a87fac2145b288e90de169a120db05af370be573bd64`
+(1,792,512 bytes). Release checks and independent semantic review are recorded in
+the current validation record; the release gate passed 85 groups in 361.201 seconds.
+
+Work resumed at **20:40:20 UTC**. Runtime, authenticated health and release
+compatibility checks passed. Native Continue restored the saved Neow checkpoint:
+HP 88/88, gold 466, eight cards and a full three-potion belt. Lost Coffer and
+Pael’s Wing were already owned; Neow’s Bones was not. Native
+`ancient NEOW NEOWS_BONES` forced the visible option once before the full producer
+attached. No act reset, fresh campaign or additional HP/card/potion assistance was
+used for this case. The console was closed before policy execution.
+
+The bounded shared-policy test resolved with **7 attempted / 7 accepted /
+7 reconciled**, seven decisions, **53 controller reads**, zero stale rejections
+and no pending action. The action sequence was `choose_ancient_relic`, `claim_relic`,
+`claim_relic`, `open_reward`, `sacrifice_card_reward`, `leave_rewards`, `leave_event`.
+The policy selected Neow’s Bones and the visible nested Sacrifice, otherwise using
+the shared chooser. Native effects, pickup tasks, ordered child receipts and the
+enclosing event all reconciled. `truncated/external_stop` was the intentional stop
+at an actionable map; no next node was selected and no mutation was retried.
+
+Neow’s Bones generated **Large Capsule and a second Lost Coffer**. Large Capsule
+obtained **Toxic Egg and Whetstone**, then added **Strike and Defend+**; the newly
+obtained Egg upgraded the basic Defend during its native addition. Lost Coffer
+opened a card reward; nested **Sacrifice granted Regal Pillow**. The full potion
+belt caused the remaining potion reward to be left unclaimed. No potion was used,
+discarded or collected. The final **Decay** curse was added after the root rewards.
+Deck size grew eight to eleven, relic count fifteen to twenty-one, and HP/gold
+remained 88/88 and 466. Pael’s Wing’s visible counter changed one to zero.
+
+One post-run observation and a later independent read-only inventory observation
+confirmed 7/7/7, an actionable map and no pending action; these two reads are
+separate from the 53 controller reads. Final public inventory and native UI checks
+were complete by **20:45:00 UTC**. The public relic list confirmed both Lost Coffer
+instances and all six appended relics; a helper’s name-set difference omitted the
+duplicate and was not used as the full append list. Native deck inspection showed
+Strike, Defend+ and Decay. Whetstone’s native upgrade checks passed; the final deck
+display alone is not used to attribute every upgraded attack to this pickup.
+
+This establishes one controlled compound chain, including nested automatic
+pickups, add-time Egg behavior, nested Sacrifice, final curse and map handoff.
+Other Neow relic outcomes, deck selectors, offers/bundles, potion procurement,
+natural Ancient entry and full-campaign acceptance remain separate evidence limits.
+No public live trajectory corpus was retained and no profile/save/history/Cloud
+filesystem content was accessed.
+
+Normal Save and Quit returned to the Profile 3 main menu with Continue available;
+game Quit then stopped the process and listener. Exact owned quarantine/purge and
+unchanged-base verification finished by **20:49:48 UTC**. Quarantine state was
+`c8b9d217f8b6307a7937eaa67255c3e558fef65f6ee33fde732e065241cd7ebf`.
+Four generated files were removed, zero overlays remained and all 429 base files
+were unchanged at SHA-256
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Separate setup, execution, cleanup and user-wait durations were not measured.

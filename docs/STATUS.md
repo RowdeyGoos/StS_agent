@@ -1,6 +1,6 @@
 # Bridge support and status
 
-Updated 2026-09-25 for broader native v2 implementation and interactive rest live validation; other capability review remains
+Updated 2026-09-25 for broader native v2 implementation and Neow compound-reward live validation; other capability review remains
 2026-09-19 against bridge source, pinned native game IL and retained evidence. Latest live
 session: **2026-09-25**. This is the authoritative summary of bridge support;
 [usage](../bridge/Sts2AgentBridge/README.md), [technical contracts](GENERIC_EVENTS.md),
@@ -39,7 +39,10 @@ demonstrated reroll, map potion use/discard, chest claiming, potion-owned hand a
 optional offers, and the first Sacrifice. The corrected Whetstone-granting
 Sacrifice passed its saved-run retest: **4/4/4 actions**, five reads and an actionable
 map, with no pending action. Full-producer shop-removal preview cancellation also
-passed: **5/5/5 actions**, unchanged gold/deck and map return. The ledger preserves the preceding failed artifact
+passed: **5/5/5 actions**, unchanged gold/deck and map return. Neow’s Bones then
+passed its Large Capsule/Lost Coffer chain, nested Sacrifice and final curse:
+**7/7/7 actions**, 53 controller reads and map return with no pending action.
+The ledger preserves the preceding failed artifact
 and its **36/36/35** counts. Prior rest
 cancellation and potion-reward evidence retains its separate package identity.
 
@@ -140,7 +143,7 @@ extend standalone rest/shop contracts.
 | --- | --- | --- |
 | Event potion/relic rewards | Singleton or 2–8 ordered items; supported exact pickup effects | Singleton and Potion Courier three-potion collection demonstrated; other counts/relic sets offline only |
 | Mixed event rewards | 2–8 card/potion/relic entries; use advertised order, native card Skip/final dismissal | Lost Coffer choose and Skip demonstrated; other orders/counts offline only |
-| Full-producer event rewards | `full_rewards_v1` shared rewards; `full_rewards_v2` retains Neow’s Bones nested pickups, visible choices and final curse under one event owner | Lost Coffer potion replacement, card choice and event/map return passed 6/6/6. Compound Neow support is released and fixture-tested, with live acceptance pending; other callers and alternatives retain separate evidence limits |
+| Full-producer event rewards | `full_rewards_v1` shared rewards; `full_rewards_v2` retains Neow’s Bones nested pickups, visible choices and final curse under one event owner | Lost Coffer potion replacement, card choice and event/map return passed 6/6/6. Neow’s Bones with Large Capsule, Lost Coffer, nested Sacrifice and the final curse passed 7/7/7 through map return; other compound branches, callers and alternatives retain separate evidence limits |
 | Full-inventory event/resume policies | `item_policy_v1`: skip-full, skip-all, protected original-potion replacement, stop-on-full; capacity-first collection | Courier full-belt skip/three replacements, Lost Coffer card plus potion skip/replacement, and Dummy resume skip/replacement demonstrated. Capacity-first paths need live coverage |
 | Terminal Strawberry pickup | Exact native type/key/+7 max HP/+7 HP, ready schema 7 | Saved floor-8 native retest passed: five reward actions reconciled and reached the map; max HP 2,064→2,071 |
 | Modified terminal gold | Bowler Hat final integer gain, ready schema 8 in source | Saved floor-15 retest passed: printed 20 gold yielded and reconciled 25 gold (492 → 517), then reached the map |
@@ -215,13 +218,17 @@ pickups, including Large Capsule, Leafy Poultice and Phial Holster. Actual comma
 results and callbacks certify effects, including prevented card/potion grants and
 native Egg upgrades. Unknown callbacks or unrelated inventory changes still stop.
 
-This new compound support is **released and fixture-tested, with live acceptance
-pending**. The final focused owner/alternative regressions passed
+This compound support is **released with representative live acceptance**:
+Neow’s Bones generated Large Capsule and Lost Coffer, nested Sacrifice granted
+Regal Pillow, and the final Decay curse settled before event/map return. All seven
+actions reconciled. Other compound branches remain fixture evidence; the
+[live ledger](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neows-bones-compound-rewards-passed)
+binds this controlled path to its tested artifact. The final focused owner/alternative regressions passed
 four groups in 49.605 s. Public projection and parent/wire checks also passed.
 Independent semantic review found no remaining blocker after nested Sacrifice
 was connected to the existing pickup chain; every visible alternative is retained.
-The final release validation passed as recorded below. These checks use
-native-shaped fixtures, not a live Neow interaction or display/localization acceptance.
+The final release validation passed as recorded below. Fixture and live evidence
+remain distinct; this case does not establish every Neow outcome or localization.
 
 The compound owner admits at most five reward sets, eight rows per set, 40 child
 inputs, 2,048 reads and five minutes within the existing 52-total-action event
@@ -257,7 +264,8 @@ These are **not an implementation queue or required live-test checklist**:
 
 ### Implemented, but still needing representative live evidence
 
-- Full-producer Neow’s Bones compound rewards, empty-chest completion, automatic
+- Other full-producer Neow’s Bones compound branches, including offer/bundle and
+  deck selectors and potion procurement; empty-chest completion, remaining automatic
   pickup effects, shop Cauldron/Orrery and additional shared event reward callers,
   plus an ending test.
   Representative hand/optional offers, potion use/discard and potion-owned choices,
@@ -265,6 +273,8 @@ These are **not an implementation queue or required live-test checklist**:
   Whetstone-granting second Sacrifice. Shop-removal preview cancellation also
   passed, with unchanged deck/gold and map return. Lost Coffer's full-producer
   rewards passed potion replacement, card choice and event/map return at 6/6/6.
+  Neow’s Bones with Large Capsule, Lost Coffer, nested Sacrifice and final Decay
+  passed at 7/7/7 through map return.
 - Expanded terminal schemas 9–10: the representative ten-entry screen passed live.
   The wider 32-entry bound and 65-action card-menu sequence remain fixture/socket
   evidence, without a separately identified ordinary 32-entry gameplay caller.
@@ -297,10 +307,13 @@ It binds 485 source/test inputs across 52 projects, source `7bd3e09`.
 The gate passed **85 groups in 361.201 seconds**, including 168 client
 tests, 1,639 router checks, 229 event wire cases, 16,750 native event
 checks and 656 rest checks. Independent semantic review found no
-remaining blocker. Neow’s Bones compound decisions, nested Sacrifice and the final
-curse are included in this package. It is installed with the exact two owned
-overlay files and all 429 base files unchanged. The first live Neow test awaits
-manual launch; fixtures do not establish native gameplay acceptance.
+remaining blocker. Its controlled Neow’s Bones test passed **7 attempted / 7 accepted /
+7 reconciled**, 53 controller reads, zero stale rejections and no pending action.
+Large Capsule, Lost Coffer, nested Sacrifice and final Decay completed before map
+return. Normal save/quit and exact cleanup were verified by **20:49:48 UTC**:
+installation absent, four generated files removed, zero overlays and all 429 base
+files unchanged. The [live ledger](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neows-bones-compound-rewards-passed)
+records setup, observed effects and remaining branch limits.
 
 The preceding manifest `2d9a2560…`, source `b55c51d`, passed Lost Coffer:
 **6 attempted / 6 accepted / 6 reconciled**, 42 reads, no stale rejection or pending
