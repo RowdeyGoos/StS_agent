@@ -906,3 +906,71 @@ history/Cloud filesystem content or live trajectory corpus was accessed.
 This establishes the corrected Punch Dagger purchase, repeated preview and exact
 effect through shop/map handoff. Royal Stamp, other deck shapes, persistence
 across reload and the complete shared v2 ending remain separate acceptance cases.
+
+## Gnarled Hammer and zero-purchase shop passed, 2026-09-26
+
+This batch reused the accepted manifest
+`289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302`, source
+`7829456da1bb28471f4aa4c910d3b5ca6d693032` and DLL
+`91182c7940b4ce420841eece40292213479838f9240a20add75523f250639405`.
+Installation was checked by **12:22:32 UTC**, state
+`ebd915dc46e0fde082b53da0b9f76f9b6fca667f80c7d0c48481f2cfb1a10830`.
+No production source, binary, test or dependency changed; the accepted release
+gate and review were reused, with fresh installed/runtime checks.
+
+After manual Profile 3 launch, live work resumed at **12:25:17 UTC**. Runtime,
+installed metadata, authenticated health and pinned compatibility passed.
+Continue restored Neow with 17 gold, HP 88/88, sixteen cards, 31 relics and five
+occupied potion slots. Before attachment, native `act 1` rebuilt the map and
+`gold 1000` changed gold to 1017. The first console entry lost its leading
+characters and was explicitly rejected as unknown command `t`; the corrected
+`act 1` then succeeded. Nine native `room shop` preparations were inspected before
+the last offered Gnarled Hammer for **204**. No cards/relics/potions/HP were
+granted. One public read verified the supported affordable offer at **0/0/0**,
+with no pending action. All subsequent gameplay used the shared producer.
+
+The Hammer controller completed by **12:30:27 UTC** at **7 attempted / 7 accepted /
+7 reconciled**, 26 controller reads, no stale rejection and no pending action.
+It bought the relic, selected three distinct unenchanted originals, confirmed,
+closed inventory and left. Two upgrade-1 Bludgeons and one upgrade-1 Headbutt each
+received exactly **Sharp 3**, preserving identity and upgrade. The other thirteen
+cards stayed exact, and the deck did not change before confirmation. Gold changed
+**1017 → 813**, one Hammer was appended (**31 → 32 relics**), and HP **88/88**,
+deck size **16** and all five potion slots stayed unchanged. One final public read
+verified exact effects and the settled map; the UI separately confirmed the map
+and visible totals.
+
+One public map inspection found a legal three-node route: combat **(1,2)**,
+unknown **(2,3)**, merchant **(3,4)**. The existing bounded travel callback used
+the public reference policy for intervening combat/event/reward actions and
+stopped at the next open inventory by **12:31:50 UTC**. Travel added **16/16/16**
+actions over 180 reads, reaching cumulative **23/23/23** with no pending action.
+It included four card plays, one end turn, gold/card rewards, one event option and
+its rewards/leave, three map entries and opening the merchant. HP stayed 88/88;
+gold was 826 and the deck had seventeen cards. Its stock had no remaining target
+selector, so no additional relic purchase was attempted.
+
+The zero-purchase case captured that exact inventory in one preflight read, then
+performed only **Close → Leave**. Both actions reconciled over three controller
+reads; one final read verified an actionable map, exact unchanged deck/relic/potion
+nodes, gold **826** and HP **88/88**. The final deck had **17 cards**, **32 relics**
+and five occupied potion slots. This added **2/2/2**, for a batch total of
+**25/25/25**, no pending action and **214 public reads**, including the separately
+counted preflight, map and verification reads. Both case controllers deliberately
+stopped with `truncated/external_stop` at the map; no campaign victory is claimed.
+
+Normal Save and Quit returned to Profile 3's main menu, followed by normal game
+Quit. Stopped-process/closed-listener, exact quarantine/purge and unchanged-base
+checks passed by **12:34:12 UTC**. Four generated files were removed, zero overlays
+remained, and all 429 base files retained SHA-256
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Quarantine state was
+`96f3d1415fc51339fd4ee2ac864b3321e93929c63d1841803b3efd2fc98a16d1`.
+The recorded live-preparation-through-cleanup interval was **535 seconds**;
+separate setup/controller and user-wait times were not measured. No profile/save/
+history/Cloud filesystem content or retained live trajectory corpus was accessed.
+
+This establishes Gnarled Hammer's three-card pickup and a separate zero-purchase
+shop visit. Zero/fewer-card Hammer confirmation, selector reversal, Royal Stamp,
+Cauldron/Orrery rewards, reload persistence and the complete shared v2 ending
+retain separate evidence limits.

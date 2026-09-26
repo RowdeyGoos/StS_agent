@@ -39,11 +39,17 @@ reads, one preflight read and one final verification read, with no pending actio
 Normal Save and Quit, game Quit and exact owned cleanup passed by
 **2026-09-26 12:20:28 UTC**, leaving zero overlays and all 429 base files unchanged.
 
-The same package was reinstalled and checked by **12:22:32 UTC** for a remaining
-Gnarled Hammer or Royal Stamp shop test: two exact overlays, unchanged base files
-and verified metadata. Installed state is
-`ebd915dc46e0fde082b53da0b9f76f9b6fca667f80c7d0c48481f2cfb1a10830`.
-Manual Profile 3 launch is pending; the existing campaign can be continued.
+The subsequent [Gnarled Hammer/zero-purchase batch](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#gnarled-hammer-and-zero-purchase-shop-passed-2026-09-26)
+passed **25/25/25** including legal travel. Hammer applied Sharp 3 to two Bludgeon+
+originals and Headbutt+ for 204 gold; a later shop Close/Leave preserved exact
+inventory without purchases. Cleanup passed by **12:34:12 UTC**, with zero
+overlays and all 429 base files unchanged. The same accepted binary/gate was reused.
+
+The package was reinstalled and checked by **12:34:58 UTC** for Royal Stamp:
+two exact overlays, unchanged base files and verified metadata. Installed state is
+`588996d8fe8edd47a99ad7bd8077db8b1cf1866aa2037065e7e736bb6ea1c543`.
+The user confirmed manual Profile 3 main-menu readiness; the saved campaign can
+be continued for the next test.
 
 The preceding manifest `e47f0514…`, source `c599a9f`, passed Red Mask, Kifuda,
 Dolly’s Mirror, Potion Belt, Cook, the remaining supported rest options, Smith
