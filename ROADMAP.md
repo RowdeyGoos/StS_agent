@@ -22,7 +22,7 @@ another fresh campaign is not an acceptance requirement. See the
    Custom screens, Trial abandonment Cancel/Confirm, event combat/reward/map paths,
    Dummy victory with automatic upgrades, terminal potion policies and assisted
    Fake Merchant seven-relic collection now have live results. Remaining targets
-   include capacity-first terminal/event/resume rewards,
+   include capacity-first terminal/event rewards,
    other Neow compound branches,
    and Sphere tool/reward variants. Yummy Cookie's true four-card upgrade
    selector, all five supported shop card-selector families and Cauldron/Orrery

@@ -1394,7 +1394,7 @@
     "overlay_count": 2,
     "phase": "installed",
     "port_accepting_before_install": false,
-    "purpose": "Unchanged accepted package prepared for shared-producer Sphere small/big tools; manual Profile 3 launch pending.",
+    "purpose": "Unchanged accepted package; user manually launched Profile 3 and fresh preflight passed at 15:53:52 UTC. Game remains open at the saved rest site; manual potion-capacity setup pending.",
     "state_sha256": "d69654a11c1a0897fbca12814aa6b975685b97090ebd58f575a147bc323024b6",
     "status": "passed",
     "verified_by_utc": "2026-09-26 15:20:01 UTC"
@@ -1499,7 +1499,14 @@
     },
     "new_campaign_required": false,
     "premise": "Continue the saved rest site and visibly establish three free potion slots before any console event setup. Prepare untouched Crystal Sphere, then attach once for Payment Plan, big-to-small-to-big switching, six reveals, visible rewards and settled map return. Stop on uncertain setup; do not retry its mutation.",
-    "status": "awaiting_manual_launch",
+    "preparation": {
+      "bridge_attached": false,
+      "game_left_running": true,
+      "native_setup": "Saved floor-50 rest restored. Swift popup closed after the mouse click without a visible discard, then reopened normally; pinned NPotionHolder blocks popup opening while a discard is pending. Return left the enabled menu unchanged. User asked to manually discard Swift, Flex and Blessing, leaving rest options untouched. No restart requested.",
+      "preflight_completed_by_utc": "2026-09-26 15:53:52 UTC",
+      "public_gameplay_reads": 0
+    },
+    "status": "awaiting_manual_potion_setup",
     "targets": [
       "sphere_small_big_tools"
     ]

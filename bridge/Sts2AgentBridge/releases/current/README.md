@@ -100,9 +100,11 @@ The same package was reinstalled and checked by **15:20:01 UTC** for Sphere’s
 small/big-tool check: two exact overlays, unchanged base files and verified metadata.
 Installed state is
 `d69654a11c1a0897fbca12814aa6b975685b97090ebd58f575a147bc323024b6`.
-Manual Profile 3 main-menu readiness is pending. Continue the saved rest site and
-visibly establish three free potion slots before preparing the event; do not
-attach to an uncertain native setup.
+Manual Profile 3 launch and fresh runtime/source/health/compatibility checks
+passed by **15:53:52 UTC**. The game remains open at the saved rest site, awaiting
+manual creation of three free potion slots. The potion menu still opens normally
+after the automated click, establishing that no discard is pending under the
+pinned holder guard. No gameplay owner has attached. No restart is needed.
 
 The preceding manifest `e47f0514…`, source `c599a9f`, passed Red Mask, Kifuda,
 Dolly’s Mirror, Potion Belt, Cook, the remaining supported rest options, Smith

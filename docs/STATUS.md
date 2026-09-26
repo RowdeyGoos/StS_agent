@@ -176,7 +176,7 @@ extend standalone rest/shop contracts.
 | Terminal Strawberry pickup | Exact native type/key/+7 max HP/+7 HP, ready schema 7 | Saved floor-8 native retest passed: five reward actions reconciled and reached the map; max HP 2,064→2,071 |
 | Modified terminal gold | Bowler Hat final integer gain, ready schema 8 in source | Saved floor-15 retest passed: printed 20 gold yielded and reconciled 25 gold (492 → 517), then reached the map |
 | Terminal reward potions | Stop-on-full, skip-full, skip-all, protected original-potion replacement | Skip-full, skip-all with full **and free** capacity, and replacement including distinct same-key potions demonstrated |
-| Potion Belt capacity | Exact +2 empty slots, retained prior inventory, at most eight slots; terminal, event and resume paths | Floor-31 terminal pickup increased capacity from three to five slots, retaining both original potions. Event/resume pickup and full-belt capacity-first behavior remain unverified |
+| Potion Belt capacity | Exact +2 empty slots, retained prior inventory, at most eight slots; terminal, event and resume paths | Floor-31 terminal pickup increased capacity from three to five slots, retaining both original potions. Event pickup and full-belt capacity-first behavior remain unverified. Resume capacity handling is fixture-only with no identified native reward-set caller |
 | Special/extra combat rewards | At most eight event extras, at most one special card; gold/card/potion/relic collection | Lantern Key special card and Punch Off potion/relic extras demonstrated. Terminal schemas 9–10 support up to 32 total entries; event extras retain their eight-entry bound |
 | Non-resuming event combat | Exact entry ownership → combat → rewards → map | Dense Vegetation, Lantern Key, Punch Off and initial Fake Merchant fight demonstrated |
 | Resuming event combat | Exact original Resume callback/task → owned item reward if present → resumed event/Proceed/map | Dummy training expiry, Setting1 victory/potion and Setting2 victory demonstrated; consecutive matching combats also demonstrated. No recursive combat driver |
@@ -296,7 +296,9 @@ These are **not an implementation queue or required live-test checklist**:
   input: retained contract limits, without a concrete necessary caller/setup.
 - Resume-time card/selector reward screens and multi-item/relic reward screens:
   no concrete Resume caller identified. Dummy Setting1 offers one potion, Setting2
-  upgrades automatically, and Setting3 obtains a relic directly.
+  upgrades automatically, and Setting3 obtains a relic directly. Resume-time
+  capacity-first Potion Belt ordering therefore also remains fixture-only,
+  rather than a scheduled gameplay acceptance case.
 - Nested pickup selectors outside the identified Neow's Bones chain, multiple
   independent selector children per callback, and broader post-selector deck
   changes beyond current one-grant support still require a concrete caller.
@@ -330,9 +332,10 @@ These are **not an implementation queue or required live-test checklist**:
   representative live acceptance. Zero-purchase
   Close/Leave passed with exact inventory preservation. The inherited passive Red Mask purchase
   passed through the full producer; other pickup effects remain separate cases.
-- Capacity-first Potion Belt collection in terminal, event and resume reward flows.
+- Capacity-first Potion Belt collection in terminal and event reward flows.
   The demonstrated terminal pickup verifies +2 capacity and retained potions;
-  full-inventory ordering and the event/resume variants remain separate tests.
+  full-inventory ordering and the event variant remain separate tests. Resume
+  capacity handling has no identified native caller, as scoped above.
 - Yummy Cookie's fixed-four upgrade selection has representative live acceptance.
   Trial/NondescriptInnocent’s curse-plus-two-transform path also passed at 5/5/5.
   Trial/MerchantInnocent's conditional curse-plus-two-upgrade path requires a
@@ -379,9 +382,13 @@ and one native potion-discard attempt did not visibly establish free capacity.
 No public gameplay reads or bridge actions ran. Normal game Quit and cleanup
 passed by **15:11:52 UTC**, with zero overlays and all 429 base files unchanged.
 The unchanged package was reinstalled and checked by **15:20:01 UTC** for Sphere's
-small/big-tool check; manual Profile 3 launch is pending. Three free potion slots
-must be visibly established before console event setup. Sphere remains untested
-through the shared v2 producer.
+small/big-tool check. Manual Profile 3 launch and fresh preflight passed by
+**15:53:52 UTC**; the game is open at the saved rest site, awaiting manual setup
+of three free potion slots. The native potion menu reopens normally after the
+automated mouse click, which rules out a pending discard under the pinned holder
+guard. No gameplay owner is attached. Sphere remains untested through the shared
+v2 producer. Resume-time capacity-first reward ordering was also removed from the
+live-test queue: the existing caller audit identifies no native reward set for it.
 
 The preceding [Silver Crucible empty-chest test](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#silver-crucible-empty-chest-passed-2026-09-26)
 passed **2/2/2** through Open/Proceed, with eighteen controller reads and no
