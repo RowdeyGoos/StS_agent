@@ -23,7 +23,6 @@ another fresh campaign is not an acceptance requirement. See the
    Dummy victory with automatic upgrades, terminal potion policies and assisted
    Fake Merchant seven-relic collection now have live results. Remaining targets
    include shop Cauldron/Orrery rewards and the remaining pickup selectors,
-   successful Dig/Lift/Clone/Kindle/Hatch effects,
    capacity-first terminal/event/resume rewards, other Neow compound branches,
    Sphere tool/reward variants, and a true multi-card upgrade selector.
    Dummy’s automatic upgrades do not establish selector coverage.

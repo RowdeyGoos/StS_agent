@@ -655,3 +655,81 @@ slots filled, and Cook success with deselection/reselection. They do not establi
 other pickup selectors, capacity-first terminal/event/resume reward ordering,
 all card variants or persistence across reload. Dig/Lift/Clone/Kindle/Hatch
 successful effects remain separate live cases.
+
+
+## Remaining rest options and Smith toggle passed, 2026-09-26
+
+The unchanged release was installed and verified by **09:55:58 UTC**, with two
+exact overlays and all 429 base files unchanged. Installed state was
+`fe129e4dff9a5c059771be88800e667ccf8d7486cdf3c25d41c3a61424b8f1bb`.
+Source remains `c599a9f65f755378ad69945e08481d8af93664d5`, manifest
+`e47f0514d5d7b142d247425f3aad227e9bdbe662b491f33809b36ab7c9e8e383`, DLL
+`59a89110df5da538603b02e6b1a73796971e139ab6733d5490203a911c0e6f1b`.
+The retained 85-group release evidence remains `/private/tmp/sts-bridge-5hudfwrd`;
+no new build or release gate was needed or run.
+
+Following the user's manual launch, live work resumed at **10:18:18 UTC**. Current
+runtime, exact installed state, authenticated health and pinned-build compatibility
+passed. Continue restored the rest-entry checkpoint: HP 88/88, gold 6, thirteen
+cards and five occupied potion slots, retaining Mirror/Belt and the earlier route's
+inventory. The preceding Cook effect was not part of that restored checkpoint.
+This does not change its recorded successful in-process result.
+
+Before full-producer attachment, native setup added Miniature Tent, Girya, Pumpkin
+Candle, Shovel and Pael's Growth. The native Pael's Growth selector enchanted one
+upgrade-0 Bludgeon with Clone. One Byrdonis Egg was added to the deck. `room rest`
+was explicitly rejected without mutation; the source-confirmed `room RestSite`
+then established the new visit. HP, gold and potions were not granted or changed
+for setup. The first full preflight verified 0/0/0, no pending action, exactly one
+Clone-enchanted Bludgeon, one egg and all five intended options enabled.
+
+The public-only test policy completed `lift → use_rest_relic (Kindle) →
+use_rest_relic (Clone) → hatch → dig → leave_rest`: **6 attempted / 6 accepted /
+6 reconciled**, six decisions, **80 controller reads**, zero stale rejections,
+no pending action and an actionable map. One preflight and one final public read
+are separate. Completion was verified before **10:22:14 UTC**.
+
+| Option | Verified effect |
+| --- | --- |
+| Lift (native UI: Train) | Girya counter 0 → 1; other inventory unchanged |
+| Kindle | Pumpkin Candle counter 5 → 10; other inventory unchanged |
+| Clone | Deck 14 → 15; one new identity exactly matched the selected original upgrade-0 Clone-enchanted Bludgeon; all originals and other inventory unchanged |
+| Hatch | The one original egg became a new upgrade-0 Byrd Swoop; one Byrdpip appended, deck size retained, exact other card nodes and HP/gold/potions unchanged |
+| Dig | Bag of Preparation appended to the exact original relic identity prefix; HP, gold, deck and potions unchanged |
+
+Miniature Tent left each subsequent option available after native completion and
+cleanup. Final HP was 88/88, gold 6, deck fifteen and relic count thirty. The native
+UI confirmed the map, counters 1/10 and new relics. This covers one egg and one
+Clone original; it does not establish multiple-egg/Tent combinations, add-time
+clone upgrades or every Dig callback.
+
+One separate public map read identified legal combat (7,2) → rest (8,3). The
+shared chooser traveled there without external changes: **12/12/12** additional
+actions, **93 controller reads**, cumulative **18/18/18**, no pending action.
+Actions were map entry, six card plays, gold claim, card-reward open/choose/leave,
+and the next map entry. HP stayed 88/88; gold became 17 and deck size sixteen.
+The encounter and selected reward were not separately classified as new content
+coverage. Pumpkin Candle's visible counter became 9 after that combat.
+
+Smith then completed `smith → choose_upgrade → deselect_card → choose_upgrade →
+confirm_selection → leave_rest`. The same original Bludgeon was selected,
+deselected and reselected; its upgrade changed **0 → 1**, with every other card
+node unchanged. HP 88/88, gold 17, deck sixteen, thirty relics and all five potion
+slots remained unchanged during Smith. This added **6/6/6**, six decisions and
+**38 controller reads**, with zero stale rejections, no pending action and map
+return. One preflight and one final public read are separate. Verification
+completed by **10:25:42 UTC**; the UI confirmed the final map and inventory counts.
+Both target controllers intentionally stopped with `truncated/external_stop`.
+
+The process finished at **24 attempted / 24 accepted / 24 reconciled**, with
+211 controller reads across the three segments and five additional public reads.
+No policy action was retried or manually assisted after attachment. Normal Save
+and Quit, game Quit, verified stopped process/closed listener and exact owned
+quarantine/purge finished by **10:27:28 UTC**. Four generated files were removed,
+zero overlays remained, and all 429 base files retained SHA-256
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Quarantine state was
+`c6a6ab35b9ca88e2dbd17d6a2fdf5285b316b3d7da99e0526a2a788aedc324c1`.
+The live-work interval includes setup, execution, inspection and cleanup; separate
+exclusive durations and user-wait time were not measured. No profile/save/history/
+Cloud filesystem content was accessed and no live trajectory corpus was retained.

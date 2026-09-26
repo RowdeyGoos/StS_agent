@@ -55,10 +55,17 @@ inventory. Counts were **45/45/45**, including legal travel between cases, with
 no pending action. The [batch ledger](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#mirror-potion-belt-and-cook-batch-passed-2026-09-26)
 records per-case counts, reads and limits.
 
+The [rest-site batch](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#remaining-rest-options-and-smith-toggle-passed-2026-09-26)
+then passed Lift, Kindle, Clone, Hatch and Dig in one Miniature Tent visit, followed
+by Smith deselection/reselection at the next legally reached rest site. Exact
+effects and map returns settled at **24/24/24**, including travel, with no pending
+action. This closes representative successful coverage for all supported
+single-player rest options; caller and variant limits remain in current status.
+
 Latest normal Save and Quit, game Quit and exact owned cleanup passed by
-**2026-09-26 09:50:50 UTC**: four generated files removed, zero overlays and all
+**2026-09-26 10:27:28 UTC**: four generated files removed, zero overlays and all
 429 base files unchanged. This batch's installed state was
-`ffcc57456b57b82157b4397c57d98d36f8ca2798b850809dde98d00cc9ccf131`.
+`fe129e4dff9a5c059771be88800e667ccf8d7486cdf3c25d41c3a61424b8f1bb`.
 Installation is now absent; the validated package is retained.
 
 The preceding manifest `18169693…`, source `7bd3e09`, passed Neow’s Bones:

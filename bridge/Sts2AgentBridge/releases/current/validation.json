@@ -413,6 +413,223 @@
       "setup": "Manual Profile 3 launch; Continue restored completed Neow checkpoint. Three native room shop setups before full-producer attachment found Mirror at 208 gold. No HP/gold/cards/potions granted. All travel after attachment used advertised legal actions without manual intervention.",
       "status": "passed",
       "target_game_executed": true
+    },
+    {
+      "accepted": 24,
+      "additional_map_route_reads": 1,
+      "attempted": 24,
+      "case": "remaining_rest_options_and_smith_toggle",
+      "cases": [
+        {
+          "accepted": 6,
+          "actions": [
+            "lift",
+            "use_rest_relic",
+            "use_rest_relic",
+            "hatch",
+            "dig",
+            "leave_rest"
+          ],
+          "after": {
+            "actionable_map": true,
+            "deck_count": 15,
+            "gold": 6,
+            "hp": 88,
+            "max_hp": 88,
+            "potion_capacity": 5,
+            "relic_count": 30
+          },
+          "attempted": 6,
+          "before": {
+            "deck_count": 14,
+            "gold": 6,
+            "hp": 88,
+            "max_hp": 88,
+            "potion_capacity": 5,
+            "relic_count": 28
+          },
+          "case": "five_special_rest_options_with_miniature_tent",
+          "cumulative_counts": [
+            6,
+            6,
+            6
+          ],
+          "decisions": 6,
+          "effects": [
+            {
+              "case": "lift",
+              "counter_after": 1,
+              "counter_before": 0,
+              "unrelated_inventory_unchanged": true
+            },
+            {
+              "case": "kindle",
+              "counter_after": 10,
+              "counter_before": 5,
+              "unrelated_inventory_unchanged": true
+            },
+            {
+              "card_id": "bludgeon",
+              "case": "clone",
+              "deck_after": 15,
+              "deck_before": 14,
+              "enchantment": "clone",
+              "exact_public_clone": true,
+              "originals_and_other_inventory_unchanged": true,
+              "upgrade_level": 0
+            },
+            {
+              "case": "hatch",
+              "egg_count": 1,
+              "hp_gold_potions_unchanged": true,
+              "new_card_id": "byrd_swoop",
+              "new_card_upgrade_level": 0,
+              "new_relic": "byrdpip",
+              "survivors_unchanged": true
+            },
+            {
+              "case": "dig",
+              "hp_gold_deck_potions_unchanged": true,
+              "new_relic": "bag_of_preparation",
+              "prior_relic_identities_unchanged": true
+            }
+          ],
+          "pending": false,
+          "preflight_public_reads": 1,
+          "reads": 80,
+          "reconciled": 6,
+          "stale_rejections": 0,
+          "verification_reads": 1,
+          "verified_by_utc": "2026-09-26 10:22:14 UTC"
+        },
+        {
+          "accepted": 12,
+          "actions": [
+            "choose_map_node",
+            "play_card",
+            "play_card",
+            "play_card",
+            "play_card",
+            "play_card",
+            "play_card",
+            "claim_gold",
+            "open_reward",
+            "choose_reward_card",
+            "leave_rewards",
+            "choose_map_node"
+          ],
+          "after": {
+            "deck_count": 16,
+            "gold": 17,
+            "hp": 88,
+            "max_hp": 88
+          },
+          "attempted": 12,
+          "case": "legal_combat_rest_travel",
+          "cumulative_counts": [
+            18,
+            18,
+            18
+          ],
+          "limits": "Encounter/reward identity not recorded or newly classified as content coverage.",
+          "pending": false,
+          "reads": 93,
+          "reconciled": 12,
+          "route": [
+            {
+              "column": 2,
+              "room": "combat",
+              "row": 7
+            },
+            {
+              "column": 3,
+              "room": "rest",
+              "row": 8
+            }
+          ]
+        },
+        {
+          "accepted": 6,
+          "actionable_map": true,
+          "actions": [
+            "smith",
+            "choose_upgrade",
+            "deselect_card",
+            "choose_upgrade",
+            "confirm_selection",
+            "leave_rest"
+          ],
+          "attempted": 6,
+          "case": "smith_deselect_reselect_same_card",
+          "cumulative_counts": [
+            24,
+            24,
+            24
+          ],
+          "decisions": 6,
+          "effect_verified": true,
+          "inventory_verification": "All other card nodes and all relic/potion nodes unchanged; same original target selected, deselected and reselected before confirmation.",
+          "pending": false,
+          "preflight_public_reads": 1,
+          "reads": 38,
+          "reconciled": 6,
+          "selected_card": {
+            "after_upgrade": 1,
+            "before_upgrade": 0,
+            "definition_id": "bludgeon"
+          },
+          "stale_rejections": 0,
+          "unchanged": {
+            "deck_count": 16,
+            "gold": 17,
+            "hp": 88,
+            "max_hp": 88,
+            "potion_capacity": 5,
+            "relic_count": 30
+          },
+          "verification_reads": 1,
+          "verified_by_utc": "2026-09-26 10:25:42 UTC"
+        }
+      ],
+      "cleanup": {
+        "base_file_count": 429,
+        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+        "game_process_running": false,
+        "generated_files_removed": 4,
+        "normal_quit": true,
+        "overlay_count": 0,
+        "port_accepting": false,
+        "quarantined_state_sha256": "c6a6ab35b9ca88e2dbd17d6a2fdf5285b316b3d7da99e0526a2a788aedc324c1",
+        "status": "passed",
+        "verified_by_utc": "2026-09-26 10:27:28 UTC"
+      },
+      "controller_reads": 211,
+      "installation": {
+        "base_file_count": 429,
+        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+        "overlay_count": 2,
+        "phase": "installed",
+        "state_sha256": "fe129e4dff9a5c059771be88800e667ccf8d7486cdf3c25d41c3a61424b8f1bb",
+        "status": "passed",
+        "verified_by_utc": "2026-09-26 09:55:58 UTC"
+      },
+      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#remaining-rest-options-and-smith-toggle-passed-2026-09-26",
+      "limits": "One Clone original, one egg and one passive Dig pickup. Multiple-egg/Tent combinations, add-time clone upgrades, every Dig callback and persistence across reload are not established.",
+      "new_build": false,
+      "new_release_gate": false,
+      "pending": false,
+      "reconciled": 24,
+      "recorded_live_corpus": false,
+      "release_manifest_sha256": "e47f0514d5d7b142d247425f3aad227e9bdbe662b491f33809b36ab7c9e8e383",
+      "setup": "Manual Profile 3 launch and Continue restored rest-entry checkpoint (88/88 HP, gold 6, thirteen cards, five occupied potion slots). Native setup before attachment added Miniature Tent, Girya, Pumpkin Candle, Shovel, Pael\u2019s Growth, one Clone enchantment on an upgrade-0 Bludgeon and one Byrdonis Egg. room rest was rejected without mutation; room RestSite succeeded. No HP/gold/potion grants.",
+      "status": "passed",
+      "target_game_executed": true,
+      "timing": {
+        "cleanup_verified_by_utc": "2026-09-26 10:27:28 UTC",
+        "live_work_resumed_utc": "2026-09-26 10:18:18 UTC",
+        "note": "Interval includes setup, execution, inspection and cleanup. Separate exclusive durations and user-wait time not measured."
+      },
+      "unchanged_release_gate_reused": true
     }
   ],
   "change": "Resolve inherited shop pickup methods to their declaring type before Harmony hook ownership checks, installation and cleanup.",
@@ -883,9 +1100,9 @@
     "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
     "overlay_count": 0,
     "phase": "absent",
-    "previous_installed_state_sha256": "ffcc57456b57b82157b4397c57d98d36f8ca2798b850809dde98d00cc9ccf131",
+    "previous_installed_state_sha256": "fe129e4dff9a5c059771be88800e667ccf8d7486cdf3c25d41c3a61424b8f1bb",
     "status": "passed",
-    "verified_by_utc": "2026-09-26 09:50:50 UTC"
+    "verified_by_utc": "2026-09-26 10:27:28 UTC"
   },
   "live": {
     "accepted": 3,
