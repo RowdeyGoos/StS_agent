@@ -22,6 +22,10 @@ using Sts2AgentBridge.Successors.GenericEventV7.Native;
 
 internal static partial class Program
 {
+    private sealed class InheritedRewardRelic:RelicModel
+    {
+        internal InheritedRewardRelic(){Id.Entry="INHERITED_REWARD";}
+    }
     private sealed class FullRewardFixture:IDisposable
     {
         internal readonly Fixture World=new("FULL_REWARD");
@@ -36,6 +40,7 @@ internal static partial class Program
         internal CardReward? CardReward;
         internal PaelsWing? Wing;
         internal bool DelayCallback,DelayCollection;
+        internal int CollectionCalls;
         internal Action? AfterCollection;
         private readonly bool _compound;
         internal FullRewardFixture(string kind="card",int count=1,bool mandatory=false,bool compound=false)
@@ -62,7 +67,7 @@ internal static partial class Program
                         Options=Options.Append(new CardRewardAlternative("SACRIFICE",PostAlternateCardRewardAction.EndSelectionAndCompleteReward){OnSelect=Wing.OnSacrifice}).ToArray();
                     }
                     reward=card;
-                } else if(kind=="relic")reward=new RelicReward{Player=World.Player,RewardsSetIndex=i,Relic=new OldCoin()};
+                } else if(kind is "relic" or "inherited_relic")reward=new RelicReward{Player=World.Player,RewardsSetIndex=i,Relic=kind=="relic"?new OldCoin():new InheritedRewardRelic()};
                 else if(kind=="special"){var card=new CardModel{Owner=World.Player};card.Id.Entry="SPECIAL";reward=new SpecialCardReward(card,World.Player){RewardsSetIndex=i};}
                 else {var p=new PotionModel();p.Id.Entry="POTION_"+i;reward=new PotionReward{Player=World.Player,RewardsSetIndex=i,Potion=p};}
                 Set.Rewards.Add(reward);var button=new NRewardButton{Reward=reward,Handler=()=>Collect(reward)};Buttons.Add(button);Screen.Children.Add(button);
@@ -81,6 +86,7 @@ internal static partial class Program
         }
         private async Task Collect(Reward reward)
         {
+            CollectionCalls++;
             if(reward is CardReward card) {
                 var options=Options;var menu=NCardRewardSelectionScreen.ShowScreen(Cards.Select(c=>new CardCreationResult(c)).ToArray(),options);card.BindMenu(menu);
                 while(true){int? index=await menu.OptionSelected();if(index<Cards.Length){World.Player.Deck.Cards.Add(Cards[index!.Value]);reward.SuccessfullySelected=true;break;}
@@ -102,6 +108,7 @@ internal static partial class Program
     }
     private static void FullRewardCases()
     {
+        InheritedRewardCases();
         CardAddJournalCases();
         foreach(string kind in new[]{"card","reroll","sacrifice","relic","special","potion"}) {
             using var f=new FullRewardFixture(kind,compound:true);var c=f.Start();
@@ -147,6 +154,43 @@ internal static partial class Program
         }
         using(var empty=new FullRewardFixture(count:0)){var parent=empty.Start();Check(parent.Status=="ready"&&parent.ParentReconciled==1&&parent.ChildEpisodes==0,"empty native Offer needs no synthetic action");}
     }
+    private static void InheritedRewardCases()
+    {
+        var reflected=typeof(InheritedRewardRelic).GetMethod("AfterObtained")!;
+        var declared=typeof(RelicModel).GetMethod("AfterObtained")!;
+        Check(reflected.ReflectedType!=reflected.DeclaringType&&reflected.DeclaringType==typeof(RelicModel),"reward fixture exercises an inherited callback");
+        foreach(bool delayed in new[]{false,true})
+        {
+            using var f=new FullRewardFixture("inherited_relic");f.DelayCollection=delayed;
+            var c=f.Start();var read=f.Act(c,"collect:0");
+            if(delayed)
+            {
+                Check(read.Status=="waiting"&&f.World.Session.Read().ParentReconciled==0,"inherited reward waits for the native collection task");
+                f.Collection.SetResult();read=f.Read(c);
+            }
+            var relic=((RelicReward)f.Set.Rewards[0]).Relic!;
+            Check(read.Status=="resolved"&&f.CollectionCalls==1&&f.World.Player.Relics.Count(r=>ReferenceEquals(r,relic))==1&&ReferenceEquals(relic.Owner,f.World.Player),"inherited reward collected once with exact ownership");
+            Check(f.World.Session.Read().ParentReconciled==1,"inherited reward parent reconciles after collection");
+            Check(!(HarmonyLib.Harmony.GetPatchInfo(declared)?.Owners.Any()??false),"inherited reward releases its declared callback hook");
+        }
+        using(var f=new FullRewardFixture("inherited_relic"))
+        {
+            var c=f.Start();var before=f.Read(c);
+            var foreign=new HarmonyLib.Harmony("fixture.reward.foreign."+Guid.NewGuid().ToString("N"));
+            foreign.Patch(declared,new HarmonyLib.HarmonyMethod(typeof(Program),nameof(RewardForeignPickupPrefix)));
+            try
+            {
+                var receipt=(GenericEventV7RewardChildApply)f.World.Session.ApplyChild(c.Child!.ParentDecisionId,c.Child.ParentActionId,c.Child.Ordinal,before.DecisionId,"collect:0");
+                Check(receipt.Value.Outcome=="uncertain"&&f.CollectionCalls==0&&((RelicReward)f.Set.Rewards[0]).Relic!.Owner is null,"foreign declared reward hook stops before native input");
+                Check(f.Read(c).Status=="unsupported"&&f.CollectionCalls==0,"failed reward stays stopped without replay");
+                bool failed=false;try{f.World.Session.Dispose();}catch(InvalidOperationException){failed=true;}
+                Check(failed,"unresolved reward disposal remains failed");
+                Check(HarmonyLib.Harmony.GetPatchInfo(declared)?.Owners.SequenceEqual(new[]{foreign.Id})==true,"reward cleanup retains the foreign hook");
+            }
+            finally{foreign.UnpatchAll(foreign.Id);}
+        }
+    }
+    private static void RewardForeignPickupPrefix(){}
     private static void NestedRewardBoundaryCases()
     {
         foreach (string mode in new[] { "cascade", "ancestor_swap", "set_swap", "early_certificate", "wrong_state", "duplicate", "task_fault", "pending_cleanup" })

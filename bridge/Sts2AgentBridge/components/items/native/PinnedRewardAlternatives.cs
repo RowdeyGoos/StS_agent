@@ -178,6 +178,12 @@ internal sealed class PinnedRewardAlternatives : IPinnedRewardAlternatives
     }
     private void Patch(MethodInfo method,string prefix,string postfix,string? finalizer=null)
     {
+        Require(method is not null);
+        // Sacrifice may grant a passive relic whose callback is inherited.
+        // Admission, patch ownership and cleanup must use its declaring method.
+        method=method.DeclaringType!.GetMethod(method.Name,
+            BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance|BindingFlags.Static|BindingFlags.DeclaredOnly,
+            null,method.GetParameters().Select(p=>p.ParameterType).ToArray(),null)!;
         Require(method is not null&&method.GetMethodBody() is not null&&!(Harmony.GetPatchInfo(method)?.Owners.Any()??false));
         _targets.Add(method);_hooks.Patch(method,new HarmonyMethod(typeof(PinnedRewardAlternatives),prefix),new HarmonyMethod(typeof(PinnedRewardAlternatives),postfix),
             finalizer:finalizer is null?null:new HarmonyMethod(typeof(PinnedRewardAlternatives),finalizer));

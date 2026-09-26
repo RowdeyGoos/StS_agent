@@ -33,7 +33,13 @@ internal sealed class PinnedRelicRewardEffect : IPinnedRelicRewardEffect
     private PinnedRelicRewardEffect(RelicReward reward)
     {
         _reward=reward;_relic=reward.Relic??throw new InvalidOperationException("reward_relic_missing");_before=new(reward.Player);_room=reward.Player.RunState.CurrentRoom!;
-        _manager=RunManager.Instance!;_node=NRun.Instance!;_target=_relic.GetType().GetMethod("AfterObtained",Type.EmptyTypes)!;
+        _manager=RunManager.Instance!;_node=NRun.Instance!;
+        var reflected=_relic.GetType().GetMethod("AfterObtained",Type.EmptyTypes)!;
+        // Harmony requires the declaring MethodInfo for inherited callbacks.
+        // Retain this same target for foreign-owner checks and exact cleanup.
+        _target=reflected.DeclaringType!.GetMethod(reflected.Name,
+            BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Instance|BindingFlags.DeclaredOnly,
+            null,Type.EmptyTypes,null)!;
         Require(PinnedAutomaticRelicEffects.Supports(_relic)&&_relic.Owner is null&&Owner());
     }
     private bool Owner()=>!_failed&&!_disposed&&System.Environment.CurrentManagedThreadId==_thread&&ReferenceEquals(_manager,RunManager.Instance)&&

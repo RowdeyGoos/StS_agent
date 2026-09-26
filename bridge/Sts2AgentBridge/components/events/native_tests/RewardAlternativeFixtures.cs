@@ -81,6 +81,7 @@ internal static partial class Program
     }
     private static void RewardAlternativeCases()
     {
+        InheritedSacrificeCases();
         AutomaticRelicRewardCases();
         foreach(int eligible in new[]{0,1,2})foreach(bool unscoped in new[]{false,true})using(var f=new AlternativesFixture("sacrifice",1)) {
             var player=f.World.World.Player;
@@ -148,11 +149,43 @@ internal static partial class Program
             Check(failed&&f.Clicks==(dispatched?1:0),"alternate identity/task/effect failure: "+mode);
         }
     }
+    private static void InheritedSacrificeCases()
+    {
+        var declared=typeof(RelicModel).GetMethod("AfterObtained")!;
+        foreach(bool conflicting in new[]{false,true})
+        {
+            using var f=new AlternativesFixture("sacrifice",1);
+            var player=f.World.World.Player;int gold=player.Gold,deck=player.Deck.Cards.Count;
+            var relic=new InheritedRewardRelic();f.Wing.Grant=relic;
+            var ready=f.Open();
+            var foreign=new HarmonyLib.Harmony("fixture.sacrifice.foreign."+Guid.NewGuid().ToString("N"));
+            if(conflicting)foreign.Patch(declared,new HarmonyLib.HarmonyMethod(typeof(Program),nameof(RewardForeignPickupPrefix)));
+            try
+            {
+                PublicRewardActionRequest.TryCreate(ready.DecisionId,"sacrifice",out var request);
+                PublicRewardActionApplyOutcome? outcome=null;bool dispatchFailed=false;
+                try{outcome=f.World.Applier.Apply(request).Outcome;}catch(InvalidOperationException){dispatchFailed=true;}
+                if(conflicting)
+                    Check((dispatchFailed||outcome!=PublicRewardActionApplyOutcome.Accepted)&&relic.Owner is null&&!player.Relics.Contains(relic),"conflicting inherited sacrifice hook prevents relic input");
+                else
+                    Check(!dispatchFailed&&outcome==PublicRewardActionApplyOutcome.Accepted&&f.World.Reader.Read().Status==PublicDecisionStatus.Ready&&f.Reward.SuccessfullySelected&&ReferenceEquals(relic.Owner,player)&&player.Relics.Count(r=>ReferenceEquals(r,relic))==1,"sacrifice reconciles an inherited passive callback");
+                Check(f.Clicks==1&&player.Gold==gold&&player.Deck.Cards.Count==deck,"inherited sacrifice executes once without unrelated changes");
+                for(int i=0;i<2;i++)
+                {
+                    bool failed=false;try{f.World.Reader.Dispose();}catch(InvalidOperationException){failed=true;}
+                    Check(failed==conflicting&&f.Clicks==1,"inherited sacrifice cleanup preserves failure without replay");
+                }
+                var owners=HarmonyLib.Harmony.GetPatchInfo(declared)?.Owners;
+                Check(conflicting?owners?.SequenceEqual(new[]{foreign.Id})==true:!(owners?.Any()??false),"sacrifice cleanup retains only a foreign declared hook");
+            }
+            finally{foreign.UnpatchAll(foreign.Id);}
+        }
+    }
     private static void AutomaticRelicRewardCases()
     {
-        foreach(string kind in new[]{"mango","paint","coin","dragon","pending","foreign","fault","invalid_deck"}) {
+        foreach(string kind in new[]{"inherited","mango","paint","coin","dragon","pending","foreign","fault","invalid_deck"}) {
             using var f=new CombatItemsFixture(1);var player=f.World.Player;var reward=(RelicReward)f.Rewards[0];
-            RelicModel relic=kind=="mango"?new Mango():kind=="paint"?new WarPaint():new OldCoin();relic.Id.Entry=kind.ToUpperInvariant();reward.Relic=relic;
+            RelicModel relic=kind=="inherited"?new InheritedRewardRelic():kind=="mango"?new Mango():kind=="paint"?new WarPaint():new OldCoin();relic.Id.Entry=kind.ToUpperInvariant();reward.Relic=relic;
             if(kind=="dragon") {var fruit=new DragonFruit{Owner=player};fruit.Id.Entry="DRAGON_FRUIT";player.Relics.Add(fruit);}
             var gate=new TaskCompletionSource();if(kind is "pending" or "foreign" or "fault")((OldCoin)relic).Gate=gate.Task;
             f.Reader.InventoryFactory=p=>new PinnedRewardInventory(p);f.Reader.RelicEffectFactory=PinnedRelicRewardEffect.Create;

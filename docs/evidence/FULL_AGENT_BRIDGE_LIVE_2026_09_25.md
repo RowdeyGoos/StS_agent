@@ -1432,3 +1432,89 @@ controller/setup and user-wait times were not measured. No profile/save/history/
 Cloud files or retained live corpus were accessed. No production source or
 package changed. Earned relics, other board/reward outcomes, full-belt handling,
 reload persistence and the full shared v2 ending retain their separate limits.
+
+## Shared v2 route stopped at Small Capsule, 2026-09-26
+
+The unchanged manifest
+`289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302`, source
+`7829456da1bb28471f4aa4c910d3b5ca6d693032`, was installed under state
+`a24e9673f20aa29dde0ce657d4d0aaadf9da5701c8498e137ae38e1e1adacb19` and
+checked by **16:19:14 UTC**. The user manually launched Profile 3. The running
+process check passed at **16:32:22 UTC**, and authenticated health/manifest
+preflight passed by **16:33:35 UTC**. A disposable preflight initially checked
+the wrong health-field name; using the existing core summary validator corrected
+that read-only helper assertion before any gameplay read or action.
+
+Continue restored the untouched floor-50 rest site at HP **88/88**, gold **665**,
+23 cards, 33 relics and five occupied potion slots. Native `act 1` reset the saved
+campaign's map and entered Neow at total floor 51. Under the user's upfront
+assistance authorization, 64 Looming Fruit add/remove pairs raised HP/max HP to
+**2072/2072** while leaving the temporary relic absent. Four Break and two Flash
+of Steel cards were added. All six were visible in the deck screen; the public
+preflight independently confirmed **29 cards**, including exactly those counts.
+The top HUD still displayed the old count of 23. All assistance and UI inspection
+preceded attachment. No native gameplay intervention followed it.
+
+The unchanged shared public-only chooser selected Small Capsule, then attempted
+its relic reward. By **16:40:46 UTC**, the controller had stopped with
+**`uncertain_dispatch`**, **2 attempted / 1 accepted / 0 reconciled**, one completed
+dispatch, two controller reads, 34 separate preflight reads and no stale
+rejections. It reported pending work and no outcome; route acceptance was false.
+Only Act 1's Neow event and reward contexts were observed. A read-only screenshot
+showed Small Capsule in the relic bar and **Stone Cracker** still offered on the
+reward screen. This is not effect reconciliation or permission to retry. No
+further bridge request or gameplay input followed the stop.
+
+Normal game Quit, stopped-process/closed-listener verification and exact owned
+quarantine/purge completed. Unchanged-base verification passed before the recorded
+**16:44:26 UTC** checkpoint: four generated files removed, zero overlays and all
+429 base files unchanged at
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Quarantine state was
+`02f15144dd1034a285971e9384d708d5567f346dfac8df55f643538ce5ca901b`.
+No profile/save/history/Cloud files or live corpus were accessed. Isolated setup,
+controller, cleanup and user-wait durations were not measured.
+
+Source inspection found that the ordinary reward-effect observer retained
+`AfterObtained` as reflected through the concrete derived relic type. Stone
+Cracker inherits that method. The shop and compound-pickup observers already
+normalize inherited callbacks to their declaring method for Harmony. A new
+derived-passive reward fixture reproduced `collect:0` returning `uncertain`
+before correction, at `/private/tmp/sts-inherited-reward-jt1ogch7/log-002.txt`
+(build/reproduction **3.446 seconds**). This is a concrete reproduced defect
+consistent with the live stop; the live receipt did not retain its exact native
+exception. The correction resolves the same selected callback on its declaring
+type and uses that single identity for foreign-hook checks, patching, validation
+and cleanup, preserving real overrides.
+
+A preceding disposable experiment used the base relic class and passed 2,925
+reward checks in 48.729 seconds, so it did not exercise inherited reflection.
+Its first version omitted a required model ID and stopped at admission; neither
+experiment is native acceptance. The existing route helper now retains only
+closed failure labels/counters from failed POST replies and the first four
+public action summaries; nine offline checks verify pass-through, no retry and
+suppression of arbitrary response/exception text. It still retains no live corpus.
+The corrected package and live retest remain separate from this unresolved attempt.
+
+The same targeted audit found the identical inherited-method defect in the
+non-compound Sacrifice observer. Its new derived-passive fixture failed during
+reconciliation at `/private/tmp/sts-inherited-sacrifice-9altk8wn/log-002.txt`
+(**3.367 seconds**). That observer now normalizes before ownership checks and
+retaining the cleanup target. A foreign hook may be detected after the native
+Sacrifice click/counter update but before relic acquisition; this stays uncertain
+and cannot be replayed. It is not a mutation-free rejection.
+
+The ordinary correction passed **16,879 native checks** in a three-group focused
+check (**180.486 seconds**, `/private/tmp/sts-bridge-s88kd1s7`). The subsequent
+Sacrifice/terminal correction passed **216 reward-alternative checks** in
+**4.829 seconds**, `/private/tmp/sts-inherited-rewards-fixed-4abt2q4r`. An earlier
+corrected run stopped because the foreign-hook fixture expected a returned
+rejection instead of the inner applier's thrown exception; the fixture now
+handles either failure representation with the same strict effect/count/cleanup
+assertions. No runtime guard was relaxed.
+
+Independent source review found no blocker: **16:51:06–16:52:06 UTC** for the
+ordinary reward path and **16:54:33–16:55:16 UTC** for the same-mechanism Sacrifice
+extension (**103 seconds total**). The reviewer did not run tests or the game.
+These focused results precede the final combined release gate and do not certify
+native recovery or a complete shared-v2 campaign.

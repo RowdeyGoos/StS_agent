@@ -376,11 +376,15 @@ return; original deck and potions stayed exact. The user freed three potion slot
 before attachment. Normal Save and Quit, game Quit and cleanup passed by
 **16:11:01 UTC**, leaving zero overlays and all 429 base files unchanged.
 The same accepted package and release gate were reused.
-The unchanged bridge was reinstalled and checked by **16:19:14 UTC** for the
-shared v2 act-transition/ending test. Manual Profile 3 launch is pending. The
-planned setup continues the saved campaign, resets its map to Act 1 and applies
-the agreed HP/damage assistance before attachment; the unchanged shared chooser
-then acts without native gameplay intervention. This route has not run yet.
+The [shared-v2 route attempt](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#shared-v2-route-stopped-at-small-capsule-2026-09-26)
+then stopped at Neow's Small Capsule/Stone Cracker reward with
+`uncertain_dispatch`, **2/1/0** and pending work. Upfront assistance was verified
+at HP 2072/2072 with four Break and two Flash of Steel cards in the 29-card deck.
+No action was retried. Normal Quit and exact cleanup passed by **16:44:26 UTC**,
+leaving zero overlays and all 429 base files unchanged. The inherited callback
+defect was reproduced in ordinary rewards and Sacrifice; its declaring-method
+correction has focused checks and independent review, with release/live retest
+still pending. No act transition or ending was reached.
 
 The preceding [Trial two-transform test](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#trial-curse-and-two-transforms-passed-2026-09-26)
 passed **5/5/5**, with fifteen controller reads and no pending action. Doubt was

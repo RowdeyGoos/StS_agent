@@ -106,13 +106,16 @@ Normal Save and Quit, game Quit and cleanup passed by **16:11:01 UTC**, leaving
 zero overlays and all 429 base files unchanged; that installation was removed.
 The unchanged release gate remains applicable.
 
-The same package was reinstalled and checked by **16:19:14 UTC** for the shared
-v2 act-transition/ending test. Two overlays match, all 429 base files are unchanged,
-and installed metadata/source identity passed. The new state is
-`a24e9673f20aa29dde0ce657d4d0aaadf9da5701c8498e137ae38e1e1adacb19`.
-Manual Profile 3 launch is pending. Setup will continue the saved campaign,
-reset its act map and apply the agreed upfront HP/damage assistance before any
-shared action. No gameplay owner has attached in a new process.
+The subsequent [shared-v2 route](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#shared-v2-route-stopped-at-small-capsule-2026-09-26)
+stopped at Small Capsule's Stone Cracker reward with `uncertain_dispatch` and
+**2/1/0**, retaining pending work. Initial assistance was verified at HP 2072/2072,
+four Break and two Flash of Steel cards in the 29-card deck. No action was retried.
+Installation state
+`a24e9673f20aa29dde0ce657d4d0aaadf9da5701c8498e137ae38e1e1adacb19`
+was removed after normal Quit; cleanup passed by **16:44:26 UTC**, leaving zero
+overlays and unchanged base files. The inherited callback defect was reproduced
+and corrected in ordinary reward and Sacrifice observers. Focused checks and
+independent review passed; a new release and live retest remain pending.
 
 The preceding manifest `e47f0514…`, source `c599a9f`, passed Red Mask, Kifuda,
 Dolly’s Mirror, Potion Belt, Cook, the remaining supported rest options, Smith
