@@ -361,7 +361,13 @@ and native enchantment integration checks also passed. Independent semantic
 review found no blocker. A missing method in a second inert fixture stopped an
 earlier gate; the fixture was corrected before the accepted gate.
 
-The latest [Silver Crucible empty-chest test](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#silver-crucible-empty-chest-passed-2026-09-26)
+The subsequent [Trial setup](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#trial-direct-shop-setup-rejected-2026-09-26)
+stopped before any action at **0/0/0**, with `read_native_event_parent_travel`.
+Console event entry retained the saved shop's enabled map-travel flag; the
+selector was not exercised. Cleanup passed by **13:41:37 UTC**. The corrected
+setup uses normal connected-room entry first; no production guard changed.
+
+The latest accepted [Silver Crucible empty-chest test](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#silver-crucible-empty-chest-passed-2026-09-26)
 passed **2/2/2** through Open/Proceed, with eighteen controller reads and no
 pending action. The map was actionable and the full inventory stayed exact.
 Normal Save and Quit, game Quit and cleanup passed by **2026-09-26 13:31:05 UTC**,

@@ -25,9 +25,11 @@ before a later failure. Keep raw responses, credentials and private data out of 
 
 Use the interaction's actual UI family: a chest relic and a standard reward list
 are different native surfaces. Console room creation after a map handoff can retain
-travel state; native map entry produced the supported Smith setup in the unified
-smoke. Establish a matching setup before changing an ownership guard. When request
-encoding changes, exercise a representative POST; GET-only socket checks do not
+travel state. In particular, a merchant enables travel and console event entry
+does not disable it; enter a connected non-shop room normally before preparing
+an event from that state. Native map entry also produced the supported Smith
+setup in the unified smoke. Establish a matching setup before changing an ownership
+guard. When request encoding changes, exercise a representative POST; GET-only socket checks do not
 establish action compatibility.
 
 ## Prepare and run within the user's scope

@@ -1240,3 +1240,39 @@ retained live corpus were accessed.
 This is representative acceptance of empty-chest completion under the shared
 producer. Crucible's card-reward upgrades, other empty-chest causes, reload
 persistence and the full shared v2 ending retain their separate evidence limits.
+
+
+## Trial direct-shop setup rejected, 2026-09-26
+
+The unchanged accepted manifest `289fabed…`, source `7829456` and DLL `91182c79…`
+used installation state
+`34e0a95a89114778b57a0112fc3833216d2dfa8205a67065c6f96801bec7e24c`, checked by
+**13:37:45 UTC**. Fresh runtime, source, metadata, health and compatibility checks
+passed after manual Profile 3 launch. Continue restored the floor-49 merchant:
+**665 gold**, HP **88/88**, **23 cards**, **33 relics**, five occupied potion slots.
+Native `event TRIAL` and Accept exposed Nondescript/Innocent's Doubt-plus-two-
+transforms option at floor 50. No inventory assistance or act reset was used.
+
+The disposable helper's single-read preflight encountered native admission still
+waiting and returned `trial_requires_fresh_prepared_verdict`, before any input.
+A bounded public inspection then reached **`read_native_event_parent_travel`** at
+**0 attempted / 0 accepted / 0 reconciled**, with no pending action or public
+decision. There were **34 reads**: one initial preflight and 33 diagnostic reads,
+including the final failed response. Neither the verdict nor its selector ran.
+
+The diagnostic identifies the enabled map-travel guard. Pinned source shows the
+merchant enables map travel, whereas console event creation does not reset it;
+normal map entry disables it. The next setup therefore enters a connected
+non-shop room normally before preparing Trial. The helper now waits boundedly
+for initial admission instead of treating an ordinary waiting reply as a prepared-
+verdict mismatch. No production ownership guard or package changed.
+
+No gameplay input followed the failed read. Normal game Quit, stopped-process/
+closed-listener checks and exact cleanup passed by **13:41:37 UTC**, removing four
+generated files and leaving zero overlays and all 429 base files unchanged at
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Quarantine state was
+`2dbf51922ae61b020bcdb14d627c14fd36c2698c7950f6e28d0925f6f38f15aa`.
+Clock checkpoints **13:38:48–13:41:37 UTC** span **169 seconds**; separate setup,
+controller and user-wait times were not measured. No profile/save/history/Cloud
+files or retained live corpus were accessed. Trial selector acceptance remains open.

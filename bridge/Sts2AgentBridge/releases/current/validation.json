@@ -674,6 +674,57 @@
       "target_game_executed": true,
       "total_public_reads": 20,
       "verification_reads": 1
+    },
+    {
+      "accepted": 0,
+      "attempted": 0,
+      "case": "trial_direct_shop_setup_rejected",
+      "cleanup": {
+        "base_file_count": 429,
+        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+        "game_process_running": false,
+        "generated_files_removed": 4,
+        "normal_quit": true,
+        "normal_save_and_quit": false,
+        "overlay_count": 0,
+        "port_accepting": false,
+        "quarantined_state_sha256": "2dbf51922ae61b020bcdb14d627c14fd36c2698c7950f6e28d0925f6f38f15aa",
+        "status": "passed",
+        "verified_by_utc": "2026-09-26 13:41:37 UTC"
+      },
+      "decisions": 0,
+      "diagnosis": "The native merchant enables map travel; console event entry retains it. The event parent diagnostic identified the existing enabled-travel guard. This does not exercise the selector. Next setup uses normal connected map entry before console event creation.",
+      "diagnostic_reads": 33,
+      "initial_helper_code": "trial_requires_fresh_prepared_verdict",
+      "installation": {
+        "base_file_count": 429,
+        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+        "credential_content_read": false,
+        "game_running_before_install": false,
+        "installed_metadata_verified": true,
+        "overlay_count": 2,
+        "phase": "installed",
+        "port_accepting_before_install": false,
+        "purpose": "Same accepted package for Trial curse-plus-two-card selector; user confirmed manual Profile 3 main-menu readiness.",
+        "state_sha256": "34e0a95a89114778b57a0112fc3833216d2dfa8205a67065c6f96801bec7e24c",
+        "status": "passed",
+        "verified_by_utc": "2026-09-26 13:37:45 UTC"
+      },
+      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#trial-direct-shop-setup-rejected-2026-09-26",
+      "pending": false,
+      "preflight_reads": 1,
+      "reconciled": 0,
+      "recorded_interval_seconds": 169,
+      "recorded_interval_start_utc": "2026-09-26 13:38:48 UTC",
+      "recorded_live_corpus": false,
+      "release_manifest_sha256": "289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302",
+      "setup": "Continue restored floor 49 merchant with 665 gold, HP 88/88, 23 cards, 33 relics and five occupied potion slots. Native event TRIAL and Accept exposed Nondescript/Innocent at floor 50 before attachment. No verdict or selector action was dispatched.",
+      "source_commit": "7829456da1bb28471f4aa4c910d3b5ca6d693032",
+      "status": "failed",
+      "subsequent_read_code": "read_native_event_parent_travel",
+      "target_game_executed": true,
+      "total_public_reads": 34,
+      "total_reads_include_final_failed_response": true
     }
   ],
   "change": "Wait for native single-enchantment preview children queued for deletion before validating the exact new holders; no input retry or premature confirmation.",
@@ -683,12 +734,12 @@
     "game_process_running": false,
     "generated_files_removed": 4,
     "normal_quit": true,
-    "normal_save_and_quit": true,
+    "normal_save_and_quit": false,
     "overlay_count": 0,
     "port_accepting": false,
-    "quarantined_state_sha256": "6fafb44f9b8c1c292df83cc2ba420f0817b1e5bb640897456eb95b3dff0613cb",
+    "quarantined_state_sha256": "2dbf51922ae61b020bcdb14d627c14fd36c2698c7950f6e28d0925f6f38f15aa",
     "status": "passed",
-    "verified_by_utc": "2026-09-26 13:31:05 UTC"
+    "verified_by_utc": "2026-09-26 13:41:37 UTC"
   },
   "elapsed_times": {
     "affected_consumers_seconds": 10.347,
@@ -701,8 +752,9 @@
     "latest_reward_batch_recorded_interval_seconds": 529,
     "latest_shop_batch_recorded_interval_seconds": 535,
     "latest_shop_selector_recorded_interval_seconds": 249,
+    "latest_trial_setup_recorded_interval_seconds": 169,
     "live_preparation_through_cleanup_recorded_interval_seconds": 480,
-    "next_installation_verified_by_utc": "2026-09-26 13:37:45 UTC",
+    "next_installation_verified_by_utc": "2026-09-26 13:43:10 UTC",
     "note": "Implementation, review and validation overlapped. Exclusive implementation/release preparation, failed gate elapsed time and user-wait durations were not measured.",
     "release_gate_seconds": 355.485
   },
@@ -1198,10 +1250,10 @@
     "overlay_count": 2,
     "phase": "installed",
     "port_accepting_before_install": false,
-    "purpose": "Same accepted package prepared for Trial curse-plus-two-card selector test; manual Profile 3 launch pending.",
-    "state_sha256": "34e0a95a89114778b57a0112fc3833216d2dfa8205a67065c6f96801bec7e24c",
+    "purpose": "Same accepted package prepared for Trial after normal connected-room entry; manual Profile 3 launch pending.",
+    "state_sha256": "9e5515310e7078abc5bc50a2eb44bc88d73bcf0d8da9a934a0846bd5a207dfa5",
     "status": "passed",
-    "verified_by_utc": "2026-09-26 13:37:45 UTC"
+    "verified_by_utc": "2026-09-26 13:43:10 UTC"
   },
   "live": {
     "accepted": 7,
@@ -1290,7 +1342,7 @@
   },
   "next_live_test": {
     "new_campaign_required": false,
-    "premise": "Prepare Trial through native controls before attachment. Prefer Merchant/Innocent for Shame plus two upgrades; Nondescript/Innocent is an alternate concrete two-transform case. Verify the exact curse, selected originals, retained other inventory and map return.",
+    "premise": "Continue the saved campaign and enter a connected non-shop room through normal native map controls before preparing Trial. Prefer Merchant/Innocent for Shame plus two upgrades; Nondescript/Innocent is another concrete target. Verify curse, selected originals, retained inventory and map return.",
     "status": "awaiting_manual_launch",
     "targets": [
       "trial_merchant_curse_two_upgrades",
