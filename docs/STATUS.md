@@ -43,7 +43,9 @@ passed: **5/5/5 actions**, unchanged gold/deck and map return. Neow’s Bones th
 passed its Large Capsule/Lost Coffer chain, nested Sacrifice and final curse:
 **7/7/7 actions**, 53 controller reads and map return with no pending action.
 The corrected full-producer Red Mask purchase also passed: **3/3/3 actions**, four
-controller reads, exact payment/pickup and map return. The ledger preserves the
+controller reads, exact payment/pickup and map return. Kifuda then passed its
+three-card pickup selector: **7/7/7 actions**, 25 controller reads, exact Adroit 3
+effects and map return. The ledger preserves the
 earlier Whetstone failure at **36/36/35** and shop failure at **1/0/0** under their
 original artifacts. Prior rest cancellation and potion-reward evidence retains
 its separate package identity.
@@ -62,9 +64,9 @@ its separate package identity.
 | Combat card choices | Owned discard/exhaust selections, including optional zero confirmation; v2 adds visible Draw grids; v3 adds mandatory one-card offers | Neow’s Fury zero/two-card choices and resumed victory demonstrated. Repeated Séance Draw selections and enclosing victories passed through Act 3. Three Knowledge Demon offers reconciled, followed by its boss victory and the ending. Other fixed/exhaust callers remain offline only |
 | Map and room handoffs | Public legal map actions and bounded event/combat-to-map verification | Representative map/next-room transitions demonstrated; composite `*-map` clients verify the map but do not select a node |
 | Rest | Heal/Proceed and Smith (one card); Lift, Kindle, Dig, Cook, Clone and Hatch. Packaged `rest_v3` exposes selector cancellation and Heal-owned rewards | Ordinary Heal/Smith, Smith/Cook immediate and preview cancellation, Dream Catcher card collect/Skip, and Tiny Mailbox two-potion collection demonstrated. Successful effects of the six additional actions remain offline only |
-| Shop purchases | Cards, potions, supported passive relics, Potion Belt +2 slots; 0–8 purchases, kind policy, gold reserve and callback-certified restock | Seven-card/one-potion visit and three restocked potion purchases with original-potion replacement demonstrated. The full-producer Red Mask passive pickup passed 3/3/3 through map return; capacity, pickup selectors and other policy variants need live coverage |
+| Shop purchases | Cards, potions, supported passive relics, Potion Belt +2 slots; 0–8 purchases, kind policy, gold reserve and callback-certified restock | Seven-card/one-potion visit and three restocked potion purchases with original-potion replacement demonstrated. Full-producer Red Mask and Kifuda pickups passed through map return; capacity, remaining pickup selectors and other policy variants need live coverage |
 | Shop removal | Exact selected original, price/effect reconciliation, preview cancellation, then separate inventory close and Leave | Removal and full-producer preview cancellation demonstrated through map return; cancellation retained exact deck and gold |
-| Shop pickup selectors | Dolly’s Mirror, Gnarled Hammer, Kifuda, Punch Dagger and Royal Stamp; exact native clone/enchantment selection | Implemented and offline tested; live coverage open. Other pickup callbacks are not generally supported |
+| Shop pickup selectors | Dolly’s Mirror, Gnarled Hammer, Kifuda, Punch Dagger and Royal Stamp; exact native clone/enchantment selection | Kifuda passed 7/7/7 through map return: three original Bludgeons received Adroit 3, exact payment, other cards/HP/potions unchanged. Its zero/fewer-card and deselection variants and the other four relics remain offline only. Other pickup callbacks are not generally supported |
 
 ### Native rest-site actions
 
@@ -287,7 +289,8 @@ These are **not an implementation queue or required live-test checklist**:
   evidence, without a separately identified ordinary 32-entry gameplay caller.
 - Selectorless removal: one-card Dark Door passed live. Empty domains, retained
   Eternal cards, other callers and adversarial variants remain fixture evidence.
-- Shop Potion Belt purchases, all five pickup selectors, and remaining
+- Shop Potion Belt purchases, the four remaining pickup selectors, Kifuda's
+  zero/fewer-card and deselection variants, and remaining
   zero-buy/kind/gold-reserve variants. The inherited passive Red Mask purchase
   passed through the full producer; other pickup effects remain separate cases.
 - Capacity-first Potion Belt collection in terminal, event and resume reward flows.
@@ -315,16 +318,24 @@ It binds 485 source/test inputs across 52 projects, source `c599a9f`.
 The gate passed **85 groups in 362.357 seconds**, including 168 client
 tests, 1,639 router checks, 229 event wire cases, 16,829 native event
 checks and 656 rest checks. Independent semantic review found no
-remaining blocker. Its controlled Red Mask retest passed **3 attempted / 3 accepted /
-3 reconciled**, four controller reads, zero stale rejections and no pending action.
-Gold changed 466 to 294; exactly one Red Mask was appended, with HP 88/88, the
-eleven-card deck and all three potions unchanged. Purchase, Close and Leave
-completed through an actionable map. One preflight and one post-run public read
-are separate from the four controller reads. Normal Save and Quit, game Quit and
-exact cleanup passed by **21:33:04 UTC**: installation absent, four generated files
-removed, zero overlays and all 429 base files unchanged. The
-[live ledger](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#red-mask-corrected-shop-purchase-passed)
-binds this representative passive purchase to its tested package.
+remaining blocker. The unchanged release was reinstalled on **2026-09-26** after
+source/package identity verification; the accepted gate was reused.
+
+The latest Kifuda purchase passed **7 attempted / 7 accepted / 7 reconciled**,
+25 controller reads, zero stale rejections and no pending action. Three original
+Bludgeons received exactly Adroit 3; gold changed 466 to 254 and one Kifuda was
+appended. The other eight cards, HP 88/88, deck size eleven and all three potions
+were unchanged. Purchase, selection, confirmation, Close and Leave completed
+through an actionable map. One preflight and one post-run public read are separate
+from the 25 controller reads. A bounded search of sixteen native-generated shops
+found neither Cauldron nor Orrery before full-producer attachment; those cases
+remain pending. Normal Save and Quit, game Quit and exact cleanup passed by
+**2026-09-26 08:57:37 UTC**: installation absent, four generated files removed,
+zero overlays and all 429 base files unchanged. The
+[live ledger](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#kifuda-three-card-shop-pickup-passed-2026-09-26)
+binds this selector result to its tested installation and package. The same release's
+[Red Mask result](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#red-mask-corrected-shop-purchase-passed)
+remains separately recorded at **3/3/3**, four controller reads and map return.
 
 The preceding manifest `18169693…`, source `7bd3e09`, passed Neow’s Bones:
 **7 attempted / 7 accepted / 7 reconciled**, 53 controller reads, no stale rejection

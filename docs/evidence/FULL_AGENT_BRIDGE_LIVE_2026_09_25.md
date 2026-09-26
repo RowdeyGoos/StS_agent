@@ -1,9 +1,10 @@
-# Full-agent bridge live coverage, 2026-09-25
+# Full-agent bridge live coverage, 2026-09-25–26
 
 This controlled Profile 3 batch exercised the shared `agent_v2` interface on
 the pinned macOS game 0.107.1 / Steam build 23811903. The user launched manually;
 native Continue resumed the existing assisted Ironclad test run. This is bounded
 interaction evidence, not an uninterrupted campaign or a policy-strength result.
+Follow-up cases below retain their own dates, package and installation identities.
 
 ## Tested artifact
 
@@ -504,3 +505,74 @@ Cauldron/Orrery rewards, pickup selectors and other automatic-effect families
 remain separate cases. No profile/save/history/Cloud filesystem content was
 accessed and no live trajectory corpus was retained. Separate setup, execution,
 cleanup and user-wait durations were not measured.
+
+## Kifuda: three-card shop pickup passed, 2026-09-26
+
+The unchanged release manifest is
+`e47f0514d5d7b142d247425f3aad227e9bdbe662b491f33809b36ab7c9e8e383`, source
+`c599a9f65f755378ad69945e08481d8af93664d5`. Its DLL is 1,793,024 bytes, SHA-256
+`59a89110df5da538603b02e6b1a73796971e139ab6733d5490203a911c0e6f1b`.
+All bound sources, retained gate identity and the three published package files'
+lengths/hashes were verified before reuse. The accepted 85-group gate in
+362.357 seconds remains under `/private/tmp/sts-bridge-5hudfwrd`; no new build,
+implementation change or gate run was needed.
+
+Installation passed by **08:41:16 UTC** under state
+`87507d8631b0f3fd0ff6af78528bc5ad711085097d0e2b6c32b14dc9d3d593c5`, with two exact
+owned overlays and all 429 base files unchanged. The user manually opened Profile 3
+at the main menu. Runtime, health and pinned release/build checks passed. Continue
+restored the completed Neow checkpoint: HP 88/88, gold 466, eleven cards, 21 relics
+and three potions. Yesterday's debug-shop Red Mask purchase was not present in
+this restored checkpoint; its accepted in-process result remains unchanged.
+
+A bounded UI-only search generated **sixteen native merchants** using `room shop`,
+opening each inventory before any full-producer observation or policy attachment.
+Neither Cauldron nor Orrery appeared. The sixteenth merchant offered Kifuda at
+212 gold, so the test selected that available pickup-selector path and stopped
+the setup search. One truncated console entry was rejected as an unknown command
+before a corrected setup input; it caused no room mutation. No further console
+room changes occurred after attachment, and no new HP, gold, cards or potions were
+granted. One public preflight read confirmed the exact supported Kifuda offer,
+zero action counts and no pending work.
+
+The bounded public-only policy completed:
+
+1. `buy_shop_item` for the unique Kifuda offer.
+2. Three `choose_relic_card` actions for three distinct original Bludgeons, all
+   initially unupgraded and unenchanted; each next observation verified the
+   selected identities.
+3. `confirm_relic_selection`, then `close_shop` and `leave_shop`.
+
+The result was **7 attempted / 7 accepted / 7 reconciled**, seven decisions,
+**25 controller reads**, zero stale rejections and no pending action. Exact payment
+changed gold **466 to 254**. One Kifuda was appended to the original relic prefix
+(21 to 22 relics). The three selected original cards each received **Adroit 3**,
+with definitions and upgrade levels retained. The other eight public card nodes
+were unchanged; all eleven original deck identities remained. Comparison used
+card identity rather than public deck order, which can change after enchantment.
+HP stayed **88/88** and the three original potion slots/references/definitions
+were unchanged.
+
+One separate post-run public observation confirmed the same effects, counts 7/7/7,
+no pending work and an actionable map. The preflight and verification reads are
+excluded from the 25 controller reads. Native UI showed the map, 254 gold,
+appended Kifuda, eleven cards and unchanged HP/potions. `truncated/external_stop`
+is the intended map stop; no next node was selected. Verification was complete
+by **08:56:48 UTC**. No action was retried or manually assisted during the policy.
+
+Normal Save and Quit returned to the Profile 3 main menu with Continue available,
+then normal Quit stopped the game and listener. Owned quarantine/purge and base
+verification passed by **08:57:37 UTC**. Quarantine state was
+`1cae3a061f063ce7da1c910de5d7a1a5884dec153a9913cb65e102f52022c891`.
+Four generated files were removed, zero overlays remained and all 429 base files
+were unchanged at SHA-256
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+
+This demonstrates one three-card Kifuda purchase through the full producer,
+including its owned selector, exact enchantments and map return. It does not
+establish zero/fewer-card selection, deselection, the other four shop pickup
+selectors, capacity changes, Cauldron/Orrery rewards or persistence across reload.
+The missing target offers are setup limits, not failed bridge actions. No
+profile/save/history/Cloud filesystem content was accessed and no live trajectory
+corpus was retained. Separate setup, execution, cleanup and user-wait durations
+were not measured.

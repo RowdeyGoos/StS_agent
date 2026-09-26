@@ -32,13 +32,25 @@ four controller reads and no pending action. The policy purchased Red Mask for
 172 gold, closed the shop and returned to an actionable map. Exact pickup and
 payment settled; HP, deck and potions stayed unchanged. A separate preflight read
 and final inventory read are excluded from the four controller reads.
-The [live ledger](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#red-mask-corrected-shop-purchase-passed)
-records setup and limits; Cauldron/Orrery and other pickup families remain separate.
+The [Red Mask ledger](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#red-mask-corrected-shop-purchase-passed)
+records that test's setup, installation and cleanup.
 
-Normal Save and Quit, game Quit and exact owned cleanup passed by **21:33:04 UTC**:
-four generated files removed, zero overlays and all 429 base files unchanged.
-The tested installed state was
-`17a45939f15e3e376cdb8c782f061989d316415ce62993b3ba153e69e0cc66e7`.
+The unchanged package then passed Kifuda's three-card shop pickup on **2026-09-26**:
+**7 attempted / 7 accepted / 7 reconciled**, 25 controller reads and no pending
+action. The three selected original Bludgeons each received Adroit 3, gold changed
+466 to 254, one Kifuda was appended and the game returned to an actionable map.
+Other cards, HP and potions were unchanged. One preflight and one final inventory
+read are separate from the controller reads. The
+[Kifuda ledger](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#kifuda-three-card-shop-pickup-passed-2026-09-26)
+records the bounded sixteen-shop setup search; Cauldron/Orrery were absent and
+remain untested. Other pickup selectors and Kifuda's zero/fewer-card and
+deselection variants remain separate cases. Source and package identities were
+verified before reuse; no new build or release-gate run is claimed.
+
+Latest normal Save and Quit, game Quit and exact owned cleanup passed by
+**2026-09-26 08:57:37 UTC**: four generated files removed, zero overlays and all
+429 base files unchanged. This test's installed state was
+`87507d8631b0f3fd0ff6af78528bc5ad711085097d0e2b6c32b14dc9d3d593c5`.
 Installation is now absent; the validated package is retained.
 
 The preceding manifest `18169693…`, source `7bd3e09`, passed Neow’s Bones:
