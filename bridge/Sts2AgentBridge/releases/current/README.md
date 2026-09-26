@@ -62,10 +62,16 @@ effects and map returns settled at **24/24/24**, including travel, with no pendi
 action. This closes representative successful coverage for all supported
 single-player rest options; caller and variant limits remain in current status.
 
+The unchanged package then passed [Yummy Cookie's four-card upgrade](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#yummy-cookie-four-card-upgrade-passed-2026-09-26):
+**7/7/7**, 31 controller reads, no pending action and map return. Bludgeon,
+Headbutt, Body Slam and Fiend Fire each gained exactly one upgrade, one Cookie
+was appended, and unselected cards/other inventory stayed unchanged. The ledger
+separately records startup/preflight reads and controlled Tezcatara setup.
+
 Latest normal Save and Quit, game Quit and exact owned cleanup passed by
-**2026-09-26 10:27:28 UTC**: four generated files removed, zero overlays and all
+**2026-09-26 11:02:11 UTC**: four generated files removed, zero overlays and all
 429 base files unchanged. This batch's installed state was
-`fe129e4dff9a5c059771be88800e667ccf8d7486cdf3c25d41c3a61424b8f1bb`.
+`fe8375964bf2a0f45ff65d37a8dc7c593a004c685cb7f3dd0be12111604310dc`.
 Installation is now absent; the validated package is retained.
 
 The preceding manifest `18169693…`, source `7bd3e09`, passed Neow’s Bones:

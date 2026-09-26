@@ -733,3 +733,71 @@ Quarantine state was
 The live-work interval includes setup, execution, inspection and cleanup; separate
 exclusive durations and user-wait time were not measured. No profile/save/history/
 Cloud filesystem content was accessed and no live trajectory corpus was retained.
+
+
+## Yummy Cookie four-card upgrade passed, 2026-09-26
+
+The unchanged release was installed and checked by **10:39:22 UTC**, with two
+exact overlays and all 429 base files unchanged. Installed state was
+`fe8375964bf2a0f45ff65d37a8dc7c593a004c685cb7f3dd0be12111604310dc`.
+Source remains `c599a9f65f755378ad69945e08481d8af93664d5`, manifest
+`e47f0514d5d7b142d247425f3aad227e9bdbe662b491f33809b36ab7c9e8e383`, DLL
+`59a89110df5da538603b02e6b1a73796971e139ab6733d5490203a911c0e6f1b`.
+The retained 85-group gate remains `/private/tmp/sts-bridge-5hudfwrd`; no new
+production build, source change or release-gate run was needed or claimed.
+
+After the user's manual Profile 3 launch, work resumed at **10:57:42 UTC**.
+Runtime, exact installed metadata, authenticated health and compatibility passed.
+Continue restored the rest-entry checkpoint with HP 88/88, gold 17, sixteen
+cards, thirty relics and five occupied potion slots. Before full-producer
+attachment, native `act 1` rebuilt the map within the saved campaign, then
+`ancient TEZCATARA YUMMY_COOKIE` prepared the source-confirmed offer. The UI
+showed Yummy Cookie and its four-card upgrade text. No direct HP, gold, card,
+relic or potion grant was used in this setup; normal Ancient entry returned HP
+to 88/88 before the test baseline.
+
+The initial helper preflight stopped after its first read while the bridge was
+settling, with `cookie_requires_fresh_settled_tezcatara`; it had issued no action.
+A bounded read-only inspection settled after 33 reads and verified the exact
+Cookie option, **0/0/0** and no pending action. The helper's initial-read handling
+was adjusted to wait at most fifteen seconds for a settled decision. No bridge
+guard changed and no mutation was retried. The successful controller then used
+one separate preflight read and one final public verification read.
+
+The public-only policy completed `choose_ancient_relic → choose_event_card × 4
+→ confirm_selection → leave_event`: **7 attempted / 7 accepted / 7 reconciled**,
+seven decisions, **31 controller reads**, zero stale rejections and no pending
+action. The selector exposed minimum/maximum four and manual confirmation;
+each returned selected set matched the exact original references. The deck
+remained unchanged before confirmation.
+
+| Selected original | Upgrade before | Upgrade after |
+| --- | --- | --- |
+| Bludgeon | 0 | 1 |
+| Headbutt | 0 | 1 |
+| Body Slam | 0 | 1 |
+| Fiend Fire | 0 | 1 |
+
+All sixteen card identities were retained, and all twelve unselected card nodes
+were unchanged. Exactly one Yummy Cookie was appended to the unchanged thirty
+original relic nodes. HP **88/88**, gold **17**, deck size **16** and the exact
+five-slot potion inventory stayed unchanged. Final public verification and the
+native UI both showed an actionable map. The intentional bounded outcome was
+`truncated/external_stop`, not campaign completion. Total public reads were 67:
+31 controller reads and 36 startup/inspection/preflight/final reads.
+
+Normal Save and Quit, game Quit, stopped-process/closed-listener checks and exact
+owned quarantine/purge passed by **11:02:11 UTC**. Four generated files were
+removed, zero overlays remained, and all 429 base files retained SHA-256
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Quarantine state was
+`949e5f9070edc06d487a1a4901d9e4c0e4501d17998fd042e24fe3712f36457e`.
+The measured live-work interval was **269 seconds**, including setup, inspection,
+test execution and cleanup. Separate phase durations and user-wait time were not
+measured. No profile/save/history/Cloud filesystem content was accessed and no
+live trajectory corpus was retained.
+
+This establishes one fixed-four upgrade selection through `agent_v2/full_run_v2`,
+including its exact effects and event/map handoff. Natural Ancient entry,
+other upgrade counts, Trial's conditional curse/upgrade path, selection reversal
+and persistence across reload are not established by this case.

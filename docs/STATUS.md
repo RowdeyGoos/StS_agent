@@ -1,8 +1,8 @@
 # Bridge support and status
 
-Updated 2026-09-25 for broader native v2 implementation and Neow compound-reward live validation; other capability review remains
+Updated 2026-09-26 for shared-producer shop, rest and four-card upgrade live validation; other capability review remains
 2026-09-19 against bridge source, pinned native game IL and retained evidence. Latest live
-session: **2026-09-25**. This is the authoritative summary of bridge support;
+session: **2026-09-26**. This is the authoritative summary of bridge support;
 [usage](../bridge/Sts2AgentBridge/README.md), [technical contracts](GENERIC_EVENTS.md),
 [caller evidence](EVENT_COVERAGE.md) and [priorities](../ROADMAP.md) have separate roles.
 
@@ -49,7 +49,9 @@ effects and map return. A further batch demonstrated Dolly’s Mirror, Potion Be
 with both added slots filled, and Cook with deselection/reselection: **45/45/45**
 including the legal intervening map travel. Lift, Kindle, Clone, Hatch and Dig
 then passed in one Miniature Tent visit, followed by Smith deselection/reselection
-at the next connected rest site: **24/24/24** including travel. The ledger preserves the
+at the next connected rest site: **24/24/24** including travel. Yummy Cookie's
+four-card upgrade selector then passed **7/7/7**, with exact upgrades, retained
+unselected cards/inventory and map return. The ledger preserves the
 earlier Whetstone failure at **36/36/35** and shop failure at **1/0/0** under their
 original artifacts. Prior rest cancellation and potion-reward evidence retains
 its separate package identity.
@@ -136,7 +138,7 @@ extend standalone rest/shop contracts.
 | --- | --- | --- |
 | Ordinary and repeated option pages | Owned choices, completed callbacks, fresh native controls and bounded revisits | Abyssal Baths two Lingers/exit demonstrated; other long chains need caller coverage |
 | Deck changes around a selector | Append-only baseline before the first selector; removal followed by at most one separate appended grant | Grave/Confront and Amalgamator/CombineStrikes demonstrated; grant provenance unverified; arbitrary survivor changes/multiple grants unsupported |
-| Upgrade | Fixed selection counts 1–8; eligible allocated off-screen holders | Sapphire Seed single upgrade at slot 20 of 23 demonstrated. **True multi-card upgrade selector remains untested live**; Dummy automatic upgrades are not selector evidence |
+| Upgrade | Fixed selection counts 1–8; eligible allocated off-screen holders | Sapphire Seed single upgrade at slot 20 of 23 demonstrated. Yummy Cookie's fixed-four selector passed through the full producer at 7/7/7, with exact upgrades and map return. Other counts/callers retain separate limits; Dummy automatic upgrades are not selector evidence |
 | Enchant | Single selection and fixed 2–8 selections with exact preview/effects | Sapphire Seed, Grave and Prickly Sponge fixed-two demonstrated; other counts/callers offline only; stacking/replacement and optional counts unsupported |
 | Remove | Positive selections up to eight with exact original preview/removal; owned automatic removal without a selector | Amalgamator fixed-two and one-card Dark Door automatic completion/map demonstrated; other counts/callers need evidence |
 | Transform | Fixed/positive variable counts up to eight; optional 0..8; fixed-one generic transform-prompt surface | Allocated off-screen input, Wood Carvings/Bird and Claws zero/three/six demonstrated; Torus and other callers need evidence |
@@ -303,9 +305,10 @@ These are **not an implementation queue or required live-test checklist**:
 - Capacity-first Potion Belt collection in terminal, event and resume reward flows.
   The demonstrated terminal pickup verifies +2 capacity and retained potions;
   full-inventory ordering and the event/resume variants remain separate tests.
-- True multi-upgrade selection using Trial/MerchantInnocent (two) or Yummy Cookie
-  (four); held-out enchant/removal/transform callers such as Torus; Trial’s
-  conditional curse-plus-two-transform path.
+- Yummy Cookie's fixed-four upgrade selection has representative live acceptance.
+  Trial/MerchantInnocent's conditional curse-plus-two-upgrade path, held-out
+  enchant/removal/transform callers such as Torus, and Trial’s conditional
+  curse-plus-two-transform path retain separate evidence limits.
 - Natural ancient entry/dialogue.
 - Broader reward orders/outcomes with a concrete offered screen, Sphere small-tool
   and earned card/potion/relic variants, and Fake Merchant zero/six-purchase variants.
@@ -328,7 +331,17 @@ checks and 656 rest checks. Independent semantic review found no
 remaining blocker. The unchanged release was reinstalled on **2026-09-26** after
 source/package identity verification; the accepted gate was reused.
 
-The latest rest batch passed **24 attempted / 24 accepted / 24 reconciled**, with
+The latest [Yummy Cookie test](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#yummy-cookie-four-card-upgrade-passed-2026-09-26)
+passed **7 attempted / 7 accepted / 7 reconciled**, 31 controller reads, no stale
+rejection or pending action, and an actionable map. Bludgeon, Headbutt, Body Slam
+and Fiend Fire each upgraded 0 → 1; the other twelve cards, HP 88/88, gold 17,
+existing relics and all five potion slots stayed unchanged. Exactly one Cookie
+was appended. Normal Save and Quit, game Quit and exact cleanup passed by
+**2026-09-26 11:02:11 UTC**: installation absent, four generated files removed,
+zero overlays and all 429 base files unchanged. Controlled Tezcatara entry does
+not establish natural Ancient entry, other counts or persistence across reload.
+
+The preceding rest batch passed **24 attempted / 24 accepted / 24 reconciled**, with
 no pending action. Lift 0 → 1, Kindle 5 → 10, an exact Clone-enchanted Bludgeon copy,
 one egg → Byrd Swoop/Byrdpip, and Dig’s Bag of Preparation pickup all settled in
 one Miniature Tent visit (6 actions, 80 controller reads, including Leave).

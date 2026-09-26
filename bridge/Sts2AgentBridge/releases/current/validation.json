@@ -630,6 +630,131 @@
         "note": "Interval includes setup, execution, inspection and cleanup. Separate exclusive durations and user-wait time not measured."
       },
       "unchanged_release_gate_reused": true
+    },
+    {
+      "accepted": 7,
+      "actions": [
+        "choose_ancient_relic",
+        "choose_event_card",
+        "choose_event_card",
+        "choose_event_card",
+        "choose_event_card",
+        "confirm_selection",
+        "leave_event"
+      ],
+      "after": {
+        "actionable_map": true,
+        "deck_count": 16,
+        "gold": 17,
+        "hp": 88,
+        "max_hp": 88,
+        "new_relic": "yummy_cookie",
+        "potion_capacity": 5,
+        "relic_count": 31
+      },
+      "attempted": 7,
+      "before": {
+        "deck_count": 16,
+        "gold": 17,
+        "hp": 88,
+        "max_hp": 88,
+        "potion_capacity": 5,
+        "relic_count": 30
+      },
+      "case": "yummy_cookie_four_card_upgrade",
+      "cleanup": {
+        "base_file_count": 429,
+        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+        "game_process_running": false,
+        "generated_files_removed": 4,
+        "normal_quit": true,
+        "overlay_count": 0,
+        "port_accepting": false,
+        "quarantined_state_sha256": "949e5f9070edc06d487a1a4901d9e4c0e4501d17998fd042e24fe3712f36457e",
+        "status": "passed",
+        "verified_by_utc": "2026-09-26 11:02:11 UTC"
+      },
+      "controller_reads": 31,
+      "decisions": 7,
+      "effects": {
+        "exact_one_relic_append": true,
+        "manual_confirmation": true,
+        "maximum": 4,
+        "minimum": 4,
+        "other_inventory_unchanged": true,
+        "selected_originals": [
+          {
+            "after_upgrade": 1,
+            "before_upgrade": 0,
+            "definition_id": "bludgeon"
+          },
+          {
+            "after_upgrade": 1,
+            "before_upgrade": 0,
+            "definition_id": "headbutt"
+          },
+          {
+            "after_upgrade": 1,
+            "before_upgrade": 0,
+            "definition_id": "body_slam"
+          },
+          {
+            "after_upgrade": 1,
+            "before_upgrade": 0,
+            "definition_id": "fiend_fire"
+          }
+        ],
+        "survivors_unchanged": true,
+        "unselected_card_count": 12
+      },
+      "installation": {
+        "base_file_count": 429,
+        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+        "overlay_count": 2,
+        "phase": "installed",
+        "state_sha256": "fe8375964bf2a0f45ff65d37a8dc7c593a004c685cb7f3dd0be12111604310dc",
+        "status": "passed",
+        "verified_by_utc": "2026-09-26 10:39:22 UTC"
+      },
+      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#yummy-cookie-four-card-upgrade-passed-2026-09-26",
+      "limits": "Controlled fixed-four upgrade selector; natural Ancient entry, other counts, conditional Trial curse/upgrade path, selection reversal and reload persistence not established.",
+      "new_build": false,
+      "new_release_gate": false,
+      "outcome": {
+        "kind": "truncated",
+        "reason": "external_stop"
+      },
+      "pending": false,
+      "preflight_public_reads": 1,
+      "reconciled": 7,
+      "recorded_live_corpus": false,
+      "release_manifest_sha256": "e47f0514d5d7b142d247425f3aad227e9bdbe662b491f33809b36ab7c9e8e383",
+      "setup": "Manual Profile 3 Continue; native act 1 rebuilt map, then ancient TEZCATARA YUMMY_COOKIE forced the offer before attachment. No direct inventory/HP grants; Ancient entry restored 88/88 HP before baseline.",
+      "stale_rejections": 0,
+      "startup": {
+        "actions_issued": 0,
+        "correction": "Temporary helper waits at most fifteen seconds for a settled initial decision; no production change or mutation retry.",
+        "initial_preflight_reads": 1,
+        "initial_result": "cookie_requires_fresh_settled_tezcatara",
+        "pending": false,
+        "settled_counts": [
+          0,
+          0,
+          0
+        ],
+        "settled_inspection_reads": 33
+      },
+      "status": "passed",
+      "target_game_executed": true,
+      "timing": {
+        "cleanup_verified_by_utc": "2026-09-26 11:02:11 UTC",
+        "live_work_interval_seconds": 269,
+        "live_work_resumed_utc": "2026-09-26 10:57:42 UTC",
+        "note": "Includes setup, inspection, execution and cleanup; separate phase durations and user-wait time not measured."
+      },
+      "total_public_reads": 67,
+      "unchanged_release_gate_reused": true,
+      "verification_reads": 1
     }
   ],
   "change": "Resolve inherited shop pickup methods to their declaring type before Harmony hook ownership checks, installation and cleanup.",
@@ -1100,9 +1225,9 @@
     "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
     "overlay_count": 0,
     "phase": "absent",
-    "previous_installed_state_sha256": "fe129e4dff9a5c059771be88800e667ccf8d7486cdf3c25d41c3a61424b8f1bb",
+    "previous_installed_state_sha256": "fe8375964bf2a0f45ff65d37a8dc7c593a004c685cb7f3dd0be12111604310dc",
     "status": "passed",
-    "verified_by_utc": "2026-09-26 10:27:28 UTC"
+    "verified_by_utc": "2026-09-26 11:02:11 UTC"
   },
   "live": {
     "accepted": 3,
