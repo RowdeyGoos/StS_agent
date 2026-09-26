@@ -801,3 +801,54 @@ This establishes one fixed-four upgrade selection through `agent_v2/full_run_v2`
 including its exact effects and event/map handoff. Natural Ancient entry,
 other upgrade counts, Trial's conditional curse/upgrade path, selection reversal
 and persistence across reload are not established by this case.
+
+## Punch Dagger single-preview failure, 2026-09-26
+
+The same release was installed and checked by **11:07:33 UTC**: source
+`c599a9f65f755378ad69945e08481d8af93664d5`, manifest
+`e47f0514d5d7b142d247425f3aad227e9bdbe662b491f33809b36ab7c9e8e383`, DLL
+`59a89110df5da538603b02e6b1a73796971e139ab6733d5490203a911c0e6f1b`.
+Installed state was
+`c15b9396c759ddfcd5d12c0357ff7d201031f6abb69f60f7108fcdd1eb050742`.
+After the user's manual Profile 3 launch, live work resumed at **11:39:45 UTC**.
+Runtime, metadata, authenticated health and compatibility passed. Continue
+restored the saved campaign. Before full-producer attachment, native `act 1`
+rebuilt the map and `gold 1000` changed gold 17 → 1017. The second of two native
+`room shop` setups offered Punch Dagger for 188; the UI opened its inventory.
+One public read verified that exact supported, affordable offer at **0/0/0**,
+with no pending action.
+
+The bounded controller accepted `buy_shop_item` and `choose_relic_card` for the
+original upgrade-1 Bludgeon, then stopped with **`read_native_failed`**:
+**2 attempted / 2 accepted / 0 reconciled**, two decisions, three controller
+reads, zero stale rejections and a pending action. **No confirmation was sent.**
+The UI showed gold **829**, Punch Dagger appended, HP **88/88**, sixteen cards
+and five occupied potion slots. Its open before/after preview showed the same
+Bludgeon+ and Momentum 5 on the preview clone. These visible partial effects do
+not establish completed purchase/selection reconciliation or a deck enchantment.
+No action was retried and no preview was manually confirmed.
+
+Normal application Quit closed the stopped game. Stopped-process/closed-listener
+checks and exact owned quarantine/purge passed by **11:54:51 UTC**; four generated
+files were removed, zero overlays remained and all 429 base files retained
+SHA-256 `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Quarantine state was
+`9650d28d5b2eda757c8ffd4edc4f0317b2561061a3e4fa017a63b7bf919704b7`.
+This cleanup does not change the unresolved **2/2/0** result. Separate test,
+investigation and user-wait durations were not measured. No profile/save/history/
+Cloud filesystem content or live trajectory corpus was accessed.
+
+Pinned source and scene inspection found a concrete same-frame mismatch.
+`NEnchantPreview.Init` queues every old Before/After child for deletion, then
+adds one new holder to each container. In `scenes/cards/enchant_preview.tscn`,
+Before and After are preview-holder scene instances, each initially containing
+a Hitbox. Those queued children remain until frame end. The shared shop selector
+read its preview again within the same callback and required exactly one child
+immediately. A fixture matching this scene reproduced rejection at that child
+count check before the correction. Scene SHA-256 identities are
+`d455678578a912bf2680fc1228154178dde651d2a6d3439c194511263c123bb6`
+for the enchant preview and
+`535237769fbd1d1d37acbc7d7ef5600180e4db7ea3092708a06c2073242f16ad`
+for `scenes/cards/holders/preview_card_holder.tscn`. This offline reproduction
+supports the correction; the exact live rejecting predicate was not exposed by
+the old diagnostic, and a fresh live retest remains required.

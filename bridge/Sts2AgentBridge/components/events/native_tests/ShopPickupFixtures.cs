@@ -26,6 +26,7 @@ internal static partial class Program {
     }
     private static void ShopPickupCases() {
         InteractiveChoiceCases();
+        SingleEnchantPreviewCases();
         foreach(string type in new[]{"mirror","hammer","kifuda","dagger","stamp"})foreach(int count in new[]{1,2,4})foreach(bool delayed in new[]{false,true})foreach(string mode in new[]{"success","wrong_result","wrong_effect","pending_dispose"}) foreach(bool interactive in new[]{false,true}) {
             var player=new Player{Gold=100};var cards=Enumerable.Range(0,count).Select(i=>{var c=new CardModel{Owner=player};c.Id.Entry="CARD_"+i;return c;}).ToArray();player.Deck.Cards.AddRange(cards);
             RelicModel relic=type switch{"mirror"=>new DollysMirror(),"hammer"=>new GnarledHammer(),"kifuda"=>new Kifuda(),"dagger"=>new PunchDagger(),_=>new RoyalStamp()};
@@ -94,6 +95,8 @@ internal static partial class Program {
         internal readonly NOverlayStack Overlays = new();
         internal readonly Control Container = new() { Visible = false };
         internal readonly Control Preview = new();
+        internal readonly Control BeforeEnchant = new NPreviewCardHolder(), AfterEnchant = new NPreviewCardHolder();
+        internal readonly EnchantmentModel Enchantment = new() { Amount = 5 };
         internal readonly NCardGrid Grid = new();
         internal readonly NBackButton Back = new(), PreviewBack = new();
         internal readonly NConfirmButton Confirm = new();
@@ -104,17 +107,26 @@ internal static partial class Program {
         private readonly Queue<Action> _highlightUpdates = new();
         internal int Inputs, Clears, Commits, Cancels;
         private readonly List<CardModel> _selected = new();
-        internal InteractiveChoiceFixture(bool smith = false, bool transform = false, bool nested = false)
+        internal InteractiveChoiceFixture(bool smith = false, bool transform = false, bool nested = false, bool enchant = false)
         {
             Cards = Enumerable.Range(0, 3).Select(i => { var c = new CardModel { Owner = Player }; c.Id.Entry = "CARD_" + i; return c; }).ToArray();
             Player.Deck.Cards.AddRange(Cards);
-            bool single = smith || transform;
-            Screen = transform ? new NDeckTransformSelectScreen() : smith ? new NDeckUpgradeSelectScreen() : new NDeckCardSelectScreen();
+            bool single = smith || transform || enchant;
+            Screen = enchant ? new NDeckEnchantSelectScreen() : transform ? new NDeckTransformSelectScreen() : smith ? new NDeckUpgradeSelectScreen() : new NDeckCardSelectScreen();
             Screen.SelectionTask = Task.Task;
             MegaCrit.Sts2.Core.Nodes.Screens.ScreenContext.ActiveScreenContext.Instance = new() { Current = Screen };
             Screen.Bind("%CardGrid", Grid); Screen.Bind("%Close", Back);
-            Screen.Bind(smith ? "%UpgradeSinglePreviewContainer" : "%PreviewContainer", Container);
-            if (transform) {
+            Screen.Bind(enchant ? "%EnchantSinglePreviewContainer" : smith ? "%UpgradeSinglePreviewContainer" : "%PreviewContainer", Container);
+            if (enchant) {
+                Enchantment.Id.Entry = "MOMENTUM";
+                var preview = new NEnchantPreview(); preview.Setup(BeforeEnchant, AfterEnchant);
+                Container.Bind("EnchantPreview", preview);
+                // The pinned scene uses preview-holder instances as its containers.
+                // Init queues their initial hitboxes (and later old holders) for
+                // deletion, then adds the new previews within the same frame.
+                BeforeEnchant.Children.Add(new Control()); AfterEnchant.Children.Add(new Control());
+                Cards[0].CurrentUpgradeLevel = 1;
+            } else if (transform) {
                 var preview = new NTransformPreview(); preview.Bind("%Before", Preview); preview.Bind("%After", new Control());
                 Container.Bind("TransformPreview", preview);
             } else Container.Bind(smith ? "UpgradePreview" : "%Cards", smith ? new NUpgradePreview() : Preview);
@@ -131,7 +143,14 @@ internal static partial class Program {
                     if (_selected.Count == (single ? 1 : 2))
                     {
                         Container.Visible = true; Back.IsEnabled = false;
-                        if (smith) Container.GetNodeOrNull<NUpgradePreview>("UpgradePreview")!.Card = card;
+                        if (enchant) {
+                            foreach (var node in BeforeEnchant.Children.Concat(AfterEnchant.Children)) node.QueueFree();
+                            var clone = new CardModel { Owner = Player, CurrentUpgradeLevel = card.CurrentUpgradeLevel, IsEnchantmentPreview = true };
+                            clone.Id.Entry = card.Id.Entry;
+                            clone.Enchantment = new() { Card = clone, Amount = Enchantment.Amount }; clone.Enchantment.Id.Entry = Enchantment.Id.Entry;
+                            BeforeEnchant.Children.Add(new NPreviewCardHolder { CardNode = new NCard { Model = card } });
+                            AfterEnchant.Children.Add(new NPreviewCardHolder { CardNode = new NCard { Model = clone } });
+                        } else if (smith) Container.GetNodeOrNull<NUpgradePreview>("UpgradePreview")!.Card = card;
                         else foreach (var c in _selected) Preview.Children.Add(new NPreviewCardHolder { CardNode = new NCard { Model = c } });
                         foreach (var h in Grid.CurrentlyDisplayedCardHolders) Highlight((ShaderMaterial)h.CardNode!.CardHighlight.Material!, 0);
                     }
@@ -144,8 +163,10 @@ internal static partial class Program {
             Confirm.Clicked = () => { Commits++; Overlays.Screens.Clear(); Task.SetResult(_selected.ToArray()); };
             Control[] ancestors = nested ? new Control[] { new MegaCrit.Sts2.Core.Nodes.Screens.NRewardsScreen() } : Array.Empty<Control>();
             Overlays.Screens.AddRange(ancestors); Overlays.Screens.Add(Screen);
-            Choice = new(Screen, Overlays, Cards, () => Context, null, 0, single ? 1 : 2, single ? 1 : 2, true, smith, ancestors, transform);
+            Choice = new(Screen, Overlays, Cards, () => Context, enchant ? Enchantment : null, enchant ? Enchantment.Amount : 0, single ? 1 : 2, single ? 1 : 2, true, smith, ancestors, transform);
         }
+        internal void FlushFreedPreviews()
+        { BeforeEnchant.Children.RemoveAll(n => n.IsQueuedForDeletion()); AfterEnchant.Children.RemoveAll(n => n.IsQueuedForDeletion()); }
         private void Highlight(ShaderMaterial material, float width)
         { if (DelayHighlights) _highlightUpdates.Enqueue(() => material.Width = width); else material.Width = width; }
         internal void Animate() { while (_highlightUpdates.TryDequeue(out var update)) update(); }
@@ -156,6 +177,46 @@ internal static partial class Program {
         }
         internal void Apply(string action, CardModel? card = null) { Ready(); Choice.Apply(action, card); }
         internal void Complete() { for (int i = 0; i < 12 && !Choice.Completed; i++) Choice.Read(); Check(Choice.Completed, "interactive completion"); }
+    }
+
+    private static void SingleEnchantPreviewCases()
+    {
+        {
+            var f = new InteractiveChoiceFixture(enchant: true);
+            f.Apply("select", f.Cards[0]);
+            for (int i = 0; i < 8; i++) Check(f.Choice.Read() is null && f.Inputs == 1 && f.Commits == 0,
+                "single enchant waits for native queued hitboxes without repeating input");
+            f.FlushFreedPreviews();
+            Check(f.Ready().Selected.Single() == f.Cards[0] && f.Cards[0].CurrentUpgradeLevel == 1 && f.Cards[0].Enchantment is null,
+                "settled preview binds the upgraded original without applying its effect");
+            f.Apply("deselect", f.Cards[0]);
+            Check(f.Ready().Selected.Length == 0 && f.Clears == 1, "single enchant can return to selection");
+            f.Apply("select", f.Cards[1]);
+            for (int i = 0; i < 8; i++) Check(f.Choice.Read() is null && f.Inputs == 2 && f.Commits == 0,
+                "reselection waits for queued old previews without confirming");
+            f.FlushFreedPreviews(); Check(f.Ready().Selected.Single() == f.Cards[1], "reselected original settles");
+            f.Apply("confirm"); f.Complete();
+            Check(f.Commits == 1 && f.Task.Task.Result.Single() == f.Cards[1], "only the explicitly confirmed selection completes");
+        }
+        foreach (string mode in new[] { "extra_child", "wrong_original", "wrong_effect", "wrong_upgrade", "hidden_preview", "context_during_wait", "bound_holder_queued" })
+        {
+            var f = new InteractiveChoiceFixture(enchant: true); f.Apply("select", f.Cards[0]); f.Choice.Read();
+            if (mode == "context_during_wait") f.Context = false;
+            else
+            {
+                f.FlushFreedPreviews();
+                var before = (NPreviewCardHolder)f.BeforeEnchant.Children.Single();
+                var after = (NPreviewCardHolder)f.AfterEnchant.Children.Single();
+                if (mode == "extra_child") f.BeforeEnchant.Children.Add(new Control());
+                if (mode == "wrong_original") before.CardNode!.Model = f.Cards[1];
+                if (mode == "wrong_effect") after.CardModel!.Enchantment!.Amount++;
+                if (mode == "wrong_upgrade") after.CardModel!.CurrentUpgradeLevel++;
+                if (mode == "hidden_preview") after.Visible = false;
+                if (mode == "bound_holder_queued") { f.Ready(); after.QueueFree(); }
+            }
+            bool rejected = false; try { f.Choice.Read(); } catch (InvalidOperationException) { rejected = true; }
+            Check(rejected && f.Inputs == 1 && f.Commits == 0, "single enchant rejects before confirmation: " + mode);
+        }
     }
     private static void InteractiveChoiceCases()
     {

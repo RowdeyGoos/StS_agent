@@ -102,7 +102,7 @@ internal sealed class PinnedDeckCardChoice
         if (!_screen.IsVisibleInTree()) return null;
         if (!Bind()) return null;
         bool preview = _container!.Visible && _container.IsVisibleInTree();
-        if (preview) CheckPreview();
+        if (preview) { if (!CheckPreview()) return null; }
         else if (!CheckHighlights()) return null;
 
         if (_desired is not null)
@@ -236,7 +236,7 @@ internal sealed class PinnedDeckCardChoice
         return settled;
     }
 
-    private void CheckPreview()
+    private bool CheckPreview()
     {
         var bindings = new List<object>();
         if (_transform)
@@ -257,7 +257,18 @@ internal sealed class PinnedDeckCardChoice
         else if (_enchantment is not null && _maximum == 1)
         {
             var before = Field(_preview!, "_before") as Control; var after = Field(_preview!, "_after") as Control; Require(Valid(before) && Valid(after));
-            var originals = before!.GetChildren().ToArray(); var previews = after!.GetChildren().ToArray(); Require(originals.Length == 1 && previews.Length == 1);
+            var originals = before!.GetChildren().ToArray(); var previews = after!.GetChildren().ToArray();
+            if (originals.Concat(previews).Any(n => n.IsQueuedForDeletion()))
+            {
+                // NEnchantPreview.Init queues its scene's initial hitboxes (or
+                // old previews on reselection) before adding the new holders.
+                // They remain children until frame end. Wait only for our
+                // outstanding input, before any preview has been accepted;
+                // never confirm, redispatch or forgive a bound preview change.
+                Require(_desired is not null && _previewBindings is null);
+                return false;
+            }
+            Require(originals.Length == 1 && previews.Length == 1);
             var original = CheckHolder(originals[0], bindings); var clone = CheckHolder(previews[0], bindings);
             Require(ReferenceEquals(original, _selected.Single()) && !ReferenceEquals(clone, original) && clone.IsEnchantmentPreview &&
                 ReferenceEquals(clone.Owner, original.Owner) && ReferenceEquals(clone.RunState, original.RunState) && clone.Id.Entry == original.Id.Entry && clone.CurrentUpgradeLevel == original.CurrentUpgradeLevel &&
@@ -271,6 +282,7 @@ internal sealed class PinnedDeckCardChoice
         }
         _previewBindings ??= bindings.ToArray();
         Require(bindings.Count == _previewBindings.Length && bindings.Select((b, i) => ReferenceEquals(b, _previewBindings[i])).All(x => x));
+        return true;
     }
     private CardModel CheckHolder(Node node, List<object> bindings)
     {

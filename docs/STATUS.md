@@ -1,6 +1,6 @@
 # Bridge support and status
 
-Updated 2026-09-26 for shared-producer shop, rest and four-card upgrade live validation; other capability review remains
+Updated 2026-09-26 for shared-producer shop, rest, four-card upgrade validation and the Punch Dagger preview failure; other capability review remains
 2026-09-19 against bridge source, pinned native game IL and retained evidence. Latest live
 session: **2026-09-26**. This is the authoritative summary of bridge support;
 [usage](../bridge/Sts2AgentBridge/README.md), [technical contracts](GENERIC_EVENTS.md),
@@ -51,7 +51,10 @@ including the legal intervening map travel. Lift, Kindle, Clone, Hatch and Dig
 then passed in one Miniature Tent visit, followed by Smith deselection/reselection
 at the next connected rest site: **24/24/24** including travel. Yummy Cookie's
 four-card upgrade selector then passed **7/7/7**, with exact upgrades, retained
-unselected cards/inventory and map return. The ledger preserves the
+unselected cards/inventory and map return. Punch Dagger subsequently stopped at
+**2/2/0** when its single-card preview opened; no confirmation was sent. Its
+deferred-child cleanup correction passes focused fixtures and awaits a live retest.
+The ledger preserves the
 earlier Whetstone failure at **36/36/35** and shop failure at **1/0/0** under their
 original artifacts. Prior rest cancellation and potion-reward evidence retains
 its separate package identity.
@@ -72,7 +75,7 @@ its separate package identity.
 | Rest | Heal/Proceed and Smith (one card); Lift, Kindle, Dig, Cook, Clone and Hatch. Packaged `rest_v3` exposes selector cancellation and Heal-owned rewards | Every supported single-player option has a representative successful live case. Smith/Cook cancellation and deselection/reselection, Dream Catcher card collect/Skip, Tiny Mailbox two-potion collection and remaining Miniature Tent options demonstrated. Exact per-option limits remain below |
 | Shop purchases | Cards, potions, supported passive relics, Potion Belt +2 slots; 0–8 purchases, kind policy, gold reserve and callback-certified restock | Seven-card/one-potion visit and three restocked potion purchases with original-potion replacement demonstrated. Full-producer Red Mask, Kifuda, Dolly’s Mirror and Potion Belt passed through map return. Belt expanded a full inventory from three to five slots and both added slots were filled; remaining pickup selectors and other policy variants need live coverage |
 | Shop removal | Exact selected original, price/effect reconciliation, preview cancellation, then separate inventory close and Leave | Removal and full-producer preview cancellation demonstrated through map return; cancellation retained exact deck and gold |
-| Shop pickup selectors | Dolly’s Mirror, Gnarled Hammer, Kifuda, Punch Dagger and Royal Stamp; exact native clone/enchantment selection | Kifuda passed 7/7/7 with three Adroit 3 originals; Dolly’s Mirror passed 5/5/5 with one exact Bludgeon clone. Both paid exactly and returned to the map, retaining other cards/HP/potions. Kifuda’s zero/fewer-card and deselection variants and Gnarled Hammer/Punch Dagger/Royal Stamp remain offline only. Other pickup callbacks are not generally supported |
+| Shop pickup selectors | Dolly’s Mirror, Gnarled Hammer, Kifuda, Punch Dagger and Royal Stamp; exact native clone/enchantment selection | Kifuda passed 7/7/7 with three Adroit 3 originals; Dolly’s Mirror passed 5/5/5 with one exact Bludgeon clone. Both paid exactly and returned to the map, retaining other cards/HP/potions. Punch Dagger stopped at 2/2/0 on its single preview; its correction needs a live retest. Kifuda’s zero/fewer-card and deselection variants and Gnarled Hammer/Royal Stamp remain offline only. Other pickup callbacks are not generally supported |
 
 ### Native rest-site actions
 
@@ -199,6 +202,14 @@ extend standalone rest/shop contracts.
   retains its uncertain result and separate artifact; no mutation was retried.
 - **Selectors:** direct input requires allocated native holders. Optional zero
   confirmation is supported on specific contracts; it is not native cancellation.
+- **Single-card shop enchant preview:** Punch Dagger stopped after purchase and
+  selection at **2/2/0**, before confirmation. The pinned preview queues old scene
+  children for deletion until frame end; a matching fixture reproduced the
+  immediate child-count rejection. The correction waits only during the owned
+  input, before accepting any preview bindings, then keeps exact card/effect
+  validation. Focused checks pass; live acceptance remains open. The
+  [failed attempt](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#punch-dagger-single-preview-failure-2026-09-26)
+  retains its original artifact and unresolved counts despite successful cleanup.
 - **Evidence boundary:** supported child effects do not certify all automatic parent
   rewards/costs or whole-event coverage. Controlled victories do not establish
   normal-HP win rate or exhaustive native coverage. Public-screen reads are not map probes.
@@ -297,8 +308,8 @@ These are **not an implementation queue or required live-test checklist**:
   evidence, without a separately identified ordinary 32-entry gameplay caller.
 - Selectorless removal: one-card Dark Door passed live. Empty domains, retained
   Eternal cards, other callers and adversarial variants remain fixture evidence.
-- The three remaining shop pickup selectors (Gnarled Hammer, Punch Dagger and
-  Royal Stamp), Kifuda's
+- Punch Dagger's corrected single-preview path, the other two remaining shop
+  pickup selectors (Gnarled Hammer and Royal Stamp), Kifuda's
   zero/fewer-card and deselection variants, and remaining
   zero-buy/kind/gold-reserve variants. The inherited passive Red Mask purchase
   passed through the full producer; other pickup effects remain separate cases.

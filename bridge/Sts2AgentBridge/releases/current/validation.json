@@ -755,6 +755,52 @@
       "total_public_reads": 67,
       "unchanged_release_gate_reused": true,
       "verification_reads": 1
+    },
+    {
+      "accepted": 2,
+      "actions": [
+        "buy_shop_item",
+        "choose_relic_card"
+      ],
+      "attempted": 2,
+      "case": "punch_dagger_single_preview",
+      "cleanup": {
+        "base_file_count": 429,
+        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+        "game_process_running": false,
+        "generated_files_removed": 4,
+        "normal_quit": true,
+        "overlay_count": 0,
+        "port_accepting": false,
+        "quarantined_state_sha256": "9650d28d5b2eda757c8ffd4edc4f0317b2561061a3e4fa017a63b7bf919704b7",
+        "status": "passed",
+        "verified_by_utc": "2026-09-26 11:54:51 UTC"
+      },
+      "code": "read_native_failed",
+      "confirmation_sent": false,
+      "controller_reads": 3,
+      "decisions": 2,
+      "diagnosis": "Pinned scene contains initial Hitbox children; NEnchantPreview.Init queues old children until frame end. Native-shaped fixture reproduced immediate child-count rejection. Old live diagnostic did not expose the exact predicate; corrected live retest required.",
+      "installation": {
+        "phase": "installed",
+        "state_sha256": "c15b9396c759ddfcd5d12c0357ff7d201031f6abb69f60f7108fcdd1eb050742",
+        "status": "passed",
+        "verified_by_utc": "2026-09-26 11:07:33 UTC"
+      },
+      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#punch-dagger-single-preview-failure-2026-09-26",
+      "mutation_retried": false,
+      "observed": "Gold 829, Punch Dagger appended, HP 88/88, sixteen cards, five occupied potions. Original Bludgeon+ and Momentum 5 clone visible in unconfirmed preview; no reconciled purchase/effect claimed.",
+      "pending": true,
+      "preflight_public_reads": 1,
+      "reconciled": 0,
+      "recorded_live_corpus": false,
+      "regression_reproduction": "/private/tmp/sts-bridge-4ynrw4xw/log-003.txt",
+      "release_manifest_sha256": "e47f0514d5d7b142d247425f3aad227e9bdbe662b491f33809b36ab7c9e8e383",
+      "setup": "Manual Profile 3 Continue, native act 1, gold 1000 (17 to 1017), second of two room shop preparations offered Punch Dagger for 188. Setup and UI inventory opening preceded attachment.",
+      "source_commit": "c599a9f65f755378ad69945e08481d8af93664d5",
+      "stale_rejections": 0,
+      "status": "failed",
+      "target_game_executed": true
     }
   ],
   "change": "Resolve inherited shop pickup methods to their declaring type before Harmony hook ownership checks, installation and cleanup.",
@@ -1225,9 +1271,9 @@
     "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
     "overlay_count": 0,
     "phase": "absent",
-    "previous_installed_state_sha256": "fe8375964bf2a0f45ff65d37a8dc7c593a004c685cb7f3dd0be12111604310dc",
+    "previous_installed_state_sha256": "c15b9396c759ddfcd5d12c0357ff7d201031f6abb69f60f7108fcdd1eb050742",
     "status": "passed",
-    "verified_by_utc": "2026-09-26 11:02:11 UTC"
+    "verified_by_utc": "2026-09-26 11:54:51 UTC"
   },
   "live": {
     "accepted": 3,

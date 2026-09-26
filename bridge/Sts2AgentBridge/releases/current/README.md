@@ -68,10 +68,17 @@ Headbutt, Body Slam and Fiend Fire each gained exactly one upgrade, one Cookie
 was appended, and unselected cards/other inventory stayed unchanged. The ledger
 separately records startup/preflight reads and controlled Tezcatara setup.
 
-Latest normal Save and Quit, game Quit and exact owned cleanup passed by
-**2026-09-26 11:02:11 UTC**: four generated files removed, zero overlays and all
-429 base files unchanged. This batch's installed state was
-`fe8375964bf2a0f45ff65d37a8dc7c593a004c685cb7f3dd0be12111604310dc`.
+The latest [Punch Dagger attempt](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#punch-dagger-single-preview-failure-2026-09-26)
+stopped on its single-card preview with `read_native_failed` at **2/2/0**.
+No confirmation was sent, and no mutation was retried. That failure remains
+bound to this release; a native-shaped regression reproduced queued preview
+children surviving until frame end. The correction is awaiting a new release
+and a fresh live test.
+
+Latest normal game Quit and exact owned cleanup passed by
+**2026-09-26 11:54:51 UTC**: four generated files removed, zero overlays and all
+429 base files unchanged. This attempt's installed state was
+`c15b9396c759ddfcd5d12c0357ff7d201031f6abb69f60f7108fcdd1eb050742`.
 Installation is now absent; the validated package is retained.
 
 The preceding manifest `18169693…`, source `7bd3e09`, passed Neow’s Bones:

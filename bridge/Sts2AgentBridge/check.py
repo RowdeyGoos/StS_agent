@@ -217,6 +217,7 @@ class Gate:
         if self.component in ("all", "events"):
             for name, option in (("events:reward_alternatives_native", "--reward-alternatives"),
                                  ("events:shop_effects_native", "--shop-effects"),
+                                 ("events:shop_pickups_native", "--shop-pickups"),
                                  ("events:full_rewards_native", "--full-event-rewards")):
                 # Focused development reuses the same inert native executable.
                 # Its full invocation already covers these in a release gate.
