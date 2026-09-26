@@ -1,6 +1,6 @@
 # Bridge support and status
 
-Updated 2026-09-26 for all five supported shop card selectors, Orrery rewards,
+Updated 2026-09-26 for all five supported shop card selectors, Cauldron/Orrery rewards,
 zero-purchase shop exit and shared-producer rest coverage; other capability review remains
 2026-09-19 against bridge source, pinned native game IL and retained evidence. Latest live
 session: **2026-09-26**. This is the authoritative summary of bridge support;
@@ -63,6 +63,9 @@ Royally Approved, Innate and Retain on the original Defend+. All five supported
 shop card-selector families now have a representative successful live case.
 Orrery's five card rewards and automatic return to the shop then passed through
 map return at **13/13/13**; later legal travel reached another merchant at **28/28/28**.
+Cauldron's corrected full-belt replacement test also passed **13/13/13**, collecting
+all five potions while protecting newly collected items. Its earlier **3/3/2**
+helper/deadline stop remains a separately recorded failed attempt.
 The ledger preserves the
 earlier Whetstone failure at **36/36/35** and shop failure at **1/0/0** under their
 original artifacts. Prior rest cancellation and potion-reward evidence retains
@@ -84,7 +87,7 @@ its separate package identity.
 | Rest | Heal/Proceed and Smith (one card); Lift, Kindle, Dig, Cook, Clone and Hatch. Packaged `rest_v3` exposes selector cancellation and Heal-owned rewards | Every supported single-player option has a representative successful live case. Smith/Cook cancellation and deselection/reselection, Dream Catcher card collect/Skip, Tiny Mailbox two-potion collection and remaining Miniature Tent options demonstrated. Exact per-option limits remain below |
 | Shop purchases | Cards, potions, supported passive relics, Potion Belt +2 slots; 0–8 purchases, kind policy, gold reserve and callback-certified restock | Seven-card/one-potion visit and three restocked potion purchases with original-potion replacement demonstrated. Full-producer passive, selector and Belt pickups passed through map return; Belt expanded a full inventory from three to five slots and both added slots were filled. Zero-purchase Close/Leave passed 2/2/2 with exact inventory preservation. Remaining pickup and policy variants need live coverage |
 | Shop removal | Exact selected original, price/effect reconciliation, preview cancellation, then separate inventory close and Leave | Removal and full-producer preview cancellation demonstrated through map return; cancellation retained exact deck and gold |
-| Shop-owned rewards | Cauldron's five potions and Orrery's five card menus under the purchase owner | Orrery passed five exact card additions, automatic shop return and Close/Leave at 13/13/13, preserving the original deck, HP and potions. Its helper initially expected a separate reward dismissal and stopped after 11 settled actions; the exit completed separately. Cauldron stopped at 3/3/2 after the helper omitted further original-potion replacements; the purchase deadline expired during continuation preparation. Corrected helper retest remains pending |
+| Shop-owned rewards | Cauldron's five potions and Orrery's five card menus under the purchase owner | Both passed 13/13/13 through purchase, all five rewards, automatic shop return and Close/Leave. Orrery added five exact cards while preserving the original deck, HP and potions. Cauldron replaced five original potions, protected newly collected items including a distinct same-key potion, and preserved the deck/HP. Earlier helper stops and Cauldron's unresolved 3/3/2 attempt remain in the ledger |
 | Shop pickup selectors | Dolly’s Mirror, Gnarled Hammer, Kifuda, Punch Dagger and Royal Stamp; exact native clone/enchantment selection | All five have representative live success: Kifuda’s three Adroit 3 originals; Mirror’s exact Bludgeon clone; Punch Dagger’s Momentum 5 on Bludgeon+; Hammer’s Sharp 3 on two Bludgeon+ originals and Headbutt+; Royal Stamp’s Royally Approved/Innate/Retain on Defend+. Punch Dagger and Stamp included deselection/reselection. All paid exactly and returned to the map, retaining other cards/HP/potions. Zero/fewer-card or toggle variants not separately demonstrated remain offline only. Other pickup callbacks are not generally supported |
 
 ### Native rest-site actions
@@ -305,7 +308,7 @@ These are **not an implementation queue or required live-test checklist**:
 
 - Other full-producer Neow’s Bones compound branches, including offer/bundle and
   deck selectors and potion procurement; empty-chest completion, remaining automatic
-  pickup effects, shop Cauldron and additional shared event reward callers,
+  pickup effects and additional shared event reward callers,
   plus an ending test.
   Representative hand/optional offers, potion use/discard and potion-owned choices,
   chest claiming, reroll and Sacrifice passed live, including the corrected
@@ -314,7 +317,8 @@ These are **not an implementation queue or required live-test checklist**:
   rewards passed potion replacement, card choice and event/map return at 6/6/6.
   Neow’s Bones with Large Capsule, Lost Coffer, nested Sacrifice and final Decay
   passed at 7/7/7 through map return. Orrery's five card additions, automatic shop
-  return and map exit passed at 13/13/13.
+  return and map exit passed at 13/13/13. Cauldron's five-potion replacement,
+  automatic return and map exit also passed at 13/13/13.
 - Expanded terminal schemas 9–10: the representative ten-entry screen passed live.
   The wider 32-entry bound and 65-action card-menu sequence remain fixture/socket
   evidence, without a separately identified ordinary 32-entry gameplay caller.
@@ -356,14 +360,22 @@ and native enchantment integration checks also passed. Independent semantic
 review found no blocker. A missing method in a second inert fixture stopped an
 earlier gate; the fixture was corrected before the accepted gate.
 
-The latest [Cauldron attempt](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#cauldron-helper-stop-and-expired-purchase-2026-09-26)
+The latest [Cauldron retest](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#cauldron-five-potion-replacement-passed-2026-09-26)
+passed **13 attempted / 13 accepted / 13 reconciled**, fourteen controller reads,
+zero stale rejections and no pending action. All five originals were replaced
+with the five exact reward potions; newly collected items were protected. Gold
+changed 665 → 454, while all 23 cards and HP 88/88 stayed unchanged through map
+return. Normal Save and Quit, game Quit and exact cleanup passed by **2026-09-26
+13:18:15 UTC**, leaving zero overlays and all 429 base files unchanged.
+
+The preceding [Cauldron attempt](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#cauldron-helper-stop-and-expired-purchase-2026-09-26)
 stopped at **3 attempted / 3 accepted / 2 reconciled**, with the purchase pending.
 The helper missed the discard/claim alternation needed for a full belt. Its later
 read failed after the existing 60-second purchase deadline elapsed during
 continuation preparation. The helper is corrected; no production safeguard changed.
 Normal game Quit and exact cleanup passed by **2026-09-26 13:10:43 UTC**, leaving
-zero overlays and unchanged base files. Cleanup does not reconcile that purchase;
-the fresh Cauldron test remains open.
+zero overlays and unchanged base files. Cleanup and the separate successful
+retest do not reconcile that purchase.
 
 The preceding [Orrery batch](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#orrery-five-card-rewards-and-merchant-travel-passed-2026-09-26)
 passed **13/13/13** through purchase, all five card choices and shop/map return.

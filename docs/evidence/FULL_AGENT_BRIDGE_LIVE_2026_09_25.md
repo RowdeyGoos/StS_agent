@@ -1138,3 +1138,59 @@ not reconcile the purchase. No profile/save/history/Cloud files or live corpus
 were accessed. The disposable helper now interleaves original-potion discards
 and reward claims, preserves newly obtained potions and uses a 45-second bound.
 Production sources, deadlines and the accepted release remain unchanged.
+
+## Cauldron five-potion replacement passed, 2026-09-26
+
+The corrected experiment reused the same accepted manifest
+`289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302`, source
+`7829456da1bb28471f4aa4c910d3b5ca6d693032` and DLL
+`91182c7940b4ce420841eece40292213479838f9240a20add75523f250639405`.
+Installation state
+`5ff6a20b72bab4188074b5948b9d911ada2e7c597c10d1a9ae466630a7e55657` was checked
+by **13:12:07 UTC**. Only the disposable test helper changed; production sources,
+interfaces, deadlines, tests, toolchain and package inputs were unchanged. The
+accepted release gate and review were reused with fresh runtime, metadata,
+authenticated health and compatibility checks.
+
+Manual Profile 3 Continue restored the pre-purchase floor-49 merchant: **665
+gold**, HP **88/88**, **23 cards**, **33 relics** and five occupied potion slots.
+Two native `room shop` preparations preceded attachment; the second offered
+Cauldron for **211** at floor 51. No act reset or inventory/HP/gold grant was
+needed. The controller's one-read preflight captured the exact inventory and
+fresh **0/0/0** counts. All later gameplay was through the shared producer.
+
+By **13:16:17 UTC**, the controller completed **13 attempted / 13 accepted /
+13 reconciled** actions, fourteen reads, zero stale rejections and no pending
+action. It discarded Swift Potion, bought Cauldron, then alternated claiming a
+reward with discarding one remaining original when the belt filled. All five
+originals were discarded exactly once: Swift Potion, Flex Potion, Blessing of
+the Forge, Blood Potion and Skill Potion. All five offered rewards were collected:
+**Blessing of the Forge, Regen Potion, Clarity Extract, Attack Potion and
+Gambler's Brew**. Newly obtained potions were never selected for discard,
+including the new Blessing while the distinct original same-key potion was removed.
+
+The last claim automatically returned to shop inventory. Close/Leave completed
+the map handoff; a final independent read verified **13/13/13**, no pending
+action and an actionable map. There were **16 public reads** including preflight
+and final verification. Gold changed **665 → 454**, exactly one Cauldron was
+appended (**33 → 34 relics**), every original card remained exact (**23 cards**),
+HP stayed **88/88** and potion capacity stayed **5**. The five final potion
+identities matched the visible reward offers. The UI independently showed the
+map, 454 gold, 23 cards, Cauldron and the five new potions. The controller stopped
+intentionally with `truncated/external_stop`; this was not a campaign victory.
+
+Normal Save and Quit returned to Profile 3's main menu, then normal game Quit
+closed the process. Stopped-process/closed-listener checks and exact quarantine/
+purge passed by **13:18:15 UTC**: four generated files removed, zero overlays,
+and all 429 base files unchanged at SHA-256
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Quarantine state was
+`0a487fea310ec2dab8624ce119b6151da88c015633432d5292718c69c40b065f`.
+Clock checkpoints **13:14:15–13:18:15 UTC** span **240 seconds**; separate
+controller/setup and user-wait durations were not measured. No profile/save/
+history/Cloud files or retained live trajectory corpus were accessed.
+
+Cauldron and Orrery now each have representative shared-producer purchase,
+reward and shop/map acceptance. This successful fresh attempt does not reconcile
+the preceding **3/3/2** attempt. Other belt sizes, alternate choices/Skip, reload
+persistence and the full shared v2 ending retain their separate evidence limits.

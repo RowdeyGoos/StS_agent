@@ -502,6 +502,107 @@
       "subsequent_read_code": "read_native_failed",
       "successful_public_reads": 7,
       "target_game_executed": true
+    },
+    {
+      "accepted": 13,
+      "actions": [
+        "discard_potion",
+        "buy_shop_item",
+        "claim_potion",
+        "discard_potion",
+        "claim_potion",
+        "discard_potion",
+        "claim_potion",
+        "discard_potion",
+        "claim_potion",
+        "discard_potion",
+        "claim_potion",
+        "close_shop",
+        "leave_shop"
+      ],
+      "attempted": 13,
+      "case": "cauldron_five_potion_replacement",
+      "cleanup": {
+        "base_file_count": 429,
+        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+        "game_process_running": false,
+        "generated_files_removed": 4,
+        "normal_quit": true,
+        "normal_save_and_quit": true,
+        "overlay_count": 0,
+        "port_accepting": false,
+        "quarantined_state_sha256": "0a487fea310ec2dab8624ce119b6151da88c015633432d5292718c69c40b065f",
+        "status": "passed",
+        "verified_by_utc": "2026-09-26 13:18:15 UTC"
+      },
+      "completed_by_utc": "2026-09-26 13:16:17 UTC",
+      "controller_reads": 14,
+      "decisions": 13,
+      "effects": {
+        "actionable_map": true,
+        "automatic_reward_return": true,
+        "claimed_potions": [
+          "blessing_of_the_forge",
+          "regen_potion",
+          "clarity",
+          "attack_potion",
+          "gamblers_brew"
+        ],
+        "deck_count": 23,
+        "gold_after": 454,
+        "gold_before": 665,
+        "hp": 88,
+        "max_hp": 88,
+        "newly_collected_potions_preserved": true,
+        "original_cards_unchanged": 23,
+        "original_potions_discarded": [
+          "swift_potion",
+          "flex_potion",
+          "blessing_of_the_forge",
+          "blood_potion",
+          "skill_potion"
+        ],
+        "potion_capacity": 5,
+        "price": 211,
+        "relic": "cauldron",
+        "relics_after": 34,
+        "relics_before": 33,
+        "same_key_original_and_reward_distinguished": true
+      },
+      "installation": {
+        "base_file_count": 429,
+        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+        "credential_content_read": false,
+        "game_running_before_install": false,
+        "installed_metadata_verified": true,
+        "overlay_count": 2,
+        "phase": "installed",
+        "port_accepting_before_install": false,
+        "purpose": "Same accepted package prepared for corrected Cauldron helper; user confirmed manual Profile 3 main-menu readiness.",
+        "state_sha256": "5ff6a20b72bab4188074b5948b9d911ada2e7c597c10d1a9ae466630a7e55657",
+        "status": "passed",
+        "verified_by_utc": "2026-09-26 13:12:07 UTC"
+      },
+      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#cauldron-five-potion-replacement-passed-2026-09-26",
+      "limits": "Five-slot all-reward replacement only. Other belt sizes, alternate reward choices/Skip, reload persistence and full shared v2 ending remain separate. This fresh success does not reconcile the preceding 3/3/2 attempt.",
+      "outcome": {
+        "kind": "truncated",
+        "reason": "external_stop"
+      },
+      "pending": false,
+      "preflight_reads": 1,
+      "reconciled": 13,
+      "recorded_interval_seconds": 240,
+      "recorded_interval_start_utc": "2026-09-26 13:14:15 UTC",
+      "recorded_live_corpus": false,
+      "release_manifest_sha256": "289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302",
+      "setup": "Manual Profile 3 Continue restored floor 49 merchant, 665 gold, HP 88/88, 23 cards, 33 relics and five full potion slots. Second of two room shop preparations offered Cauldron for 211 at floor 51. No act reset or inventory/HP/gold grant. All setup preceded attachment.",
+      "source_commit": "7829456da1bb28471f4aa4c910d3b5ca6d693032",
+      "stale_rejections": 0,
+      "status": "passed",
+      "target_game_executed": true,
+      "total_public_reads": 16,
+      "verification_reads": 1
     }
   ],
   "change": "Wait for native single-enchantment preview children queued for deletion before validating the exact new holders; no input retry or premature confirmation.",
@@ -511,11 +612,12 @@
     "independent_review_seconds": 193,
     "installation_verified_by_utc": "2026-09-26 12:08:59 UTC",
     "latest_cauldron_attempt_recorded_interval_seconds": 376,
+    "latest_cauldron_retest_recorded_interval_seconds": 240,
     "latest_reward_batch_recorded_interval_seconds": 529,
     "latest_shop_batch_recorded_interval_seconds": 535,
     "latest_shop_selector_recorded_interval_seconds": 249,
     "live_preparation_through_cleanup_recorded_interval_seconds": 480,
-    "next_installation_verified_by_utc": "2026-09-26 13:12:07 UTC",
+    "next_installation_verified_by_utc": "2026-09-26 13:20:38 UTC",
     "note": "Implementation, review and validation overlapped. Exclusive implementation/release preparation, failed gate elapsed time and user-wait durations were not measured.",
     "release_gate_seconds": 355.485
   },
@@ -1011,10 +1113,10 @@
     "overlay_count": 2,
     "phase": "installed",
     "port_accepting_before_install": false,
-    "purpose": "Same accepted package prepared for corrected Cauldron helper; user confirmed manual Profile 3 main-menu readiness.",
-    "state_sha256": "5ff6a20b72bab4188074b5948b9d911ada2e7c597c10d1a9ae466630a7e55657",
+    "purpose": "Same accepted package prepared for Silver Crucible empty-chest Open/Proceed test; user confirmed manual Profile 3 main-menu readiness.",
+    "state_sha256": "b8e6c5b2b911e13ab3fbbef3b4b5641c91f2a4925feda4855c3acc5f0f48350a",
     "status": "passed",
-    "verified_by_utc": "2026-09-26 13:12:07 UTC"
+    "verified_by_utc": "2026-09-26 13:20:38 UTC"
   },
   "live": {
     "accepted": 7,
@@ -1103,10 +1205,10 @@
   },
   "next_live_test": {
     "new_campaign_required": false,
-    "premise": "Continue the saved merchant and prepare Cauldron before attachment. Within one 45-second controller run, alternate legal original-potion discards and claims for all five rewards, verify exact effects and shop/map return. The failed 3/3/2 attempt remains separately recorded.",
+    "premise": "Continue saved Profile 3 campaign; add Silver Crucible and enter its first treasure room using native controls before attachment. Within twenty seconds, perform Open then Proceed, verify no offered relic, exact unchanged inventory and settled map return.",
     "status": "user_ready",
     "targets": [
-      "cauldron"
+      "silver_crucible_empty_chest"
     ]
   },
   "previous_release": {
@@ -1212,7 +1314,7 @@
   "release_manifest_sha256": "289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302",
   "remaining_limits": [
     "Punch Dagger passed on this release; the preceding 2/2/0 failure retains its original identity and unresolved counts.",
-    "Cauldron, remaining concrete compound/pickup paths, untested selector/reward variants and the full-producer ending retain the limits in docs/STATUS.md.",
+    "Empty-chest completion, remaining concrete compound/pickup paths, untested selector/reward variants and the full-producer ending retain the limits in docs/STATUS.md.",
     "Offline fixtures do not establish native animation timing, exhaustive callers or strategic policy quality."
   ],
   "semantic_review": {

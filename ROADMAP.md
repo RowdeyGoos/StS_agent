@@ -22,11 +22,11 @@ another fresh campaign is not an acceptance requirement. See the
    Custom screens, Trial abandonment Cancel/Confirm, event combat/reward/map paths,
    Dummy victory with automatic upgrades, terminal potion policies and assisted
    Fake Merchant seven-relic collection now have live results. Remaining targets
-   include shop Cauldron rewards,
-   capacity-first terminal/event/resume rewards, other Neow compound branches,
+   include empty-chest completion, capacity-first terminal/event/resume rewards,
+   other Neow compound branches,
    and Sphere tool/reward variants. Yummy Cookie's true four-card upgrade
-   selector, all five supported shop card-selector families and Orrery's five-card rewards now have
-   representative live acceptance; conditional Trial paths
+   selector, all five supported shop card-selector families and Cauldron/Orrery
+   rewards now have representative live acceptance; conditional Trial paths
    retain their separate evidence limits.
    Choose a concrete native caller and observable outcome before extending a mechanism.
    [Current status](docs/STATUS.md) owns exact evidence and practical limits.
