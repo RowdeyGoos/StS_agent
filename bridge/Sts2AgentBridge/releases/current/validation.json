@@ -603,9 +603,93 @@
       "target_game_executed": true,
       "total_public_reads": 16,
       "verification_reads": 1
+    },
+    {
+      "accepted": 2,
+      "actions": [
+        "open_chest",
+        "leave_treasure"
+      ],
+      "attempted": 2,
+      "case": "silver_crucible_empty_chest",
+      "cleanup": {
+        "base_file_count": 429,
+        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+        "game_process_running": false,
+        "generated_files_removed": 4,
+        "normal_quit": true,
+        "normal_save_and_quit": true,
+        "overlay_count": 0,
+        "port_accepting": false,
+        "quarantined_state_sha256": "6fafb44f9b8c1c292df83cc2ba420f0817b1e5bb640897456eb95b3dff0613cb",
+        "status": "passed",
+        "verified_by_utc": "2026-09-26 13:31:05 UTC"
+      },
+      "completed_by_utc": "2026-09-26 13:29:23 UTC",
+      "controller_reads": 18,
+      "decisions": 2,
+      "effects": {
+        "actionable_map": true,
+        "deck_count": 23,
+        "gold": 665,
+        "hp": 88,
+        "inventory_unchanged": true,
+        "max_hp": 88,
+        "no_relic_offered": true,
+        "potion_capacity": 5,
+        "relic_count": 34,
+        "silver_crucible_counter": 3
+      },
+      "installation": {
+        "base_file_count": 429,
+        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+        "credential_content_read": false,
+        "game_running_before_install": false,
+        "installed_metadata_verified": true,
+        "overlay_count": 2,
+        "phase": "installed",
+        "port_accepting_before_install": false,
+        "purpose": "Same accepted package prepared for Silver Crucible empty-chest Open/Proceed test; user confirmed manual Profile 3 main-menu readiness.",
+        "state_sha256": "b8e6c5b2b911e13ab3fbbef3b4b5641c91f2a4925feda4855c3acc5f0f48350a",
+        "status": "passed",
+        "verified_by_utc": "2026-09-26 13:20:38 UTC"
+      },
+      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#silver-crucible-empty-chest-passed-2026-09-26",
+      "limits": "One native first-chest-empty caller. Silver Crucible card-reward upgrades, other empty-chest causes, reload persistence and the full shared v2 ending retain separate evidence limits.",
+      "outcome": {
+        "kind": "truncated",
+        "reason": "external_stop"
+      },
+      "pending": false,
+      "preflight_reads": 1,
+      "reconciled": 2,
+      "recorded_interval_seconds": 227,
+      "recorded_interval_start_utc": "2026-09-26 13:27:18 UTC",
+      "recorded_live_corpus": false,
+      "release_manifest_sha256": "289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302",
+      "setup": "Manual Profile 3 Continue restored floor 49 merchant: 665 gold, HP 88/88, 23 cards, 33 relics and five occupied potion slots. Added Silver Crucible once and entered its first treasure room through native console controls before attachment; chest was unopened at floor 50. No act reset or HP/gold/card/potion grant.",
+      "source_commit": "7829456da1bb28471f4aa4c910d3b5ca6d693032",
+      "stale_rejections": 0,
+      "status": "passed",
+      "target_game_executed": true,
+      "total_public_reads": 20,
+      "verification_reads": 1
     }
   ],
   "change": "Wait for native single-enchantment preview children queued for deletion before validating the exact new holders; no input retry or premature confirmation.",
+  "cleanup": {
+    "base_file_count": 429,
+    "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+    "game_process_running": false,
+    "generated_files_removed": 4,
+    "normal_quit": true,
+    "normal_save_and_quit": true,
+    "overlay_count": 0,
+    "port_accepting": false,
+    "quarantined_state_sha256": "6fafb44f9b8c1c292df83cc2ba420f0817b1e5bb640897456eb95b3dff0613cb",
+    "status": "passed",
+    "verified_by_utc": "2026-09-26 13:31:05 UTC"
+  },
   "elapsed_times": {
     "affected_consumers_seconds": 10.347,
     "focused_pickup_seconds": 4.778,
@@ -613,11 +697,12 @@
     "installation_verified_by_utc": "2026-09-26 12:08:59 UTC",
     "latest_cauldron_attempt_recorded_interval_seconds": 376,
     "latest_cauldron_retest_recorded_interval_seconds": 240,
+    "latest_empty_chest_recorded_interval_seconds": 227,
     "latest_reward_batch_recorded_interval_seconds": 529,
     "latest_shop_batch_recorded_interval_seconds": 535,
     "latest_shop_selector_recorded_interval_seconds": 249,
     "live_preparation_through_cleanup_recorded_interval_seconds": 480,
-    "next_installation_verified_by_utc": "2026-09-26 13:20:38 UTC",
+    "next_installation_verified_by_utc": "2026-09-26 13:37:45 UTC",
     "note": "Implementation, review and validation overlapped. Exclusive implementation/release preparation, failed gate elapsed time and user-wait durations were not measured.",
     "release_gate_seconds": 355.485
   },
@@ -1113,10 +1198,10 @@
     "overlay_count": 2,
     "phase": "installed",
     "port_accepting_before_install": false,
-    "purpose": "Same accepted package prepared for Silver Crucible empty-chest Open/Proceed test; user confirmed manual Profile 3 main-menu readiness.",
-    "state_sha256": "b8e6c5b2b911e13ab3fbbef3b4b5641c91f2a4925feda4855c3acc5f0f48350a",
+    "purpose": "Same accepted package prepared for Trial curse-plus-two-card selector test; manual Profile 3 launch pending.",
+    "state_sha256": "34e0a95a89114778b57a0112fc3833216d2dfa8205a67065c6f96801bec7e24c",
     "status": "passed",
-    "verified_by_utc": "2026-09-26 13:20:38 UTC"
+    "verified_by_utc": "2026-09-26 13:37:45 UTC"
   },
   "live": {
     "accepted": 7,
@@ -1205,10 +1290,11 @@
   },
   "next_live_test": {
     "new_campaign_required": false,
-    "premise": "Continue saved Profile 3 campaign; add Silver Crucible and enter its first treasure room using native controls before attachment. Within twenty seconds, perform Open then Proceed, verify no offered relic, exact unchanged inventory and settled map return.",
-    "status": "user_ready",
+    "premise": "Prepare Trial through native controls before attachment. Prefer Merchant/Innocent for Shame plus two upgrades; Nondescript/Innocent is an alternate concrete two-transform case. Verify the exact curse, selected originals, retained other inventory and map return.",
+    "status": "awaiting_manual_launch",
     "targets": [
-      "silver_crucible_empty_chest"
+      "trial_merchant_curse_two_upgrades",
+      "trial_nondescript_curse_two_transforms"
     ]
   },
   "previous_release": {
@@ -1314,7 +1400,7 @@
   "release_manifest_sha256": "289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302",
   "remaining_limits": [
     "Punch Dagger passed on this release; the preceding 2/2/0 failure retains its original identity and unresolved counts.",
-    "Empty-chest completion, remaining concrete compound/pickup paths, untested selector/reward variants and the full-producer ending retain the limits in docs/STATUS.md.",
+    "Remaining concrete compound/pickup paths, untested selector/reward variants and the full-producer ending retain the limits in docs/STATUS.md.",
     "Offline fixtures do not establish native animation timing, exhaustive callers or strategic policy quality."
   ],
   "semantic_review": {

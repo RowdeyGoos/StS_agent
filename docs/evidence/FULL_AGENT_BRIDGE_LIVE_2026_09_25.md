@@ -1194,3 +1194,49 @@ Cauldron and Orrery now each have representative shared-producer purchase,
 reward and shop/map acceptance. This successful fresh attempt does not reconcile
 the preceding **3/3/2** attempt. Other belt sizes, alternate choices/Skip, reload
 persistence and the full shared v2 ending retain their separate evidence limits.
+
+
+## Silver Crucible empty chest passed, 2026-09-26
+
+The unchanged accepted manifest
+`289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302`, source
+`7829456da1bb28471f4aa4c910d3b5ca6d693032` and DLL
+`91182c7940b4ce420841eece40292213479838f9240a20add75523f250639405` were reused.
+Installation state
+`b8e6c5b2b911e13ab3fbbef3b4b5641c91f2a4925feda4855c3acc5f0f48350a` was checked
+by **13:20:38 UTC**. Fresh process, source, metadata, authenticated health and
+compatibility checks passed after the user's manual Profile 3 launch. No
+production source, test, toolchain or package input changed.
+
+The pinned `SilverCrucible.ShouldGenerateTreasure` suppresses the owner's first
+treasure-room reward. Continue restored the floor-49 merchant with **665 gold**,
+HP **88/88**, **23 cards**, **33 relics** and five occupied potion slots. Native
+setup added **Silver Crucible** once and entered `room treasure`, leaving the
+floor-50 chest unopened. No act reset or HP/gold/card/potion grant was used.
+All setup preceded attachment; the first shared read captured the exact inventory
+with 34 relics, Crucible counter 3, no offered relic and fresh **0/0/0** counts.
+
+By **13:29:23 UTC**, the public-only helper completed **Open → Proceed** at
+**2 attempted / 2 accepted / 2 reconciled**, eighteen controller reads, zero stale
+rejections and no pending action. It observed no offered relic. A final independent
+read verified an actionable map and exact unchanged gold, HP, deck, relics and
+potion inventory. There were **20 public reads** including preflight and final
+verification. The UI independently showed the map, unchanged inventory totals
+and Crucible counter 3. The controller intentionally stopped with
+`truncated/external_stop`; this was not a campaign victory.
+
+Normal Save and Quit returned to the main menu, then normal game Quit stopped
+the process. Exact cleanup passed by **13:31:05 UTC**: four generated files removed,
+zero overlays and all 429 base files unchanged at SHA-256
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Quarantine state was
+`6fafb44f9b8c1c292df83cc2ba420f0817b1e5bb640897456eb95b3dff0613cb`.
+An initial cleanup invocation rejected a malformed expected identity before any
+change; the verified full identity was then used successfully. Clock checkpoints
+**13:27:18–13:31:05 UTC** span **227 seconds**; separate setup/controller and
+user-wait durations were not measured. No profile/save/history/Cloud files or
+retained live corpus were accessed.
+
+This is representative acceptance of empty-chest completion under the shared
+producer. Crucible's card-reward upgrades, other empty-chest causes, reload
+persistence and the full shared v2 ending retain their separate evidence limits.

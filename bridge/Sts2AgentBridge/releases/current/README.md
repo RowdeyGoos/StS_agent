@@ -74,11 +74,19 @@ Fourteen controller reads plus preflight/final verification found no stale or
 pending action. Cleanup passed by **13:18:15 UTC**, with zero overlays and all
 429 base files unchanged. The earlier 3/3/2 attempt remains unresolved separately.
 
-The package was reinstalled and checked by **13:20:38 UTC** for the empty-chest test:
-two exact overlays, unchanged base files and verified metadata. Installed state is
+The [Silver Crucible empty-chest test](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#silver-crucible-empty-chest-passed-2026-09-26)
+passed **2/2/2** through Open/Proceed with exact inventory preservation and an
+actionable map. Eighteen controller reads plus preflight/final verification found
+no stale rejection or pending action. The installed state was
 `b8e6c5b2b911e13ab3fbbef3b4b5641c91f2a4925feda4855c3acc5f0f48350a`.
-The user confirmed manual Profile 3 main-menu readiness; the saved campaign can
-be continued with Silver Crucible for the empty-chest test.
+Normal Save and Quit, game Quit and exact cleanup passed by **13:31:05 UTC**,
+leaving zero overlays and all 429 base files unchanged.
+
+The same package was reinstalled and checked by **13:37:45 UTC** for Trial’s
+curse-plus-two-card selector: two exact overlays, unchanged base files and verified
+metadata. Installed state is
+`34e0a95a89114778b57a0112fc3833216d2dfa8205a67065c6f96801bec7e24c`.
+Manual Profile 3 main-menu readiness is pending; the saved campaign can be continued.
 
 The preceding manifest `e47f0514…`, source `c599a9f`, passed Red Mask, Kifuda,
 Dolly’s Mirror, Potion Belt, Cook, the remaining supported rest options, Smith

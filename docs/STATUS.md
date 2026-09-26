@@ -1,7 +1,7 @@
 # Bridge support and status
 
 Updated 2026-09-26 for all five supported shop card selectors, Cauldron/Orrery rewards,
-zero-purchase shop exit and shared-producer rest coverage; other capability review remains
+empty-chest completion, zero-purchase shop exit and shared-producer rest coverage; other capability review remains
 2026-09-19 against bridge source, pinned native game IL and retained evidence. Latest live
 session: **2026-09-26**. This is the authoritative summary of bridge support;
 [usage](../bridge/Sts2AgentBridge/README.md), [technical contracts](GENERIC_EVENTS.md),
@@ -307,7 +307,7 @@ These are **not an implementation queue or required live-test checklist**:
 ### Implemented, but still needing representative live evidence
 
 - Other full-producer Neow’s Bones compound branches, including offer/bundle and
-  deck selectors and potion procurement; empty-chest completion, remaining automatic
+  deck selectors and potion procurement; remaining automatic
   pickup effects and additional shared event reward callers,
   plus an ending test.
   Representative hand/optional offers, potion use/discard and potion-owned choices,
@@ -318,7 +318,8 @@ These are **not an implementation queue or required live-test checklist**:
   Neow’s Bones with Large Capsule, Lost Coffer, nested Sacrifice and final Decay
   passed at 7/7/7 through map return. Orrery's five card additions, automatic shop
   return and map exit passed at 13/13/13. Cauldron's five-potion replacement,
-  automatic return and map exit also passed at 13/13/13.
+  automatic return and map exit also passed at 13/13/13. Silver Crucible’s first
+  empty chest passed Open/Proceed at 2/2/2 with exact inventory preservation.
 - Expanded terminal schemas 9–10: the representative ten-entry screen passed live.
   The wider 32-entry bound and 65-action card-menu sequence remain fixture/socket
   evidence, without a separately identified ordinary 32-entry gameplay caller.
@@ -360,7 +361,13 @@ and native enchantment integration checks also passed. Independent semantic
 review found no blocker. A missing method in a second inert fixture stopped an
 earlier gate; the fixture was corrected before the accepted gate.
 
-The latest [Cauldron retest](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#cauldron-five-potion-replacement-passed-2026-09-26)
+The latest [Silver Crucible empty-chest test](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#silver-crucible-empty-chest-passed-2026-09-26)
+passed **2/2/2** through Open/Proceed, with eighteen controller reads and no
+pending action. The map was actionable and the full inventory stayed exact.
+Normal Save and Quit, game Quit and cleanup passed by **2026-09-26 13:31:05 UTC**,
+leaving zero overlays and all 429 base files unchanged.
+
+The preceding [Cauldron retest](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#cauldron-five-potion-replacement-passed-2026-09-26)
 passed **13 attempted / 13 accepted / 13 reconciled**, fourteen controller reads,
 zero stale rejections and no pending action. All five originals were replaced
 with the five exact reward potions; newly collected items were protected. Gold
