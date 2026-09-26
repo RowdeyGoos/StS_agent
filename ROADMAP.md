@@ -47,9 +47,12 @@ another fresh campaign is not an acceptance requirement. See the
 4. **Close concrete fidelity and delivery issues.** Use focused native comparisons
    for identified rule/public-information discrepancies or a specific uncovered
    mechanism. Retain accepted unchanged engine and consumer evidence, including
-   the existing low-HP, death and revival comparisons. Finish with the current package's clean-install,
-   command/Gym/data/continuation checks, source identity, documented limits and
-   committed changes. Training-specific throughput targets follow actual training
+   the existing low-HP, death and revival comparisons. The September 26
+   [package refresh](docs/AGENT_EXECUTION.md#validation-and-timing) passed current
+   command/Gym/data/continuation checks in fresh installations and all 406 agent
+   tests. Retain that evidence unless remaining fixes affect its inputs; finish
+   with exact release/source identity, documented limits and committed changes.
+   Training-specific throughput targets follow actual training
    workloads later.
 
 Completion means the named gameplay paths have the required representative

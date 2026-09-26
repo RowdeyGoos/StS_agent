@@ -1094,7 +1094,7 @@
     "latest_trial_sphere_setup_recorded_interval_seconds": 641,
     "latest_trial_transform_recorded_interval_seconds": 225,
     "live_preparation_through_cleanup_recorded_interval_seconds": 480,
-    "next_installation_verified_by_utc": "2026-09-26 15:20:01 UTC",
+    "next_installation_verified_by_utc": "2026-09-26 16:19:14 UTC",
     "note": "Implementation, review and validation overlapped. Exclusive implementation/release preparation, failed gate elapsed time and user-wait durations were not measured.",
     "release_gate_seconds": 355.485
   },
@@ -1590,10 +1590,10 @@
     "overlay_count": 2,
     "phase": "installed",
     "port_accepting_before_install": false,
-    "purpose": "Unchanged accepted package used for the completed Sphere small/big tool and reward test; removed after settled map return.",
-    "state_sha256": "d69654a11c1a0897fbca12814aa6b975685b97090ebd58f575a147bc323024b6",
+    "purpose": "Unchanged accepted bridge installed and verified for the shared v2 act/ending route. Manual Profile 3 main-menu launch requested; no new-process public gameplay read or action yet.",
+    "state_sha256": "a24e9673f20aa29dde0ce657d4d0aaadf9da5701c8498e137ae38e1e1adacb19",
     "status": "passed",
-    "verified_by_utc": "2026-09-26 15:20:01 UTC"
+    "verified_by_utc": "2026-09-26 16:19:14 UTC"
   },
   "live": {
     "accepted": 7,
@@ -1681,9 +1681,23 @@
     "verification_reads": 1
   },
   "next_live_test": {
+    "acceptance": "Settled native victory, all accepted actions reconciled, observed act sequence starting 1/2/3 and an observed Architect event. A cutoff, defeat or mere ending handoff does not pass route acceptance.",
     "deferred_conditional_case": "Trial Merchant/Innocent needs a different campaign seed; repeating the event in this campaign cannot prepare it.",
-    "premise": "Prepare a controlled supported campaign segment before attachment, using the previously authorized upfront HP and damage assistance. Verify every shared action through native act and ending transitions. No mid-run native intervention. Exact setup remains under source inspection.",
-    "status": "preparing",
+    "helper": "Disposable full-route mode uses existing LiveAdapter/run_agent and unchanged game.agent.full_policy.choose_action; 8192 decisions, 90 minutes, 320 observed stages, existing three known nonmutating stale-rejection limit. It records only bounded stage summaries and exact final counts/outcome, not a live corpus.",
+    "helper_validation": {
+      "cases": [
+        "complete_act_sequence_and_architect",
+        "missing_act_does_not_pass",
+        "defeat_preserves_actual_outcome_without_acceptance",
+        "unassisted_setup_rejected_before_controller"
+      ],
+      "count": 4,
+      "native_evidence": false,
+      "status": "passed"
+    },
+    "new_campaign_required": false,
+    "premise": "Continue the saved campaign, reset its native map to Act 1, establish at least 2000 HP and four Break/two Flash of Steel cards before the first shared decision. Reuse the unchanged public-only chooser for bounded play through acts and the Architect; no native gameplay intervention after attachment.",
+    "status": "awaiting_manual_launch",
     "targets": [
       "full_shared_v2_act_transitions_and_ending"
     ]

@@ -103,8 +103,16 @@ the agent collected three gold entries, two potions and a card before map return
 The user freed three potion slots before attachment. Installation state was
 `d69654a11c1a0897fbca12814aa6b975685b97090ebd58f575a147bc323024b6`.
 Normal Save and Quit, game Quit and cleanup passed by **16:11:01 UTC**, leaving
-zero overlays and all 429 base files unchanged. The game is stopped and this
-installation is removed. The unchanged release gate remains applicable.
+zero overlays and all 429 base files unchanged; that installation was removed.
+The unchanged release gate remains applicable.
+
+The same package was reinstalled and checked by **16:19:14 UTC** for the shared
+v2 act-transition/ending test. Two overlays match, all 429 base files are unchanged,
+and installed metadata/source identity passed. The new state is
+`a24e9673f20aa29dde0ce657d4d0aaadf9da5701c8498e137ae38e1e1adacb19`.
+Manual Profile 3 launch is pending. Setup will continue the saved campaign,
+reset its act map and apply the agreed upfront HP/damage assistance before any
+shared action. No gameplay owner has attached in a new process.
 
 The preceding manifest `e47f0514…`, source `c599a9f`, passed Red Mask, Kifuda,
 Dolly’s Mirror, Potion Belt, Cook, the remaining supported rest options, Smith

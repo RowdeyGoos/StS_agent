@@ -160,6 +160,34 @@ training loader; synthetic combat defeats and boosted HP remain labelled fixture
 Serial/two-worker comparisons, CLI cancellation, a stalled worker and the exact
 process-start interruption window exercise ownership and cleanup.
 
+The September 26 delivery refresh includes the subsequent shared-contract and
+native-preview chooser changes plus the opt-in live recorder. These are the only
+three shipped Python files changed since the milestone 6 wheel; engine rules are
+unchanged. The refreshed wheel is
+`/private/tmp/sts-agent-delivery-20260926/wheel/sts_agent-0.1.0-py3-none-any.whl`,
+SHA-256 `fc86fe7f22b66de58249e3db7ed3b0506daf9611ad5df9ad67ddedebb9b02afd`.
+All **282** shipped Python files match the current checkout byte for byte. Its
+build identity is `a4513feb98c9e6d446b2a10d46757746c34b29053d6e69587e61e79bd212be22`;
+rules identity remains `2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c`.
+The current agent suite passed **406 tests in 586.31 seconds**, including the
+20-case normal-HP Gym campaign matrix and controlled endings. Its two warnings
+are the existing Gym checker advisory about constant layout metadata bounds.
+All game Python sources parsed, and diff/link/source-binding checks passed.
+
+Fresh core and optional-Gym Python 3.11 environments installed this wheel offline.
+The core environment had neither NumPy nor Gymnasium. Its installed headless
+command completed 38 commands, checking JSON restoration before every command;
+its installed agent command recorded two twelve-decision episodes with two workers
+in **0.948 seconds**, both explicitly truncated at the decision budget. The public
+loader and optional encoder validated all **24** samples against the new build,
+with legal candidate indexes and retained successor masks. Audit directory/file
+modes were checked without reading their contents. A separate installed
+Defect/Underdocks/A10 Gym run completed twelve reconciled decisions and an explicit
+cutoff, retaining its successor mask. These are delivery checks, not trained-policy
+or native campaign evidence. No live corpus was collected. The build command,
+including metadata preparation, took **0.571 seconds**; separate environment
+creation/install durations were not measured.
+
 On 2026-09-24 (local date), the final affected agent/package integration passed
 **383 tests in 123.12 seconds**. Compilation and diff/link checks passed. The
 unchanged 20-case Gym campaign matrix and repository-wide engine/bridge evidence
@@ -173,9 +201,9 @@ above; the fix and exact interruption/cancellation regressions passed, with no
 remaining blocker. Implementation/checking/review overlapped, so their elapsed
 times are not additive; implementation time was not separately isolated.
 
-The final wheel SHA-256 is
+The original milestone 6 wheel SHA-256 was
 `b79559e8b6ea546f282e593556a611dc6a5da68433634680d2e9ee9e75e97e24`.
-All **281** shipped Python source files match the checkout exactly. Its Python
+All **281** shipped Python source files matched that checkout exactly. Its Python
 source build identity is `5215b1a1321140dca0a9eab97b0ec555a935921585cf603a15cb46bc4d1825a7`;
 rules identity is `2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c`.
 The wheel built in **0.46 seconds** and installed into a fresh core Python 3.11
