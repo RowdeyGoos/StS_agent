@@ -334,15 +334,28 @@ supplies dated source candidates rather than a current implementation checklist.
 ## Release and latest evidence
 
 The current [release manifest](../bridge/Sts2AgentBridge/releases/current/bridge.json)
-is **`e47f0514d5d7b142d247425f3aad227e9bdbe662b491f33809b36ab7c9e8e383`**.
-It binds 485 source/test inputs across 52 projects, source `c599a9f`.
-The gate passed **85 groups in 362.357 seconds**, including 168 client
-tests, 1,639 router checks, 229 event wire cases, 16,829 native event
-checks and 656 rest checks. Independent semantic review found no
-remaining blocker. The unchanged release was reinstalled on **2026-09-26** after
-source/package identity verification; the accepted gate was reused.
+is **`289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302`**.
+It binds 485 source/test inputs across 52 projects, source `7829456`, including
+the reviewed single-enchantment deferred-preview correction (`338a076`). The
+accepted gate passed **85 groups in 355.485 seconds**, including 168 client
+tests, 1,639 router checks, 229 event wire cases, 16,857 native event checks and
+656 rest checks. Focused pickup checks passed 877 cases; affected direct-input
+and native enchantment integration checks also passed. Independent semantic
+review found no blocker. A missing method in a second inert fixture stopped an
+earlier gate; the fixture was corrected before the accepted gate.
 
-The latest [Yummy Cookie test](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#yummy-cookie-four-card-upgrade-passed-2026-09-26)
+The corrected package was installed and checked by **2026-09-26 12:08:59 UTC**,
+with two exact overlays and all 429 base files unchanged. Manual Profile 3 launch
+and the corrected live retest are pending. This package has no live result yet.
+The latest [Punch Dagger attempt](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#punch-dagger-single-preview-failure-2026-09-26)
+used the preceding manifest `e47f0514…`, source `c599a9f`, and stopped after buy
+and selection with `read_native_failed`: **2/2/0**, three controller reads and a
+pending action. No confirmation or retry occurred. Normal Quit and exact cleanup
+passed by **11:54:51 UTC** without resolving the failed actions. The source/scene
+regression reproduced a queued-child timing mismatch; only a new native test can
+establish live success for the correction.
+
+The preceding manifest's [Yummy Cookie test](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#yummy-cookie-four-card-upgrade-passed-2026-09-26)
 passed **7 attempted / 7 accepted / 7 reconciled**, 31 controller reads, no stale
 rejection or pending action, and an actionable map. Bludgeon, Headbutt, Body Slam
 and Fiend Fire each upgraded 0 → 1; the other twelve cards, HP 88/88, gold 17,

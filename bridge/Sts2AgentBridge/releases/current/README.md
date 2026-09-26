@@ -1,101 +1,57 @@
 # Current unified release
 
-This release fixes inherited passive-relic pickup hooks in the shared shop producer.
-[Current status](../../../../docs/STATUS.md#release-and-latest-evidence) owns live
-support; [bridge usage](../../README.md#client-modes) owns commands.
+This release fixes the shared single-card enchantment preview timing used by
+shop pickups such as Punch Dagger and Royal Stamp. Native preview initialization
+queues old children for deletion until frame end. The bridge now waits for that
+cleanup during its owned input, then validates the exact original, clone and
+enchantment before publishing selection or permitting confirmation. A changed
+already-bound preview still fails; ownership, deadlines and cleanup remain strict.
+
+[Current status](../../../../docs/STATUS.md#release-and-latest-evidence) owns support;
+[bridge usage](../../README.md#client-modes) owns commands.
 
 | Record | Meaning |
 | --- | --- |
 | [bridge.json](bridge.json) | Exact source/test, toolchain, reference, binary and package identities |
 | [validation.json](validation.json) | Release checks, review, installation and separately bound live evidence |
 
-Manifest SHA-256: `e47f0514d5d7b142d247425f3aad227e9bdbe662b491f33809b36ab7c9e8e383`.
-It binds **485 inputs across 52 projects**, source `c599a9f`.
+Manifest SHA-256: `289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302`.
+It binds **485 inputs across 52 projects**, source `7829456`, feature `338a076`.
 DLL: **1,793,024 bytes**, SHA-256
-`59a89110df5da538603b02e6b1a73796971e139ab6733d5490203a911c0e6f1b`.
+`91182c7940b4ce420841eece40292213479838f9240a20add75523f250639405`.
 
-The final gate passed **85 groups in 362.357 seconds**, including reproducible
+The final gate passed **85 groups in 355.485 seconds**, including reproducible
 builds, native metadata/dependency checks, packaging and disposable cleanup.
-It includes **168 client tests**, **1,639 router checks**,
-**229 event wire cases**, **16,829 native event checks**,
-**656 rest checks**, **21 shop core checks**,
-**252 campaign checks** and **179 potion checks**.
-Independent semantic review found no remaining blocker. The focused regression
-passed 301 native shop-effect checks and 21 shop core checks in five groups.
-Original broad Python results remain separately bound; no new broad Python run is claimed.
+It includes **168 client tests**, **1,639 router checks**, **229 event wire cases**,
+**16,857 native event checks**, **656 rest checks**, **21 shop core checks**,
+**252 campaign checks** and **179 potion checks**. Focused validation passed
+877 pickup checks, 39 direct-input checks and six native enchantment integration
+cases. Independent semantic review found no blocker in 193 seconds.
+One earlier gate stopped because a second inert test stub lacked the deletion
+API; it was corrected before the accepted gate. Original broad Python evidence
+remains separately bound; no new broad Python run is claimed.
 
-Harmony now receives the declared pickup method for inherited callbacks; ownership
-and cleanup inspect that same method. Fixtures cover actual inherited passive
-relics, delayed completion and a conflicting patch rejected before purchase input.
-The controlled Profile 3 retest passed: **3 attempted / 3 accepted / 3 reconciled**,
-four controller reads and no pending action. The policy purchased Red Mask for
-172 gold, closed the shop and returned to an actionable map. Exact pickup and
-payment settled; HP, deck and potions stayed unchanged. A separate preflight read
-and final inventory read are excluded from the four controller reads.
-The [Red Mask ledger](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#red-mask-corrected-shop-purchase-passed)
-records that test's setup, installation and cleanup.
+The corrected package is installed and checked by **2026-09-26 12:08:59 UTC**:
+two exact overlays and all 429 base files unchanged. Installed state is
+`9f39f9df0369eeb78dad20d865dbc6b523c588f0a9f3bd5c72ead49bd2356d8a`.
+The game was stopped before installation. Manual Profile 3 launch and a fresh
+owned Punch Dagger test within the saved campaign remain pending; no new live
+success is claimed for this package.
 
-The unchanged package then passed Kifuda's three-card shop pickup on **2026-09-26**:
-**7 attempted / 7 accepted / 7 reconciled**, 25 controller reads and no pending
-action. The three selected original Bludgeons each received Adroit 3, gold changed
-466 to 254, one Kifuda was appended and the game returned to an actionable map.
-Other cards, HP and potions were unchanged. One preflight and one final inventory
-read are separate from the controller reads. The
-[Kifuda ledger](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#kifuda-three-card-shop-pickup-passed-2026-09-26)
-records the bounded sixteen-shop setup search; Cauldron/Orrery were absent and
-remain untested. Other pickup selectors and Kifuda's zero/fewer-card and
-deselection variants remain separate cases. Source and package identities were
-verified before reuse; no new build or release-gate run is claimed.
+The preceding manifest `e47f0514…`, source `c599a9f`, passed Red Mask, Kifuda,
+Dolly’s Mirror, Potion Belt, Cook, the remaining supported rest options, Smith
+reselection and Yummy Cookie’s four-card upgrade. Its latest
+[Punch Dagger attempt](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#punch-dagger-single-preview-failure-2026-09-26)
+stopped with `read_native_failed` after buy/select at **2/2/0**, with no confirmation
+or retry. Normal game Quit and exact owned cleanup passed by **11:54:51 UTC**;
+cleanup does not resolve those actions. Native source/scene inspection and an
+offline regression support the correction; the old live diagnostic did not expose
+the exact rejecting predicate. The ledger retains each result’s original identity.
 
-The next unchanged-package batch passed Dolly’s Mirror (one exact Bludgeon clone),
-Potion Belt (full inventory expanded to five slots, both new slots filled), and
-Cook (Decay/Defend+ removal, deselection/reselection, +9 current/max HP). All three
-returned to an actionable map with verified effects and unchanged unrelated
-inventory. Counts were **45/45/45**, including legal travel between cases, with
-no pending action. The [batch ledger](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#mirror-potion-belt-and-cook-batch-passed-2026-09-26)
-records per-case counts, reads and limits.
-
-The [rest-site batch](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#remaining-rest-options-and-smith-toggle-passed-2026-09-26)
-then passed Lift, Kindle, Clone, Hatch and Dig in one Miniature Tent visit, followed
-by Smith deselection/reselection at the next legally reached rest site. Exact
-effects and map returns settled at **24/24/24**, including travel, with no pending
-action. This closes representative successful coverage for all supported
-single-player rest options; caller and variant limits remain in current status.
-
-The unchanged package then passed [Yummy Cookie's four-card upgrade](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#yummy-cookie-four-card-upgrade-passed-2026-09-26):
-**7/7/7**, 31 controller reads, no pending action and map return. Bludgeon,
-Headbutt, Body Slam and Fiend Fire each gained exactly one upgrade, one Cookie
-was appended, and unselected cards/other inventory stayed unchanged. The ledger
-separately records startup/preflight reads and controlled Tezcatara setup.
-
-The latest [Punch Dagger attempt](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#punch-dagger-single-preview-failure-2026-09-26)
-stopped on its single-card preview with `read_native_failed` at **2/2/0**.
-No confirmation was sent, and no mutation was retried. That failure remains
-bound to this release; a native-shaped regression reproduced queued preview
-children surviving until frame end. The correction is awaiting a new release
-and a fresh live test.
-
-Latest normal game Quit and exact owned cleanup passed by
-**2026-09-26 11:54:51 UTC**: four generated files removed, zero overlays and all
-429 base files unchanged. This attempt's installed state was
-`c15b9396c759ddfcd5d12c0357ff7d201031f6abb69f60f7108fcdd1eb050742`.
-Installation is now absent; the validated package is retained.
-
-The preceding manifest `18169693…`, source `7bd3e09`, passed Neow’s Bones:
-**7 attempted / 7 accepted / 7 reconciled**, 53 controller reads and map return.
-Its later Red Mask purchase stopped with `uncertain_dispatch` at **1/0/0**, leaving
-an unresolved action. No mutation was retried. Normal save/quit and exact cleanup
-finished by **21:13:24 UTC**: four generated files removed, zero overlays and all
-429 base files unchanged. These results retain their original identities in Git
-`c599a9f`, the [live ledger](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md)
-and `previous-release-record` under this release’s evidence directory.
-
-The [native candidate boundary](../../../../docs/AGENT_CONTRACT.md#native-full-run-v2-candidate)
-remains explicit. Remaining shop/rest/pickup cases, other compound Neow branches,
-empty chests and a full v2 ending retain their stated evidence limits. No
-profile/save/history/Cloud files or live trajectory corpus were accessed.
-
-Current evidence is under `/private/tmp/sts-bridge-5hudfwrd`. Prior install inputs
-are retained in its
-`previous-install-inputs` directory; current install inputs use
-`/private/tmp/sts-unified-bridge-release`.
+Current evidence is `/private/tmp/sts-bridge-6nkaloz2`. Its
+`previous-release-record` and `previous-install-inputs` retain the preceding
+records/package; Git `338a076` also preserves that release record. Current install
+inputs are `/private/tmp/sts-unified-bridge-release`.
+The [full-producer boundary](../../../../docs/AGENT_CONTRACT.md#native-full-run-v2-candidate)
+remains explicit. Remaining concrete shop/pickup paths and a full v2 ending need
+live acceptance. No profile/save/history/Cloud files or live corpus were accessed.
