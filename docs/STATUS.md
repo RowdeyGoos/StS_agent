@@ -335,7 +335,9 @@ These are **not an implementation queue or required live-test checklist**:
   full-inventory ordering and the event/resume variants remain separate tests.
 - Yummy Cookie's fixed-four upgrade selection has representative live acceptance.
   Trial/NondescriptInnocent’s curse-plus-two-transform path also passed at 5/5/5.
-  Trial/MerchantInnocent's conditional curse-plus-two-upgrade path and held-out
+  Trial/MerchantInnocent's conditional curse-plus-two-upgrade path requires a
+  different campaign seed: recreating Trial in the current campaign repeats
+  Nondescript. It remains untested. Held-out
   enchant/removal/transform callers such as Torus retain separate evidence limits.
 - Natural ancient entry/dialogue.
 - Broader reward orders/outcomes with a concrete offered screen, Sphere small-tool
@@ -361,7 +363,7 @@ and native enchantment integration checks also passed. Independent semantic
 review found no blocker. A missing method in a second inert fixture stopped an
 earlier gate; the fixture was corrected before the accepted gate.
 
-The latest [Trial two-transform test](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#trial-curse-and-two-transforms-passed-2026-09-26)
+The latest accepted [Trial two-transform test](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#trial-curse-and-two-transforms-passed-2026-09-26)
 passed **5/5/5**, with fifteen controller reads and no pending action. Doubt was
 observed before the selector; two Bludgeon+ originals became Headbutt and
 True Grit+, with every other card and inventory item preserved through map return.
@@ -370,6 +372,16 @@ zero overlays and all 429 base files unchanged. The preceding
 [0/0/0 setup rejection](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#trial-direct-shop-setup-rejected-2026-09-26)
 retains its original evidence; normal connected rest entry corrected the setup
 without changing any production guard.
+
+The subsequent [Trial/Sphere preparation](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#trial-seed-limit-and-sphere-setup-stop-2026-09-26)
+stopped before bridge attachment: Trial repeated its campaign-seeded branch,
+and one native potion-discard attempt did not visibly establish free capacity.
+No public gameplay reads or bridge actions ran. Normal game Quit and cleanup
+passed by **15:11:52 UTC**, with zero overlays and all 429 base files unchanged.
+The unchanged package was reinstalled and checked by **15:20:01 UTC** for Sphere's
+small/big-tool check; manual Profile 3 launch is pending. Three free potion slots
+must be visibly established before console event setup. Sphere remains untested
+through the shared v2 producer.
 
 The preceding [Silver Crucible empty-chest test](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#silver-crucible-empty-chest-passed-2026-09-26)
 passed **2/2/2** through Open/Proceed, with eighteen controller reads and no

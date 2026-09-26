@@ -32,6 +32,13 @@ setup in the unified smoke. Establish a matching setup before changing an owners
 guard. When request encoding changes, exercise a representative POST; GET-only socket checks do not
 establish action compatibility.
 
+Check a branch's RNG source before repeating console setup. In the pinned game,
+`EventModel.BeginEvent` derives its RNG from the campaign seed, player slot and
+event ID. Trial's Accept uses its first draw, so recreating Trial in the same
+single-player campaign repeats the same verdict branch. A different entrant
+number does not indicate a different branch: that display uses a separate RNG.
+Keep other branches explicitly untested until a matching campaign is available.
+
 ## Prepare and run within the user's scope
 
 - Use the user's actual authorization and launch preferences. Existing approval

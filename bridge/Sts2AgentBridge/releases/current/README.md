@@ -90,11 +90,19 @@ with zero overlays and all 429 base files unchanged. The earlier
 [0/0/0 setup rejection](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#trial-direct-shop-setup-rejected-2026-09-26)
 remains recorded separately; normal connected rest entry fixed the setup.
 
-The same package was reinstalled and checked by **14:53:56 UTC** for Trial’s
-two-upgrade branch: two exact overlays, unchanged base files and verified metadata.
+The subsequent [Trial/Sphere preparation](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#trial-seed-limit-and-sphere-setup-stop-2026-09-26)
+stopped before any public gameplay read or bridge action. Trial's branch repeats
+for this campaign seed, and a native potion-discard attempt did not visibly free
+a slot. Cleanup passed by **15:11:52 UTC**, leaving zero overlays and unchanged
+base files. Neither proposed case gained live acceptance.
+
+The same package was reinstalled and checked by **15:20:01 UTC** for Sphere’s
+small/big-tool check: two exact overlays, unchanged base files and verified metadata.
 Installed state is
-`957dc03911d95691663db12be03214c4348999d04f705eed6e889f1c4c537f73`.
-Manual Profile 3 main-menu readiness is pending; the saved campaign can be continued.
+`d69654a11c1a0897fbca12814aa6b975685b97090ebd58f575a147bc323024b6`.
+Manual Profile 3 main-menu readiness is pending. Continue the saved rest site and
+visibly establish three free potion slots before preparing the event; do not
+attach to an uncertain native setup.
 
 The preceding manifest `e47f0514…`, source `c599a9f`, passed Red Mask, Kifuda,
 Dolly’s Mirror, Potion Belt, Cook, the remaining supported rest options, Smith

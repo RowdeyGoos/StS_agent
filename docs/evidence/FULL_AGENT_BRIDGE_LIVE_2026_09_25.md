@@ -1325,3 +1325,55 @@ Clock checkpoints **14:49:27–14:53:12 UTC** span **225 seconds**; separate set
 controller and user-wait durations were not measured. No profile/save/history/
 Cloud files or retained live corpus were accessed. Merchant/Innocent's two
 upgrades, other callers and the full shared v2 ending remain separate cases.
+
+
+## Trial seed limit and Sphere setup stop, 2026-09-26
+
+The unchanged manifest `289fabed…`, source `7829456` and DLL `91182c79…` used
+installation state
+`957dc03911d95691663db12be03214c4348999d04f705eed6e889f1c4c537f73`, checked by
+**14:53:56 UTC**. After manual Profile 3 launch, fresh runtime, source, metadata,
+health and compatibility checks passed by **15:01:11 UTC**. Continue restored
+the floor-50 rest site with **665 gold**, HP **88/88**, **23 cards**, **33 relics**
+and five occupied potion slots. The preceding debug Trial transformations were
+not present on reload; their accepted result did not claim reload persistence.
+
+Two native `event TRIAL` preparations followed by Accept each exposed Nondescript,
+at floors 51 and 52. No verdict was chosen. Pinned `EventModel.BeginEvent` source
+seeds the event RNG from the campaign seed, player slot and event ID; Trial Accept
+uses its first `NextInt(3)`. Recreating this event cannot expose Merchant for the
+same single-player campaign. The displayed entrant number uses the separate
+chaotic RNG and is not a branch-selection signal. Merchant/Innocent therefore
+remains untested, pending a different matching campaign.
+
+Preparation switched to the already planned Sphere tool coverage. One native
+Swift Potion Discard click was issued, but the next screenshot still showed the
+occupied slot. Flex's menu was opened for inspection; no second discard was
+issued. The discard's completion/cause was not established, so no mutation was
+retried and setup stopped. No Sphere event was created. There were **zero public
+gameplay reads and zero bridge actions**: health/manifest checks did not attach
+the shared producer. Neither the Trial upgrade case nor Sphere was exercised.
+This is a setup stop, not evidence of a production bridge defect or live success.
+
+Normal game Quit was used without Save and Quit. The stopped process and closed
+listener were checked before exact owned cleanup. By **15:11:52 UTC**, four
+generated files were removed, overlays were zero, and all 429 base files matched
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Quarantine state was
+`50cf9087ff1c92e96e7c775e51a8f96ac691755c0a001dc32a60391934c23113`.
+The recorded **15:01:11–15:11:52 UTC** interval spans **641 seconds**; separate
+setup/controller/user-wait durations were not measured. No profile/save/history/
+Cloud filesystem access or retained live corpus was used.
+
+A disposable shared-adapter Sphere helper is now prepared for Payment Plan,
+big→small→big switching, one small reveal, five big reveals, currently visible
+rewards and settled map return. It checks exact public fog/count/tool changes,
+uses only visible fragments when choosing cells, and requires three free potion
+slots before the first event action. The slot premise must be established in the
+fresh saved room before console event setup. Four offline helper cases passed:
+ordinary completion, one known non-mutating stale rejection, a gold-reward
+continuation, and rejection of an incorrect tool/fog effect before another action.
+An initial test-harness syntax error and an invalid synthetic node definition
+were corrected before that passing run. These checks are not native evidence.
+No production source, package or runtime safeguard changed, and the accepted
+release gate was not rerun for documentation and disposable-helper changes.
