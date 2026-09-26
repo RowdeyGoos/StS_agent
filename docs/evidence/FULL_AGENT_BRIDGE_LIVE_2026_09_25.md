@@ -851,4 +851,58 @@ for the enchant preview and
 `535237769fbd1d1d37acbc7d7ef5600180e4db7ea3092708a06c2073242f16ad`
 for `scenes/cards/holders/preview_card_holder.tscn`. This offline reproduction
 supports the correction; the exact live rejecting predicate was not exposed by
-the old diagnostic, and a fresh live retest remains required.
+the old diagnostic. The separate corrected retest below establishes live success
+for the new package without changing this failed attempt.
+
+## Punch Dagger corrected preview passed, 2026-09-26
+
+The retest used manifest
+`289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302`, source
+`7829456da1bb28471f4aa4c910d3b5ca6d693032`, including feature `338a076`, and DLL
+`91182c7940b4ce420841eece40292213479838f9240a20add75523f250639405`
+(1,793,024 bytes). Installation was verified by **12:08:59 UTC**, state
+`9f39f9df0369eeb78dad20d865dbc6b523c588f0a9f3bd5c72ead49bd2356d8a`.
+The accepted 85-group release gate took 355.485 seconds; focused pickup and
+affected consumer checks passed, and independent semantic review found no blocker.
+
+After the user's manual Profile 3 launch, live work resumed at **12:12:28 UTC**.
+Runtime, metadata, authenticated health and compatibility passed. Continue
+restored the saved campaign at Neow. Before full-producer attachment, native
+`act 1` rebuilt the map and `gold 1000` changed gold 17 → 1017. The second of two
+native `room shop` setups offered Punch Dagger for 188; the UI opened inventory.
+No cards, relics, potions or HP were granted. One public preflight read verified
+the exact supported affordable offer at **0/0/0**, with no pending action.
+
+The bounded controller completed by **12:19:01 UTC**:
+`buy_shop_item → choose_relic_card → deselect_relic_card → choose_relic_card →
+confirm_relic_selection → close_shop → leave_shop`. All **7 attempted / 7 accepted /
+7 reconciled** actions settled, with 19 controller reads, zero stale rejections
+and no pending action. It stopped deliberately at the actionable map with
+`truncated/external_stop`; this is a successful bounded case, not a campaign win.
+One final public read independently rechecked the settled map and **7/7/7**
+counts: **21 public reads** including preflight and final verification.
+
+The same original upgrade-1 Bludgeon was selected, deselected and reselected.
+Its preview settled before each next action; the original deck remained unchanged
+before confirmation. Confirmation applied exactly **Momentum 5** to that original,
+preserving its identity and upgrade. The other fifteen card nodes stayed exact.
+Gold changed **1017 → 829**, exactly one Punch Dagger was appended to the 31
+original relics, and HP **88/88**, deck size **16** and all five occupied potion
+slots were preserved. The UI separately showed the returned map, 829 gold,
+88/88 HP, sixteen cards and Punch Dagger. No external setup or manual game action
+intervened between attachment and the settled map.
+
+Normal Save and Quit returned to Profile 3's main menu, then normal game Quit
+closed the process. Stopped-process/closed-listener checks, exact owned quarantine
+and purge passed by **12:20:28 UTC**. Four generated files were removed, zero
+overlays remained and all 429 base files retained SHA-256
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Quarantine state was
+`8c2fc6d2a50469d385189828cfe8ca1f31a4b5c6aa9a0640c98f3937f7b37618`.
+Live preparation through verified cleanup spanned eight minutes; separate
+controller/setup and user-wait durations were not measured. No profile/save/
+history/Cloud filesystem content or live trajectory corpus was accessed.
+
+This establishes the corrected Punch Dagger purchase, repeated preview and exact
+effect through shop/map handoff. Royal Stamp, other deck shapes, persistence
+across reload and the complete shared v2 ending remain separate acceptance cases.

@@ -31,12 +31,19 @@ One earlier gate stopped because a second inert test stub lacked the deletion
 API; it was corrected before the accepted gate. Original broad Python evidence
 remains separately bound; no new broad Python run is claimed.
 
-The corrected package is installed and checked by **2026-09-26 12:08:59 UTC**:
-two exact overlays and all 429 base files unchanged. Installed state is
-`9f39f9df0369eeb78dad20d865dbc6b523c588f0a9f3bd5c72ead49bd2356d8a`.
-The game was stopped before installation. Manual Profile 3 launch and a fresh
-owned Punch Dagger test within the saved campaign remain pending; no new live
-success is claimed for this package.
+The corrected [Punch Dagger retest](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#punch-dagger-corrected-preview-passed-2026-09-26)
+passed **7/7/7** through purchase, selection, deselection, reselection, confirmation
+and shop/map return. The same original Bludgeon+ received Momentum 5, gold changed
+1017 → 829, and the other cards/HP/potions stayed exact. There were 19 controller
+reads, one preflight read and one final verification read, with no pending action.
+Normal Save and Quit, game Quit and exact owned cleanup passed by
+**2026-09-26 12:20:28 UTC**, leaving zero overlays and all 429 base files unchanged.
+
+The same package was reinstalled and checked by **12:22:32 UTC** for a remaining
+Gnarled Hammer or Royal Stamp shop test: two exact overlays, unchanged base files
+and verified metadata. Installed state is
+`ebd915dc46e0fde082b53da0b9f76f9b6fca667f80c7d0c48481f2cfb1a10830`.
+Manual Profile 3 launch is pending; the existing campaign can be continued.
 
 The preceding manifest `e47f0514…`, source `c599a9f`, passed Red Mask, Kifuda,
 Dolly’s Mirror, Potion Belt, Cook, the remaining supported rest options, Smith
@@ -46,7 +53,8 @@ stopped with `read_native_failed` after buy/select at **2/2/0**, with no confirm
 or retry. Normal game Quit and exact owned cleanup passed by **11:54:51 UTC**;
 cleanup does not resolve those actions. Native source/scene inspection and an
 offline regression support the correction; the old live diagnostic did not expose
-the exact rejecting predicate. The ledger retains each result’s original identity.
+the exact rejecting predicate. The successful retest above does not reconcile the
+old attempt. The ledger retains each result’s original identity.
 
 Current evidence is `/private/tmp/sts-bridge-6nkaloz2`. Its
 `previous-release-record` and `previous-install-inputs` retain the preceding
