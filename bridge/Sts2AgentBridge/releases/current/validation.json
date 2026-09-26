@@ -426,6 +426,82 @@
         }
       ],
       "total_public_reads": 176
+    },
+    {
+      "accepted": 3,
+      "actions": [
+        "discard_potion",
+        "buy_shop_item",
+        "claim_potion"
+      ],
+      "attempted": 3,
+      "case": "cauldron_helper_stop_and_expired_purchase",
+      "cleanup": {
+        "base_file_count": 429,
+        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+        "game_process_running": false,
+        "generated_files_removed": 4,
+        "normal_quit": true,
+        "normal_save_and_quit": false,
+        "overlay_count": 0,
+        "port_accepting": false,
+        "quarantined_state_sha256": "16db5c1ecc46cfba8e4111dc483e2f9e76318ac4b19b9816e58bd8a21b6919c1",
+        "status": "passed",
+        "verified_by_utc": "2026-09-26 13:10:43 UTC"
+      },
+      "cleanup_reconciles_actions": false,
+      "code": "shop_rewards_expected_action_unavailable",
+      "controller_reads": 4,
+      "correction": "Disposable helper now chooses legal protected-original discards when no potion claim fits, preserves all newly collected potions, allows automatic shop return and uses a 45-second host limit.",
+      "decisions": 3,
+      "effects": {
+        "deck_count": 23,
+        "discarded_original": "swift_potion",
+        "first_reward": "blessing_of_the_forge",
+        "gold_after": 454,
+        "gold_before": 665,
+        "hp": 88,
+        "max_hp": 88,
+        "price": 211,
+        "relics_after": 34,
+        "relics_before": 33,
+        "remaining_rewards": 4
+      },
+      "explanation": "The disposable helper omitted discard/claim alternation inside rewards. It stopped with the parent purchase pending. Preparing a continuation exceeded the native 60-second purchase deadline; the next read failed before another mutation. Production safeguards and source remain unchanged.",
+      "failed_public_reads": 1,
+      "failed_read_by_utc": "2026-09-26 13:09:12 UTC",
+      "initial_offer_reads": 1,
+      "inspection_reads": 1,
+      "installation": {
+        "base_file_count": 429,
+        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+        "credential_content_read": false,
+        "game_running_before_install": false,
+        "installed_metadata_verified": true,
+        "overlay_count": 2,
+        "phase": "installed",
+        "port_accepting_before_install": false,
+        "purpose": "Same accepted package prepared for Cauldron shop-owned potion rewards; user confirmed manual Profile 3 main-menu readiness.",
+        "state_sha256": "247628e31adb63cbaf48851a59a37bb84b3ed2815a2dff9250c9a2c7c84235fe",
+        "status": "passed",
+        "verified_by_utc": "2026-09-26 13:01:17 UTC"
+      },
+      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#cauldron-helper-stop-and-expired-purchase-2026-09-26",
+      "mutation_retried_after_failure": false,
+      "pending": true,
+      "preflight_reads": 1,
+      "reconciled": 2,
+      "recorded_interval_seconds": 376,
+      "recorded_interval_start_utc": "2026-09-26 13:04:27 UTC",
+      "recorded_live_corpus": false,
+      "release_manifest_sha256": "289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302",
+      "setup": "Manual Profile 3 Continue restored floor 49 merchant, 665 gold, HP 88/88, 23 cards, 33 relics including Orrery and five full potion slots. Second of two room shop preparations offered Cauldron for 211 at floor 51. No act reset or inventory/HP/gold grant. All setup preceded attachment.",
+      "source_commit": "7829456da1bb28471f4aa4c910d3b5ca6d693032",
+      "stale_rejections": 0,
+      "status": "failed",
+      "subsequent_read_code": "read_native_failed",
+      "successful_public_reads": 7,
+      "target_game_executed": true
     }
   ],
   "change": "Wait for native single-enchantment preview children queued for deletion before validating the exact new holders; no input retry or premature confirmation.",
@@ -434,11 +510,12 @@
     "focused_pickup_seconds": 4.778,
     "independent_review_seconds": 193,
     "installation_verified_by_utc": "2026-09-26 12:08:59 UTC",
+    "latest_cauldron_attempt_recorded_interval_seconds": 376,
     "latest_reward_batch_recorded_interval_seconds": 529,
     "latest_shop_batch_recorded_interval_seconds": 535,
     "latest_shop_selector_recorded_interval_seconds": 249,
     "live_preparation_through_cleanup_recorded_interval_seconds": 480,
-    "next_installation_verified_by_utc": "2026-09-26 13:01:17 UTC",
+    "next_installation_verified_by_utc": "2026-09-26 13:12:07 UTC",
     "note": "Implementation, review and validation overlapped. Exclusive implementation/release preparation, failed gate elapsed time and user-wait durations were not measured.",
     "release_gate_seconds": 355.485
   },
@@ -934,10 +1011,10 @@
     "overlay_count": 2,
     "phase": "installed",
     "port_accepting_before_install": false,
-    "purpose": "Same accepted package prepared for Cauldron shop-owned potion rewards; user confirmed manual Profile 3 main-menu readiness.",
-    "state_sha256": "247628e31adb63cbaf48851a59a37bb84b3ed2815a2dff9250c9a2c7c84235fe",
+    "purpose": "Same accepted package prepared for corrected Cauldron helper; user confirmed manual Profile 3 main-menu readiness.",
+    "state_sha256": "5ff6a20b72bab4188074b5948b9d911ada2e7c597c10d1a9ae466630a7e55657",
     "status": "passed",
-    "verified_by_utc": "2026-09-26 13:01:17 UTC"
+    "verified_by_utc": "2026-09-26 13:12:07 UTC"
   },
   "live": {
     "accepted": 7,
@@ -1026,7 +1103,7 @@
   },
   "next_live_test": {
     "new_campaign_required": false,
-    "premise": "Continue saved Profile 3 campaign and prepare an affordable native Cauldron offer before full-producer attachment. Free five slots through legal potion discards, collect all five potion rewards, verify exact effects and finish shop/map return.",
+    "premise": "Continue the saved merchant and prepare Cauldron before attachment. Within one 45-second controller run, alternate legal original-potion discards and claims for all five rewards, verify exact effects and shop/map return. The failed 3/3/2 attempt remains separately recorded.",
     "status": "user_ready",
     "targets": [
       "cauldron"

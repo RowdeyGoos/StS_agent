@@ -60,9 +60,16 @@ Later legal travel reached another merchant at **28/28/28**, with one confirmed
 non-mutating stale rejection. Cleanup passed by **13:00:51 UTC**, leaving zero
 overlays and all 429 base files unchanged. No production change was needed.
 
-The package was reinstalled and checked by **13:01:17 UTC** for Cauldron:
+The subsequent [Cauldron attempt](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#cauldron-helper-stop-and-expired-purchase-2026-09-26)
+stopped at **3/3/2** after a helper omission left the reward purchase pending.
+The existing 60-second deadline expired during continuation preparation; no
+further mutation followed its failed read. Normal game Quit and cleanup passed
+by **13:10:43 UTC**, preserving the unresolved result. The helper now alternates
+legal original-potion discards and claims; production sources remain unchanged.
+
+The package was reinstalled and checked by **13:12:07 UTC** for the corrected Cauldron test:
 two exact overlays, unchanged base files and verified metadata. Installed state is
-`247628e31adb63cbaf48851a59a37bb84b3ed2815a2dff9250c9a2c7c84235fe`.
+`5ff6a20b72bab4188074b5948b9d911ada2e7c597c10d1a9ae466630a7e55657`.
 The user confirmed manual Profile 3 main-menu readiness; the saved campaign can
 be continued for the potion reward test.
 

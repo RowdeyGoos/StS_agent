@@ -84,7 +84,7 @@ its separate package identity.
 | Rest | Heal/Proceed and Smith (one card); Lift, Kindle, Dig, Cook, Clone and Hatch. Packaged `rest_v3` exposes selector cancellation and Heal-owned rewards | Every supported single-player option has a representative successful live case. Smith/Cook cancellation and deselection/reselection, Dream Catcher card collect/Skip, Tiny Mailbox two-potion collection and remaining Miniature Tent options demonstrated. Exact per-option limits remain below |
 | Shop purchases | Cards, potions, supported passive relics, Potion Belt +2 slots; 0–8 purchases, kind policy, gold reserve and callback-certified restock | Seven-card/one-potion visit and three restocked potion purchases with original-potion replacement demonstrated. Full-producer passive, selector and Belt pickups passed through map return; Belt expanded a full inventory from three to five slots and both added slots were filled. Zero-purchase Close/Leave passed 2/2/2 with exact inventory preservation. Remaining pickup and policy variants need live coverage |
 | Shop removal | Exact selected original, price/effect reconciliation, preview cancellation, then separate inventory close and Leave | Removal and full-producer preview cancellation demonstrated through map return; cancellation retained exact deck and gold |
-| Shop-owned rewards | Cauldron's five potions and Orrery's five card menus under the purchase owner | Orrery passed five exact card additions, automatic shop return and Close/Leave at 13/13/13, preserving the original deck, HP and potions. The test helper initially expected a separate reward dismissal and stopped after 11 settled actions; the two exit actions completed separately. Cauldron remains awaiting representative live evidence |
+| Shop-owned rewards | Cauldron's five potions and Orrery's five card menus under the purchase owner | Orrery passed five exact card additions, automatic shop return and Close/Leave at 13/13/13, preserving the original deck, HP and potions. Its helper initially expected a separate reward dismissal and stopped after 11 settled actions; the exit completed separately. Cauldron stopped at 3/3/2 after the helper omitted further original-potion replacements; the purchase deadline expired during continuation preparation. Corrected helper retest remains pending |
 | Shop pickup selectors | Dolly’s Mirror, Gnarled Hammer, Kifuda, Punch Dagger and Royal Stamp; exact native clone/enchantment selection | All five have representative live success: Kifuda’s three Adroit 3 originals; Mirror’s exact Bludgeon clone; Punch Dagger’s Momentum 5 on Bludgeon+; Hammer’s Sharp 3 on two Bludgeon+ originals and Headbutt+; Royal Stamp’s Royally Approved/Innate/Retain on Defend+. Punch Dagger and Stamp included deselection/reselection. All paid exactly and returned to the map, retaining other cards/HP/potions. Zero/fewer-card or toggle variants not separately demonstrated remain offline only. Other pickup callbacks are not generally supported |
 
 ### Native rest-site actions
@@ -356,7 +356,16 @@ and native enchantment integration checks also passed. Independent semantic
 review found no blocker. A missing method in a second inert fixture stopped an
 earlier gate; the fixture was corrected before the accepted gate.
 
-The latest [Orrery batch](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#orrery-five-card-rewards-and-merchant-travel-passed-2026-09-26)
+The latest [Cauldron attempt](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#cauldron-helper-stop-and-expired-purchase-2026-09-26)
+stopped at **3 attempted / 3 accepted / 2 reconciled**, with the purchase pending.
+The helper missed the discard/claim alternation needed for a full belt. Its later
+read failed after the existing 60-second purchase deadline elapsed during
+continuation preparation. The helper is corrected; no production safeguard changed.
+Normal game Quit and exact cleanup passed by **2026-09-26 13:10:43 UTC**, leaving
+zero overlays and unchanged base files. Cleanup does not reconcile that purchase;
+the fresh Cauldron test remains open.
+
+The preceding [Orrery batch](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#orrery-five-card-rewards-and-merchant-travel-passed-2026-09-26)
 passed **13/13/13** through purchase, all five card choices and shop/map return.
 Gold changed 826 → 649 and the deck grew 17 → 22, preserving every original card,
 HP and potions. The helper stopped after the game's automatic reward dismissal;

@@ -1092,3 +1092,49 @@ the earlier runtime preflight and separate setup/controller/user-wait durations
 were not measured. No profile/save/history/Cloud filesystem content or retained
 live trajectory corpus was accessed. Cauldron, alternate Orrery choices/Skip,
 reload persistence and the full shared v2 ending remain separate evidence limits.
+
+## Cauldron helper stop and expired purchase, 2026-09-26
+
+The unchanged accepted manifest `289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302`
+ran from installation state
+`247628e31adb63cbaf48851a59a37bb84b3ed2815a2dff9250c9a2c7c84235fe`, verified by
+**13:01:17 UTC**. Manual Profile 3 Continue restored the floor-49 merchant with
+665 gold, HP 88/88, 23 cards, 33 relics including Orrery, and five occupied potion
+slots. Runtime, metadata, authenticated health and compatibility passed. The
+second of two native `room shop` preparations offered **Cauldron for 211** at
+floor 51; no inventory/HP/gold grant or act reset was needed. Public inspection
+attached the full producer at **0/0/0**, with no pending action.
+
+The helper incorrectly expected to clear all five potion slots before purchase.
+The shop's legal discard actions require a full belt, so after discarding Swift
+Potion only the purchase was chosen. Cauldron was bought and its first reward,
+**Blessing of the Forge**, was collected in that slot. The helper then lacked the
+branch to discard another original while the reward screen was full and stopped
+with `shop_rewards_expected_action_unavailable`: **3 attempted / 3 accepted /
+2 reconciled**, four controller reads and one pending purchase. Gold was **454**;
+HP 88/88 and all 23 original cards stayed exact; Cauldron was appended as relic 34.
+A separate public read still exposed the four protected-original discard choices.
+The newly collected Blessing was distinct from the original same-key potion.
+
+Preparation of a continuation exceeded the purchase's existing **60-second**
+owner deadline in `PinnedShopEffectDispatch.Invoke/Owner`. Its next preflight read
+failed `read_native_failed` by **13:09:12 UTC**, before any continuation mutation.
+The exact failing predicate was not separately exposed, but the source deadline
+had expired. No reward action was retried after that failure. The UI still showed
+four unclaimed potions. Seven public reads succeeded across inspection, preflight,
+controller and the settled-child inspection; the eighth read failed. The
+**3/3/2** result remains unresolved and is not live acceptance for Cauldron.
+
+Normal game Quit was used without Save and Quit or further reward input.
+Stopped-process/closed-listener, exact quarantine/purge and unchanged-base checks
+passed by **13:10:43 UTC**: four generated files removed, zero overlays, all 429
+base files retaining SHA-256
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Quarantine state was
+`16db5c1ecc46cfba8e4111dc483e2f9e76318ac4b19b9816e58bd8a21b6919c1`.
+Clock checkpoints **13:04:27–13:10:43 UTC** span **376 seconds**; exclusive
+controller/preparation and user-wait durations were not measured. Cleanup does
+not reconcile the purchase. No profile/save/history/Cloud files or live corpus
+were accessed. The disposable helper now interleaves original-potion discards
+and reward claims, preserves newly obtained potions and uses a 45-second bound.
+Production sources, deadlines and the accepted release remain unchanged.
