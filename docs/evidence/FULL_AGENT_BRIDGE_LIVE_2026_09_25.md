@@ -1614,3 +1614,37 @@ Independent source review ran **17:40:56–17:43:44 UTC** (design),
 **17:58:28–17:59:06 UTC** (correction clear), **429 seconds total**.
 The reviewer ran no tests or game. Final validation and native Cook recovery
 remain separate; the intended retest continues the saved campaign.
+
+The stable correction was committed as `327e7da` and its final combined gate
+passed **85 groups in 369.018 seconds**, including **16,972 native event checks**,
+reproducible production builds, clients/socket integration, metadata, packaging
+and disposable cleanup. Evidence root: `/private/tmp/sts-bridge-0ceoerz0`.
+Corrected manifest:
+`fed09e937f44d54c52064b0a9c0adc09a03bcfd7ca21bbd3a805277b4151da37`.
+DLL: **1,800,704 bytes**, SHA-256
+`e90607c18b127d3299f67b5ab1ba7b0039f35ab237d33338a56c7762cc7a3bbd`.
+All 102 bound Python files match the preceding release. Its exact release record
+and fixed package inputs were verified and preserved under `previous-release-record`
+and `previous-install-inputs` in this evidence root; Git `327e7da` retains that
+record too. No old live evidence was repinned to the new binary.
+
+Publish, stopped-game installation, base/overlay verification and installed
+metadata checks passed by **18:11:04 UTC**, under state
+`279151f568527c80cdd9f860dee982da7fa90000761f9858c34ce06c576602ca`.
+Two exact overlay files are installed and all 429 base files remain unchanged.
+A first stopped-process read lacked sandbox process access; the authorized
+read-only check passed outside the sandbox. An initial two-argument verifier
+invocation was rejected before inspection; the supported three-argument check
+passed. Neither error mutated the game. Credentials were not read for installation
+verification. The package now awaits manual Profile 3 launch for the saved Cook
+retest; no native recovery is yet claimed.
+
+Disposable helper modes retain the existing adapter/controller. The focused
+Cook mode checks the 33-card premise, all eligible choices, the first/last eligible
+originals, deselection/reselection, exact two-card removal, +9 HP/max HP, unchanged
+other inventory and map return. Six offline cases passed. The continuation mode
+accepts only settled initial counters and uses the unchanged common chooser;
+five offline cases verify count deltas, missing-act/defeat rejection and explicit
+resumed-run scope. Those eleven cases are helper evidence, not native acceptance.
+Implementation and checks overlapped; exclusive implementation, release preparation
+and user-wait durations were not measured.

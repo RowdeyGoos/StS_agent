@@ -225,10 +225,10 @@ extend standalone rest/shop contracts.
   retains its original package and unresolved counts after clean removal.
 - **Large-deck shared selectors:** the later route stopped at Cook with a 33-card
   deck and **51/51/50** counts. The shared selector incorrectly waited for every
-  native holder to be allocated. A source correction preserves all public choices
-  and performs bounded native scrolling/rebinding only for the requested original;
-  partial-grid and slow-frame regressions pass. Final release and live recovery
-  remain pending. Generic event selectors retain their allocated-holder boundary.
+  native holder to be allocated. The released correction preserves all public
+  choices and performs bounded native scrolling/rebinding only for the requested
+  original. Partial-grid and slow-frame regressions and all 85 release checks
+  pass; it is installed for the saved-run retest. Live recovery remains pending. Generic event selectors retain their allocated-holder boundary.
   [Result and diagnosis](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#shared-v2-neow-recovery-and-large-deck-cook-stop-2026-09-26).
   Optional zero confirmation is contract-specific and is not native cancellation.
 - **Single-card shop enchant preview:** Punch Dagger stopped after purchase and
@@ -311,7 +311,7 @@ These are **not an implementation queue or required live-test checklist**:
 - Variable-count upgrades, enchantment stacking/replacement, and generic-event
   unallocated-card input: retained contract limits, without a concrete necessary
   caller/setup. The shared Cook large-deck failure is a separate confirmed defect
-  with a correction under validation.
+  with a released correction awaiting live acceptance.
 - Resume-time card/selector reward screens and multi-item/relic reward screens:
   no concrete Resume caller identified. Dummy Setting1 offers one potion, Setting2
   upgrades automatically, and Setting3 obtains a relic directly. Resume-time
@@ -376,23 +376,29 @@ supplies dated source candidates rather than a current implementation checklist.
 ## Release and latest evidence
 
 The current [release manifest](../bridge/Sts2AgentBridge/releases/current/bridge.json)
-is **`e8cfb4c7fb75fd87d72aa38d9b40e6a4580b07b3d8730238d0278f2e2c5b52fc`**.
-It binds 485 source/test inputs across 52 projects, source/feature `57b61ef`.
-The ordinary reward and Sacrifice observers now normalize inherited callbacks to
-the selected declaring method. The accepted gate passed **85 groups in 371.271
-seconds**, including 168 client tests, 1,639 router checks, 229 event wire cases,
-16,903 native event checks and 656 rest checks. Focused regressions reproduced
-both defects before correction; independent semantic review found no blocker.
-All 102 bound Python files are unchanged from the preceding release.
+is **`fed09e937f44d54c52064b0a9c0adc09a03bcfd7ca21bbd3a805277b4151da37`**.
+It binds 485 source/test inputs across 52 projects, source/feature `327e7da`.
+The shared deck-choice driver now handles native grid virtualization while
+retaining all public candidates and exact one-shot selection. Focused regressions
+passed 946 pickup checks; independent review cleared the allocation-order
+correction. The final gate passed **85 groups in 369.018 seconds**, including
+168 client tests, 1,639 router checks, 229 event wire cases, 16,972 native event
+checks and 656 rest checks. All 102 bound Python files match the preceding release.
 
-The corrected package was installed and checked by **2026-09-26 17:09:11 UTC**,
-with two exact overlay files and all 429 base files unchanged. Its manual Profile 3
-run recovered Neow, then completed four fights and Slippery Bridge before stopping
-at Cook's 33-card selector: **51/51/50**, pending work and no ending. Normal Quit
-and cleanup passed by **17:39:16 UTC**, leaving zero overlays and all base files
-unchanged. The shared selector correction is under validation; this artifact is
-no longer installed. [Latest result](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#shared-v2-neow-recovery-and-large-deck-cook-stop-2026-09-26).
-Earlier results retain their original manifest and source bindings.
+The package was installed and verified by **2026-09-26 18:11:04 UTC**, with two
+exact overlay files and all 429 base files unchanged. It awaits a manual Profile 3
+launch for the saved campaign's large Cook selector retest, then the remaining
+shared-v2 act/ending route. Eleven offline helper cases passed. No live recovery
+is yet claimed for this artifact; earlier evidence retains its original bindings.
+
+The [preceding route](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#shared-v2-neow-recovery-and-large-deck-cook-stop-2026-09-26)
+under manifest `e8cfb4c7` recovered Neow's reward and event/map return, then
+completed four fights and Slippery Bridge before Cook's 33-card selector stopped
+at **51/51/50** with pending work. Normal Quit and cleanup passed by
+**17:39:16 UTC**, leaving zero overlays and all 429 base files unchanged. No act
+transition or ending was reached. Cleanup does not reconcile Cook or the earlier
+uncertain reward attempt. The previous release record and package inputs remain
+under `/private/tmp/sts-bridge-0ceoerz0`, as well as the dated Git record.
 
 The latest accepted [Sphere tool/reward test](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#sphere-small-and-big-tools-passed-2026-09-26)
 passed **17/17/17**, 64 public reads, zero stale rejections and no pending action.

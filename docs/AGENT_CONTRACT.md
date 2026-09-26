@@ -550,7 +550,7 @@ native selected set, then stops motion and rechecks the exact card before input.
 A page allows 128 reads; a semantic request allows 64 pages within the existing
 256 native-input budget. Settled scrolling may finish native presentation
 allocation before rebinding. Hidden padding holders never become candidates.
-This source correction has fixture evidence; large-deck live recovery remains
+This released correction has fixture evidence; large-deck live recovery remains
 pending. It does not broaden the separate generic-event selector adapters.
 
 The Neow compound child retains exact native offer, collection, pickup and
