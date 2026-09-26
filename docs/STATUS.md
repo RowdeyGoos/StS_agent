@@ -213,6 +213,15 @@ extend standalone rest/shop contracts.
   passed **3/3/3** with exact payment/pickup and map return. The
   [original 1/0/0 live stop](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#red-mask-shop-purchase-stopped-before-acceptance)
   retains its uncertain result and separate artifact; no mutation was retried.
+- **Ordinary reward and Sacrifice callback hooks:** the shared-v2 route stopped
+  at Small Capsule's Stone Cracker claim with **2/1/0** and pending work. Derived
+  passive-relic fixtures reproduced inherited-method hook failures in both
+  observers. The correction uses each selected callback's declaring method for
+  ownership, patching and cleanup; focused checks, independent review and the
+  final release gate passed. The correction is installed; native recovery remains
+  unverified. The
+  [failed attempt](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#shared-v2-route-stopped-at-small-capsule-2026-09-26)
+  retains its original package and unresolved counts after clean removal.
 - **Selectors:** direct input requires allocated native holders. Optional zero
   confirmation is supported on specific contracts; it is not native cancellation.
 - **Single-card shop enchant preview:** Punch Dagger stopped after purchase and
@@ -358,15 +367,20 @@ supplies dated source candidates rather than a current implementation checklist.
 ## Release and latest evidence
 
 The current [release manifest](../bridge/Sts2AgentBridge/releases/current/bridge.json)
-is **`289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302`**.
-It binds 485 source/test inputs across 52 projects, source `7829456`, including
-the reviewed single-enchantment deferred-preview correction (`338a076`). The
-accepted gate passed **85 groups in 355.485 seconds**, including 168 client
-tests, 1,639 router checks, 229 event wire cases, 16,857 native event checks and
-656 rest checks. Focused pickup checks passed 877 cases; affected direct-input
-and native enchantment integration checks also passed. Independent semantic
-review found no blocker. A missing method in a second inert fixture stopped an
-earlier gate; the fixture was corrected before the accepted gate.
+is **`e8cfb4c7fb75fd87d72aa38d9b40e6a4580b07b3d8730238d0278f2e2c5b52fc`**.
+It binds 485 source/test inputs across 52 projects, source/feature `57b61ef`.
+The ordinary reward and Sacrifice observers now normalize inherited callbacks to
+the selected declaring method. The accepted gate passed **85 groups in 371.271
+seconds**, including 168 client tests, 1,639 router checks, 229 event wire cases,
+16,903 native event checks and 656 rest checks. Focused regressions reproduced
+both defects before correction; independent semantic review found no blocker.
+All 102 bound Python files are unchanged from the preceding release.
+
+The corrected package was installed and checked by **2026-09-26 17:09:11 UTC**,
+with two exact overlay files and all 429 base files unchanged. It awaits a manual
+Profile 3 launch for Neow’s reward retest and the assisted shared-v2 act/ending
+route. No live acceptance is claimed for this new artifact; the results below
+retain their original manifest and source bindings.
 
 The latest accepted [Sphere tool/reward test](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#sphere-small-and-big-tools-passed-2026-09-26)
 passed **17/17/17**, 64 public reads, zero stale rejections and no pending action.
@@ -375,7 +389,7 @@ board. Three gold entries, two potions and a card were collected before map
 return; original deck and potions stayed exact. The user freed three potion slots
 before attachment. Normal Save and Quit, game Quit and cleanup passed by
 **16:11:01 UTC**, leaving zero overlays and all 429 base files unchanged.
-The same accepted package and release gate were reused.
+That test reused the preceding package (`289fabed`) and its accepted gate.
 The [shared-v2 route attempt](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#shared-v2-route-stopped-at-small-capsule-2026-09-26)
 then stopped at Neow's Small Capsule/Stone Cracker reward with
 `uncertain_dispatch`, **2/1/0** and pending work. Upfront assistance was verified
@@ -383,8 +397,8 @@ at HP 2072/2072 with four Break and two Flash of Steel cards in the 29-card deck
 No action was retried. Normal Quit and exact cleanup passed by **16:44:26 UTC**,
 leaving zero overlays and all 429 base files unchanged. The inherited callback
 defect was reproduced in ordinary rewards and Sacrifice; its declaring-method
-correction has focused checks and independent review, with release/live retest
-still pending. No act transition or ending was reached.
+correction passed the final release gate and is installed for a live retest.
+No act transition or ending was reached in the failed attempt.
 
 The preceding [Trial two-transform test](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#trial-curse-and-two-transforms-passed-2026-09-26)
 passed **5/5/5**, with fifteen controller reads and no pending action. Doubt was

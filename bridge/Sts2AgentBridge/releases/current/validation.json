@@ -1,1069 +1,543 @@
 {
-  "additional_live_tests": [
+  "additional_live_tests": [],
+  "change": "Normalize inherited AfterObtained callbacks to their selected declaring method in ordinary relic rewards and non-compound Sacrifice. Use that identity for foreign-hook checks, installation, validation and cleanup while preserving real overrides and uncertain-action safeguards.",
+  "cleanup": {
+    "note": "The corrected package is currently installed awaiting manual launch. Previous artifact cleanup is dated separately under previous_release.latest_live.cleanup.",
+    "status": "not_yet_run"
+  },
+  "elapsed_times": {
+    "focused_ordinary_reward_seconds": 180.486,
+    "focused_sacrifice_terminal_seconds": 4.829,
+    "independent_review_seconds": 103,
+    "installation_verified_by_utc": "2026-09-26 17:09:11 UTC",
+    "note": "Implementation and validation overlapped. Exclusive implementation, release preparation and user-wait durations were not measured.",
+    "release_gate_seconds": 371.271
+  },
+  "evidence_root": "/private/tmp/sts-bridge-cj8jmqx7",
+  "feature_commit": "57b61efb8deee847b5db1f6db6147085cdf0d85a",
+  "focused_validation": [
     {
-      "accepted": 25,
-      "attempted": 25,
-      "case": "gnarled_hammer_and_zero_purchase_shop",
-      "cleanup": {
-        "base_file_count": 429,
-        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-        "game_process_running": false,
-        "generated_files_removed": 4,
-        "normal_quit": true,
-        "normal_save_and_quit": true,
-        "overlay_count": 0,
-        "port_accepting": false,
-        "quarantined_state_sha256": "96f3d1415fc51339fd4ee2ac864b3321e93929c63d1841803b3efd2fc98a16d1",
-        "status": "passed",
-        "verified_by_utc": "2026-09-26 12:34:12 UTC"
-      },
-      "installation": {
-        "base_file_count": 429,
-        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-        "credential_content_read": false,
-        "game_running_before_install": false,
-        "installed_metadata_verified": true,
-        "overlay_count": 2,
-        "phase": "installed",
-        "port_accepting_before_install": false,
-        "purpose": "Same accepted package prepared for a remaining Gnarled Hammer or Royal Stamp shop selector test; manual Profile 3 launch pending.",
-        "state_sha256": "ebd915dc46e0fde082b53da0b9f76f9b6fca667f80c7d0c48481f2cfb1a10830",
-        "status": "passed",
-        "verified_by_utc": "2026-09-26 12:22:32 UTC"
-      },
-      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#gnarled-hammer-and-zero-purchase-shop-passed-2026-09-26",
-      "limits": "Three-card Hammer and zero-purchase exit only. Zero/fewer-card Hammer confirmation, selector reversal, Royal Stamp, Cauldron/Orrery, reload persistence and shared v2 ending remain separate.",
-      "map_inspection_reads": 1,
-      "outcome": {
-        "actionable_map": true,
-        "kind": "truncated",
-        "reason": "external_stop"
-      },
-      "pending": false,
-      "preflight_public_reads": 1,
-      "reconciled": 25,
-      "recorded_interval_seconds": 535,
-      "recorded_live_corpus": false,
-      "release_manifest_sha256": "289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302",
-      "setup": "Manual Profile 3 Continue at Neow; one incomplete console command t rejected without action, corrected act 1 succeeded; gold 1000 (17 to 1017); nine room shop preparations before Gnarled Hammer at 204. All setup and UI inventory opening preceded full-producer attachment. No cards, relics, potions or HP granted.",
-      "source_commit": "7829456da1bb28471f4aa4c910d3b5ca6d693032",
-      "started_utc": "2026-09-26 12:25:17 UTC",
-      "status": "passed",
-      "target_game_executed": true,
-      "tests": [
-        {
-          "accepted": 7,
-          "actions": [
-            "buy_shop_item",
-            "choose_relic_card",
-            "choose_relic_card",
-            "choose_relic_card",
-            "confirm_relic_selection",
-            "close_shop",
-            "leave_shop"
-          ],
-          "attempted": 7,
-          "case": "gnarled_hammer",
-          "completed_by_utc": "2026-09-26 12:30:27 UTC",
-          "controller_reads": 26,
-          "effects": {
-            "actionable_map": true,
-            "deck_count": 16,
-            "display_counter": 3,
-            "distinct_originals": 3,
-            "enchantment": "sharp",
-            "gold_after": 813,
-            "gold_before": 1017,
-            "hp": 88,
-            "max_hp": 88,
-            "occupied_potion_slots": 5,
-            "potion_capacity": 5,
-            "price": 204,
-            "relic_count_after": 32,
-            "relic_count_before": 31,
-            "selected_cards": [
-              {
-                "id": "bludgeon",
-                "upgrade_level": 1
-              },
-              {
-                "id": "bludgeon",
-                "upgrade_level": 1
-              },
-              {
-                "id": "headbutt",
-                "upgrade_level": 1
-              }
-            ],
-            "unrelated_inventory_unchanged": true,
-            "unselected_originals_unchanged": 13
-          },
-          "reconciled": 7,
-          "status": "passed",
-          "verification_reads": 1
-        },
-        {
-          "accepted": 16,
-          "attempted": 16,
-          "case": "legal_travel",
-          "completed_by_utc": "2026-09-26 12:31:50 UTC",
-          "contexts": [
-            "combat",
-            "event",
-            "rewards",
-            "map",
-            "shop"
-          ],
-          "controller_reads": 180,
-          "entered_nodes": [
-            [
-              1,
-              2
-            ],
-            [
-              2,
-              3
-            ],
-            [
-              3,
-              4
-            ]
-          ],
-          "final_deck_count": 17,
-          "final_gold": 826,
-          "final_shop_stage": "inventory_browse",
-          "hp": 88,
-          "max_hp": 88,
-          "reconciled": 16,
-          "status": "passed"
-        },
-        {
-          "accepted": 2,
-          "actionable_map": true,
-          "actions": [
-            "close_shop",
-            "leave_shop"
-          ],
-          "attempted": 2,
-          "case": "zero_purchase_shop",
-          "controller_reads": 3,
-          "deck_count": 17,
-          "gold": 826,
-          "hp": 88,
-          "inventory_unchanged": true,
-          "max_hp": 88,
-          "occupied_potion_slots": 5,
-          "potion_capacity": 5,
-          "preflight_reads": 1,
-          "reconciled": 2,
-          "relic_count": 32,
-          "status": "passed",
-          "verification_reads": 1
-        }
-      ],
-      "total_public_reads": 214
+      "groups": 3,
+      "native_event_checks": 16879,
+      "root": "/private/tmp/sts-bridge-s88kd1s7",
+      "scope": "Ordinary inherited reward acquisition, delayed completion, exact ownership, foreign-hook prevention before input, no replay and sticky failed cleanup. Precedes the Sacrifice correction; final gate covers both.",
+      "seconds": 180.486,
+      "status": "passed"
     },
     {
-      "accepted": 7,
-      "actions": [
-        "buy_shop_item",
-        "choose_relic_card",
-        "deselect_relic_card",
-        "choose_relic_card",
-        "confirm_relic_selection",
-        "close_shop",
-        "leave_shop"
-      ],
-      "attempted": 7,
-      "case": "royal_stamp_preview_toggle",
-      "cleanup": {
-        "base_file_count": 429,
-        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-        "game_process_running": false,
-        "generated_files_removed": 4,
-        "normal_quit": true,
-        "normal_save_and_quit": true,
-        "overlay_count": 0,
-        "port_accepting": false,
-        "quarantined_state_sha256": "da3d36d7fac7008ac74b33384f9ac37b369bb44feff455ce5e5f1a37c395e86b",
-        "status": "passed",
-        "verified_by_utc": "2026-09-26 12:42:36 UTC"
-      },
-      "completed_by_utc": "2026-09-26 12:40:42 UTC",
-      "controller_reads": 19,
-      "decisions": 7,
-      "effects": {
-        "deck_count": 17,
-        "display_counter": null,
-        "enchantment": "royally_approved",
-        "enchantment_applied_only_after_confirmation": true,
-        "gold_after": 614,
-        "gold_before": 826,
-        "hp": 88,
-        "keywords": [
-          "innate",
-          "retain"
-        ],
-        "max_hp": 88,
-        "occupied_potion_slots": 5,
-        "other_relics_and_potions_unchanged": true,
-        "potion_capacity": 5,
-        "price": 212,
-        "relic": "royal_stamp",
-        "relic_count_after": 33,
-        "relic_count_before": 32,
-        "same_original_reselected": true,
-        "selected_card": "defend",
-        "unselected_originals_unchanged": 16,
-        "upgrade_level": 1
-      },
-      "installation": {
-        "base_file_count": 429,
-        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-        "credential_content_read": false,
-        "game_running_before_install": false,
-        "installed_metadata_verified": true,
-        "overlay_count": 2,
-        "phase": "installed",
-        "port_accepting_before_install": false,
-        "purpose": "Same accepted package prepared for Royal Stamp shop selector; user confirmed manual Profile 3 main-menu readiness.",
-        "state_sha256": "588996d8fe8edd47a99ad7bd8077db8b1cf1866aa2037065e7e736bb6ea1c543",
-        "status": "passed",
-        "verified_by_utc": "2026-09-26 12:34:58 UTC"
-      },
-      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#royal-stamp-preview-toggle-passed-2026-09-26",
-      "limits": "All five supported shop card-selector families now have one successful native case. This case does not establish every selector variant, Royal Stamp persistence across reload, Cauldron/Orrery rewards or the complete shared v2 ending.",
-      "mutation_retried": false,
-      "outcome": {
-        "actionable_map": true,
-        "kind": "truncated",
-        "reason": "external_stop"
-      },
-      "pending": false,
-      "preflight_public_reads": 1,
-      "reconciled": 7,
-      "recorded_interval_seconds": 249,
-      "recorded_live_corpus": false,
-      "release_manifest_sha256": "289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302",
-      "setup": "Manual Profile 3 Continue restored the merchant checkpoint at floor 41 with 826 gold, HP 88/88, seventeen cards, 32 relics and five occupied potion slots. Two native room shop preparations preceded attachment; the second offered Royal Stamp for 212. No act reset or gold/card/relic/potion/HP grant was needed.",
-      "source_commit": "7829456da1bb28471f4aa4c910d3b5ca6d693032",
-      "stale_rejections": 0,
-      "started_utc": "2026-09-26 12:38:27 UTC",
-      "status": "passed",
-      "target_game_executed": true,
-      "total_public_reads": 21,
-      "verification_reads": 1
-    },
-    {
-      "accepted": 28,
-      "attempted": 28,
-      "case": "orrery_five_rewards_and_merchant_travel",
-      "cleanup": {
-        "base_file_count": 429,
-        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-        "game_process_running": false,
-        "generated_files_removed": 4,
-        "normal_quit": true,
-        "normal_save_and_quit": true,
-        "overlay_count": 0,
-        "port_accepting": false,
-        "quarantined_state_sha256": "5d7acdcd3093c74582bd6e3270bc1b7aa50a292846eb88b8611684bcf60267d8",
-        "status": "passed",
-        "verified_by_utc": "2026-09-26 13:00:51 UTC"
-      },
-      "installation": {
-        "base_file_count": 429,
-        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-        "credential_content_read": false,
-        "game_running_before_install": false,
-        "installed_metadata_verified": true,
-        "overlay_count": 2,
-        "phase": "installed",
-        "port_accepting_before_install": false,
-        "purpose": "Same accepted package prepared for Cauldron/Orrery shop-owned rewards; user confirmed manual Profile 3 main-menu readiness.",
-        "state_sha256": "9a4d3f300710a5140ab79a876f89c768a6ea232497b3e07aa48379f9498b0343",
-        "status": "passed",
-        "verified_by_utc": "2026-09-26 12:46:53 UTC"
-      },
-      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#orrery-five-card-rewards-and-merchant-travel-passed-2026-09-26",
-      "limits": "Orrery all-five collection and shop/map handoff only. Cauldron, alternate choices/Skip, reload persistence and full shared v2 ending remain separate. Two disposable-helper stops are retained below; no production correction or uncertain mutation retry occurred.",
-      "pending": false,
-      "reconciled": 28,
-      "recorded_interval_seconds": 529,
-      "recorded_interval_start_utc": "2026-09-26 12:52:02 UTC",
-      "recorded_live_corpus": false,
-      "release_manifest_sha256": "289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302",
-      "setup": "Manual Profile 3 Continue restored floor 41 merchant with 826 gold, HP 88/88, seventeen cards, 32 relics and five potions. Sixth of six room shop preparations offered Orrery for 177 at floor 47; all setup preceded attachment. No act reset or inventory/HP/gold grant.",
-      "source_commit": "7829456da1bb28471f4aa4c910d3b5ca6d693032",
-      "stale_rejections": 1,
-      "status": "passed",
-      "target_game_executed": true,
-      "tests": [
-        {
-          "accepted": 13,
-          "actions": [
-            "buy_shop_item",
-            "open_reward",
-            "choose_reward_card",
-            "open_reward",
-            "choose_reward_card",
-            "open_reward",
-            "choose_reward_card",
-            "open_reward",
-            "choose_reward_card",
-            "open_reward",
-            "choose_reward_card",
-            "close_shop",
-            "leave_shop"
-          ],
-          "attempted": 13,
-          "case": "orrery_five_card_rewards",
-          "effects": {
-            "actionable_map": true,
-            "added_cards": [
-              {
-                "id": "cinder",
-                "upgrade_level": 0
-              },
-              {
-                "id": "headbutt",
-                "upgrade_level": 0
-              },
-              {
-                "id": "setup_strike",
-                "upgrade_level": 0
-              },
-              {
-                "id": "stomp",
-                "upgrade_level": 0
-              },
-              {
-                "id": "armaments",
-                "upgrade_level": 1
-              }
-            ],
-            "automatic_reward_return": true,
-            "deck_after": 22,
-            "deck_before": 17,
-            "gold_after": 649,
-            "gold_before": 826,
-            "hp": 88,
-            "max_hp": 88,
-            "occupied_potion_slots": 5,
-            "original_cards_unchanged": 17,
-            "potion_capacity": 5,
-            "potions_unchanged": true,
-            "price": 177,
-            "relic": "orrery",
-            "relics_after": 33,
-            "relics_before": 32
-          },
-          "exit_controller_reads": 3,
-          "exit_preflight_reads": 1,
-          "helper_stop": {
-            "accepted": 11,
-            "attempted": 11,
-            "code": "shop_rewards_unexpected_context",
-            "completed_by_utc": "2026-09-26 12:56:25 UTC",
-            "explanation": "Expected explicit reward dismissal, but the native game automatically returned to inventory after the fifth card. Inventory effects had been checked; bounded Close/Leave completed separately.",
-            "pending": false,
-            "reconciled": 11,
-            "status": "failed"
-          },
-          "initial_offer_reads": 1,
-          "outcome": {
-            "kind": "truncated",
-            "reason": "external_stop"
-          },
-          "preflight_reads": 1,
-          "reconciled": 13,
-          "reward_controller_reads": 12,
-          "status": "passed",
-          "total_public_reads": 19,
-          "verification_reads": 1
-        },
-        {
-          "accepted": 15,
-          "attempted": 15,
-          "case": "legal_travel_to_next_merchant",
-          "cauldron_offered": false,
-          "completed_by_utc": "2026-09-26 12:58:56 UTC",
-          "continuation_reads": 16,
-          "deck_count": 23,
-          "first_controller_reads": 139,
-          "gold": 665,
-          "helper_stop": {
-            "code": "travel_dispatch_rejected",
-            "counts": [
-              23,
-              23,
-              23
-            ],
-            "mutation_state": "none",
-            "pending": false,
-            "reason": "stale_decision",
-            "status": "failed"
-          },
-          "hp": 88,
-          "map_inspection_reads": 1,
-          "max_hp": 88,
-          "pending": false,
-          "reconciled": 15,
-          "relic_count": 33,
-          "route": [
-            [
-              4,
-              4
-            ],
-            [
-              5,
-              5
-            ]
-          ],
-          "settled_inspection_reads": 1,
-          "stale_rejections": 1,
-          "status": "passed"
-        }
-      ],
-      "total_public_reads": 176
-    },
-    {
-      "accepted": 3,
-      "actions": [
-        "discard_potion",
-        "buy_shop_item",
-        "claim_potion"
-      ],
-      "attempted": 3,
-      "case": "cauldron_helper_stop_and_expired_purchase",
-      "cleanup": {
-        "base_file_count": 429,
-        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-        "game_process_running": false,
-        "generated_files_removed": 4,
-        "normal_quit": true,
-        "normal_save_and_quit": false,
-        "overlay_count": 0,
-        "port_accepting": false,
-        "quarantined_state_sha256": "16db5c1ecc46cfba8e4111dc483e2f9e76318ac4b19b9816e58bd8a21b6919c1",
-        "status": "passed",
-        "verified_by_utc": "2026-09-26 13:10:43 UTC"
-      },
-      "cleanup_reconciles_actions": false,
-      "code": "shop_rewards_expected_action_unavailable",
-      "controller_reads": 4,
-      "correction": "Disposable helper now chooses legal protected-original discards when no potion claim fits, preserves all newly collected potions, allows automatic shop return and uses a 45-second host limit.",
-      "decisions": 3,
-      "effects": {
-        "deck_count": 23,
-        "discarded_original": "swift_potion",
-        "first_reward": "blessing_of_the_forge",
-        "gold_after": 454,
-        "gold_before": 665,
-        "hp": 88,
-        "max_hp": 88,
-        "price": 211,
-        "relics_after": 34,
-        "relics_before": 33,
-        "remaining_rewards": 4
-      },
-      "explanation": "The disposable helper omitted discard/claim alternation inside rewards. It stopped with the parent purchase pending. Preparing a continuation exceeded the native 60-second purchase deadline; the next read failed before another mutation. Production safeguards and source remain unchanged.",
-      "failed_public_reads": 1,
-      "failed_read_by_utc": "2026-09-26 13:09:12 UTC",
-      "initial_offer_reads": 1,
-      "inspection_reads": 1,
-      "installation": {
-        "base_file_count": 429,
-        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-        "credential_content_read": false,
-        "game_running_before_install": false,
-        "installed_metadata_verified": true,
-        "overlay_count": 2,
-        "phase": "installed",
-        "port_accepting_before_install": false,
-        "purpose": "Same accepted package prepared for Cauldron shop-owned potion rewards; user confirmed manual Profile 3 main-menu readiness.",
-        "state_sha256": "247628e31adb63cbaf48851a59a37bb84b3ed2815a2dff9250c9a2c7c84235fe",
-        "status": "passed",
-        "verified_by_utc": "2026-09-26 13:01:17 UTC"
-      },
-      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#cauldron-helper-stop-and-expired-purchase-2026-09-26",
-      "mutation_retried_after_failure": false,
-      "pending": true,
-      "preflight_reads": 1,
-      "reconciled": 2,
-      "recorded_interval_seconds": 376,
-      "recorded_interval_start_utc": "2026-09-26 13:04:27 UTC",
-      "recorded_live_corpus": false,
-      "release_manifest_sha256": "289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302",
-      "setup": "Manual Profile 3 Continue restored floor 49 merchant, 665 gold, HP 88/88, 23 cards, 33 relics including Orrery and five full potion slots. Second of two room shop preparations offered Cauldron for 211 at floor 51. No act reset or inventory/HP/gold grant. All setup preceded attachment.",
-      "source_commit": "7829456da1bb28471f4aa4c910d3b5ca6d693032",
-      "stale_rejections": 0,
-      "status": "failed",
-      "subsequent_read_code": "read_native_failed",
-      "successful_public_reads": 7,
-      "target_game_executed": true
-    },
-    {
-      "accepted": 13,
-      "actions": [
-        "discard_potion",
-        "buy_shop_item",
-        "claim_potion",
-        "discard_potion",
-        "claim_potion",
-        "discard_potion",
-        "claim_potion",
-        "discard_potion",
-        "claim_potion",
-        "discard_potion",
-        "claim_potion",
-        "close_shop",
-        "leave_shop"
-      ],
-      "attempted": 13,
-      "case": "cauldron_five_potion_replacement",
-      "cleanup": {
-        "base_file_count": 429,
-        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-        "game_process_running": false,
-        "generated_files_removed": 4,
-        "normal_quit": true,
-        "normal_save_and_quit": true,
-        "overlay_count": 0,
-        "port_accepting": false,
-        "quarantined_state_sha256": "0a487fea310ec2dab8624ce119b6151da88c015633432d5292718c69c40b065f",
-        "status": "passed",
-        "verified_by_utc": "2026-09-26 13:18:15 UTC"
-      },
-      "completed_by_utc": "2026-09-26 13:16:17 UTC",
-      "controller_reads": 14,
-      "decisions": 13,
-      "effects": {
-        "actionable_map": true,
-        "automatic_reward_return": true,
-        "claimed_potions": [
-          "blessing_of_the_forge",
-          "regen_potion",
-          "clarity",
-          "attack_potion",
-          "gamblers_brew"
-        ],
-        "deck_count": 23,
-        "gold_after": 454,
-        "gold_before": 665,
-        "hp": 88,
-        "max_hp": 88,
-        "newly_collected_potions_preserved": true,
-        "original_cards_unchanged": 23,
-        "original_potions_discarded": [
-          "swift_potion",
-          "flex_potion",
-          "blessing_of_the_forge",
-          "blood_potion",
-          "skill_potion"
-        ],
-        "potion_capacity": 5,
-        "price": 211,
-        "relic": "cauldron",
-        "relics_after": 34,
-        "relics_before": 33,
-        "same_key_original_and_reward_distinguished": true
-      },
-      "installation": {
-        "base_file_count": 429,
-        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-        "credential_content_read": false,
-        "game_running_before_install": false,
-        "installed_metadata_verified": true,
-        "overlay_count": 2,
-        "phase": "installed",
-        "port_accepting_before_install": false,
-        "purpose": "Same accepted package prepared for corrected Cauldron helper; user confirmed manual Profile 3 main-menu readiness.",
-        "state_sha256": "5ff6a20b72bab4188074b5948b9d911ada2e7c597c10d1a9ae466630a7e55657",
-        "status": "passed",
-        "verified_by_utc": "2026-09-26 13:12:07 UTC"
-      },
-      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#cauldron-five-potion-replacement-passed-2026-09-26",
-      "limits": "Five-slot all-reward replacement only. Other belt sizes, alternate reward choices/Skip, reload persistence and full shared v2 ending remain separate. This fresh success does not reconcile the preceding 3/3/2 attempt.",
-      "outcome": {
-        "kind": "truncated",
-        "reason": "external_stop"
-      },
-      "pending": false,
-      "preflight_reads": 1,
-      "reconciled": 13,
-      "recorded_interval_seconds": 240,
-      "recorded_interval_start_utc": "2026-09-26 13:14:15 UTC",
-      "recorded_live_corpus": false,
-      "release_manifest_sha256": "289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302",
-      "setup": "Manual Profile 3 Continue restored floor 49 merchant, 665 gold, HP 88/88, 23 cards, 33 relics and five full potion slots. Second of two room shop preparations offered Cauldron for 211 at floor 51. No act reset or inventory/HP/gold grant. All setup preceded attachment.",
-      "source_commit": "7829456da1bb28471f4aa4c910d3b5ca6d693032",
-      "stale_rejections": 0,
-      "status": "passed",
-      "target_game_executed": true,
-      "total_public_reads": 16,
-      "verification_reads": 1
-    },
-    {
-      "accepted": 2,
-      "actions": [
-        "open_chest",
-        "leave_treasure"
-      ],
-      "attempted": 2,
-      "case": "silver_crucible_empty_chest",
-      "cleanup": {
-        "base_file_count": 429,
-        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-        "game_process_running": false,
-        "generated_files_removed": 4,
-        "normal_quit": true,
-        "normal_save_and_quit": true,
-        "overlay_count": 0,
-        "port_accepting": false,
-        "quarantined_state_sha256": "6fafb44f9b8c1c292df83cc2ba420f0817b1e5bb640897456eb95b3dff0613cb",
-        "status": "passed",
-        "verified_by_utc": "2026-09-26 13:31:05 UTC"
-      },
-      "completed_by_utc": "2026-09-26 13:29:23 UTC",
-      "controller_reads": 18,
-      "decisions": 2,
-      "effects": {
-        "actionable_map": true,
-        "deck_count": 23,
-        "gold": 665,
-        "hp": 88,
-        "inventory_unchanged": true,
-        "max_hp": 88,
-        "no_relic_offered": true,
-        "potion_capacity": 5,
-        "relic_count": 34,
-        "silver_crucible_counter": 3
-      },
-      "installation": {
-        "base_file_count": 429,
-        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-        "credential_content_read": false,
-        "game_running_before_install": false,
-        "installed_metadata_verified": true,
-        "overlay_count": 2,
-        "phase": "installed",
-        "port_accepting_before_install": false,
-        "purpose": "Same accepted package prepared for Silver Crucible empty-chest Open/Proceed test; user confirmed manual Profile 3 main-menu readiness.",
-        "state_sha256": "b8e6c5b2b911e13ab3fbbef3b4b5641c91f2a4925feda4855c3acc5f0f48350a",
-        "status": "passed",
-        "verified_by_utc": "2026-09-26 13:20:38 UTC"
-      },
-      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#silver-crucible-empty-chest-passed-2026-09-26",
-      "limits": "One native first-chest-empty caller. Silver Crucible card-reward upgrades, other empty-chest causes, reload persistence and the full shared v2 ending retain separate evidence limits.",
-      "outcome": {
-        "kind": "truncated",
-        "reason": "external_stop"
-      },
-      "pending": false,
-      "preflight_reads": 1,
-      "reconciled": 2,
-      "recorded_interval_seconds": 227,
-      "recorded_interval_start_utc": "2026-09-26 13:27:18 UTC",
-      "recorded_live_corpus": false,
-      "release_manifest_sha256": "289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302",
-      "setup": "Manual Profile 3 Continue restored floor 49 merchant: 665 gold, HP 88/88, 23 cards, 33 relics and five occupied potion slots. Added Silver Crucible once and entered its first treasure room through native console controls before attachment; chest was unopened at floor 50. No act reset or HP/gold/card/potion grant.",
-      "source_commit": "7829456da1bb28471f4aa4c910d3b5ca6d693032",
-      "stale_rejections": 0,
-      "status": "passed",
-      "target_game_executed": true,
-      "total_public_reads": 20,
-      "verification_reads": 1
-    },
-    {
-      "accepted": 0,
-      "attempted": 0,
-      "case": "trial_direct_shop_setup_rejected",
-      "cleanup": {
-        "base_file_count": 429,
-        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-        "game_process_running": false,
-        "generated_files_removed": 4,
-        "normal_quit": true,
-        "normal_save_and_quit": false,
-        "overlay_count": 0,
-        "port_accepting": false,
-        "quarantined_state_sha256": "2dbf51922ae61b020bcdb14d627c14fd36c2698c7950f6e28d0925f6f38f15aa",
-        "status": "passed",
-        "verified_by_utc": "2026-09-26 13:41:37 UTC"
-      },
-      "decisions": 0,
-      "diagnosis": "The native merchant enables map travel; console event entry retains it. The event parent diagnostic identified the existing enabled-travel guard. This does not exercise the selector. Next setup uses normal connected map entry before console event creation.",
-      "diagnostic_reads": 33,
-      "initial_helper_code": "trial_requires_fresh_prepared_verdict",
-      "installation": {
-        "base_file_count": 429,
-        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-        "credential_content_read": false,
-        "game_running_before_install": false,
-        "installed_metadata_verified": true,
-        "overlay_count": 2,
-        "phase": "installed",
-        "port_accepting_before_install": false,
-        "purpose": "Same accepted package for Trial curse-plus-two-card selector; user confirmed manual Profile 3 main-menu readiness.",
-        "state_sha256": "34e0a95a89114778b57a0112fc3833216d2dfa8205a67065c6f96801bec7e24c",
-        "status": "passed",
-        "verified_by_utc": "2026-09-26 13:37:45 UTC"
-      },
-      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#trial-direct-shop-setup-rejected-2026-09-26",
-      "pending": false,
-      "preflight_reads": 1,
-      "reconciled": 0,
-      "recorded_interval_seconds": 169,
-      "recorded_interval_start_utc": "2026-09-26 13:38:48 UTC",
-      "recorded_live_corpus": false,
-      "release_manifest_sha256": "289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302",
-      "setup": "Continue restored floor 49 merchant with 665 gold, HP 88/88, 23 cards, 33 relics and five occupied potion slots. Native event TRIAL and Accept exposed Nondescript/Innocent at floor 50 before attachment. No verdict or selector action was dispatched.",
-      "source_commit": "7829456da1bb28471f4aa4c910d3b5ca6d693032",
-      "status": "failed",
-      "subsequent_read_code": "read_native_event_parent_travel",
-      "target_game_executed": true,
-      "total_public_reads": 34,
-      "total_reads_include_final_failed_response": true
-    },
-    {
-      "accepted": 5,
-      "actions": [
-        "choose_event_option",
-        "choose_event_card",
-        "choose_event_card",
-        "confirm_selection",
-        "leave_event"
-      ],
-      "attempted": 5,
-      "case": "trial_nondescript_curse_two_transforms",
-      "cleanup": {
-        "base_file_count": 429,
-        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-        "game_process_running": false,
-        "generated_files_removed": 4,
-        "normal_quit": true,
-        "normal_save_and_quit": true,
-        "overlay_count": 0,
-        "port_accepting": false,
-        "quarantined_state_sha256": "dda0d5d4874bc12d73cc340b7e5cab970d4fcfa8c3d005caf8e5d6aade1dec8a",
-        "status": "passed",
-        "verified_by_utc": "2026-09-26 14:53:12 UTC"
-      },
-      "completed_by_utc": "2026-09-26 14:51:20 UTC",
-      "controller_reads": 15,
-      "decisions": 5,
-      "effects": {
-        "actionable_map": true,
-        "curse_observed_before_selector": "doubt",
-        "curse_preserved": true,
-        "deck_after": 24,
-        "deck_before": 23,
-        "gold": 665,
-        "hp": 88,
-        "max_hp": 88,
-        "original_survivors_unchanged": 21,
-        "potion_capacity": 5,
-        "potions_unchanged": true,
-        "relic_count": 33,
-        "relics_unchanged": true,
-        "replacement_cards": [
-          {
-            "id": "headbutt",
-            "upgrade_level": 0
-          },
-          {
-            "id": "true_grit",
-            "upgrade_level": 1
-          }
-        ],
-        "selected_originals": [
-          {
-            "id": "bludgeon",
-            "upgrade_level": 1
-          },
-          {
-            "id": "bludgeon",
-            "upgrade_level": 1
-          }
-        ]
-      },
-      "installation": {
-        "base_file_count": 429,
-        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-        "credential_content_read": false,
-        "game_running_before_install": false,
-        "installed_metadata_verified": true,
-        "overlay_count": 2,
-        "phase": "installed",
-        "port_accepting_before_install": false,
-        "purpose": "Same accepted package for Trial after normal connected-room entry; user confirmed manual Profile 3 main-menu readiness.",
-        "state_sha256": "9e5515310e7078abc5bc50a2eb44bc88d73bcf0d8da9a934a0846bd5a207dfa5",
-        "status": "passed",
-        "verified_by_utc": "2026-09-26 13:43:10 UTC"
-      },
-      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#trial-curse-and-two-transforms-passed-2026-09-26",
-      "limits": "Representative fixed-two transform after an observed curse addition. Automatic grant provenance is not broadened beyond the existing event contract; Merchant/Innocent upgrades, other callers, reload persistence and full shared v2 ending remain separate.",
-      "outcome": {
-        "kind": "truncated",
-        "reason": "external_stop"
-      },
-      "pending": false,
-      "preflight_reads": 34,
-      "reconciled": 5,
-      "recorded_interval_seconds": 225,
-      "recorded_interval_start_utc": "2026-09-26 14:49:27 UTC",
-      "recorded_live_corpus": false,
-      "release_manifest_sha256": "289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302",
-      "setup": "Continue restored floor 49 merchant. Native Proceed and connected rest-site entry reached floor 50 before any rest action. Native event TRIAL and Accept then exposed Nondescript/Innocent at floor 51, all before attachment. No act reset or inventory/HP/gold assistance.",
-      "source_commit": "7829456da1bb28471f4aa4c910d3b5ca6d693032",
-      "stale_rejections": 0,
-      "status": "passed",
-      "target_game_executed": true,
-      "total_public_reads": 50,
-      "verification_reads": 1
-    },
-    {
-      "bridge_actions_dispatched": 0,
-      "bridge_attached": false,
-      "case": "trial_seed_limit_and_sphere_setup_stop",
-      "cleanup": {
-        "base_file_count": 429,
-        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-        "game_process_running": false,
-        "generated_files_removed": 4,
-        "normal_quit": true,
-        "normal_save_and_quit": false,
-        "overlay_count": 0,
-        "port_accepting": false,
-        "quarantined_state_sha256": "50cf9087ff1c92e96e7c775e51a8f96ac691755c0a001dc32a60391934c23113",
-        "status": "passed",
-        "verified_by_utc": "2026-09-26 15:11:52 UTC"
-      },
-      "diagnosis": "Pinned EventModel.BeginEvent derives the event RNG from campaign seed, player slot and event ID; Trial Accept uses its first draw. Recreating Trial repeats the branch. The entrant number uses separate chaotic RNG. Native discard completion/cause remains unestablished.",
-      "installation": {
-        "base_file_count": 429,
-        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-        "credential_content_read": false,
-        "game_running_before_install": false,
-        "installed_metadata_verified": true,
-        "overlay_count": 2,
-        "phase": "installed",
-        "port_accepting_before_install": false,
-        "purpose": "Unchanged package for Trial Merchant/Innocent preparation; user confirmed manual Profile 3 launch.",
-        "state_sha256": "957dc03911d95691663db12be03214c4348999d04f705eed6e889f1c4c537f73",
-        "status": "passed",
-        "verified_by_utc": "2026-09-26 14:53:56 UTC"
-      },
-      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#trial-seed-limit-and-sphere-setup-stop-2026-09-26",
-      "limits": "Neither Trial Merchant/Innocent nor Sphere gained live acceptance. A different campaign seed is needed for Merchant. The previous Trial transform result does not establish reload persistence.",
-      "recorded_interval_seconds": 641,
-      "recorded_interval_start_utc": "2026-09-26 15:01:11 UTC",
-      "recorded_live_corpus": false,
-      "release_manifest_sha256": "289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302",
-      "setup": "Continue restored floor 50 rest, gold 665, HP 88/88, 23 cards, 33 relics and five full potion slots. Two console Trial preparations and Accept exposed Nondescript at floors 51 and 52; no verdict chosen. One Swift Potion Discard click was not visibly completed. Flex menu opened for inspection only. No Sphere event prepared; normal game Quit without Save and Quit.",
-      "source_commit": "7829456da1bb28471f4aa4c910d3b5ca6d693032",
-      "status": "not_exercised",
-      "target_game_executed": true,
-      "total_public_reads": 0,
-      "uncertain_native_setup_action": "Swift Potion Discard; no retry and no bridge attachment"
-    },
-    {
-      "accepted": 17,
-      "actions": [
-        {
-          "kind": "choose_event_option",
-          "subject": "crystal_sphere.pages.initial.options.payment_plan"
-        },
-        {
-          "kind": "choose_event_option",
-          "subject": "tool_small"
-        },
-        {
-          "kind": "choose_event_option",
-          "subject": "reveal_60"
-        },
-        {
-          "kind": "choose_event_option",
-          "subject": "tool_big"
-        },
-        {
-          "kind": "choose_event_option",
-          "subject": "reveal_15"
-        },
-        {
-          "kind": "choose_event_option",
-          "subject": "reveal_48"
-        },
-        {
-          "kind": "choose_event_option",
-          "subject": "reveal_40"
-        },
-        {
-          "kind": "choose_event_option",
-          "subject": "reveal_53"
-        },
-        {
-          "kind": "choose_event_option",
-          "subject": "reveal_73"
-        },
-        {
-          "kind": "claim_gold",
-          "subject": "gold"
-        },
-        {
-          "kind": "claim_gold",
-          "subject": "gold"
-        },
-        {
-          "kind": "claim_gold",
-          "subject": "gold"
-        },
-        {
-          "kind": "claim_potion",
-          "subject": "potion"
-        },
-        {
-          "kind": "claim_potion",
-          "subject": "potion"
-        },
-        {
-          "kind": "open_reward",
-          "subject": "card"
-        },
-        {
-          "kind": "choose_reward_card",
-          "subject": "card"
-        },
-        {
-          "kind": "leave_event",
-          "subject": "crystal_sphere.leave"
-        }
-      ],
-      "attempted": 17,
-      "case": "sphere_small_big_tools",
-      "cleanup": {
-        "base_file_count": 429,
-        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-        "game_process_running": false,
-        "generated_files_removed": 4,
-        "normal_quit": true,
-        "normal_save_and_quit": true,
-        "overlay_count": 0,
-        "port_accepting": false,
-        "quarantined_state_sha256": "a3c06a990b8164a5b29016ae05aaf64e2bb78f0eec3d691670d3016bae199c69",
-        "status": "passed",
-        "verified_by_utc": "2026-09-26 16:11:01 UTC"
-      },
-      "effects": {
-        "actionable_map": true,
-        "after": {
-          "deck_count": 26,
-          "gold": 715,
-          "hp": 88,
-          "max_hp": 88,
-          "potion_capacity": 5,
-          "potion_count": 4,
-          "relic_count": 33
-        },
-        "all_eight_public_board_transitions_verified": true,
-        "before": {
-          "deck_count": 23,
-          "gold": 665,
-          "hp": 88,
-          "max_hp": 88,
-          "potion_capacity": 5,
-          "potion_count": 2,
-          "relic_count": 33
-        },
-        "big_reveal_new_cells": [
-          9,
-          8,
-          9,
-          7,
-          8
-        ],
-        "debt_observed_before_board": true,
-        "gold_entries_claimed": 3,
-        "new_cards": [
-          {
-            "id": "debt",
-            "upgrade": 0
-          },
-          {
-            "id": "doubt",
-            "upgrade": 0
-          },
-          {
-            "id": "fight_me",
-            "upgrade": 0
-          }
-        ],
-        "new_potions": [
-          "explosive_ampoule",
-          "bottled_potential"
-        ],
-        "original_deck_and_potions_preserved": true,
-        "reveals": 6,
-        "reward_kinds": [
-          "card",
-          "gold",
-          "potion"
-        ],
-        "selection_uses_only_current_public_fog_and_fragments": true,
-        "small_reveal_new_cells": 1,
-        "tool_switches": 2
-      },
-      "helper_validation": {
-        "cases": [
-          "ordinary_completion",
-          "known_nonmutating_stale",
-          "gold_reward_continuation",
-          "incorrect_tool_fog_effect_stops_before_next_action"
-        ],
-        "count": 4,
-        "native_evidence": false,
+      "fixture_correction": "The first corrected run expected returned failure instead of the inner applier exception; the fixture now accepts either with unchanged strict effects/counts/cleanup assertions. No runtime guard changed.",
+      "reward_alternative_checks": 216,
+      "root": "/private/tmp/sts-inherited-rewards-fixed-4abt2q4r",
+      "scope": "Sacrifice and terminal inherited passive rewards, exact acquisition and foreign-hook failure. Sacrifice can already mutate click/counter state before hook detection; no acquisition or retry is permitted.",
+      "seconds": 4.829,
+      "status": "passed"
+    }
+  ],
+  "full_shared_native_interface_complete": false,
+  "gate": {
+    "checks": {
+      "agent:paired": {
+        "log": "log-078.txt",
+        "seconds": 0.145,
         "status": "passed"
       },
-      "installation": {
-        "base_file_count": 429,
-        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-        "credential_content_read": false,
-        "game_running_before_install": false,
-        "installed_metadata_verified": true,
-        "overlay_count": 2,
-        "phase": "installed",
-        "port_accepting_before_install": false,
-        "purpose": "Unchanged accepted package used for the completed Sphere small/big tool and reward test; removed after settled map return.",
-        "state_sha256": "d69654a11c1a0897fbca12814aa6b975685b97090ebd58f575a147bc323024b6",
-        "status": "passed",
-        "verified_by_utc": "2026-09-26 15:20:01 UTC"
+      "apps/bridge/operations/check_live_runtime_fixtures.py": {
+        "log": "log-013.txt",
+        "seconds": 0.063,
+        "status": "passed"
       },
-      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#sphere-small-and-big-tools-passed-2026-09-26",
-      "limits": "Earned relics, other board/reward outcomes, full-belt handling, provenance of automatic grants, reload persistence and full shared v2 ending remain separate.",
-      "mutation_retried": false,
-      "pending": false,
-      "preparation": {
-        "bridge_attached_during_native_setup": false,
-        "manual_capacity_visually_verified": true,
-        "native_setup": "Saved floor-50 rest; user discarded Swift, Flex and Blessing after automated input had no effect. Three free slots verified before event CRYSTAL_SPHERE; untouched initial options at floor 51. No native gameplay input after shared attachment.",
-        "preflight_completed_by_utc": "2026-09-26 15:53:52 UTC",
-        "public_gameplay_reads_during_setup": 0
+      "apps/bridge/operations/manage_live_campaign_fixtures.py": {
+        "log": "log-014.txt",
+        "seconds": 2.864,
+        "status": "passed"
       },
-      "reconciled": 17,
-      "recorded_interval_seconds": 159,
-      "recorded_interval_start_utc": "2026-09-26 16:08:22 UTC",
-      "recorded_live_corpus": false,
-      "release_manifest_sha256": "289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302",
-      "setup": "Manual Profile 3 Continue restored floor 50 rest. Automated potion menu input had no visible effect; reopened popup ruled out a pending discard under the native holder guard. User manually discarded Swift, Flex and Blessing; screenshot verified three free slots and retained Blood/Skill before native event CRYSTAL_SPHERE. Initial floor-51 options were untouched at first shared read. No rest choice, act reset or inventory grant.",
-      "source_commit": "7829456da1bb28471f4aa4c910d3b5ca6d693032",
-      "stale_rejections": 0,
-      "status": "passed",
-      "stop": "Helper ended at the verified settled actionable map; no separate terminal outcome transition or campaign victory claimed.",
-      "target_game_executed": true,
-      "total_public_reads": 64
+      "apps/bridge/operations/predecessor_conflict_fixtures.py": {
+        "log": "log-015.txt",
+        "seconds": 0.828,
+        "status": "passed"
+      },
+      "build:apps/bridge/agent_native_tests/AgentNative.Tests.csproj": {
+        "log": "log-017.txt",
+        "seconds": 1.216,
+        "status": "passed"
+      },
+      "build:apps/bridge/campaign_native_tests/CampaignNative.Tests.csproj": {
+        "log": "log-019.txt",
+        "seconds": 3.32,
+        "status": "passed"
+      },
+      "build:apps/bridge/full_native_tests/FullNative.Tests.csproj": {
+        "log": "log-021.txt",
+        "seconds": 2.74,
+        "status": "passed"
+      },
+      "build:apps/bridge/potion_native_tests/CombatPotions.Tests.csproj": {
+        "log": "log-023.txt",
+        "seconds": 1.134,
+        "status": "passed"
+      },
+      "build:apps/bridge/production/Sts2AgentBridge.csproj": {
+        "log": "log-001.txt",
+        "seconds": 1.651,
+        "status": "passed"
+      },
+      "build:apps/bridge/tests/Sts2AgentBridge.Unified.Tests.csproj": {
+        "log": "log-025.txt",
+        "seconds": 1.407,
+        "status": "passed"
+      },
+      "build:apps/bridge/verifier/Sts2AgentBridge.Unified.Verifier.csproj": {
+        "log": "log-080.txt",
+        "seconds": 1.083,
+        "status": "passed"
+      },
+      "build:components/cards/combat_tests/CombatCardChoice.Tests.csproj": {
+        "log": "log-027.txt",
+        "seconds": 1.182,
+        "status": "passed"
+      },
+      "build:components/cards/completion_tests/Sts2AgentBridge.CardSelectionCompletionV1.Native.Tests.csproj": {
+        "log": "log-029.txt",
+        "seconds": 1.124,
+        "status": "passed"
+      },
+      "build:components/cards/native_tests/Sts2AgentBridge.CardSelectionV1.Native.Tests.csproj": {
+        "log": "log-031.txt",
+        "seconds": 1.845,
+        "status": "passed"
+      },
+      "build:components/cards/parent_native_adapter_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Adapter.Tests.csproj": {
+        "log": "log-033.txt",
+        "seconds": 1.937,
+        "status": "passed"
+      },
+      "build:components/cards/parent_native_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Tests.csproj": {
+        "log": "log-035.txt",
+        "seconds": 1.078,
+        "status": "passed"
+      },
+      "build:components/cards/parent_tests/Sts2AgentBridge.CardSelectionV1.Parent.Tests.csproj": {
+        "log": "log-037.txt",
+        "seconds": 1.247,
+        "status": "passed"
+      },
+      "build:components/cards/tests/Sts2AgentBridge.CardSelectionV1.Core.Tests.csproj": {
+        "log": "log-039.txt",
+        "seconds": 1.281,
+        "status": "passed"
+      },
+      "build:components/cards/wire_tests/Sts2AgentBridge.CardSelectionV1.Wire.Tests.csproj": {
+        "log": "log-041.txt",
+        "seconds": 2.015,
+        "status": "passed"
+      },
+      "build:components/events/direct_input_tests/DirectTransformInput.Tests.csproj": {
+        "log": "log-043.txt",
+        "seconds": 2.084,
+        "status": "passed"
+      },
+      "build:components/events/integration/GenericEventV7.Native.Integration.csproj": {
+        "log": "log-071.txt",
+        "seconds": 2.257,
+        "status": "passed"
+      },
+      "build:components/events/integration/Sts2AgentBridge.GenericEventV7.Integration.csproj": {
+        "log": "log-070.txt",
+        "seconds": 1.31,
+        "status": "passed"
+      },
+      "build:components/events/item_tests/GenericEventV7.Item.Tests.csproj": {
+        "log": "log-045.txt",
+        "seconds": 1.198,
+        "status": "passed"
+      },
+      "build:components/events/native_tests/GenericEventV7.Native.Tests.csproj": {
+        "log": "log-047.txt",
+        "seconds": 2.06,
+        "status": "passed"
+      },
+      "build:components/events/transform_tests/CardTransformV2.Tests.csproj": {
+        "log": "log-048.txt",
+        "seconds": 1.268,
+        "status": "passed"
+      },
+      "build:components/events/wire_tests/Sts2AgentBridge.GenericEventV7.WireTests.csproj": {
+        "log": "log-050.txt",
+        "seconds": 1.253,
+        "status": "passed"
+      },
+      "build:components/item_bootstrap/lifecycle_tests/Sts2AgentBridge.ItemV1.Bootstrap.Tests.csproj": {
+        "log": "log-052.txt",
+        "seconds": 1.093,
+        "status": "passed"
+      },
+      "build:components/item_bootstrap/operator_tests/Sts2AgentBridge.ItemV1.Operator.Tests.csproj": {
+        "log": "log-054.txt",
+        "seconds": 1.104,
+        "status": "passed"
+      },
+      "build:components/item_transport/runtime_tests/Sts2AgentBridge.ItemV1.Transport.Tests.csproj": {
+        "log": "log-056.txt",
+        "seconds": 2.735,
+        "status": "passed"
+      },
+      "build:components/item_wire/producer_tests/Sts2AgentBridge.ItemV1.Wire.Tests.csproj": {
+        "log": "log-058.txt",
+        "seconds": 1.349,
+        "status": "passed"
+      },
+      "build:components/items/tests/Sts2AgentBridge.ItemV1.Tests.csproj": {
+        "log": "log-060.txt",
+        "seconds": 1.287,
+        "status": "passed"
+      },
+      "build:components/rooms/broker_tests/Sts2AgentBridge.RoomFlowsV1.Broker.Tests.csproj": {
+        "log": "log-062.txt",
+        "seconds": 2.109,
+        "status": "passed"
+      },
+      "build:components/rooms/event/tests/Sts2AgentBridge.RoomFlowsV1.Event.Tests.csproj": {
+        "log": "log-064.txt",
+        "seconds": 2.046,
+        "status": "passed"
+      },
+      "build:components/rooms/rest/tests/Sts2AgentBridge.RestV2.Tests.csproj": {
+        "log": "log-066.txt",
+        "seconds": 3.026,
+        "status": "passed"
+      },
+      "build:components/rooms/shop/tests/Sts2AgentBridge.RoomFlowsV1.Shop.Tests.csproj": {
+        "log": "log-068.txt",
+        "seconds": 1.387,
+        "status": "passed"
+      },
+      "cards:combat_host_native": {
+        "log": "log-075.txt",
+        "seconds": 0.365,
+        "status": "passed"
+      },
+      "cards:host_wire": {
+        "log": "log-076.txt",
+        "seconds": 0.116,
+        "status": "passed"
+      },
+      "clean_install": {
+        "log": "log-084.txt",
+        "seconds": 0.077,
+        "status": "passed"
+      },
+      "client": {
+        "log": "log-009.txt",
+        "seconds": 1.279,
+        "status": "passed"
+      },
+      "components/cards/host_tests": {
+        "log": "log-003.txt",
+        "seconds": 0.052,
+        "status": "passed"
+      },
+      "components/events/host_tests": {
+        "log": "log-004.txt",
+        "seconds": 2.376,
+        "status": "passed"
+      },
+      "components/item_transport/transport_tests": {
+        "log": "log-005.txt",
+        "seconds": 0.044,
+        "status": "passed"
+      },
+      "components/item_wire/host_tests": {
+        "log": "log-006.txt",
+        "seconds": 0.051,
+        "status": "passed"
+      },
+      "components/rooms/rest/host_tests": {
+        "log": "log-007.txt",
+        "seconds": 0.05,
+        "status": "passed"
+      },
+      "core_client": {
+        "log": "log-010.txt",
+        "seconds": 0.051,
+        "status": "passed"
+      },
+      "events:host_native": {
+        "log": "log-073.txt",
+        "seconds": 75.408,
+        "status": "passed"
+      },
+      "package": {
+        "log": "log-083.txt",
+        "seconds": 0.071,
+        "status": "passed"
+      },
+      "package_identity": {
+        "log": "log-002.txt",
+        "seconds": 0.031,
+        "status": "passed"
+      },
+      "package_output": {
+        "log": "log-085.txt",
+        "seconds": 0.028,
+        "status": "passed"
+      },
+      "production_surface": {
+        "log": "log-081.txt",
+        "seconds": 0.056,
+        "status": "passed"
+      },
+      "production_surface_rejections": {
+        "log": "log-082.txt",
+        "seconds": 0.071,
+        "status": "passed"
+      },
+      "reproducible_build": {
+        "log": "log-079.txt",
+        "seconds": 1.584,
+        "status": "passed"
+      },
+      "reward_codec": {
+        "log": "log-011.txt",
+        "seconds": 0.041,
+        "status": "passed"
+      },
+      "room_codec": {
+        "log": "log-012.txt",
+        "seconds": 0.145,
+        "status": "passed"
+      },
+      "rooms:rest_host_native": {
+        "log": "log-074.txt",
+        "seconds": 6.091,
+        "status": "passed"
+      },
+      "sdk": {
+        "log": "log-016.txt",
+        "seconds": 0.046,
+        "status": "passed"
+      },
+      "shared_client:socket": {
+        "log": "log-077.txt",
+        "seconds": 87.454,
+        "status": "passed"
+      },
+      "test:apps/bridge/agent_native_tests/AgentNative.Tests.csproj": {
+        "log": "log-018.txt",
+        "seconds": 0.081,
+        "status": "passed"
+      },
+      "test:apps/bridge/campaign_native_tests/CampaignNative.Tests.csproj": {
+        "log": "log-020.txt",
+        "seconds": 0.586,
+        "status": "passed"
+      },
+      "test:apps/bridge/full_native_tests/FullNative.Tests.csproj": {
+        "log": "log-022.txt",
+        "seconds": 0.063,
+        "status": "passed"
+      },
+      "test:apps/bridge/potion_native_tests/CombatPotions.Tests.csproj": {
+        "log": "log-024.txt",
+        "seconds": 0.35,
+        "status": "passed"
+      },
+      "test:apps/bridge/tests/Sts2AgentBridge.Unified.Tests.csproj": {
+        "log": "log-026.txt",
+        "seconds": 11.843,
+        "status": "passed"
+      },
+      "test:components/cards/combat_tests/CombatCardChoice.Tests.csproj": {
+        "log": "log-028.txt",
+        "seconds": 0.1,
+        "status": "passed"
+      },
+      "test:components/cards/completion_tests/Sts2AgentBridge.CardSelectionCompletionV1.Native.Tests.csproj": {
+        "log": "log-030.txt",
+        "seconds": 0.052,
+        "status": "passed"
+      },
+      "test:components/cards/native_tests/Sts2AgentBridge.CardSelectionV1.Native.Tests.csproj": {
+        "log": "log-032.txt",
+        "seconds": 0.041,
+        "status": "passed"
+      },
+      "test:components/cards/parent_native_adapter_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Adapter.Tests.csproj": {
+        "log": "log-034.txt",
+        "seconds": 0.033,
+        "status": "passed"
+      },
+      "test:components/cards/parent_native_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Tests.csproj": {
+        "log": "log-036.txt",
+        "seconds": 0.025,
+        "status": "passed"
+      },
+      "test:components/cards/parent_tests/Sts2AgentBridge.CardSelectionV1.Parent.Tests.csproj": {
+        "log": "log-038.txt",
+        "seconds": 0.044,
+        "status": "passed"
+      },
+      "test:components/cards/tests/Sts2AgentBridge.CardSelectionV1.Core.Tests.csproj": {
+        "log": "log-040.txt",
+        "seconds": 0.048,
+        "status": "passed"
+      },
+      "test:components/cards/wire_tests/Sts2AgentBridge.CardSelectionV1.Wire.Tests.csproj": {
+        "log": "log-042.txt",
+        "seconds": 0.057,
+        "status": "passed"
+      },
+      "test:components/events/direct_input_tests/DirectTransformInput.Tests.csproj": {
+        "log": "log-044.txt",
+        "seconds": 0.963,
+        "status": "passed"
+      },
+      "test:components/events/item_tests/GenericEventV7.Item.Tests.csproj": {
+        "log": "log-046.txt",
+        "seconds": 0.036,
+        "status": "passed"
+      },
+      "test:components/events/native_tests/GenericEventV7.Native.Tests.csproj": {
+        "log": "log-072.txt",
+        "seconds": 192.134,
+        "status": "passed"
+      },
+      "test:components/events/transform_tests/CardTransformV2.Tests.csproj": {
+        "log": "log-049.txt",
+        "seconds": 0.075,
+        "status": "passed"
+      },
+      "test:components/events/wire_tests/Sts2AgentBridge.GenericEventV7.WireTests.csproj": {
+        "log": "log-051.txt",
+        "seconds": 0.122,
+        "status": "passed"
+      },
+      "test:components/item_bootstrap/lifecycle_tests/Sts2AgentBridge.ItemV1.Bootstrap.Tests.csproj": {
+        "log": "log-053.txt",
+        "seconds": 0.027,
+        "status": "passed"
+      },
+      "test:components/item_bootstrap/operator_tests/Sts2AgentBridge.ItemV1.Operator.Tests.csproj": {
+        "log": "log-055.txt",
+        "seconds": 0.204,
+        "status": "passed"
+      },
+      "test:components/item_transport/runtime_tests/Sts2AgentBridge.ItemV1.Transport.Tests.csproj": {
+        "log": "log-057.txt",
+        "seconds": 6.475,
+        "status": "passed"
+      },
+      "test:components/item_wire/producer_tests/Sts2AgentBridge.ItemV1.Wire.Tests.csproj": {
+        "log": "log-059.txt",
+        "seconds": 0.037,
+        "status": "passed"
+      },
+      "test:components/items/tests/Sts2AgentBridge.ItemV1.Tests.csproj": {
+        "log": "log-061.txt",
+        "seconds": 0.04,
+        "status": "passed"
+      },
+      "test:components/rooms/broker_tests/Sts2AgentBridge.RoomFlowsV1.Broker.Tests.csproj": {
+        "log": "log-063.txt",
+        "seconds": 0.044,
+        "status": "passed"
+      },
+      "test:components/rooms/event/tests/Sts2AgentBridge.RoomFlowsV1.Event.Tests.csproj": {
+        "log": "log-065.txt",
+        "seconds": 0.039,
+        "status": "passed"
+      },
+      "test:components/rooms/rest/tests/Sts2AgentBridge.RestV2.Tests.csproj": {
+        "log": "log-067.txt",
+        "seconds": 0.48,
+        "status": "passed"
+      },
+      "test:components/rooms/shop/tests/Sts2AgentBridge.RoomFlowsV1.Shop.Tests.csproj": {
+        "log": "log-069.txt",
+        "seconds": 0.054,
+        "status": "passed"
+      },
+      "tests/maintenance": {
+        "log": "log-008.txt",
+        "seconds": 1.212,
+        "status": "passed"
+      }
     },
-    {
+    "component": "all",
+    "event_groups": [],
+    "integration_jobs": 4,
+    "live_campaign_started": false,
+    "release_manifests": {
+      "bridge": "e8cfb4c7fb75fd87d72aa38d9b40e6a4580b07b3d8730238d0278f2e2c5b52fc"
+    },
+    "seconds": 371.271,
+    "selected_checks": [],
+    "source": {
+      "files": 485,
+      "projects": 52,
+      "targets": 1
+    },
+    "status": "passed",
+    "suite": "release",
+    "target_game_executed": false,
+    "targets": [
+      "bridge"
+    ]
+  },
+  "installation": {
+    "base_file_count": 429,
+    "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+    "credential_content_read": false,
+    "game_running_before_install": false,
+    "installed_metadata_verified": true,
+    "overlay_count": 2,
+    "phase": "installed",
+    "port_accepting_before_install": false,
+    "purpose": "Corrected reward callbacks installed for a fresh manual Profile 3 process and shared-v2 route retest.",
+    "state_sha256": "0a07959bbbf2334cb961d72db6e10d86654d6ca55ac0ae4258114f8a19e45dec",
+    "status": "passed",
+    "verified_by_utc": "2026-09-26 17:09:11 UTC"
+  },
+  "live": {
+    "note": "No live acceptance is claimed for this corrected package. Awaiting manual Profile 3 launch.",
+    "recorded_live_corpus": false,
+    "release_manifest_sha256": "e8cfb4c7fb75fd87d72aa38d9b40e6a4580b07b3d8730238d0278f2e2c5b52fc",
+    "status": "not_run",
+    "target_game_executed": false
+  },
+  "next_live_test": {
+    "acceptance": "Settled native victory, all accepted actions reconciled, observed act sequence starting 1/2/3 and an observed Architect event. A cutoff, defeat or mere ending handoff does not pass route acceptance.",
+    "blocking_case": "full_shared_v2_assisted_route_small_capsule",
+    "deferred_conditional_case": "Trial Merchant/Innocent needs a different campaign seed; repeating the event in this campaign cannot prepare it.",
+    "first_acceptance": "Retest the offered Neow Small Capsule/Stone Cracker reward with exact acquisition, settled parent and continued legal gameplay. The earlier uncertain mutation is not retried or adopted.",
+    "helper": "Disposable full-route mode uses existing LiveAdapter/run_agent and unchanged game.agent.full_policy.choose_action; 8192 decisions, 90 minutes, 320 observed stages, existing three known nonmutating stale-rejection limit. It records only bounded stage summaries and exact final counts/outcome, not a live corpus.",
+    "helper_failure_diagnostics": {
+      "native_evidence": false,
+      "offline_cases": 9,
+      "scope": "Closed failed-POST labels/counters and first four public action summaries; unchanged response passthrough, no retry, unknown response/exception text suppressed.",
+      "status": "passed"
+    },
+    "helper_validation": {
+      "cases": [
+        "complete_act_sequence_and_architect",
+        "missing_act_does_not_pass",
+        "defeat_preserves_actual_outcome_without_acceptance",
+        "unassisted_setup_rejected_before_controller"
+      ],
+      "count": 4,
+      "native_evidence": false,
+      "status": "passed"
+    },
+    "new_campaign_required": false,
+    "premise": "Continue the saved campaign, reset its native map to Act 1, establish at least 2000 HP and four Break/two Flash of Steel cards before the first shared decision. Reuse the unchanged public-only chooser for bounded play through acts and the Architect; no native gameplay intervention after attachment.",
+    "status": "installed_awaiting_manual_profile3_launch",
+    "targets": [
+      "full_shared_v2_act_transitions_and_ending"
+    ]
+  },
+  "previous_release": {
+    "evidence_root": "/private/tmp/sts-bridge-6nkaloz2",
+    "install_inputs": "/private/tmp/sts-bridge-cj8jmqx7/previous-install-inputs",
+    "latest_live": {
       "accepted": 1,
       "architect_observed": false,
       "attempted": 2,
@@ -1136,702 +610,12 @@
       "stale_rejections": 0,
       "status": "failed",
       "target_game_executed": true
-    }
-  ],
-  "change": "Wait for native single-enchantment preview children queued for deletion before validating the exact new holders; no input retry or premature confirmation.",
-  "cleanup": {
-    "base_file_count": 429,
-    "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-    "game_process_running": false,
-    "generated_files_removed": 4,
-    "normal_quit": true,
-    "normal_save_and_quit": false,
-    "overlay_count": 0,
-    "port_accepting": false,
-    "quarantined_state_sha256": "02f15144dd1034a285971e9384d708d5567f346dfac8df55f643538ce5ca901b",
-    "status": "passed",
-    "verified_by_utc": "2026-09-26 16:44:26 UTC"
-  },
-  "elapsed_times": {
-    "affected_consumers_seconds": 10.347,
-    "focused_pickup_seconds": 4.778,
-    "independent_review_seconds": 193,
-    "installation_verified_by_utc": "2026-09-26 12:08:59 UTC",
-    "latest_cauldron_attempt_recorded_interval_seconds": 376,
-    "latest_cauldron_retest_recorded_interval_seconds": 240,
-    "latest_empty_chest_recorded_interval_seconds": 227,
-    "latest_reward_batch_recorded_interval_seconds": 529,
-    "latest_shop_batch_recorded_interval_seconds": 535,
-    "latest_shop_selector_recorded_interval_seconds": 249,
-    "latest_sphere_recorded_interval_seconds": 159,
-    "latest_trial_setup_recorded_interval_seconds": 169,
-    "latest_trial_sphere_setup_recorded_interval_seconds": 641,
-    "latest_trial_transform_recorded_interval_seconds": 225,
-    "live_preparation_through_cleanup_recorded_interval_seconds": 480,
-    "next_installation_verified_by_utc": "2026-09-26 16:19:14 UTC",
-    "note": "Implementation, review and validation overlapped. Exclusive implementation/release preparation, failed gate elapsed time and user-wait durations were not measured.",
-    "release_gate_seconds": 355.485
-  },
-  "evidence_root": "/private/tmp/sts-bridge-6nkaloz2",
-  "failed_release_attempt": {
-    "accepted_manifest_emitted": false,
-    "check": "build:components/events/direct_input_tests/DirectTransformInput.Tests.csproj",
-    "reason": "Second inert Node stub lacked QueueFree/IsQueuedForDeletion. Added the same three-line deletion model and reran its affected consumers before the final accepted gate.",
-    "root": "/private/tmp/sts-bridge-o5v3mwtt"
-  },
-  "feature_commit": "338a0760638bbf8a1a0f200d08549a4be4fa23d5",
-  "focused_validation": [
-    {
-      "groups": 3,
-      "root": "/private/tmp/sts-bridge-tyo6y72j",
-      "scope": "Native-shaped initial hitboxes, delayed queued deletion and reselection; wrong original/effect/upgrade, hidden preview, lost context and queued bound holder rejection; existing pickup success/failure/disposal matrix.",
-      "seconds": 4.778,
-      "shop_pickup_checks": 877,
-      "status": "passed"
-    },
-    {
-      "direct_input_checks": 39,
-      "enchantment_integration_cases": 6,
-      "groups": 6,
-      "root": "/private/tmp/sts-bridge-cbyzj0t1",
-      "scope": "Affected direct-input fixture and native event enchantment integration.",
-      "seconds": 10.347,
-      "status": "passed"
-    },
-    {
-      "scope": "Existing check-runner maintenance tests.",
-      "seconds": 1.229,
-      "status": "passed",
-      "tests": 18
-    }
-  ],
-  "full_shared_native_interface_complete": false,
-  "gate": {
-    "checks": {
-      "agent:paired": {
-        "log": "log-078.txt",
-        "seconds": 0.15,
-        "status": "passed"
-      },
-      "apps/bridge/operations/check_live_runtime_fixtures.py": {
-        "log": "log-013.txt",
-        "seconds": 0.053,
-        "status": "passed"
-      },
-      "apps/bridge/operations/manage_live_campaign_fixtures.py": {
-        "log": "log-014.txt",
-        "seconds": 2.893,
-        "status": "passed"
-      },
-      "apps/bridge/operations/predecessor_conflict_fixtures.py": {
-        "log": "log-015.txt",
-        "seconds": 0.86,
-        "status": "passed"
-      },
-      "build:apps/bridge/agent_native_tests/AgentNative.Tests.csproj": {
-        "log": "log-017.txt",
-        "seconds": 1.14,
-        "status": "passed"
-      },
-      "build:apps/bridge/campaign_native_tests/CampaignNative.Tests.csproj": {
-        "log": "log-019.txt",
-        "seconds": 3.185,
-        "status": "passed"
-      },
-      "build:apps/bridge/full_native_tests/FullNative.Tests.csproj": {
-        "log": "log-021.txt",
-        "seconds": 2.706,
-        "status": "passed"
-      },
-      "build:apps/bridge/potion_native_tests/CombatPotions.Tests.csproj": {
-        "log": "log-023.txt",
-        "seconds": 1.117,
-        "status": "passed"
-      },
-      "build:apps/bridge/production/Sts2AgentBridge.csproj": {
-        "log": "log-001.txt",
-        "seconds": 1.601,
-        "status": "passed"
-      },
-      "build:apps/bridge/tests/Sts2AgentBridge.Unified.Tests.csproj": {
-        "log": "log-025.txt",
-        "seconds": 1.383,
-        "status": "passed"
-      },
-      "build:apps/bridge/verifier/Sts2AgentBridge.Unified.Verifier.csproj": {
-        "log": "log-080.txt",
-        "seconds": 1.037,
-        "status": "passed"
-      },
-      "build:components/cards/combat_tests/CombatCardChoice.Tests.csproj": {
-        "log": "log-027.txt",
-        "seconds": 1.1,
-        "status": "passed"
-      },
-      "build:components/cards/completion_tests/Sts2AgentBridge.CardSelectionCompletionV1.Native.Tests.csproj": {
-        "log": "log-029.txt",
-        "seconds": 1.056,
-        "status": "passed"
-      },
-      "build:components/cards/native_tests/Sts2AgentBridge.CardSelectionV1.Native.Tests.csproj": {
-        "log": "log-031.txt",
-        "seconds": 1.738,
-        "status": "passed"
-      },
-      "build:components/cards/parent_native_adapter_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Adapter.Tests.csproj": {
-        "log": "log-033.txt",
-        "seconds": 1.834,
-        "status": "passed"
-      },
-      "build:components/cards/parent_native_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Tests.csproj": {
-        "log": "log-035.txt",
-        "seconds": 1.019,
-        "status": "passed"
-      },
-      "build:components/cards/parent_tests/Sts2AgentBridge.CardSelectionV1.Parent.Tests.csproj": {
-        "log": "log-037.txt",
-        "seconds": 1.201,
-        "status": "passed"
-      },
-      "build:components/cards/tests/Sts2AgentBridge.CardSelectionV1.Core.Tests.csproj": {
-        "log": "log-039.txt",
-        "seconds": 1.161,
-        "status": "passed"
-      },
-      "build:components/cards/wire_tests/Sts2AgentBridge.CardSelectionV1.Wire.Tests.csproj": {
-        "log": "log-041.txt",
-        "seconds": 1.872,
-        "status": "passed"
-      },
-      "build:components/events/direct_input_tests/DirectTransformInput.Tests.csproj": {
-        "log": "log-043.txt",
-        "seconds": 1.939,
-        "status": "passed"
-      },
-      "build:components/events/integration/GenericEventV7.Native.Integration.csproj": {
-        "log": "log-071.txt",
-        "seconds": 2.211,
-        "status": "passed"
-      },
-      "build:components/events/integration/Sts2AgentBridge.GenericEventV7.Integration.csproj": {
-        "log": "log-070.txt",
-        "seconds": 1.265,
-        "status": "passed"
-      },
-      "build:components/events/item_tests/GenericEventV7.Item.Tests.csproj": {
-        "log": "log-045.txt",
-        "seconds": 1.128,
-        "status": "passed"
-      },
-      "build:components/events/native_tests/GenericEventV7.Native.Tests.csproj": {
-        "log": "log-047.txt",
-        "seconds": 1.97,
-        "status": "passed"
-      },
-      "build:components/events/transform_tests/CardTransformV2.Tests.csproj": {
-        "log": "log-048.txt",
-        "seconds": 1.161,
-        "status": "passed"
-      },
-      "build:components/events/wire_tests/Sts2AgentBridge.GenericEventV7.WireTests.csproj": {
-        "log": "log-050.txt",
-        "seconds": 1.186,
-        "status": "passed"
-      },
-      "build:components/item_bootstrap/lifecycle_tests/Sts2AgentBridge.ItemV1.Bootstrap.Tests.csproj": {
-        "log": "log-052.txt",
-        "seconds": 1.039,
-        "status": "passed"
-      },
-      "build:components/item_bootstrap/operator_tests/Sts2AgentBridge.ItemV1.Operator.Tests.csproj": {
-        "log": "log-054.txt",
-        "seconds": 1.058,
-        "status": "passed"
-      },
-      "build:components/item_transport/runtime_tests/Sts2AgentBridge.ItemV1.Transport.Tests.csproj": {
-        "log": "log-056.txt",
-        "seconds": 2.539,
-        "status": "passed"
-      },
-      "build:components/item_wire/producer_tests/Sts2AgentBridge.ItemV1.Wire.Tests.csproj": {
-        "log": "log-058.txt",
-        "seconds": 1.225,
-        "status": "passed"
-      },
-      "build:components/items/tests/Sts2AgentBridge.ItemV1.Tests.csproj": {
-        "log": "log-060.txt",
-        "seconds": 1.159,
-        "status": "passed"
-      },
-      "build:components/rooms/broker_tests/Sts2AgentBridge.RoomFlowsV1.Broker.Tests.csproj": {
-        "log": "log-062.txt",
-        "seconds": 1.935,
-        "status": "passed"
-      },
-      "build:components/rooms/event/tests/Sts2AgentBridge.RoomFlowsV1.Event.Tests.csproj": {
-        "log": "log-064.txt",
-        "seconds": 1.904,
-        "status": "passed"
-      },
-      "build:components/rooms/rest/tests/Sts2AgentBridge.RestV2.Tests.csproj": {
-        "log": "log-066.txt",
-        "seconds": 2.791,
-        "status": "passed"
-      },
-      "build:components/rooms/shop/tests/Sts2AgentBridge.RoomFlowsV1.Shop.Tests.csproj": {
-        "log": "log-068.txt",
-        "seconds": 1.453,
-        "status": "passed"
-      },
-      "cards:combat_host_native": {
-        "log": "log-075.txt",
-        "seconds": 0.376,
-        "status": "passed"
-      },
-      "cards:host_wire": {
-        "log": "log-076.txt",
-        "seconds": 0.121,
-        "status": "passed"
-      },
-      "clean_install": {
-        "log": "log-084.txt",
-        "seconds": 0.076,
-        "status": "passed"
-      },
-      "client": {
-        "log": "log-009.txt",
-        "seconds": 1.302,
-        "status": "passed"
-      },
-      "components/cards/host_tests": {
-        "log": "log-003.txt",
-        "seconds": 0.046,
-        "status": "passed"
-      },
-      "components/events/host_tests": {
-        "log": "log-004.txt",
-        "seconds": 2.387,
-        "status": "passed"
-      },
-      "components/item_transport/transport_tests": {
-        "log": "log-005.txt",
-        "seconds": 0.044,
-        "status": "passed"
-      },
-      "components/item_wire/host_tests": {
-        "log": "log-006.txt",
-        "seconds": 0.049,
-        "status": "passed"
-      },
-      "components/rooms/rest/host_tests": {
-        "log": "log-007.txt",
-        "seconds": 0.046,
-        "status": "passed"
-      },
-      "core_client": {
-        "log": "log-010.txt",
-        "seconds": 0.037,
-        "status": "passed"
-      },
-      "events:host_native": {
-        "log": "log-073.txt",
-        "seconds": 75.801,
-        "status": "passed"
-      },
-      "package": {
-        "log": "log-083.txt",
-        "seconds": 0.072,
-        "status": "passed"
-      },
-      "package_identity": {
-        "log": "log-002.txt",
-        "seconds": 0.028,
-        "status": "passed"
-      },
-      "package_output": {
-        "log": "log-085.txt",
-        "seconds": 0.029,
-        "status": "passed"
-      },
-      "production_surface": {
-        "log": "log-081.txt",
-        "seconds": 0.057,
-        "status": "passed"
-      },
-      "production_surface_rejections": {
-        "log": "log-082.txt",
-        "seconds": 0.074,
-        "status": "passed"
-      },
-      "reproducible_build": {
-        "log": "log-079.txt",
-        "seconds": 1.607,
-        "status": "passed"
-      },
-      "reward_codec": {
-        "log": "log-011.txt",
-        "seconds": 0.037,
-        "status": "passed"
-      },
-      "room_codec": {
-        "log": "log-012.txt",
-        "seconds": 0.149,
-        "status": "passed"
-      },
-      "rooms:rest_host_native": {
-        "log": "log-074.txt",
-        "seconds": 6.064,
-        "status": "passed"
-      },
-      "sdk": {
-        "log": "log-016.txt",
-        "seconds": 0.045,
-        "status": "passed"
-      },
-      "shared_client:socket": {
-        "log": "log-077.txt",
-        "seconds": 84.447,
-        "status": "passed"
-      },
-      "test:apps/bridge/agent_native_tests/AgentNative.Tests.csproj": {
-        "log": "log-018.txt",
-        "seconds": 0.073,
-        "status": "passed"
-      },
-      "test:apps/bridge/campaign_native_tests/CampaignNative.Tests.csproj": {
-        "log": "log-020.txt",
-        "seconds": 0.425,
-        "status": "passed"
-      },
-      "test:apps/bridge/full_native_tests/FullNative.Tests.csproj": {
-        "log": "log-022.txt",
-        "seconds": 0.064,
-        "status": "passed"
-      },
-      "test:apps/bridge/potion_native_tests/CombatPotions.Tests.csproj": {
-        "log": "log-024.txt",
-        "seconds": 0.333,
-        "status": "passed"
-      },
-      "test:apps/bridge/tests/Sts2AgentBridge.Unified.Tests.csproj": {
-        "log": "log-026.txt",
-        "seconds": 11.837,
-        "status": "passed"
-      },
-      "test:components/cards/combat_tests/CombatCardChoice.Tests.csproj": {
-        "log": "log-028.txt",
-        "seconds": 0.096,
-        "status": "passed"
-      },
-      "test:components/cards/completion_tests/Sts2AgentBridge.CardSelectionCompletionV1.Native.Tests.csproj": {
-        "log": "log-030.txt",
-        "seconds": 0.05,
-        "status": "passed"
-      },
-      "test:components/cards/native_tests/Sts2AgentBridge.CardSelectionV1.Native.Tests.csproj": {
-        "log": "log-032.txt",
-        "seconds": 0.037,
-        "status": "passed"
-      },
-      "test:components/cards/parent_native_adapter_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Adapter.Tests.csproj": {
-        "log": "log-034.txt",
-        "seconds": 0.032,
-        "status": "passed"
-      },
-      "test:components/cards/parent_native_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Tests.csproj": {
-        "log": "log-036.txt",
-        "seconds": 0.023,
-        "status": "passed"
-      },
-      "test:components/cards/parent_tests/Sts2AgentBridge.CardSelectionV1.Parent.Tests.csproj": {
-        "log": "log-038.txt",
-        "seconds": 0.042,
-        "status": "passed"
-      },
-      "test:components/cards/tests/Sts2AgentBridge.CardSelectionV1.Core.Tests.csproj": {
-        "log": "log-040.txt",
-        "seconds": 0.044,
-        "status": "passed"
-      },
-      "test:components/cards/wire_tests/Sts2AgentBridge.CardSelectionV1.Wire.Tests.csproj": {
-        "log": "log-042.txt",
-        "seconds": 0.051,
-        "status": "passed"
-      },
-      "test:components/events/direct_input_tests/DirectTransformInput.Tests.csproj": {
-        "log": "log-044.txt",
-        "seconds": 0.925,
-        "status": "passed"
-      },
-      "test:components/events/item_tests/GenericEventV7.Item.Tests.csproj": {
-        "log": "log-046.txt",
-        "seconds": 0.034,
-        "status": "passed"
-      },
-      "test:components/events/native_tests/GenericEventV7.Native.Tests.csproj": {
-        "log": "log-072.txt",
-        "seconds": 182.293,
-        "status": "passed"
-      },
-      "test:components/events/transform_tests/CardTransformV2.Tests.csproj": {
-        "log": "log-049.txt",
-        "seconds": 0.072,
-        "status": "passed"
-      },
-      "test:components/events/wire_tests/Sts2AgentBridge.GenericEventV7.WireTests.csproj": {
-        "log": "log-051.txt",
-        "seconds": 0.115,
-        "status": "passed"
-      },
-      "test:components/item_bootstrap/lifecycle_tests/Sts2AgentBridge.ItemV1.Bootstrap.Tests.csproj": {
-        "log": "log-053.txt",
-        "seconds": 0.026,
-        "status": "passed"
-      },
-      "test:components/item_bootstrap/operator_tests/Sts2AgentBridge.ItemV1.Operator.Tests.csproj": {
-        "log": "log-055.txt",
-        "seconds": 0.187,
-        "status": "passed"
-      },
-      "test:components/item_transport/runtime_tests/Sts2AgentBridge.ItemV1.Transport.Tests.csproj": {
-        "log": "log-057.txt",
-        "seconds": 6.481,
-        "status": "passed"
-      },
-      "test:components/item_wire/producer_tests/Sts2AgentBridge.ItemV1.Wire.Tests.csproj": {
-        "log": "log-059.txt",
-        "seconds": 0.033,
-        "status": "passed"
-      },
-      "test:components/items/tests/Sts2AgentBridge.ItemV1.Tests.csproj": {
-        "log": "log-061.txt",
-        "seconds": 0.036,
-        "status": "passed"
-      },
-      "test:components/rooms/broker_tests/Sts2AgentBridge.RoomFlowsV1.Broker.Tests.csproj": {
-        "log": "log-063.txt",
-        "seconds": 0.04,
-        "status": "passed"
-      },
-      "test:components/rooms/event/tests/Sts2AgentBridge.RoomFlowsV1.Event.Tests.csproj": {
-        "log": "log-065.txt",
-        "seconds": 0.035,
-        "status": "passed"
-      },
-      "test:components/rooms/rest/tests/Sts2AgentBridge.RestV2.Tests.csproj": {
-        "log": "log-067.txt",
-        "seconds": 0.499,
-        "status": "passed"
-      },
-      "test:components/rooms/shop/tests/Sts2AgentBridge.RoomFlowsV1.Shop.Tests.csproj": {
-        "log": "log-069.txt",
-        "seconds": 0.05,
-        "status": "passed"
-      },
-      "tests/maintenance": {
-        "log": "log-008.txt",
-        "seconds": 1.195,
-        "status": "passed"
-      }
-    },
-    "component": "all",
-    "event_groups": [],
-    "integration_jobs": 4,
-    "live_campaign_started": false,
-    "release_manifests": {
-      "bridge": "289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302"
-    },
-    "seconds": 355.485,
-    "selected_checks": [],
-    "source": {
-      "files": 485,
-      "projects": 52,
-      "targets": 1
-    },
-    "status": "passed",
-    "suite": "release",
-    "target_game_executed": false,
-    "targets": [
-      "bridge"
-    ]
-  },
-  "installation": {
-    "base_file_count": 429,
-    "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-    "credential_content_read": false,
-    "game_running_before_install": false,
-    "installed_metadata_verified": true,
-    "overlay_count": 2,
-    "phase": "absent",
-    "port_accepting_before_install": false,
-    "purpose": "Shared v2 route stopped at Small Capsule; this installation was removed by exact owned cleanup.",
-    "removed_by_utc": "2026-09-26 16:44:26 UTC",
-    "state_sha256": "a24e9673f20aa29dde0ce657d4d0aaadf9da5701c8498e137ae38e1e1adacb19",
-    "status": "passed",
-    "verified_by_utc": "2026-09-26 16:19:14 UTC"
-  },
-  "live": {
-    "accepted": 7,
-    "actions": [
-      "buy_shop_item",
-      "choose_relic_card",
-      "deselect_relic_card",
-      "choose_relic_card",
-      "confirm_relic_selection",
-      "close_shop",
-      "leave_shop"
-    ],
-    "attempted": 7,
-    "case": "punch_dagger_corrected_preview_toggle",
-    "cleanup": {
-      "base_file_count": 429,
-      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "game_process_running": false,
-      "generated_files_removed": 4,
-      "normal_quit": true,
-      "normal_save_and_quit": true,
-      "overlay_count": 0,
-      "port_accepting": false,
-      "quarantined_state_sha256": "8c2fc6d2a50469d385189828cfe8ca1f31a4b5c6aa9a0640c98f3937f7b37618",
-      "status": "passed",
-      "verified_by_utc": "2026-09-26 12:20:28 UTC"
-    },
-    "completed_by_utc": "2026-09-26 12:19:01 UTC",
-    "controller_reads": 19,
-    "decisions": 7,
-    "effects": {
-      "deck_count": 16,
-      "display_counter": 5,
-      "enchantment": "momentum",
-      "enchantment_applied_only_after_confirmation": true,
-      "gold_after": 829,
-      "gold_before": 1017,
-      "hp": 88,
-      "max_hp": 88,
-      "occupied_potion_slots": 5,
-      "other_relics_and_potions_unchanged": true,
-      "potion_capacity": 5,
-      "price": 188,
-      "relic": "punch_dagger",
-      "relic_count_after": 32,
-      "relic_count_before": 31,
-      "same_original_reselected": true,
-      "selected_card": "bludgeon",
-      "unselected_originals_unchanged": 15,
-      "upgrade_level": 1
-    },
-    "installation": {
-      "base_file_count": 429,
-      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "credential_content_read": false,
-      "game_running_before_install": false,
-      "installed_metadata_verified": true,
-      "overlay_count": 2,
-      "phase": "installed",
-      "port_accepting_before_install": false,
-      "state_sha256": "9f39f9df0369eeb78dad20d865dbc6b523c588f0a9f3bd5c72ead49bd2356d8a",
-      "status": "passed",
-      "verified_by_utc": "2026-09-26 12:08:59 UTC"
-    },
-    "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#punch-dagger-corrected-preview-passed-2026-09-26",
-    "limits": "Controlled shop purchase and repeated single-card preview through map return. Royal Stamp, other deck shapes, persistence across reload and the shared v2 ending remain separate. This result does not reconcile the preceding package's 2/2/0 failed attempt.",
-    "mutation_retried": false,
-    "outcome": {
-      "actionable_map": true,
-      "kind": "truncated",
-      "reason": "external_stop"
-    },
-    "pending": false,
-    "preflight_public_reads": 1,
-    "reconciled": 7,
-    "recorded_live_corpus": false,
-    "release_manifest_sha256": "289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302",
-    "setup": "Manual Profile 3 Continue restored the saved campaign at Neow. Before full-producer attachment: act 1, gold 1000 (17 to 1017), second of two room shop preparations offered Punch Dagger for 188, and UI opened inventory. No cards, relics, potions or HP granted.",
-    "source_commit": "7829456da1bb28471f4aa4c910d3b5ca6d693032",
-    "stale_rejections": 0,
-    "started_utc": "2026-09-26 12:12:28 UTC",
-    "status": "passed",
-    "target_game_executed": true,
-    "total_public_reads": 21,
-    "verification_reads": 1
-  },
-  "next_live_test": {
-    "acceptance": "Settled native victory, all accepted actions reconciled, observed act sequence starting 1/2/3 and an observed Architect event. A cutoff, defeat or mere ending handoff does not pass route acceptance.",
-    "blocking_case": "full_shared_v2_assisted_route_small_capsule",
-    "deferred_conditional_case": "Trial Merchant/Innocent needs a different campaign seed; repeating the event in this campaign cannot prepare it.",
-    "helper": "Disposable full-route mode uses existing LiveAdapter/run_agent and unchanged game.agent.full_policy.choose_action; 8192 decisions, 90 minutes, 320 observed stages, existing three known nonmutating stale-rejection limit. It records only bounded stage summaries and exact final counts/outcome, not a live corpus.",
-    "helper_validation": {
-      "cases": [
-        "complete_act_sequence_and_architect",
-        "missing_act_does_not_pass",
-        "defeat_preserves_actual_outcome_without_acceptance",
-        "unassisted_setup_rejected_before_controller"
-      ],
-      "count": 4,
-      "native_evidence": false,
-      "status": "passed"
-    },
-    "new_campaign_required": false,
-    "premise": "Continue the saved campaign, reset its native map to Act 1, establish at least 2000 HP and four Break/two Flash of Steel cards before the first shared decision. Reuse the unchanged public-only chooser for bounded play through acts and the Architect; no native gameplay intervention after attachment.",
-    "status": "correction_in_validation",
-    "targets": [
-      "full_shared_v2_act_transitions_and_ending"
-    ]
-  },
-  "previous_release": {
-    "evidence_root": "/private/tmp/sts-bridge-5hudfwrd",
-    "install_inputs": "/private/tmp/sts-bridge-6nkaloz2/previous-install-inputs",
-    "latest_live": {
-      "accepted": 2,
-      "actions": [
-        "buy_shop_item",
-        "choose_relic_card"
-      ],
-      "attempted": 2,
-      "case": "punch_dagger_single_preview",
-      "cleanup": {
-        "base_file_count": 429,
-        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-        "game_process_running": false,
-        "generated_files_removed": 4,
-        "normal_quit": true,
-        "overlay_count": 0,
-        "port_accepting": false,
-        "quarantined_state_sha256": "9650d28d5b2eda757c8ffd4edc4f0317b2561061a3e4fa017a63b7bf919704b7",
-        "status": "passed",
-        "verified_by_utc": "2026-09-26 11:54:51 UTC"
-      },
-      "code": "read_native_failed",
-      "confirmation_sent": false,
-      "controller_reads": 3,
-      "decisions": 2,
-      "diagnosis": "Pinned scene contains initial Hitbox children; NEnchantPreview.Init queues old children until frame end. Native-shaped fixture reproduced immediate child-count rejection. Old live diagnostic did not expose the exact predicate; corrected live retest required.",
-      "installation": {
-        "phase": "installed",
-        "state_sha256": "c15b9396c759ddfcd5d12c0357ff7d201031f6abb69f60f7108fcdd1eb050742",
-        "status": "passed",
-        "verified_by_utc": "2026-09-26 11:07:33 UTC"
-      },
-      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#punch-dagger-single-preview-failure-2026-09-26",
-      "mutation_retried": false,
-      "observed": "Gold 829, Punch Dagger appended, HP 88/88, sixteen cards, five occupied potions. Original Bludgeon+ and Momentum 5 clone visible in unconfirmed preview; no reconciled purchase/effect claimed.",
-      "pending": true,
-      "preflight_public_reads": 1,
-      "reconciled": 0,
-      "recorded_live_corpus": false,
-      "regression_reproduction": "/private/tmp/sts-bridge-4ynrw4xw/log-003.txt",
-      "release_manifest_sha256": "e47f0514d5d7b142d247425f3aad227e9bdbe662b491f33809b36ab7c9e8e383",
-      "setup": "Manual Profile 3 Continue, native act 1, gold 1000 (17 to 1017), second of two room shop preparations offered Punch Dagger for 188. Setup and UI inventory opening preceded attachment.",
-      "source_commit": "c599a9f65f755378ad69945e08481d8af93664d5",
-      "stale_rejections": 0,
-      "status": "failed",
-      "target_game_executed": true
     },
     "live_evidence_ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md",
-    "record_directory": "/private/tmp/sts-bridge-6nkaloz2/previous-release-record",
-    "record_git": "338a0760638bbf8a1a0f200d08549a4be4fa23d5",
-    "release_manifest_sha256": "e47f0514d5d7b142d247425f3aad227e9bdbe662b491f33809b36ab7c9e8e383",
-    "source_commit": "c599a9f65f755378ad69945e08481d8af93664d5"
+    "record_directory": "/private/tmp/sts-bridge-cj8jmqx7/previous-release-record",
+    "record_git": "57b61efb8deee847b5db1f6db6147085cdf0d85a",
+    "release_manifest_sha256": "289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302",
+    "source_commit": "7829456da1bb28471f4aa4c910d3b5ca6d693032"
   },
   "python_integration": {
     "previous_broad_run": {
@@ -1857,44 +641,61 @@
         "test": "tests/maintenance/test_release_support.py"
       }
     ],
-    "reason": "Only the shared C# preview timing guard, inert fixtures and focused checker selection changed. All twelve bound shared Python sources match the preceding release. The final gate reran bridge clients/integration; no new broad Python run is claimed.",
-    "record": "Original broad run and focused corrections retained in Git 887c1da; preceding release record with later evidence retained in Git 338a076 and /private/tmp/sts-bridge-6nkaloz2/previous-release-record/validation.json.",
+    "reason": "Only two C# reward callback observers, their inert fixtures and generated package identity changed. All 102 bound Python files, including the twelve shared sources, match the preceding manifest. The final gate reran clients and affected integration; no new broad Python run is claimed.",
+    "record": "Original broad run and corrections retained in Git 887c1da; preceding release evidence retained in Git 57b61ef and /private/tmp/sts-bridge-cj8jmqx7/previous-release-record/validation.json. Prior 406-test shared-agent and installed-wheel delivery evidence remains separate and unchanged.",
     "status": "unaffected_evidence_retained"
   },
-  "regression_reproduction": {
-    "boundary": "Owned pickup selection changed at boundary 260; exact child-count rejection before correction.",
-    "log": "log-003.txt",
-    "root": "/private/tmp/sts-bridge-4ynrw4xw",
-    "status": "failed_as_expected",
-    "target_game_executed": false
-  },
+  "regression_reproduction": [
+    {
+      "boundary": "Derived passive relic ordinary reward returned uncertain before correction.",
+      "log": "log-002.txt",
+      "root": "/private/tmp/sts-inherited-reward-jt1ogch7",
+      "seconds": 3.446,
+      "status": "failed_as_expected",
+      "target_game_executed": false
+    },
+    {
+      "boundary": "Derived passive Sacrifice reward failed at reward_alternative_boundary before correction.",
+      "log": "log-002.txt",
+      "root": "/private/tmp/sts-inherited-sacrifice-9altk8wn",
+      "seconds": 3.367,
+      "status": "failed_as_expected",
+      "target_game_executed": false
+    }
+  ],
   "release_check_counts": {
     "campaign_native_checks": 252,
     "client_tests": 168,
     "event_wire_checks": 229,
-    "native_event_checks": 16857,
+    "native_event_checks": 16903,
     "potion_native_checks": 179,
     "rest_checks": 656,
     "router_checks": 1639,
     "shop_checks": 21
   },
-  "release_manifest_sha256": "289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302",
+  "release_manifest_sha256": "e8cfb4c7fb75fd87d72aa38d9b40e6a4580b07b3d8730238d0278f2e2c5b52fc",
   "remaining_limits": [
-    "Punch Dagger passed on this release; the preceding 2/2/0 failure retains its original identity and unresolved counts.",
-    "Remaining concrete compound/pickup paths, untested selector/reward variants and the full-producer ending retain the limits in docs/STATUS.md.",
-    "Offline fixtures do not establish native animation timing, exhaustive callers or strategic policy quality."
+    "Corrected ordinary reward and Sacrifice callbacks still need native acceptance.",
+    "The previous 2/1/0 uncertain route attempt remains unreconciled after cleanup.",
+    "Full shared-v2 act transitions/ending and named representative branches remain open. Prior live successes retain their original artifact bindings."
   ],
   "semantic_review": {
-    "limit": "Independent source/diff and regression review; reviewer did not execute the game or rerun tests. Follow-up direct-input stub correction is the same reviewed inert deletion model and was author-reviewed.",
+    "limit": "Independent source/diff and regression review, without executing tests or the game. The fixture failure-representation adjustment was author-reviewed; the production correction did not change afterward.",
     "reviewer": "semantic_review",
-    "scope": "Single-enchantment deferred deletion readiness, ownership, exact preview identity/effect binding, no duplicate input or premature reconciliation, timeout and sticky failed cleanup; unchanged rest/shared consumers.",
-    "seconds": 193,
+    "scope": "Declared callback identity preserves actual overrides and exact cleanup target; ownership, delayed completion, foreign hooks, no replay and sticky failed disposal in both corrected observers.",
+    "seconds": 103,
     "status": "clear",
-    "utc": [
-      "2026-09-26 11:55:26 UTC",
-      "2026-09-26 11:58:39 UTC"
+    "windows_utc": [
+      [
+        "2026-09-26 16:51:06 UTC",
+        "2026-09-26 16:52:06 UTC"
+      ],
+      [
+        "2026-09-26 16:54:33 UTC",
+        "2026-09-26 16:55:16 UTC"
+      ]
     ]
   },
-  "source_commit": "7829456da1bb28471f4aa4c910d3b5ca6d693032",
-  "user_data_access": "No profile/save/history/Cloud filesystem access. No public live trajectory corpus collected."
+  "source_commit": "57b61efb8deee847b5db1f6db6147085cdf0d85a",
+  "user_data_access": "No profile/save/history/Cloud filesystem access or retained live corpus. Installation validation did not read credential content."
 }

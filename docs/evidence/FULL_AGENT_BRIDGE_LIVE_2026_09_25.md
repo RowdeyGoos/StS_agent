@@ -1457,8 +1457,8 @@ preceded attachment. No native gameplay intervention followed it.
 
 The unchanged shared public-only chooser selected Small Capsule, then attempted
 its relic reward. By **16:40:46 UTC**, the controller had stopped with
-**`uncertain_dispatch`**, **2 attempted / 1 accepted / 0 reconciled**, one completed
-dispatch, two controller reads, 34 separate preflight reads and no stale
+**`uncertain_dispatch`**, **2 attempted / 1 accepted / 0 reconciled**, controller
+decision count 1, two controller reads, 34 separate preflight reads and no stale
 rejections. It reported pending work and no outcome; route acceptance was false.
 Only Act 1's Neow event and reward contexts were observed. A read-only screenshot
 showed Small Capsule in the relic bar and **Stone Cracker** still offered on the
@@ -1518,3 +1518,24 @@ ordinary reward path and **16:54:33–16:55:16 UTC** for the same-mechanism Sacr
 extension (**103 seconds total**). The reviewer did not run tests or the game.
 These focused results precede the final combined release gate and do not certify
 native recovery or a complete shared-v2 campaign.
+
+The final combined gate passed **85 groups in 371.271 seconds**, including
+**16,903 native event checks**, reproducible builds, clients/socket integration,
+metadata, package and disposable-cleanup checks. Evidence is retained at
+`/private/tmp/sts-bridge-cj8jmqx7`. Source/feature commit is
+`57b61efb8deee847b5db1f6db6147085cdf0d85a`; corrected manifest is
+`e8cfb4c7fb75fd87d72aa38d9b40e6a4580b07b3d8730238d0278f2e2c5b52fc`.
+All 102 bound Python files match the preceding manifest. No new broad Python
+run is claimed. The prior release record and package inputs are preserved under
+`previous-release-record` and `previous-install-inputs` in that evidence root,
+with their original identities; Git `57b61ef` also retains the prior record.
+
+The corrected DLL is **1,793,536 bytes**, SHA-256
+`a8fda9fc80fcb5275547393913ad40003ac9b9752c956bcf1e3d0fe9cc8ab1a5`.
+Publish, stopped-game install, overlay/base verification and installed metadata
+validation passed by **17:09:11 UTC** on 2026-09-26 under state
+`0a07959bbbf2334cb961d72db6e10d86654d6ca55ac0ae4258114f8a19e45dec`.
+There are two exact overlay files and all 429 base files remain unchanged.
+Credential content was not read during this installation verification. The
+package awaits a manual Profile 3 launch; no live result for the correction is
+claimed. Exclusive release-preparation and user-wait durations were not measured.

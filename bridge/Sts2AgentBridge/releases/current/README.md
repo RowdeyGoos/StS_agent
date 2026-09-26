@@ -1,11 +1,10 @@
 # Current unified release
 
-This release fixes the shared single-card enchantment preview timing used by
-shop pickups such as Punch Dagger and Royal Stamp. Native preview initialization
-queues old children for deletion until frame end. The bridge now waits for that
-cleanup during its owned input, then validates the exact original, clone and
-enchantment before publishing selection or permitting confirmation. A changed
-already-bound preview still fails; ownership, deadlines and cleanup remain strict.
+This release fixes inherited relic pickup callbacks in ordinary rewards and
+Pael’s Wing Sacrifice. Both observers now resolve the selected `AfterObtained`
+callback on its declaring type before checking foreign hooks, patching and
+retaining the cleanup target. Real overrides, ownership checks, deadlines and
+uncertain-action stop behavior remain intact.
 
 [Current status](../../../../docs/STATUS.md#release-and-latest-evidence) owns support;
 [bridge usage](../../README.md#client-modes) owns commands.
@@ -15,123 +14,39 @@ already-bound preview still fails; ownership, deadlines and cleanup remain stric
 | [bridge.json](bridge.json) | Exact source/test, toolchain, reference, binary and package identities |
 | [validation.json](validation.json) | Release checks, review, installation and separately bound live evidence |
 
-Manifest SHA-256: `289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302`.
-It binds **485 inputs across 52 projects**, source `7829456`, feature `338a076`.
-DLL: **1,793,024 bytes**, SHA-256
-`91182c7940b4ce420841eece40292213479838f9240a20add75523f250639405`.
+Manifest SHA-256: `e8cfb4c7fb75fd87d72aa38d9b40e6a4580b07b3d8730238d0278f2e2c5b52fc`.
+It binds **485 inputs across 52 projects**, source and feature `57b61ef`.
+DLL: **1,793,536 bytes**, SHA-256
+`a8fda9fc80fcb5275547393913ad40003ac9b9752c956bcf1e3d0fe9cc8ab1a5`.
 
-The final gate passed **85 groups in 355.485 seconds**, including reproducible
+The final gate passed **85 groups in 371.271 seconds**, including reproducible
 builds, native metadata/dependency checks, packaging and disposable cleanup.
 It includes **168 client tests**, **1,639 router checks**, **229 event wire cases**,
-**16,857 native event checks**, **656 rest checks**, **21 shop core checks**,
-**252 campaign checks** and **179 potion checks**. Focused validation passed
-877 pickup checks, 39 direct-input checks and six native enchantment integration
-cases. Independent semantic review found no blocker in 193 seconds.
-One earlier gate stopped because a second inert test stub lacked the deletion
-API; it was corrected before the accepted gate. Original broad Python evidence
-remains separately bound; no new broad Python run is claimed.
+**16,903 native event checks**, **656 rest checks**, **21 shop core checks**,
+**252 campaign checks** and **179 potion checks**. Focused ordinary reward checks
+passed before the Sacrifice extension; the latter passed 216 reward-alternative
+checks. Independent semantic review found no blocker in 103 seconds across two
+bounded reviews. All 102 bound Python files match the preceding release; the
+prior Python delivery evidence is retained without claiming a new broad run.
 
-The corrected [Punch Dagger retest](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#punch-dagger-corrected-preview-passed-2026-09-26)
-passed **7/7/7** through purchase, selection, deselection, reselection, confirmation
-and shop/map return. The same original Bludgeon+ received Momentum 5, gold changed
-1017 → 829, and the other cards/HP/potions stayed exact. There were 19 controller
-reads, one preflight read and one final verification read, with no pending action.
-Normal Save and Quit, game Quit and exact owned cleanup passed by
-**2026-09-26 12:20:28 UTC**, leaving zero overlays and all 429 base files unchanged.
+The preceding [shared-v2 route attempt](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#shared-v2-route-stopped-at-small-capsule-2026-09-26)
+stopped at Neow’s Small Capsule/Stone Cracker reward with `uncertain_dispatch`,
+**2 attempted / 1 accepted / 0 reconciled**, and pending work. No action was
+retried. Normal Quit and exact cleanup passed by **16:44:26 UTC** on 2026-09-26,
+leaving zero overlays and all 429 base files unchanged. Derived-passive fixtures
+reproduced the callback defect before each correction. The failed live reply did
+not preserve its exact native exception; native recovery is still unverified.
 
-The subsequent [Gnarled Hammer/zero-purchase batch](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#gnarled-hammer-and-zero-purchase-shop-passed-2026-09-26)
-passed **25/25/25** including legal travel. Hammer applied Sharp 3 to two Bludgeon+
-originals and Headbutt+ for 204 gold; a later shop Close/Leave preserved exact
-inventory without purchases. Cleanup passed by **12:34:12 UTC**, with zero
-overlays and all 429 base files unchanged. The same accepted binary/gate was reused.
+The corrected package was installed and verified by **17:09:11 UTC** on
+2026-09-26, with two exact overlay files and all 429 base files unchanged.
+Installed state:
+`0a07959bbbf2334cb961d72db6e10d86654d6ca55ac0ae4258114f8a19e45dec`.
+It awaits a manual Profile 3 launch for the reward retest and assisted shared-v2
+act/ending route. No live acceptance is claimed for this artifact.
 
-The [Royal Stamp test](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#royal-stamp-preview-toggle-passed-2026-09-26)
-then passed **7/7/7**, including deselection/reselection. Defend+ received Royally
-Approved with Innate and Retain; gold changed 826 → 614 and other cards/HP/potions
-stayed exact through map return. Cleanup passed by **12:42:36 UTC**, with zero
-overlays and all 429 base files unchanged. All five supported shop card selectors
-now have a representative live success.
-
-The [Orrery batch](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#orrery-five-card-rewards-and-merchant-travel-passed-2026-09-26)
-passed **13/13/13** through five card additions, automatic shop return and map exit.
-The helper's explicit-dismissal assumption caused a settled stop after eleven
-actions; Close/Leave completed separately without repeating the purchase.
-Later legal travel reached another merchant at **28/28/28**, with one confirmed
-non-mutating stale rejection. Cleanup passed by **13:00:51 UTC**, leaving zero
-overlays and all 429 base files unchanged. No production change was needed.
-
-The subsequent [Cauldron attempt](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#cauldron-helper-stop-and-expired-purchase-2026-09-26)
-stopped at **3/3/2** after a helper omission left the reward purchase pending.
-The existing 60-second deadline expired during continuation preparation; no
-further mutation followed its failed read. Normal game Quit and cleanup passed
-by **13:10:43 UTC**, preserving the unresolved result. The helper now alternates
-legal original-potion discards and claims; production sources remain unchanged.
-
-The [corrected Cauldron retest](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#cauldron-five-potion-replacement-passed-2026-09-26)
-passed **13/13/13** through all five protected-original potion replacements and
-shop/map return. Gold changed 665 → 454; all 23 cards and HP 88/88 stayed exact.
-Fourteen controller reads plus preflight/final verification found no stale or
-pending action. Cleanup passed by **13:18:15 UTC**, with zero overlays and all
-429 base files unchanged. The earlier 3/3/2 attempt remains unresolved separately.
-
-The [Silver Crucible empty-chest test](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#silver-crucible-empty-chest-passed-2026-09-26)
-passed **2/2/2** through Open/Proceed with exact inventory preservation and an
-actionable map. Eighteen controller reads plus preflight/final verification found
-no stale rejection or pending action. The installed state was
-`b8e6c5b2b911e13ab3fbbef3b4b5641c91f2a4925feda4855c3acc5f0f48350a`.
-Normal Save and Quit, game Quit and exact cleanup passed by **13:31:05 UTC**,
-leaving zero overlays and all 429 base files unchanged.
-
-The [Trial two-transform test](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#trial-curse-and-two-transforms-passed-2026-09-26)
-passed **5/5/5** through Innocent, two selections, Confirm and map return. The two
-Bludgeon+ originals became Headbutt and True Grit+ after observed Doubt addition;
-all other cards and inventory stayed exact. Cleanup passed by **14:53:12 UTC**,
-with zero overlays and all 429 base files unchanged. The earlier
-[0/0/0 setup rejection](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#trial-direct-shop-setup-rejected-2026-09-26)
-remains recorded separately; normal connected rest entry fixed the setup.
-
-The subsequent [Trial/Sphere preparation](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#trial-seed-limit-and-sphere-setup-stop-2026-09-26)
-stopped before any public gameplay read or bridge action. Trial's branch repeats
-for this campaign seed, and a native potion-discard attempt did not visibly free
-a slot. Cleanup passed by **15:11:52 UTC**, leaving zero overlays and unchanged
-base files. Neither proposed case gained live acceptance.
-
-The [Sphere tool/reward test](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#sphere-small-and-big-tools-passed-2026-09-26)
-passed **17/17/17**, with 64 public reads and no stale rejection or pending action.
-Payment Plan, big→small→big switching and all six exact board changes completed;
-the agent collected three gold entries, two potions and a card before map return.
-The user freed three potion slots before attachment. Installation state was
-`d69654a11c1a0897fbca12814aa6b975685b97090ebd58f575a147bc323024b6`.
-Normal Save and Quit, game Quit and cleanup passed by **16:11:01 UTC**, leaving
-zero overlays and all 429 base files unchanged; that installation was removed.
-The unchanged release gate remains applicable.
-
-The subsequent [shared-v2 route](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#shared-v2-route-stopped-at-small-capsule-2026-09-26)
-stopped at Small Capsule's Stone Cracker reward with `uncertain_dispatch` and
-**2/1/0**, retaining pending work. Initial assistance was verified at HP 2072/2072,
-four Break and two Flash of Steel cards in the 29-card deck. No action was retried.
-Installation state
-`a24e9673f20aa29dde0ce657d4d0aaadf9da5701c8498e137ae38e1e1adacb19`
-was removed after normal Quit; cleanup passed by **16:44:26 UTC**, leaving zero
-overlays and unchanged base files. The inherited callback defect was reproduced
-and corrected in ordinary reward and Sacrifice observers. Focused checks and
-independent review passed; a new release and live retest remain pending.
-
-The preceding manifest `e47f0514…`, source `c599a9f`, passed Red Mask, Kifuda,
-Dolly’s Mirror, Potion Belt, Cook, the remaining supported rest options, Smith
-reselection and Yummy Cookie’s four-card upgrade. Its latest
-[Punch Dagger attempt](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#punch-dagger-single-preview-failure-2026-09-26)
-stopped with `read_native_failed` after buy/select at **2/2/0**, with no confirmation
-or retry. Normal game Quit and exact owned cleanup passed by **11:54:51 UTC**;
-cleanup does not resolve those actions. Native source/scene inspection and an
-offline regression support the correction; the old live diagnostic did not expose
-the exact rejecting predicate. The successful retest above does not reconcile the
-old attempt. The ledger retains each result’s original identity.
-
-Current evidence is `/private/tmp/sts-bridge-6nkaloz2`. Its
-`previous-release-record` and `previous-install-inputs` retain the preceding
-records/package; Git `338a076` also preserves that release record. Current install
-inputs are `/private/tmp/sts-unified-bridge-release`.
-The [full-producer boundary](../../../../docs/AGENT_CONTRACT.md#native-full-run-v2-candidate)
-remains explicit. Remaining concrete shop/pickup paths and a full v2 ending need
-live acceptance. No profile/save/history/Cloud files or live corpus were accessed.
+The prior release’s exact record remains in Git `57b61ef` and
+`/private/tmp/sts-bridge-cj8jmqx7/previous-release-record`; its package inputs are
+under `previous-install-inputs` alongside it. Previous successful selector/reward
+cases retain their original manifest and source identities in the dated ledger.
+Cleanup does not reconcile the failed route, and a corrected reward alone will
+not establish the complete shared-v2 campaign or all remaining caller branches.

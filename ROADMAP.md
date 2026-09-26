@@ -43,7 +43,8 @@ another fresh campaign is not an acceptance requirement. See the
    producer and chooser through native act transitions and the ending, with every
    action reconciled. Reuse authorized controlled assistance and keep its scope
    explicit. This verifies the newer shared interface; milestone 7's earlier
-   traversal acceptance remains intact.
+   traversal acceptance remains intact. First retest the inherited reward-callback
+   correction at Neow, where the initial v2 attempt stopped with pending work.
 4. **Close concrete fidelity and delivery issues.** Use focused native comparisons
    for identified rule/public-information discrepancies or a specific uncovered
    mechanism. Retain accepted unchanged engine and consumer evidence, including
