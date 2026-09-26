@@ -867,6 +867,201 @@
       "target_game_executed": true,
       "total_public_reads": 0,
       "uncertain_native_setup_action": "Swift Potion Discard; no retry and no bridge attachment"
+    },
+    {
+      "accepted": 17,
+      "actions": [
+        {
+          "kind": "choose_event_option",
+          "subject": "crystal_sphere.pages.initial.options.payment_plan"
+        },
+        {
+          "kind": "choose_event_option",
+          "subject": "tool_small"
+        },
+        {
+          "kind": "choose_event_option",
+          "subject": "reveal_60"
+        },
+        {
+          "kind": "choose_event_option",
+          "subject": "tool_big"
+        },
+        {
+          "kind": "choose_event_option",
+          "subject": "reveal_15"
+        },
+        {
+          "kind": "choose_event_option",
+          "subject": "reveal_48"
+        },
+        {
+          "kind": "choose_event_option",
+          "subject": "reveal_40"
+        },
+        {
+          "kind": "choose_event_option",
+          "subject": "reveal_53"
+        },
+        {
+          "kind": "choose_event_option",
+          "subject": "reveal_73"
+        },
+        {
+          "kind": "claim_gold",
+          "subject": "gold"
+        },
+        {
+          "kind": "claim_gold",
+          "subject": "gold"
+        },
+        {
+          "kind": "claim_gold",
+          "subject": "gold"
+        },
+        {
+          "kind": "claim_potion",
+          "subject": "potion"
+        },
+        {
+          "kind": "claim_potion",
+          "subject": "potion"
+        },
+        {
+          "kind": "open_reward",
+          "subject": "card"
+        },
+        {
+          "kind": "choose_reward_card",
+          "subject": "card"
+        },
+        {
+          "kind": "leave_event",
+          "subject": "crystal_sphere.leave"
+        }
+      ],
+      "attempted": 17,
+      "case": "sphere_small_big_tools",
+      "cleanup": {
+        "base_file_count": 429,
+        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+        "game_process_running": false,
+        "generated_files_removed": 4,
+        "normal_quit": true,
+        "normal_save_and_quit": true,
+        "overlay_count": 0,
+        "port_accepting": false,
+        "quarantined_state_sha256": "a3c06a990b8164a5b29016ae05aaf64e2bb78f0eec3d691670d3016bae199c69",
+        "status": "passed",
+        "verified_by_utc": "2026-09-26 16:11:01 UTC"
+      },
+      "effects": {
+        "actionable_map": true,
+        "after": {
+          "deck_count": 26,
+          "gold": 715,
+          "hp": 88,
+          "max_hp": 88,
+          "potion_capacity": 5,
+          "potion_count": 4,
+          "relic_count": 33
+        },
+        "all_eight_public_board_transitions_verified": true,
+        "before": {
+          "deck_count": 23,
+          "gold": 665,
+          "hp": 88,
+          "max_hp": 88,
+          "potion_capacity": 5,
+          "potion_count": 2,
+          "relic_count": 33
+        },
+        "big_reveal_new_cells": [
+          9,
+          8,
+          9,
+          7,
+          8
+        ],
+        "debt_observed_before_board": true,
+        "gold_entries_claimed": 3,
+        "new_cards": [
+          {
+            "id": "debt",
+            "upgrade": 0
+          },
+          {
+            "id": "doubt",
+            "upgrade": 0
+          },
+          {
+            "id": "fight_me",
+            "upgrade": 0
+          }
+        ],
+        "new_potions": [
+          "explosive_ampoule",
+          "bottled_potential"
+        ],
+        "original_deck_and_potions_preserved": true,
+        "reveals": 6,
+        "reward_kinds": [
+          "card",
+          "gold",
+          "potion"
+        ],
+        "selection_uses_only_current_public_fog_and_fragments": true,
+        "small_reveal_new_cells": 1,
+        "tool_switches": 2
+      },
+      "helper_validation": {
+        "cases": [
+          "ordinary_completion",
+          "known_nonmutating_stale",
+          "gold_reward_continuation",
+          "incorrect_tool_fog_effect_stops_before_next_action"
+        ],
+        "count": 4,
+        "native_evidence": false,
+        "status": "passed"
+      },
+      "installation": {
+        "base_file_count": 429,
+        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+        "credential_content_read": false,
+        "game_running_before_install": false,
+        "installed_metadata_verified": true,
+        "overlay_count": 2,
+        "phase": "installed",
+        "port_accepting_before_install": false,
+        "purpose": "Unchanged accepted package used for the completed Sphere small/big tool and reward test; removed after settled map return.",
+        "state_sha256": "d69654a11c1a0897fbca12814aa6b975685b97090ebd58f575a147bc323024b6",
+        "status": "passed",
+        "verified_by_utc": "2026-09-26 15:20:01 UTC"
+      },
+      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#sphere-small-and-big-tools-passed-2026-09-26",
+      "limits": "Earned relics, other board/reward outcomes, full-belt handling, provenance of automatic grants, reload persistence and full shared v2 ending remain separate.",
+      "mutation_retried": false,
+      "pending": false,
+      "preparation": {
+        "bridge_attached_during_native_setup": false,
+        "manual_capacity_visually_verified": true,
+        "native_setup": "Saved floor-50 rest; user discarded Swift, Flex and Blessing after automated input had no effect. Three free slots verified before event CRYSTAL_SPHERE; untouched initial options at floor 51. No native gameplay input after shared attachment.",
+        "preflight_completed_by_utc": "2026-09-26 15:53:52 UTC",
+        "public_gameplay_reads_during_setup": 0
+      },
+      "reconciled": 17,
+      "recorded_interval_seconds": 159,
+      "recorded_interval_start_utc": "2026-09-26 16:08:22 UTC",
+      "recorded_live_corpus": false,
+      "release_manifest_sha256": "289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302",
+      "setup": "Manual Profile 3 Continue restored floor 50 rest. Automated potion menu input had no visible effect; reopened popup ruled out a pending discard under the native holder guard. User manually discarded Swift, Flex and Blessing; screenshot verified three free slots and retained Blood/Skill before native event CRYSTAL_SPHERE. Initial floor-51 options were untouched at first shared read. No rest choice, act reset or inventory grant.",
+      "source_commit": "7829456da1bb28471f4aa4c910d3b5ca6d693032",
+      "stale_rejections": 0,
+      "status": "passed",
+      "stop": "Helper ended at the verified settled actionable map; no separate terminal outcome transition or campaign victory claimed.",
+      "target_game_executed": true,
+      "total_public_reads": 64
     }
   ],
   "change": "Wait for native single-enchantment preview children queued for deletion before validating the exact new holders; no input retry or premature confirmation.",
@@ -876,12 +1071,12 @@
     "game_process_running": false,
     "generated_files_removed": 4,
     "normal_quit": true,
-    "normal_save_and_quit": false,
+    "normal_save_and_quit": true,
     "overlay_count": 0,
     "port_accepting": false,
-    "quarantined_state_sha256": "50cf9087ff1c92e96e7c775e51a8f96ac691755c0a001dc32a60391934c23113",
+    "quarantined_state_sha256": "a3c06a990b8164a5b29016ae05aaf64e2bb78f0eec3d691670d3016bae199c69",
     "status": "passed",
-    "verified_by_utc": "2026-09-26 15:11:52 UTC"
+    "verified_by_utc": "2026-09-26 16:11:01 UTC"
   },
   "elapsed_times": {
     "affected_consumers_seconds": 10.347,
@@ -894,6 +1089,7 @@
     "latest_reward_batch_recorded_interval_seconds": 529,
     "latest_shop_batch_recorded_interval_seconds": 535,
     "latest_shop_selector_recorded_interval_seconds": 249,
+    "latest_sphere_recorded_interval_seconds": 159,
     "latest_trial_setup_recorded_interval_seconds": 169,
     "latest_trial_sphere_setup_recorded_interval_seconds": 641,
     "latest_trial_transform_recorded_interval_seconds": 225,
@@ -1394,7 +1590,7 @@
     "overlay_count": 2,
     "phase": "installed",
     "port_accepting_before_install": false,
-    "purpose": "Unchanged accepted package; user manually launched Profile 3 and fresh preflight passed at 15:53:52 UTC. Game remains open at the saved rest site; manual potion-capacity setup pending.",
+    "purpose": "Unchanged accepted package used for the completed Sphere small/big tool and reward test; removed after settled map return.",
     "state_sha256": "d69654a11c1a0897fbca12814aa6b975685b97090ebd58f575a147bc323024b6",
     "status": "passed",
     "verified_by_utc": "2026-09-26 15:20:01 UTC"
@@ -1486,29 +1682,10 @@
   },
   "next_live_test": {
     "deferred_conditional_case": "Trial Merchant/Innocent needs a different campaign seed; repeating the event in this campaign cannot prepare it.",
-    "helper_validation": {
-      "cases": [
-        "ordinary_completion",
-        "known_nonmutating_stale",
-        "gold_reward_continuation",
-        "incorrect_tool_fog_effect_stops_before_next_action"
-      ],
-      "count": 4,
-      "native_evidence": false,
-      "status": "passed"
-    },
-    "new_campaign_required": false,
-    "premise": "Continue the saved rest site and visibly establish three free potion slots before any console event setup. Prepare untouched Crystal Sphere, then attach once for Payment Plan, big-to-small-to-big switching, six reveals, visible rewards and settled map return. Stop on uncertain setup; do not retry its mutation.",
-    "preparation": {
-      "bridge_attached": false,
-      "game_left_running": true,
-      "native_setup": "Saved floor-50 rest restored. Swift popup closed after the mouse click without a visible discard, then reopened normally; pinned NPotionHolder blocks popup opening while a discard is pending. Return left the enabled menu unchanged. User asked to manually discard Swift, Flex and Blessing, leaving rest options untouched. No restart requested.",
-      "preflight_completed_by_utc": "2026-09-26 15:53:52 UTC",
-      "public_gameplay_reads": 0
-    },
-    "status": "awaiting_manual_potion_setup",
+    "premise": "Prepare a controlled supported campaign segment before attachment, using the previously authorized upfront HP and damage assistance. Verify every shared action through native act and ending transitions. No mid-run native intervention. Exact setup remains under source inspection.",
+    "status": "preparing",
     "targets": [
-      "sphere_small_big_tools"
+      "full_shared_v2_act_transitions_and_ending"
     ]
   },
   "previous_release": {

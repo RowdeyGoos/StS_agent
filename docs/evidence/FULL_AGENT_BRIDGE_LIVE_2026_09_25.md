@@ -1377,3 +1377,58 @@ An initial test-harness syntax error and an invalid synthetic node definition
 were corrected before that passing run. These checks are not native evidence.
 No production source, package or runtime safeguard changed, and the accepted
 release gate was not rerun for documentation and disposable-helper changes.
+
+
+## Sphere small and big tools passed, 2026-09-26
+
+The unchanged accepted manifest
+`289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302`, source
+`7829456da1bb28471f4aa4c910d3b5ca6d693032` and DLL
+`91182c7940b4ce420841eece40292213479838f9240a20add75523f250639405` were reused.
+Installation state
+`d69654a11c1a0897fbca12814aa6b975685b97090ebd58f575a147bc323024b6` was checked
+by **15:20:01 UTC**; fresh manual Profile 3 launch, runtime, source, metadata,
+health and compatibility checks passed by **15:53:52 UTC**.
+
+Continue restored the untouched floor-50 rest site. Automated potion-menu input
+did not visibly discard Swift; its popup could reopen, ruling out a pending
+discard under the pinned holder guard. The user then manually discarded Swift,
+Flex and Blessing. A fresh screenshot confirmed three empty slots, retained
+Blood/Skill potions, **665 gold**, HP **88/88**, **23 cards** and **33 relics**.
+Native `event CRYSTAL_SPHERE` prepared the untouched initial options at floor 51.
+All setup preceded the first shared read; no rest option, act reset or inventory
+grant was used. This successful setup does not change the preceding process's
+separately recorded uncertain setup result.
+
+The bounded public-only helper completed **17 attempted / 17 accepted /
+17 reconciled** actions with **64 public reads**, zero stale rejections and no
+pending action. Payment Plan first appended the observed **Debt**. It switched
+big → small, revealed cell 60, switched back to big, then revealed cells
+15, 48, 40, 53 and 73. Both tool changes preserved the remaining divinations;
+each reveal consumed exactly one. All eight tool/reveal transitions were checked
+against the next public board, including exact fog changes: the small reveal
+cleared one cell and the five big reveals cleared **9, 8, 9, 7 and 8** previously
+hidden cells. Cell selection used only current public fog and visible fragments.
+
+The helper collected three gold entries, two potions and one card reward, then
+left the event. Gold changed **665 → 715**; the new potions were **Explosive
+Ampoule** and **Bottled Potential**. The final 26-card deck contained the 23 exact
+originals plus **Debt**, **Doubt** and **Fight Me**, all upgrade 0. Debt was
+observed before the board; this result does not separately certify the provenance
+of every automatic card grant. Original Blood/Skill potion identities remained
+exact, capacity stayed five, and HP/relic totals stayed **88/88** and **33**.
+The final public decision and UI both showed the actionable map. This helper
+stopped after the settled case; it did not report campaign victory or run a
+separate terminal-outcome transition.
+
+Normal Save and Quit returned to Profile 3's main menu, then normal Quit stopped
+the game. Exact cleanup passed by **16:11:01 UTC**: four generated files removed,
+zero overlays and all 429 base files unchanged at SHA-256
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Quarantine state was
+`a3c06a990b8164a5b29016ae05aaf64e2bb78f0eec3d691670d3016bae199c69`.
+Recorded checkpoints **16:08:22–16:11:01 UTC** span **159 seconds**; separate
+controller/setup and user-wait times were not measured. No profile/save/history/
+Cloud files or retained live corpus were accessed. No production source or
+package changed. Earned relics, other board/reward outcomes, full-belt handling,
+reload persistence and the full shared v2 ending retain their separate limits.

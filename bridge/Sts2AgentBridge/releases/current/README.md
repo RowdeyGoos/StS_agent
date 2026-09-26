@@ -96,15 +96,15 @@ for this campaign seed, and a native potion-discard attempt did not visibly free
 a slot. Cleanup passed by **15:11:52 UTC**, leaving zero overlays and unchanged
 base files. Neither proposed case gained live acceptance.
 
-The same package was reinstalled and checked by **15:20:01 UTC** for Sphere’s
-small/big-tool check: two exact overlays, unchanged base files and verified metadata.
-Installed state is
+The [Sphere tool/reward test](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#sphere-small-and-big-tools-passed-2026-09-26)
+passed **17/17/17**, with 64 public reads and no stale rejection or pending action.
+Payment Plan, big→small→big switching and all six exact board changes completed;
+the agent collected three gold entries, two potions and a card before map return.
+The user freed three potion slots before attachment. Installation state was
 `d69654a11c1a0897fbca12814aa6b975685b97090ebd58f575a147bc323024b6`.
-Manual Profile 3 launch and fresh runtime/source/health/compatibility checks
-passed by **15:53:52 UTC**. The game remains open at the saved rest site, awaiting
-manual creation of three free potion slots. The potion menu still opens normally
-after the automated click, establishing that no discard is pending under the
-pinned holder guard. No gameplay owner has attached. No restart is needed.
+Normal Save and Quit, game Quit and cleanup passed by **16:11:01 UTC**, leaving
+zero overlays and all 429 base files unchanged. The game is stopped and this
+installation is removed. The unchanged release gate remains applicable.
 
 The preceding manifest `e47f0514…`, source `c599a9f`, passed Red Mask, Kifuda,
 Dolly’s Mirror, Potion Belt, Cook, the remaining supported rest options, Smith

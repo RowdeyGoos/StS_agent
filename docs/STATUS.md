@@ -1,6 +1,6 @@
 # Bridge support and status
 
-Updated 2026-09-26 for shared-producer shop, rest, treasure and Trial selector
+Updated 2026-09-26 for shared-producer shop, rest, treasure, Trial and Sphere
 coverage; other capability review remains
 2026-09-19 against bridge source, pinned native game IL and retained evidence. Latest live
 session: **2026-09-26**. This is the authoritative summary of bridge support;
@@ -183,7 +183,7 @@ extend standalone rest/shop contracts.
 | Resume-time item rewards | One owned Offer with singleton or 2–8 potion/relic entries | Setting1 potion collect/skip/replacement demonstrated. Relic/set reward screens are fixture-only with no concrete resume caller identified; Setting3 obtains its relic directly. Resume-time cards/selectors unsupported |
 | Fake Merchant inventory | Initially closed inventory → 0–6 supported relic purchases → close/Leave | Two-purchase visit demonstrated; zero/six purchase variants offline only; already-open entry unsupported |
 | Fake Merchant fight/healing | Initial owned Foul Potion starts combat; terminal Fake Lee’s Waffle verifies capped 10% max-HP healing; terminal schemas 9–10 support 32 entries; schema 10 adds exact Fake Mango +3 max HP/+3 HP | Original ten-entry rewards passed after native Continue: 12/12/12 actions, all rewards collected, HP10/80→21/83 and actionable map. Earlier assisted seven-relic collection and the failed 8/8/7 Mango attempt retain separate evidence. Fight after shopping unsupported |
-| Crystal Sphere | Owned Uncover Future/Payment Plan entry, small/big tool, legal 11×11 fog reveals, earned rewards and exact native exit/overlay cleanup | Both entry paths demonstrated; Uncover Future gold/map verified. Other tool/reward variants offline only. Hidden items are not projected; already-open adoption and full-belt replacement unsupported |
+| Crystal Sphere | Owned Uncover Future/Payment Plan entry, small/big tool, legal 11×11 fog reveals, earned rewards and exact native exit/overlay cleanup | Both entry paths demonstrated. Shared v2 Payment Plan passed 17/17/17 with big→small→big switching, all six exact fog/count changes, earned gold/two potions/card and map return. Earned relics and other outcomes remain separate. Hidden items are not projected; already-open adoption and full-belt replacement unsupported |
 | Trial abandonment | Owned popup Cancel or explicit Confirm, exact native abandonment task | Both demonstrated; Cancel continued to rewards/map/next room, Confirm produced `run_abandoned` and native Defeat/HP0 |
 | Architect ending | Native vote/queued action/next-act/WinRun task chain, terminal `run_won`; exact owned victory event with its combat layout and retained map-travel flag | Empty final-boss reward Proceed and the Architect parent sequence reached `run_won`; native Victory observed in both controlled saved runs. The latest ending used three reconciled parent actions. Saved continuations report `continued_victory`, not full-campaign certification |
 
@@ -343,8 +343,10 @@ These are **not an implementation queue or required live-test checklist**:
   Nondescript. It remains untested. Held-out
   enchant/removal/transform callers such as Torus retain separate evidence limits.
 - Natural ancient entry/dialogue.
-- Broader reward orders/outcomes with a concrete offered screen, Sphere small-tool
-  and earned card/potion/relic variants, and Fake Merchant zero/six-purchase variants.
+- Broader reward orders/outcomes with a concrete offered screen, Sphere earned
+  relics, and Fake Merchant zero/six-purchase variants. Sphere small/big tools,
+  six exact reveals and earned gold/card/potions passed through the shared producer
+  at 17/17/17; other outcomes retain separate limits.
 - Held-out elite and room-handoff variants beyond the accepted campaign route.
   The demonstrated long traversal does not establish all-branch coverage or
   strategic quality. Another fresh run is not required for milestone 7 acceptance.
@@ -366,7 +368,16 @@ and native enchantment integration checks also passed. Independent semantic
 review found no blocker. A missing method in a second inert fixture stopped an
 earlier gate; the fixture was corrected before the accepted gate.
 
-The latest accepted [Trial two-transform test](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#trial-curse-and-two-transforms-passed-2026-09-26)
+The latest accepted [Sphere tool/reward test](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#sphere-small-and-big-tools-passed-2026-09-26)
+passed **17/17/17**, 64 public reads, zero stale rejections and no pending action.
+Both tool switches and all six fog/divination changes matched the next public
+board. Three gold entries, two potions and a card were collected before map
+return; original deck and potions stayed exact. The user freed three potion slots
+before attachment. Normal Save and Quit, game Quit and cleanup passed by
+**16:11:01 UTC**, leaving zero overlays and all 429 base files unchanged.
+The same accepted package and release gate were reused.
+
+The preceding [Trial two-transform test](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#trial-curse-and-two-transforms-passed-2026-09-26)
 passed **5/5/5**, with fifteen controller reads and no pending action. Doubt was
 observed before the selector; two Bludgeon+ originals became Headbutt and
 True Grit+, with every other card and inventory item preserved through map return.
@@ -381,14 +392,9 @@ stopped before bridge attachment: Trial repeated its campaign-seeded branch,
 and one native potion-discard attempt did not visibly establish free capacity.
 No public gameplay reads or bridge actions ran. Normal game Quit and cleanup
 passed by **15:11:52 UTC**, with zero overlays and all 429 base files unchanged.
-The unchanged package was reinstalled and checked by **15:20:01 UTC** for Sphere's
-small/big-tool check. Manual Profile 3 launch and fresh preflight passed by
-**15:53:52 UTC**; the game is open at the saved rest site, awaiting manual setup
-of three free potion slots. The native potion menu reopens normally after the
-automated mouse click, which rules out a pending discard under the pinned holder
-guard. No gameplay owner is attached. Sphere remains untested through the shared
-v2 producer. Resume-time capacity-first reward ordering was also removed from the
-live-test queue: the existing caller audit identifies no native reward set for it.
+Its later successful Sphere test is recorded above; the earlier setup stop
+remains distinct. Resume-time capacity-first reward ordering was removed from
+the live-test queue: the existing caller audit identifies no native reward set for it.
 
 The preceding [Silver Crucible empty-chest test](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#silver-crucible-empty-chest-passed-2026-09-26)
 passed **2/2/2** through Open/Proceed, with eighteen controller reads and no

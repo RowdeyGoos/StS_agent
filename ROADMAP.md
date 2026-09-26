@@ -24,7 +24,9 @@ another fresh campaign is not an acceptance requirement. See the
    Fake Merchant seven-relic collection now have live results. Remaining targets
    include capacity-first terminal/event rewards,
    other Neow compound branches,
-   and Sphere tool/reward variants. Yummy Cookie's true four-card upgrade
+   and concrete remaining pickup effects. Sphere's small/big tools and earned
+   gold/card/potions passed; earned relics retain a separate evidence limit.
+   Yummy Cookie's true four-card upgrade
    selector, all five supported shop card-selector families and Cauldron/Orrery
    rewards, plus Silver Crucible’s empty chest, now have representative live
    acceptance; conditional Trial paths retain their separate evidence limits.
