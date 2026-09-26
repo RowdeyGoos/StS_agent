@@ -82,15 +82,18 @@ no stale rejection or pending action. The installed state was
 Normal Save and Quit, game Quit and exact cleanup passed by **13:31:05 UTC**,
 leaving zero overlays and all 429 base files unchanged.
 
-The [Trial setup](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#trial-direct-shop-setup-rejected-2026-09-26)
-stopped at **0/0/0** with `read_native_event_parent_travel`; console entry retained
-the saved shop's enabled travel flag. No verdict/selector input ran. Normal Quit
-and exact cleanup passed by **13:41:37 UTC**, with zero overlays and unchanged
-base files. The next setup enters a connected room normally before creating Trial.
+The [Trial two-transform test](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#trial-curse-and-two-transforms-passed-2026-09-26)
+passed **5/5/5** through Innocent, two selections, Confirm and map return. The two
+Bludgeon+ originals became Headbutt and True Grit+ after observed Doubt addition;
+all other cards and inventory stayed exact. Cleanup passed by **14:53:12 UTC**,
+with zero overlays and all 429 base files unchanged. The earlier
+[0/0/0 setup rejection](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#trial-direct-shop-setup-rejected-2026-09-26)
+remains recorded separately; normal connected rest entry fixed the setup.
 
-The same package was reinstalled and checked by **13:43:10 UTC**: two exact
-overlays, unchanged base files and verified metadata. Installed state is
-`9e5515310e7078abc5bc50a2eb44bc88d73bcf0d8da9a934a0846bd5a207dfa5`.
+The same package was reinstalled and checked by **14:53:56 UTC** for Trial’s
+two-upgrade branch: two exact overlays, unchanged base files and verified metadata.
+Installed state is
+`957dc03911d95691663db12be03214c4348999d04f705eed6e889f1c4c537f73`.
 Manual Profile 3 main-menu readiness is pending; the saved campaign can be continued.
 
 The preceding manifest `e47f0514…`, source `c599a9f`, passed Red Mask, Kifuda,

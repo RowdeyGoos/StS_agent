@@ -1,7 +1,7 @@
 # Bridge support and status
 
-Updated 2026-09-26 for all five supported shop card selectors, Cauldron/Orrery rewards,
-empty-chest completion, zero-purchase shop exit and shared-producer rest coverage; other capability review remains
+Updated 2026-09-26 for shared-producer shop, rest, treasure and Trial selector
+coverage; other capability review remains
 2026-09-19 against bridge source, pinned native game IL and retained evidence. Latest live
 session: **2026-09-26**. This is the authoritative summary of bridge support;
 [usage](../bridge/Sts2AgentBridge/README.md), [technical contracts](GENERIC_EVENTS.md),
@@ -153,11 +153,11 @@ extend standalone rest/shop contracts.
 | Interaction | Implemented scope | Live evidence and limits |
 | --- | --- | --- |
 | Ordinary and repeated option pages | Owned choices, completed callbacks, fresh native controls and bounded revisits | Abyssal Baths two Lingers/exit demonstrated; other long chains need caller coverage |
-| Deck changes around a selector | Append-only baseline before the first selector; removal followed by at most one separate appended grant | Grave/Confront and Amalgamator/CombineStrikes demonstrated; grant provenance unverified; arbitrary survivor changes/multiple grants unsupported |
+| Deck changes around a selector | Append-only baseline before the first selector; removal followed by at most one separate appended grant | Grave/Confront, Amalgamator/CombineStrikes and Trial/NondescriptInnocent demonstrated; grant provenance unverified; arbitrary survivor changes/multiple grants unsupported |
 | Upgrade | Fixed selection counts 1–8; eligible allocated off-screen holders | Sapphire Seed single upgrade at slot 20 of 23 demonstrated. Yummy Cookie's fixed-four selector passed through the full producer at 7/7/7, with exact upgrades and map return. Other counts/callers retain separate limits; Dummy automatic upgrades are not selector evidence |
 | Enchant | Single selection and fixed 2–8 selections with exact preview/effects | Sapphire Seed, Grave and Prickly Sponge fixed-two demonstrated; other counts/callers offline only; stacking/replacement and optional counts unsupported |
 | Remove | Positive selections up to eight with exact original preview/removal; owned automatic removal without a selector | Amalgamator fixed-two and one-card Dark Door automatic completion/map demonstrated; other counts/callers need evidence |
-| Transform | Fixed/positive variable counts up to eight; optional 0..8; fixed-one generic transform-prompt surface | Allocated off-screen input, Wood Carvings/Bird and Claws zero/three/six demonstrated; Torus and other callers need evidence |
+| Transform | Fixed/positive variable counts up to eight; optional 0..8; fixed-one generic transform-prompt surface | Allocated off-screen input, Wood Carvings/Bird and Claws zero/three/six demonstrated. Trial/NondescriptInnocent passed 5/5/5 after observed Doubt addition: two exact originals transformed, survivors/inventory preserved and map returned. Torus and other callers need evidence |
 | Add-card grid | Positive selection; optional 0..15 with explicit confirmation | Cheese two-of-eight and Sea Glass zero/three/fifteen demonstrated |
 | Ordinary card-reward menus | One or 2–8 menus, 1–5 cards/menu, native choice/Skip and final dismissal | Brain Leech singleton and Colorful Philosophers choose/Skip/choose demonstrated; other counts/outcomes offline only |
 | Direct offered card | Required `card_offer_v1`; optional v2 choice/Skip with zero/one observed appended grant | Lead Paperweight and Hefty Tablet choice/Skip demonstrated. Required-choice v1 is fixture-only capability with no identified native caller; not a pending gameplay test |
@@ -334,9 +334,9 @@ These are **not an implementation queue or required live-test checklist**:
   The demonstrated terminal pickup verifies +2 capacity and retained potions;
   full-inventory ordering and the event/resume variants remain separate tests.
 - Yummy Cookie's fixed-four upgrade selection has representative live acceptance.
-  Trial/MerchantInnocent's conditional curse-plus-two-upgrade path, held-out
-  enchant/removal/transform callers such as Torus, and Trial’s conditional
-  curse-plus-two-transform path retain separate evidence limits.
+  Trial/NondescriptInnocent’s curse-plus-two-transform path also passed at 5/5/5.
+  Trial/MerchantInnocent's conditional curse-plus-two-upgrade path and held-out
+  enchant/removal/transform callers such as Torus retain separate evidence limits.
 - Natural ancient entry/dialogue.
 - Broader reward orders/outcomes with a concrete offered screen, Sphere small-tool
   and earned card/potion/relic variants, and Fake Merchant zero/six-purchase variants.
@@ -361,13 +361,17 @@ and native enchantment integration checks also passed. Independent semantic
 review found no blocker. A missing method in a second inert fixture stopped an
 earlier gate; the fixture was corrected before the accepted gate.
 
-The subsequent [Trial setup](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#trial-direct-shop-setup-rejected-2026-09-26)
-stopped before any action at **0/0/0**, with `read_native_event_parent_travel`.
-Console event entry retained the saved shop's enabled map-travel flag; the
-selector was not exercised. Cleanup passed by **13:41:37 UTC**. The corrected
-setup uses normal connected-room entry first; no production guard changed.
+The latest [Trial two-transform test](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#trial-curse-and-two-transforms-passed-2026-09-26)
+passed **5/5/5**, with fifteen controller reads and no pending action. Doubt was
+observed before the selector; two Bludgeon+ originals became Headbutt and
+True Grit+, with every other card and inventory item preserved through map return.
+Normal Save and Quit, game Quit and cleanup passed by **14:53:12 UTC**, leaving
+zero overlays and all 429 base files unchanged. The preceding
+[0/0/0 setup rejection](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#trial-direct-shop-setup-rejected-2026-09-26)
+retains its original evidence; normal connected rest entry corrected the setup
+without changing any production guard.
 
-The latest accepted [Silver Crucible empty-chest test](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#silver-crucible-empty-chest-passed-2026-09-26)
+The preceding [Silver Crucible empty-chest test](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#silver-crucible-empty-chest-passed-2026-09-26)
 passed **2/2/2** through Open/Proceed, with eighteen controller reads and no
 pending action. The map was actionable and the full inventory stayed exact.
 Normal Save and Quit, game Quit and cleanup passed by **2026-09-26 13:31:05 UTC**,

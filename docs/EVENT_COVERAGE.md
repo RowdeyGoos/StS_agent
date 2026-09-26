@@ -14,6 +14,7 @@ controlled Profile 3 case to its own release, setup, counters and cleanup.
 | Caller/path | Recorded result | Qualification |
 | --- | --- | --- |
 | Neow/Lost Coffer | Potion replacement, card choice and event/map return passed at 6/6/6 | Console-forced option; uses the shared full producer, with its original release identity retained |
+| [Trial: Nondescript → Innocent](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#trial-curse-and-two-transforms-passed-2026-09-26) | Doubt observed, two exact original transformations, retained other cards/inventory and map return passed at 5/5/5 | Native rest entry and console event setup preceded attachment; automatic grant provenance remains separate, and Merchant/Innocent upgrades remain untested |
 | [Tezcatara/Yummy Cookie](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#yummy-cookie-four-card-upgrade-passed-2026-09-26) | Four exact original upgrades, retained unselected cards/inventory and map return passed at 7/7/7 | Console-forced option; fixed-four selection and confirmation, not natural Ancient entry or other upgrade counts |
 | [Neow/Neow’s Bones](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neows-bones-compound-rewards-passed) | Large Capsule’s Toxic Egg/Whetstone and Strike/Defend+ additions, Lost Coffer’s nested Sacrifice granting Regal Pillow, final Decay and map return passed at 7/7/7 | Full belt left the potion reward unclaimed. Other generated relics, selectors, offers and potion-procurement branches remain separate evidence limits; natural entry was not tested |
 
@@ -94,7 +95,7 @@ and [Potion Courier singleton](archive/phase-1/research/PHASE_1_GENERIC_EVENT_V6
 records retain their exact original scope.
 
 For untested caller candidates—including Endless Conveyor, Morphic Grove,
-Symbiote, Whispering Hollow and Trial’s conditional selector branches—use the
+Symbiote, Whispering Hollow and Trial’s Merchant/Innocent selector—use the
 [static research map](EVENT_INTERACTION_MAP.md). Its 68 types/105 branch groups
 are a source census, not a count of supported events, reachable events or remaining
 features. Keep future attempt chronology in the dated evidence ledger.

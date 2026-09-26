@@ -1276,3 +1276,52 @@ Quarantine state was
 Clock checkpoints **13:38:48–13:41:37 UTC** span **169 seconds**; separate setup,
 controller and user-wait times were not measured. No profile/save/history/Cloud
 files or retained live corpus were accessed. Trial selector acceptance remains open.
+
+
+## Trial curse and two transforms passed, 2026-09-26
+
+The unchanged accepted manifest
+`289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302`, source
+`7829456da1bb28471f4aa4c910d3b5ca6d693032` and DLL
+`91182c7940b4ce420841eece40292213479838f9240a20add75523f250639405` were reused.
+Installation state
+`9e5515310e7078abc5bc50a2eb44bc88d73bcf0d8da9a934a0846bd5a207dfa5` was checked
+by **13:43:10 UTC**. After manual Profile 3 launch, fresh process, source,
+metadata, authenticated health and compatibility checks passed. No production
+source, tests, toolchain or package input changed.
+
+Continue restored the floor-49 merchant: **665 gold**, HP **88/88**, **23 cards**,
+**33 relics**, five occupied potion slots. Normal native Proceed and connected
+rest-site entry reached floor 50, without selecting any rest option. Native
+`event TRIAL` and Accept then exposed **Nondescript/Innocent** at floor 51. All
+setup preceded attachment; no act reset or inventory/HP/gold assistance was used.
+A native save notification appeared on normal rest entry; reload persistence of
+later debug-event changes was not tested.
+
+The preflight reached the exact untouched verdict after **34 reads**, with fresh
+**0/0/0** counts and no pending action. By **14:51:20 UTC**, the shared producer
+completed Innocent, two original-card selections, Confirm and Proceed at
+**5 attempted / 5 accepted / 5 reconciled**, fifteen controller reads, zero stale
+rejections and no pending action. **Doubt** was observed as the sole appended card
+before selection. The two selected **Bludgeon+** originals were removed and replaced
+by **Headbutt** and **True Grit+**. All **21 other original cards**, the appended
+Doubt, gold, HP, all 33 relics and all five potions remained exact. The deck grew
+**23 → 24** solely from the observed curse addition.
+
+One independent final read verified the exact effects, **5/5/5**, no pending action
+and an actionable map. There were **50 public reads** in total. The UI also showed
+the map, 665 gold, HP88/88 and 24 cards. The intentional result was
+`truncated/external_stop`, not a campaign victory. This accepts the fixed-two
+transform child after the observed curse; it does not broaden automatic-grant
+provenance beyond the existing generic-event contract.
+
+Normal Save and Quit returned to the main menu, then normal game Quit stopped
+the process. Exact cleanup passed by **14:53:12 UTC**: four generated files removed,
+zero overlays and all 429 base files unchanged at SHA-256
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Quarantine state was
+`dda0d5d4874bc12d73cc340b7e5cab970d4fcfa8c3d005caf8e5d6aade1dec8a`.
+Clock checkpoints **14:49:27–14:53:12 UTC** span **225 seconds**; separate setup,
+controller and user-wait durations were not measured. No profile/save/history/
+Cloud files or retained live corpus were accessed. Merchant/Innocent's two
+upgrades, other callers and the full shared v2 ending remain separate cases.
