@@ -1025,3 +1025,70 @@ Cloud filesystem content or live trajectory corpus was accessed.
 All five supported shop card-selector families now have one successful native
 case. This test does not establish every selector variant, Royal Stamp persistence
 across reload, Cauldron/Orrery rewards or the complete shared v2 ending.
+
+## Orrery five-card rewards and merchant travel passed, 2026-09-26
+
+This batch reused manifest
+`289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302`, source
+`7829456da1bb28471f4aa4c910d3b5ca6d693032` and DLL
+`91182c7940b4ce420841eece40292213479838f9240a20add75523f250639405`.
+Installation was verified by **12:46:53 UTC**, state
+`9a4d3f300710a5140ab79a876f89c768a6ea232497b3e07aa48379f9498b0343`.
+Unchanged production/test/toolchain/package inputs retained the accepted gate and
+review. Fresh runtime, metadata, authenticated health and compatibility passed.
+
+After manual Profile 3 launch, Continue restored floor 41's merchant checkpoint
+with **826 gold**, HP **88/88**, **17 cards**, **32 relics** and five occupied
+potion slots. Royal Stamp from the previous console-prepared room was not present;
+its prior result remains a within-session test, not reload-persistence evidence.
+Six native `room shop` preparations preceded attachment. The sixth offered
+**Orrery for 177**, at floor 47. No act reset or inventory/HP/gold grant was needed.
+A public inspection verified the affordable supported offer at **0/0/0**; a separate
+one-read controller preflight captured exact inventory before purchase.
+
+The controller bought Orrery and opened/chose each of five reward menus. Every
+original card stayed exact; the additions were **Cinder, Headbutt, Setup Strike,
+Stomp and Armaments+**. Gold changed **826 → 649**, the deck **17 → 22** and relics
+**32 → 33**, with exactly Orrery appended. HP **88/88** and all five potions stayed
+exact. After the fifth card, the native reward screen closed automatically and
+returned to inventory. The disposable helper expected an explicit `leave_rewards`
+and stopped with `shop_rewards_unexpected_context` by **12:56:25 UTC**, after
+**11/11/11**, twelve controller reads, no stale rejection and no pending action.
+Its callback had already checked the complete five-card inventory effects before
+rejecting that context. This was a test expectation failure, not an uncertain
+mutation or a bridge failure; the purchase and card choices were not repeated.
+
+A separate bounded Close/Leave controller captured the settled inventory in one
+read, completed **2/2/2** over three reads and used one final read to verify an
+exact unchanged inventory and actionable map. The Orrery case therefore finished
+at **13/13/13**, with **19 total public reads**, including both preflights, the
+initial offer inspection and final verification. Its final stop was intentionally
+`truncated/external_stop`. UI inspection also showed 649 gold, 22 cards, five
+potions, Orrery and the returned map. The helper was corrected to allow a settled
+automatic shop return; no production source or release input changed.
+
+One map read identified the legal route **unknown (4,4) → merchant (5,5)**.
+The unknown room was combat. Travel completed seven card plays, an end turn and
+gold collection, reaching **23/23/23**. A subsequent `open_reward` dispatch was
+explicitly rejected as `stale_decision` with `mutation_state=none`; the first
+travel helper stopped after 139 reads. A fresh one-read inspection verified the
+settled reward decision and unchanged counts. Continuing from that fresh decision
+completed open/choose/leave rewards, map entry and Open Shop in five actions and
+sixteen reads, reaching **28/28/28** by **12:58:56 UTC**. No uncertain action was
+retried. The helper's known-stale handling was aligned with the existing host.
+The merchant had no Cauldron. Final visible totals were **665 gold**, HP **88/88**,
+**23 cards**, **33 relics** and five potions at floor 49. The entire batch used
+**176 public reads**, with one known non-mutating rejection and no pending action.
+
+Normal Save and Quit returned to Profile 3's main menu, followed by normal game
+Quit. Stopped-process/closed-listener checks and exact owned quarantine/purge
+passed by **13:00:51 UTC**, removing four generated files and leaving zero overlays.
+All 429 base files retained SHA-256
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Quarantine state was
+`5d7acdcd3093c74582bd6e3270bc1b7aa50a292846eb88b8611684bcf60267d8`.
+Recorded clock checkpoints from **12:52:02 to 13:00:51 UTC** span **529 seconds**;
+the earlier runtime preflight and separate setup/controller/user-wait durations
+were not measured. No profile/save/history/Cloud filesystem content or retained
+live trajectory corpus was accessed. Cauldron, alternate Orrery choices/Skip,
+reload persistence and the full shared v2 ending remain separate evidence limits.

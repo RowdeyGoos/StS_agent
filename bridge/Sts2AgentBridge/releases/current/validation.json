@@ -253,6 +253,179 @@
       "target_game_executed": true,
       "total_public_reads": 21,
       "verification_reads": 1
+    },
+    {
+      "accepted": 28,
+      "attempted": 28,
+      "case": "orrery_five_rewards_and_merchant_travel",
+      "cleanup": {
+        "base_file_count": 429,
+        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+        "game_process_running": false,
+        "generated_files_removed": 4,
+        "normal_quit": true,
+        "normal_save_and_quit": true,
+        "overlay_count": 0,
+        "port_accepting": false,
+        "quarantined_state_sha256": "5d7acdcd3093c74582bd6e3270bc1b7aa50a292846eb88b8611684bcf60267d8",
+        "status": "passed",
+        "verified_by_utc": "2026-09-26 13:00:51 UTC"
+      },
+      "installation": {
+        "base_file_count": 429,
+        "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+        "credential_content_read": false,
+        "game_running_before_install": false,
+        "installed_metadata_verified": true,
+        "overlay_count": 2,
+        "phase": "installed",
+        "port_accepting_before_install": false,
+        "purpose": "Same accepted package prepared for Cauldron/Orrery shop-owned rewards; user confirmed manual Profile 3 main-menu readiness.",
+        "state_sha256": "9a4d3f300710a5140ab79a876f89c768a6ea232497b3e07aa48379f9498b0343",
+        "status": "passed",
+        "verified_by_utc": "2026-09-26 12:46:53 UTC"
+      },
+      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#orrery-five-card-rewards-and-merchant-travel-passed-2026-09-26",
+      "limits": "Orrery all-five collection and shop/map handoff only. Cauldron, alternate choices/Skip, reload persistence and full shared v2 ending remain separate. Two disposable-helper stops are retained below; no production correction or uncertain mutation retry occurred.",
+      "pending": false,
+      "reconciled": 28,
+      "recorded_interval_seconds": 529,
+      "recorded_interval_start_utc": "2026-09-26 12:52:02 UTC",
+      "recorded_live_corpus": false,
+      "release_manifest_sha256": "289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302",
+      "setup": "Manual Profile 3 Continue restored floor 41 merchant with 826 gold, HP 88/88, seventeen cards, 32 relics and five potions. Sixth of six room shop preparations offered Orrery for 177 at floor 47; all setup preceded attachment. No act reset or inventory/HP/gold grant.",
+      "source_commit": "7829456da1bb28471f4aa4c910d3b5ca6d693032",
+      "stale_rejections": 1,
+      "status": "passed",
+      "target_game_executed": true,
+      "tests": [
+        {
+          "accepted": 13,
+          "actions": [
+            "buy_shop_item",
+            "open_reward",
+            "choose_reward_card",
+            "open_reward",
+            "choose_reward_card",
+            "open_reward",
+            "choose_reward_card",
+            "open_reward",
+            "choose_reward_card",
+            "open_reward",
+            "choose_reward_card",
+            "close_shop",
+            "leave_shop"
+          ],
+          "attempted": 13,
+          "case": "orrery_five_card_rewards",
+          "effects": {
+            "actionable_map": true,
+            "added_cards": [
+              {
+                "id": "cinder",
+                "upgrade_level": 0
+              },
+              {
+                "id": "headbutt",
+                "upgrade_level": 0
+              },
+              {
+                "id": "setup_strike",
+                "upgrade_level": 0
+              },
+              {
+                "id": "stomp",
+                "upgrade_level": 0
+              },
+              {
+                "id": "armaments",
+                "upgrade_level": 1
+              }
+            ],
+            "automatic_reward_return": true,
+            "deck_after": 22,
+            "deck_before": 17,
+            "gold_after": 649,
+            "gold_before": 826,
+            "hp": 88,
+            "max_hp": 88,
+            "occupied_potion_slots": 5,
+            "original_cards_unchanged": 17,
+            "potion_capacity": 5,
+            "potions_unchanged": true,
+            "price": 177,
+            "relic": "orrery",
+            "relics_after": 33,
+            "relics_before": 32
+          },
+          "exit_controller_reads": 3,
+          "exit_preflight_reads": 1,
+          "helper_stop": {
+            "accepted": 11,
+            "attempted": 11,
+            "code": "shop_rewards_unexpected_context",
+            "completed_by_utc": "2026-09-26 12:56:25 UTC",
+            "explanation": "Expected explicit reward dismissal, but the native game automatically returned to inventory after the fifth card. Inventory effects had been checked; bounded Close/Leave completed separately.",
+            "pending": false,
+            "reconciled": 11,
+            "status": "failed"
+          },
+          "initial_offer_reads": 1,
+          "outcome": {
+            "kind": "truncated",
+            "reason": "external_stop"
+          },
+          "preflight_reads": 1,
+          "reconciled": 13,
+          "reward_controller_reads": 12,
+          "status": "passed",
+          "total_public_reads": 19,
+          "verification_reads": 1
+        },
+        {
+          "accepted": 15,
+          "attempted": 15,
+          "case": "legal_travel_to_next_merchant",
+          "cauldron_offered": false,
+          "completed_by_utc": "2026-09-26 12:58:56 UTC",
+          "continuation_reads": 16,
+          "deck_count": 23,
+          "first_controller_reads": 139,
+          "gold": 665,
+          "helper_stop": {
+            "code": "travel_dispatch_rejected",
+            "counts": [
+              23,
+              23,
+              23
+            ],
+            "mutation_state": "none",
+            "pending": false,
+            "reason": "stale_decision",
+            "status": "failed"
+          },
+          "hp": 88,
+          "map_inspection_reads": 1,
+          "max_hp": 88,
+          "pending": false,
+          "reconciled": 15,
+          "relic_count": 33,
+          "route": [
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              5
+            ]
+          ],
+          "settled_inspection_reads": 1,
+          "stale_rejections": 1,
+          "status": "passed"
+        }
+      ],
+      "total_public_reads": 176
     }
   ],
   "change": "Wait for native single-enchantment preview children queued for deletion before validating the exact new holders; no input retry or premature confirmation.",
@@ -261,10 +434,11 @@
     "focused_pickup_seconds": 4.778,
     "independent_review_seconds": 193,
     "installation_verified_by_utc": "2026-09-26 12:08:59 UTC",
+    "latest_reward_batch_recorded_interval_seconds": 529,
     "latest_shop_batch_recorded_interval_seconds": 535,
     "latest_shop_selector_recorded_interval_seconds": 249,
     "live_preparation_through_cleanup_recorded_interval_seconds": 480,
-    "next_installation_verified_by_utc": "2026-09-26 12:46:53 UTC",
+    "next_installation_verified_by_utc": "2026-09-26 13:01:17 UTC",
     "note": "Implementation, review and validation overlapped. Exclusive implementation/release preparation, failed gate elapsed time and user-wait durations were not measured.",
     "release_gate_seconds": 355.485
   },
@@ -760,10 +934,10 @@
     "overlay_count": 2,
     "phase": "installed",
     "port_accepting_before_install": false,
-    "purpose": "Same accepted package prepared for Cauldron/Orrery shop-owned rewards; user confirmed manual Profile 3 main-menu readiness.",
-    "state_sha256": "9a4d3f300710a5140ab79a876f89c768a6ea232497b3e07aa48379f9498b0343",
+    "purpose": "Same accepted package prepared for Cauldron shop-owned potion rewards; user confirmed manual Profile 3 main-menu readiness.",
+    "state_sha256": "247628e31adb63cbaf48851a59a37bb84b3ed2815a2dff9250c9a2c7c84235fe",
     "status": "passed",
-    "verified_by_utc": "2026-09-26 12:46:53 UTC"
+    "verified_by_utc": "2026-09-26 13:01:17 UTC"
   },
   "live": {
     "accepted": 7,
@@ -852,11 +1026,10 @@
   },
   "next_live_test": {
     "new_campaign_required": false,
-    "premise": "Continue saved Profile 3 campaign and establish an affordable native Cauldron or Orrery offer before full-producer attachment. Collect all five rewards and verify exact gold, original inventory and shop/map return; the Cauldron case discards original potions through legal public actions to free five slots.",
+    "premise": "Continue saved Profile 3 campaign and prepare an affordable native Cauldron offer before full-producer attachment. Free five slots through legal potion discards, collect all five potion rewards, verify exact effects and finish shop/map return.",
     "status": "user_ready",
     "targets": [
-      "cauldron",
-      "orrery"
+      "cauldron"
     ]
   },
   "previous_release": {
@@ -962,7 +1135,7 @@
   "release_manifest_sha256": "289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302",
   "remaining_limits": [
     "Punch Dagger passed on this release; the preceding 2/2/0 failure retains its original identity and unresolved counts.",
-    "Cauldron/Orrery, remaining concrete compound/pickup paths, untested selector variants and the full-producer ending retain the limits in docs/STATUS.md.",
+    "Cauldron, remaining concrete compound/pickup paths, untested selector/reward variants and the full-producer ending retain the limits in docs/STATUS.md.",
     "Offline fixtures do not establish native animation timing, exhaustive callers or strategic policy quality."
   ],
   "semantic_review": {

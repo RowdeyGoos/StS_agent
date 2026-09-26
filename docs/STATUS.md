@@ -1,7 +1,7 @@
 # Bridge support and status
 
-Updated 2026-09-26 for all five supported shop card selectors, zero-purchase
-shop exit and shared-producer rest coverage; other capability review remains
+Updated 2026-09-26 for all five supported shop card selectors, Orrery rewards,
+zero-purchase shop exit and shared-producer rest coverage; other capability review remains
 2026-09-19 against bridge source, pinned native game IL and retained evidence. Latest live
 session: **2026-09-26**. This is the authoritative summary of bridge support;
 [usage](../bridge/Sts2AgentBridge/README.md), [technical contracts](GENERIC_EVENTS.md),
@@ -61,6 +61,8 @@ and an exact-inventory zero-purchase shop exit brought that batch to **25/25/25*
 Royal Stamp then passed **7/7/7**, including deselection/reselection and exact
 Royally Approved, Innate and Retain on the original Defend+. All five supported
 shop card-selector families now have a representative successful live case.
+Orrery's five card rewards and automatic return to the shop then passed through
+map return at **13/13/13**; later legal travel reached another merchant at **28/28/28**.
 The ledger preserves the
 earlier Whetstone failure at **36/36/35** and shop failure at **1/0/0** under their
 original artifacts. Prior rest cancellation and potion-reward evidence retains
@@ -82,6 +84,7 @@ its separate package identity.
 | Rest | Heal/Proceed and Smith (one card); Lift, Kindle, Dig, Cook, Clone and Hatch. Packaged `rest_v3` exposes selector cancellation and Heal-owned rewards | Every supported single-player option has a representative successful live case. Smith/Cook cancellation and deselection/reselection, Dream Catcher card collect/Skip, Tiny Mailbox two-potion collection and remaining Miniature Tent options demonstrated. Exact per-option limits remain below |
 | Shop purchases | Cards, potions, supported passive relics, Potion Belt +2 slots; 0–8 purchases, kind policy, gold reserve and callback-certified restock | Seven-card/one-potion visit and three restocked potion purchases with original-potion replacement demonstrated. Full-producer passive, selector and Belt pickups passed through map return; Belt expanded a full inventory from three to five slots and both added slots were filled. Zero-purchase Close/Leave passed 2/2/2 with exact inventory preservation. Remaining pickup and policy variants need live coverage |
 | Shop removal | Exact selected original, price/effect reconciliation, preview cancellation, then separate inventory close and Leave | Removal and full-producer preview cancellation demonstrated through map return; cancellation retained exact deck and gold |
+| Shop-owned rewards | Cauldron's five potions and Orrery's five card menus under the purchase owner | Orrery passed five exact card additions, automatic shop return and Close/Leave at 13/13/13, preserving the original deck, HP and potions. The test helper initially expected a separate reward dismissal and stopped after 11 settled actions; the two exit actions completed separately. Cauldron remains awaiting representative live evidence |
 | Shop pickup selectors | Dolly’s Mirror, Gnarled Hammer, Kifuda, Punch Dagger and Royal Stamp; exact native clone/enchantment selection | All five have representative live success: Kifuda’s three Adroit 3 originals; Mirror’s exact Bludgeon clone; Punch Dagger’s Momentum 5 on Bludgeon+; Hammer’s Sharp 3 on two Bludgeon+ originals and Headbutt+; Royal Stamp’s Royally Approved/Innate/Retain on Defend+. Punch Dagger and Stamp included deselection/reselection. All paid exactly and returned to the map, retaining other cards/HP/potions. Zero/fewer-card or toggle variants not separately demonstrated remain offline only. Other pickup callbacks are not generally supported |
 
 ### Native rest-site actions
@@ -302,7 +305,7 @@ These are **not an implementation queue or required live-test checklist**:
 
 - Other full-producer Neow’s Bones compound branches, including offer/bundle and
   deck selectors and potion procurement; empty-chest completion, remaining automatic
-  pickup effects, shop Cauldron/Orrery and additional shared event reward callers,
+  pickup effects, shop Cauldron and additional shared event reward callers,
   plus an ending test.
   Representative hand/optional offers, potion use/discard and potion-owned choices,
   chest claiming, reroll and Sacrifice passed live, including the corrected
@@ -310,7 +313,8 @@ These are **not an implementation queue or required live-test checklist**:
   passed, with unchanged deck/gold and map return. Lost Coffer's full-producer
   rewards passed potion replacement, card choice and event/map return at 6/6/6.
   Neow’s Bones with Large Capsule, Lost Coffer, nested Sacrifice and final Decay
-  passed at 7/7/7 through map return.
+  passed at 7/7/7 through map return. Orrery's five card additions, automatic shop
+  return and map exit passed at 13/13/13.
 - Expanded terminal schemas 9–10: the representative ten-entry screen passed live.
   The wider 32-entry bound and 65-action card-menu sequence remain fixture/socket
   evidence, without a separately identified ordinary 32-entry gameplay caller.
@@ -352,7 +356,17 @@ and native enchantment integration checks also passed. Independent semantic
 review found no blocker. A missing method in a second inert fixture stopped an
 earlier gate; the fixture was corrected before the accepted gate.
 
-The latest [Royal Stamp test](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#royal-stamp-preview-toggle-passed-2026-09-26)
+The latest [Orrery batch](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#orrery-five-card-rewards-and-merchant-travel-passed-2026-09-26)
+passed **13/13/13** through purchase, all five card choices and shop/map return.
+Gold changed 826 → 649 and the deck grew 17 → 22, preserving every original card,
+HP and potions. The helper stopped after the game's automatic reward dismissal;
+all eleven actions were settled, and Close/Leave completed separately. Legal
+travel then reached another merchant at **28/28/28**, with one known non-mutating
+stale rejection handled from a fresh decision. No production correction was needed.
+Normal Save and Quit, game Quit and exact cleanup passed by **2026-09-26 13:00:51 UTC**,
+leaving zero overlays and all 429 base files unchanged.
+
+The preceding [Royal Stamp test](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#royal-stamp-preview-toggle-passed-2026-09-26)
 passed **7 attempted / 7 accepted / 7 reconciled**, 19 controller reads, no stale
 rejection or pending action. The same Defend+ was selected, deselected and
 reselected, then received exactly Royally Approved with Innate and Retain.

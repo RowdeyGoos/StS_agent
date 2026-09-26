@@ -52,11 +52,19 @@ stayed exact through map return. Cleanup passed by **12:42:36 UTC**, with zero
 overlays and all 429 base files unchanged. All five supported shop card selectors
 now have a representative live success.
 
-The package was reinstalled and checked by **12:46:53 UTC** for Cauldron/Orrery:
+The [Orrery batch](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#orrery-five-card-rewards-and-merchant-travel-passed-2026-09-26)
+passed **13/13/13** through five card additions, automatic shop return and map exit.
+The helper's explicit-dismissal assumption caused a settled stop after eleven
+actions; Close/Leave completed separately without repeating the purchase.
+Later legal travel reached another merchant at **28/28/28**, with one confirmed
+non-mutating stale rejection. Cleanup passed by **13:00:51 UTC**, leaving zero
+overlays and all 429 base files unchanged. No production change was needed.
+
+The package was reinstalled and checked by **13:01:17 UTC** for Cauldron:
 two exact overlays, unchanged base files and verified metadata. Installed state is
-`9a4d3f300710a5140ab79a876f89c768a6ea232497b3e07aa48379f9498b0343`.
+`247628e31adb63cbaf48851a59a37bb84b3ed2815a2dff9250c9a2c7c84235fe`.
 The user confirmed manual Profile 3 main-menu readiness; the saved campaign can
-be continued for the reward test.
+be continued for the potion reward test.
 
 The preceding manifest `e47f0514…`, source `c599a9f`, passed Red Mask, Kifuda,
 Dolly’s Mirror, Potion Belt, Cook, the remaining supported rest options, Smith
