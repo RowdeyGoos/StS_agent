@@ -19,6 +19,9 @@ namespace Godot
         public Node? FixtureParent {get;set;}
         public Node? GetParent()=>GeometryTrace.Read(this,"parent",FixtureParent);
         public readonly List<Node> Children=new();
+        private bool _queuedForDeletion;
+        public void QueueFree() => _queuedForDeletion = true;
+        public bool IsQueuedForDeletion() => _queuedForDeletion;
         public List<Node> GetChildren()=>Children;
         public int GetChildCount(bool includeInternal=false)=>Children.Count;
         public Node GetChild(int index,bool includeInternal=false)=>Children[index];
