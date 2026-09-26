@@ -218,12 +218,19 @@ extend standalone rest/shop contracts.
   passive-relic fixtures reproduced inherited-method hook failures in both
   observers. The correction uses each selected callback's declaring method for
   ownership, patching and cleanup; focused checks, independent review and the
-  final release gate passed. The correction is installed; native recovery remains
-  unverified. The
+  final release gate passed. The corrected package recovered Neow's reward and
+  event/map return during the later route; non-compound Sacrifice remains a
+  separate live limit. The
   [failed attempt](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#shared-v2-route-stopped-at-small-capsule-2026-09-26)
   retains its original package and unresolved counts after clean removal.
-- **Selectors:** direct input requires allocated native holders. Optional zero
-  confirmation is supported on specific contracts; it is not native cancellation.
+- **Large-deck shared selectors:** the later route stopped at Cook with a 33-card
+  deck and **51/51/50** counts. The shared selector incorrectly waited for every
+  native holder to be allocated. A source correction preserves all public choices
+  and performs bounded native scrolling/rebinding only for the requested original;
+  partial-grid and slow-frame regressions pass. Final release and live recovery
+  remain pending. Generic event selectors retain their allocated-holder boundary.
+  [Result and diagnosis](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#shared-v2-neow-recovery-and-large-deck-cook-stop-2026-09-26).
+  Optional zero confirmation is contract-specific and is not native cancellation.
 - **Single-card shop enchant preview:** Punch Dagger stopped after purchase and
   selection at **2/2/0**, before confirmation. The pinned preview queues old scene
   children for deletion until frame end; a matching fixture reproduced the
@@ -301,8 +308,10 @@ These are **not an implementation queue or required live-test checklist**:
 - Selectorless transform/add/enchantment variants retain their own contract limits;
   the new automatic-removal path does not broaden them.
 - Multi-card Smith: no native count-changing caller found; removed as a feature gap.
-- Variable-count upgrades, enchantment stacking/replacement, and unallocated-card
-  input: retained contract limits, without a concrete necessary caller/setup.
+- Variable-count upgrades, enchantment stacking/replacement, and generic-event
+  unallocated-card input: retained contract limits, without a concrete necessary
+  caller/setup. The shared Cook large-deck failure is a separate confirmed defect
+  with a correction under validation.
 - Resume-time card/selector reward screens and multi-item/relic reward screens:
   no concrete Resume caller identified. Dummy Setting1 offers one potion, Setting2
   upgrades automatically, and Setting3 obtains a relic directly. Resume-time
@@ -377,10 +386,13 @@ both defects before correction; independent semantic review found no blocker.
 All 102 bound Python files are unchanged from the preceding release.
 
 The corrected package was installed and checked by **2026-09-26 17:09:11 UTC**,
-with two exact overlay files and all 429 base files unchanged. It awaits a manual
-Profile 3 launch for Neow’s reward retest and the assisted shared-v2 act/ending
-route. No live acceptance is claimed for this new artifact; the results below
-retain their original manifest and source bindings.
+with two exact overlay files and all 429 base files unchanged. Its manual Profile 3
+run recovered Neow, then completed four fights and Slippery Bridge before stopping
+at Cook's 33-card selector: **51/51/50**, pending work and no ending. Normal Quit
+and cleanup passed by **17:39:16 UTC**, leaving zero overlays and all base files
+unchanged. The shared selector correction is under validation; this artifact is
+no longer installed. [Latest result](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#shared-v2-neow-recovery-and-large-deck-cook-stop-2026-09-26).
+Earlier results retain their original manifest and source bindings.
 
 The latest accepted [Sphere tool/reward test](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#sphere-small-and-big-tools-passed-2026-09-26)
 passed **17/17/17**, 64 public reads, zero stale rejections and no pending action.
@@ -397,8 +409,8 @@ at HP 2072/2072 with four Break and two Flash of Steel cards in the 29-card deck
 No action was retried. Normal Quit and exact cleanup passed by **16:44:26 UTC**,
 leaving zero overlays and all 429 base files unchanged. The inherited callback
 defect was reproduced in ordinary rewards and Sacrifice; its declaring-method
-correction passed the final release gate and is installed for a live retest.
-No act transition or ending was reached in the failed attempt.
+correction passed the final release gate and recovered Neow in the subsequent
+route recorded above. Neither attempt reached an act transition or ending.
 
 The preceding [Trial two-transform test](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#trial-curse-and-two-transforms-passed-2026-09-26)
 passed **5/5/5**, with fifteen controller reads and no pending action. Doubt was

@@ -541,6 +541,18 @@ private. Revealed Sphere cells retain their visible rarity/gold-size variant.
 | Events/Ancients | Existing children plus `full_rewards_v1` shared rewards and a Neow’s Bones `full_rewards_v2` compound child: nested reward sets, offers/bundles, deck choices, observed pickup effects, nested Sacrifice and the final curse; combat and owned item resumption | Eight rows per reward set, at most five compound sets and 40 child inputs within the 52-total-action event budget. Arbitrary nested pickup/selector callbacks remain unsupported. Controlled Large Capsule/Lost Coffer, nested Sacrifice and final curse passed through map return at 7/7/7; other compound branches remain fixture evidence |
 | Treasure/ending | `campaign_v3`: native chest Open, offered relic Claim or Skip, separate Proceed, and certified empty-chest completion; existing act/Architect continuation | Native Open/award/picking tasks must finish before handoff. Chest claiming and Silver Crucible’s empty-chest Open/Proceed are live demonstrated; broader pickup effects and the v2 ending need live validation |
 
+The shared deck-choice driver used by shop, rest and compound pickups retains
+its full eligible domain (at most 64 originals) independently of native grid
+allocation. Only an explicit selection/deselection request can navigate toward an
+unallocated original. It pins display order and the holder/card-node/hitbox pool,
+permits recycling only under that pending navigation, validates the complete
+native selected set, then stops motion and rechecks the exact card before input.
+A page allows 128 reads; a semantic request allows 64 pages within the existing
+256 native-input budget. Settled scrolling may finish native presentation
+allocation before rebinding. Hidden padding holders never become candidates.
+This source correction has fixture evidence; large-deck live recovery remains
+pending. It does not broaden the separate generic-event selector adapters.
+
 The Neow compound child retains exact native offer, collection, pickup and
 card-command tasks under one event owner. `full_rewards_v2` adds `card_offer`,
 `bundle_offer`, `bundle_preview`, `deck_remove`, `deck_upgrade` and `deck_transform`

@@ -1537,5 +1537,80 @@ validation passed by **17:09:11 UTC** on 2026-09-26 under state
 `0a07959bbbf2334cb961d72db6e10d86654d6ca55ac0ae4258114f8a19e45dec`.
 There are two exact overlay files and all 429 base files remain unchanged.
 Credential content was not read during this installation verification. The
-package awaits a manual Profile 3 launch; no live result for the correction is
-claimed. Exclusive release-preparation and user-wait durations were not measured.
+package was then awaiting a manual Profile 3 launch; the next entry records
+its actual live result. Exclusive release-preparation and user-wait durations were not measured.
+
+## Shared v2 Neow recovery and large-deck Cook stop, 2026-09-26
+
+Manifest `e8cfb4c7fb75fd87d72aa38d9b40e6a4580b07b3d8730238d0278f2e2c5b52fc`,
+source `57b61efb8deee847b5db1f6db6147085cdf0d85a`, ran under installed state
+`0a07959bbbf2334cb961d72db6e10d86654d6ca55ac0ae4258114f8a19e45dec`.
+The user manually launched Profile 3. Running-process verification passed at
+**17:30:33 UTC** and authenticated release/health preflight by **17:31:07 UTC**.
+Continue restored the already-reset Neow room at floor 51, HP **88/88**, gold
+**665**, 23 cards and five occupied potion slots. There was no act reset this
+session. The previous console assistance had not persisted: before attachment,
+64 native Looming Fruit add/remove pairs restored **2072/2072 HP**, with the
+fruit absent, then four Break and two Flash of Steel cards were added. The
+public preflight confirmed **29 cards** and these exact damage-card counts;
+the stale top HUD still showed 23. Console setup was closed before attachment.
+
+The unchanged `game.agent.full_policy.choose_action` chose Small Capsule,
+claimed its relic reward, left Neow and reached the map. It then completed four
+fights at floors 52, 53, 54 and 56, with Slippery Bridge at floor 55. Neow recovery
+is demonstrated within this route; no separate per-case counter total is claimed.
+At floor 57 it entered Cook's two-card removal screen with **33 cards**, no
+selected cards, HP **2072/2072** and gold **726**. The controller remained waiting.
+A graceful interrupt of the exact owned controller produced **`interrupted_pending`**
+by **17:37:42 UTC**: **51 attempted / 51 accepted / 50 reconciled**, 51 decisions,
+3,861 controller reads, 34 separate preflight reads, zero stale rejections and
+pending work. Only Act 1 was observed; no Architect or terminal outcome was seen,
+and route acceptance was false. No manual gameplay input or mutation retry
+followed attachment. A read-only screenshot established the Cook screen, not
+an exact native holder count or predicate. The earlier uncertain reward attempt
+remains separate and unreconciled.
+
+Normal Quit, stopped-process/closed-listener checks and exact quarantine/purge
+completed. Unchanged-base verification passed by **17:39:16 UTC**: four generated
+files removed, zero overlays and all 429 base files unchanged at
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Quarantine state was
+`7cac22c5b3446df232acdbe95c2771a988978f274c5c0c92fda3be717d5aa788`.
+Cleanup does not reconcile Cook. No profile/save/history/Cloud filesystem access
+or retained live corpus occurred. Exclusive setup, controller, cleanup and user
+wait durations were not measured.
+
+The shared `PinnedDeckCardChoice` required its allocated native holders to equal
+the full candidate count. Pinned `NCardGrid` instead recycles a bounded window for
+larger decks. A partial-grid fixture reproduced failure to become ready at
+`/private/tmp/sts-bridge-w56ogio5/log-003.txt`. The correction keeps the complete
+public domain, validates the native display order and navigates only toward an
+explicitly selected original. It retains the same holder/card-node/hitbox pool,
+ignores hidden padding's stale models, checks the native selected set across
+pages and stops scrolling before exact native selection. Domain, ownership,
+foreign selection and unowned binding changes fail without replay.
+
+Independent review found a second concrete edge in the first correction:
+`UpdateScrollPosition` allocates at the old position before moving. A slow frame
+can snap to the bottom while the last row remains unallocated. The corrected
+fixture reproduced that zero-distance failure at
+`/private/tmp/sts-bridge-k3odcdec/log-003.txt`. Pending navigation now finishes the
+exact native presentation allocation under its retained owner and revalidates
+on the next read before selection. Navigation is bounded to 64 pages per semantic
+request, 128 reads per page and the existing 256 native-input budget. This changes
+no policy choice, selector domain, wire schema, deck or RNG directly.
+
+The 33-card/25-holder fixture covers gradual and snapping frames, delayed
+highlights, exact cross-page selection/deselection/reselection/confirmation and
+hidden final-row padding. Adversarial cases cover changes during allocation and
+no allocation progress. **946 shop pickup checks** passed in **4.260 seconds**
+(`/private/tmp/sts-bridge-44lnv2f7`, three groups), including the final tightening
+of the distinct-holder invariant. An earlier production build passed in 2.259 seconds
+and affected direct-input/event consumers in 36.990 seconds; both preceded the
+allocation-order correction and are not final-release evidence.
+
+Independent source review ran **17:40:56–17:43:44 UTC** (design),
+**17:49:08–17:52:51 UTC** (implementation, found the slow-frame edge), and
+**17:58:28–17:59:06 UTC** (correction clear), **429 seconds total**.
+The reviewer ran no tests or game. Final validation and native Cook recovery
+remain separate; the intended retest continues the saved campaign.

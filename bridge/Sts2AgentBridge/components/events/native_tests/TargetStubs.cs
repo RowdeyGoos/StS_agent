@@ -66,6 +66,12 @@ namespace Godot
         public Variant GetShaderParameter(string _) => new(FixtureTrace.Read(this,"shader",Width));
     }
 
+    public sealed class InputEventPanGesture : IDisposable
+    {
+        public Vector2 Delta { get; set; }
+        public void Dispose() { }
+    }
+
     public sealed class InputEventAction : IDisposable
     {
         public string Action { get; set; } = string.Empty;
@@ -372,6 +378,37 @@ namespace MegaCrit.Sts2.Core.Nodes.Screens.CardSelection
     {
         public List<NGridCardHolder> CurrentlyDisplayedCardHolders { get; } = new();
         public bool IsAnimatingOut { get; set; }
+        private readonly List<CardModel> _cards = new(), _highlightedCards = new();
+        private readonly Control _scrollContainer = new();
+        private float _targetDrag;
+        private bool CanScroll => FixtureCanScroll;
+        private float ScrollLimitTop => 0;
+        private float ScrollLimitBottom => FixtureScrollBottom;
+        public bool FixtureCanScroll = true;
+        public float FixtureScrollBottom = -1000;
+        public List<CardModel> FixtureCards => _cards;
+        public List<CardModel> FixtureHighlights => _highlightedCards;
+        public Control FixtureScroll => _scrollContainer;
+        public float FixtureScrollTarget => _targetDrag;
+        public int FixturePanInputs, FixtureScrollStops, FixtureAllocations;
+        public bool FixtureSnapScroll;
+        public Action? FixtureAllocate;
+        public void _GuiInput(InputEventPanGesture gesture)
+        { FixturePanInputs++; _targetDrag -= gesture.Delta.Y * 50; }
+        // Match the pinned native method: changing position does not allocate.
+        public void SetScrollPosition(float value)
+        { FixtureScrollStops++; _targetDrag = value; _scrollContainer.Position = new(0, value); }
+        private void AllocateCardHolders() { FixtureAllocations++; FixtureAllocate?.Invoke(); }
+        public void FixtureScrollFrame()
+        {
+            if (Math.Abs(_scrollContainer.Position.Y - _targetDrag) <= 0.1f) return;
+            // Native UpdateScrollPosition allocates at the OLD position. A slow
+            // frame snaps to the target, leaving no later frame to finish rows.
+            float next = _scrollContainer.Position.Y + (_targetDrag - _scrollContainer.Position.Y) * (FixtureSnapScroll ? 1 : 0.75f);
+            if (Math.Abs(next - _targetDrag) < 0.5f) next = _targetDrag;
+            AllocateCardHolders();
+            _scrollContainer.Position = new(0, next);
+        }
         public int YOffset { get; set; }
     }
     public class NUpgradePreview : Control { public CardModel? Card { get; set; } }

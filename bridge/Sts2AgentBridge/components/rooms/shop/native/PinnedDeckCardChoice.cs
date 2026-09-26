@@ -37,6 +37,13 @@ internal sealed class PinnedDeckCardChoice
     private NGridCardHolder[]? _holders;
     private NCard[]? _cardNodes;
     private GodotObject[]? _hitboxes;
+    private CardModel[]? _holderCards, _gridCards;
+    private bool[]? _holderVisible;
+    private Control? _scrollContainer;
+    private CardModel? _scrollTarget;
+    private float _scrollDestination;
+    private int _scrollReads, _scrollPages;
+    private bool _scrollAllocationDrained;
     private Control? _container, _preview;
     private NConfirmButton? _confirm, _openPreview;
     private NBackButton? _back, _previewBack;
@@ -99,6 +106,7 @@ internal sealed class PinnedDeckCardChoice
         if (_selection.IsCompleted) { Require(Completed); return null; }
         if (_confirmed || _cancelled) { Require(_context()); return null; }
         Require(OwnsForeground && _context());
+        if (_scrollTarget is not null) Require(++_scrollReads <= 128);
         if (!_screen.IsVisibleInTree()) return null;
         if (!Bind()) return null;
         bool preview = _container!.Visible && _container.IsVisibleInTree();
@@ -119,7 +127,8 @@ internal sealed class PinnedDeckCardChoice
                 Require(!preview);
                 CardModel? remove = _selected.FirstOrDefault(c => !_desired.Contains(c));
                 CardModel card = remove ?? _desired.First(c => !_selected.Contains(c));
-                var holder = _holders!.Single(h => ReferenceEquals(h.CardModel, card));
+                var holder = _holders!.SingleOrDefault(h => h.Visible && ReferenceEquals(h.CardModel, card));
+                if (holder is null) { ScrollTo(card); return null; }
                 Require(Clickable(holder));
                 _highlightPending.Add(card);
                 _selected = remove is null ? _selected.Append(card).ToArray() : _selected.Where(c => !ReferenceEquals(c, card)).ToArray();
@@ -158,6 +167,7 @@ internal sealed class PinnedDeckCardChoice
         Require(_interactive && _ready && _desired is null && !_confirmed && !_cancelled);
         var fresh = Read(); Require(fresh is not null && _ready && _context());
         _ready = false;
+        _scrollPages = 0;
         switch (operation)
         {
             case "select":
@@ -183,13 +193,23 @@ internal sealed class PinnedDeckCardChoice
         var holders = grid.CurrentlyDisplayedCardHolders.ToArray();
         if (_holders is null)
         {
-            if (holders.Length != _domain.Length) return false;
+            if (holders.Length == 0) return false;
+            if (holders.Length != _domain.Length || holders.Count(h => h.Visible) != _domain.Length)
+            {
+                // A native grid recycles a bounded window of holders. The
+                // request's complete public domain is independent of that pool.
+                _gridCards = GridCards(grid);
+                Require(SameSet(_gridCards, _domain));
+                _scrollContainer = Field(grid, "_scrollContainer") as Control;
+                Require(Valid(_scrollContainer));
+            }
             Require(holders.Distinct(ReferenceEqualityComparer.Instance).Count() == holders.Length &&
                 holders.All(h => Valid(h) && h.CardModel is {} c && _domain.Contains(c)) &&
-                holders.Select(h => h.CardModel).Distinct(ReferenceEqualityComparer.Instance).Count() == _domain.Length);
+                holders.Where(h => h.Visible).Select(h => h.CardModel).Distinct(ReferenceEqualityComparer.Instance).Count() == holders.Count(h => h.Visible));
             _grid = grid; _holders = holders;
             Require(holders.All(h => Valid(h.CardNode) && Valid(h.Hitbox)));
             _cardNodes = holders.Select(h => h.CardNode!).ToArray(); _hitboxes = holders.Select(h => (GodotObject)h.Hitbox!).ToArray();
+            _holderCards = holders.Select(h => h.CardModel!).ToArray(); _holderVisible = holders.Select(h => h.Visible).ToArray();
             _container = _screen.GetNodeOrNull<Control>(Container); Require(Valid(_container));
             _preview = _container!.GetNodeOrNull<Control>(Preview); _confirm = _container.GetNodeOrNull<NConfirmButton>(Confirm);
             Require(Valid(_preview) && Valid(_confirm) && !_container.Visible);
@@ -201,24 +221,116 @@ internal sealed class PinnedDeckCardChoice
             }
         }
         Require(ReferenceEquals(grid, _grid) && holders.Length == _holders!.Length &&
-            holders.Select((h, i) => ReferenceEquals(h, _holders[i])).All(x => x) &&
+            holders.Distinct(ReferenceEqualityComparer.Instance).Count() == holders.Length &&
             ReferenceEquals(_screen.GetNodeOrNull<Control>(Container), _container) &&
             ReferenceEquals(_container!.GetNodeOrNull<Control>(Preview), _preview) &&
             ReferenceEquals(_container.GetNodeOrNull<NConfirmButton>(Confirm), _confirm) &&
             ReferenceEquals(_screen.GetNodeOrNull<NConfirmButton>(OpenPreview), _openPreview));
         if (_interactive) Require(ReferenceEquals(_container.GetNodeOrNull<NBackButton>(PreviewBack), _previewBack) && ReferenceEquals(_screen.GetNodeOrNull<NBackButton>("%Close"), _back));
+        if (_gridCards is not null)
+        {
+            Require(GridCards(grid).SequenceEqual(_gridCards) && ReferenceEquals(Field(grid, "_scrollContainer"), _scrollContainer));
+            CheckWindow(holders);
+        }
+        if (_scrollTarget is not null)
+        {
+            // Only our outstanding pan may recycle this exact holder pool.
+            // Hidden padding holders retain stale models in the native grid.
+            Require(!_container!.Visible && _context());
+            foreach (var h in holders)
+            {
+                int prior = Array.IndexOf(_holders!, h);
+                Require(prior >= 0 && Valid(h) && !h.IsQueuedForDeletion() && ReferenceEquals(h.CardNode, _cardNodes![prior]) &&
+                    ReferenceEquals(h.Hitbox, _hitboxes![prior]) && Valid(h.CardNode) && Valid(h.Hitbox) &&
+                    !h.CardNode!.IsQueuedForDeletion() && !h.Hitbox.IsQueuedForDeletion() && ReferenceEquals(h.CardNode.Model, h.CardModel));
+            }
+            CheckNativeHighlights();
+            float current = _scrollContainer!.Position.Y;
+            Require(float.IsFinite(current) && Field(grid, "_targetDrag") is float target && target == _scrollDestination);
+            bool allocated = holders.Any(h => h.Visible && ReferenceEquals(h.CardModel, _scrollTarget));
+            if (!allocated && Math.Abs(current - _scrollDestination) > 0.1f) return false;
+            if (!allocated && !_scrollAllocationDrained)
+            {
+                // UpdateScrollPosition allocates at the old position, then
+                // moves. A snapping frame may leave more rows to recycle with
+                // no further motion. Finish that native presentation work under
+                // the same pan owner; never emit a second selection or gesture.
+                var cards = holders.Select(h => h.CardModel).ToArray();
+                var visible = holders.Select(h => h.Visible).ToArray();
+                var allocate = typeof(NCardGrid).GetMethod("AllocateCardHolders", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+                Require(allocate is not null && allocate.ReturnType == typeof(void) && allocate.GetParameters().Length == 0);
+                Input(() => allocate.Invoke(grid, null));
+                var after = grid.CurrentlyDisplayedCardHolders.ToArray();
+                _scrollAllocationDrained = after.Length == holders.Length && after.Select((h, i) =>
+                    ReferenceEquals(h, holders[i]) && ReferenceEquals(h.CardModel, cards[i]) && h.Visible == visible[i]).All(x => x);
+                // Revalidate the entire pool, domain, owner and selected set on
+                // the next read before accepting a binding or touching a card.
+                return false;
+            }
+            // Stop residual easing before freezing a new binding or selecting.
+            Input(() => grid.SetScrollPosition(current));
+            _holders = holders; _cardNodes = holders.Select(h => h.CardNode!).ToArray();
+            _hitboxes = holders.Select(h => (GodotObject)h.Hitbox!).ToArray();
+            _holderCards = holders.Select(h => h.CardModel!).ToArray(); _holderVisible = holders.Select(h => h.Visible).ToArray();
+            _highlightPending.UnionWith(holders.Where(h => h.Visible).Select(h => h.CardModel!));
+            _scrollTarget = null;
+        }
+        Require(holders.Select((h, i) => ReferenceEquals(h, _holders![i])).All(x => x));
         for (int i = 0; i < holders.Length; i++)
         {
             var h = holders[i]; Require(Valid(h) && Valid(h.CardNode) && Valid(h.Hitbox) && ReferenceEquals(h.CardNode, _cardNodes![i]) &&
-                ReferenceEquals(h.Hitbox, _hitboxes![i]) && ReferenceEquals(h.CardNode!.Model, h.CardModel) && _domain.Contains(h.CardModel!));
+                ReferenceEquals(h.Hitbox, _hitboxes![i]) && ReferenceEquals(h.CardNode!.Model, h.CardModel) &&
+                ReferenceEquals(h.CardModel, _holderCards![i]) && h.Visible == _holderVisible![i] && _domain.Contains(h.CardModel!));
         }
         return true;
     }
 
+    private CardModel[] GridCards(NCardGrid grid)
+    {
+        Require(Field(grid, "_cards") is IEnumerable<CardModel>);
+        var cards = ((IEnumerable<CardModel>)Field(grid, "_cards")!).Take(65).ToArray();
+        Require(cards.Length is >= 1 and <= 64 && cards.Distinct(ReferenceEqualityComparer.Instance).Count() == cards.Length);
+        return cards;
+    }
+    private void CheckWindow(NGridCardHolder[] holders)
+    {
+        Require(holders.All(h => Valid(h) && !h.IsQueuedForDeletion() && h.CardModel is not null));
+        var indices = holders.Where(h => h.Visible).Select(h => Array.IndexOf(_gridCards!, h.CardModel)).ToArray();
+        Require(indices.Length > 0 && indices[0] >= 0 && indices.Select((value, index) => value == indices[0] + index).All(x => x));
+    }
+    private void CheckNativeHighlights()
+    {
+        Require(Field(_grid!, "_highlightedCards") is IEnumerable<CardModel>);
+        var cards = ((IEnumerable<CardModel>)Field(_grid!, "_highlightedCards")!).Take(65).ToArray();
+        Require(cards.Distinct(ReferenceEqualityComparer.Instance).Count() == cards.Length && SameSet(cards, _selected));
+    }
+    private void ScrollTo(CardModel card)
+    {
+        Require(_gridCards is not null && _scrollTarget is null && !_container!.Visible && ++_scrollPages <= 64 &&
+            typeof(NCardGrid).GetProperty("CanScroll", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(_grid) is true);
+        var allocated = _holders!.Where(h => h.Visible).Select(h => Array.IndexOf(_gridCards!, h.CardModel)).ToArray();
+        int index = Array.IndexOf(_gridCards!, card);
+        Require(index >= 0 && allocated.Length > 0 && (index < allocated[0] || index > allocated[^1]));
+        float current = _scrollContainer!.Position.Y, height = _grid!.Size.Y;
+        float top = (float)typeof(NCardGrid).GetProperty("ScrollLimitTop", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(_grid)!;
+        float bottom = (float)typeof(NCardGrid).GetProperty("ScrollLimitBottom", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(_grid)!;
+        Require(float.IsFinite(current) && float.IsFinite(height) && height > 0 && float.IsFinite(top) && float.IsFinite(bottom));
+        _scrollDestination = Math.Clamp(current + (index < allocated[0] ? height : -height), Math.Min(top, bottom), Math.Max(top, bottom));
+        Require(Math.Abs(_scrollDestination - current) > 0.1f);
+        _scrollTarget = card; _scrollReads = 0; _scrollAllocationDrained = false;
+        // Pan input changes the native target; _Process performs allocation.
+        // SetScrollPosition alone changes position without allocating any rows.
+        using var gesture = new InputEventPanGesture { Delta = new Vector2(0, (current - _scrollDestination) / 50f) };
+        Input(() => _grid._GuiInput(gesture));
+        Require(Field(_grid, "_targetDrag") is float changed && float.IsFinite(changed) && Math.Abs(changed - _scrollDestination) <= 0.01f);
+        _scrollDestination = (float)Field(_grid, "_targetDrag")!;
+    }
+
     private bool CheckHighlights()
     {
+        if (_gridCards is not null) CheckNativeHighlights();
         bool settled = true;
-        foreach (var h in _holders!)
+        foreach (var h in _holders!.Where(h => h.Visible))
         {
             Require(h.CardNode!.CardHighlight?.Material is ShaderMaterial);
             var endpoint = CardSelectionV1NativeRules.ClassifyHighlight(((ShaderMaterial)h.CardNode.CardHighlight.Material).GetShaderParameter("width").AsSingle());

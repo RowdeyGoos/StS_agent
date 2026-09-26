@@ -35,14 +35,19 @@ stopped at Neow’s Small Capsule/Stone Cracker reward with `uncertain_dispatch`
 retried. Normal Quit and exact cleanup passed by **16:44:26 UTC** on 2026-09-26,
 leaving zero overlays and all 429 base files unchanged. Derived-passive fixtures
 reproduced the callback defect before each correction. The failed live reply did
-not preserve its exact native exception; native recovery is still unverified.
+not preserve its exact native exception; the later Neow recovery is recorded below.
 
 The corrected package was installed and verified by **17:09:11 UTC** on
 2026-09-26, with two exact overlay files and all 429 base files unchanged.
 Installed state:
 `0a07959bbbf2334cb961d72db6e10d86654d6ca55ac0ae4258114f8a19e45dec`.
-It awaits a manual Profile 3 launch for the reward retest and assisted shared-v2
-act/ending route. No live acceptance is claimed for this artifact.
+The manual Profile 3 run recovered Neow's reward and event/map return, then
+completed four fights and Slippery Bridge. It stopped at Cook's two-card selector
+with a 33-card deck: **51 attempted / 51 accepted / 50 reconciled**, pending work
+and no ending. No manual gameplay input or mutation retry followed attachment. Normal
+Quit and exact cleanup passed by **17:39:16 UTC**, leaving zero overlays and all
+429 base files unchanged. The selector correction is under development; this
+artifact is no longer installed. [Dated result](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#shared-v2-neow-recovery-and-large-deck-cook-stop-2026-09-26).
 
 The prior release’s exact record remains in Git `57b61ef` and
 `/private/tmp/sts-bridge-cj8jmqx7/previous-release-record`; its package inputs are

@@ -107,9 +107,10 @@ internal static partial class Program {
         private readonly Queue<Action> _highlightUpdates = new();
         internal int Inputs, Clears, Commits, Cancels;
         private readonly List<CardModel> _selected = new();
-        internal InteractiveChoiceFixture(bool smith = false, bool transform = false, bool nested = false, bool enchant = false)
+        private int _windowStart;
+        internal InteractiveChoiceFixture(bool smith = false, bool transform = false, bool nested = false, bool enchant = false, int count = 3, int window = 0)
         {
-            Cards = Enumerable.Range(0, 3).Select(i => { var c = new CardModel { Owner = Player }; c.Id.Entry = "CARD_" + i; return c; }).ToArray();
+            Cards = Enumerable.Range(0, count).Select(i => { var c = new CardModel { Owner = Player }; c.Id.Entry = "CARD_" + i; return c; }).ToArray();
             Player.Deck.Cards.AddRange(Cards);
             bool single = smith || transform || enchant;
             Screen = enchant ? new NDeckEnchantSelectScreen() : transform ? new NDeckTransformSelectScreen() : smith ? new NDeckUpgradeSelectScreen() : new NDeckCardSelectScreen();
@@ -132,17 +133,23 @@ internal static partial class Program {
             } else Container.Bind(smith ? "UpgradePreview" : "%Cards", smith ? new NUpgradePreview() : Preview);
             Container.Bind(single ? "Confirm" : "%PreviewConfirm", Confirm);
             Container.Bind(single ? "Cancel" : "%PreviewCancel", PreviewBack);
-            foreach (var card in Cards.Reverse())
+            Grid.FixtureCards.AddRange(Cards.Reverse());
+            Grid.Size = new(1800, 920);
+            Grid.FixtureScrollBottom = -1680;
+            Grid.FixtureAllocate = Allocate;
+            foreach (var initialCard in Grid.FixtureCards.Take(window > 0 ? window : count))
             {
                 var material = new ShaderMaterial();
-                var holder = new NGridCardHolder { CardModel = card, CardNode = new NCard { Model = card, CardHighlight = new() { Material = material } }, Hitbox = new NClickableControl { IsEnabled = true } };
+                var holder = new NGridCardHolder { CardModel = initialCard, CardNode = new NCard { Model = initialCard, CardHighlight = new() { Material = material } }, Hitbox = new NClickableControl { IsEnabled = true } };
                 holder.Selected = () => {
+                    var card = holder.CardModel!;
                     Inputs++;
                     if (_selected.Contains(card)) { _selected.Remove(card); Highlight(material, 0); }
                     else { _selected.Add(card); Highlight(material, BitConverter.Int32BitsToSingle(1033476506)); }
+                    Grid.FixtureHighlights.Clear(); Grid.FixtureHighlights.AddRange(_selected);
                     if (_selected.Count == (single ? 1 : 2))
                     {
-                        Container.Visible = true; Back.IsEnabled = false;
+                        Container.Visible = true; Back.IsEnabled = false; Grid.FixtureHighlights.Clear();
                         if (enchant) {
                             foreach (var node in BeforeEnchant.Children.Concat(AfterEnchant.Children)) node.QueueFree();
                             var clone = new CardModel { Owner = Player, CurrentUpgradeLevel = card.CurrentUpgradeLevel, IsEnchantmentPreview = true };
@@ -157,13 +164,47 @@ internal static partial class Program {
                 };
                 Grid.CurrentlyDisplayedCardHolders.Add(holder);
             }
-            PreviewBack.Clicked = () => { Clears++; Container.Visible = false; Back.IsEnabled = true; _selected.Clear(); Preview.Children.Clear();
+            PreviewBack.Clicked = () => { Clears++; Container.Visible = false; Back.IsEnabled = true; _selected.Clear(); Grid.FixtureHighlights.Clear(); Preview.Children.Clear();
                 foreach (var h in Grid.CurrentlyDisplayedCardHolders) Highlight((ShaderMaterial)h.CardNode!.CardHighlight.Material!, 0); };
             Back.Clicked = () => { Cancels++; Overlays.Screens.Clear(); Task.SetResult(Array.Empty<CardModel>()); };
             Confirm.Clicked = () => { Commits++; Overlays.Screens.Clear(); Task.SetResult(_selected.ToArray()); };
             Control[] ancestors = nested ? new Control[] { new MegaCrit.Sts2.Core.Nodes.Screens.NRewardsScreen() } : Array.Empty<Control>();
             Overlays.Screens.AddRange(ancestors); Overlays.Screens.Add(Screen);
             Choice = new(Screen, Overlays, Cards, () => Context, enchant ? Enchantment : null, enchant ? Enchantment.Amount : 0, single ? 1 : 2, single ? 1 : 2, true, smith, ancestors, transform);
+        }
+        private void Allocate()
+        {
+            // Pinned AllocateCardHolders predicates: five columns, row pitch
+            // 320, first center 300, viewport 1000. Height 920 allocates five
+            // rows: ceil((920 + 40) / 320) + 2. Recycle at most one row.
+            var holders = Grid.CurrentlyDisplayedCardHolders;
+            float first = 300 + _windowStart / 5 * 320 + Grid.FixtureScroll.Position.Y;
+            float last = first + (holders.Count / 5 - 1) * 320;
+            int start = _windowStart;
+            if (first > 0) start = Math.Max(0, start - 5);
+            else if (last < 1000 && start + holders.Count < Cards.Length) start += 5;
+            if (start == _windowStart) return;
+            var row = start > _windowStart ? holders.Take(5).ToArray() : holders.TakeLast(5).ToArray();
+            foreach (var h in row) holders.Remove(h);
+            if (start > _windowStart) holders.AddRange(row); else holders.InsertRange(0, row);
+            _windowStart = start;
+            for (int i = 0; i < holders.Count; i++)
+            {
+                var h = holders[i];
+                if (start + i >= Cards.Length) { h.Visible = false; continue; }
+                h.Visible = true; h.CardModel = Grid.FixtureCards[start + i]; h.CardNode!.Model = h.CardModel;
+                Highlight((ShaderMaterial)h.CardNode.CardHighlight.Material!, _selected.Contains(h.CardModel!) ? BitConverter.Int32BitsToSingle(1033476506) : 0);
+            }
+        }
+        internal void ScrollFrame() => Grid.FixtureScrollFrame();
+        internal DeckChoiceView PagedReady()
+        {
+            for (int i = 0; i < 120; i++)
+            {
+                if (Choice.Read() is {} view) return view;
+                ScrollFrame(); Animate();
+            }
+            throw new InvalidOperationException("paged choice did not become ready");
         }
         internal void FlushFreedPreviews()
         { BeforeEnchant.Children.RemoveAll(n => n.IsQueuedForDeletion()); AfterEnchant.Children.RemoveAll(n => n.IsQueuedForDeletion()); }
@@ -220,6 +261,13 @@ internal static partial class Program {
     }
     private static void InteractiveChoiceCases()
     {
+        {
+            var f = new InteractiveChoiceFixture();
+            f.Grid.CurrentlyDisplayedCardHolders.RemoveAt(2);
+            Check(f.Ready().Domain.SequenceEqual(f.Cards) && f.Inputs == 0,
+                "partial native allocation preserves the full selector domain without input");
+        }
+        VirtualizedChoiceCases();
         NestedDeckChoiceCases();
         foreach (bool smith in new[] { false, true }) foreach (bool preview in new[] { false, true })
         {
@@ -271,6 +319,67 @@ internal static partial class Program {
                 else f.Choice.Read();
             } catch (InvalidOperationException) { rejected = true; }
             Check(rejected && f.Inputs + f.Cancels + f.Commits == 0, "interactive boundary before input: " + mode);
+        }
+    }
+
+    private static void VirtualizedChoiceCases()
+    {
+        foreach (bool snap in new[] { true, false }) foreach (bool delayed in new[] { false, true })
+        {
+            var f = new InteractiveChoiceFixture(count: 33, window: 25) { DelayHighlights = delayed };
+            f.Grid.FixtureSnapScroll = snap;
+            Check(f.Ready().Domain.SequenceEqual(f.Cards) && f.Inputs == 0 && f.Grid.FixturePanInputs == 0,
+                "large Cook domain is complete without observation-time scrolling");
+            f.Choice.Apply("select", f.Cards[32]); f.PagedReady();
+            f.Choice.Apply("select", f.Cards[0]);
+            for (int i = 0; i < 8; i++) Check(f.Choice.Read() is null && f.Grid.FixturePanInputs == 1 && f.Inputs == 1,
+                "same-frame reads await native allocation without duplicate pan or selection");
+            var view = f.PagedReady();
+            Check(view.Selected.SequenceEqual(new[] { f.Cards[32], f.Cards[0] }) && f.Inputs == 2 &&
+                f.Grid.CurrentlyDisplayedCardHolders.Any(h => !h.Visible) && f.Grid.FixtureScroll.Position.Y == f.Grid.FixtureScrollTarget,
+                "two exact originals across pages reach preview with motion stopped and padding ignored");
+            f.Choice.Apply("deselect", f.Cards[32]);
+            Check(f.PagedReady().Selected.Single() == f.Cards[0] && f.Clears == 1,
+                "preview return restores only the retained original");
+            f.Choice.Apply("select", f.Cards[32]); f.PagedReady();
+            Check(f.Inputs == 4 && f.Grid.FixturePanInputs > 1 && f.Commits == 0,
+                "backward navigation reselects the exact original without premature confirmation");
+            f.Choice.Apply("confirm"); f.Complete();
+            Check(f.Commits == 1 && f.Task.Task.Result.SequenceEqual(new[] { f.Cards[0], f.Cards[32] }),
+                "large Cook commits exactly the explicit final pair");
+        }
+        foreach (string mode in new[] { "domain", "order", "holder_rebind", "foreign_highlight", "context_during_pan", "pool_during_pan", "target_during_pan", "allocation_timeout" })
+        {
+            var f = new InteractiveChoiceFixture(count: 33, window: 25); f.Ready();
+            bool pan = mode.EndsWith("during_pan", StringComparison.Ordinal) || mode == "allocation_timeout";
+            if (pan) { f.Choice.Apply("select", f.Cards[0]); f.Choice.Read(); }
+            if (mode == "domain") f.Grid.FixtureCards[0] = new CardModel();
+            if (mode == "order") f.Grid.FixtureCards.Reverse();
+            if (mode == "holder_rebind") { var h = f.Grid.CurrentlyDisplayedCardHolders[0]; h.CardModel = f.Cards[0]; h.CardNode!.Model = f.Cards[0]; }
+            if (mode == "foreign_highlight") f.Grid.FixtureHighlights.Add(f.Cards[0]);
+            if (mode == "context_during_pan") f.Context = false;
+            if (mode == "pool_during_pan") { var h = f.Grid.CurrentlyDisplayedCardHolders[0]; f.Grid.CurrentlyDisplayedCardHolders[0] = new() { CardModel = h.CardModel, CardNode = h.CardNode, Hitbox = h.Hitbox }; }
+            if (mode == "target_during_pan") f.Grid.SetScrollPosition(-99);
+            bool rejected = false;
+            try { for (int i = 0; i < (mode == "allocation_timeout" ? 130 : 1); i++) f.Choice.Read(); }
+            catch (InvalidOperationException) { rejected = true; }
+            Check(rejected && f.Inputs == 0 && f.Commits == 0 && f.Grid.FixturePanInputs == (pan ? 1 : 0),
+                "virtualized selector rejects without choosing or replaying: " + mode);
+        }
+        foreach (string mode in new[] { "context", "pool", "highlight", "stalled" })
+        {
+            var f = new InteractiveChoiceFixture(count: 33, window: 25); f.Ready();
+            f.Grid.FixtureSnapScroll = true;
+            f.Choice.Apply("select", f.Cards[0]); f.Choice.Read(); f.ScrollFrame();
+            f.Grid.FixtureAllocate = () => {
+                if (mode == "context") f.Context = false;
+                if (mode == "pool") { var h = f.Grid.CurrentlyDisplayedCardHolders[0]; f.Grid.CurrentlyDisplayedCardHolders[0] = new() { CardModel = h.CardModel, CardNode = h.CardNode, Hitbox = h.Hitbox }; }
+                if (mode == "highlight") f.Grid.FixtureHighlights.Add(f.Cards[0]);
+            };
+            bool rejected = false;
+            try { f.PagedReady(); } catch (InvalidOperationException) { rejected = true; }
+            Check(rejected && f.Inputs == 0 && f.Commits == 0 && f.Grid.FixturePanInputs == (mode == "stalled" ? 2 : 1),
+                "settled-page allocation revalidates before any card input: " + mode);
         }
     }
 
