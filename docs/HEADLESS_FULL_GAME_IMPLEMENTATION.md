@@ -1,6 +1,6 @@
 # Headless implementation backlog
 
-Updated 2026-09-22. This document owns remaining headless assignments;
+Updated 2026-09-26. This document owns remaining headless assignments;
 [the engine guide](HEADLESS_ENGINE.md) owns usage and supported gameplay.
 The [original assessment and completed-batch chronology](archive/HEADLESS_FULL_GAME_IMPLEMENTATION_2026_09_21.md)
 is historical. Its old “partial” and “remaining” labels are not current tasks.
@@ -25,11 +25,14 @@ serializable continuations. Gameplay does not depend on projections or encoders.
 | HF-52: playable characters | All five implemented; the four added characters have A0/A10 native victories | [Campaign evidence](evidence/native_character_campaigns_2026_09_21.md), [focused interaction audit](evidence/native_character_interactions_2026_09_21.md) |
 | HF-44–47: public observations, encoding, datasets and operational adapters | Full headless public profile, encoding, Gym, datasets, CLI and bounded workers implemented | Assignments below |
 | HF-48: fidelity acceptance | Retained full campaigns and focused comparisons pass; ongoing discrepancy-driven work | [Acceptance task](#hf-48--accept-complete-run-fidelity-and-close-coverage-gaps) |
-| HF-49–50: throughput and delivery | Test-overhead improvements landed; training/search workloads and full-game consumer delivery remain | Assignments below |
+| HF-49–50: throughput and delivery | Test-overhead improvements, recorded rollout measurements and clean core/Gym consumer delivery implemented; workload-specific performance work and final current-package acceptance remain | Assignments below |
 
 “Implemented” describes executable rules, not exhaustive native equivalence.
 Boosted native campaigns are accepted; a normal-HP test-policy victory is not a
-completion gate. Low-HP/death/revival rules need separate focused comparisons.
+completion gate. Low-HP/death/revival coverage comes from separate
+[item boundaries](evidence/native_item_status_2026_09_20.md#interactions) and
+[death-lifecycle comparisons](evidence/native_focused_behavior_2026_09_20.md#death-lifecycle-follow-up),
+not the boosted campaign results.
 Multiplayer, alternate modes and progression-dependent unlock histories are
 excluded. Native UI and on-disk saves are not simulated by Python JSON restoration.
 
@@ -66,6 +69,11 @@ carry those decisions through operational execution.
 The bounded v1 slice retains its controlled Ironclad live acceptance; the v2
 coverage census explicitly records native exclusions. Preserve the independent
 rules layer and distinguish interface coverage from exhaustive native fidelity.
+
+The current priority is [completion of the non-training system](../ROADMAP.md#immediate-priorities):
+close concrete fidelity discrepancies, validate remaining bridge paths and the
+shared v2 ending, then verify the current deliverable. Training implementation,
+trained-policy strength and training-specific optimization follow that work.
 
 The [shared agent interface and Gymnasium plan](AGENT_ENVIRONMENT.md) sequences
 HF-44–47 with the existing live bridge: the public-only combat/selection/reward/map
@@ -159,8 +167,11 @@ complete autonomous live runs.
   resolve the source mismatch found during the agent-interface preflight.
 - **Ongoing work:** choose a concrete untested mechanism or observed mismatch,
   reproduce it natively, and add one focused regression after fixing it. Campaign
-  inventories exercise a small portion of possible combinations; additional
-  character-specific card/item compositions and low-HP boundaries remain useful.
+  inventories exercise a small portion of possible combinations. Retained probes
+  already cover low-HP regeneration/damage ordering, Fairy/Lizard Tail revival,
+  actual enemy death/illusion revival and lethal Osty interactions. Additional
+  character-specific compositions or boundary cases need a distinct uncovered
+  behavior; these existing probes are not an unfinished implementation queue.
 - **Acceptance:** compare relevant legal decisions, resources, ordered effects,
   RNG consumption and JSON continuation. Record any canonical representation
   differences. Do not treat metadata checks as gameplay proof or repeat large

@@ -199,10 +199,12 @@ default card-catalog fingerprint. Saves from the previous default catalog are
 incompatible even though these structural schema versions remain unchanged.
 
 These records are not release-provenance certificates. Actor inputs must exclude
-private RNG, hidden draw order and privileged continuation data. HF-44's
-[first public contract and headless producer](AGENT_CONTRACT.md#headless-producer)
-now cover the bounded combat/selection/reward/map slice. Full-game producer
-coverage remains open; the rules package does not depend on that adapter.
+private RNG, hidden draw order and privileged continuation data. The
+[full headless public producer](AGENT_CONTRACT.md#full-run-v2-profile) now covers
+the engine's current command and decision families, with fixed encoding and Gym
+execution. Broader live acceptance of the
+[native v2 producer](AGENT_CONTRACT.md#native-full-run-v2-candidate) remains open;
+the rules package does not depend on either adapter.
 
 ## Consolidated native verification
 
@@ -219,8 +221,11 @@ Use evidence for its declared profile, inputs and compared boundaries:
 | [Character interaction audit](evidence/native_character_interactions_2026_09_21.md) | Focused character/item mechanisms, orb passive rules and RNG salt correction |
 
 Boosted native campaigns are accepted simulator evidence. Their ordinary game
-rules still run, but low-HP thresholds, death and revival need focused boundary
-checks. A normal-HP victory by the demonstration policy is not a simulator gate.
+rules still run; low-HP thresholds, death and revival rely on the separate
+[item boundaries](evidence/native_item_status_2026_09_20.md#interactions) and
+[death-lifecycle checks](evidence/native_focused_behavior_2026_09_20.md#death-lifecycle-follow-up).
+Those probes cover named cases, not every inventory composition. A normal-HP
+victory by the demonstration policy is not a simulator gate.
 Native TestMode captures are distinct from live desktop play and native disk-save
 restoration. No finite campaign set proves every possible inventory or action order.
 The [backlog](HEADLESS_FULL_GAME_IMPLEMENTATION.md) owns remaining fidelity and

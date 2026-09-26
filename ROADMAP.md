@@ -1,10 +1,16 @@
 # Roadmap
 
-Priorities updated 2026-09-25. This file owns priorities;
+Priorities updated 2026-09-26. This file owns priorities;
 [current status](docs/STATUS.md) owns capability and evidence. Follow [AGENTS.md](AGENTS.md) for the development
 process. Completed packets and old campaign instructions are historical references.
 
 ## Immediate priorities
+
+The current user-requested objective is to finish the non-training system for the
+declared pinned single-player scope. Carry implementation, relevant native
+validation, packaging and cleanup through completion before moving to training.
+The shared contract, fixed action encoding, Gym environments, public data tools
+and bounded execution are already delivered; the remaining work is below.
 
 Milestone 7 is accepted by the user for the assisted potion campaign: all gameplay
 was policy-controlled through the native ending, with one reload to install the
@@ -16,9 +22,11 @@ another fresh campaign is not an acceptance requirement. See the
    Custom screens, Trial abandonment Cancel/Confirm, event combat/reward/map paths,
    Dummy victory with automatic upgrades, terminal potion policies and assisted
    Fake Merchant seven-relic collection now have live results. Remaining targets
-   include shop Potion Belt purchases and pickup selectors, capacity-first
-   terminal/event/resume rewards, Sphere tool/reward variants, and a true multi-card
-   upgrade selector. Dummy’s automatic upgrades do not establish selector coverage.
+   include shop Cauldron/Orrery rewards, Potion Belt purchases and the remaining
+   pickup selectors, successful Dig/Lift/Cook/Clone/Kindle/Hatch effects,
+   capacity-first terminal/event/resume rewards, other Neow compound branches,
+   Sphere tool/reward variants, and a true multi-card upgrade selector.
+   Dummy’s automatic upgrades do not establish selector coverage.
    Choose a concrete native caller and observable outcome before extending a mechanism.
    [Current status](docs/STATUS.md) owns exact evidence and practical limits.
 2. **Exercise remaining handoff variants in useful live runs.**
@@ -28,6 +36,29 @@ another fresh campaign is not an acceptance requirement. See the
    Test held-out handoffs and elite variants, keeping run completion,
    branch coverage and strategic quality as separate claims. Use generalized
    transformation in useful play; do not repeat the card16 geometry experiment.
+3. **Verify the complete shared v2 route.** Exercise the current public-only
+   producer and chooser through native act transitions and the ending, with every
+   action reconciled. Reuse authorized controlled assistance and keep its scope
+   explicit. This verifies the newer shared interface; milestone 7's earlier
+   traversal acceptance remains intact.
+4. **Close concrete fidelity and delivery issues.** Use focused native comparisons
+   for identified rule/public-information discrepancies or a specific uncovered
+   mechanism. Retain accepted unchanged engine and consumer evidence, including
+   the existing low-HP, death and revival comparisons. Finish with the current package's clean-install,
+   command/Gym/data/continuation checks, source identity, documented limits and
+   committed changes. Training-specific throughput targets follow actual training
+   workloads later.
+
+Completion means the named gameplay paths have the required representative
+evidence, no known in-scope correctness failure is unresolved, the shared v2 route
+reaches a settled ending, and the supported package can be installed and used
+as documented. Fixes discovered during these checks remain part of this work.
+Unsupported shapes with no identified gameplay caller retain explicit limits;
+they are neither silently marked passed nor an unbounded implementation queue.
+Training and trained-policy performance are subsequent work. The detailed open
+coverage list stays in [current status](docs/STATUS.md#implementation-gaps-versus-remaining-live-tests),
+and concrete engine discrepancies stay in the
+[headless backlog](docs/HEADLESS_FULL_GAME_IMPLEMENTATION.md#hf-48--accept-complete-run-fidelity-and-close-coverage-gaps).
 
 Allocated off-screen transformation and single-upgrade holders each have a
 representative live result. Further tests should address new behavior, such as

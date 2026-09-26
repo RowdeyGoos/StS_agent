@@ -136,14 +136,19 @@ not a training algorithm or training-library performance claim.
 
 ## Live boundary
 
-The existing bridge client already selects the shared v1 policy using
-`--capability agent`, with optional `--agent-dispatch-map`. Use its
+The bridge client selects the shared v1 policy using `--capability agent`, with
+optional `--agent-dispatch-map`, or the newer shared v2 chooser using
+`--capability full-agent`. Use its
 [established entry point and preparation rules](../bridge/Sts2AgentBridge/README.md#client-modes).
-This delivery does not launch/install the game or record a live corpus. The live
-shared-policy profile remains its accepted bounded combat/selection/reward/map
-slice. Milestone 7 adds a separate [native traversal policy](../bridge/Sts2AgentBridge/README.md#campaign-traversal)
-with full live acceptance pending. Full v2 native projection and broader shared
-policy content remain outside that integration policy.
+The headless execution command does not install/launch the game or collect a live
+corpus. The v1 shared-policy slice retains its bounded live acceptance. Milestone 7's
+separate [native traversal policy](../bridge/Sts2AgentBridge/README.md#campaign-traversal)
+has accepted assisted-campaign evidence. The
+[native v2 producer](AGENT_CONTRACT.md#native-full-run-v2-candidate) is implemented
+with representative interaction results; complete shared-interface campaign and
+remaining path acceptance are still open. Optional live recording uses its own
+format and explicit retention authorization, separately from the headless artifacts
+described here. [Current status](STATUS.md) owns those evidence boundaries.
 
 ## Validation and timing
 
