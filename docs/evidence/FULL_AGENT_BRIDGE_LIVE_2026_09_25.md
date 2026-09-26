@@ -974,3 +974,54 @@ This establishes Gnarled Hammer's three-card pickup and a separate zero-purchase
 shop visit. Zero/fewer-card Hammer confirmation, selector reversal, Royal Stamp,
 Cauldron/Orrery rewards, reload persistence and the complete shared v2 ending
 retain separate evidence limits.
+
+## Royal Stamp preview toggle passed, 2026-09-26
+
+The same accepted manifest
+`289fabed66cddcd01003747383962f0c18f9a17395d2eb6c4a1b340bb4c5b302`, source
+`7829456da1bb28471f4aa4c910d3b5ca6d693032` and DLL
+`91182c7940b4ce420841eece40292213479838f9240a20add75523f250639405` were reused.
+The installation was checked by **12:34:58 UTC**, state
+`588996d8fe8edd47a99ad7bd8077db8b1cf1866aa2037065e7e736bb6ea1c543`.
+No production, test, toolchain or package input changed; release checks and review
+were reused with fresh installed metadata, runtime, health and compatibility checks.
+
+Live work resumed at **12:38:27 UTC** after the user's manual Profile 3 launch.
+Continue restored the merchant checkpoint at floor 41 with Gnarled Hammer,
+**826 gold**, HP **88/88**, **17 cards**, **32 relics** and five occupied potion
+slots. Two native `room shop` preparations preceded attachment; the second offered
+Royal Stamp for **212**. No act reset or gold/card/relic/potion/HP grant was needed.
+One public preflight read verified the exact supported affordable offer and
+**0/0/0** counts with no pending action.
+
+The controller completed by **12:40:42 UTC** at **7/7/7** with 19 controller reads,
+zero stale rejections and no pending action. Its actions were buy, select,
+deselect, reselect the same original, confirm, close inventory and leave.
+Before confirmation the deck stayed unchanged. Confirmation applied exactly
+**Royally Approved** to the original upgrade-1 **Defend**, and its public keywords
+included both **Innate** and **Retain**. The enchantment has no displayed amount;
+the public counter was null. Card identity and upgrade were preserved, and the
+other sixteen card nodes stayed exact. Gold changed **826 → 614** and exactly one
+Royal Stamp was appended (**32 → 33 relics**); HP **88/88**, deck size **17** and
+all five potion slots were unchanged.
+
+One final public read verified those effects, settled **7/7/7** counts and an
+actionable map: **21 public reads** in total. The UI separately showed the map,
+614 gold, 88/88 HP, seventeen cards and Royal Stamp. The bounded controller's
+`truncated/external_stop` was intentional at map return, not a campaign victory.
+No manual mutation intervened between attachment and that settled map.
+
+Normal Save and Quit returned to Profile 3's main menu, followed by normal game
+Quit. Stopped-process/closed-listener and exact owned quarantine/purge passed by
+**12:42:36 UTC**, removing four generated files and leaving zero overlays. All
+429 base files retained SHA-256
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Quarantine state was
+`da3d36d7fac7008ac74b33384f9ac37b369bb44feff455ce5e5f1a37c395e86b`.
+The recorded live-through-cleanup interval was **249 seconds**; separate setup,
+controller and user-wait durations were not measured. No profile/save/history/
+Cloud filesystem content or live trajectory corpus was accessed.
+
+All five supported shop card-selector families now have one successful native
+case. This test does not establish every selector variant, Royal Stamp persistence
+across reload, Cauldron/Orrery rewards or the complete shared v2 ending.

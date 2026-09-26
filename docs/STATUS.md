@@ -1,7 +1,7 @@
 # Bridge support and status
 
-Updated 2026-09-26 for shared-producer shop/rest coverage, including Gnarled Hammer,
-zero-purchase shop exit and the passed Punch Dagger preview correction; other capability review remains
+Updated 2026-09-26 for all five supported shop card selectors, zero-purchase
+shop exit and shared-producer rest coverage; other capability review remains
 2026-09-19 against bridge source, pinned native game IL and retained evidence. Latest live
 session: **2026-09-26**. This is the authoritative summary of bridge support;
 [usage](../bridge/Sts2AgentBridge/README.md), [technical contracts](GENERIC_EVENTS.md),
@@ -58,6 +58,9 @@ on the original Bludgeon+ and map return. Its earlier **2/2/0** failure remains
 bound to the preceding package; the successful retest does not reconcile that attempt.
 Gnarled Hammer then passed **7/7/7** with three Sharp 3 originals; legal travel
 and an exact-inventory zero-purchase shop exit brought that batch to **25/25/25**.
+Royal Stamp then passed **7/7/7**, including deselection/reselection and exact
+Royally Approved, Innate and Retain on the original Defend+. All five supported
+shop card-selector families now have a representative successful live case.
 The ledger preserves the
 earlier Whetstone failure at **36/36/35** and shop failure at **1/0/0** under their
 original artifacts. Prior rest cancellation and potion-reward evidence retains
@@ -79,7 +82,7 @@ its separate package identity.
 | Rest | Heal/Proceed and Smith (one card); Lift, Kindle, Dig, Cook, Clone and Hatch. Packaged `rest_v3` exposes selector cancellation and Heal-owned rewards | Every supported single-player option has a representative successful live case. Smith/Cook cancellation and deselection/reselection, Dream Catcher card collect/Skip, Tiny Mailbox two-potion collection and remaining Miniature Tent options demonstrated. Exact per-option limits remain below |
 | Shop purchases | Cards, potions, supported passive relics, Potion Belt +2 slots; 0–8 purchases, kind policy, gold reserve and callback-certified restock | Seven-card/one-potion visit and three restocked potion purchases with original-potion replacement demonstrated. Full-producer passive, selector and Belt pickups passed through map return; Belt expanded a full inventory from three to five slots and both added slots were filled. Zero-purchase Close/Leave passed 2/2/2 with exact inventory preservation. Remaining pickup and policy variants need live coverage |
 | Shop removal | Exact selected original, price/effect reconciliation, preview cancellation, then separate inventory close and Leave | Removal and full-producer preview cancellation demonstrated through map return; cancellation retained exact deck and gold |
-| Shop pickup selectors | Dolly’s Mirror, Gnarled Hammer, Kifuda, Punch Dagger and Royal Stamp; exact native clone/enchantment selection | Kifuda passed 7/7/7 with three Adroit 3 originals; Dolly’s Mirror passed 5/5/5 with one exact Bludgeon clone; corrected Punch Dagger passed 7/7/7 with deselection/reselection and Momentum 5 on the original Bludgeon+; Gnarled Hammer passed 7/7/7 with Sharp 3 on two Bludgeon+ originals and Headbutt+. All paid exactly and returned to the map, retaining other cards/HP/potions. Royal Stamp and zero/fewer-card or toggle variants not separately demonstrated remain offline only. Other pickup callbacks are not generally supported |
+| Shop pickup selectors | Dolly’s Mirror, Gnarled Hammer, Kifuda, Punch Dagger and Royal Stamp; exact native clone/enchantment selection | All five have representative live success: Kifuda’s three Adroit 3 originals; Mirror’s exact Bludgeon clone; Punch Dagger’s Momentum 5 on Bludgeon+; Hammer’s Sharp 3 on two Bludgeon+ originals and Headbutt+; Royal Stamp’s Royally Approved/Innate/Retain on Defend+. Punch Dagger and Stamp included deselection/reselection. All paid exactly and returned to the map, retaining other cards/HP/potions. Zero/fewer-card or toggle variants not separately demonstrated remain offline only. Other pickup callbacks are not generally supported |
 
 ### Native rest-site actions
 
@@ -313,8 +316,9 @@ These are **not an implementation queue or required live-test checklist**:
   evidence, without a separately identified ordinary 32-entry gameplay caller.
 - Selectorless removal: one-card Dark Door passed live. Empty domains, retained
   Eternal cards, other callers and adversarial variants remain fixture evidence.
-- Royal Stamp's shop pickup selector, Kifuda/Gnarled Hammer zero/fewer-card and
-  deselection variants, and remaining kind/gold-reserve variants. Zero-purchase
+- Kifuda/Gnarled Hammer zero/fewer-card and deselection variants, and remaining
+  kind/gold-reserve variants. All five supported shop card selectors now have
+  representative live acceptance. Zero-purchase
   Close/Leave passed with exact inventory preservation. The inherited passive Red Mask purchase
   passed through the full producer; other pickup effects remain separate cases.
 - Capacity-first Potion Belt collection in terminal, event and resume reward flows.
@@ -348,7 +352,16 @@ and native enchantment integration checks also passed. Independent semantic
 review found no blocker. A missing method in a second inert fixture stopped an
 earlier gate; the fixture was corrected before the accepted gate.
 
-The latest [Gnarled Hammer and zero-purchase batch](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#gnarled-hammer-and-zero-purchase-shop-passed-2026-09-26)
+The latest [Royal Stamp test](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#royal-stamp-preview-toggle-passed-2026-09-26)
+passed **7 attempted / 7 accepted / 7 reconciled**, 19 controller reads, no stale
+rejection or pending action. The same Defend+ was selected, deselected and
+reselected, then received exactly Royally Approved with Innate and Retain.
+Gold changed 826 → 614; the other sixteen cards, HP 88/88 and potions were
+preserved through map return. Normal Save and Quit, game Quit and exact cleanup
+passed by **2026-09-26 12:42:36 UTC**, with zero overlays and unchanged base files.
+The unchanged accepted release was reused.
+
+The preceding [Gnarled Hammer and zero-purchase batch](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#gnarled-hammer-and-zero-purchase-shop-passed-2026-09-26)
 passed **25 attempted / 25 accepted / 25 reconciled**, with no pending action.
 Hammer applied Sharp 3 to three exact originals for 204 gold (**7/7/7**); legal
 combat/event travel reached another merchant (**16/16/16**); Close/Leave without
@@ -366,8 +379,8 @@ HP 88/88 and five occupied potion slots stayed unchanged. Normal Save and Quit,
 game Quit and exact cleanup passed by **2026-09-26 12:20:28 UTC**: four generated
 files removed, zero overlays and all 429 base files unchanged.
 The preceding package's [failed attempt](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#punch-dagger-single-preview-failure-2026-09-26)
-retains its original **2/2/0** result, artifact and cleanup evidence. Royal Stamp
-shares the corrected preview mechanism but still needs its own live effect test.
+retains its original **2/2/0** result, artifact and cleanup evidence. Royal Stamp's
+separate successful test above also exercises the corrected shared preview.
 
 The preceding manifest's [Yummy Cookie test](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#yummy-cookie-four-card-upgrade-passed-2026-09-26)
 passed **7 attempted / 7 accepted / 7 reconciled**, 31 controller reads, no stale

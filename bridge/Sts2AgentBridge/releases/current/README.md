@@ -45,11 +45,18 @@ originals and Headbutt+ for 204 gold; a later shop Close/Leave preserved exact
 inventory without purchases. Cleanup passed by **12:34:12 UTC**, with zero
 overlays and all 429 base files unchanged. The same accepted binary/gate was reused.
 
-The package was reinstalled and checked by **12:34:58 UTC** for Royal Stamp:
+The [Royal Stamp test](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#royal-stamp-preview-toggle-passed-2026-09-26)
+then passed **7/7/7**, including deselection/reselection. Defend+ received Royally
+Approved with Innate and Retain; gold changed 826 → 614 and other cards/HP/potions
+stayed exact through map return. Cleanup passed by **12:42:36 UTC**, with zero
+overlays and all 429 base files unchanged. All five supported shop card selectors
+now have a representative live success.
+
+The package was reinstalled and checked by **12:46:53 UTC** for Cauldron/Orrery:
 two exact overlays, unchanged base files and verified metadata. Installed state is
-`588996d8fe8edd47a99ad7bd8077db8b1cf1866aa2037065e7e736bb6ea1c543`.
+`9a4d3f300710a5140ab79a876f89c768a6ea232497b3e07aa48379f9498b0343`.
 The user confirmed manual Profile 3 main-menu readiness; the saved campaign can
-be continued for the next test.
+be continued for the reward test.
 
 The preceding manifest `e47f0514…`, source `c599a9f`, passed Red Mask, Kifuda,
 Dolly’s Mirror, Potion Belt, Cook, the remaining supported rest options, Smith
