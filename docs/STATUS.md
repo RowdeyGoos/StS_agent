@@ -45,7 +45,9 @@ passed its Large Capsule/Lost Coffer chain, nested Sacrifice and final curse:
 The corrected full-producer Red Mask purchase also passed: **3/3/3 actions**, four
 controller reads, exact payment/pickup and map return. Kifuda then passed its
 three-card pickup selector: **7/7/7 actions**, 25 controller reads, exact Adroit 3
-effects and map return. The ledger preserves the
+effects and map return. A further batch demonstrated Dolly’s Mirror, Potion Belt
+with both added slots filled, and Cook with deselection/reselection: **45/45/45**
+including the legal intervening map travel. The ledger preserves the
 earlier Whetstone failure at **36/36/35** and shop failure at **1/0/0** under their
 original artifacts. Prior rest cancellation and potion-reward evidence retains
 its separate package identity.
@@ -63,10 +65,10 @@ its separate package identity.
 | Visible infinite enemy HP | Combat schema 2 represents the native infinity display with null numeric HP; campaign v6 conserves potions and ends turns when all enemies are infinite | Saved Waterfall Giant retest passed: 25/25/25 combat actions, native victory, rewards and Act 2 entry. The same controller continued through both remaining bosses and the native ending |
 | Combat card choices | Owned discard/exhaust selections, including optional zero confirmation; v2 adds visible Draw grids; v3 adds mandatory one-card offers | Neow’s Fury zero/two-card choices and resumed victory demonstrated. Repeated Séance Draw selections and enclosing victories passed through Act 3. Three Knowledge Demon offers reconciled, followed by its boss victory and the ending. Other fixed/exhaust callers remain offline only |
 | Map and room handoffs | Public legal map actions and bounded event/combat-to-map verification | Representative map/next-room transitions demonstrated; composite `*-map` clients verify the map but do not select a node |
-| Rest | Heal/Proceed and Smith (one card); Lift, Kindle, Dig, Cook, Clone and Hatch. Packaged `rest_v3` exposes selector cancellation and Heal-owned rewards | Ordinary Heal/Smith, Smith/Cook immediate and preview cancellation, Dream Catcher card collect/Skip, and Tiny Mailbox two-potion collection demonstrated. Successful effects of the six additional actions remain offline only |
-| Shop purchases | Cards, potions, supported passive relics, Potion Belt +2 slots; 0–8 purchases, kind policy, gold reserve and callback-certified restock | Seven-card/one-potion visit and three restocked potion purchases with original-potion replacement demonstrated. Full-producer Red Mask and Kifuda pickups passed through map return; capacity, remaining pickup selectors and other policy variants need live coverage |
+| Rest | Heal/Proceed and Smith (one card); Lift, Kindle, Dig, Cook, Clone and Hatch. Packaged `rest_v3` exposes selector cancellation and Heal-owned rewards | Ordinary Heal/Smith, Smith/Cook cancellation, successful Cook with deselection/reselection, Dream Catcher card collect/Skip, and Tiny Mailbox two-potion collection demonstrated. Successful effects of Dig/Lift/Clone/Kindle/Hatch remain offline only |
+| Shop purchases | Cards, potions, supported passive relics, Potion Belt +2 slots; 0–8 purchases, kind policy, gold reserve and callback-certified restock | Seven-card/one-potion visit and three restocked potion purchases with original-potion replacement demonstrated. Full-producer Red Mask, Kifuda, Dolly’s Mirror and Potion Belt passed through map return. Belt expanded a full inventory from three to five slots and both added slots were filled; remaining pickup selectors and other policy variants need live coverage |
 | Shop removal | Exact selected original, price/effect reconciliation, preview cancellation, then separate inventory close and Leave | Removal and full-producer preview cancellation demonstrated through map return; cancellation retained exact deck and gold |
-| Shop pickup selectors | Dolly’s Mirror, Gnarled Hammer, Kifuda, Punch Dagger and Royal Stamp; exact native clone/enchantment selection | Kifuda passed 7/7/7 through map return: three original Bludgeons received Adroit 3, exact payment, other cards/HP/potions unchanged. Its zero/fewer-card and deselection variants and the other four relics remain offline only. Other pickup callbacks are not generally supported |
+| Shop pickup selectors | Dolly’s Mirror, Gnarled Hammer, Kifuda, Punch Dagger and Royal Stamp; exact native clone/enchantment selection | Kifuda passed 7/7/7 with three Adroit 3 originals; Dolly’s Mirror passed 5/5/5 with one exact Bludgeon clone. Both paid exactly and returned to the map, retaining other cards/HP/potions. Kifuda’s zero/fewer-card and deselection variants and Gnarled Hammer/Punch Dagger/Royal Stamp remain offline only. Other pickup callbacks are not generally supported |
 
 ### Native rest-site actions
 
@@ -81,15 +83,16 @@ The new rest flow has its own native effect and selector checks.
 | Smith | Default rest option | Select and upgrade **one** card | Ordinary upgrade and `rest_v3` cancellation before selection/from preview demonstrated; deselection remains offline only |
 | Dig | Shovel | Obtain a relic directly, including its pickup callback | Implemented in source; exact new relic and callback completion. One owned deck/enchantment selector of up to three cards; other follow-up surfaces stop |
 | Lift | Girya, fewer than three lifts | Increase its lift counter, granting Strength in later combats | Included in the current package; exact +1 and native task completion checked offline. No live demonstration |
-| Cook | Meat Cleaver | Remove two cards, gain nine max HP; native selection can be canceled | Immediate and two-card preview cancellation demonstrated. Successful removal/+9 max HP remains offline only |
+| Cook | Meat Cleaver | Remove two cards, gain nine max HP; native selection can be canceled | Immediate and two-card preview cancellation demonstrated. Successful Decay/Defend+ removal, deselection/reselection, HP 88/88 → 97/97 and map return passed through the full producer at 7/7/7 |
 | Clone | Pael’s Growth | Copy the deck’s Clone-enchanted cards | Implemented in source; scoped native insertion results, including add-time upgrades |
 | Kindle | Pumpkin Candle | Add five to its remaining combat counter | Included in the current package; exact +5 and native task completion checked offline. No live demonstration |
 | Hatch | Byrdonis Egg card | Obtain Byrdpip and transform every egg into Byrd Swoop | Implemented in source; exact relic and all egg transformations |
 | Mend | Generated only with multiple players | Target and heal another player | Outside the current single-player bridge scope |
 
 The six new options use `rest_v2` on the existing room-flow routes. They are
-implemented, validated offline and included in the current package. Their successful
-effects remain **without live demonstration**; Cook cancellation passed live. A flow
+implemented, validated offline and included in the current package. Cook’s successful
+effect and cancellation passed live; the other five successful effects remain
+**without live demonstration**. A flow
 starts with at most 64 deck cards, executes one option, waits for the native effect
 and rest continuation, verifies hook removal, then returns at the rest site without
 pressing Proceed. Remaining Miniature Tent choices stay available for the next
@@ -289,7 +292,8 @@ These are **not an implementation queue or required live-test checklist**:
   evidence, without a separately identified ordinary 32-entry gameplay caller.
 - Selectorless removal: one-card Dark Door passed live. Empty domains, retained
   Eternal cards, other callers and adversarial variants remain fixture evidence.
-- Shop Potion Belt purchases, the four remaining pickup selectors, Kifuda's
+- The three remaining shop pickup selectors (Gnarled Hammer, Punch Dagger and
+  Royal Stamp), Kifuda's
   zero/fewer-card and deselection variants, and remaining
   zero-buy/kind/gold-reserve variants. The inherited passive Red Mask purchase
   passed through the full producer; other pickup effects remain separate cases.
@@ -321,19 +325,21 @@ checks and 656 rest checks. Independent semantic review found no
 remaining blocker. The unchanged release was reinstalled on **2026-09-26** after
 source/package identity verification; the accepted gate was reused.
 
-The latest Kifuda purchase passed **7 attempted / 7 accepted / 7 reconciled**,
-25 controller reads, zero stale rejections and no pending action. Three original
-Bludgeons received exactly Adroit 3; gold changed 466 to 254 and one Kifuda was
-appended. The other eight cards, HP 88/88, deck size eleven and all three potions
-were unchanged. Purchase, selection, confirmation, Close and Leave completed
-through an actionable map. One preflight and one post-run public read are separate
-from the 25 controller reads. A bounded search of sixteen native-generated shops
-found neither Cauldron nor Orrery before full-producer attachment; those cases
-remain pending. Normal Save and Quit, game Quit and exact cleanup passed by
-**2026-09-26 08:57:37 UTC**: installation absent, four generated files removed,
-zero overlays and all 429 base files unchanged. The
-[live ledger](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#kifuda-three-card-shop-pickup-passed-2026-09-26)
-binds this selector result to its tested installation and package. The same release's
+The latest batch passed **45 attempted / 45 accepted / 45 reconciled**, with no
+pending action. Dolly’s Mirror cloned one selected Bludgeon for 208 gold (5 actions,
+7 controller reads). After legal map travel, Potion Belt expanded the full belt
+from three to five slots and Blood/Skill Potions filled both added slots (5 actions,
+6 reads, total cost 270). Further legal travel reached Cook: exact Decay/Defend+
+removal, deselection/reselection and HP 88/88 → 97/97 passed (7 actions, 38 reads).
+All three cases returned to an actionable map; unaffected inventory was verified.
+The [live ledger](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#mirror-potion-belt-and-cook-batch-passed-2026-09-26)
+separates those cases, travel actions and additional public reads. Normal Save and
+Quit, game Quit and exact cleanup passed by **2026-09-26 09:50:50 UTC**: installation
+absent, four generated files removed, zero overlays and all 429 base files unchanged.
+The same release's
+[Kifuda result](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#kifuda-three-card-shop-pickup-passed-2026-09-26)
+remains separately recorded at **7/7/7**, 25 controller reads and map return.
+Cauldron/Orrery remain untested. The
 [Red Mask result](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#red-mask-corrected-shop-purchase-passed)
 remains separately recorded at **3/3/3**, four controller reads and map return.
 

@@ -576,3 +576,82 @@ The missing target offers are setup limits, not failed bridge actions. No
 profile/save/history/Cloud filesystem content was accessed and no live trajectory
 corpus was retained. Separate setup, execution, cleanup and user-wait durations
 were not measured.
+
+
+## Mirror, Potion Belt and Cook batch passed, 2026-09-26
+
+The user manually launched Profile 3 with the unchanged package: source
+`c599a9f65f755378ad69945e08481d8af93664d5`, manifest
+`e47f0514d5d7b142d247425f3aad227e9bdbe662b491f33809b36ab7c9e8e383`, DLL
+`59a89110df5da538603b02e6b1a73796971e139ab6733d5490203a911c0e6f1b`.
+Source bindings, the retained 85-group gate result and all three published package
+files matched `/private/tmp/sts-bridge-5hudfwrd`; no new build or gate is claimed.
+Installed state was
+`ffcc57456b57b82157b4397c57d98d36f8ca2798b850809dde98d00cc9ccf131`.
+Installation checks passed by **09:29:26 UTC**, with two exact overlays and all
+429 base files unchanged. Runtime, authenticated health and compatibility passed.
+
+Continue restored the completed Neow checkpoint: HP 88/88, gold 466, eleven cards,
+21 relics and three occupied potion slots. The prior debug-shop Kifuda was absent.
+Three native `room shop` setups, all before full-producer attachment, found Dolly’s
+Mirror at 208 gold. No HP, gold, cards or potions were granted for this batch.
+After attachment, all travel used advertised legal map/gameplay actions; no
+external room changes or manual policy intervention occurred.
+
+Counts below are attempted / accepted / reconciled. Controller reads exclude
+separate public preflight, route-inspection and final verification reads.
+
+| Segment | Actions in segment | Cumulative counts | Controller reads |
+| --- | --- | --- | --- |
+| Dolly’s Mirror purchase, select Bludgeon, confirm, Close, Leave | 5 / 5 / 5 | 5 / 5 / 5 | 7 |
+| Legal combat → unknown event → shop route | 17 / 17 / 17 | 22 / 22 / 22 | 189 |
+| Potion Belt, Blood Potion, Skill Potion, Close, Leave | 5 / 5 / 5 | 27 / 27 / 27 | 6 |
+| Legal unknown event → unknown event → rest route | 11 / 11 / 11 | 38 / 38 / 38 | 121 |
+| Cook, two choices, deselect/reselect Decay, confirm, Leave | 7 / 7 / 7 | 45 / 45 / 45 | 38 |
+
+Dolly’s Mirror completed by **09:35:22 UTC**. Gold changed **466 → 258**, relics
+21 → 22, and deck size 11 → 12. The new Bludgeon had a new identity and exactly
+the original upgrade-0 card’s public fields/children. All original card nodes,
+HP and original potion references/definitions were unchanged; the prior relic
+prefix was retained with exactly one Mirror appended.
+
+Legal nodes combat (1,2), unknown (2,3), shop (3,4) then reached another merchant
+with gold 276 and thirteen cards. Potion Belt cost 170, expanding the full belt
+**3 → 5**, retaining all original slot nodes and exposing exactly two empty added
+slots. Blood Potion cost 49 and filled index 3; Skill Potion cost 51 and filled
+index 4. Gold ended at **6**, all five slots were occupied, and the exact original
+three slots/potions, HP and all thirteen card nodes were unchanged. Relics grew
+22 → 23 with one Belt appended. Completion preceded the 09:40:55 UTC map read.
+
+Legal unknown (4,4), unknown (5,3), rest (6,3) travel then reached Meat Cleaver’s
+Cook option. The policy selected Decay and Defend+, deselected Decay, selected
+that same original again and confirmed. Exactly those two cards were removed;
+HP changed **88/88 → 97/97**, deck size **13 → 11**, and gold stayed 6. Every
+surviving card node and all relic/potion nodes stayed unchanged. Final public
+verification completed by **09:44:24 UTC**; the native UI independently showed
+97/97 HP, six gold, eleven cards, Mirror, Belt and five occupied potion slots.
+
+All three target cases had zero stale rejections and returned to an actionable
+map with no pending action, using the intentional `truncated/external_stop` bound.
+Each had one separate preflight and one final public verification read. Two
+additional map-route reads are excluded from controller totals. The first route
+inspection’s helper fell through to an unrelated branch and raised a local
+`KeyError` after its successful read; it performed no mutation. Fixing that local
+branch did not retry an action. The route controllers used ordinary combat,
+rewards and event card selection; event identities/whole-event branches were not
+recorded and are not newly certified by this batch.
+
+Normal Save and Quit, game Quit, stopped-process/closed-listener verification and
+exact owned quarantine/purge finished by **09:50:50 UTC**. Four generated files
+were removed, no overlays remained and all 429 base files retained SHA-256
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Quarantine state was
+`73699f6f3ee9331c301dd22152e5eeb71b38d913c0fb1c8ad7b38840278df1ea`.
+Separate setup, execution, cleanup and user-wait durations were not measured.
+No profile/save/history/Cloud files or live trajectory corpus were accessed.
+
+These results cover one Mirror clone, shop capacity expansion with both added
+slots filled, and Cook success with deselection/reselection. They do not establish
+other pickup selectors, capacity-first terminal/event/resume reward ordering,
+all card variants or persistence across reload. Dig/Lift/Clone/Kindle/Hatch
+successful effects remain separate live cases.

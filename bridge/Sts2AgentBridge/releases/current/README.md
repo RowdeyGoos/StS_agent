@@ -47,10 +47,18 @@ remain untested. Other pickup selectors and Kifuda's zero/fewer-card and
 deselection variants remain separate cases. Source and package identities were
 verified before reuse; no new build or release-gate run is claimed.
 
+The next unchanged-package batch passed Dolly’s Mirror (one exact Bludgeon clone),
+Potion Belt (full inventory expanded to five slots, both new slots filled), and
+Cook (Decay/Defend+ removal, deselection/reselection, +9 current/max HP). All three
+returned to an actionable map with verified effects and unchanged unrelated
+inventory. Counts were **45/45/45**, including legal travel between cases, with
+no pending action. The [batch ledger](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#mirror-potion-belt-and-cook-batch-passed-2026-09-26)
+records per-case counts, reads and limits.
+
 Latest normal Save and Quit, game Quit and exact owned cleanup passed by
-**2026-09-26 08:57:37 UTC**: four generated files removed, zero overlays and all
-429 base files unchanged. This test's installed state was
-`87507d8631b0f3fd0ff6af78528bc5ad711085097d0e2b6c32b14dc9d3d593c5`.
+**2026-09-26 09:50:50 UTC**: four generated files removed, zero overlays and all
+429 base files unchanged. This batch's installed state was
+`ffcc57456b57b82157b4397c57d98d36f8ca2798b850809dde98d00cc9ccf131`.
 Installation is now absent; the validated package is retained.
 
 The preceding manifest `18169693…`, source `7bd3e09`, passed Neow’s Bones:
