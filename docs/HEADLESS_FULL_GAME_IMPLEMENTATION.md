@@ -71,8 +71,8 @@ coverage census explicitly records native exclusions. Preserve the independent
 rules layer and distinguish interface coverage from exhaustive native fidelity.
 
 The current priority is [completion of the non-training system](../ROADMAP.md#immediate-priorities):
-close concrete fidelity discrepancies, validate remaining bridge paths and the
-shared v2 ending, then verify the current deliverable. Training implementation,
+close concrete fidelity discrepancies, validate remaining bridge paths, preserve
+the accepted assisted shared-v2 ending and verify the current deliverable. Training implementation,
 trained-policy strength and training-specific optimization follow that work.
 
 The [shared agent interface and Gymnasium plan](AGENT_ENVIRONMENT.md) sequences

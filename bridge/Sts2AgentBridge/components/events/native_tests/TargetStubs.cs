@@ -180,6 +180,7 @@ namespace MegaCrit.Sts2.Core.Models
         public ModelId Id { get; } = new();
         private int _level; public int CurrentUpgradeLevel { get=>FixtureTrace.Read(this,"level",_level);set=>_level=value; }
         public bool IsUpgradable { get; set; }
+        internal CardModel PreviewClone()=>(CardModel)MemberwiseClone();
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
         public void UpgradeInternal()=>CurrentUpgradeLevel++;
     }
@@ -312,6 +313,22 @@ namespace MegaCrit.Sts2.Core.Nodes.Cards.Holders
     public class NPreviewCardHolder:NCardHolder { }
     public class NGridCardHolder : NCardHolder
     {
+        private CardModel? _baseCard,_upgradedCard;
+        public Func<CardModel,CardModel>? PreviewCloneFactory;
+        public Action<CardModel>? BeforePreviewUpgrade,AfterPreviewUpgrade;
+        public CardModel? UpgradedPreview=>_upgradedCard;
+        public void BuildPreview()=>UpdateCardModel();
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+        private void UpdateCardModel()
+        {
+            var card=(_baseCard=CardNode.Model);
+            if(card.IsUpgradable) {
+                _upgradedCard=PreviewCloneFactory?.Invoke(card)??card.PreviewClone();
+                BeforePreviewUpgrade?.Invoke(_upgradedCard);
+                _upgradedCard.UpgradeInternal();
+                AfterPreviewUpgrade?.Invoke(_upgradedCard);
+            }
+        }
         private CardModel _cardModel=null!; public new CardModel CardModel { get=>FixtureTrace.Read(this,"model",_cardModel);set=>_cardModel=value; }
         private NClickableControl _hitbox=null!; public NClickableControl Hitbox { get=>FixtureTrace.Read(this,"hitbox",_hitbox);set=>_hitbox=value; }
         public Action? Selected { get; set; }

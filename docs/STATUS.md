@@ -607,7 +607,7 @@ remains separately recorded at **45/45/45**, including legal travel.
 The same release's
 [Kifuda result](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#kifuda-three-card-shop-pickup-passed-2026-09-26)
 remains separately recorded at **7/7/7**, 25 controller reads and map return.
-Cauldron/Orrery remain untested. The
+Cauldron/Orrery were untested in that earlier batch; their later acceptance is recorded above. The
 [Red Mask result](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#red-mask-corrected-shop-purchase-passed)
 remains separately recorded at **3/3/3**, four controller reads and map return.
 

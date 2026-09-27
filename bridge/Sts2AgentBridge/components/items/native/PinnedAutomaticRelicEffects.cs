@@ -56,7 +56,7 @@ internal sealed partial class PinnedAutomaticRelicEffects : IDisposable
         internal Func<bool> Authority=()=>false;
         internal bool GainGold,LoseGold,Hp,Damage;
         internal int Capacity=0;
-        internal Func<CardModel,bool>? Upgrade,Added;
+        internal Func<CardModel,bool>? Upgrade,Added,PreviewUpgrade;
         internal Func<bool>? Modifying;
         internal Action? BeforeMutation;
     }
@@ -96,6 +96,7 @@ internal sealed partial class PinnedAutomaticRelicEffects : IDisposable
     }
     internal PinnedAutomaticRelicEffects? Enter() { Require(Valid());var old=Scope.Value;Require(old is null);Scope.Value=this;return old; }
     internal static void Exit(PinnedAutomaticRelicEffects? old)=>Scope.Value=old;
+    internal bool IsCurrent=>ReferenceEquals(Scope.Value,this);
     internal bool Valid()=>!_failed&&!_disposed&&System.Environment.CurrentManagedThreadId==_thread&&_owner()&&_expected.Same(new(_player))&&ExactHooks();
     private bool GoldEffect=>_relic?.GetType()==typeof(OldCoin)||_compound?.GainGold==true;
     private bool HpEffect => _compound?.Hp==true||_relic?.GetType()==typeof(Strawberry)||_relic?.GetType()==typeof(Pear)||_relic?.GetType()==typeof(Mango)||_relic?.GetType()==typeof(LeesWaffle)||_relic?.GetType()==typeof(FakeMango)||_relic?.GetType()==typeof(FakeLeesWaffle);
@@ -136,6 +137,13 @@ internal sealed partial class PinnedAutomaticRelicEffects : IDisposable
     private static void CapacityPostfix(PinnedAutomaticRelicEffects? __state) {if(__state is {} s)s.Accept("capacity");}
     private static void UpgradePrefix(CardModel __instance,out PinnedAutomaticRelicEffects? __state)
     {
+        __state=null;
+        // A compound deck selector owns the exact synchronous holder refresh.
+        // Its detached UI copy changes no inventory and consumes no effect call.
+        var preview=Scope.Value;
+        if(preview?._compound?.PreviewUpgrade?.Invoke(__instance)==true) {
+            preview.Require(preview._compound.Authority()&&preview.Valid());return;
+        }
         __state=Begin();if(__state is not {} s)return;
         // Egg modifiers may upgrade a detached copy. The insertion journal
         // binds the actual returned model; no existing deck card may change.

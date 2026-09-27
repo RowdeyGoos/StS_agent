@@ -111,7 +111,7 @@ internal sealed partial class GenericEventCompoundRewards : IGenericFullRewardSe
         }
     }
     private bool Context()=>!_failed&&!_disposed&&!_binding.Failed&&Environment.CurrentManagedThreadId==_thread&&
-        Environment.TickCount64<=_deadline&&ReferenceEquals(Active,this)&&RemovalHooksValid()&&PotionHooksValid()&&_binding.ItemContextValid()&&ReferenceEquals(_binding.Option.Relic,_optionRelic)&&
+        Environment.TickCount64<=_deadline&&ReferenceEquals(Active,this)&&RemovalHooksValid()&&GridPreviewHooksValid()&&PotionHooksValid()&&_binding.ItemContextValid()&&ReferenceEquals(_binding.Option.Relic,_optionRelic)&&
         _binding.ChosenTask?.IsFaulted!=true&&_binding.ChosenTask?.IsCanceled!=true&&
         ReferenceEquals(RunManager.Instance?.RewardsSetSynchronizer,_synchronizer)&&
         Harmony.GetPatchInfo(_completeMethod) is {} patches&&patches.Owners.Count==1&&patches.Owners.Contains(_hooks.Id);
@@ -265,14 +265,14 @@ internal sealed partial class GenericEventCompoundRewards : IGenericFullRewardSe
     {
         if(_disposed){Require(_complete&&!_failed);return;}
         Exception? failure=null;
-        try{Require(!_inside&&_complete&&Context());}catch(Exception error){failure=error;}
+        try{Require(!_inside&&_gridPreview is null&&_complete&&Context());}catch(Exception error){failure=error;}
         foreach(var frame in _frames.AsEnumerable().Reverse())try{frame.Controller.Dispose();}catch(Exception error){failure??=error;}
         try{DisposePickups();}catch(Exception error){failure??=error;}
         try{DisposeOffers();}catch(Exception error){failure??=error;}
         try{DisposeDecks();}catch(Exception error){failure??=error;}
         try{_tailAdds?.Dispose();}catch(Exception error){failure??=error;}
         try{_tailEffects?.Dispose();}catch(Exception error){failure??=error;}
-        try{_hooks.UnpatchAll(_hooks.Id);Require(Harmony.GetPatchInfo(_completeMethod)?.Owners.Contains(_hooks.Id)!=true&&new[]{_removeMethod,_procureMethod,_potionInsertMethod}.Where(m=>m is not null).All(m=>Harmony.GetPatchInfo(m!)?.Owners.Contains(_hooks.Id)!=true));}catch(Exception error){failure??=error;}
+        try{_hooks.UnpatchAll(_hooks.Id);Require(Harmony.GetPatchInfo(_completeMethod)?.Owners.Contains(_hooks.Id)!=true&&new[]{_removeMethod,_gridPreviewMethod,_procureMethod,_potionInsertMethod}.Where(m=>m is not null).All(m=>Harmony.GetPatchInfo(m!)?.Owners.Contains(_hooks.Id)!=true));}catch(Exception error){failure??=error;}
         _disposed=true;if(failure is not null){Fail();throw new InvalidOperationException("compound_reward_cleanup",failure);}Active=null;
     }
 }

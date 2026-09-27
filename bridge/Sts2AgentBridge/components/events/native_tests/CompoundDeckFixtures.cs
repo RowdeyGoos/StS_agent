@@ -46,6 +46,10 @@ internal static partial class Program
         internal readonly List<CardModel> Chosen=new();
         internal NCardGridSelectionScreen? Screen;
         internal bool DelayCreation,DelayCompletion,DelayMutation,RetainScreen,Fault,WrongRequest,WrongEffect,DirectRemoval,DirectGeneric,WrongTransformResult;
+        internal Action<NGridCardHolder,CardModel>? ConfigurePreview;
+        internal NGridCardHolder? RecycledHolder;
+        internal int PreviewPasses=1;
+        internal bool SelectionPreview;
         internal int Inputs;
         internal readonly string Kind;
         internal readonly int Count;
@@ -126,9 +130,15 @@ internal static partial class Program
             Container.Bind(single?"Confirm":"%PreviewConfirm",Confirm);Container.Bind(single?"Cancel":"%PreviewCancel",PreviewBack);
             foreach(var card in cards.Reverse()) {
                 var material=new ShaderMaterial();
-                var holder=new NGridCardHolder{CardModel=card,CardNode=new NCard{Model=card,CardHighlight=new(){Material=material}},Hitbox=new NClickableControl()};
+                var holder=Grid.CurrentlyDisplayedCardHolders.Count==0&&RecycledHolder is not null?RecycledHolder:new NGridCardHolder();
+                holder.CardModel=card;holder.CardNode=new NCard{Model=card,CardHighlight=new(){Material=material}};holder.Hitbox=new NClickableControl();
+                ConfigurePreview?.Invoke(holder,card);
+                // Native InitGrid builds a detached upgraded preview before
+                // registering the holder, even when upgrades are not displayed.
+                for(int pass=0;pass<PreviewPasses;pass++)holder.BuildPreview();
                 holder.Selected=()=>{
                     Inputs++;
+                    if(SelectionPreview)card.PreviewClone().UpgradeInternal();
                     if(Chosen.Contains(card)){Chosen.Remove(card);material.Width=0;}else{Chosen.Add(card);material.Width=BitConverter.Int32BitsToSingle(1033476506);}
                     if(Chosen.Count==Count) {
                         Container.Visible=true;Back.IsEnabled=false;
@@ -155,6 +165,7 @@ internal static partial class Program
     }
     private static void CompoundDeckCases()
     {
+        CompoundGridPreviewCases();
         using(var f=new CompoundRewardFixture(tail:"curse")) {
             using var second=new CompoundDeckFixture(f,"upgrade",index:1);
             using var first=new CompoundDeckFixture(f,"remove");
@@ -207,6 +218,50 @@ internal static partial class Program
             if(mode=="foreign_wait"){f.World.Player.Gold++;Check(deck.Read(c).Status=="unsupported","foreign mutation cannot enter delayed remove");continue;}
             if(mode.StartsWith("delay_")){Check(read.Status=="waiting","actual deck command task retained");deck.Mutation.SetResult();read=deck.Read(c);}
             Check(read.Status==(mode is "direct" or "bad_transform"?"unsupported":"resolved"),"compound command proof "+mode+" "+read.Status);
+        }
+    }
+    private static void CompoundGridPreviewCases()
+    {
+        using(var f=new CompoundRewardFixture(tail:"curse")) {
+            using var deck=new CompoundDeckFixture(f,"remove",index:1){DelayCreation=true};
+            using var bundle=new CompoundOfferFixture(f,"bundle");
+            var c=f.Start();f.Act(c,"collect:0");f.Act(c,"choose:0");f.Act(c,"confirm");
+            Check(f.Act(c,"collect:1").Status=="waiting","bundle then removal retains delayed native grid creation");
+            deck.Creation.SetResult();Check(deck.Read(c).Phase=="deck_remove","bundle then removal previews expose deck");
+            Check(deck.Grid.CurrentlyDisplayedCardHolders.Where(h=>h.CardModel.IsUpgradable).All(h=>
+                h.UpgradedPreview is {} preview&&!ReferenceEquals(preview,h.CardModel)&&preview.CurrentUpgradeLevel==h.CardModel.CurrentUpgradeLevel+1),
+                "grid owns detached upgraded previews before any removal input");
+            deck.Act(c,"select:0");Check(deck.Act(c,"confirm").Status=="resolved"&&f.World.Session.Read().ParentReconciled==1,
+                "bundle, removal and final curse complete one parent");
+        }
+        foreach(string kind in new[]{"remove","shears","upgrade","transform"}) {
+            using var f=new CompoundRewardFixture();using var deck=new CompoundDeckFixture(f,kind){PreviewPasses=65,SelectionPreview=kind=="upgrade"};
+            var old=deck.NewCard("RECYCLED");var holder=new NGridCardHolder{CardModel=old,CardNode=new NCard{Model=old}};
+            holder.BuildPreview();deck.RecycledHolder=holder;
+            var c=f.Start();var read=f.Act(c,"collect:0");
+            Check(read.Status=="ready"&&f.World.Player.Deck.Cards.All(card=>card.CurrentUpgradeLevel==0),
+                "recycled holder uses current card; repeated previews conserve inventory and effect budget "+kind);
+            deck.Act(c,"select:0");if(deck.Count==2)deck.Act(c,"select:1");
+            Check(deck.Act(c,"confirm").Status=="resolved","real effect remains certified after preview work "+kind);
+        }
+        foreach(string mode in new[]{"original","foreign","wrong_clone","twice","survivor","nested","throw","stale_clone"}) {
+            using var f=new CompoundRewardFixture();using var deck=new CompoundDeckFixture(f,"remove");
+            deck.ConfigurePreview=(holder,card)=>{
+                if(mode=="wrong_clone")holder.PreviewCloneFactory=_=>deck.NewCard("WRONG");
+                if(mode=="original")holder.PreviewCloneFactory=_=>card;
+                if(mode=="foreign")holder.BeforePreviewUpgrade=_=>deck.NewCard("FOREIGN").UpgradeInternal();
+                if(mode=="twice")holder.AfterPreviewUpgrade=clone=>clone.UpgradeInternal();
+                if(mode=="survivor")holder.AfterPreviewUpgrade=_=>f.World.Cards.First().CurrentUpgradeLevel++;
+                if(mode=="nested")holder.BeforePreviewUpgrade=_=>holder.BuildPreview();
+                if(mode=="throw")holder.AfterPreviewUpgrade=_=>throw new InvalidOperationException("native preview failure");
+                if(mode=="stale_clone"){deck.PreviewPasses=2;holder.PreviewCloneFactory=_=>holder.UpgradedPreview??card.PreviewClone();}
+            };
+            var c=f.Start();var ready=f.Read(c);
+            var receipt=(GenericEventV7RewardChildApply)f.World.Session.ApplyChild(c.Child!.ParentDecisionId,c.Child.ParentActionId,c.Child.Ordinal,ready.DecisionId,"collect:0");
+            Check(receipt.Value.Outcome is "accepted" or "uncertain","preview failure dispatched only once "+mode);
+            Check(f.Read(c).Status=="unsupported"&&deck.Inputs==0&&f.World.Session.Read().ParentReconciled==0,
+                "invalid preview cannot publish selector or complete parent "+mode);
+            if(mode=="original")Check(f.World.Player.Deck.Cards.All(card=>card.CurrentUpgradeLevel==0),"original preview target rejected before mutation");
         }
     }
 }

@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.CardSelection;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Models;
+using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
 using MegaCrit.Sts2.Core.Nodes.Screens.CardSelection;
 using Sts2AgentBridge.Adapters.Public;
 using Sts2AgentBridge.Items.Native;
@@ -66,12 +67,14 @@ internal sealed partial class GenericEventCompoundRewards
         }
         internal IDisposable Enter()
         {
+            if(!Automatic)Owner.ObserveGridPreviews();
             if(Kind=="remove")Owner.ObserveRemovals();
             var policy=new PinnedAutomaticRelicEffects.CompoundPolicy {
                 Authority=()=>ReferenceEquals(Owner.NativePickup,Pickup)&&Pickup.Certificate is null,
                 Hp=Named(Pickup.Relic,"PrecariousShears","LeafyPoultice"),Damage=Named(Pickup.Relic,"PrecariousShears","LeafyPoultice"),
                 Added=c=>Transform?.AddedCard(c)==true,Modifying=()=>Transform?.InModification==true,
                 BeforeMutation=AdvanceDeck,
+                PreviewUpgrade=c=>Owner.PreviewUpgrade(this,c),
                 Upgrade=c=>Kind=="upgrade"&&PrepareSelected()&&Selected!.Contains(c)&&_upgraded.Add(c)
             };
             Effects=new(Owner._binding.Player,Pickup.Relic,Owner.Context,policy);return Effects.EnterLease();
@@ -233,6 +236,75 @@ internal sealed partial class GenericEventCompoundRewards
         Exception? failure=null;
         foreach(var leaf in _decks)try{leaf.Effects?.Dispose();leaf.Transform?.Close();}catch(Exception error){failure??=error;}
         if(failure is not null)throw new InvalidOperationException("compound_deck_cleanup",failure);
+    }
+    private sealed class GridPreview
+    {
+        internal readonly DeckLeaf Leaf;
+        internal readonly NGridCardHolder Holder;
+        internal readonly CardModel Original;
+        internal readonly object? Previous;
+        internal readonly PinnedAutomaticRelicEffects.State Before;
+        internal readonly int Level;
+        internal readonly bool Upgradable;
+        internal CardModel? Clone;
+        internal GridPreview(DeckLeaf leaf,NGridCardHolder holder)
+        {
+            Leaf=leaf;Holder=holder;Original=holder.CardNode.Model;Previous=Field(holder,"_upgradedCard");
+            Before=new(leaf.Owner._binding.Player);Level=Original.CurrentUpgradeLevel;Upgradable=Original.IsUpgradable;
+        }
+    }
+    private GridPreview? _gridPreview;
+    private MethodInfo? _gridPreviewMethod;
+    private void ObserveGridPreviews()
+    {
+        if(_gridPreviewMethod is not null)return;
+        var method=typeof(NGridCardHolder).GetMethod("UpdateCardModel",BindingFlags.Instance|BindingFlags.NonPublic);
+        Require(method is not null&&method.ReturnType==typeof(void)&&method.GetParameters().Length==0&&
+            method.GetMethodBody() is not null&&!(Harmony.GetPatchInfo(method)?.Owners.Any()??false));
+        _gridPreviewMethod=method;
+        _hooks.Patch(method,new HarmonyMethod(typeof(GenericEventCompoundRewards),nameof(GridPreviewEntering)),
+            new HarmonyMethod(typeof(GenericEventCompoundRewards),nameof(GridPreviewFinished)),
+            finalizer:new HarmonyMethod(typeof(GenericEventCompoundRewards),nameof(GridPreviewFailed)));
+    }
+    private bool GridPreviewHooksValid()=>_gridPreviewMethod is null||Harmony.GetPatchInfo(_gridPreviewMethod) is {} info&&info.Owners.Count==1&&info.Owners.Contains(_hooks.Id);
+    private static void GridPreviewEntering(NGridCardHolder __instance,out GridPreview? __state)
+    {
+        __state=null;var owner=Active;if(owner is null)return;
+        var leaf=owner._decks.SingleOrDefault(d=>d.Effects?.IsCurrent==true);if(leaf is null)return;
+        owner.Require(owner.Context()&&owner._gridPreview is null&&ReferenceEquals(owner.NativePickup,leaf.Pickup)&&
+            ReferenceEquals(owner.CurrentFrame(),leaf.Reward)&&!leaf.EffectCertified&&leaf.Requests.Count>0&&
+            __instance.GetType()==typeof(NGridCardHolder)&&leaf.Eligible.Contains(__instance.CardNode.Model)&&leaf.Effects!.Valid());
+        var call=new GridPreview(leaf,__instance);
+        owner.Require(call.Before.Deck.Any(c=>ReferenceEquals(c.Model,call.Original)));
+        owner._gridPreview=__state=call;
+    }
+    private bool PreviewUpgrade(DeckLeaf leaf,CardModel card)
+    {
+        if(_gridPreview is not {} call)return false;
+        Require(ReferenceEquals(call.Leaf,leaf)&&leaf.Effects!.IsCurrent&&call.Upgradable&&call.Clone is null&&
+            ReferenceEquals(NativePickup,leaf.Pickup)&&leaf.Effects.Valid()&&
+            ReferenceEquals(Field(call.Holder,"_baseCard"),call.Original)&&ReferenceEquals(Field(call.Holder,"_upgradedCard"),card)&&
+            !ReferenceEquals(card,call.Previous)&&!call.Before.Deck.Any(c=>ReferenceEquals(c.Model,card))&&
+            ReferenceEquals(card.Owner,_binding.Player)&&ReferenceEquals(card.RunState,call.Before.Run)&&
+            card.GetType()==call.Original.GetType()&&card.Id.Entry==call.Original.Id.Entry&&card.Type==call.Original.Type&&
+            card.CurrentUpgradeLevel==call.Level&&card.IsUpgradable);
+        call.Clone=card;return true;
+    }
+    private static void GridPreviewFinished(GridPreview? __state)
+    {
+        if(__state is not {} call)return;var owner=call.Leaf.Owner;
+        try {
+            owner.Require(ReferenceEquals(owner._gridPreview,call)&&call.Leaf.Effects!.IsCurrent&&call.Leaf.Effects.Valid()&&
+                ReferenceEquals(owner.NativePickup,call.Leaf.Pickup)&&call.Before.Same(new(owner._binding.Player))&&
+                ReferenceEquals(Field(call.Holder,"_baseCard"),call.Original)&&
+                (call.Upgradable?call.Clone is {} clone&&ReferenceEquals(Field(call.Holder,"_upgradedCard"),clone)&&clone.CurrentUpgradeLevel==call.Level+1:call.Clone is null));
+        }finally{if(ReferenceEquals(owner._gridPreview,call))owner._gridPreview=null;}
+    }
+    private static void GridPreviewFailed(Exception? __exception,GridPreview? __state)
+    {
+        if(__state is not {} call)return;var owner=call.Leaf.Owner;
+        if(__exception is not null)owner.Fail();
+        if(ReferenceEquals(owner._gridPreview,call))owner._gridPreview=null;
     }
     internal sealed class Removal
     {

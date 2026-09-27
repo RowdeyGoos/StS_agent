@@ -611,6 +611,14 @@ ordinary events retain the v1 child contract. Nested Sacrifice retains its exact
 Pael’s Wing callback while the existing compound pickup chain certifies any granted
 relic; it does not install a competing pickup observer or omit the visible action.
 
+Compound deck grids build temporary upgraded previews inside the retained pickup
+invocation. The observer permits one upgrade only of the fresh copy assigned by
+the exact native holder refresh, bound to an eligible original. It verifies the
+copy's one-level increase and unchanged real inventory before leaving that
+synchronous call. Preview work does not consume the automatic-effect mutation
+budget; real deck upgrades still require the selected-card effect proof. Foreign
+copies, original-card preview targets and failed preview cleanup stop the owner.
+
 The same `game.agent.full_policy.choose_action` runs through
 `--capability full-agent`. `--agent-stop-at-map` ends a controlled case only at an
 actionable map with no pending actions and reports `truncated/external_stop`.

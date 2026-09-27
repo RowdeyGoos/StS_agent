@@ -39,12 +39,12 @@ another fresh campaign is not an acceptance requirement. See the
    Test held-out handoffs and elite variants, keeping run completion,
    branch coverage and strategic quality as separate claims. Use generalized
    transformation in useful play; do not repeat the card16 geometry experiment.
-3. **Verify the complete shared v2 route.** Exercise the current public-only
-   producer and chooser through native act transitions and the ending, with every
-   action reconciled. Reuse authorized controlled assistance and keep its scope
-   explicit. This verifies the newer shared interface; milestone 7's earlier
-   traversal acceptance remains intact. First retest the inherited reward-callback
-   correction at Neow, where the initial v2 attempt stopped with pending work.
+3. **Preserve shared v2 route acceptance while closing remaining failures.** The
+   assisted saved campaign reached native Victory with the shared producer and
+   chooser on September 27. Corrections, reloads and earlier stops remain in its
+   evidence; a fresh uninterrupted v2 campaign is a separate unverified scope.
+   Retest the confirmed compound Neow removal-preview failure, then retain the
+   accepted ending evidence unless an affected input changes.
 4. **Close concrete fidelity and delivery issues.** Use focused native comparisons
    for identified rule/public-information discrepancies or a specific uncovered
    mechanism. Retain accepted unchanged engine and consumer evidence, including

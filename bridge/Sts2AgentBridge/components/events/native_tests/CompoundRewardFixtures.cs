@@ -166,6 +166,8 @@ internal static partial class Program
             Check(!(HarmonyLib.Harmony.GetPatchInfo(method)?.Owners.Any()??false),"compound completion observer removed");
             foreach(var hooked in new[]{typeof(RelicCmd).GetMethod("Obtain")!,typeof(PaelsWing).GetMethod("OnSacrifice")!})
                 Check(!(HarmonyLib.Harmony.GetPatchInfo(hooked)?.Owners.Any()??false),"compound pickup/alternative observer removed");
+            var preview=typeof(NGridCardHolder).GetMethod("UpdateCardModel",BindingFlags.Instance|BindingFlags.NonPublic)!;
+            Check(!(HarmonyLib.Harmony.GetPatchInfo(preview)?.Owners.Any()??false),"compound grid preview observer removed after success or failure");
             typeof(GenericEventCompoundRewards).GetField("Active",BindingFlags.Static|BindingFlags.NonPublic)!.SetValue(null,null);
             typeof(Sts2AgentBridge.Items.Native.PinnedRelicPickupChain).GetField("Active",BindingFlags.Static|BindingFlags.NonPublic)!.SetValue(null,null);
             typeof(Sts2AgentBridge.Items.Native.PinnedCardAddJournal).GetField("Active",BindingFlags.Static|BindingFlags.NonPublic)!.SetValue(null,null);
