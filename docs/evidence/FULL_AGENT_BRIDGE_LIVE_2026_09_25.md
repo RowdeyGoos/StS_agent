@@ -2577,3 +2577,68 @@ The shared chooser handles the rewards after a targeted Unlock Chest option.
 Lantern Key quest removal and natural event entry remain separate evidence limits.
 The unchanged release binding passed again; no production source changed and
 no release suite was repeated. Manual launch is pending.
+
+
+### Repy capacity-first Potion Belt passed
+
+After manual Profile 3 launch, fresh running-state, source/owned-package identity,
+authenticated health and compatibility checks passed. The unchanged manifest was
+`69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639`, source
+`0fb2972acf5475de36908beac2b89c4d50a60a93`, under installed state
+`48dd01a2adf0a8956416773d11788f49b66ff93a8fd6583c49c89eb13fef7996`.
+Native controls retired the completed TEST475 campaign and started fresh Ironclad
+A0 Custom with seed **TEST168**, without modifiers. Before attachment, console
+commands added Fire, Strength and Block potions and opened War Historian Repy.
+The baseline was 80/80 HP, 99 gold, ten cards, Burning Blood and three full slots.
+No Lantern Key was present; its removal and natural event entry were not tested.
+
+The helper selected the advertised Unlock Chest option. Before any reward claim,
+it verified the actual offer order: **Weak Potion, Fysh Oil, Potion Belt, Bag of
+Preparation**. The unchanged shared chooser claimed Belt, Bag of Preparation,
+then the two potions, and left the event. Potion claims were absent from the
+legal actions while the starting belt was full. The first decision after Belt
+verified exactly two new empty slots and the unchanged original slots/models.
+Both generated potions then filled the added slots with their exact offered
+identities. Every original card, HP/max HP and gold remained unchanged.
+
+All **6 attempted / 6 accepted / 6 reconciled** actions completed: six decisions,
+**42 controller reads**, zero stale rejections and nothing pending. One separate
+public verification read confirmed **6/6/6**, actionable map and
+`truncated/external_stop`; the native map and five filled slots were visually
+confirmed by **16:23:08 UTC on 2026-09-27**. Relic order was Burning Blood,
+Potion Belt and Bag of Preparation. No manual gameplay input occurred after
+attachment. This is representative full-belt capacity-first event evidence;
+terminal ordering and other callers retain separate evidence limits.
+
+Normal Save and Quit and app Quit completed. Fresh stopped-process/closed-listener
+checks passed, followed by exact quarantine to
+`19e5eceae0f1ce770143f6eef47bba79a15349a6c3f4596bfb67fc4482af7150`
+and purge of four owned files. Base verification passed by **16:24:34 UTC**:
+zero overlays, all 429 base files unchanged, aggregate
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+No profile/save/history/Cloud filesystem access or retained live corpus occurred.
+The preparation-to-cleanup window was **16:19:39–16:24:34 UTC** (295 seconds);
+controller and user-wait durations were not separately measured. No production
+source changed; the accepted release checks were reused without another gate.
+
+The same accepted package was reinstalled for the terminal full-belt case under
+state `4f2ca6cf55ffc0449db2cbb7928727a8a14fa86f80a5b39c20776dd5dadd7ec5`.
+Exact overlays and installed PE metadata checked by **16:30:23 UTC**: two owned
+overlay files and all 429 base files unchanged. Pinned Punch Off Fight creates
+one extra relic and one extra potion, enters combat without a Resume callback,
+and appends these after ordinary rewards. Native population consumes the potion
+roll, gold, optional potion, three card rarity/choice/upgrade draws, extra relic
+and extra potion in that order. The existing headless generation code predicts
+**TEST531** gives ten gold, Fire Potion, the Whirlwind/Bloodletting/Forgotten Ritual
+card offer, Potion Belt and a second Fire Potion. Actual visible offers will be
+checked before any claim; this prediction is not yet a live result.
+
+The planned baseline is fresh Ironclad A0 Custom, no modifiers, four Looming Fruit
+add/remove pairs for 204/204 HP, three added Bludgeons, and Fire/Strength/Block in
+the three original slots. All assistance precedes attachment. The bounded helper
+targets Take Them then Fight, uses the unchanged chooser for combat/rewards,
+preserves the original potions, checks two empty slots after Belt, and verifies
+the two distinct offered Fire Potions in those slots before settled map return.
+No temporary Looming Fruit remains in the starting relic inventory. A fresh
+campaign and the user's manual launch are required; no further live input has
+occurred for this prepared case.

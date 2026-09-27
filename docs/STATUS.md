@@ -12,6 +12,13 @@ Quick navigation: [supported interactions](#supported-interactions) ·
 [missing features versus remaining tests](#implementation-gaps-versus-remaining-live-tests) ·
 [release and evidence](#release-and-latest-evidence).
 
+The [Repy full-belt Potion Belt case](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#repy-capacity-first-potion-belt-passed)
+passed **6/6/6**, with 42 controller reads and nothing pending. Belt added two
+empty slots before either potion claim; the original Fire/Strength/Block potions
+were preserved, then Weak Potion and Fysh Oil filled the new slots. Deck, HP and
+gold were unchanged and the policy returned to the map. Cleanup passed by
+**16:24:34 UTC**, with zero overlays and all 429 base files unchanged.
+
 The [New Leaf / empty-belt Phial Holster case](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-new-leaf-and-empty-belt-phial-holster-passed)
 passed **6/6/6**, with 53 controller reads and nothing pending. The selected
 Strike became Body Slam, Holster added Attack and Weak potions, and Writhe and
@@ -200,11 +207,11 @@ extend standalone rest/shop contracts.
 | Event potion/relic rewards | Singleton or 2–8 ordered items; supported exact pickup effects | Singleton and Potion Courier three-potion collection demonstrated; other counts/relic sets offline only |
 | Mixed event rewards | 2–8 card/potion/relic entries; use advertised order, native card Skip/final dismissal | Lost Coffer choose and Skip demonstrated; other orders/counts offline only |
 | Full-producer event rewards | `full_rewards_v1` shared rewards; `full_rewards_v2` retains Neow’s Bones nested pickups, visible choices and final curse under one event owner | Lost Coffer potion replacement, card choice and event/map return passed 6/6/6. Neow’s Bones with Large Capsule, Lost Coffer, nested Sacrifice and the final curse passed 7/7/7 through map return; other compound branches, callers and alternatives retain separate evidence limits |
-| Full-inventory event/resume policies | `item_policy_v1`: skip-full, skip-all, protected original-potion replacement, stop-on-full; capacity-first collection | Courier full-belt skip/three replacements, Lost Coffer card plus potion skip/replacement, and Dummy resume skip/replacement demonstrated. Capacity-first paths need live coverage |
+| Full-inventory event/resume policies | `item_policy_v1`: skip-full, skip-all, protected original-potion replacement, stop-on-full; capacity-first collection | Courier full-belt skip/three replacements, Lost Coffer card plus potion skip/replacement, and Dummy resume skip/replacement demonstrated. Full-producer Repy collected Belt before potions, retained all three originals, filled both added slots and reached the map at 6/6/6. Resume capacity remains fixture-only |
 | Terminal Strawberry pickup | Exact native type/key/+7 max HP/+7 HP, ready schema 7 | Saved floor-8 native retest passed: five reward actions reconciled and reached the map; max HP 2,064→2,071 |
 | Modified terminal gold | Bowler Hat final integer gain, ready schema 8 in source | Saved floor-15 retest passed: printed 20 gold yielded and reconciled 25 gold (492 → 517), then reached the map |
 | Terminal reward potions | Stop-on-full, skip-full, skip-all, protected original-potion replacement | Skip-full, skip-all with full **and free** capacity, and replacement including distinct same-key potions demonstrated |
-| Potion Belt capacity | Exact +2 empty slots, retained prior inventory, at most eight slots; terminal, event and resume paths | Floor-31 terminal pickup increased capacity from three to five slots, retaining both original potions. Event pickup and full-belt capacity-first behavior remain unverified. Resume capacity handling is fixture-only with no identified native reward-set caller |
+| Potion Belt capacity | Exact +2 empty slots, retained prior inventory, at most eight slots; terminal, event and resume paths | Floor-31 terminal pickup increased capacity from three to five slots, retaining both original potions. Full-belt event ordering passed through Repy at 6/6/6, including both added slots filled. Terminal full-belt ordering remains unverified. Resume capacity handling is fixture-only with no identified native reward-set caller |
 | Special/extra combat rewards | At most eight event extras, at most one special card; gold/card/potion/relic collection | Lantern Key special card and Punch Off potion/relic extras demonstrated. Terminal schemas 9–10 support up to 32 total entries; event extras retain their eight-entry bound |
 | Non-resuming event combat | Exact entry ownership → combat → rewards → map | Dense Vegetation, Lantern Key, Punch Off and initial Fake Merchant fight demonstrated |
 | Resuming event combat | Exact original Resume callback/task → owned item reward if present → resumed event/Proceed/map | Dummy training expiry, Setting1 victory/potion and Setting2 victory demonstrated; consecutive matching combats also demonstrated. No recursive combat driver |
@@ -414,10 +421,12 @@ These are **not an implementation queue or required live-test checklist**:
   representative live acceptance. Zero-purchase
   Close/Leave passed with exact inventory preservation. The inherited passive Red Mask purchase
   passed through the full producer; other pickup effects remain separate cases.
-- Capacity-first Potion Belt collection in terminal and event reward flows.
-  The demonstrated terminal pickup verifies +2 capacity and retained potions;
-  full-inventory ordering and the event variant remain separate tests. Resume
-  capacity handling has no identified native caller, as scoped above.
+- Capacity-first Potion Belt collection in terminal reward flows. The earlier
+  terminal pickup verifies +2 capacity and retained potions; full-inventory
+  terminal ordering remains untested. The event variant passed through Repy at
+  6/6/6, preserving the three original potions and filling both added slots.
+  Console-created Repy had no Lantern Key; quest removal and natural entry remain
+  separate evidence limits. Resume capacity has no identified native caller.
 - Yummy Cookie's fixed-four upgrade selection has representative live acceptance.
   Trial/NondescriptInnocent’s curse-plus-two-transform path also passed at 5/5/5.
   Trial/MerchantInnocent's conditional curse-plus-two-upgrade path requires a
@@ -455,7 +464,10 @@ verification passed by **15:07:20 UTC**. The fresh full-belt Holster retest pass
 **7/7/7**, 61 controller reads plus one verification read. The same artifact's
 New Leaf/empty-belt Holster case then passed **6/6/6**, 53 controller reads plus
 one verification read. Both completed the final curse and actionable map.
-Latest exact owned cleanup and base verification passed by **15:31:24 UTC**:
+Repy's full-belt capacity-first event rewards then passed **6/6/6**, 42 controller
+reads plus one verification read, with exact originals retained and both added
+slots filled before map return.
+Latest exact owned cleanup and base verification passed by **16:24:34 UTC**:
 zero overlays and all 429 base files unchanged.
 
 The prior manifest **`14772d59c22d9d630bc71780c3871fedd95331e9c6797267a5fe0acd5ab0582a`**,

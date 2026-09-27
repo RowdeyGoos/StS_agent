@@ -39,8 +39,15 @@ empty-belt Phial Holster passed **6/6/6**, 53 controller reads plus one verifica
 read. The selected Strike became Body Slam; the two potion grants, final Writhe
 and map return completed. Other originals, HP and gold were unchanged. Exact
 cleanup passed by **15:31:24 UTC**, with zero overlays and all 429 base files
-unchanged. The next prepared case targets capacity-first event rewards.
+unchanged.
 
-The same package is reinstalled and verified by **15:39:18 UTC** for War Historian
-Repy’s full-belt Potion Belt reward ordering case. Two exact overlays are installed
-and all 429 base files are unchanged. Manual Profile 3 launch is pending.
+War Historian Repy’s full-belt Potion Belt ordering then passed **6/6/6**, 42
+controller reads plus one verification read. Belt added two empty slots before
+either potion claim; all three original potions were preserved, both generated
+potions were collected and map return settled. Deck/HP/gold were unchanged.
+Exact cleanup passed by **16:24:34 UTC**, with zero overlays and all 429 base files
+unchanged. Console setup omitted Lantern Key; quest removal was not tested.
+
+The same package is reinstalled and verified by **16:30:23 UTC** for Punch Off’s
+terminal full-belt capacity-first test. Two exact overlays are installed and all
+429 base files are unchanged. Manual Profile 3 launch is pending.

@@ -11,14 +11,14 @@
     "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
     "game_process_running": false,
     "generated_files_removed": 4,
-    "installed_state_sha256": "59421f560ca9c00d2024e6eb45abb5d5857dbedec2c1295e34ff5cf68903807a",
+    "installed_state_sha256": "48dd01a2adf0a8956416773d11788f49b66ff93a8fd6583c49c89eb13fef7996",
     "normal_app_quit": true,
     "normal_save_and_quit": true,
     "overlay_count": 0,
     "port_accepting": false,
-    "quarantined_state_sha256": "4599968277a70821e50b58f4d237203f6e120fa382e2754dc2c9310c289fb165",
+    "quarantined_state_sha256": "19e5eceae0f1ce770143f6eef47bba79a15349a6c3f4596bfb67fc4482af7150",
     "status": "passed",
-    "verified_by_utc": "2026-09-27 15:31:24 UTC"
+    "verified_by_utc": "2026-09-27 16:24:34 UTC"
   },
   "completed_cleanups": [
     {
@@ -34,6 +34,20 @@
       "quarantined_state_sha256": "473a56ef49b427c1ca7c95690b0c84826432327e6c4b2bd90209d0a8db2696dd",
       "status": "passed",
       "verified_by_utc": "2026-09-27 15:18:36 UTC"
+    },
+    {
+      "base_file_count": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "game_process_running": false,
+      "generated_files_removed": 4,
+      "installed_state_sha256": "59421f560ca9c00d2024e6eb45abb5d5857dbedec2c1295e34ff5cf68903807a",
+      "normal_app_quit": true,
+      "normal_save_and_quit": true,
+      "overlay_count": 0,
+      "port_accepting": false,
+      "quarantined_state_sha256": "4599968277a70821e50b58f4d237203f6e120fa382e2754dc2c9310c289fb165",
+      "status": "passed",
+      "verified_by_utc": "2026-09-27 15:31:24 UTC"
     }
   ],
   "completed_installations": [
@@ -58,6 +72,17 @@
       "state_sha256": "59421f560ca9c00d2024e6eb45abb5d5857dbedec2c1295e34ff5cf68903807a",
       "status": "tested_cleaned",
       "verified_by_utc": "2026-09-27 15:24:48 UTC"
+    },
+    {
+      "base_file_count": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "game_process_running_at_install": false,
+      "metadata_verifier": "passed",
+      "overlay_count": 2,
+      "port_accepting_at_install": false,
+      "state_sha256": "48dd01a2adf0a8956416773d11788f49b66ff93a8fd6583c49c89eb13fef7996",
+      "status": "tested_cleaned",
+      "verified_by_utc": "2026-09-27 15:39:18 UTC"
     }
   ],
   "elapsed_times": {
@@ -535,17 +560,17 @@
     "metadata_verifier": "passed",
     "overlay_count": 2,
     "port_accepting_at_install": false,
-    "state_sha256": "48dd01a2adf0a8956416773d11788f49b66ff93a8fd6583c49c89eb13fef7996",
+    "state_sha256": "4f2ca6cf55ffc0449db2cbb7928727a8a14fa86f80a5b39c20776dd5dadd7ec5",
     "status": "installed_verified",
-    "verified_by_utc": "2026-09-27 15:39:18 UTC"
+    "verified_by_utc": "2026-09-27 16:30:23 UTC"
   },
   "live": {
-    "accepted": 13,
-    "attempted": 13,
-    "case_count": 2,
+    "accepted": 19,
+    "attempted": 19,
+    "case_count": 3,
     "full_shared_native_interface_complete": false,
     "pending": false,
-    "reconciled": 13,
+    "reconciled": 19,
     "status": "passed"
   },
   "live_cases": [
@@ -697,18 +722,111 @@
       "user_wait_seconds": null,
       "verification_reads": 1,
       "verified_by_utc": "2026-09-27 15:29:56 UTC"
+    },
+    {
+      "accepted": 6,
+      "actionable_map": true,
+      "actions": [
+        "choose_event_option",
+        "claim_relic",
+        "claim_relic",
+        "claim_potion",
+        "claim_potion",
+        "leave_event"
+      ],
+      "after": {
+        "deck": 10,
+        "gold": 99,
+        "hp": 80,
+        "max_hp": 80,
+        "potion_capacity": 5
+      },
+      "attempted": 6,
+      "before": {
+        "deck": 10,
+        "gold": 99,
+        "hp": 80,
+        "max_hp": 80,
+        "potion_capacity": 3
+      },
+      "case": "repy_capacity_first_potion_belt",
+      "controller_reads": 42,
+      "controller_seconds": null,
+      "decisions": 6,
+      "deck_hp_max_hp_gold_unchanged": true,
+      "evidence": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#repy-capacity-first-potion-belt-passed",
+      "generated_rewards_order": [
+        "weak_potion",
+        "fysh_oil",
+        "potion_belt",
+        "bag_of_preparation"
+      ],
+      "initial_potions": [
+        "fire_potion",
+        "strength_potion",
+        "block_potion"
+      ],
+      "installed_state_sha256": "48dd01a2adf0a8956416773d11788f49b66ff93a8fd6583c49c89eb13fef7996",
+      "limits": [
+        "Lantern Key removal and natural event entry were not tested.",
+        "Terminal full-belt reward ordering remains separate."
+      ],
+      "manual_gameplay_after_attachment": false,
+      "new_potion_slot_indices": [
+        3,
+        4
+      ],
+      "new_potions": [
+        "weak_potion",
+        "fysh_oil"
+      ],
+      "new_relics": [
+        "potion_belt",
+        "bag_of_preparation"
+      ],
+      "original_potions_unchanged": true,
+      "outcome": {
+        "kind": "truncated",
+        "reason": "external_stop"
+      },
+      "pending": false,
+      "potions_unavailable_before_belt": true,
+      "preparation_to_cleanup_seconds": 295,
+      "preparation_to_cleanup_window_utc": [
+        "2026-09-27 16:19:39 UTC",
+        "2026-09-27 16:24:34 UTC"
+      ],
+      "reconciled": 6,
+      "release_manifest_sha256": "69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639",
+      "setup": {
+        "ascension": 0,
+        "character": "ironclad",
+        "console_setup_before_attachment": true,
+        "lantern_key_present": false,
+        "manual_launch": true,
+        "mode": "native_seeded_custom_without_gameplay_modifiers",
+        "profile": 3,
+        "seed": "TEST168"
+      },
+      "source_commit": "0fb2972acf5475de36908beac2b89c4d50a60a93",
+      "stale_rejections": 0,
+      "status": "passed",
+      "two_new_empty_slots_verified_before_potion_claims": true,
+      "user_wait_seconds": null,
+      "verification_reads": 1,
+      "verified_by_utc": "2026-09-27 16:23:08 UTC"
     }
   ],
   "next_live_test": {
-    "acceptance": "Claim Belt before potions; observe two new empty slots; retain the exact three originals, claim both generated potions, unchanged deck/HP/gold, settled map.",
-    "baseline": "Fresh Ironclad A0 Custom, no modifiers, Fire/Strength/Block potions, console-created Repy; no Lantern Key.",
-    "first_case": "Full-belt Potion Belt priority in War Historian Repy Unlock Chest event rewards; predicted seed TEST168.",
+    "acceptance": "Owned Take Them/Fight and combat; collect Belt before potions; verify two new empty slots, retain all three original potions, collect both distinct offered Fire Potions, and settle ordinary rewards/map.",
+    "baseline": "Fresh Ironclad A0 Custom, no modifiers, four Looming Fruit add/remove pairs for 204 HP, three added Bludgeons, Fire/Strength/Block potions, console-created Punch Off; all assistance before attachment.",
+    "first_case": "Full-belt Potion Belt priority in Punch Off terminal combat rewards; predicted seed TEST531.",
     "game_restart_required": true,
-    "helper_case": "repy-capacity-first",
-    "installed_state_sha256": "48dd01a2adf0a8956416773d11788f49b66ff93a8fd6583c49c89eb13fef7996",
+    "helper_case": "punch-capacity-first",
+    "installed_state_sha256": "4f2ca6cf55ffc0449db2cbb7928727a8a14fa86f80a5b39c20776dd5dadd7ec5",
     "new_campaign_required": true,
     "prepared_helper": "/private/tmp/sts-broader-live-check.py",
-    "setup_prediction": "Native-compatible startup relic bags and reward draw order predict Weak Potion, Fysh Oil, Potion Belt and Bag of Preparation. Confirm actual offered list before any reward claim.",
+    "setup_prediction": "Existing native-compatible generator predicts 10 gold, two distinct Fire Potions, Potion Belt, and Whirlwind/Bloodletting/Forgotten Ritual card offer. Check actual visible rewards before any claim.",
     "status": "awaiting_manual_launch"
   },
   "package": {
@@ -760,7 +878,7 @@
   "release_manifest_sha256": "69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639",
   "remaining_limits": [
     "The fresh Shears/full-belt Phial correction passed at 7/7/7 through final curse and map return. The prior 6/5/4 action remains uncertain under its original release.",
-    "Other named variants including capacity-first terminal/event rewards remain in docs/STATUS.md; no exhaustive fidelity claim. New Leaf transform and two-potion empty-belt Holster grants now passed.",
+    "Other named variants including capacity-first terminal rewards remain in docs/STATUS.md; no exhaustive fidelity claim. New Leaf/empty-belt Holster and Repy full-belt capacity-first event rewards passed.",
     "Earlier assisted shared-v2 campaign and Neow passes retain their original artifacts."
   ],
   "schema_version": 1,
