@@ -129,9 +129,8 @@ internal static class GenericEventTerminalClassifier
     }
     // The wire service validates action history and native effects. This boundary
     // validates the emitted family and keeps child completion owned by its parent.
-    private static bool CardAction(string action) => !action.StartsWith("collect:",StringComparison.Ordinal) &&
-        !GenericEventTransportRequestParser.RewardAction(Encoding.ASCII.GetBytes(action)) &&
-        Sts2AgentBridge.Successors.CardSelectionV1.Wire.CardSelectionV1WireProtocol.IsChildAction(action);
+    private static bool CardAction(string action) => action is "preview" or "confirm" ||
+        GenericEventV7GridAdmission.Action(action) && action.StartsWith("select:", StringComparison.Ordinal) && int.Parse(action[7..]) < 64;
 
     private static TerminalClassification ItemSet(JsonElement p,JsonElement child,string nonce) {
         if(!Keys(p,"version","session_nonce","status","offer_count","collected","current") ||

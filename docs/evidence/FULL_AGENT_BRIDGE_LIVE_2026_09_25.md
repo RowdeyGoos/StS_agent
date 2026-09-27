@@ -2033,3 +2033,11 @@ listener run above completed. Client checks and full coordinator/event-parent
 checks passed at `/private/tmp/sts-bridge-uijsa1ve`; its first router attempt found
 a fixture-only reused JSON-node assignment, subsequently corrected. Production
 compilation passed at `/private/tmp/sts-bridge-rdywfrmv` (**2.065 seconds**).
+
+The first release attempt, `/private/tmp/sts-bridge-urntv1m5`, stopped while
+compiling native integration: its separate wire assembly does not expose the
+internal legacy action predicate. The classifier now applies the same closed
+`preview`/`confirm`/`select:0..63` grammar using the shared public grid predicate
+plus the explicit legacy slot bound. No action bound was broadened. The focused
+wire/native-host integration passed **five groups in 8.145 seconds** at
+`/private/tmp/sts-bridge-bi_xrl3o`. The failed release emitted no accepted manifest.
