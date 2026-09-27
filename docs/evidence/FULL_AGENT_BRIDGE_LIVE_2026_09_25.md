@@ -2838,3 +2838,78 @@ survivors, 68/68 HP, unchanged gold/potions, the final curse and actionable map.
 Only native dialogue decisions may precede that five-action sequence. Syntax and
 author review passed; no production change or new release gate was needed.
 Manual launch and the new seeded campaign are the remaining prerequisites.
+
+
+### Neow offer Skip and Leafy Poultice passed
+
+After manual Profile 3 launch, fresh running-state, source/owned-installation,
+authenticated health and pinned-build compatibility checks passed. The unchanged
+manifest was `69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639`,
+source `0fb2972acf5475de36908beac2b89c4d50a60a93`, installed state
+`5dd2560fec972e14597693a012d0c450829f95aa043ffef44c9ad696a07b3a41`.
+Native controls retired the completed TEST531 test campaign and created fresh
+**TEST74**, Ironclad A0 Custom, with no gameplay modifiers or assistance.
+The visible initial inventory was **80/80 HP, 99 gold, ten cards**, only Burning
+Blood and three empty potion slots. Before attachment, the helper's offer-count
+expectation was corrected from three to the native Lead Paperweight count of
+two, confirmed by its visible description and pinned CreateForReward call.
+No gameplay POST had occurred before that helper correction.
+
+Console `ancient NEOW NEOWS_BONES` prepared the visible Bones option; the console
+was closed before attachment. The first public decision verified the baseline.
+The helper selected Bones and verified both actual advertised relics before
+claiming either: **Lead Paperweight, Leafy Poultice**, matching the seed prediction.
+It claimed Paperweight and skipped the visible **Mind Blast / Ultimate Defend**
+offer. Before claiming Poultice, a fresh public decision verified that all ten
+original card nodes, HP/max HP, gold and potion slots were still exact.
+
+Poultice then automatically removed the first basic Strike and first basic
+Defend. Exactly two upgrade-0 replacement cards, **Cinder and Dismantle**, appeared;
+all eight other originals remained unchanged. HP/max HP fell from **80/80 to
+68/68**; gold stayed 99 and the three empty potion slots remained exact. Neow's
+final **Writhe** was the sole additional card, making eleven cards. The final
+relic order was Burning Blood, Bones, Lead Paperweight and Leafy Poultice.
+
+The bounded helper completed **5 attempted / 5 accepted / 5 reconciled** actions:
+Bones, claim Paperweight, Skip, claim Poultice and Leave. There were five decisions,
+**57 controller reads**, zero stale rejections and nothing pending. One separate
+verification read rechecked the exact final inventory and actionable map, with
+native counts **5/5/5** and `truncated/external_stop`. The native map and counters
+were visually confirmed by **17:42:41 UTC on 2026-09-27**. No manual gameplay
+input occurred after attachment. This establishes the compound optional-offer
+Skip and automatic Poultice pickup path, not generic selectorless transformation,
+natural Neow pool selection or every generated card outcome.
+
+Normal Save and Quit, visible main menu and app Quit completed. Fresh stopped-
+process/closed-listener checks passed. Exact quarantine produced
+`8d3f722fdc4adef51e974d25c0ffb3030f53df12e1c7d3ce7b1cf285f4ee544e`;
+purge removed four owned files. Base verification passed by **17:44:17 UTC**:
+zero overlays, all 429 base files unchanged, aggregate
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+No profile/save/history/Cloud filesystem access or retained live corpus occurred.
+The preparation-to-cleanup window was **17:39:33–17:44:17 UTC** (284 seconds);
+controller and user-wait durations were not separately measured. No production
+source changed; accepted release checks were reused without another gate.
+
+The same accepted package was reinstalled for Fake Merchant's six-purchase
+inventory path under state
+`7ba782981a1a3be6d8a1ea05dcb848c8600ac03abfa5a6abf339e1d53bda2eb7`.
+Exact overlays and installed initializer/dependency metadata checked by
+**17:50:30 UTC**: two owned overlays and all 429 base files unchanged. The
+pinned event has six stock relics, with prices taken from the actual visible
+stock. Fake Mango adds three max HP/HP; Fake Lee's Waffle
+heals up to the maximum. A full-HP setup makes its capped result unambiguous.
+
+The prepared nine-action/90-second helper opens the initially closed inventory,
+verifies six distinct offered slots and affordability, buys each slot once in
+native order, then closes and leaves. Every following decision must verify the
+previous exact payment and relic append, unchanged earlier relics/deck/potions
+and the expected HP/max-HP result. A fresh read verifies the final actionable
+map. It admits no combat or unrelated choices. Syntax and author review passed;
+this is still a prepared case, not a native result.
+
+Native Continue will use the saved TEST74 campaign. Before attachment, the setup
+will add 400 gold, verify full HP and no already-owned fake relics, and console-
+create Fake Merchant with its inventory closed. A connected native room entry
+will be used if needed to clear travel state. No new campaign is required;
+manual Profile 3 launch is the remaining prerequisite.

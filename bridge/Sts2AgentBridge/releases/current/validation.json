@@ -11,14 +11,14 @@
     "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
     "game_process_running": false,
     "generated_files_removed": 4,
-    "installed_state_sha256": "ea2ad3d2f5a76e9da885f72a67fe9c4fade0052e296eb89da037bdfa6f4f22cb",
+    "installed_state_sha256": "5dd2560fec972e14597693a012d0c450829f95aa043ffef44c9ad696a07b3a41",
     "normal_app_quit": true,
     "normal_save_and_quit": true,
     "overlay_count": 0,
     "port_accepting": false,
-    "quarantined_state_sha256": "b8318bdde4f7d28003969182df6202f00a774abd6be562214520c16ff5b895f0",
+    "quarantined_state_sha256": "8d3f722fdc4adef51e974d25c0ffb3030f53df12e1c7d3ce7b1cf285f4ee544e",
     "status": "passed",
-    "verified_by_utc": "2026-09-27 17:30:13 UTC"
+    "verified_by_utc": "2026-09-27 17:44:17 UTC"
   },
   "completed_cleanups": [
     {
@@ -90,6 +90,20 @@
       "quarantined_state_sha256": "76b9d52def81edd73495ebe6328081ae0ff0d46447a8cb472a66f59500842061",
       "status": "passed",
       "verified_by_utc": "2026-09-27 16:55:30 UTC"
+    },
+    {
+      "base_file_count": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "game_process_running": false,
+      "generated_files_removed": 4,
+      "installed_state_sha256": "ea2ad3d2f5a76e9da885f72a67fe9c4fade0052e296eb89da037bdfa6f4f22cb",
+      "normal_app_quit": true,
+      "normal_save_and_quit": true,
+      "overlay_count": 0,
+      "port_accepting": false,
+      "quarantined_state_sha256": "b8318bdde4f7d28003969182df6202f00a774abd6be562214520c16ff5b895f0",
+      "status": "passed",
+      "verified_by_utc": "2026-09-27 17:30:13 UTC"
     }
   ],
   "completed_installations": [
@@ -158,6 +172,17 @@
       "state_sha256": "ea2ad3d2f5a76e9da885f72a67fe9c4fade0052e296eb89da037bdfa6f4f22cb",
       "status": "tested_cleaned",
       "verified_by_utc": "2026-09-27 16:58:32 UTC"
+    },
+    {
+      "base_file_count": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "game_process_running_at_install": false,
+      "metadata_verifier": "passed",
+      "overlay_count": 2,
+      "port_accepting_at_install": false,
+      "state_sha256": "5dd2560fec972e14597693a012d0c450829f95aa043ffef44c9ad696a07b3a41",
+      "status": "tested_cleaned",
+      "verified_by_utc": "2026-09-27 17:36:47 UTC"
     }
   ],
   "elapsed_times": {
@@ -635,17 +660,17 @@
     "metadata_verifier": "passed",
     "overlay_count": 2,
     "port_accepting_at_install": false,
-    "state_sha256": "5dd2560fec972e14597693a012d0c450829f95aa043ffef44c9ad696a07b3a41",
+    "state_sha256": "7ba782981a1a3be6d8a1ea05dcb848c8600ac03abfa5a6abf339e1d53bda2eb7",
     "status": "installed_verified",
-    "verified_by_utc": "2026-09-27 17:36:47 UTC"
+    "verified_by_utc": "2026-09-27 17:50:30 UTC"
   },
   "live": {
-    "accepted": 44,
-    "attempted": 45,
-    "case_count": 6,
+    "accepted": 49,
+    "attempted": 50,
+    "case_count": 7,
     "full_shared_native_interface_complete": false,
     "pending": false,
-    "reconciled": 44,
+    "reconciled": 49,
     "stale_rejections": 1,
     "status": "passed"
   },
@@ -1167,17 +1192,116 @@
       "user_wait_seconds": null,
       "verification_reads": 1,
       "verified_by_utc": "2026-09-27 17:28:54 UTC"
+    },
+    {
+      "accepted": 5,
+      "actionable_map": true,
+      "actions": [
+        "choose_ancient_relic",
+        "claim_relic",
+        "skip_reward",
+        "claim_relic",
+        "leave_event"
+      ],
+      "after": {
+        "deck": 11,
+        "gold": 99,
+        "hp": 68,
+        "max_hp": 68,
+        "potion_capacity": 3,
+        "relic_count": 4
+      },
+      "attempted": 5,
+      "automatic_transformed_originals": [
+        "strike",
+        "defend"
+      ],
+      "before": {
+        "deck": 10,
+        "gold": 99,
+        "hp": 80,
+        "max_hp": 80,
+        "potion_capacity": 3,
+        "relic_count": 1
+      },
+      "case": "neow_offer_skip_leafy_poultice",
+      "controller_reads": 57,
+      "controller_seconds": null,
+      "decisions": 5,
+      "evidence": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-offer-skip-and-leafy-poultice-passed",
+      "expected_max_hp_loss": 12,
+      "final_curse": "writhe",
+      "helper_preparation": "Offer count corrected to two from visible native description and pinned LeadPaperweight source before any gameplay POST.",
+      "installed_state_sha256": "5dd2560fec972e14597693a012d0c450829f95aa043ffef44c9ad696a07b3a41",
+      "limits": [
+        "Owned compound pickup; no general selectorless-transform support claim.",
+        "Controlled Bones entry; natural Neow pool selection and all generated card outcomes retain separate limits."
+      ],
+      "manual_gameplay_after_attachment": false,
+      "native_verification_counts": [
+        5,
+        5,
+        5
+      ],
+      "new_relics": [
+        "neows_bones",
+        "lead_paperweight",
+        "leafy_poultice"
+      ],
+      "outcome": {
+        "kind": "truncated",
+        "reason": "external_stop"
+      },
+      "pending": false,
+      "potions_gold_unchanged": true,
+      "preparation_to_cleanup_seconds": 284,
+      "preparation_to_cleanup_window_utc": [
+        "2026-09-27 17:39:33 UTC",
+        "2026-09-27 17:44:17 UTC"
+      ],
+      "reconciled": 5,
+      "release_manifest_sha256": "69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639",
+      "setup": {
+        "actual_relic_pair_verified_before_claims": true,
+        "ascension": 0,
+        "character": "ironclad",
+        "console_setup_before_attachment": true,
+        "hp_damage_assistance": false,
+        "initial_potion_slots_empty": true,
+        "manual_launch": true,
+        "mode": "native_seeded_custom_without_gameplay_modifiers",
+        "new_campaign": true,
+        "profile": 3,
+        "seed": "TEST74"
+      },
+      "skip_preserved_exact_deck": true,
+      "skipped_offer_cards": [
+        "mind_blast",
+        "ultimate_defend"
+      ],
+      "source_commit": "0fb2972acf5475de36908beac2b89c4d50a60a93",
+      "stale_rejections": 0,
+      "status": "passed",
+      "surviving_original_count": 8,
+      "survivors_unchanged": true,
+      "transformed_cards": [
+        "cinder",
+        "dismantle"
+      ],
+      "user_wait_seconds": null,
+      "verification_reads": 1,
+      "verified_by_utc": "2026-09-27 17:42:41 UTC"
     }
   ],
   "next_live_test": {
-    "acceptance": "Skip the visible optional card offer and verify the exact deck is unchanged before the next relic claim. Leafy Poultice must transform the first original basic Strike and Defend, reduce HP/max HP from 80/80 to 68/68, preserve other originals/potions/gold, then settle the final curse and actionable map.",
-    "baseline": "Fresh Ironclad A0 Custom campaign, canonical seed TEST74, no gameplay modifiers or assistance; ten starter cards, Burning Blood, 80/80 HP, 99 gold and three empty potion slots. Console Neow/Bones before attachment. The seed prediction is checked against the actual offered relics before claims.",
-    "decision_limit": 8,
-    "first_case": "Neow's Bones: Lead Paperweight offer Skip, then Leafy Poultice automatic transformations.",
+    "acceptance": "Open the initially closed inventory, verify all six distinct advertised relics and prices, buy each exact slot once, verify each debit and relic append, then Close/Leave to the actionable map. Preserve original deck/potions/relics and check any Fake Mango +3 HP/max-HP effect from a full-HP baseline.",
+    "baseline": "Continue saved TEST74 and inspect the restored checkpoint. Before attachment, add 400 gold through the native console and prepare Fake Merchant with its inventory closed, no fake relics already owned and full HP. Use a connected room entry if needed to clear travel state.",
+    "decision_limit": 9,
+    "first_case": "Fake Merchant: six purchases, Close and Leave through the full producer.",
     "game_restart_required": true,
-    "helper_case": "neow-bones offer-skip-leafy",
-    "installed_state_sha256": "5dd2560fec972e14597693a012d0c450829f95aa043ffef44c9ad696a07b3a41",
-    "new_campaign_required": true,
+    "helper_case": "fake-merchant 6",
+    "installed_state_sha256": "7ba782981a1a3be6d8a1ea05dcb848c8600ac03abfa5a6abf339e1d53bda2eb7",
+    "new_campaign_required": false,
     "prepared_helper": "/private/tmp/sts-broader-live-check.py",
     "seconds": 90,
     "status": "awaiting_manual_launch"
@@ -1231,7 +1355,7 @@
   "release_manifest_sha256": "69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639",
   "remaining_limits": [
     "The fresh Shears/full-belt Phial correction passed at 7/7/7 through final curse and map return. The prior 6/5/4 action remains uncertain under its original release.",
-    "Other named variants remain in docs/STATUS.md; no exhaustive fidelity claim. New Leaf/empty-belt Holster, capacity-first Repy/Punch Off rewards, Trial/MerchantInnocent two upgrades and Wood Carvings/Torus passed. Compound offer Skip and Leafy Poultice automatic transformations are prepared next.",
+    "Other named variants remain in docs/STATUS.md; no exhaustive fidelity claim. Compound offer Skip and Leafy Poultice automatic transformations passed at 5/5/5. Fake Merchant six purchases are prepared next; zero-purchase and other named paths retain separate evidence limits.",
     "Earlier assisted shared-v2 campaign and Neow passes retain their original artifacts."
   ],
   "schema_version": 1,

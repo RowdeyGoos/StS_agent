@@ -12,6 +12,13 @@ Quick navigation: [supported interactions](#supported-interactions) ·
 [missing features versus remaining tests](#implementation-gaps-versus-remaining-live-tests) ·
 [release and evidence](#release-and-latest-evidence).
 
+The [Neow offer Skip / Leafy Poultice case](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-offer-skip-and-leafy-poultice-passed)
+passed **5/5/5**, with 57 controller reads and nothing pending. Skip retained the
+exact deck; Leafy Poultice automatically replaced the first Strike and Defend
+with Cinder and Dismantle and reduced HP/max HP from 80/80 to 68/68. Eight other
+originals, gold and potions were preserved; Writhe and map return completed.
+Cleanup passed by **17:44:17 UTC**, with zero overlays and all 429 base files unchanged.
+
 The [Wood Carvings/Torus case](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#wood-carvings-torus-passed)
 passed **4/4/4**, with forty controller reads and nothing pending. One selected
 upgrade-0 Strike became Toric Toughness; every other card, HP, gold, relic and
@@ -411,8 +418,9 @@ These are **not an implementation queue or required live-test checklist**:
 - Other full-producer Neow’s Bones compound branches and potion-procurement
   outcomes; remaining automatic pickup effects and additional shared event reward
   callers. Lead Paperweight offer Skip followed by Leafy Poultice's automatic
-  Strike/Defend transformations and twelve max-HP loss is prepared as the next
-  concrete case; it is not yet live demonstrated.
+  Strike/Defend transformations and twelve max-HP loss passed at 5/5/5 through
+  final Writhe and map return. This is the owned compound pickup path; it does
+  not broaden general selectorless-transform support.
   New Leaf's selected transformation followed by empty-belt Phial Holster's two
   potions, final curse and map return passed at 6/6/6 with unchanged survivors.
   Shears' two-card removal followed by full-belt Phial Holster, final curse and
@@ -454,7 +462,9 @@ These are **not an implementation queue or required live-test checklist**:
 - Broader reward orders/outcomes with a concrete offered screen, Sphere earned
   relics, and Fake Merchant zero/six-purchase variants. Sphere small/big tools,
   six exact reveals and earned gold/card/potions passed through the shared producer
-  at 17/17/17; other outcomes retain separate limits.
+  at 17/17/17; other outcomes retain separate limits. Fake Merchant's six-purchase
+  inventory path is prepared next, with exact visible payments, pickup effects
+  and Close/Leave/map return; no live result is claimed yet.
 - Held-out elite and room-handoff variants beyond the accepted campaign route.
 - A fresh uninterrupted shared-v2 campaign. The assisted saved continuation now
   demonstrates the ending, with earlier stops, corrections and reloads retained
@@ -494,7 +504,11 @@ through map return without changing other inventory.
 Wood Carvings/Torus then passed **4/4/4**, forty controller reads and one
 verification read. One exact Strike became Toric Toughness, with unchanged
 survivors/inventory and settled map return.
-Latest exact owned cleanup and base verification passed by **17:30:13 UTC**:
+Neow's Lead Paperweight Skip / Leafy Poultice case then passed **5/5/5**, 57
+controller reads and one verification read. The skipped offer retained the deck;
+two exact automatic transformations, twelve max-HP loss, final Writhe and map
+return settled with other originals, gold and potions unchanged.
+Latest exact owned cleanup and base verification passed by **17:44:17 UTC**:
 zero overlays and all 429 base files unchanged.
 
 The prior manifest **`14772d59c22d9d630bc71780c3871fedd95331e9c6797267a5fe0acd5ab0582a`**,

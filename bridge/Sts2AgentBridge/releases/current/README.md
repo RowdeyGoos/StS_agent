@@ -66,9 +66,16 @@ verification read. The selected upgrade-0 Strike became Toric Toughness; all
 other cards/inventory were preserved through map return. Exact cleanup passed
 by **17:30:13 UTC**, leaving zero overlays and all 429 base files unchanged.
 
-The same package is reinstalled and verified by **17:36:47 UTC** for the Neow
-Lead Paperweight Skip / Leafy Poultice case: two exact overlays and all 429 base
-files unchanged. The eight-action/90-second helper checks the skipped offer,
-two automatic transformations, twelve max-HP loss, final curse and map return.
-Manual Profile 3 launch is pending; fresh seed TEST74 is required for the
-prepared reward pair. This case has no live acceptance yet.
+Neow's Lead Paperweight Skip / Leafy Poultice case then passed **5/5/5**, 57
+controller reads and one verification read. Skip retained the exact deck; the
+first Strike and Defend were automatically replaced by Cinder and Dismantle,
+HP/max HP became 68/68, and Writhe/map return completed. The eight other originals,
+gold and potions were unchanged. Exact cleanup passed by **17:44:17 UTC**, leaving
+zero overlays and all 429 base files unchanged.
+
+The latest installation was verified by **17:50:30 UTC** for Fake Merchant's
+six-purchase inventory path: two exact overlays and all 429 base files unchanged.
+The nine-action/90-second helper checks visible payments, exact relic additions,
+preserved originals/potions, any Fake Mango HP gain and Close/Leave/map return.
+Manual Profile 3 launch is pending; the saved TEST74 campaign can be continued.
+This preparation has no live acceptance yet.
