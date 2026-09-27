@@ -12,6 +12,18 @@ Quick navigation: [supported interactions](#supported-interactions) ·
 [missing features versus remaining tests](#implementation-gaps-versus-remaining-live-tests) ·
 [release and evidence](#release-and-latest-evidence).
 
+The requested representative non-training coverage is complete. The
+[final batch](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#prevention-removal-policy-variants-and-handoffs)
+added eight passing cases at **29/29/29**: Sozu-blocked Holster, empty automatic
+removal retaining Eternal, standalone first Sacrifice, three shop-policy
+variants, an assisted elite handoff and natural Orobas entry. A separate boss
+helper stopped at the first map with **10/10/10** reconciled actions; its
+overstrict acceptance check does not establish a bridge failure or a complete
+boss-to-Ancient chain. No action remained pending. Agent-managed Steam restarts
+and normal shutdowns worked throughout. Final cleanup passed by **20:07:27 UTC**,
+with zero overlays and all 429 base files unchanged. Broader branch coverage and
+trained-policy performance remain separate scopes, as detailed below.
+
 The [automatic Neow pickup batch](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#automatic-neow-pickup-families-passed)
 passed four cases at **4/4/4 each**, covering all seven scalar, upgrade and card-add
 families. Exact gold/HP effects, two automatic starter upgrades, rare Hellraiser,
@@ -19,7 +31,7 @@ Neow's Fury, Eternal Greed, final curses and map return were verified. Two cases
 used naturally offered Bones at ordinary Neow entry. Cleanup passed by
 **19:21:41 UTC**, with zero overlays and all 429 base files unchanged.
 
-The latest shop test found a concrete legal-action defect: Kifuda zero-card
+The earlier Kifuda test found a concrete legal-action defect: zero-card
 confirmation stopped at **2/2/0**, with both actions unresolved. The pinned native
 enchant confirmation ignores an empty selection despite declared MinSelect=0;
 the corrected release now requires at least one card, with raw bounds and native
@@ -41,8 +53,8 @@ cost 280 gold; Fake Mango raised HP/max HP from 68/68 to 71/71. The original dec
 relics and potion slots were preserved through Close/Leave and map return.
 Cleanup passed by **18:10:49 UTC**, with zero overlays and all 429 base files unchanged.
 The [Steam launch workflow](LIVE_DEVELOPMENT.md#agent-managed-steam-launch-on-this-mac)
-now supports user-authorized agent launches; two main-menu launches and bridge
-health checks passed with a normal quit between them.
+supports user-authorized agent launches; repeated main-menu launches, bridge
+health checks and normal shutdowns passed across the controlled batches.
 
 The [Neow offer Skip / Leafy Poultice case](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-offer-skip-and-leafy-poultice-passed)
 passed **5/5/5**, with 57 controller reads and nothing pending. Skip retained the
@@ -109,7 +121,9 @@ are verified. Final Proceed does not erase earlier verified child results.
 The new native `agent_v2` / `full_run_v2` candidate connects rich observations and
 nested decisions to the same public-only chooser as headless. Its first controlled
 rest/card-reward/map path and an assisted saved continuation through the Architect
-and native Victory passed live; broader v2 acceptance remains open. Its [coverage and remaining gaps](AGENT_CONTRACT.md#native-full-run-v2-candidate)
+and native Victory passed live. The requested representative follow-up coverage
+is complete; exhaustive branch and fresh uninterrupted v2 campaign evidence remain
+separate limits. Its [coverage and remaining gaps](AGENT_CONTRACT.md#native-full-run-v2-candidate)
 now include hand/optional combat choices, general potion use/discard and owned
 selectors, chest claims/empty chests, reward reroll/sacrifice, shop removal cancel,
 automatic relic effects, Cauldron/Orrery rewards and shared event reward children.
@@ -164,10 +178,10 @@ its separate package identity.
 | Combat card choices | Owned discard/exhaust selections, including optional zero confirmation; v2 adds visible Draw grids; v3 adds mandatory one-card offers | Neow’s Fury zero/two-card choices and resumed victory demonstrated. Repeated Séance Draw selections and enclosing victories passed through Act 3. Three Knowledge Demon offers reconciled, followed by its boss victory and the ending. Other fixed/exhaust callers remain offline only |
 | Map and room handoffs | Public legal map actions and bounded event/combat-to-map verification | Representative map/next-room transitions demonstrated; composite `*-map` clients verify the map but do not select a node |
 | Rest | Heal/Proceed and Smith (one card); Lift, Kindle, Dig, Cook, Clone and Hatch. Packaged `rest_v3` exposes selector cancellation and Heal-owned rewards | Every supported single-player option has a representative successful live case. Smith/Cook cancellation and deselection/reselection, Dream Catcher card collect/Skip, Tiny Mailbox two-potion collection and remaining Miniature Tent options demonstrated. Exact per-option limits remain below |
-| Shop purchases | Cards, potions, supported passive relics, Potion Belt +2 slots; 0–8 purchases, kind policy, gold reserve and callback-certified restock | Seven-card/one-potion visit and three restocked potion purchases with original-potion replacement demonstrated. Full-producer passive, selector and Belt pickups passed through map return; Belt expanded a full inventory from three to five slots and both added slots were filled. Zero-purchase Close/Leave passed 2/2/2 with exact inventory preservation. Remaining pickup and policy variants need live coverage |
+| Shop purchases | Cards, potions, supported passive relics, Potion Belt +2 slots; 0–8 purchases, kind policy, gold reserve and callback-certified restock | Seven-card/one-potion visit and restocked potion purchases demonstrated. Full-producer passive, selector and Belt pickups passed; both added slots were filled. Exact-inventory zero-purchase exit passed. Legacy room flow also passed potion-only reserve 3/3/3, fully reserved cards 2/2/2 and relic-only cap-one 3/3/3; other combinations retain separate evidence limits |
 | Shop removal | Exact selected original, price/effect reconciliation, preview cancellation, then separate inventory close and Leave | Removal and full-producer preview cancellation demonstrated through map return; cancellation retained exact deck and gold |
 | Shop-owned rewards | Cauldron's five potions and Orrery's five card menus under the purchase owner | Both passed 13/13/13 through purchase, all five rewards, automatic shop return and Close/Leave. Orrery added five exact cards while preserving the original deck, HP and potions. Cauldron replaced five original potions, protected newly collected items including a distinct same-key potion, and preserved the deck/HP. Earlier helper stops and Cauldron's unresolved 3/3/2 attempt remain in the ledger |
-| Shop pickup selectors | Dolly’s Mirror, Gnarled Hammer, Kifuda, Punch Dagger and Royal Stamp; exact native clone/enchantment selection | All five have representative live success: Kifuda’s three Adroit 3 originals; Mirror’s exact Bludgeon clone; Punch Dagger’s Momentum 5 on Bludgeon+; Hammer’s Sharp 3 on two Bludgeon+ originals and Headbutt+; Royal Stamp’s Royally Approved/Innate/Retain on Defend+. Punch Dagger and Stamp included deselection/reselection. All paid exactly and returned to the map, retaining other cards/HP/potions. Zero/fewer-card or toggle variants not separately demonstrated remain offline only. Other pickup callbacks are not generally supported |
+| Shop pickup selectors | Dolly’s Mirror, Gnarled Hammer, Kifuda, Punch Dagger and Royal Stamp; exact native clone/enchantment selection | All five have representative live success: Kifuda’s three Adroit 3 originals; Mirror’s exact Bludgeon clone; Punch Dagger’s Momentum 5 on Bludgeon+; Hammer’s Sharp 3 on two Bludgeon+ originals and Headbutt+; Royal Stamp’s Royally Approved/Innate/Retain on Defend+. Kifuda also passed one-card deselection/reselection after the legal-minimum correction; Punch Dagger and Stamp included toggling. All paid exactly and returned to the map, retaining other cards/HP/potions. Empty native enchant confirmation is not advertised; other untested variants retain separate limits. Other pickup callbacks are not generally supported |
 
 ### Native rest-site actions
 
@@ -244,14 +258,14 @@ extend standalone rest/shop contracts.
 | Deck changes around a selector | Append-only baseline before the first selector; removal followed by at most one separate appended grant | Grave/Confront, Amalgamator/CombineStrikes and both Trial/Innocent selector branches demonstrated; grant provenance unverified; arbitrary survivor changes/multiple grants unsupported |
 | Upgrade | Fixed selection counts 1–8; eligible allocated off-screen holders | Sapphire Seed single upgrade at slot 20 of 23 demonstrated. Full-producer Trial/MerchantInnocent fixed-two passed 5/5/5 after Shame addition, and Yummy Cookie fixed-four passed 7/7/7, with exact upgrades and map return. Other counts/callers retain separate limits; Dummy automatic upgrades are not selector evidence |
 | Enchant | Single selection and fixed 2–8 selections with exact preview/effects | Sapphire Seed, Grave and Prickly Sponge fixed-two demonstrated; other counts/callers offline only; stacking/replacement and optional counts unsupported |
-| Remove | Positive selections up to eight with exact original preview/removal; owned automatic removal without a selector | Amalgamator fixed-two and one-card Dark Door automatic completion/map demonstrated; other counts/callers need evidence |
+| Remove | Positive selections up to eight with exact original preview/removal; owned automatic removal without a selector | Amalgamator fixed-two and one-card Dark Door demonstrated. Empty-domain Dark Door also passed 2/2/2, retaining the sole Eternal Curse of the Bell without selector input; other callers retain separate limits |
 | Transform | Fixed/positive variable counts up to eight; optional 0..8; fixed-one generic transform-prompt surface | Allocated off-screen input, Wood Carvings/Bird and Claws zero/three/six demonstrated. Trial/NondescriptInnocent passed 5/5/5 after observed Doubt addition: two exact originals transformed, survivors/inventory preserved and map returned. Full-producer Torus passed 4/4/4 with the selected Strike becoming Toric Toughness and exact survivors/inventory through map return; other callers retain separate limits |
 | Add-card grid | Positive selection; optional 0..15 with explicit confirmation | Cheese two-of-eight and Sea Glass zero/three/fifteen demonstrated |
 | Ordinary card-reward menus | One or 2–8 menus, 1–5 cards/menu, native choice/Skip and final dismissal | Brain Leech singleton and Colorful Philosophers choose/Skip/choose demonstrated; other counts/outcomes offline only |
 | Direct offered card | Required `card_offer_v1`; optional v2 choice/Skip with zero/one observed appended grant | Lead Paperweight and Hefty Tablet choice/Skip demonstrated. Required-choice v1 is fixture-only capability with no identified native caller; not a pending gameplay test |
 | Card bundle | 1–5 bundles of 1–8 cards, original preview and Confirm | Scroll Boxes three-card bundle demonstrated; other variants offline only |
 | Results acknowledgment | Confirm 1–64 displayed results while preserving the post-show deck | Pandora’s Box nine-result screen demonstrated; preceding automatic transformations are not certified |
-| Ancient dialogue/options | Native ancient layout, bounded dialogue and supported pickup children | Console-selected routes and natural Nonupeipe entry in the shared Act-3 continuation demonstrated; other natural routes and normal Darv pool eligibility retain separate limits |
+| Ancient dialogue/options | Native ancient layout, bounded dialogue and supported pickup children | Console-selected routes and natural Neow, Pael, Nonupeipe and Orobas entry demonstrated. Orobas passed legal-node entry, Sand Castle and map at 3/3/3; other routes/dialogue and normal Darv pool eligibility retain separate limits |
 
 ### Item rewards, combat events and custom screens
 
@@ -307,8 +321,9 @@ extend standalone rest/shop contracts.
   observers. The correction uses each selected callback's declaring method for
   ownership, patching and cleanup; focused checks, independent review and the
   final release gate passed. The corrected package recovered Neow's reward and
-  event/map return during the later route; non-compound Sacrifice remains a
-  separate live limit. The
+  event/map return during the later route. Standalone first Sacrifice subsequently
+  passed **3/3/3**, with Wing counter 0→1, exact unchanged deck/other inventory and
+  map return; the earlier Whetstone-granting case retains its separate evidence. The
   [failed attempt](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#shared-v2-route-stopped-at-small-capsule-2026-09-26)
   retains its original package and unresolved counts after clean removal.
 - **Large-deck shared selectors:** the later route stopped at Cook with a 33-card
@@ -444,69 +459,59 @@ These are **not an implementation queue or required live-test checklist**:
 - Required direct card offers: v1 exists in fixtures, but the inspected Lead
   Paperweight/Massive Scroll callers are optional v2; there is no required-v1
   gameplay case to schedule yet.
+- Prevented card additions: the pinned source has no override of
+  `AbstractModel.ShouldAddToDeck`; its base implementation returns true. The
+  bridge's prevention handling remains fixture-tested, but there is no concrete
+  native prevention caller to schedule. Sozu's real potion-procurement
+  prevention is separately live-demonstrated.
 
-### Implemented, but still needing representative live evidence
+<a id="implemented-but-still-needing-representative-live-evidence"></a>
 
-- Other full-producer Neow’s Bones compound branches and potion-procurement
-  outcomes; potion/card prevention variants and additional shared event reward callers.
-  All seven automatic scalar/upgrade/card-add families passed in four controlled
-  cases at 4/4/4 each, including naturally offered Bones in two cases. Lead Paperweight offer Skip followed by Leafy Poultice's automatic
-  Strike/Defend transformations and twelve max-HP loss passed at 5/5/5 through
-  final Writhe and map return. This is the owned compound pickup path; it does
-  not broaden general selectorless-transform support.
-  New Leaf's selected transformation followed by empty-belt Phial Holster's two
-  potions, final curse and map return passed at 6/6/6 with unchanged survivors.
-  Shears' two-card removal followed by full-belt Phial Holster, final curse and
-  map return now passed at 7/7/7 with exact original-potion preservation.
-  Representative hand/optional offers, potion use/discard and potion-owned choices,
-  chest claiming, reroll and Sacrifice passed live, including the corrected
-  Whetstone-granting second Sacrifice. Shop-removal preview cancellation also
-  passed, with unchanged deck/gold and map return. Lost Coffer's full-producer
-  rewards passed potion replacement, card choice and event/map return at 6/6/6.
-  Neow’s Bones with Large Capsule, Lost Coffer, nested Sacrifice and final Decay
-  passed at 7/7/7 through map return. Orrery's five card additions, automatic shop
-  return and map exit passed at 13/13/13. Cauldron's five-potion replacement,
-  automatic return and map exit also passed at 13/13/13. Silver Crucible’s first
-  empty chest passed Open/Proceed at 2/2/2 with exact inventory preservation.
-- Expanded terminal schemas 9–10: the representative ten-entry screen passed live.
-  The wider 32-entry bound and 65-action card-menu sequence remain fixture/socket
-  evidence, without a separately identified ordinary 32-entry gameplay caller.
-- Selectorless removal: one-card Dark Door passed live. Empty domains, retained
-  Eternal cards, other callers and adversarial variants remain fixture evidence.
-- Remaining shop kind/gold-reserve variants. The legal minimum correction and
-  Kifuda one-card deselection/reselection passed at 7/7/7; native empty enchant
-  confirmation remains unsupported. All five supported shop card selectors now have
-  representative live acceptance. Zero-purchase
-  Close/Leave passed with exact inventory preservation. The inherited passive Red Mask purchase
-  passed through the full producer; other pickup effects remain separate cases.
-- Other capacity-reward callers retain separate limits. Representative full-belt
-  Potion Belt ordering now passed in terminal rewards through Punch Off at
-  17/16/16 and event rewards through Repy at 6/6/6. Both preserved the three
-  original potions and filled both added slots. Console-created Repy had no
-  Lantern Key; quest removal and natural entry remain separate evidence limits.
-  Resume capacity has no identified native caller.
-- Held-out enchant/removal/transform callers retain separate evidence limits.
-  Wood Carvings/Torus's fixed-one basic-card choice and exact Toric Toughness
-  replacement now passed through the full producer at 4/4/4, with unchanged
-  survivors/inventory. Yummy Cookie's fixed-four
-  upgrades and both Trial/Innocent curse-plus-two selectors now have representative
-  live acceptance; each Trial branch passed 5/5/5. Recreating Trial repeats a
-  campaign's branch; the saved TEST531 campaign produced Merchant as predicted.
-- Other natural ancient entry/dialogue routes beyond the demonstrated Nonupeipe
-  continuation and two ordinary Neow starts.
-- Broader reward orders/outcomes with a concrete offered screen, Sphere other
-  outcomes. Sphere small/big tools,
-  six exact reveals and earned gold/card/potions passed through the shared producer
-  at 17/17/17; other outcomes retain separate limits. Fake Merchant's six-purchase
-  inventory path passed at 9/9/9, with exact visible payments, six relic appends,
-  Fake Mango's +3 HP/max-HP effect and Close/Leave/map return. Its zero-purchase
-  variant also passed 3/3/3 with exact inventory preservation through the map.
-- Held-out elite and room-handoff variants beyond the accepted campaign route.
-- A fresh uninterrupted shared-v2 campaign. The assisted saved continuation now
-  demonstrates the ending, with earlier stops, corrections and reloads retained
-  in its evidence.
-  The demonstrated long traversal does not establish all-branch coverage or
-  strategic quality. Another fresh run is not required for milestone 7 acceptance.
+### Representative coverage complete; additional evidence limits
+
+The requested named cases now have representative live evidence, including the
+[final prevention/removal/policy/handoff batch](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#prevention-removal-policy-variants-and-handoffs).
+No known correctness failure remains open in those paths. Historical uncertain
+actions retain their original failed records; later success does not adopt them.
+The following are limits on the conclusion, not an unbounded test queue:
+
+- Neow's Bones: all seven automatic scalar/upgrade/card-add families, offered
+  choice/Skip, removal/upgrade/transform selectors, empty/full-belt Holster and
+  Sozu-blocked Holster have representative passes. Additional generated outcomes,
+  localization, other callback combinations and reload fidelity are separate.
+  Standalone first Sacrifice passed 3/3/3; nested and Whetstone-granting Sacrifice
+  retain their earlier successful cases.
+- Expanded terminal schemas 9–10: the representative ten-entry screen passed.
+  The 32-entry bound and 65-action card-menu sequence remain fixture/socket
+  evidence without an identified ordinary 32-entry gameplay caller.
+- Automatic removal: one-card Dark Door and an empty removable domain retaining
+  Eternal Curse of the Bell passed. Other callers and adversarial variants remain
+  fixture evidence. Wood Carvings/Torus, Yummy Cookie's four upgrades and both
+  Trial/Innocent curse-plus-two selectors have representative live acceptance;
+  other selector counts and callers retain their own limits.
+- Shop: all five supported pickup-selector families, Kifuda one-card toggling,
+  Cauldron/Orrery rewards and zero-purchase exit passed. Potion-only with a reserve,
+  cards blocked by a full reserve and relic-only with a one-purchase cap passed
+  through the production legacy room controller; these are not shared-v2 policy
+  tests. Other policy combinations and unrecognized pickup callbacks are separate.
+  Native empty enchant confirmation is a no-op and is not advertised.
+- Capacity-first Potion Belt passed in Punch Off terminal rewards (17/16/16) and
+  Repy event rewards (6/6/6), retaining three originals and filling both added
+  slots. Console-created Repy had no Lantern Key; quest removal and natural entry
+  remain separate. Resume capacity has no identified native caller.
+- Natural Ancient entry now includes Neow, Pael, Nonupeipe and Orobas. Other
+  routes/dialogue and normal Darv pool eligibility remain unverified. Byrdonis
+  combat/rewards/map passed with upfront damage assistance; other elite variants
+  and unassisted strategy are separate. A boss helper stopped at the first map
+  with all ten actions reconciled; the subsequent Orobas pass used a fresh process
+  and does not turn those two cases into one uninterrupted chain.
+- Sphere small/big tools, earned gold/card/potions and a relic passed. Fake
+  Merchant six-purchase and zero-purchase paths passed with exact effects and
+  map return. Other offered outcomes/orderings require their own evidence.
+- The assisted shared-v2 saved continuation demonstrates the native ending.
+  Its corrections, reloads and earlier stops remain recorded. A fresh uninterrupted
+  v2 campaign, every seed/branch and strategic quality are separate scopes;
+  another fresh run is not required for milestone 7 acceptance.
 
 [Roadmap](../ROADMAP.md) owns the order of work. [Caller evidence](EVENT_COVERAGE.md)
 links the exact demonstrated paths; the [research map](EVENT_INTERACTION_MAP.md)
@@ -525,6 +530,15 @@ Independent semantic review found no blocker. The final release gate passed
 metadata and unchanged-base verification passed by **18:57:12 UTC**. The subsequent
 Steam launch and authenticated health checks passed by **18:58:39 UTC**; the subsequent Profile 3 Kifuda retest passed **7/7/7**, 34 controller reads plus
 one verification read, with nothing pending. Cleanup passed by **19:07:01 UTC**.
+
+The same release subsequently passed the four automatic Neow cases and eight
+final representative cases. Its aggregate is **thirteen passing cases plus one
+helper-limited boss result, 62/62/62 actions**, with nothing pending. The final
+installation `d79b611c…` was verified at **19:24:58 UTC**; normal shutdown, exact
+quarantine/purge and unchanged-base checks passed by **20:07:27 UTC**. The
+[batch evidence](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#prevention-removal-policy-variants-and-handoffs)
+and [release validation](../bridge/Sts2AgentBridge/releases/current/validation.json)
+retain case-level results, artifact bindings and the helper limitation.
 
 The preceding manifest `69bfd021…`, source `0fb2972`, corrected reward capacity
 settlement and owns the following live results. Those results retain their exact

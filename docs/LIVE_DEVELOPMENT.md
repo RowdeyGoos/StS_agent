@@ -39,6 +39,11 @@ single-player campaign repeats the same verdict branch. A different entrant
 number does not indicate a different branch: that display uses a separate RNG.
 Keep other branches explicitly untested until a matching campaign is available.
 
+For boss-to-Ancient coverage, stopping at the first actionable map verifies the
+reward handoff only. Select the legal Ancient map node and verify its event and
+return before claiming Ancient-entry coverage. A helper that stops at the map
+cannot require later Ancient actions in that same result.
+
 ## Prepare and run within the user's scope
 
 - Use the user's actual authorization and launch preferences. Existing approval
@@ -81,10 +86,13 @@ Profile 3 at the main menu through native UI, and check the authenticated bridge
 health/manifest before attaching gameplay. A zero launcher exit code alone does
 not establish readiness. Do not launch again while the first result is uncertain.
 
-This path reached the modded Profile 3 main menu twice on 2026-09-27, including
-a normal quit with confirmed process/listener shutdown between launches. Both
-launches passed authenticated health and compatibility checks. Steam was already
-running and signed in; a cold Steam start or sign-in prompt remains untested.
+This path repeatedly reached the modded Profile 3 main menu on 2026-09-27,
+including fresh processes for the Kifuda, Neow and final coverage batches.
+Normal quit, stopped process/listener and exact owned-overlay checks preceded
+each restart; launches passed authenticated health and compatibility checks.
+The unchanged verified installation can serve several independent cases across
+fresh processes, followed by exact final quarantine/purge and base verification.
+Steam was already running and signed in; a cold Steam start or sign-in prompt remains untested.
 Direct game-app launch produced a Steam initialization error. Browser automation
 blocks Steam URL links, and native Steam-window capture failed; neither is needed
 for this verified command. No launch preferences, credentials or save files were

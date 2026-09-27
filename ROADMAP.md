@@ -6,83 +6,61 @@ process. Completed packets and old campaign instructions are historical referenc
 
 ## Immediate priorities
 
-The current user-requested objective is to finish the non-training system for the
-declared pinned single-player scope. Carry implementation, relevant native
-validation, packaging and cleanup through completion before moving to training.
-The shared contract, fixed action encoding, Gym environments, public data tools
-and bounded execution are already delivered; the remaining work is below.
+The requested non-training completion pass is complete for the declared pinned
+single-player scope. The shared contract, fixed action encoding, Gym environments,
+public data tools and bounded execution are delivered. The named bridge paths
+have representative live evidence, the shared-v2 saved continuation reaches a
+settled native ending, and no known correctness failure remains open in the
+requested paths. The current package passed its release gate, installation and
+exact cleanup checks; source and evidence are committed.
 
-Milestone 7 is accepted by the user for the assisted potion campaign: all gameplay
-was policy-controlled through the native ending, with one reload to install the
-Waterfall Giant correction. Its original continuation result remains unchanged;
-another fresh campaign is not an acceptance requirement. See the
+The final coverage work included the native Kifuda empty-confirm correction and
+successful one-card toggle retest, automatic Neow pickups, Sozu-blocked Holster,
+empty removal retaining Eternal, standalone first Sacrifice, shop spending/kind
+variants, an assisted elite handoff and natural Orobas entry. Agent-managed Steam
+launch, normal shutdown and restart worked across the controlled batches.
+[Current status](docs/STATUS.md) owns exact results and limits; the
+[live ledger](docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#prevention-removal-policy-variants-and-handoffs)
+retains the separate boss-helper map stop with all actions reconciled.
+
+Milestone 7 remains accepted by the user for the assisted potion campaign: all
+its gameplay was policy-controlled through the native ending, with one reload
+for the Waterfall Giant correction. Its original continuation result is unchanged;
+another fresh campaign is not an acceptance requirement. The later shared-v2
+ending is an assisted saved continuation with its own corrections and reloads,
+not a fresh uninterrupted v2 certification. See the
 [accepted scope](docs/AGENT_ENVIRONMENT.md#7-complete-live-campaign-traversal).
 
-1. **Finish representative coverage of remaining pickup and selector variants.**
-   Custom screens, Trial abandonment Cancel/Confirm, event combat/reward/map paths,
-   Dummy victory with automatic upgrades, terminal potion policies and assisted
-   Fake Merchant seven-relic collection now have live results. Capacity-first
-   terminal/event rewards and both Trial/Innocent selector branches also have
-   representative acceptance. All seven automatic Neow pickup families now passed in four controlled cases.
-   Remaining targets include concrete potion/card prevention outcomes and reward
-   callback variants. Sphere's small/big tools and earned
-   gold/card/potions and an earned relic passed. The zero-card Kifuda test found a
-   native no-op confirmation. The legal-minimum correction passed its release gate;
-   the one-card Kifuda deselection/reselection retest passed 7/7/7 through the map.
-   Yummy Cookie's true four-card upgrade
-   selector, all five supported shop card-selector families and Cauldron/Orrery
-   rewards, Silver Crucible’s empty chest and Wood Carvings/Torus now have
-   representative live acceptance; other held-out callers retain separate limits.
-   Choose a concrete native caller and observable outcome before extending a mechanism.
-   [Current status](docs/STATUS.md) owns exact evidence and practical limits.
-2. **Exercise remaining handoff variants in useful live runs.**
-   Reuse the [multi-case results](docs/evidence/MULTICASE_BRIDGE_LIVE_2026_09_12.md),
-   [combined batch](docs/evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md) and
-   [unified smoke](docs/evidence/UNIFIED_BRIDGE_SMOKE_2026_09_08.md).
-   Test held-out handoffs and elite variants, keeping run completion,
-   branch coverage and strategic quality as separate claims. Use generalized
-   transformation in useful play; do not repeat the card16 geometry experiment.
-3. **Preserve shared v2 route acceptance while closing remaining failures.** The
-   assisted saved campaign reached native Victory with the shared producer and
-   chooser on September 27. Corrections, reloads and earlier stops remain in its
-   evidence; a fresh uninterrupted v2 campaign is a separate unverified scope.
-   The compound Neow removal-preview correction passed its 8/8/8 live retest;
-   the offer/upgrade branch also passed at 7/7/7.
-   Retain those results and the accepted ending evidence unless affected inputs change.
-4. **Close concrete fidelity and delivery issues.** Use focused native comparisons
-   for identified rule/public-information discrepancies or a specific uncovered
-   mechanism. Retain accepted unchanged engine and consumer evidence, including
-   the existing low-HP, death and revival comparisons. The September 26
-   [package refresh](docs/AGENT_EXECUTION.md#validation-and-timing) passed current
-   command/Gym/data/continuation checks in fresh installations and all 406 agent
-   tests. Retain that evidence unless remaining fixes affect its inputs; finish
-   with exact release/source identity, documented limits and committed changes.
-   Training-specific throughput targets follow actual training
-   workloads later.
+Further work should start from a new concrete requirement:
 
-Completion means the named gameplay paths have the required representative
-evidence, no known in-scope correctness failure is unresolved, the shared v2 route
-reaches a settled ending, and the supported package can be installed and used
-as documented. Fixes discovered during these checks remain part of this work.
-Unsupported shapes with no identified gameplay caller retain explicit limits;
-they are neither silently marked passed nor an unbounded implementation queue.
-Training and trained-policy performance are subsequent work. The detailed open
-coverage list stays in [current status](docs/STATUS.md#implementation-gaps-versus-remaining-live-tests),
-and concrete engine discrepancies stay in the
-[headless backlog](docs/HEADLESS_FULL_GAME_IMPLEMENTATION.md#hf-48--accept-complete-run-fidelity-and-close-coverage-gaps).
+1. **Maintain the accepted package.** Reuse unchanged engine/consumer evidence,
+   including the September 26 package refresh and its 406 agent checks, until
+   affected inputs or the pinned game build change. Preserve exact source,
+   artifact, test and cleanup bindings.
+2. **Resolve new native discrepancies when observed.** Identify the caller and
+   observable outcome first, then add the smallest implementation and validation
+   needed. Unsupported shapes with no identified gameplay caller retain explicit
+   limits; they are not an unbounded implementation queue.
+3. **Begin training or broader evaluation when requested.** Training integration,
+   throughput targets, stronger policies, exhaustive branch/seed coverage and a
+   fresh uninterrupted shared-v2 campaign are subsequent scopes. Representative
+   bridge coverage does not establish strategic quality.
 
-Allocated off-screen transformation and single-upgrade holders each have a
-representative live result. Further tests should address new behavior, such as
-multi-upgrade or unallocated cards, rather than repeating their geometry checks.
+[Current status](docs/STATUS.md#implementation-gaps-versus-remaining-live-tests)
+owns remaining evidence limits, and the
+[headless backlog](docs/HEADLESS_FULL_GAME_IMPLEMENTATION.md#hf-48--accept-complete-run-fidelity-and-close-coverage-gaps)
+owns concrete engine discrepancies. Allocated off-screen transformation and
+single-upgrade holders already have representative results; further tests should
+address new behavior rather than repeat their geometry checks.
 
 ## Scope of further bridge implementation
 
 [Current status](docs/STATUS.md#implementation-gaps-versus-remaining-live-tests)
-owns the missing-feature list, separately from implemented capabilities awaiting
-live coverage. Rest selector cancellation, wider terminal reward screens and the
-named full-producer pickup paths are implemented; representative coverage remains
-the immediate priority. Unsupported selector/pickup shapes without a concrete
-caller stay outside that queue. Multi-card Smith is not a native gameplay
+owns implementation limits separately from the accepted representative coverage.
+Rest selector cancellation, wider terminal reward screens and the named
+full-producer pickup paths are implemented and have representative evidence.
+Unsupported selector/pickup shapes without a concrete caller remain outside the
+implementation queue. Multi-card Smith is not a native gameplay
 requirement in the pinned assembly.
 
 Use the [research map](docs/EVENT_INTERACTION_MAP.md) for source-backed callers;

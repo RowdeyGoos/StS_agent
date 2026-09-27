@@ -33,3 +33,14 @@ scalar, upgrade and card-add families. Two cases used naturally offered Bones.
 All sixteen actions reconciled through map return, with zero stale rejections
 and nothing pending. Final normal shutdown and exact cleanup passed by
 **19:21:41 UTC**, leaving zero overlays and all 429 base files unchanged.
+
+The [final coverage batch](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#prevention-removal-policy-variants-and-handoffs)
+added eight passing cases at **29/29/29**: Sozu-blocked Holster, empty Dark Door
+removal retaining Eternal, standalone first Sacrifice, three legacy shop-policy
+variants, an assisted Byrdonis reward handoff and natural Orobas entry.
+A separate boss helper stopped at the first map; its **10/10/10** actions all
+reconciled, but it does not establish an uninterrupted boss-to-Ancient chain.
+The release now has thirteen passing cases plus that helper-limited result,
+**62/62/62** total actions and nothing pending. Agent-managed Steam restarts and
+normal shutdowns worked throughout. Final exact cleanup passed by **20:07:27 UTC**:
+four generated files removed, zero overlays and all 429 base files unchanged.

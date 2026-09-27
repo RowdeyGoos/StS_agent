@@ -13,6 +13,11 @@ controlled Profile 3 case to its own release, setup, counters and cleanup.
 
 | Caller/path | Recorded result | Qualification |
 | --- | --- | --- |
+| [Neow's Bones / Sozu + Phial Holster](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#prevention-removal-policy-variants-and-handoffs) | New Leaf transform, fourth slot, both prevented potion procurements, Writhe and map passed at 6/6/6 | Sozu and Bones were console-prepared before attachment; all four potion slots remained empty |
+| [Dark Door / no removable cards](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#prevention-removal-policy-variants-and-handoffs) | Automatic completion and map passed at 2/2/2, retaining the sole Eternal Curse of the Bell with no selector input | Connected native room followed by console event/deck setup; other removal callers remain separate |
+| [Pael's Wing / standalone first Sacrifice](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#prevention-removal-policy-variants-and-handoffs) | Ordinary Shrinker Beetle card reward sacrificed; Wing counter 0→1, exact unchanged deck/other inventory and map passed at 3/3/3 | Wing and terminal victory prepared before attachment; no second-Sacrifice grant or combat-policy claim |
+| [Byrdonis / elite rewards](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#prevention-removal-policy-variants-and-handoffs) | Combat, 43 gold, Red Mask, Strength Potion, card and map passed at 7/7/7 with the unchanged shared chooser | Native console elite entry and Strength 1000 before attachment; natural elite entry and unassisted strategy not established |
+| [Orobas / natural Act 2 entry](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#prevention-removal-policy-variants-and-handoffs) | Legal Ancient node, Sand Castle and map passed at 3/3/3 | Native boss reward Skip preceded attachment in a fresh process. No forced Ancient/option or debug jump; travel disabled before attachment. Separate boss helper's 10/10/10 map stop is not an uninterrupted chain |
 | [Fake Merchant: zero purchases](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#fake-merchant-zero-purchases-passed) | Open/Close/Leave and map return passed at 3/3/3 with exact unchanged deck, relics, potions, HP and gold | Saved TEST74 combat checkpoint; controlled Act 1 console entry before attachment. Natural eligibility and persistence are not claimed |
 | [Fake Merchant: six purchases](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#fake-merchant-six-purchases-passed) | Open, six exact payments/relic appends, Close/Leave and map return passed at 9/9/9; 280 gold paid and Fake Mango added three HP/max HP | Saved TEST74; 400 gold and console event setup preceded attachment. Original deck/relics/potions unchanged; full HP makes Waffle's capped heal exact. Natural eligibility and other stock sets remain separate |
 | [The Architect: shared-v2 ending](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#symbiote-passed-and-settled-combat-stale-stop-2026-09-27) | Final combat, rewards and Architect completed at 12/12/12 new actions; `victory/none` and native Victory observed | Unchanged common chooser in an assisted saved continuation, resumed after a settled client stop and validated client-only correction. No fresh uninterrupted campaign claim |
@@ -33,6 +38,20 @@ controlled Profile 3 case to its own release, setup, counters and cleanup.
 | [Neow’s Bones / New Leaf + Phial Holster](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-new-leaf-and-empty-belt-phial-holster-passed) | Passed 6/6/6: selected Strike transformed to Body Slam, fourth slot plus Attack/Weak potions, Writhe and map return | Initially empty belt; other original cards, HP and gold unchanged. Seeded Custom Mode without modifiers, console-prepared Bones; other generated outcomes remain separate |
 | [Neow’s Bones / Lead Paperweight Skip + Leafy Poultice](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-offer-skip-and-leafy-poultice-passed) | Passed 5/5/5: Skip preserved the exact deck; automatic first-Strike/Defend transformations added Cinder/Dismantle, HP/max HP became 68/68, then Writhe and map return | Fresh TEST74 Custom campaign without modifiers or assistance, console-prepared Bones. Eight other originals, gold and empty potion slots were unchanged; general selectorless transforms and other generated outcomes remain separate |
 | [War Historian Repy / Unlock Chest](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#repy-capacity-first-potion-belt-passed) | Passed 6/6/6: Potion Belt before potion claims, two added empty slots, retained Fire/Strength/Block originals, Weak Potion/Fysh Oil collection and map return | Full initial belt; exact deck/HP/gold preserved. Seeded Custom Mode without modifiers, console-created Repy without Lantern Key; quest removal and natural entry remain separate |
+
+### September 27 legacy shop policy variants
+
+These [ordinary shop cases](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#prevention-removal-policy-variants-and-handoffs)
+used the production legacy room controller, not the shared-v2 chooser. Native
+funding/setup preceded attachment; each checked its public shop inventory effect
+and Close/Leave/map return. Full-run deck-instance and HP preservation are not
+claimed from this controller.
+
+| Policy | Recorded result |
+| --- | --- |
+| Potions only, reserve 1048 | Attack Potion for 51, gold 1099→1048, then reserve stopped further purchases; 3/3/3 |
+| Cards only, reserve all 1099 | Affordable cards left unbought, inventory/gold unchanged; 2/2/2 |
+| Relics only, cap one | Book of Five Rings for 187, gold 1099→912, then cap stopped further purchases; 3/3/3 |
 
 ## September 24 campaign ending
 

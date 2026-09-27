@@ -3191,3 +3191,101 @@ separately. User wait was zero during this batch. These are representative nativ
 pickup results, not every seed, prevented card addition, localization or reload
 fidelity. Aggregate summaries only were retained; no profile/save/history/Cloud
 filesystem access or raw trajectory corpus was used.
+
+### Prevention, removal, policy variants and handoffs
+
+The final Profile 3 batch reused the accepted source
+`7b892d2ce13bd1c884af30f0baa81bd83bfb197b`, manifest
+`5ece253f925f3aa766f6c21095d1017aa04f2c5ce366656720f934e354d50c9c`, DLL
+`d73b988f8d3ebc4387c2f889374b35647c65205b11b2b72dcd7bd07b70811d4a` and ZIP
+`d3bfa8b9b14fc7a84422d81a250dbbe88fdae71b9cd62cff7550446797ad419e`.
+Installation `d79b611c3dce53d5d8f895d5f2c4229b1f672856fccf1b1a3c2c1f9e02fc407d`
+passed initializer/dependency and exact two-overlay/429-base-file verification
+by **19:24:58 UTC**. That verifier invocation did not check the results hook.
+No production source or package changed; the accepted 85-group gate and semantic
+review were reused. Sanitized per-case summaries are retained in the current
+[validation record](../../bridge/Sts2AgentBridge/releases/current/validation.json).
+
+Eight cases passed at **29 attempted / 29 accepted / 29 reconciled** actions.
+Every case reached an actionable map. All native console setup and ordinary UI
+preparation preceded attachment; no manual gameplay input followed attachment.
+The three shop-policy cases used the production legacy `room_flow_host.run_flow`.
+Other cases used the shared full producer; the elite and Ancient choices used
+the unchanged `game.agent.full_policy.choose_action`.
+
+| Case | Verified outcome | Actions | Reads + verification | Verified by UTC |
+| --- | --- | --- | --- | --- |
+| Sozu + Phial Holster | Strike → Body Slam, capacity 3→4 with both potion procurements blocked, four empty slots, final Writhe; HP/gold and other originals unchanged | 6/6/6 | 53 + 1 | 19:31:35 |
+| Dark Door empty removal | Sole Eternal Curse of the Bell retained; exact unchanged inventory, no selector input | 2/2/2 | 37 + 1 | 19:36:32 |
+| Standalone first Sacrifice | Pael's Wing counter 0→1; exact deck/other inventory unchanged; unclaimed ordinary gold/potion left behind | 3/3/3 | 4 + 1 | 19:39:43 |
+| Shop potions + reserve | Attack Potion for 51, gold 1099→1048; affordable Taunt excluded by kind and further affordable potions excluded by reserve 1048 | 3/3/3 | One preflight; controller reads not retained | 19:43:59 |
+| Shop cards + full reserve | Reserve 1099 excluded all affordable cards; Close/Leave preserved public shop inventory and gold | 2/2/2 | One preflight; controller reads not retained | 19:47:04 |
+| Shop relics + cap one | Book of Five Rings for 187, gold 1099→912; further affordable relics left after the one-purchase cap | 3/3/3 | One preflight; controller reads not retained | 19:49:36 |
+| Byrdonis elite handoff | One attack, 43 gold, Red Mask, Strength Potion, card choice and map; final HP 80/80, gold 142 | 7/7/7 | 16 + 1 | 19:53:34 |
+| Natural Orobas entry | Legal Act 2 Ancient node, Sand Castle and event/map return; floor 6, HP 80/80, gold 99 | 3/3/3 | 48 + 1, plus one preflight | 20:01:47 |
+
+The initial TEST475 Ironclad A0 Custom run had no modifiers. Sozu and Neow's Bones
+were native-console setup; New Leaf and Holster were claimed through the bridge.
+For Dark Door, native connected Shrinker Beetle entry preceded console event
+setup; eleven other cards were removed and Eternal Curse of the Bell was
+added before attachment. Empty eligibility was observed in that exact deck.
+For standalone Sacrifice, a fresh Continue restored the original eleven-card
+combat checkpoint; native Pael's Wing and `kill all` prepared the ordinary
+terminal reward before attachment. These are separate cases, not a claim that
+the one-card event setup survived a reload.
+
+The three shop cases continued the funded saved merchant across fresh processes.
+Sozu removal, 1000 added gold and native shop preparation occurred before the
+first attachment. Purchase kind, reserve/cap, visible price, exact public shop
+inventory effect, Close/Leave and map return were checked. This legacy controller
+does not supply the full-run deck-instance/HP contract; those stronger checks are
+not claimed for these three cases. The elite was console-created, with Strength
+1000 applied to the player before attachment. Its success establishes the
+additional combat/reward handoff, not natural elite entry or unassisted strategy.
+
+A separate Kin Priest/two Kin Follower boss case used the same upfront Strength
+assistance. By **19:57:02 UTC**, all **10/10/10** combat/reward actions had reconciled,
+with 107 controller reads, one verification read, zero stale rejections and
+nothing pending. The temporary helper stopped at the first map, then incorrectly
+required `continue_act`, an Ancient choice and event leave, producing
+`boss_ancient_handoff_incomplete`. The native map entry uses its legal Ancient
+node; the helper's later requirements could not be satisfied after its own stop.
+The final map's act was not retained in that result. This is a helper-limited
+result, not an observed bridge failure or an accepted uninterrupted
+boss-to-Ancient chain. No mutation was retried or adopted.
+
+After normal shutdown and a fresh Steam launch, native Continue restored the
+boss reward. Native Skip before attachment generated the Act 2 map. Debug travel
+was briefly enabled and disabled before any map input; no debug jump occurred,
+and travel was disabled before attachment. A read-only public decision showed
+the sole legal Ancient node at Act 2 floor 5. The shared adapter dispatched that
+node; the unchanged chooser then obtained Sand Castle from Orobas and left.
+No Ancient or relic option was forced, and no additional dialogue action was
+offered. This demonstrates natural map entry in the controlled saved campaign;
+it does not establish every Ancient route or normal Darv eligibility.
+
+Including the helper-limited result, this batch exercised **39/39/39** actions,
+all reconciled. The requested representative non-training coverage is complete;
+the source/status documents retain broader branch, strategy and unsupported-shape
+limits. A pinned-source audit found no `ShouldAddToDeck` override: only
+`AbstractModel`'s always-true base declaration, `Hook` dispatch and the
+`CardPileCmd` addition paths reference it. Prevented card addition therefore has
+no concrete native caller to schedule; fixtures remain its evidence. Sozu's
+actual `ShouldProcurePotion` prevention is covered above.
+
+One verified installation served independent cases across fresh processes.
+Agent-managed Steam launch, authenticated health/manifest verification, normal
+Save and Quit/app Quit, stopped process/listener and exact owned-overlay/base
+checks passed between cases. Final normal shutdown, exact quarantine/purge and
+base verification passed by **20:07:27 UTC**. Quarantined state
+`0cc872c1a90432e15f1509723bf94b03448b4cc069b5056620564a8f43c13900`;
+four generated files removed, zero overlays, no game/listener, and all 429 base
+files unchanged with aggregate
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+
+The installation-verification-to-final-cleanup window was **19:24:58–20:07:27 UTC
+(2,549 seconds)**, including setup, analysis and restarts; controller durations
+were not measured separately. User wait was zero in this batch. The earlier
+Mac-unlock wait ended before the Kifuda retest but was not timed separately.
+No profile/save/history/preferences/Cloud filesystem access or raw trajectory
+corpus was used; only aggregate acceptance summaries were retained.
