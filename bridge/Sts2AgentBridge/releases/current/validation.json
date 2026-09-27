@@ -1,485 +1,468 @@
 {
-  "additional_live_cases": {
-    "hefty_kaleidoscope": {
-      "controller_reads": null,
-      "counts": [
-        9,
-        9,
-        9
-      ],
-      "decisions": 9,
-      "helper_postcondition": "wrong_expected_branch",
-      "pending": false,
-      "stale_rejections": 0,
-      "status": "settled_map",
-      "verification_reads": 2
-    },
-    "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-compound-previews-offer-passed-removal-stopped-2026-09-27",
-    "recorded_live_corpus": false,
-    "scroll_boxes_precise_scissors": {
-      "controller_reads": 39,
-      "counts": [
-        5,
-        5,
-        3
-      ],
-      "decisions": 5,
-      "pending": true,
-      "removal_input_dispatched": false,
-      "stale_rejections": 0,
-      "status": "read_native_event_pending_ownership"
-    },
-    "setup": "Native seeded Custom Mode, Ironclad A0, no modifiers; Neow Bones prepared before attachment; Profile 3 manually launched."
-  },
-  "change": "Full client bounds consecutive confirmed no-mutation stale rejections, resetting only after validated accepted dispatch; keeps cumulative reporting and legacy cumulative cap. Native package and policy unchanged.",
+  "change": "Compound deck grids admit the exact temporary preview clone during synchronous native holder refresh, with unchanged real inventory, one clone upgrade and strict retained pickup ownership. Preview work is separate from the effect mutation budget.",
   "changed_bound_files": [
-    "apps/bridge/client/agent_host.py",
-    "apps/bridge/client_tests/test_agent_host.py",
-    "apps/bridge/client_tests/test_full_agent_host.py"
+    "apps/bridge/package/identity.json",
+    "components/events/direct_input_tests/TargetStubs.cs",
+    "components/events/native/GenericEventCompoundRewards.Deck.cs",
+    "components/events/native/GenericEventCompoundRewards.cs",
+    "components/events/native_tests/CompoundDeckFixtures.cs",
+    "components/events/native_tests/CompoundRewardFixtures.cs",
+    "components/events/native_tests/TargetStubs.cs",
+    "components/items/native/PinnedAutomaticRelicEffects.cs"
   ],
   "cleanup": {
-    "base_file_count": 429,
-    "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-    "game_process_running": false,
-    "generated_files_removed": 4,
-    "installed_state_sha256": "bb9ed1f8e6230ac7b535ddea5bcd5ba181ea6ee6156c69acaf76ac92957cfca0",
-    "overlay_count": 0,
-    "port_accepting": false,
-    "quarantined_state_sha256": "0259a99cc3919265d22cca0e9c072cfe28765a89b3cb9018b54cbb168380eb80",
-    "status": "passed",
-    "verified_by_utc": "2026-09-27 13:29:46 UTC"
+    "record": {
+      "base_file_count": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "game_process_running": false,
+      "generated_files_removed": 4,
+      "installed_state_sha256": "bb9ed1f8e6230ac7b535ddea5bcd5ba181ea6ee6156c69acaf76ac92957cfca0",
+      "overlay_count": 0,
+      "port_accepting": false,
+      "quarantined_state_sha256": "0259a99cc3919265d22cca0e9c072cfe28765a89b3cb9018b54cbb168380eb80",
+      "status": "passed",
+      "verified_by_utc": "2026-09-27 13:29:46 UTC"
+    },
+    "release_manifest_sha256": "325f2611735c00376775a0d6f4c2c4c1aa1657a93477e056cf777a318321bf20",
+    "status": "prior_release_cleanup_passed"
   },
   "elapsed_times": {
-    "design_review_seconds": 85,
-    "focused_tests_seconds": 0.823,
-    "implementation_review_seconds": 14,
-    "note": "No exclusive implementation, user-wait or live-controller timing was measured.",
-    "release_gate_seconds": 399.505
+    "design_review_seconds": 288,
+    "focused_validation_seconds": 61.856,
+    "implementation_review_seconds": 109,
+    "note": "Separate implementation, release preparation and user-wait durations were not measured.",
+    "release_gate_seconds": 386.222
   },
-  "evidence_root": "/private/tmp/sts-bridge-hs1bsp44",
-  "feature_commit": "2e9e66d4403e50dfcc7242498af49b7026b0f0d2",
+  "evidence_root": "/private/tmp/sts-bridge-ndvgcami",
+  "feature_commits": [
+    "845df307137f17f13e46f32c742d59a678873ddf",
+    "ec76b0c17326822e0adfb162c8c1c727266ea73d",
+    "988f2b5286add8d669538ccdb71912c8e9b1b660"
+  ],
   "focused_validation": {
-    "command": "PYTHONPATH=.:bridge/Sts2AgentBridge/apps/bridge/client_tests .venv/bin/python -B -m unittest test_full_agent_host test_agent_host test_live_recording",
-    "seconds": 0.823,
-    "status": "passed",
-    "tests": 23
+    "check_groups": 5,
+    "direct_holder_checks": 39,
+    "native_full_reward_checks": 3304,
+    "scratch": "/private/tmp/sts-bridge-ybthv58q",
+    "seconds": 61.856,
+    "status": "passed"
   },
   "full_shared_native_interface_complete": false,
   "gate_result": {
     "checks": {
       "agent:paired": {
         "log": "log-078.txt",
-        "seconds": 0.161,
+        "seconds": 0.156,
         "status": "passed"
       },
       "apps/bridge/operations/check_live_runtime_fixtures.py": {
         "log": "log-013.txt",
-        "seconds": 0.067,
+        "seconds": 0.062,
         "status": "passed"
       },
       "apps/bridge/operations/manage_live_campaign_fixtures.py": {
         "log": "log-014.txt",
-        "seconds": 3.162,
+        "seconds": 2.958,
         "status": "passed"
       },
       "apps/bridge/operations/predecessor_conflict_fixtures.py": {
         "log": "log-015.txt",
-        "seconds": 0.93,
+        "seconds": 0.875,
         "status": "passed"
       },
       "build:apps/bridge/agent_native_tests/AgentNative.Tests.csproj": {
         "log": "log-017.txt",
-        "seconds": 1.405,
+        "seconds": 1.204,
         "status": "passed"
       },
       "build:apps/bridge/campaign_native_tests/CampaignNative.Tests.csproj": {
         "log": "log-019.txt",
-        "seconds": 3.714,
+        "seconds": 3.399,
         "status": "passed"
       },
       "build:apps/bridge/full_native_tests/FullNative.Tests.csproj": {
         "log": "log-021.txt",
-        "seconds": 3.114,
+        "seconds": 2.868,
         "status": "passed"
       },
       "build:apps/bridge/potion_native_tests/CombatPotions.Tests.csproj": {
         "log": "log-023.txt",
-        "seconds": 1.287,
+        "seconds": 1.191,
         "status": "passed"
       },
       "build:apps/bridge/production/Sts2AgentBridge.csproj": {
         "log": "log-001.txt",
-        "seconds": 2.237,
+        "seconds": 1.733,
         "status": "passed"
       },
       "build:apps/bridge/tests/Sts2AgentBridge.Unified.Tests.csproj": {
         "log": "log-025.txt",
-        "seconds": 1.609,
+        "seconds": 1.482,
         "status": "passed"
       },
       "build:apps/bridge/verifier/Sts2AgentBridge.Unified.Verifier.csproj": {
         "log": "log-080.txt",
-        "seconds": 1.25,
+        "seconds": 1.102,
         "status": "passed"
       },
       "build:components/cards/combat_tests/CombatCardChoice.Tests.csproj": {
         "log": "log-027.txt",
-        "seconds": 1.327,
+        "seconds": 1.172,
         "status": "passed"
       },
       "build:components/cards/completion_tests/Sts2AgentBridge.CardSelectionCompletionV1.Native.Tests.csproj": {
         "log": "log-029.txt",
-        "seconds": 1.298,
+        "seconds": 1.18,
         "status": "passed"
       },
       "build:components/cards/native_tests/Sts2AgentBridge.CardSelectionV1.Native.Tests.csproj": {
         "log": "log-031.txt",
-        "seconds": 2.126,
+        "seconds": 1.889,
         "status": "passed"
       },
       "build:components/cards/parent_native_adapter_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Adapter.Tests.csproj": {
         "log": "log-033.txt",
-        "seconds": 2.192,
+        "seconds": 2.001,
         "status": "passed"
       },
       "build:components/cards/parent_native_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Tests.csproj": {
         "log": "log-035.txt",
-        "seconds": 1.228,
+        "seconds": 1.09,
         "status": "passed"
       },
       "build:components/cards/parent_tests/Sts2AgentBridge.CardSelectionV1.Parent.Tests.csproj": {
         "log": "log-037.txt",
-        "seconds": 1.501,
+        "seconds": 1.309,
         "status": "passed"
       },
       "build:components/cards/tests/Sts2AgentBridge.CardSelectionV1.Core.Tests.csproj": {
         "log": "log-039.txt",
-        "seconds": 1.451,
+        "seconds": 1.291,
         "status": "passed"
       },
       "build:components/cards/wire_tests/Sts2AgentBridge.CardSelectionV1.Wire.Tests.csproj": {
         "log": "log-041.txt",
-        "seconds": 2.309,
+        "seconds": 2.04,
         "status": "passed"
       },
       "build:components/events/direct_input_tests/DirectTransformInput.Tests.csproj": {
         "log": "log-043.txt",
-        "seconds": 2.395,
+        "seconds": 2.199,
         "status": "passed"
       },
       "build:components/events/integration/GenericEventV7.Native.Integration.csproj": {
         "log": "log-071.txt",
-        "seconds": 2.484,
+        "seconds": 2.366,
         "status": "passed"
       },
       "build:components/events/integration/Sts2AgentBridge.GenericEventV7.Integration.csproj": {
         "log": "log-070.txt",
-        "seconds": 1.437,
+        "seconds": 1.443,
         "status": "passed"
       },
       "build:components/events/item_tests/GenericEventV7.Item.Tests.csproj": {
         "log": "log-045.txt",
-        "seconds": 1.375,
+        "seconds": 1.294,
         "status": "passed"
       },
       "build:components/events/native_tests/GenericEventV7.Native.Tests.csproj": {
         "log": "log-047.txt",
-        "seconds": 2.453,
+        "seconds": 2.274,
         "status": "passed"
       },
       "build:components/events/transform_tests/CardTransformV2.Tests.csproj": {
         "log": "log-048.txt",
-        "seconds": 1.412,
+        "seconds": 1.265,
         "status": "passed"
       },
       "build:components/events/wire_tests/Sts2AgentBridge.GenericEventV7.WireTests.csproj": {
         "log": "log-050.txt",
-        "seconds": 1.44,
+        "seconds": 1.302,
         "status": "passed"
       },
       "build:components/item_bootstrap/lifecycle_tests/Sts2AgentBridge.ItemV1.Bootstrap.Tests.csproj": {
         "log": "log-052.txt",
-        "seconds": 1.261,
+        "seconds": 1.136,
         "status": "passed"
       },
       "build:components/item_bootstrap/operator_tests/Sts2AgentBridge.ItemV1.Operator.Tests.csproj": {
         "log": "log-054.txt",
-        "seconds": 1.28,
+        "seconds": 1.156,
         "status": "passed"
       },
       "build:components/item_transport/runtime_tests/Sts2AgentBridge.ItemV1.Transport.Tests.csproj": {
         "log": "log-056.txt",
-        "seconds": 3.076,
+        "seconds": 2.76,
         "status": "passed"
       },
       "build:components/item_wire/producer_tests/Sts2AgentBridge.ItemV1.Wire.Tests.csproj": {
         "log": "log-058.txt",
-        "seconds": 1.485,
+        "seconds": 1.329,
         "status": "passed"
       },
       "build:components/items/tests/Sts2AgentBridge.ItemV1.Tests.csproj": {
         "log": "log-060.txt",
-        "seconds": 1.416,
+        "seconds": 1.273,
         "status": "passed"
       },
       "build:components/rooms/broker_tests/Sts2AgentBridge.RoomFlowsV1.Broker.Tests.csproj": {
         "log": "log-062.txt",
-        "seconds": 2.357,
+        "seconds": 2.095,
         "status": "passed"
       },
       "build:components/rooms/event/tests/Sts2AgentBridge.RoomFlowsV1.Event.Tests.csproj": {
         "log": "log-064.txt",
-        "seconds": 2.349,
+        "seconds": 2.017,
         "status": "passed"
       },
       "build:components/rooms/rest/tests/Sts2AgentBridge.RestV2.Tests.csproj": {
         "log": "log-066.txt",
-        "seconds": 3.447,
+        "seconds": 3.072,
         "status": "passed"
       },
       "build:components/rooms/shop/tests/Sts2AgentBridge.RoomFlowsV1.Shop.Tests.csproj": {
         "log": "log-068.txt",
-        "seconds": 1.519,
+        "seconds": 1.44,
         "status": "passed"
       },
       "cards:combat_host_native": {
         "log": "log-075.txt",
-        "seconds": 0.438,
+        "seconds": 0.385,
         "status": "passed"
       },
       "cards:host_wire": {
         "log": "log-076.txt",
-        "seconds": 0.141,
+        "seconds": 0.123,
         "status": "passed"
       },
       "clean_install": {
         "log": "log-084.txt",
-        "seconds": 0.09,
+        "seconds": 0.079,
         "status": "passed"
       },
       "client": {
         "log": "log-009.txt",
-        "seconds": 1.443,
+        "seconds": 1.4,
         "status": "passed"
       },
       "components/cards/host_tests": {
         "log": "log-003.txt",
-        "seconds": 0.058,
+        "seconds": 0.051,
         "status": "passed"
       },
       "components/events/host_tests": {
         "log": "log-004.txt",
-        "seconds": 2.728,
+        "seconds": 2.491,
         "status": "passed"
       },
       "components/item_transport/transport_tests": {
         "log": "log-005.txt",
-        "seconds": 0.051,
+        "seconds": 0.046,
         "status": "passed"
       },
       "components/item_wire/host_tests": {
         "log": "log-006.txt",
-        "seconds": 0.057,
+        "seconds": 0.054,
         "status": "passed"
       },
       "components/rooms/rest/host_tests": {
         "log": "log-007.txt",
-        "seconds": 0.054,
+        "seconds": 0.051,
         "status": "passed"
       },
       "core_client": {
         "log": "log-010.txt",
-        "seconds": 0.046,
+        "seconds": 0.051,
         "status": "passed"
       },
       "events:host_native": {
         "log": "log-073.txt",
-        "seconds": 82.032,
+        "seconds": 79.164,
         "status": "passed"
       },
       "package": {
         "log": "log-083.txt",
-        "seconds": 0.085,
+        "seconds": 0.074,
         "status": "passed"
       },
       "package_identity": {
         "log": "log-002.txt",
-        "seconds": 0.036,
+        "seconds": 0.032,
         "status": "passed"
       },
       "package_output": {
         "log": "log-085.txt",
-        "seconds": 0.035,
+        "seconds": 0.03,
         "status": "passed"
       },
       "production_surface": {
         "log": "log-081.txt",
-        "seconds": 0.06,
+        "seconds": 0.052,
         "status": "passed"
       },
       "production_surface_rejections": {
         "log": "log-082.txt",
-        "seconds": 0.088,
+        "seconds": 0.077,
         "status": "passed"
       },
       "reproducible_build": {
         "log": "log-079.txt",
-        "seconds": 1.858,
+        "seconds": 1.723,
         "status": "passed"
       },
       "reward_codec": {
         "log": "log-011.txt",
-        "seconds": 0.048,
+        "seconds": 0.041,
         "status": "passed"
       },
       "room_codec": {
         "log": "log-012.txt",
-        "seconds": 0.161,
+        "seconds": 0.152,
         "status": "passed"
       },
       "rooms:rest_host_native": {
         "log": "log-074.txt",
-        "seconds": 6.488,
+        "seconds": 6.177,
         "status": "passed"
       },
       "sdk": {
         "log": "log-016.txt",
-        "seconds": 0.054,
+        "seconds": 0.048,
         "status": "passed"
       },
       "shared_client:socket": {
         "log": "log-077.txt",
-        "seconds": 83.159,
+        "seconds": 87.533,
         "status": "passed"
       },
       "test:apps/bridge/agent_native_tests/AgentNative.Tests.csproj": {
         "log": "log-018.txt",
-        "seconds": 0.087,
+        "seconds": 0.079,
         "status": "passed"
       },
       "test:apps/bridge/campaign_native_tests/CampaignNative.Tests.csproj": {
         "log": "log-020.txt",
-        "seconds": 0.475,
+        "seconds": 0.482,
         "status": "passed"
       },
       "test:apps/bridge/full_native_tests/FullNative.Tests.csproj": {
         "log": "log-022.txt",
-        "seconds": 0.08,
+        "seconds": 0.074,
         "status": "passed"
       },
       "test:apps/bridge/potion_native_tests/CombatPotions.Tests.csproj": {
         "log": "log-024.txt",
-        "seconds": 0.362,
+        "seconds": 0.333,
         "status": "passed"
       },
       "test:apps/bridge/tests/Sts2AgentBridge.Unified.Tests.csproj": {
         "log": "log-026.txt",
-        "seconds": 11.878,
+        "seconds": 11.87,
         "status": "passed"
       },
       "test:components/cards/combat_tests/CombatCardChoice.Tests.csproj": {
         "log": "log-028.txt",
-        "seconds": 0.116,
+        "seconds": 0.108,
         "status": "passed"
       },
       "test:components/cards/completion_tests/Sts2AgentBridge.CardSelectionCompletionV1.Native.Tests.csproj": {
         "log": "log-030.txt",
-        "seconds": 0.059,
+        "seconds": 0.053,
         "status": "passed"
       },
       "test:components/cards/native_tests/Sts2AgentBridge.CardSelectionV1.Native.Tests.csproj": {
         "log": "log-032.txt",
-        "seconds": 0.046,
+        "seconds": 0.04,
         "status": "passed"
       },
       "test:components/cards/parent_native_adapter_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Adapter.Tests.csproj": {
         "log": "log-034.txt",
-        "seconds": 0.039,
+        "seconds": 0.034,
         "status": "passed"
       },
       "test:components/cards/parent_native_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Tests.csproj": {
         "log": "log-036.txt",
-        "seconds": 0.029,
+        "seconds": 0.025,
         "status": "passed"
       },
       "test:components/cards/parent_tests/Sts2AgentBridge.CardSelectionV1.Parent.Tests.csproj": {
         "log": "log-038.txt",
-        "seconds": 0.051,
+        "seconds": 0.045,
         "status": "passed"
       },
       "test:components/cards/tests/Sts2AgentBridge.CardSelectionV1.Core.Tests.csproj": {
         "log": "log-040.txt",
-        "seconds": 0.054,
+        "seconds": 0.049,
         "status": "passed"
       },
       "test:components/cards/wire_tests/Sts2AgentBridge.CardSelectionV1.Wire.Tests.csproj": {
         "log": "log-042.txt",
-        "seconds": 0.063,
+        "seconds": 0.056,
         "status": "passed"
       },
       "test:components/events/direct_input_tests/DirectTransformInput.Tests.csproj": {
         "log": "log-044.txt",
-        "seconds": 1.067,
+        "seconds": 0.977,
         "status": "passed"
       },
       "test:components/events/item_tests/GenericEventV7.Item.Tests.csproj": {
         "log": "log-046.txt",
-        "seconds": 0.043,
+        "seconds": 0.037,
         "status": "passed"
       },
       "test:components/events/native_tests/GenericEventV7.Native.Tests.csproj": {
         "log": "log-072.txt",
-        "seconds": 214.855,
+        "seconds": 204.512,
         "status": "passed"
       },
       "test:components/events/transform_tests/CardTransformV2.Tests.csproj": {
         "log": "log-049.txt",
-        "seconds": 0.085,
+        "seconds": 0.077,
         "status": "passed"
       },
       "test:components/events/wire_tests/Sts2AgentBridge.GenericEventV7.WireTests.csproj": {
         "log": "log-051.txt",
-        "seconds": 0.148,
+        "seconds": 0.14,
         "status": "passed"
       },
       "test:components/item_bootstrap/lifecycle_tests/Sts2AgentBridge.ItemV1.Bootstrap.Tests.csproj": {
         "log": "log-053.txt",
-        "seconds": 0.031,
+        "seconds": 0.027,
         "status": "passed"
       },
       "test:components/item_bootstrap/operator_tests/Sts2AgentBridge.ItemV1.Operator.Tests.csproj": {
         "log": "log-055.txt",
-        "seconds": 0.197,
+        "seconds": 0.211,
         "status": "passed"
       },
       "test:components/item_transport/runtime_tests/Sts2AgentBridge.ItemV1.Transport.Tests.csproj": {
         "log": "log-057.txt",
-        "seconds": 6.47,
+        "seconds": 6.476,
         "status": "passed"
       },
       "test:components/item_wire/producer_tests/Sts2AgentBridge.ItemV1.Wire.Tests.csproj": {
         "log": "log-059.txt",
-        "seconds": 0.041,
+        "seconds": 0.035,
         "status": "passed"
       },
       "test:components/items/tests/Sts2AgentBridge.ItemV1.Tests.csproj": {
         "log": "log-061.txt",
-        "seconds": 0.046,
+        "seconds": 0.04,
         "status": "passed"
       },
       "test:components/rooms/broker_tests/Sts2AgentBridge.RoomFlowsV1.Broker.Tests.csproj": {
         "log": "log-063.txt",
-        "seconds": 0.049,
+        "seconds": 0.044,
         "status": "passed"
       },
       "test:components/rooms/event/tests/Sts2AgentBridge.RoomFlowsV1.Event.Tests.csproj": {
         "log": "log-065.txt",
-        "seconds": 0.045,
+        "seconds": 0.037,
         "status": "passed"
       },
       "test:components/rooms/rest/tests/Sts2AgentBridge.RestV2.Tests.csproj": {
         "log": "log-067.txt",
-        "seconds": 0.56,
+        "seconds": 0.537,
         "status": "passed"
       },
       "test:components/rooms/shop/tests/Sts2AgentBridge.RoomFlowsV1.Shop.Tests.csproj": {
@@ -489,7 +472,7 @@
       },
       "tests/maintenance": {
         "log": "log-008.txt",
-        "seconds": 1.493,
+        "seconds": 1.455,
         "status": "passed"
       }
     },
@@ -498,9 +481,9 @@
     "integration_jobs": 4,
     "live_campaign_started": false,
     "release_manifests": {
-      "bridge": "325f2611735c00376775a0d6f4c2c4c1aa1657a93477e056cf777a318321bf20"
+      "bridge": "14772d59c22d9d630bc71780c3871fedd95331e9c6797267a5fe0acd5ab0582a"
     },
-    "seconds": 399.505,
+    "seconds": 386.222,
     "selected_checks": [],
     "source": {
       "files": 489,
@@ -515,225 +498,99 @@
     ]
   },
   "installation": {
-    "authenticated_health_and_compatibility": true,
     "base_file_count": 429,
     "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-    "game_restarted": false,
     "game_running_before_install": false,
     "installed_metadata_checked": true,
-    "native_package_reused": true,
+    "local_preflight_corrections": "Relative manifest path was rejected before publication; install then reported missing artifact directory without mutation. Absolute-path publication and subsequent install passed.",
     "overlay_count": 2,
-    "package_reinstalled": false,
-    "reverified_by_utc": "2026-09-27 12:50:24 UTC",
-    "state_sha256": "f98b4d04bc9f49be87e6761f9f9fd6e8d14c1d71627fac7c42c0569f50a1223b",
-    "status": "cleaned_after_live_test",
-    "verified_by_utc": "2026-09-27 12:17:58 UTC"
+    "state_sha256": "2637ef75ae81512eceb1597e9eb0e39319aa6d8f712758ec302a81e086c2edd3",
+    "status": "installed_awaiting_manual_launch",
+    "verified_by_utc": "2026-09-27 14:03:51 UTC"
   },
   "live": {
-    "action_delta": [
-      12,
-      12,
-      12
-    ],
-    "architect_observed": true,
-    "completed_by_utc": "2026-09-27 12:51:10 UTC",
-    "continuation_acceptance_passed": true,
-    "controller_reads": 262,
-    "decisions": 12,
-    "final_native_counts": [
-      124,
-      124,
-      124
-    ],
-    "initial_counts": [
-      112,
-      112,
-      112
-    ],
-    "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#symbiote-passed-and-settled-combat-stale-stop-2026-09-27",
-    "native_victory_visually_confirmed": true,
-    "observed_act_sequence": [
-      3
-    ],
-    "observed_stages": [
-      "combat",
-      "rewards",
-      "the_architect"
-    ],
-    "outcome": {
-      "kind": "victory",
-      "reason": "none",
-      "schema": "sts_run_outcome_v1"
-    },
-    "pending": false,
-    "policy": "unchanged_game.agent.full_policy.choose_action",
-    "policy_calls": 12,
-    "preflight_public_reads": 1,
     "recorded_live_corpus": false,
-    "route_acceptance_passed": false,
-    "scope": "Same settled floor-99 combat resumed after revalidating the unchanged installed native package and fresh public state. Final combat, rewards and Architect reached native Victory; the preceding segment retains manifest c78ae051.",
-    "setup": "Saved assisted campaign; no setup mutation in this session and no manual gameplay intervention after policy attachment.",
-    "stale_rejections": 0,
-    "status": "assisted_continuation_victory",
-    "target_game_executed": true,
-    "uninterrupted_fresh_campaign": false
+    "status": "not_run",
+    "target_game_executed": false
   },
-  "native_package_unchanged": true,
   "next_live_test": {
-    "first_case": "Neow Scroll Boxes then Precise Scissors",
+    "first_case": "Seed TEST614: Neow Bones, Scroll Boxes bundle, Precise Scissors removal, final curse, settled map.",
     "game_restart_required": true,
     "new_campaign_required": true,
-    "remaining_work": "Reproduce and correct native grid preview upgrade observation, validate and package before manual launch.",
-    "status": "correction_required"
+    "status": "awaiting_user_manual_launch"
   },
   "package": {
     "Sts2AgentBridgeUnified-1.0.0.zip": [
-      1820342,
-      "9a898af4142d694f99594306e6d494804610141092ea17eaf05603a313707a2d"
+      1823414,
+      "05abf0d82caffe86207ab5de92d3cd368b3692441bcfdc97bd08b4ef40d3f6b7"
     ],
     "Sts2AgentBridgeUnified.dll": [
-      1819648,
-      "66ca1e3dcb4fa4de9b509e8e8dbce45e00c27efd3f20ae466c352443aaadf59a"
+      1822720,
+      "5c039250832e579022e5a53f6a393aefbc000335c5c19586206eca78647536d7"
     ],
     "Sts2AgentBridgeUnified.json": [
       322,
       "bfb70a5edd38b1f9bcf8254e5fea117c6d9bf5ef3988431d2077436aca710955"
     ]
   },
-  "package_input_reuse_verified": true,
   "previous_release": {
-    "cleanup": {
-      "reason": "Game remains open at a reconciled combat boundary while the client-only correction is validated.",
-      "status": "not_yet_performed"
-    },
-    "installation": {
-      "base_file_count": 429,
-      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "game_running_before_install": false,
-      "installed_metadata_checked": true,
-      "overlay_count": 2,
-      "state_sha256": "f98b4d04bc9f49be87e6761f9f9fd6e8d14c1d71627fac7c42c0569f50a1223b",
-      "status": "installed_running_settled_client_stop",
-      "verified_by_utc": "2026-09-27 12:17:58 UTC"
-    },
-    "live": {
-      "continuation": {
-        "action_delta": [
-          112,
-          108,
-          108
-        ],
-        "architect_observed": false,
-        "code": "stale_limit",
-        "controller_counts": [
-          116,
-          112,
-          112
-        ],
-        "decisions": 108,
-        "deck_count_at_later_read": 108,
-        "floor": 99,
-        "gold": 280,
-        "hp": 2149,
-        "initial_counts": [
-          4,
-          4,
-          4
-        ],
-        "last_action": "play_card",
-        "last_subject": "setup_strike",
-        "max_hp": 2151,
-        "native_counts_after_read": [
-          112,
-          112,
-          112
-        ],
-        "pending": false,
-        "policy_calls": 112,
-        "preflight_reads": 1,
-        "reads": 1452,
-        "stale_rejections": 4,
-        "status": "failed",
-        "stopped_by_utc": "2026-09-27 12:33:20 UTC",
-        "victory_observed": false
-      },
-      "initial": {
-        "act": 3,
-        "deck_count": 105,
-        "floor": 90,
-        "gold": 124,
-        "hp": 2135,
-        "max_hp": 2135
-      },
-      "installed_state_sha256": "f98b4d04bc9f49be87e6761f9f9fd6e8d14c1d71627fac7c42c0569f50a1223b",
-      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#symbiote-passed-and-settled-combat-stale-stop-2026-09-27",
-      "policy": "unchanged_game.agent.full_policy.choose_action",
-      "read_only_diagnostic": {
-        "by_utc": "2026-09-27 12:36:09 UTC",
-        "pending": false,
-        "public_graphs_unchanged": true,
-        "reads": 3,
-        "tokens_unchanged": true
-      },
-      "recorded_live_corpus": false,
-      "scope": "Saved event and subsequent Act-3 continuation; no fresh uninterrupted-campaign acceptance, no setup mutation and no manual gameplay intervention after attachment.",
-      "status": "symbiote_passed_continuation_stale_limit",
-      "symbiote": {
-        "counts": [
-          4,
-          4,
-          4
-        ],
-        "decisions": 4,
-        "eligible_count": null,
-        "finished_by_utc": "2026-09-27 12:30:24 UTC",
-        "holder_allocation": null,
-        "pending": false,
-        "reads": 42,
-        "selected_slot": null,
-        "stale_rejections": 0,
-        "status": "passed",
-        "stop": "actionable_map"
-      },
-      "target_game_executed": true
-    },
-    "manifest_sha256": "c78ae051419d0b5db6c3693530f47577fa929b439fb43c34acf2124215d85971",
-    "record_copy": "/private/tmp/sts-bridge-hs1bsp44/previous-release-record",
-    "record_git": "2e9e66d4403e50dfcc7242498af49b7026b0f0d2",
-    "source_commit": "b5f6f0945745b5ba08cb15e9095f919bba0f4f24"
+    "live_ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-compound-previews-offer-passed-removal-stopped-2026-09-27",
+    "manifest_sha256": "325f2611735c00376775a0d6f4c2c4c1aa1657a93477e056cf777a318321bf20",
+    "record_copy": "/private/tmp/sts-bridge-ndvgcami/previous-release-record",
+    "record_git": "6c8938a00769987813bfafd9914d063b425a3f95",
+    "source_commit": "2e9e66d4403e50dfcc7242498af49b7026b0f0d2"
+  },
+  "regression_reproduction": {
+    "case": "native-shaped detached grid preview inside the compound pickup scope",
+    "log": "log-003.txt",
+    "scratch": "/private/tmp/sts-bridge-ub_8iatp",
+    "status": "expected_rejection_before_fix"
   },
   "release_check_counts": {
     "campaign_native_checks": 284,
     "client_tests": 173,
-    "native_event_checks": 17151,
+    "native_event_checks": 17508,
     "router_checks": 1719
   },
-  "release_manifest_sha256": "325f2611735c00376775a0d6f4c2c4c1aa1657a93477e056cf777a318321bf20",
+  "release_manifest_sha256": "14772d59c22d9d630bc71780c3871fedd95331e9c6797267a5fe0acd5ab0582a",
   "remaining_limits": [
-    "Untested native branches and broader pickup effects remain open; shared-v2 ending is demonstrated for the assisted saved continuation.",
-    "Earlier campaign stops, corrections and reloads remain recorded; no fresh uninterrupted campaign claim.",
-    "Separated-stale recovery remains fixture-tested because the corrected live segment had zero stale rejections.",
-    "Prior Symbiote success is bound to c78ae051; the preceding 84/81/80 failure remains unresolved under its original package."
+    "Corrected native bundle/removal behavior requires live retest; old 5/5/3 pending failure stays bound to manifest 325f2611.",
+    "Other named native variants remain in docs/STATUS.md; no exhaustive fidelity claim.",
+    "The shared-v2 assisted saved-campaign victory remains historical evidence under its original release."
   ],
   "schema_version": 1,
   "semantic_review": {
-    "design_seconds": 85,
-    "implementation_seconds": 14,
-    "limit": "Source-only review; reviewer did not run tests or access game. Design duration includes waiting.",
+    "author_followup": "Production nullable guard binds one checked original; missing-node regression added. The direct-input companion uses the identical preview fixture.",
+    "design_seconds": 288,
+    "game_access": false,
+    "implementation_seconds": 109,
     "reviewer": "semantic_review",
-    "scope": "Full-only consecutive stale bound; resets exclusively after validated acceptance; unchanged uncertainty, legacy cap, cumulative report and time/action guards. Five regressions inspected.",
+    "scope": "Exact eligible original and fresh clone, single upgrade, conserved real inventory, separate budget, sticky failure and hook cleanup; bundle/removal and adversarial fixtures.",
+    "source_only": true,
     "status": "clear",
     "windows_utc": [
       [
-        "2026-09-27 12:37:33 UTC",
-        "2026-09-27 12:38:58 UTC"
+        "2026-09-27 13:34:24 UTC",
+        "2026-09-27 13:39:12 UTC"
       ],
       [
-        "2026-09-27 12:39:32 UTC",
-        "2026-09-27 12:39:46 UTC"
+        "2026-09-27 13:47:41 UTC",
+        "2026-09-27 13:49:30 UTC"
       ]
     ]
   },
-  "source_commit": "2e9e66d4403e50dfcc7242498af49b7026b0f0d2",
-  "user_data_access": "No profile/save/history/Cloud filesystem access or retained live corpus; aggregate acceptance summaries only."
+  "source_commit": "988f2b5286add8d669538ccdb71912c8e9b1b660",
+  "user_data_access": "No profile/save/history/Cloud filesystem access or retained live corpus; aggregate acceptance summaries only.",
+  "validation_corrections": [
+    {
+      "failure": "production nullable native card annotations",
+      "resolution": "Explicit original null guard; production build passed in 1.929 seconds.",
+      "scratch": "/private/tmp/sts-bridge-icjawzsq"
+    },
+    {
+      "failure": "direct-input companion fixture lacked new native preview methods",
+      "resolution": "Matching fixture added; both focused checks passed.",
+      "scratch": "/private/tmp/sts-bridge-t6qeyw9e"
+    }
+  ]
 }

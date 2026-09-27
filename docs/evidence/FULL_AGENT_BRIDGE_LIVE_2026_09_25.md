@@ -2264,3 +2264,49 @@ zero overlays, all **429 base files** unchanged, aggregate SHA-256
 `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
 Cleanup does not reconcile the failed action. Separate controller, implementation
 and user-wait durations were not measured for these cases.
+
+
+### Scoped preview correction prepared
+
+Source `988f2b5286add8d669538ccdb71912c8e9b1b660` and manifest `14772d59c22d9d630bc71780c3871fedd95331e9c6797267a5fe0acd5ab0582a` bind the corrected package.
+Native-shaped holder creation first reproduced the preview rejection in
+`/private/tmp/sts-bridge-ub_8iatp/log-003.txt`. The correction binds the exact
+eligible original and fresh `_upgradedCard` during synchronous `UpdateCardModel`,
+allows its single upgrade and verifies conserved real inventory before return.
+Real deck effects retain their existing proofs. Preview work does not consume
+the 64-effect mutation budget. Scope/failure and hook cleanup remain strict.
+
+Focused validation passed **3,304 full reward checks and 39 direct-holder checks**,
+five groups in **61.856 seconds**, under `/private/tmp/sts-bridge-ybthv58q`.
+Cases include bundle/removal after delayed grid creation, four deck-effect families,
+recycled holders and repeated previews, Pomander's selection preview, original or
+foreign targets, reused/incorrect copies, nested calls, duplicate upgrades,
+survivor mutation, thrown native preview and absent card node. Hook removal is
+verified after success and failure. These are fixture results, not live acceptance.
+
+Independent source-only review found no blocker: design **13:34:24–13:39:12 UTC
+(288 seconds)** and implementation **13:47:41–13:49:30 UTC (109 seconds)**.
+The reviewer ran no tests and accessed no game. Production compilation then exposed
+nullable native-card annotations; an explicit checked-original binding fixed them
+and a 1.929-second production build passed. A companion direct-input harness also
+needed the same fixture methods; its focused check passed before final validation.
+Neither failed preparation emitted an accepted release.
+
+The final release passed **85 groups in 386.222 seconds** under
+`/private/tmp/sts-bridge-ndvgcami`, including affected consumers, integrated native event/host checks,
+reproducibility, package identity and installation/cleanup fixtures. Old manifest
+`325f2611…` and its complete record remain in Git `6c8938a` and this gate's
+`previous-release-record`. This release awaits installation and a manual launch;
+no corrected live result is claimed. Separate implementation, preparation and
+user-wait durations were not measured.
+
+
+The corrected package was subsequently installed with owned state
+`2637ef75ae81512eceb1597e9eb0e39319aa6d8f712758ec302a81e086c2edd3`.
+Fresh stopped-process/closed-listener checks passed before installation. Exact
+package/overlay and installed PE metadata verification passed by **14:03:51 UTC**:
+two owned overlay files and all 429 base files unchanged. The original package
+was identity-checked and moved intact to this gate's `previous-install-inputs`.
+A relative manifest-path publication and then a missing-artifact install were
+rejected during local preflight before installation; corrected absolute-path
+publication and installation passed. The user was asked to launch manually.

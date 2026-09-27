@@ -16,10 +16,10 @@ The subsequent [Neow compound cases](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.
 completed Hefty Tablet plus Kaleidoscope at **9/9/9**, but Scroll Boxes followed
 by Precise Scissors stopped at an empty removal grid: **5/5/3**, pending, before
 any removal input. Native grid preview clones are upgraded during construction;
-the compound observer currently rejects those detached upgrades. Correction and
-live retest remain open. Both controlled cases used seeded Custom Mode with no
-modifiers. Cleanup passed at **13:29:46 UTC**; game stopped, zero overlays and all
-429 base files unchanged.
+the previous compound observer rejected those detached upgrades. The scoped
+correction is now released and fixture-tested; its live retest remains open. Both controlled cases used seeded Custom Mode with no
+modifiers. Prior cleanup passed at **13:29:46 UTC**. The corrected bridge is installed and
+verified at **14:03:51 UTC**, with two owned overlays and all 429 base files unchanged.
 
 ## How to read support
 
@@ -329,7 +329,8 @@ native Egg upgrades. Unknown callbacks or unrelated inventory changes still stop
 This compound support is **released with representative live acceptance**:
 Neow’s Bones generated Large Capsule and Lost Coffer, nested Sacrifice granted
 Regal Pillow, and the final Decay curse settled before event/map return. All seven
-actions reconciled. Other compound branches remain fixture evidence; the
+actions reconciled. Hefty Tablet/Kaleidoscope also completed at 9/9/9; the
+bundle/removal correction awaits its live retest. The
 [live ledger](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neows-bones-compound-rewards-passed)
 binds this controlled path to its tested artifact. The final focused owner/alternative regressions passed
 four groups in 49.605 s. Public projection and parent/wire checks also passed.
@@ -428,7 +429,16 @@ supplies dated source candidates rather than a current implementation checklist.
 ## Release and latest evidence
 
 The current [release manifest](../bridge/Sts2AgentBridge/releases/current/bridge.json)
-is **`325f2611735c00376775a0d6f4c2c4c1aa1657a93477e056cf777a318321bf20`**. Source `2e9e66d` changes only the full client and
+is **`14772d59c22d9d630bc71780c3871fedd95331e9c6797267a5fe0acd5ab0582a`**, source `988f2b5`. The scoped
+compound-grid preview correction passed independent review and **85 release groups
+in 386.222 seconds**, including production build/package reproducibility and
+operational checks. Focused checks passed 3,304 reward checks and 39 direct-holder
+checks. The corrected package is installed and verified at **14:03:51 UTC** (two owned
+overlays, unchanged 429 base files). The native bundle/removal case awaits manual
+launch; the preceding **5/5/3** failure remains pending in its historical record.
+
+The preceding manifest
+**`325f2611735c00376775a0d6f4c2c4c1aa1657a93477e056cf777a318321bf20`**. Source `2e9e66d` changes only the full client and
 its two regression files among 489 bound inputs across 52 projects. Full mode
 now stops after four consecutive confirmed no-mutation stale rejections; only
 validated acceptance resets that streak. Cumulative reporting, the legacy cap,
