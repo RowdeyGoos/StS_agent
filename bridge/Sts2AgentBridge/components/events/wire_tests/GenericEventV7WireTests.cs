@@ -33,6 +33,44 @@ internal static partial class GenericEventV7WireTests
     }
     private static int Main()
     {
+        Case("identical grid episodes retain distinct parent lineage", () => {
+            using var native = new RepeatedGridNative();
+            using var parent = new GenericEventV7Session(native, Nonce);
+            using var service = new GenericEventV7WireService(Nonce, parent);
+            var decisions = new HashSet<string>();
+            for (int episode = 0; episode < 2; episode++)
+            {
+                var ready = Read(service).GetProperty("parent");
+                Check(Post(service, Request(ready.GetProperty("decision_id").GetString()!)).GetProperty("payload").GetProperty("outcome").GetString() == "accepted", "grid parent accepted");
+                var child = Read(service);
+                Check(decisions.Add(child.GetProperty("payload").GetProperty("decision_id").GetString()!), "identical cards produce distinct child lineage");
+                Play(service, "select:0");
+                Check(decisions.Add(Read(service).GetProperty("payload").GetProperty("decision_id").GetString()!), "preview lineage and selected slot remain distinct");
+                Play(service, "confirm");
+                Check(Read(service).GetProperty("payload").GetProperty("status").GetString() == "resolved", "grid episode resolved");
+            }
+            Check(Read(service).GetProperty("parent").GetProperty("parent_reconciled").GetInt32() == 2 && native.Inputs == 4,
+                "both identical grid episodes complete through real session and wire");
+        });
+        foreach (int count in new[] { 48, 65, 128 })
+        {
+            using var f = new FakeSession { Grid = true, Domain = count, Resume = true };
+            using var s = new GenericEventV7WireService(Nonce, f);
+            Child(f, s);
+            var current = Read(s);
+            Check(current.GetProperty("child").GetProperty("contract_version").GetString() == "card_grid_v1" &&
+                current.GetProperty("payload").GetProperty("candidates").GetArrayLength() == count, "grid domain survives wire");
+            Play(s, "select:" + (count - 1)); Play(s, "confirm");
+            Check(Read(s).GetProperty("payload").GetProperty("status").GetString() == "resolved", "grid wire resolves exact selection");
+            Check(Read(s).GetProperty("parent").GetProperty("status").GetString() == "ready", "grid parent owns final handoff");
+        }
+        foreach (string action in new[] { "select:128", "select:01", "select:-1", "deselect:0", "preview", "cancel" })
+        {
+            using var f = new FakeSession { Grid = true, Domain = 128 }; using var s = new GenericEventV7WireService(Nonce, f);
+            Child(f, s); var current = Read(s).GetProperty("payload");
+            Error(Post(s, Request(current.GetProperty("decision_id").GetString()!, action, 1, ParentId, "choose:0")), "invalid_request");
+            Check(f.ChildApplies == 0, "bad grid action never dispatches");
+        }
         foreach (string stable in new[] { "UNRELATED_FOREST.OPT", "UNRELATED_LIBRARY.OPT", "HELD_OUT_991.NO_CATALOG" })
             Case("unregistered " + stable, () => {
                 using var f = new FakeSession { Stable = stable }; using var s = new GenericEventV7WireService(Nonce, f);
@@ -468,6 +506,41 @@ internal static partial class GenericEventV7WireTests
         Check(receipt.GetProperty("kind").GetString() == "action" && receipt.GetProperty("payload").GetProperty("outcome").GetString() == "accepted", "accepted child " + action);
     }
 
+    private sealed class RepeatedGridNative : IGenericEventV7NativeAdapter
+    {
+        private object _option = new(), _screen = new();
+        private GenericEventV7GridAdmission? _admission;
+        private GenericEventV7GridSession? _child;
+        private Grid? _grid;
+        internal int Inputs;
+        public GenericEventV7NativeCapture Capture() => _child is not null
+            ? new("child", false, Array.Empty<GenericEventV7NativeOption>(), _screen, _admission)
+            : new("parent", false, new[] { new GenericEventV7NativeOption(_option, "REPEAT.UPGRADE", "Upgrade", true, false, false) });
+        public void Dispatch(object identity, string nonce, string decision, string action)
+        {
+            Check(ReferenceEquals(identity, _option) && _child is null, "retained grid parent control");
+            _screen = new(); _admission = new(new(), "upgrade", 2); _grid = new(this);
+            _child = new(nonce, decision, action, "upgrade", 2, null, _grid);
+        }
+        public IGenericEventV7ChildSession CreateChild(object identity)
+        { Check(ReferenceEquals(identity, _admission!.Identity), "retained grid admission"); return _child!; }
+        public void CompleteParent()
+        { Check(_grid!.Complete, "parent waits for child"); _child = null; _option = new(); }
+        public void Dispose() { }
+        private sealed class Grid : IGenericEventV7GridNative
+        {
+            private readonly RepeatedGridNative _owner;
+            private int? _slot;
+            internal bool Complete;
+            internal Grid(RepeatedGridNative owner) => _owner = owner;
+            public GenericEventV7GridCapture Read() => new(Complete ? "resolved" : "ready",
+                new[] { new GenericEventV7GridCard("STRIKE", 0), new GenericEventV7GridCard("STRIKE", 0) }, _slot);
+            public void Apply(string operation, int? slot)
+            { _owner.Inputs++; if (operation == "select") _slot = slot; else Complete = true; }
+            public void Dispose() { Check(Complete, "unfinished grid cannot dispose cleanly"); }
+        }
+    }
+
     private sealed class FakeSession : IGenericEventV7Session
     {
         internal string Stable = "UNREGISTERED.OPTION", Rendered = "A presented option", Mutation = "", Family = "upgrade", Mode = "preview_confirm";
@@ -475,7 +548,7 @@ internal static partial class GenericEventV7WireTests
         private readonly HashSet<int> _selected = new();
         private readonly List<CardSelectionV1ActionResult> _history = new();
         private bool _preview, _resolved, _delivered;
-        internal bool Resume, FailAfterResolution;
+        internal bool Resume, FailAfterResolution, Grid;
         internal int? CompletedOverride;
         internal bool HasChild, Uncertain, Throw, Regress, ThrowFirstDispose, UncertainChild;
         internal string? ReadTag, ApplyTag;
@@ -506,6 +579,7 @@ internal static partial class GenericEventV7WireTests
                 "choose:0", Mutation == "operation" ? "unknown" : Family, Min,
                 Mutation == "count" ? 2 : Max, Mutation == "mode" ? "auto_at_max" : Mode,
                 Mutation == "domain" ? 1 : Mutation == "domain_changed" ? 4 : Domain);
+            if (child is not null && Grid) child = new(1, ParentId, "choose:0", new GenericEventV7GridAdmission(new object(), Family, Domain));
             return new(Nonce, initial ? "ready" : HasChild ? "child" : "waiting",
                 initial ? "choose_option" : HasChild ? "child" : "waiting", initial ? ParentId : "",
                 initial ? new[] { new GenericEventV7Candidate(0, "choose:0", Stable, Rendered, true, false, false) } : Array.Empty<GenericEventV7Candidate>(),
@@ -519,8 +593,8 @@ internal static partial class GenericEventV7WireTests
             if (Throw) throw new InvalidOperationException("After side effect");
             return new(Nonce, decisionId!, actionId!, Uncertain ? "uncertain" : "accepted");
         }
-        public GenericEventV7ChildRead ReadChild(string? d, string? a, int o) => new GenericEventV7CardRead(ReadTag ?? GenericEventV7Families.ContractVersion(Family), ReadChildValue(d,a,o));
-        public GenericEventV7ChildApply ApplyChild(string? d, string? a, int o, string? decision, string? action) => new GenericEventV7CardApply(ApplyTag ?? GenericEventV7Families.ContractVersion(Family), ApplyChildValue(d,a,o,decision,action));
+        public GenericEventV7ChildRead ReadChild(string? d, string? a, int o) => new GenericEventV7CardRead(ReadTag ?? (Grid ? "card_grid_v1" : GenericEventV7Families.ContractVersion(Family)), ReadChildValue(d,a,o));
+        public GenericEventV7ChildApply ApplyChild(string? d, string? a, int o, string? decision, string? action) => new GenericEventV7CardApply(ApplyTag ?? (Grid ? "card_grid_v1" : GenericEventV7Families.ContractVersion(Family)), ApplyChildValue(d,a,o,decision,action));
         private ICardSelectionV1ReadValue ReadChildValue(string? parentDecisionId, string? parentActionId, int childOrdinal)
         {
             ChildReads++;
@@ -563,7 +637,7 @@ internal static partial class GenericEventV7WireTests
             if (actionId!.StartsWith("select:", StringComparison.Ordinal))
             {
                 _selected.Add(int.Parse(actionId[7..])); result = "selected";
-                if ((Family is "remove" or "transform" || Family == "upgrade" && Max > 1) && _selected.Count == Max) _preview = true;
+                if ((Grid || Family is "remove" or "transform" || Family == "upgrade" && Max > 1) && _selected.Count == Max) _preview = true;
                 if (Family == "add" && Mode == "auto_at_max" && _selected.Count == Max) _resolved = true;
             }
             else if (actionId == "preview") { _preview = true; result = "previewed"; }

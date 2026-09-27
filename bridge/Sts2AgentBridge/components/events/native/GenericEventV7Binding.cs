@@ -99,6 +99,8 @@ internal sealed class GenericEventV7Binding
     internal bool AutomaticRemovalCompleted;
     internal EnchantmentModel? EnchantmentModel;
     internal CardSelectionV1Enchantment? Enchantment;
+    internal bool FullCardGrid;
+    internal GenericEventV7GridCardAdapter? GridCard;
     internal GenericEventV7Admission? Admission;
     internal PlayerChoiceContext? RewardContext;
     internal List<CardCreationResult>? RewardList;

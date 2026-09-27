@@ -51,6 +51,7 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
     private readonly HashSet<object> _itemIdentities=new(ReferenceEqualityComparer.Instance);
     private readonly HashSet<object> _tasks=new(ReferenceEqualityComparer.Instance);
     internal Func<GenericEventV7Binding,MegaCrit.Sts2.Core.Rewards.RewardsSet,IGenericFullRewardSession>? FullRewardsFactory = null;
+    internal bool FullCardGrid = false;
     internal GenericEventV7Binding InspectPending(string decision, string action)
     {
         if (_disposed || System.Environment.CurrentManagedThreadId != _thread || _pending is not {} binding ||
@@ -195,6 +196,16 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
                 if(!b.MatchesCurrentDeck()) return Fixed("unsupported");
                 diagnostic=GenericEventDiagnosticCode.PendingOffers;
                 if(!b.MatchesOffers()) return Fixed("unsupported");
+                if(b.FullCardGrid && b.Prefs.MinSelect==1 && b.Prefs.MaxSelect==1 &&
+                    b.Operation is CardSelectionV1Operation.Enchant or CardSelectionV1Operation.Upgrade)
+                {
+                    diagnostic=GenericEventDiagnosticCode.PrepareCandidates;
+                    b.GridCard ??= new GenericEventV7GridCardAdapter(b);
+                    if(b.GridCard.Read().Status!="ready")return Fixed("waiting");
+                    b.Admission ??= new GenericEventV7GridAdmission(new object(),b.Operation==CardSelectionV1Operation.Enchant?"enchant":"upgrade",b.DomainCount);
+                    diagnostic=GenericEventDiagnosticCode.ChildReady;
+                    return new GenericEventV7NativeCapture("child",false,Array.Empty<GenericEventV7NativeOption>(),b.Screen,b.Admission);
+                }
                 diagnostic=GenericEventDiagnosticCode.PrepareFamily;
                 if(!(b.Screen is NDeckUpgradeSelectScreen upgrade ? (b.Prefs.MaxSelect==1?GenericEventV7CardAdapter.IsReady(b,upgrade,out diagnostic):GenericEventV7MultiUpgradeAdapter.IsReady(b,upgrade,out diagnostic)) :
                     b.Screen is NDeckEnchantSelectScreen enchant ? (b.Prefs.MaxSelect==1?GenericEventV7CardAdapter.IsReady(b,enchant,out diagnostic):GenericEventV7RemovalAdapter.IsReady(b,enchant,out diagnostic)):
@@ -279,6 +290,7 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
             !_options.TryGetValue(c.Button,out var owned)||!ReferenceEquals(owned,c))throw new InvalidOperationException("Unowned option.");
         _pending=new GenericEventV7Binding(_run!,_player!,_room!,_map!,_overlays!,_layout!,_event!,c.Option,c.Button,nonce,decisionId,actionId);
         _pending.FullRewardsFactory=FullRewardsFactory;
+        _pending.FullCardGrid=FullCardGrid;
         _pending.ObservedPreviewClones=_previewClones;
         _pending.ObservedUpgradeClones=_upgradeClones;
         _pending.ObservedCommandTasks=_commandTasks;
@@ -336,6 +348,8 @@ public sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAda
             !_screens.Add(b.Screen!)||!_tasks.Add(b.RequestTask!)||!_tasks.Add(b.ChosenTask!))
             throw new InvalidOperationException("Unowned or repeated child.");
         _childCreated=true;
+        if(b.Admission is GenericEventV7GridAdmission gridAdmission && b.GridCard is {} gridCard)
+            return new GenericEventV7GridSession(b.Nonce,b.Decision,b.Action,gridAdmission.Operation,gridAdmission.DomainCount,b.Enchantment,gridCard);
         var context=b.Context();
         if(b.Screen is NDeckTransformSelectScreen transform)
         {

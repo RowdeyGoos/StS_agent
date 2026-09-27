@@ -101,6 +101,36 @@ internal static class CardTransformV2WireCodec
     { w.WriteStartArray(name); foreach (int x in values) w.WriteNumberValue(x); w.WriteEndArray(); }
 }
 
+internal static class CardGridV1WireCodec
+{
+    internal static byte[] Encode(object value)
+    {
+        byte[] source = CardSelectionV1WireCodec.Encode(value);
+        try
+        {
+            using var document = JsonDocument.Parse(source);
+            var buffer = new ArrayBufferWriter<byte>();
+            using (var writer = new Utf8JsonWriter(buffer))
+            {
+                writer.WriteStartObject();
+                foreach (var property in document.RootElement.EnumerateObject())
+                    if (property.Name == "version") writer.WriteString("version", "card_grid_v1"); else property.WriteTo(writer);
+                var enchantment = value is CardSelectionV1Observation o ? o.Enchantment : (value as CardSelectionV1ResolvedResult)?.Enchantment;
+                if (value is CardSelectionV1Observation or CardSelectionV1ResolvedResult)
+                {
+                    writer.WritePropertyName("enchantment");
+                    if (enchantment is null) writer.WriteNullValue();
+                    else { writer.WriteStartObject(); writer.WriteString("key", enchantment.Key); writer.WriteNumber("amount", enchantment.Amount); writer.WriteEndObject(); }
+                }
+                writer.WriteEndObject();
+            }
+            if (buffer.WrittenCount > CardSelectionV1WireProtocol.MaximumResponseBytes) throw new InvalidOperationException("Grid response cap.");
+            return buffer.WrittenSpan.ToArray();
+        }
+        finally { Array.Clear(source); }
+    }
+}
+
 internal static class CardEnchantV1WireCodec
 {
     public static byte[] Encode(object value, bool multi = false)

@@ -30,6 +30,34 @@ internal static class EventBoundaryTests
 
     internal static void Run(Action<bool,string> check)
     {
+        foreach (string operation in new[] { "upgrade", "enchant" })
+        {
+            var child = new GenericEventV7Child(1, Decision, "choose:0", new GenericEventV7GridAdmission(new object(), operation, 128));
+            var waiting = CardSelectionV1Observation.Fixed(Nonce, "waiting", "waiting", Array.Empty<CardSelectionV1ActionResult>());
+            var body = GenericEventV7WireCodec.Decision(Nonce, Parent(child), CardGridV1WireCodec.Encode(waiting));
+            check(Classify(body) == TerminalClassification.NonTerminal, "grid child remains parent owned");
+            foreach (string fault in new[] { "version", "payload", "operation", "minimum", "maximum", "mode", "overflow", "legacy" })
+                check(Classify(Mutate(body, n => {
+                    var c = n["child"]!;
+                    switch (fault) {
+                        case "version": c["contract_version"] = "card_grid_v2"; break;
+                        case "payload": n["payload"]!["version"] = "card_selection_v1"; break;
+                        case "operation": c["operation"] = "remove"; break;
+                        case "minimum": c["min_select"] = 0; break;
+                        case "maximum": c["max_select"] = 2; break;
+                        case "mode": c["commit_mode"] = "auto_at_max"; break;
+                        case "overflow": c["domain_count"] = 129; break;
+                        case "legacy": c["contract_version"] = "card_selection_v1"; n["payload"]!["version"] = "card_selection_v1"; break;
+                    }
+                })) == TerminalClassification.Invalid, "grid descriptor rejects " + fault);
+            foreach (string action in new[] { "select:0", "select:127", "confirm", "select:128", "select:001", "preview", "deselect:0" })
+            {
+                var receipt = GenericEventV7WireCodec.Action(Nonce, child, null,
+                    CardGridV1WireCodec.Encode(new CardSelectionV1DispatchReceipt(Nonce, Decision, action)));
+                check(Classify(receipt, GenericEventTransportRoute.ChildPost) == (action is "select:0" or "select:127" or "confirm"
+                    ? TerminalClassification.NonTerminal : TerminalClassification.Invalid), "grid receipt grammar " + action);
+            }
+        }
         foreach(int count in new[]{1,10,64}) {
             var child=new GenericEventV7Child(1,Decision,"choose:0",new GenericEventV7ResultsAdmission(new object(),count));
             var cards=Enumerable.Range(0,count).Select(i=>new GenericEventV7RewardCard(i,"CARD_"+i,0)).ToArray();
@@ -207,10 +235,10 @@ internal static class EventBoundaryTests
                 check(Classify(receipt,GenericEventTransportRoute.ChildPost)==(status=="accepted"?TerminalClassification.NonTerminal:TerminalClassification.Terminal),"item set uses singleton receipt "+status);
             }
         }
-        foreach(string action in new[]{"open:8","open:00","choose:5","choose:8:0","choose:0:5","choose:00:0","skip:8","dismiss:0","select:64","collect:256","choose:0:0:0","OPEN"})
+        foreach(string action in new[]{"open:8","open:00","choose:5","choose:8:0","choose:0:5","choose:00:0","skip:8","dismiss:0","select:128","select:001","collect:256","choose:0:0:0","OPEN"})
             check(!BridgeRequestParser.TryParse(Header(action),out _),"invalid reward/card/item action "+action);
         check(!BridgeRequestParser.TryParse(Header("open",true,"/probe/item-v1/public/item-action"),out _),"reward action cannot use item route");
-        foreach(string action in new[]{"select:0","select:63","preview","confirm","collect:0","collect:255"})
+        foreach(string action in new[]{"select:0","select:63","select:64","select:127","preview","confirm","collect:0","collect:255"})
             check(BridgeRequestParser.TryParse(Header(action),out _),"existing child action preserved "+action);
         var complete=GenericEventV7WireCodec.Decision(Nonce,Parent(null,"complete","map_handoff"),null);
         check(Classify(complete)==TerminalClassification.Terminal,"only completed parent allows map handoff");

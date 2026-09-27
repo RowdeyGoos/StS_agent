@@ -37,6 +37,7 @@
   <Compile Include="../../../components/cards/wire/CardSelectionV1WireService.cs" />
   <Compile Include="../../../components/events/core/GenericEventV5ChildSession.cs" />
   <Compile Include="../../../components/events/core/GenericEventV7ChildSession.cs" />
+  <Compile Include="../../../components/events/core/GenericEventV7GridSession.cs" />
   <Compile Include="../../../components/events/core/GenericEventV7Contracts.cs" />
   <Compile Include="../../../components/events/core/GenericEventV7ItemChildSession.cs" />
   <Compile Include="../../../components/events/core/GenericEventV7NativeContracts.cs" />

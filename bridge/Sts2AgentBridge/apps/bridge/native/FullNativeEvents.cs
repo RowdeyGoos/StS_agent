@@ -66,6 +66,7 @@ internal sealed partial class FullNativeBackend
         }
         if (kind == "item") return EventItem(child, payload, binding);
         if (kind == "crystal_sphere") return EventSphere(child, payload, binding);
+        if (kind == "card_selection" && Text(child, "contract_version") == "card_grid_v1") return EventGrid(child, payload, binding);
         var children = new List<JsonObject>(); var links = new List<(string, IEnumerable<string>)>();
         var subjects = new Dictionary<int, string>();
         void Card(int slot, CardModel card, JsonElement view)
@@ -78,9 +79,9 @@ internal sealed partial class FullNativeBackend
         {
             Require(binding.Screen is not null);
             var grid = binding.Screen!.GetNodeOrNull<NCardGrid>("%CardGrid") ?? throw new AgentUnsupported();
-            var holders = grid.CurrentlyDisplayedCardHolders.ToArray();
             _state.Bind(binding.Screen); _state.Bind(grid);
-            var candidates = payload.GetProperty("candidates").EnumerateArray().ToArray(); Require(candidates.Length == holders.Length);
+            var candidates = payload.GetProperty("candidates").EnumerateArray().ToArray();
+            var holders = grid.CurrentlyDisplayedCardHolders.ToArray(); Require(candidates.Length == holders.Length);
             foreach (var row in candidates)
             {
                 int slot = row.GetProperty("slot").GetInt32(); var holder = holders[slot]; _state.Bind(holder);

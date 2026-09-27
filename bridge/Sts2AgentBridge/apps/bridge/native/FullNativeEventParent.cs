@@ -47,6 +47,7 @@ internal sealed partial class FullNativeBackend
         var run = _state.PublicRun(_history);
         var source = _router.ActiveObservationSource is ValueTuple<PinnedGenericEventV7NativeAdapter, GenericEventV7Session> pair
             ? pair : throw new AgentUnsupported();
+        source.Item1.FullCardGrid = true;
         source.Item1.FullRewardsFactory ??= (binding,set) => binding.Option.Relic is MegaCrit.Sts2.Core.Models.Relics.NeowsBones
             ? new GenericEventCompoundRewards(binding,set) : new GenericEventFullRewards(binding,set);
         var room = _state.Run.CurrentRoom as EventRoom ?? throw new AgentUnsupported();

@@ -554,7 +554,7 @@ public sealed class GenericEventV7Hooks : IDisposable
                 __0 is null||__1 is null||__2<1||__3.MinSelect<1||__3.MinSelect!=__3.MaxSelect||__3.MaxSelect>8||__3.Cancelable||
                 !ReferenceEquals(__1.CanonicalInstance,__1)||
                 !Sts2AgentBridge.Successors.CardSelectionV1.Native.CardSelectionV1NativeRules.IsStableKey(__1.Id.Entry)||
-                __0.Count<=__3.MaxSelect||__0.Count>64)
+                __0.Count<=__3.MaxSelect||__0.Count>(b.FullCardGrid&&__3.MaxSelect==1?128:64))
             {b.Failed=true;return;}
             b.RequestSeen=true;b.Prefs=__3;
             b.Operation=Sts2AgentBridge.Successors.CardSelectionV1.CardSelectionV1Operation.Enchant;
@@ -663,7 +663,7 @@ public sealed class GenericEventV7Hooks : IDisposable
             if (!Owns(b) || b.Closed || b.ScreenSeen || !b.ContextValid(false) ||
                 b.Operation!=Sts2AgentBridge.Successors.CardSelectionV1.CardSelectionV1Operation.Upgrade || !ReferenceEquals(Parent.Value,b) ||
                 !ReferenceEquals(__2,b.RunState) || !b.SamePrefs(__1) ||
-                !b.MatchesCurrentDeck() || __0.Count<=b.Prefs.MaxSelect || __0.Count>64 ||
+                !b.MatchesCurrentDeck() || __0.Count<=b.Prefs.MaxSelect || __0.Count>(b.FullCardGrid&&b.Prefs.MaxSelect==1?128:64) ||
                 (b.Prefs.MaxSelect>1 && __2.GetType()!=typeof(RunState)))
             { b.Failed=true; return; }
             b.ScreenSeen=true;

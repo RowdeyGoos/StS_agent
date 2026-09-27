@@ -1949,3 +1949,87 @@ under installed state
 Two exact overlays are installed; all 429 base files remain unchanged. The game
 is stopped for manual Profile 3 launch. Live controller/setup/cleanup durations
 were not separately measured; the above wall-clock milestones are retained.
+
+## Act-3 continuation and Symbiote grid stop, 2026-09-27
+
+The user's manual Profile 3 readiness continued the same accepted package:
+manifest `418330cff79f95d517596c27929ac84a3440693d0aed716da0de563cdda97149`,
+source `2fbb99af3b0760ae79ca0c0e8fabe2352a9a7d3f`, installed state
+`79001d017b36208ef30280a0a1f1908a378f66961f0b75294cf0ee02d986fe0e`.
+Running-process, exact overlay/base and authenticated identity/compatibility checks
+passed by **11:04:45 UTC**. The UI confirmed Profile 3, pinned v0.107.1 and one mod.
+Native Continue restored Act 2 floor **82**, deck **94**, HP **2125/2126**, gold
+**389**, with Rest/Smith/Cook/Kindle/Dig/Clone.
+
+Before attaching any public producer, the previously announced native setup ran
+`relic remove PAELS_GROWTH` ("Relic removed!") and `room RestSite` ("Jumped to room:
+'RestSite'"). The refreshed rest at floor **83** had no Clone, with the same deck,
+HP and gold. A public preflight confirmed **0/0/0**, nothing pending, no Pael's
+Growth or Clone option, and **48** already Clone-enchanted cards. Removing the
+relic did not erase prior card enchantments. No manual gameplay intervention
+followed policy attachment.
+
+The unchanged `game.agent.full_policy.choose_action` completed the rest, Act-2
+boss combat/rewards and map handoff; entered Act 3 through **Nonupeipe** at floor
+85; completed combat 86, **Trial** 87, shop 88 and combat 89; then chose Symbiote's
+**Approach** at floor 90. That option opened the Corrupted enchant selector and
+the controller stopped with `read_native_event_diagnostic_unavailable`:
+**84 attempted / 81 accepted / 80 reconciled**, **one pending** action, 81 decisions,
+1,272 controller reads, one preflight read, three stale rejections and 84 policy
+calls. The final accepted semantic action was `choose_event_option`, subject
+`symbiote.pages.initial.options.approach`. The last public view had HP
+**2135/2135**, gold **124**. A read-only screenshot showed floor 90, **105 deck
+cards** and the Corrupted chooser. No child selection input occurred. The exact
+eligible count and failing preparation predicate were not observed. This is
+resumed Act-2/Act-3 traversal and natural Nonupeipe entry evidence, not an ending
+or fresh uninterrupted-campaign acceptance; no Architect or victory was observed.
+
+Normal quit, stopped process/listener at **11:11:24 UTC**, exact quarantine/purge
+and base verification completed by **11:11:57 UTC**. Quarantine state:
+`ade4a034e550e68bee6069a50cd615cdc17761601ac35c31712a2619e4620c53`.
+Four owned generated files were removed, zero overlays remained and all **429**
+base files matched
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+The uncertain Approach was not retried or adopted. No profile/save/history/Cloud
+filesystem access or retained live corpus occurred.
+
+Source inspection found the single upgrade/enchant path required every eligible
+original to have an allocated holder and limited eligible domains to 64. The
+native grid recycles a smaller holder pool. This supports a virtualization defect;
+it does not identify which predicate failed in the live attempt or prove more
+than 64 eligible cards. The deck-copy bound itself was 512, so the 105-card deck
+alone did not explain failure.
+
+The correction adds full-producer-only **`card_grid_v1`** within the existing
+event owner and shared grid driver: 2–128 eligible originals, one selected upgrade
+or enchant, exact preview/confirm, complete model-domain projection, and bounded
+scrolling only after selection. It certifies the exact original's effect,
+unchanged ordered survivors, retained enchantment identity, successful request
+and chosen tasks, and closed owned overlay. The public graph includes the pending
+enchantment key/amount. Legacy selector contracts keep their allocated-holder
+and 64-candidate limits. Fourteen existing closed preparation diagnostics now
+survive the shared boundary; no exception text or native data is emitted.
+
+Independent design review ran **11:12:49–11:17:09 UTC (260 seconds)**; implementation
+review ran **11:33:05–11:39:20 UTC (375 seconds)**. The reviewer required post-confirm
+foreign/nested overlay rejection, parent-lineage binding for identical repeated
+selectors, and preserving the pending enchantment in the shared projection. All
+were corrected; no remaining blocker was reported. Review was source-only.
+Focused native tests passed **169 assertions** at
+`/private/tmp/sts-grid-focused-zkbwtki5` (build **4.676 seconds**, checks **4.839
+seconds**), including a 105-card deck with 48 or 65 eligible cards, 128-card
+endpoints, unallocated selection, actual native-to-wire-to-production graph
+projection, delayed callbacks, stale confirmation, wrong effects and failed
+cleanup. The repeated-identical-grid wire case passed at
+`/private/tmp/sts-bridge-yj9kfunw` (**1.698 seconds**, three check groups).
+These are inert-object/source tests; corrected Symbiote behavior is not yet live
+verified. Implementation and checks overlapped; exclusive implementation, live
+controller, release preparation and user-wait durations were not measured.
+
+The final focused router run passed **three groups in 13.699 seconds** at
+`/private/tmp/sts-bridge-4x0l0t11`. The preceding sandboxed attempt reached its
+loopback-bind boundary and received permission denied; the approved disposable
+listener run above completed. Client checks and full coordinator/event-parent
+checks passed at `/private/tmp/sts-bridge-uijsa1ve`; its first router attempt found
+a fixture-only reused JSON-node assignment, subsequently corrected. Production
+compilation passed at `/private/tmp/sts-bridge-rdywfrmv` (**2.065 seconds**).

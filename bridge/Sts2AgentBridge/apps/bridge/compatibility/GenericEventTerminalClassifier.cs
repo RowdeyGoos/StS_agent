@@ -70,7 +70,7 @@ internal static class GenericEventTerminalClassifier
                 if(Text(payload,"kind")=="child_failure")
                     return Keys(payload,"schema_version","kind","version","session_nonce","parent_ordinal","outcome") && outcome is "unsupported" or "uncertain" or "rejected" ? TerminalClassification.Terminal : TerminalClassification.Invalid;
                 return Keys(payload,"schema_version","kind","version","session_nonce","parent_ordinal","decision_id","action_id","outcome") &&
-                    Hex(Text(payload,"decision_id"),64) && CardAction(Text(payload,"action_id")??"") && outcome=="accepted" ? TerminalClassification.NonTerminal : TerminalClassification.Invalid;
+                    Hex(Text(payload,"decision_id"),64) && (Text(child,"contract_version")=="card_grid_v1"?GenericEventV7GridAdmission.Action(Text(payload,"action_id")):CardAction(Text(payload,"action_id")??"")) && outcome=="accepted" ? TerminalClassification.NonTerminal : TerminalClassification.Invalid;
             }
             if (kind != "decision" || route != GenericEventTransportRoute.DecisionGet || parent.ValueKind != JsonValueKind.Object)
                 return TerminalClassification.Invalid;
@@ -120,6 +120,9 @@ internal static class GenericEventTerminalClassifier
             string version=Text(value,"kind")=="item" ? (count==1?"item_v1":"item_set_v1") : (count==1?"card_reward_v1":"card_reward_set_v1");
             return count is >=1 and <=8 && (Text(value,"contract_version")==version||Text(value,"kind")=="card_reward"&&count>=2&&Text(value,"contract_version")=="mixed_reward_set_v1");
         }
+        if(Text(value,"contract_version")=="card_grid_v1")return Text(value,"kind")=="card_selection"&&
+            value.GetProperty("min_select").GetInt32()==1&&value.GetProperty("max_select").GetInt32()==1&&Text(value,"commit_mode")=="preview_confirm"&&
+            GenericEventV7GridAdmission.Supports(Text(value,"operation")??"",value.GetProperty("domain_count").GetInt32());
         return
             Text(value,"kind")=="card_selection"&&Text(value,"contract_version")==GenericEventV7Families.ContractVersion(Text(value,"operation")??"",value.GetProperty("max_select").GetInt32(),value.GetProperty("min_select").GetInt32())&&
             GenericEventV7Families.Supports(Text(value,"operation")??"",value.GetProperty("min_select").GetInt32(),value.GetProperty("max_select").GetInt32(),Text(value,"commit_mode")??"",value.GetProperty("domain_count").GetInt32());
@@ -128,7 +131,7 @@ internal static class GenericEventTerminalClassifier
     // validates the emitted family and keeps child completion owned by its parent.
     private static bool CardAction(string action) => !action.StartsWith("collect:",StringComparison.Ordinal) &&
         !GenericEventTransportRequestParser.RewardAction(Encoding.ASCII.GetBytes(action)) &&
-        GenericEventTransportRequestParser.ChildAction(Encoding.ASCII.GetBytes(action));
+        Sts2AgentBridge.Successors.CardSelectionV1.Wire.CardSelectionV1WireProtocol.IsChildAction(action);
 
     private static TerminalClassification ItemSet(JsonElement p,JsonElement child,string nonce) {
         if(!Keys(p,"version","session_nonce","status","offer_count","collected","current") ||

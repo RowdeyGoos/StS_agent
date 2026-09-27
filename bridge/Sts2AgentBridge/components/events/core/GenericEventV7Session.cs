@@ -92,6 +92,7 @@ public sealed class GenericEventV7Session : IGenericEventV7Session
                     !_admissions.Add(admission.Identity)) return Stop();
                 _card = _native.CreateChild(admission.Identity);
                 _child = admission switch {
+                    GenericEventV7GridAdmission g => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,g),
                     GenericEventV7CardAdmission c => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,c.Operation,c.MinSelect,c.MaxSelect,c.CommitMode,c.DomainCount),
                     GenericEventV7AbandonAdmission a => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,a),
                     GenericEventV7SphereAdmission s => new GenericEventV7Child(_episodes+1,_pendingDecision,_pendingAction,s),

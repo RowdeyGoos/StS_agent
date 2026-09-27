@@ -38,6 +38,7 @@ public sealed record GenericEventV7NativeCapture(string Status, bool EventFinish
 // Native-only closed admission family; identity never crosses the wire.
 public abstract record GenericEventV7Admission(object Identity) {
     public bool IsSupported => Identity is not null && (this switch {
+        GenericEventV7GridAdmission g => GenericEventV7GridAdmission.Supports(g.Operation,g.DomainCount),
         GenericEventV7CardAdmission c => GenericEventV7Families.Supports(c.Operation,c.MinSelect,c.MaxSelect,c.CommitMode,c.DomainCount),
         GenericEventV7SphereAdmission => true,
         GenericEventV7FullRewardsAdmission r => r.OfferCount is >=1 and <=8 && r.ContractVersion is "full_rewards_v1" or "full_rewards_v2",
@@ -48,6 +49,12 @@ public abstract record GenericEventV7Admission(object Identity) {
         GenericEventV7ItemPolicyAdmission i => i.OfferCount is >=1 and <=8,
         GenericEventV7ItemAdmission i => i.OfferCount is >= 1 and <= 8,
         _ => false });
+}
+public sealed record GenericEventV7GridAdmission(object AdmissionIdentity, string Operation, int DomainCount) : GenericEventV7Admission(AdmissionIdentity)
+{
+    public static bool Supports(string operation, int count) => operation is "upgrade" or "enchant" && count is >= 2 and <= 128;
+    public static bool Action(string? action) => action == "confirm" || action is not null && action.StartsWith("select:", StringComparison.Ordinal) &&
+        int.TryParse(action[7..], out int slot) && slot is >= 0 and < 128 && action == "select:" + slot;
 }
 public sealed record GenericEventV7CardAdmission(object AdmissionIdentity, string Operation,
     int MinSelect, int MaxSelect, string CommitMode, int DomainCount) : GenericEventV7Admission(AdmissionIdentity);

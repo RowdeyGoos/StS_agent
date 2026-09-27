@@ -23,6 +23,7 @@
     <Compile Include="../native_tests/ShopPotionFixtures.cs" />
     <Compile Include="../native_tests/ShopRelicFixtures.cs" />
     <Compile Include="../native_tests/ShopPickupFixtures.cs" />
+    <Compile Include="../native_tests/GridCardFixtures.cs" />
     <Compile Include="../native_tests/MerchantFightFixtures.cs" />
     <Compile Include="../native_tests/ShopRemovalFixtures.cs" />
     <Compile Include="../../rooms/shop/native/ShopPotionOwnership.cs" />
@@ -53,6 +54,7 @@
     <Compile Include="../../cards/wire/CardSelectionV1WireProtocol.cs" />
     <Compile Include="../../cards/parents/CardSelectionParentV1Contracts.cs" />
     <Compile Include="../core/GenericEventV7ChildSession.cs" />
+    <Compile Include="../core/GenericEventV7GridSession.cs" />
     <Compile Include="../core/GenericEventV7ItemChildSession.cs" />
     <Compile Include="../core/GenericEventV5ChildSession.cs" />
     <Compile Include="../../items/core/ItemV1Contracts.cs" />
@@ -95,6 +97,7 @@
     <Compile Include="../native/GenericEventV7Binding.cs" />
     <Compile Include="../native/GenericEventV7CombatHandoff.cs" />
     <Compile Include="../native/GenericEventV7CardAdapter.cs" />
+    <Compile Include="../native/GenericEventV7GridCardAdapter.cs" />
     <Compile Include="../native/GenericEventV7Hooks.cs" />
     <Compile Include="../native/GenericEventV7MerchantScreen.cs" />
     <Compile Include="../native/GenericEventV7MerchantFight.cs" />
@@ -137,6 +140,7 @@
     <Compile Include="../native_tests/CompoundRemainingFixtures.cs" />
     <Compile Include="../native_tests/CompoundProjectionFixtures.cs" />
     <Compile Include="../../../apps/bridge/native/FullNativeCompoundRewards.cs" />
+    <Compile Include="../../../apps/bridge/native/FullNativeEventGrid.cs" />
     <Compile Include="../../../apps/bridge/runtime/FullPublicGraph.cs" />
     <Compile Include="../../../apps/bridge/runtime/AgentContracts.cs" />
     <Compile Include="../../rooms/shop/native/PinnedShopEffectDispatch.cs" />

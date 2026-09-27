@@ -8,6 +8,7 @@
     <Compile Include="ShopPotionFixtures.cs" />
     <Compile Include="ShopRelicFixtures.cs" />
     <Compile Include="ShopPickupFixtures.cs" />
+    <Compile Include="GridCardFixtures.cs" />
     <Compile Include="ShopInteractiveFixtures.cs" />
     <Compile Include="../../rooms/shop/native/ShopInteractiveSession.cs" />
     <Compile Include="../../rooms/shop/tests/MultiplePurchaseFixture.cs" />
@@ -34,6 +35,7 @@
     <Compile Include="CompoundRemainingFixtures.cs" />
     <Compile Include="CompoundProjectionFixtures.cs" />
     <Compile Include="../../../apps/bridge/native/FullNativeCompoundRewards.cs" />
+    <Compile Include="../../../apps/bridge/native/FullNativeEventGrid.cs" />
     <Compile Include="../../../apps/bridge/runtime/FullPublicGraph.cs" />
     <Compile Include="../../../apps/bridge/runtime/AgentContracts.cs" />
     <Compile Include="../../rooms/shop/native/PinnedShopEffectDispatch.cs" />
@@ -108,6 +110,7 @@
     <Compile Include="../native/GenericEventV7Binding.cs" Link="Native/GenericEventV7Binding.cs" />
     <Compile Include="../native/GenericEventV7CombatHandoff.cs" Link="Native/GenericEventV7CombatHandoff.cs" />
     <Compile Include="../native/GenericEventV7CardAdapter.cs" Link="Native/GenericEventV7CardAdapter.cs" />
+    <Compile Include="../native/GenericEventV7GridCardAdapter.cs" />
     <Compile Include="../native/GenericEventV7Hooks.cs" Link="Native/GenericEventV7Hooks.cs" />
     <Compile Include="../native/GenericEventV7MerchantScreen.cs" />
     <Compile Include="../native/GenericEventV7MerchantFight.cs" />
@@ -118,6 +121,7 @@
     <Compile Include="../native/PinnedGenericEventV7NativeAdapter.cs" Link="Native/PinnedGenericEventV7NativeAdapter.cs" />
     <Compile Include="../../cards/native/CardSelectionV1NativeRules.cs" Link="Frozen/CardSelectionV1NativeRules.cs" />
     <ProjectReference Include="../core/GenericEventV7.Core.csproj" />
+    <ProjectReference Include="../wire/GenericEventV7.Wire.csproj" />
     <Reference Include="0Harmony"><HintPath>$(HarmonyPath)</HintPath><Private>true</Private></Reference>
   </ItemGroup>
 <ItemGroup><Compile Include="../../rooms/shop/core/ShopV1Contracts.cs" /><Compile Include="../../rooms/common/RoomFlowContracts.cs" /></ItemGroup>

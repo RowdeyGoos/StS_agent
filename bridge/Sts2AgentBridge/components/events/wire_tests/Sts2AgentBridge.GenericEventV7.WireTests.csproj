@@ -7,6 +7,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="../core/GenericEventV7ChildSession.cs" />
+    <Compile Include="../core/GenericEventV7GridSession.cs" />
     <Compile Include="../core/GenericEventV7ItemChildSession.cs" />
     <Compile Include="../core/GenericEventV5ChildSession.cs" Link="Frozen/GenericEventV5ChildSession.cs" />
     <Compile Include="../../items/core/ItemV1Contracts.cs" Link="Frozen/ItemV1Contracts.cs" />

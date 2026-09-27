@@ -29,17 +29,14 @@ continuation also passed live at **10/10/10**, with nothing pending. The next re
 stopped before input at the declared Clone capacity guard, preserving the verified
 map receipt. The campaign ending remains open.
 
-Publish, stopped-game installation, exact overlay/base and installed metadata
-checks first passed by **2026-09-27 10:48:07 UTC**. After the live test, normal quit
-and exact cleanup passed by **10:56:07 UTC**. Reinstallation and verification of
-the same package passed by **10:57:23 UTC**. Two exact overlay files are installed;
-all 429 base files are unchanged. Installed state:
-`79001d017b36208ef30280a0a1f1908a378f66961f0b75294cf0ee02d986fe0e`.
-The game remains stopped for manual Profile 3 launch. Before the next policy
-attachment, the controlled setup will remove Pael's Growth and refresh the rest
-options, retaining the 128-card bound. No fresh campaign is needed. Thirty-three
-disposable helper cases pass. The [live ledger](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#floor-81-recovery-and-settled-clone-capacity-stop-2026-09-27)
-records the accepted scope and cleanup.
+The same package's later assisted saved continuation passed the rest, Act-2 boss,
+natural Nonupeipe entry and several Act-3 rooms, then stopped at Symbiote's
+Corrupted selector at **84/81/80**, one pending action. No child selection input
+occurred. Normal quit and exact cleanup passed by **2026-09-27 11:11:57 UTC**,
+leaving zero overlays and all 429 base files unchanged. The game is closed.
+The [live ledger](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#act-3-continuation-and-symbiote-grid-stop-2026-09-27)
+retains its original artifact, setup and unresolved counts. The full-producer
+single-card grid correction is in source; its release and live retest are pending.
 
 The preceding package passed the [86-card rest/map cycle at 14/14/14](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#large-rest-recovery-and-floor-81-stop-2026-09-27),
 then stopped entering floor 81 at **27/27/26**, one pending map action. Normal

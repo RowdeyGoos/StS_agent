@@ -108,10 +108,14 @@ internal static partial class Program {
         internal int Inputs, Clears, Commits, Cancels;
         private readonly List<CardModel> _selected = new();
         private int _windowStart;
-        internal InteractiveChoiceFixture(bool smith = false, bool transform = false, bool nested = false, bool enchant = false, int count = 3, int window = 0, int maximumDomain = 64)
+        internal InteractiveChoiceFixture(bool smith = false, bool transform = false, bool nested = false, bool enchant = false, int count = 3, int window = 0, int maximumDomain = 64, Player? owner = null, CardModel[]? domain = null, NOverlayStack? overlays = null, EnchantmentModel? enchantment = null)
         {
-            Cards = Enumerable.Range(0, count).Select(i => { var c = new CardModel { Owner = Player }; c.Id.Entry = "CARD_" + i; return c; }).ToArray();
-            Player.Deck.Cards.AddRange(Cards);
+            if (owner is not null) Player = owner;
+            if (overlays is not null) Overlays = overlays;
+            if (enchantment is not null) Enchantment = enchantment;
+            Cards = domain ?? Enumerable.Range(0, count).Select(i => { var c = new CardModel { Owner = Player }; c.Id.Entry = "CARD_" + i; return c; }).ToArray();
+            if (domain is null) Player.Deck.Cards.AddRange(Cards);
+            count = Cards.Length;
             bool single = smith || transform || enchant;
             Screen = enchant ? new NDeckEnchantSelectScreen() : transform ? new NDeckTransformSelectScreen() : smith ? new NDeckUpgradeSelectScreen() : new NDeckCardSelectScreen();
             Screen.SelectionTask = Task.Task;
@@ -119,14 +123,14 @@ internal static partial class Program {
             Screen.Bind("%CardGrid", Grid); Screen.Bind("%Close", Back);
             Screen.Bind(enchant ? "%EnchantSinglePreviewContainer" : smith ? "%UpgradeSinglePreviewContainer" : "%PreviewContainer", Container);
             if (enchant) {
-                Enchantment.Id.Entry = "MOMENTUM";
+                if (enchantment is null) Enchantment.Id.Entry = "MOMENTUM";
                 var preview = new NEnchantPreview(); preview.Setup(BeforeEnchant, AfterEnchant);
                 Container.Bind("EnchantPreview", preview);
                 // The pinned scene uses preview-holder instances as its containers.
                 // Init queues their initial hitboxes (and later old holders) for
                 // deletion, then adds the new previews within the same frame.
                 BeforeEnchant.Children.Add(new Control()); AfterEnchant.Children.Add(new Control());
-                Cards[0].CurrentUpgradeLevel = 1;
+                if (domain is null) Cards[0].CurrentUpgradeLevel = 1;
             } else if (transform) {
                 var preview = new NTransformPreview(); preview.Bind("%Before", Preview); preview.Bind("%After", new Control());
                 Container.Bind("TransformPreview", preview);

@@ -3,6 +3,7 @@
   <ItemGroup>
     <InternalsVisibleTo Include="FullNative.Tests" />
     <Compile Include="GenericEventV7ChildSession.cs" />
+    <Compile Include="GenericEventV7GridSession.cs" />
     <Compile Include="GenericEventV7ItemChildSession.cs" />
     <Compile Include="GenericEventV7CardRewardSession.cs" />
     <Compile Include="GenericEventV7OfferSession.cs" />

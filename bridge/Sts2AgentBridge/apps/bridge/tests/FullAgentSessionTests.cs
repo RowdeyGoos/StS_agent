@@ -117,7 +117,8 @@ internal static class FullAgentSessionTests
                 !stopped.ToJsonString().Contains("sentinel"), "closed rest capacity diagnostics stop before dispatch");
         }
         foreach (var diagnostic in new[] { GenericEventDiagnosticCode.ParentTravel,
-            GenericEventDiagnosticCode.CaptureException, (GenericEventDiagnosticCode)999 })
+            GenericEventDiagnosticCode.CaptureException, (GenericEventDiagnosticCode)999 }.Concat(
+                Enum.GetValues<GenericEventDiagnosticCode>().Where(d => d.ToString().StartsWith("Prepare", StringComparison.Ordinal))))
         {
             byte[] body = "{\"private\":\"native sentinel must not escape\"}"u8.ToArray();
             var backend = new Backend(); using var session = new FullAgentSession(backend, "fixture");
@@ -125,8 +126,7 @@ internal static class FullAgentSessionTests
                 FullReadFailure.At(FullReadStage.Native, () => FullAgentWire.Read(
                     new(body, Terminal: true, Diagnostic: diagnostic, EventDiagnostic: true))));
             var stopped = Read(session);
-            string expected = diagnostic == GenericEventDiagnosticCode.ParentTravel ? "parent_travel" :
-                diagnostic == GenericEventDiagnosticCode.CaptureException ? "capture_exception" : "diagnostic_unavailable";
+            string expected = diagnostic == (GenericEventDiagnosticCode)999 ? "diagnostic_unavailable" : GenericEventDiagnosticCodec.Encode(diagnostic);
             check(stopped["code"]!.GetValue<string>() == "read_native_event_" + expected,
                 "nested native event diagnostic survives shared read boundary " + diagnostic);
             check(body.All(b => b == 0) && !stopped.ToJsonString().Contains("sentinel") &&

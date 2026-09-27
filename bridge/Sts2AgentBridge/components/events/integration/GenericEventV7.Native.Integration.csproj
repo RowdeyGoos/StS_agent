@@ -22,6 +22,7 @@
     <Compile Include="../native_tests/ShopPotionFixtures.cs" />
     <Compile Include="../native_tests/ShopRelicFixtures.cs" />
     <Compile Include="../native_tests/ShopPickupFixtures.cs" />
+    <Compile Include="../native_tests/GridCardFixtures.cs" />
     <Compile Include="../native_tests/MerchantFightFixtures.cs" />
     <Compile Include="../native_tests/ShopRemovalFixtures.cs" />
     <Compile Include="../../rooms/shop/native/ShopPotionOwnership.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="../native/GenericEventV7Binding.cs" Link="Actual/GenericEventV7Binding.cs" />
     <Compile Include="../native/GenericEventV7CombatHandoff.cs" Link="Actual/GenericEventV7CombatHandoff.cs" />
     <Compile Include="../native/GenericEventV7CardAdapter.cs" Link="Actual/GenericEventV7CardAdapter.cs" />
+    <Compile Include="../native/GenericEventV7GridCardAdapter.cs" />
     <Compile Include="../native/GenericEventV7RewardAdapter.cs" Link="Actual/GenericEventV7RewardAdapter.cs" />
     <Compile Include="../native/GenericEventV7RemovalAdapter.cs" Link="Actual/GenericEventV7RemovalAdapter.cs" />
     <Compile Include="../native/GenericEventV7Hooks.cs" Link="Actual/GenericEventV7Hooks.cs" />
@@ -120,6 +122,7 @@
     <Compile Include="../native_tests/CompoundRemainingFixtures.cs" />
     <Compile Include="../native_tests/CompoundProjectionFixtures.cs" />
     <Compile Include="../../../apps/bridge/native/FullNativeCompoundRewards.cs" />
+    <Compile Include="../../../apps/bridge/native/FullNativeEventGrid.cs" />
     <Compile Include="../../../apps/bridge/runtime/FullPublicGraph.cs" />
     <Compile Include="../../../apps/bridge/runtime/AgentContracts.cs" />
     <Compile Include="../../rooms/shop/native/PinnedShopEffectDispatch.cs" />

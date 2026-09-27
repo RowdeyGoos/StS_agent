@@ -23,13 +23,13 @@ internal static partial class GenericEventV7WireTests
 
     private static void FullRewardBoundaryCases()
     {
-        foreach(var action in new[]{"deselect:0","deselect:63","deselect:64","deselect:00","select:63","select:64"})
+        foreach(var action in new[]{"deselect:0","deselect:63","deselect:64","deselect:00","select:63","select:64","select:127","select:128","select:001"})
             Case("compound transport selector grammar "+action,()=>{
                 var head=Encoding.ASCII.GetBytes("POST /probe/generic-event-v7/public/action HTTP/1.1\r\nHost: 127.0.0.1:43117\r\nAuthorization: Bearer "+new string('a',64)+
                     "\r\nAccept: application/json\r\nX-Sts2-Decision-Id: "+new string('b',64)+"\r\nX-Sts2-Action-Id: "+action+
                     "\r\nX-Sts2-Child-Ordinal: 1\r\nX-Sts2-Parent-Decision-Id: "+ParentId+"\r\nX-Sts2-Parent-Action-Id: choose:0\r\nConnection: close\r\n\r\n");
                 bool parsed=GenericEventTransportRequestParser.TryParse(head,GenericEventReleaseSelection.Generic,out var request);
-                Check(parsed==(action is "deselect:0" or "deselect:63" or "select:63"),"exact bounded selector grammar at HTTP ingress");
+                Check(parsed==(action is "deselect:0" or "deselect:63" or "select:63" or "select:64" or "select:127"),"exact bounded selector grammar at HTTP ingress");
                 if(parsed)Check(request.Route==GenericEventTransportRoute.ChildPost&&Encoding.ASCII.GetString(head,request.ActionOffset,request.ActionLength)==action,
                     "native action retained through parsing");
                 Array.Clear(head);

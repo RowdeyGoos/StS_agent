@@ -74,9 +74,9 @@ internal static class GenericEventTransportRequestParser
         if(value.SequenceEqual("skip_card"u8)||value.SequenceEqual("skip_remaining"u8)||value.Length==9&&value.StartsWith("discard:"u8)&&value[8] is >= (byte)'0' and <= (byte)'7'||value.SequenceEqual("cancel"u8)||value.SequenceEqual("confirm_abandon"u8)||value.SequenceEqual("preview"u8)||value.SequenceEqual("confirm"u8)||RewardAction(value))return true;
         bool item=value.StartsWith("collect:"u8);
         int prefix=item?8:7;
-        if(!item&&!value.StartsWith("select:"u8)||value.Length<=prefix||value.Length>prefix+(item?3:2))return false;
+        if(!item&&!value.StartsWith("select:"u8)||value.Length<=prefix||value.Length>prefix+3)return false;
         var digits=value[prefix..];if(digits.Length>1&&digits[0]=='0')return false;
-        int n=0;foreach(byte c in digits){if(c<'0'||c>'9')return false;n=n*10+c-'0';}return n<=(item?255:63);
+        int n=0;foreach(byte c in digits){if(c<'0'||c>'9')return false;n=n*10+c-'0';}return n<=(item?255:127);
     }
     internal static bool RewardAction(ReadOnlySpan<byte> value) =>
         value.SequenceEqual("open"u8) || value.SequenceEqual("skip"u8) || value.SequenceEqual("dismiss"u8) ||

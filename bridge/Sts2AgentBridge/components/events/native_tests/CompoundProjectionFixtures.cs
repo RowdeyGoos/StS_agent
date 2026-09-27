@@ -38,6 +38,14 @@ namespace Sts2AgentBridge.Unified
                 Text(child,"parent_action_id") is not null&&Text(payload,"decision_id")?.Length==64);
             _inputs.Add((action,Candidate(_inputs.Count,kind,subject,target)));
         }
+        internal (JsonObject Decision, string[] Actions) ProjectGrid(GenericEventV7Binding binding, JsonElement wire)
+        {
+            _inputs.Clear(); _state.Player = binding.Player;
+            var run = Node("run", children: new[] { Node("deck", children: binding.Player.Deck.Cards.Select(_state.Card)) });
+            var context = EventGrid(wire.GetProperty("child"), wire.GetProperty("payload"), binding);
+            var decision = Decision(run, context, _inputs.Select(i => i.Candidate)); Validate(decision);
+            return (decision, _inputs.Select(i => i.Native).ToArray());
+        }
         internal (JsonObject Decision,string[] Actions) Project(Player player,GenericEventV7Child child,GenericEventV7RewardRead read,GenericEventCompoundRewards owner)
         {
             _state.Player=player;

@@ -52,6 +52,7 @@ namespace Sts2AgentBridge.Successors.GenericEventV7.Native
     internal sealed class GenericEventCompoundRewards:IGenericFullRewardSession { internal GenericEventCompoundRewards(GenericEventV7Binding binding, object set) {} }
     internal sealed class PinnedGenericEventV7NativeAdapter : IGenericEventV7NativeAdapter
     {
+        internal bool FullCardGrid = false;
         internal Func<GenericEventV7Binding, object, IGenericFullRewardSession>? FullRewardsFactory;
         internal readonly List<GenericEventV7NativeOption> Options = new();
         internal readonly Dictionary<object, EventOption> Displayed = new();
@@ -149,6 +150,7 @@ internal static partial class Program
             Check(projected == (description == "present" ? text!.Text : null), "only existing descriptions are formatted");
             Check(text?.Formats == (description == "present" ? 1 : 0) || text is null, "missing localization is never formatted");
             Check(model.Title.Formats == 1 && router.EventAdapter.Inputs == 0, "title preserved and projection is read-only");
+            Check(router.EventAdapter.FullCardGrid, "full producer enables model-domain grid before event dispatch");
             var counts = router.EventSession!.Read();
             Check(counts.ParentAttempted == 0 && counts.ParentAccepted == 0 && counts.ParentReconciled == 0 && counts.TotalAttempted == 0, "ready projection preserves 0/0/0 accounting");
             router.EventWire!.Dispose();

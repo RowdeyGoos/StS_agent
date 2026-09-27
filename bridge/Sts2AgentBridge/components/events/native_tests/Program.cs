@@ -341,6 +341,7 @@ internal static partial class Program
     static void Check(bool okay,string name){_checks++;if(!okay)throw new Exception(name);}
     static void Main(string[] args)
     {
+        if(args.SequenceEqual(new[]{"--card-grid"})){GridCardCases();Console.WriteLine("event card-grid checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--automatic-removal"})){AutomaticRemovalTests();Console.WriteLine("automatic removal checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--abandon-popup"})){AbandonPopupCases();Console.WriteLine("abandon popup checks: "+_checks);return;}
         if(args.SequenceEqual(new[]{"--sphere"})){SphereCases();Console.WriteLine("sphere checks: "+_checks);return;}
@@ -512,7 +513,7 @@ internal static partial class Program
         ShopEffectCases();
         FullRewardCases();
 #endif
-        ItemSetTests();EventCapacityCases(); ItemPolicyCases();MerchantScreenCases();ShopPotionOwnershipCases();ShopRelicCases();ShopPickupCases();MerchantFightCases();ShopRemovalCases();SphereCases();AbandonPopupCases();TerminalCases();
+        GridCardCases();ItemSetTests();EventCapacityCases(); ItemPolicyCases();MerchantScreenCases();ShopPotionOwnershipCases();ShopRelicCases();ShopPickupCases();MerchantFightCases();ShopRemovalCases();SphereCases();AbandonPopupCases();TerminalCases();
         AutomaticRemovalTests();CardRewardTests();
         CardRewardSetTests();
         CombatHandoffCases();OwnershipDiagnosticCases();

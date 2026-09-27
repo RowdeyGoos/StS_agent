@@ -172,7 +172,7 @@ extend standalone rest/shop contracts.
 | Direct offered card | Required `card_offer_v1`; optional v2 choice/Skip with zero/one observed appended grant | Lead Paperweight and Hefty Tablet choice/Skip demonstrated. Required-choice v1 is fixture-only capability with no identified native caller; not a pending gameplay test |
 | Card bundle | 1–5 bundles of 1–8 cards, original preview and Confirm | Scroll Boxes three-card bundle demonstrated; other variants offline only |
 | Results acknowledgment | Confirm 1–64 displayed results while preserving the post-show deck | Pandora’s Box nine-result screen demonstrated; preceding automatic transformations are not certified |
-| Ancient dialogue/options | Native ancient layout, bounded dialogue and supported pickup children | Console-selected routes demonstrated. Natural entry/dialogue and normal Darv pool eligibility remain open |
+| Ancient dialogue/options | Native ancient layout, bounded dialogue and supported pickup children | Console-selected routes and natural Nonupeipe entry in the shared Act-3 continuation demonstrated; other natural routes and normal Darv pool eligibility retain separate limits |
 
 ### Item rewards, combat events and custom screens
 
@@ -240,7 +240,9 @@ extend standalone rest/shop contracts.
   pass. The saved-run retest passed **7/7/7** on a publicly verified **32-card**
   deck: public deck positions 0/31, deselection/reselection, exact Blood Wall+/Stomp
   removal, +9 HP/max HP and map return. No exact live allocation count was sampled.
-  Generic event selectors retain their allocated-holder boundary.
+  Full-producer single upgrade/enchant event selectors now use `card_grid_v1` in
+  source with up to 128 public originals; corrected Symbiote live acceptance is
+  pending. Other generic selectors retain their allocated-holder boundary.
   [Retest](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#large-deck-cook-retest-passed-2026-09-27) and
   [original failure](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#shared-v2-neow-recovery-and-large-deck-cook-stop-2026-09-26).
   Optional zero confirmation is contract-specific and is not native cancellation.
@@ -396,7 +398,7 @@ These are **not an implementation queue or required live-test checklist**:
   different campaign seed: recreating Trial in the current campaign repeats
   Nondescript. It remains untested. Held-out
   enchant/removal/transform callers such as Torus retain separate evidence limits.
-- Natural ancient entry/dialogue.
+- Other natural ancient entry/dialogue routes beyond the demonstrated Nonupeipe continuation.
 - Broader reward orders/outcomes with a concrete offered screen, Sphere earned
   relics, and Fake Merchant zero/six-purchase variants. Sphere small/big tools,
   six exact reveals and earned gold/card/potions passed through the shared producer
@@ -422,19 +424,20 @@ Independent review cleared the correction. The final gate passed **85 groups in
 360.645 seconds**, including 168 client tests, 1,642 router checks, 284 campaign
 checks and 16,982 native event checks. All 102 bound Python files are unchanged.
 
-The corrected saved continuation passed floor-81 combat, rewards and map travel
-at **10/10/10**, with no pending work. The next rest stopped before any option
-input with `read_native_rest_clone_capacity`: the 94-card deck's next Clone would
-exceed the declared 128-card inventory. This also demonstrated preserving a
-verified map receipt across a later native read failure. It does not establish
-the shared-v2 ending.
+The subsequent saved continuation removed Pael's Growth and refreshed the rest
+before policy attachment, then passed the rest, Act-2 boss, natural Nonupeipe
+entry and several Act-3 rooms. Symbiote's Approach opened a Corrupted card selector
+and stopped at **84/81/80**, one pending action. The deck contained 105 cards;
+the exact eligible count and failed preparation predicate were not captured.
+No selector input occurred. Normal quit and exact cleanup passed by **11:11:57
+UTC**, leaving zero overlays and all 429 base files unchanged. The game is closed.
 
-Normal quit and exact cleanup passed by **10:56:07 UTC**. The same accepted
-package was reinstalled and checked by **10:57:23 UTC**: two exact overlays and
-all 429 base files unchanged. The game is stopped for manual Profile 3 launch.
-Before the next policy attachment, the controlled setup will remove Pael's Growth
-and refresh the rest options; no fresh campaign is needed. Thirty-three disposable
-helper cases passed. [Live result](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#floor-81-recovery-and-settled-clone-capacity-stop-2026-09-27).
+The source correction adds full-producer-only `card_grid_v1` for single upgrade/
+enchant selectors, complete model-domain projection and bounded native scrolling
+within 128 cards. Exact selected-only effects and closure remain required;
+legacy selectors keep their original bounds. Focused checks and independent
+review passed; the corrected release and live retest are pending. The shared-v2
+ending remains open. [Latest result](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#act-3-continuation-and-symbiote-grid-stop-2026-09-27).
 
 The preceding package passed the saved-run rest cycle at **14/14/14**, with Clone
 expanding the deck to 86 and a verified map return. Its next shop completed,

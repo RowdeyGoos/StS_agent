@@ -551,11 +551,12 @@ private. Revealed Sphere cells retain their visible rarity/gold-size variant.
 | Rewards | `reward_v3`: existing 32-row terminal rewards plus visible native reroll/sacrifice controls, exact card/item/special-card claims, and certified automatic relic pickup effects | Arbitrary nested relic pickups and multiple independent selectors remain outside the certified effect families |
 | Rest | `rest_v4`: native options, Smith/Cook toggles/confirmation/cancel, Heal rewards with shared reward alternatives, and separately reconciled Leave; supported pickup choices use `relic_choice` | 128 starting-deck cards and selector originals; Clone's predicted result must fit 128 before any input. Legacy v2/v3 retain 64 starting cards. Other reward/pickup bounds remain; no multiplayer Mend |
 | Shop | `shop_v8`: Open/Close/Leave, stock/prices, purchases, removal confirmation/cancel, existing pickup selectors, certified automatic relic effects, and Cauldron/Orrery reward decisions | Eight purchases per visit; arbitrary pickup callbacks remain unsupported. Every nested reward receipt precedes the purchase receipt |
-| Events/Ancients | Existing children plus `full_rewards_v1` shared rewards and a Neow’s Bones `full_rewards_v2` compound child: nested reward sets, offers/bundles, deck choices, observed pickup effects, nested Sacrifice and the final curse; combat and owned item resumption | Eight rows per reward set, at most five compound sets and 40 child inputs within the 52-total-action event budget. Arbitrary nested pickup/selector callbacks remain unsupported. Controlled Large Capsule/Lost Coffer, nested Sacrifice and final curse passed through map return at 7/7/7; other compound branches remain fixture evidence |
+| Events/Ancients | Existing children, full-producer single upgrade/enchant `card_grid_v1`, plus `full_rewards_v1` shared rewards and a Neow’s Bones `full_rewards_v2` compound child: nested reward sets, offers/bundles, deck choices, observed pickup effects, nested Sacrifice and the final curse; combat and owned item resumption | Eight rows per reward set, at most five compound sets and 40 child inputs within the 52-total-action event budget. Arbitrary nested pickup/selector callbacks remain unsupported. Controlled Large Capsule/Lost Coffer, nested Sacrifice and final curse passed through map return at 7/7/7; other compound branches remain fixture evidence |
 | Treasure/ending | `campaign_v3`: native chest Open, offered relic Claim or Skip, separate Proceed, and certified empty-chest completion; existing act/Architect continuation | Native Open/award/picking tasks must finish before handoff. Chest claiming and Silver Crucible’s empty-chest Open/Proceed are live demonstrated; broader pickup effects and the v2 ending need live validation |
 
-The shared deck-choice driver used by shop, rest and compound pickups retains
-its full eligible domain (128 originals for full rest, 64 for other callers) independently of native grid
+The shared deck-choice driver used by shop, rest, compound pickups and full event
+card grids retains its full eligible domain (128 originals for full rest and event
+`card_grid_v1`, 64 for other callers) independently of native grid
 allocation. Only an explicit selection/deselection request can navigate toward an
 unallocated original. It pins display order and the holder/card-node/hitbox pool,
 permits recycling only under that pending navigation, validates the complete
@@ -569,7 +570,19 @@ navigation toward the same requested original; it is never a selection receipt.
 The released correction passed a 32-card Cook retest: public deck positions 0/31,
 deselection/reselection, exact removal and map return at 7/7/7. Exact live holder
 allocation and frame timing were not sampled; larger bounds retain fixture
-evidence. Separate generic-event selector adapters keep their existing scope.
+evidence. Full-producer single upgrade/enchant event selectors use `card_grid_v1`:
+2–128 eligible originals in a deck of at most 128, exactly one `select:<slot>`
+followed by `confirm`, and no deselect/cancel. Slots refer to the immutable public
+model domain, including currently unallocated cards; the child field `visible`
+means membership of that public domain, not a rendered holder. The shared graph
+uses the existing `choose_event_card` and `confirm_selection` actions and exposes
+the pending enchantment as `modifier`/`amount`. Exact original preview, selected-only
+effect, unchanged ordered survivors, successful request/parent callbacks and a
+closed owned selector are required before completion. Decisions bind parent
+lineage, operation, effect and selection. Reads/actions remain bounded and failures
+never permit replay or clean handoff. Other generic-event selectors retain their
+legacy allocated-holder and 64-candidate limits. Symbiote is the identified live
+caller; corrected live acceptance remains pending.
 
 The Neow compound child retains exact native offer, collection, pickup and
 card-command tasks under one event owner. `full_rewards_v2` adds `card_offer`,

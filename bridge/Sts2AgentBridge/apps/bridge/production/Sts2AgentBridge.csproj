@@ -60,6 +60,7 @@
     <Compile Include="../native/FullNativeCoreProjection.cs" />
     <Compile Include="../native/FullNativeEvents.cs" />
     <Compile Include="../native/FullNativeCompoundRewards.cs" />
+    <Compile Include="../native/FullNativeEventGrid.cs" />
     <Compile Include="../native/FullNativeRestLeave.cs" />
     <Compile Include="../native/FullNativeShop.cs" />
     <Compile Include="../native/AgentPublicReader.cs" />
@@ -85,6 +86,7 @@
     <Compile Include="../../../components/cards/wire/CardSelectionV1WireService.cs" />
     <Compile Include="../../../components/events/core/GenericEventV5ChildSession.cs" />
     <Compile Include="../../../components/events/core/GenericEventV7ChildSession.cs" />
+    <Compile Include="../../../components/events/core/GenericEventV7GridSession.cs" />
     <Compile Include="../../../components/events/core/GenericEventV7Contracts.cs" />
     <Compile Include="../../../components/events/core/GenericEventV7ItemChildSession.cs" />
     <Compile Include="../../../components/events/core/GenericEventV7CardRewardSession.cs" />
@@ -105,6 +107,7 @@
     <Compile Include="../../../components/events/native/GenericEventV7Binding.cs" />
     <Compile Include="../../../components/events/native/GenericEventV7CombatHandoff.cs" />
     <Compile Include="../../../components/events/native/GenericEventV7CardAdapter.cs" />
+    <Compile Include="../../../components/events/native/GenericEventV7GridCardAdapter.cs" />
     <Compile Include="../../../components/events/native/GenericEventV7Hooks.cs" />
     <Compile Include="../../../components/events/native/GenericEventV7ItemAdapter.cs" />
     <Compile Include="../../../components/events/native/GenericEventV7CardRewardAdapter.cs" />

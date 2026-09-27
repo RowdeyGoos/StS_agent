@@ -72,6 +72,20 @@ internal sealed class FullReadFailure : Exception
             GenericEventDiagnosticCode.ParentUnavailable or GenericEventDiagnosticCode.ParentWaiting or
             GenericEventDiagnosticCode.ParentMap or GenericEventDiagnosticCode.ParentOverlay or
             GenericEventDiagnosticCode.ParentLayout or GenericEventDiagnosticCode.ParentTravel or
+            GenericEventDiagnosticCode.PrepareBinding or
+            GenericEventDiagnosticCode.PrepareScreen or
+            GenericEventDiagnosticCode.PrepareExternalSelector or
+            GenericEventDiagnosticCode.PrepareDeck or
+            GenericEventDiagnosticCode.PrepareForeground or
+            GenericEventDiagnosticCode.PrepareFamily or
+            GenericEventDiagnosticCode.PrepareGridNode or
+            GenericEventDiagnosticCode.PrepareGridState or
+            GenericEventDiagnosticCode.PrepareHolders or
+            GenericEventDiagnosticCode.PrepareCandidates or
+            GenericEventDiagnosticCode.PrepareGeometry or
+            GenericEventDiagnosticCode.PreparePreviewNodes or
+            GenericEventDiagnosticCode.PreparePreviewState or
+            GenericEventDiagnosticCode.PrepareConfirm or
             GenericEventDiagnosticCode.ChildReady or GenericEventDiagnosticCode.MapReady or
             GenericEventDiagnosticCode.CaptureDisposed or GenericEventDiagnosticCode.CaptureException or
             GenericEventDiagnosticCode.PendingBindingFailed or GenericEventDiagnosticCode.PendingOwnership or

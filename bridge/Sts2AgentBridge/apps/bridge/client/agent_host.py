@@ -36,6 +36,8 @@ FULL_FAILURE_CODES = frozenset({
         'none', 'parent_ready', 'parent_unavailable', 'parent_waiting', 'parent_map',
         'parent_overlay', 'parent_layout', 'parent_travel', 'child_ready', 'map_ready',
         'capture_disposed', 'capture_exception', 'diagnostic_unavailable',
+        'prepare_binding', 'prepare_screen', 'prepare_external_selector', 'prepare_deck', 'prepare_foreground', 'prepare_family', 'prepare_grid_node',
+        'prepare_grid_state', 'prepare_holders', 'prepare_candidates', 'prepare_geometry', 'prepare_preview_nodes', 'prepare_preview_state', 'prepare_confirm',
         'pending_binding_failed', 'pending_ownership', 'pending_context', 'pending_task_failed',
         'pending_chosen_entry', 'pending_chosen_task', 'pending_chosen_completion',
         'pending_request_task', 'pending_screen', 'pending_selectorless_request',
