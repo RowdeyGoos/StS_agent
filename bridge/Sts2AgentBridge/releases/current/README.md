@@ -1,12 +1,10 @@
 # Current unified release
 
-This release fixes shared deck selectors that waited indefinitely when a large
-deck had fewer allocated native controls than eligible cards. The full candidate
-domain stays available; only an explicit selection navigates toward an original.
-The driver validates the retained control pool and selected set, finishes native
-allocation after slow frames, and stops scrolling before exact one-shot input.
-Shared shop, rest and compound pickups use this driver. The separate generic-event
-selector adapters keep their existing bounds.
+This release fixes rest-site handoffs after deck growth. Full-profile rest entry
+and selectors now support the existing 128-card public inventory bound; legacy
+routes retain 64. Clone's predicted result is checked before input. Verified
+rest/shop receipts reach the client before a successor read can fail. Shared
+selectors also handle native allocation cycling under the same bounded pan.
 
 [Current status](../../../../docs/STATUS.md#release-and-latest-evidence) owns support;
 [bridge usage](../../README.md#client-modes) owns commands.
@@ -16,45 +14,35 @@ selector adapters keep their existing bounds.
 | [bridge.json](bridge.json) | Exact source/test, toolchain, reference, binary and package identities |
 | [validation.json](validation.json) | Release checks, review, installation and separately bound live evidence |
 
-Manifest SHA-256: `fed09e937f44d54c52064b0a9c0adc09a03bcfd7ca21bbd3a805277b4151da37`.
-It binds **485 inputs across 52 projects**, source and feature `327e7da`.
-DLL: **1,800,704 bytes**, SHA-256
-`e90607c18b127d3299f67b5ab1ba7b0039f35ab237d33338a56c7762cc7a3bbd`.
+Manifest SHA-256: `da706c27c151f0e8e1d286a1f16dc48a0770ec17f04e69598b677979f944b3dd`.
+It binds **485 inputs across 52 projects**, feature/source `1f74e08` plus the
+checker-generated package identity. DLL: **1,802,240 bytes**, SHA-256
+`3d1a78ac7a3e166372bc1f45d109d7c00ce73edecfeb720f1327e73846c165dd`.
 
-The final gate passed **85 groups in 369.018 seconds**, including reproducible
-builds, native metadata/dependency checks, packaging and disposable cleanup.
-It includes **168 client tests**, **1,639 router checks**, **229 event wire cases**,
-**16,972 native event checks**, **656 rest checks**, **21 shop core checks**,
-**252 campaign checks** and **179 potion checks**. Focused virtualized-deck
-regressions passed **946 checks in 4.260 seconds**. Independent source review
-found the slow-frame allocation edge, then cleared its correction (**429 seconds**
-across three reviews). All 102 bound Python files match the preceding release;
-prior broad Python delivery evidence remains separate and unchanged.
+The final gate passed **85 groups in 356.419 seconds**, including reproducible
+builds, metadata/dependency checks, packaging and disposable cleanup. It includes
+**168 client tests**, **1,642 router checks**, **694 rest checks** and **16,982
+native event checks**. The final focused pickup run passed **956 checks in 4.239
+seconds**. Independent source reviews took **513 seconds** across diagnosis,
+implementation and the allocation-cycle correction. The only changed bound
+Python file is the tested agent failure-code consumer; the other 101 are unchanged.
+These are fixture/build results, not live large-rest acceptance.
 
-The preceding [shared-v2 route](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#shared-v2-neow-recovery-and-large-deck-cook-stop-2026-09-26)
-recovered Neow's Small Capsule reward and map return, then completed four fights
-and Slippery Bridge. Cook's 33-card selector waited with **51 attempted / 51
-accepted / 50 reconciled** and pending work. No manual gameplay intervention or
-mutation retry followed attachment. Normal Quit and exact cleanup passed by
-**17:39:16 UTC**, leaving zero overlays and all 429 base files unchanged. Neither
-this nor the earlier 2/1/0 uncertain reward attempt is reconciled by cleanup.
+Installation, exact overlay/base verification and installed metadata checks passed
+by **2026-09-27 10:16:59 UTC**. Two exact overlay files are installed; all 429 base
+files are unchanged. Installed state:
+`13420352011a5c163e0559333bb4a02a01da87d6d9648f934e879ed9f5f31aa8`.
+The game remains stopped for manual Profile 3 launch. The first test continues
+the saved Act 2 rest site, takes Proceed once and verifies unchanged inventory,
+map return and settled counts. It does not retry the preceding unresolved action.
+The existing disposable helpers passed **21 offline cases**. Continued ending
+acceptance will be reported separately from a complete three-act campaign.
 
-The corrected package was installed and verified by **18:11:04 UTC** on
-2026-09-26, with two exact overlay files and all 429 base files unchanged.
-Installed state:
-`279151f568527c80cdd9f860dee982da7fa90000761f9858c34ce06c576602ca`.
-The saved Cook selection/preview/removal retest passed **7/7/7** on 2026-09-27,
-with exact Blood Wall+/Stomp removal from a publicly verified 32-card deck.
-The unchanged shared policy then crossed into Act 2 and stopped at an 86-card
-rest site: **236/234/233**, one pending action. The final action was not retained;
-source inspection found a 64/128-card rest boundary conflict and a successor
-read that could withhold an already verified receipt. No mutation was retried.
-Normal quit and exact cleanup passed by **09:49:02 UTC**, with four generated
-files purged, zero overlays and all 429 base files unchanged. No completed
-campaign is claimed, and cleanup does not reconcile the pending action.
-The disposable retest and continuation helpers passed eleven offline cases.
-
-The preceding release's exact record remains in Git `327e7da` and
-`/private/tmp/sts-bridge-0ceoerz0/previous-release-record`; its package inputs are
-under `previous-install-inputs` alongside it. Prior successful and failed live
-cases retain their original manifest/source identities in the dated ledger.
+The preceding package passed [large Cook at 7/7/7](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#large-deck-cook-retest-passed-2026-09-27)
+on a public 32-card deck. Its unchanged-policy route reached Act 2, then stopped
+at an 86-card rest at **236/234/233**, one pending action. The final action was
+not logged; Clone is a source-consistent explanation, not an observed action.
+Normal quit and exact cleanup passed by **09:49:02 UTC**. Cleanup does not reconcile
+that attempt. Its full original record is retained in Git `1f74e08`, with exact
+package inputs in `/private/tmp/sts-bridge-gi4ihmno/previous-install-inputs`.
+All prior live results retain their original artifact identities in the ledger.

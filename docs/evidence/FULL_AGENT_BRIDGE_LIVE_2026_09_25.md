@@ -1752,3 +1752,31 @@ Independent source review ran **09:50:33–09:56:27 UTC** (diagnosis/design),
 bottom issue; its correction was author-verified by the passing focused check.
 Implementation, review and checks overlapped; exclusive implementation, live
 controller, release preparation and user-wait durations were not measured.
+
+The stable correction was committed as `1f74e08`. Its final combined release
+gate passed **85 groups in 356.419 seconds**, including 16,982 native event
+checks, 694 rest checks, 1,642 router checks and 168 client tests. Evidence root:
+`/private/tmp/sts-bridge-gi4ihmno`. Corrected manifest:
+`da706c27c151f0e8e1d286a1f16dc48a0770ec17f04e69598b677979f944b3dd`.
+DLL: **1,802,240 bytes**, SHA-256
+`3d1a78ac7a3e166372bc1f45d109d7c00ce73edecfeb720f1327e73846c165dd`.
+Only the bound Python failure-code consumer changed; it passed client/integration
+coverage. No new broad headless-suite run is claimed.
+
+The preceding three package inputs were checked against their original manifest
+and preserved under this root's `previous-install-inputs`; Git `1f74e08` retains
+the preceding release record and complete live/cleanup summary. Publish and
+stopped-game installation passed. Exact overlay/base and installed native metadata
+checks passed by **10:16:59 UTC**, under state
+`13420352011a5c163e0559333bb4a02a01da87d6d9648f934e879ed9f5f31aa8`.
+Two exact overlay files are installed and all 429 base files are unchanged.
+An unnecessary post-install base-only invocation rejected the expected overlay;
+the correct overlay mode verified it and every base file. That check made no
+mutation. The game remains stopped for manual Profile 3 launch.
+
+The disposable recovery helper will accept only a fresh settled large rest with
+native Proceed, leave once and verify exact inventory/map return at 1/1/1.
+Continuation can start in Act 2 or 3 and keeps that scope separate from full
+three-act acceptance; it retains one bounded final-action summary for failures.
+Six Cook, eight continuation and seven large-rest-exit offline cases passed.
+These helper results do not establish live recovery on the corrected artifact.
