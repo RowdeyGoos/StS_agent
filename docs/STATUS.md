@@ -240,8 +240,8 @@ extend standalone rest/shop contracts.
   pass. The saved-run retest passed **7/7/7** on a publicly verified **32-card**
   deck: public deck positions 0/31, deselection/reselection, exact Blood Wall+/Stomp
   removal, +9 HP/max HP and map return. No exact live allocation count was sampled.
-  Full-producer single upgrade/enchant event selectors now use `card_grid_v1` in
-  source with up to 128 public originals; corrected Symbiote live acceptance is
+  Full-producer single upgrade/enchant event selectors use released `card_grid_v1`
+  with up to 128 public originals; corrected Symbiote live acceptance is
   pending. Other generic selectors retain their allocated-holder boundary.
   [Retest](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#large-deck-cook-retest-passed-2026-09-27) and
   [original failure](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#shared-v2-neow-recovery-and-large-deck-cook-stop-2026-09-26).
@@ -414,32 +414,33 @@ supplies dated source candidates rather than a current implementation checklist.
 ## Release and latest evidence
 
 The current [release manifest](../bridge/Sts2AgentBridge/releases/current/bridge.json)
-is **`418330cff79f95d517596c27929ac84a3440693d0aed716da0de563cdda97149`**.
-It binds 485 inputs across 52 projects, feature/source `2fbb99a` and the generated
-package identity. Full navigation accepts nonnegative native floor progress;
-legacy campaign_v2 retains its 0–80 range. Certified completions survive later
-read/projection failures, while malformed completions and unverified parents
-remain unresolved. Existing execution budgets and cleanup rules remain intact.
-Independent review cleared the correction. The final gate passed **85 groups in
-360.645 seconds**, including 168 client tests, 1,642 router checks, 284 campaign
-checks and 16,982 native event checks. All 102 bound Python files are unchanged.
+is **`c78ae051419d0b5db6c3693530f47577fa929b439fb43c34acf2124215d85971`**.
+It binds 489 inputs across 52 projects, feature `2246d40`, source
+`b5f6f09` and the generated package identity. Full-producer `card_grid_v1`
+provides single upgrade/enchant events with 2–128 eligible originals independent
+of holder allocation, using existing bounded native scrolling. Exact preview,
+selected-only effect, unchanged survivors, successful owned callbacks and closed
+selector remain required. The shared graph includes the pending enchantment.
+Legacy selectors retain their bounds. Closed preparation diagnostics survive the
+shared client. Independent review cleared the correction; the final gate passed
+**85 groups in 461.83 seconds**, including 168 client tests, 1,719 router
+checks and 17,151 native event checks. Only the bridge client diagnostic
+allowlist and test-runner/timeout regression changed among 102 bound Python
+inputs; game.agent sources are unchanged.
 
-The subsequent saved continuation removed Pael's Growth and refreshed the rest
+The preceding saved continuation removed Pael's Growth and refreshed the rest
 before policy attachment, then passed the rest, Act-2 boss, natural Nonupeipe
 entry and several Act-3 rooms. Symbiote's Approach opened a Corrupted card selector
-and stopped at **84/81/80**, one pending action. The deck contained 105 cards;
-the exact eligible count and failed preparation predicate were not captured.
+and stopped at **84/81/80**, one pending action. The screenshot showed 105 deck
+cards; the eligible count and exact failed preparation predicate were not captured.
 No selector input occurred. Normal quit and exact cleanup passed by **11:11:57
-UTC**, leaving zero overlays and all 429 base files unchanged. The game is closed.
+UTC**, leaving zero overlays and all 429 base files unchanged. Corrected live
+acceptance and the shared-v2 ending remain open. The corrected package is
+installed and verified by **12:17:58 UTC**, with both exact overlays and all 429
+base files unchanged. The game is stopped, awaiting manual Profile 3 launch.
+[Latest result](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#act-3-continuation-and-symbiote-grid-stop-2026-09-27).
 
-The source correction adds full-producer-only `card_grid_v1` for single upgrade/
-enchant selectors, complete model-domain projection and bounded native scrolling
-within 128 cards. Exact selected-only effects and closure remain required;
-legacy selectors keep their original bounds. Focused checks and independent
-review passed; the corrected release and live retest are pending. The shared-v2
-ending remains open. [Latest result](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#act-3-continuation-and-symbiote-grid-stop-2026-09-27).
-
-The preceding package passed the saved-run rest cycle at **14/14/14**, with Clone
+An earlier package passed the saved-run rest cycle at **14/14/14**, with Clone
 expanding the deck to 86 and a verified map return. Its next shop completed,
 then floor-81 navigation stopped at **27/27/26**, one pending action. Normal quit
 and exact cleanup passed by **10:31:01 UTC**; original counts and artifact identity

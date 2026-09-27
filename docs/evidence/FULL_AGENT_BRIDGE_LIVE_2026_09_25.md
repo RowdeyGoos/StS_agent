@@ -2058,3 +2058,33 @@ The runner still kills the entire process group on timeout and cannot publish a
 release after failure. A focused runner regression checks exact suite selection,
 both deadline values and failure/cleanup after expiry. This changes validation
 scheduling only; production source and all live deadlines remain unchanged.
+
+A subsequent release attempt at `/private/tmp/sts-bridge-b3a1a0hq` stopped inside
+Roslyn while compiling the unchanged combat-choice fixture: an internal
+`MissingMethodException` terminated the compiler. The exact selected fixture
+rebuilt and passed in a fresh isolated output at `/private/tmp/sts-bridge-wxoofz28`
+(**three groups, 1.75 seconds**) without source, SDK or settings changes. This
+narrow rerun did not reproduce the compiler failure; the failed release remains
+failed and does not supply release acceptance.
+
+The feature was committed as `2246d40`, assembly linkage as `e0fe148`, and the
+bounded test allowance/progress markers as `b5f6f09`. The final release gate passed
+**85 groups in 461.83 seconds**
+at `/private/tmp/sts-bridge-8_yq9i3_`, including **168 client tests**, **1,719 router
+checks**, **284 campaign checks** and **17,151 native event checks**.
+Accepted manifest: `c78ae051419d0b5db6c3693530f47577fa929b439fb43c34acf2124215d85971`.
+DLL: **1,819,648 bytes**, SHA-256
+`66ca1e3dcb4fa4de9b509e8e8dbce45e00c27efd3f20ae466c352443aaadf59a`.
+Of 102 bound Python files, only the bridge client's closed
+diagnostic allowlist, test runner and its timeout regression changed; all shared
+game.agent files are unchanged. No new broad headless run is claimed. Corrected
+live behavior remains unverified.
+
+The corrected release passed by **12:16:44 UTC**. Its package was published after
+verifying and retaining the preceding three install-input files. A fresh stopped
+process/listener check preceded installation. Exact overlay/base and installed
+metadata verification passed by **12:17:58 UTC**, under installed state
+`f98b4d04bc9f49be87e6761f9f9fd6e8d14c1d71627fac7c42c0569f50a1223b`.
+Both owned overlays are installed and all 429 base files retain the recorded
+base digest. The game is stopped for manual Profile 3 launch and the saved
+Symbiote retest; corrected native behavior is not yet live demonstrated.
