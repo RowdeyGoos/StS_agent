@@ -32,10 +32,16 @@ The exact bundle, selected Strike removal, Regret addition and unchanged unrelat
 inventory were verified through map return. This is a seeded Custom-mode case
 with no gameplay modifiers and console setup before attachment.
 
-Normal quit, exact owned cleanup and base verification passed by **14:10:28 UTC**:
-four generated files removed, zero overlays and all **429** base files unchanged.
-Other compound branches and capacity-first rewards remain separate live cases.
+The subsequent [offer/upgrade case](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-lead-paperweight-and-pomander-passed)
+passed **7/7/7**, with 60 controller reads and nothing pending: The Bomb was added,
+the exact selected Strike upgraded, Guilty added and the map restored. Other
+originals, HP, gold and potions were unchanged.
 
-The same accepted package is reinstalled and checked by **14:12:55 UTC** for
-Neow's optional offer plus upgrade case: two owned overlays and unchanged base
-files. The game awaits the user's manual launch on Profile 3.
+The subsequent [full-belt Phial Holster case](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-phial-holster-pickup-stopped)
+stopped during pickup at **6/5/4**, 48 reads and one pending action. The two removals,
+HP loss and one potion addition were visible; the final curse/map return did not
+complete. No retry occurred. Correction and a fresh controlled retest are required.
+Latest normal quit, exact owned cleanup and base verification passed by
+**14:32:26 UTC**: four generated files removed, installation absent, zero overlays
+and all **429** base files unchanged. Other compound branches and capacity-first
+rewards remain separate live cases.

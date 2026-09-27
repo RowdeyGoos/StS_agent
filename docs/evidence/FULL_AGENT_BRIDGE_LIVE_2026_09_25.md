@@ -2354,3 +2354,87 @@ with state `970bb7b18cf1b76185fa8214228bf5f40c8d15a14319d9839fa292b561cea596`.
 Exact overlay and installed metadata checks passed by **14:12:55 UTC**: two owned
 overlays and all 429 base files unchanged. A manual Profile 3 launch was requested.
 This new installation is separate from the successful case and cleanup above.
+
+
+### Neow Lead Paperweight and Pomander passed
+
+The user manually launched Profile 3 with the same accepted manifest
+`14772d59c22d9d630bc71780c3871fedd95331e9c6797267a5fe0acd5ab0582a`, source
+`988f2b5286add8d669538ccdb71912c8e9b1b660`, installed state
+`970bb7b18cf1b76185fa8214228bf5f40c8d15a14319d9839fa292b561cea596`.
+Fresh running-state, exact owned-package, authenticated health and compatibility
+checks passed. Native controls abandoned the completed disposable TEST614 run
+and started a fresh Ironclad A0 Custom campaign with canonical seed `TEST407`
+and no gameplay modifiers. The console prepared Neow's Bones before attachment.
+No manual gameplay input occurred after the policy began.
+
+The policy selected Bones, claimed Lead Paperweight, chose its card, claimed
+Pomander, selected and confirmed one upgrade, then left Neow. The unchanged
+shared chooser handled the children after the test selected the advertised Bones
+option. All **7 attempted / 7 accepted / 7 reconciled** actions completed:
+seven decisions, **60 controller reads**, zero stale rejections and nothing pending.
+One separate public verification read confirmed **7/7/7**, the actionable map and
+`truncated/external_stop`; the native map was visually confirmed by
+**14:20:19 UTC on 2026-09-27**.
+
+Lead Paperweight added **The Bomb**, Pomander upgraded the exact selected original
+**Strike** by one level, and Neow's final curse was **Guilty**. The deck grew
+from ten to twelve cards. Every other original was unchanged; HP stayed 80/80,
+gold stayed 99 and the three empty potion slots were unchanged. The relic order
+was Burning Blood, Bones, Lead Paperweight and Pomander. This establishes the
+controlled compound optional-offer and upgrade path, not Skip, all Neow outcomes
+or arbitrary campaign modes. No profile/save/history/Cloud filesystem access or
+retained live corpus occurred. Controller and user-wait durations were not
+separately measured.
+
+Normal Save and Quit, then app Quit, completed. Fresh stopped-process and
+closed-listener checks passed before quarantine. Installed state `970bb7b1…`
+became quarantine state
+`39948aa66ed11ce50221769bc6453385dbab2ca3d29b8b6200079bce446fc4d4`.
+Exact purge removed four owned files. Base verification passed by **14:21:36 UTC**:
+zero overlays, all 429 base files unchanged, aggregate
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+
+The same package was reinstalled for the next Precarious Shears/Phial Holster
+full-belt case, with state
+`46e49ca12317201cc14f80c579f7edb6d967a3471a7305f97bce417b92b1e27c`.
+Exact overlays, installed metadata and compatibility checked by **14:23:57 UTC**:
+two owned overlay files and all 429 base files unchanged. A manual Profile 3
+launch was requested. This preparation is separate from the completed case above.
+
+
+### Neow Phial Holster pickup stopped
+
+The user manually launched Profile 3 on manifest `14772d59…`, source `988f2b5`,
+installed state
+`46e49ca12317201cc14f80c579f7edb6d967a3471a7305f97bce417b92b1e27c`.
+Fresh running-state, source/installation identity, authenticated health and
+compatibility checks passed. Native controls started a fresh Ironclad A0 Custom
+campaign, seed `TEST91`, without modifiers. Before attachment, the console added
+Fire, Strength and Block potions in that order and prepared Neow's Bones.
+The helper verified the clean 80/80 HP, 99 gold, ten-card/Burning Blood start
+and all three filled potion slots before its first action.
+
+Bones generated Precarious Shears and Phial Holster. The controller selected and
+confirmed Shears' two removals, then stopped during the Holster claim with
+`uncertain_dispatch`: **6 attempted / 5 accepted / 4 reconciled**, five completed
+decisions, **48 controller reads**, zero stale rejections and one pending action.
+The six policy calls include the unaccepted Holster attempt. No further input
+was dispatched and no uncertain mutation was retried or adopted.
+
+Visual inspection showed **64/80 HP**, 99 gold, **eight cards**, the three original
+potions plus a fourth potion, and the Holster relic. Its reward row remained
+visible; the final curse and map return had not completed. These are observations
+of partial effects, not acceptance of Holster or the enclosing Neow chain.
+The coarse failure does not identify the rejected native predicate. A correction
+and a fresh controlled retest remain required. No live corpus or private
+profile/save/history/Cloud filesystem access occurred.
+
+Normal Save and Quit and app Quit completed. Fresh stopped-process/closed-listener
+checks passed, followed by exact quarantine to
+`8a455a38657d24aae83216c5c46cb5e0069c03bac4d3e5781ad9cf3a8b6cfbc3`
+and purge of four owned files. Base verification passed by **14:32:26 UTC**:
+zero overlays, all 429 base files unchanged, aggregate
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Cleanup does not reconcile the failed action. Separate controller and user-wait
+elapsed durations were not measured.

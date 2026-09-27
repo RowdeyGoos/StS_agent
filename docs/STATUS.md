@@ -12,14 +12,16 @@ Quick navigation: [supported interactions](#supported-interactions) ·
 [missing features versus remaining tests](#implementation-gaps-versus-remaining-live-tests) ·
 [release and evidence](#release-and-latest-evidence).
 
-The corrected [Neow bundle/removal case](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-scroll-boxes-and-precise-scissors-passed)
-passed **8/8/8**: Scroll Boxes' three-card bundle, Precise Scissors' exact Strike
-removal, final Regret and settled map return. Other originals, HP, gold and potions
-stayed unchanged. This used seeded Custom Mode with no modifiers and console
-setup before attachment. Cleanup passed at **14:10:28 UTC**. The same package
-was reinstalled and verified at **14:12:55 UTC** for the next offer/upgrade case:
-two owned overlays, all 429 base files unchanged, awaiting manual launch. The prior empty-grid **5/5/3** failure
-and Hefty Tablet/Kaleidoscope **9/9/9** result retain their original release.
+The [Neow offer/upgrade case](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-lead-paperweight-and-pomander-passed)
+passed **7/7/7**, following the corrected bundle/removal case's **8/8/8**. The
+subsequent [full-belt Phial Holster case](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-phial-holster-pickup-stopped)
+stopped during its pickup at **6/5/4**, with one pending action. Shears' two
+removals and 16 HP loss were visible, as was one added potion, but Holster's
+completion, final curse and map return were not verified. No retry occurred.
+Latest owned cleanup passed at **14:32:26 UTC**: installation absent, zero overlays
+and all 429 base files unchanged. These seeded Custom-mode cases used no modifiers
+and console setup before attachment. The prior empty-grid **5/5/3** failure and
+Hefty Tablet/Kaleidoscope **9/9/9** result retain their original release.
 
 ## How to read support
 
@@ -330,7 +332,8 @@ This compound support is **released with representative live acceptance**:
 Neow’s Bones generated Large Capsule and Lost Coffer, nested Sacrifice granted
 Regal Pillow, and the final Decay curse settled before event/map return. All seven
 actions reconciled. Hefty Tablet/Kaleidoscope also completed at 9/9/9; the
-bundle/removal correction passed its controlled live retest at 8/8/8. The
+bundle/removal correction passed its controlled live retest at 8/8/8. Lead
+Paperweight/Pomander then passed the offer/upgrade chain at 7/7/7. The
 [live ledger](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neows-bones-compound-rewards-passed)
 binds this controlled path to its tested artifact. The final focused owner/alternative regressions passed
 four groups in 49.605 s. Public projection and parent/wire checks also passed.
@@ -377,7 +380,7 @@ These are **not an implementation queue or required live-test checklist**:
 
 ### Implemented, but still needing representative live evidence
 
-- Other full-producer Neow’s Bones compound branches, including upgrade/transform
+- Other full-producer Neow’s Bones compound branches, including transform
   selectors and potion procurement; remaining automatic
   pickup effects and additional shared event reward callers.
   Representative hand/optional offers, potion use/discard and potion-owned choices,
@@ -433,9 +436,12 @@ is **`14772d59c22d9d630bc71780c3871fedd95331e9c6797267a5fe0acd5ab0582a`**, sourc
 compound-grid preview correction passed independent review and **85 release groups
 in 386.222 seconds**, including production build/package reproducibility and
 operational checks. Focused checks passed 3,304 reward checks and 39 direct-holder
-checks. The native bundle/removal retest passed at **8/8/8**, 56 reads and nothing pending;
-exact cleanup passed at **14:10:28 UTC**. The preceding **5/5/3** failure remains
-unreconciled in its historical record.
+checks. The native bundle/removal retest passed at **8/8/8**, 56 reads; the
+offer/upgrade case passed at **7/7/7**, 60 reads. Neither left anything pending.
+The subsequent full-belt Phial Holster pickup stopped at **6/5/4**, one pending
+action, with its correction/retest still required. Latest exact cleanup passed
+at **14:32:26 UTC**. This and the preceding **5/5/3** failure remain unreconciled
+in their historical records.
 
 The preceding manifest
 **`325f2611735c00376775a0d6f4c2c4c1aa1657a93477e056cf777a318321bf20`**. Source `2e9e66d` changes only the full client and

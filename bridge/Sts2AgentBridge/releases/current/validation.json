@@ -15,13 +15,51 @@
     "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
     "game_process_running": false,
     "generated_files_removed": 4,
-    "installed_state_sha256": "2637ef75ae81512eceb1597e9eb0e39319aa6d8f712758ec302a81e086c2edd3",
+    "installed_state_sha256": "46e49ca12317201cc14f80c579f7edb6d967a3471a7305f97bce417b92b1e27c",
     "overlay_count": 0,
     "port_accepting": false,
-    "quarantined_state_sha256": "7d52311f2b2d11515bb96f1d641d0ff21ad316ff759ac655048aba6e445ba0b0",
+    "quarantined_state_sha256": "8a455a38657d24aae83216c5c46cb5e0069c03bac4d3e5781ad9cf3a8b6cfbc3",
     "status": "passed",
-    "verified_by_utc": "2026-09-27 14:10:28 UTC"
+    "verified_by_utc": "2026-09-27 14:32:26 UTC"
   },
+  "cleanup_cases": [
+    {
+      "base_file_count": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "game_process_running": false,
+      "generated_files_removed": 4,
+      "installed_state_sha256": "2637ef75ae81512eceb1597e9eb0e39319aa6d8f712758ec302a81e086c2edd3",
+      "overlay_count": 0,
+      "port_accepting": false,
+      "quarantined_state_sha256": "7d52311f2b2d11515bb96f1d641d0ff21ad316ff759ac655048aba6e445ba0b0",
+      "status": "passed",
+      "verified_by_utc": "2026-09-27 14:10:28 UTC"
+    },
+    {
+      "base_file_count": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "game_process_running": false,
+      "generated_files_removed": 4,
+      "installed_state_sha256": "970bb7b18cf1b76185fa8214228bf5f40c8d15a14319d9839fa292b561cea596",
+      "overlay_count": 0,
+      "port_accepting": false,
+      "quarantined_state_sha256": "39948aa66ed11ce50221769bc6453385dbab2ca3d29b8b6200079bce446fc4d4",
+      "status": "passed",
+      "verified_by_utc": "2026-09-27 14:21:36 UTC"
+    },
+    {
+      "base_file_count": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "game_process_running": false,
+      "generated_files_removed": 4,
+      "installed_state_sha256": "46e49ca12317201cc14f80c579f7edb6d967a3471a7305f97bce417b92b1e27c",
+      "overlay_count": 0,
+      "port_accepting": false,
+      "quarantined_state_sha256": "8a455a38657d24aae83216c5c46cb5e0069c03bac4d3e5781ad9cf3a8b6cfbc3",
+      "status": "passed",
+      "verified_by_utc": "2026-09-27 14:32:26 UTC"
+    }
+  ],
   "elapsed_times": {
     "design_review_seconds": 288,
     "focused_validation_seconds": 61.856,
@@ -496,64 +534,193 @@
   "installation": {
     "base_file_count": 429,
     "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-    "game_running_before_install": false,
-    "installed_metadata_checked": true,
-    "overlay_count": 2,
-    "purpose": "Next Neow offer/upgrade case; completed bundle/removal session and cleanup retain their separate installation identity.",
-    "same_accepted_package": true,
-    "state_sha256": "970bb7b18cf1b76185fa8214228bf5f40c8d15a14319d9839fa292b561cea596",
-    "status": "installed_awaiting_manual_launch",
-    "verified_by_utc": "2026-09-27 14:12:55 UTC"
+    "last_installed_state_sha256": "46e49ca12317201cc14f80c579f7edb6d967a3471a7305f97bce417b92b1e27c",
+    "overlay_count": 0,
+    "status": "absent_after_owned_cleanup",
+    "verified_by_utc": "2026-09-27 14:32:26 UTC"
   },
   "live": {
-    "actionable_map": true,
-    "bundle_cards": [
-      "setup_strike",
-      "tremble",
-      "taunt"
-    ],
-    "case": "Neow Bones Scroll Boxes then Precise Scissors",
-    "completed_by_utc": "2026-09-27 14:08:52 UTC",
-    "controller_reads": 56,
-    "counts": [
-      8,
-      8,
-      8
-    ],
-    "decisions": 8,
-    "final_curse": "regret",
-    "final_deck_count": 13,
-    "gold": 99,
-    "hp": [
-      80,
-      80
-    ],
-    "initial_deck_count": 10,
-    "installed_state_sha256": "2637ef75ae81512eceb1597e9eb0e39319aa6d8f712758ec302a81e086c2edd3",
-    "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-scroll-boxes-and-precise-scissors-passed",
-    "manual_gameplay_after_attachment": false,
-    "map_visually_confirmed": true,
-    "other_originals_unchanged": true,
-    "outcome": {
-      "kind": "truncated",
-      "reason": "external_stop"
+    "before": {
+      "deck": 10,
+      "gold": 99,
+      "hp": 80,
+      "max_hp": 80,
+      "potion_capacity": 3,
+      "potions": [
+        "fire_potion",
+        "strength_potion",
+        "block_potion"
+      ]
     },
-    "pending": false,
-    "policy": "Force advertised Bones option, then unchanged game.agent.full_policy.choose_action; no Sacrifice alternative arose.",
-    "potions_unchanged": true,
+    "case": "Neow Bones Precarious Shears then full-belt Phial Holster",
+    "code": "uncertain_dispatch",
+    "controller_reads": 48,
+    "counts": [
+      6,
+      5,
+      4
+    ],
+    "decisions": 5,
+    "installed_state_sha256": "46e49ca12317201cc14f80c579f7edb6d967a3471a7305f97bce417b92b1e27c",
+    "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-phial-holster-pickup-stopped",
+    "manual_gameplay_after_attachment": false,
+    "outcome": null,
+    "pending": true,
+    "policy_calls": 6,
     "recorded_live_corpus": false,
-    "removed_original": "strike",
-    "setup": "Fresh native Custom Mode, Ironclad A0, TEST614, no modifiers; console-prepared Neow Bones before attachment.",
+    "retry_or_adoption": false,
+    "setup": "Fresh native Custom Mode, Ironclad A0, TEST91, no modifiers; Fire/Strength/Block potions and Neow Bones console-prepared before attachment.",
     "stale_rejections": 0,
-    "status": "passed",
+    "status": "failed",
     "target_game_executed": true,
-    "verification_reads": 1
+    "visual_after": {
+      "deck": 8,
+      "filled_potion_slots": 4,
+      "final_curse_and_map_completed": false,
+      "gold": 99,
+      "holster_relic_present": true,
+      "holster_reward_row_present": true,
+      "hp": 64,
+      "max_hp": 80
+    }
   },
+  "live_cases": [
+    {
+      "actionable_map": true,
+      "bundle_cards": [
+        "setup_strike",
+        "tremble",
+        "taunt"
+      ],
+      "case": "Neow Bones Scroll Boxes then Precise Scissors",
+      "completed_by_utc": "2026-09-27 14:08:52 UTC",
+      "controller_reads": 56,
+      "counts": [
+        8,
+        8,
+        8
+      ],
+      "decisions": 8,
+      "final_curse": "regret",
+      "final_deck_count": 13,
+      "gold": 99,
+      "hp": [
+        80,
+        80
+      ],
+      "initial_deck_count": 10,
+      "installed_state_sha256": "2637ef75ae81512eceb1597e9eb0e39319aa6d8f712758ec302a81e086c2edd3",
+      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-scroll-boxes-and-precise-scissors-passed",
+      "manual_gameplay_after_attachment": false,
+      "map_visually_confirmed": true,
+      "other_originals_unchanged": true,
+      "outcome": {
+        "kind": "truncated",
+        "reason": "external_stop"
+      },
+      "pending": false,
+      "policy": "Force advertised Bones option, then unchanged game.agent.full_policy.choose_action; no Sacrifice alternative arose.",
+      "potions_unchanged": true,
+      "recorded_live_corpus": false,
+      "removed_original": "strike",
+      "setup": "Fresh native Custom Mode, Ironclad A0, TEST614, no modifiers; console-prepared Neow Bones before attachment.",
+      "stale_rejections": 0,
+      "status": "passed",
+      "target_game_executed": true,
+      "verification_reads": 1
+    },
+    {
+      "actionable_map": true,
+      "case": "Neow Bones Lead Paperweight then Pomander",
+      "completed_by_utc": "2026-09-27 14:20:19 UTC",
+      "controller_reads": 60,
+      "counts": [
+        7,
+        7,
+        7
+      ],
+      "decisions": 7,
+      "final_curse": "guilty",
+      "final_deck_count": 12,
+      "gold": 99,
+      "hp": [
+        80,
+        80
+      ],
+      "initial_deck_count": 10,
+      "installed_state_sha256": "970bb7b18cf1b76185fa8214228bf5f40c8d15a14319d9839fa292b561cea596",
+      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-lead-paperweight-and-pomander-passed",
+      "manual_gameplay_after_attachment": false,
+      "map_visually_confirmed": true,
+      "offered_card": "the_bomb",
+      "other_originals_unchanged": true,
+      "outcome": {
+        "kind": "truncated",
+        "reason": "external_stop"
+      },
+      "pending": false,
+      "policy": "Force advertised Bones option, then unchanged game.agent.full_policy.choose_action; no Sacrifice alternative arose.",
+      "potions_unchanged": true,
+      "recorded_live_corpus": false,
+      "setup": "Fresh native Custom Mode, Ironclad A0, TEST407, no modifiers; console-prepared Neow Bones before attachment.",
+      "stale_rejections": 0,
+      "status": "passed",
+      "target_game_executed": true,
+      "upgrade_delta": 1,
+      "upgraded_original": "strike",
+      "verification_reads": 1
+    },
+    {
+      "before": {
+        "deck": 10,
+        "gold": 99,
+        "hp": 80,
+        "max_hp": 80,
+        "potion_capacity": 3,
+        "potions": [
+          "fire_potion",
+          "strength_potion",
+          "block_potion"
+        ]
+      },
+      "case": "Neow Bones Precarious Shears then full-belt Phial Holster",
+      "code": "uncertain_dispatch",
+      "controller_reads": 48,
+      "counts": [
+        6,
+        5,
+        4
+      ],
+      "decisions": 5,
+      "installed_state_sha256": "46e49ca12317201cc14f80c579f7edb6d967a3471a7305f97bce417b92b1e27c",
+      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-phial-holster-pickup-stopped",
+      "manual_gameplay_after_attachment": false,
+      "outcome": null,
+      "pending": true,
+      "policy_calls": 6,
+      "recorded_live_corpus": false,
+      "retry_or_adoption": false,
+      "setup": "Fresh native Custom Mode, Ironclad A0, TEST91, no modifiers; Fire/Strength/Block potions and Neow Bones console-prepared before attachment.",
+      "stale_rejections": 0,
+      "status": "failed",
+      "target_game_executed": true,
+      "visual_after": {
+        "deck": 8,
+        "filled_potion_slots": 4,
+        "final_curse_and_map_completed": false,
+        "gold": 99,
+        "holster_relic_present": true,
+        "holster_reward_row_present": true,
+        "hp": 64,
+        "max_hp": 80
+      }
+    }
+  ],
   "next_live_test": {
-    "first_case": "Neow Bones Lead Paperweight offer then Pomander upgrade; seed TEST407.",
+    "first_case": "Neow Bones Precarious Shears then Phial Holster, initially full belt; seed TEST91.",
     "game_restart_required": true,
     "new_campaign_required": true,
-    "status": "awaiting_user_manual_launch"
+    "status": "requires_correction_and_fresh_controlled_retest"
   },
   "package": {
     "Sts2AgentBridgeUnified-1.0.0.zip": [
@@ -590,7 +757,7 @@
   },
   "release_manifest_sha256": "14772d59c22d9d630bc71780c3871fedd95331e9c6797267a5fe0acd5ab0582a",
   "remaining_limits": [
-    "Compound bundle/removal passed at 8/8/8; other native selector and potion-procurement branches remain separate evidence limits.",
+    "Optional offer/upgrade passed at 7/7/7; full-belt Phial Holster stopped at 6/5/4 and requires correction/retest. Transform and other procurement variants remain separate limits.",
     "Other named native variants remain in docs/STATUS.md; no exhaustive fidelity claim.",
     "The shared-v2 assisted saved-campaign victory remains historical evidence under its original release."
   ],
