@@ -1,4 +1,36 @@
 {
+  "additional_live_cases": {
+    "hefty_kaleidoscope": {
+      "controller_reads": null,
+      "counts": [
+        9,
+        9,
+        9
+      ],
+      "decisions": 9,
+      "helper_postcondition": "wrong_expected_branch",
+      "pending": false,
+      "stale_rejections": 0,
+      "status": "settled_map",
+      "verification_reads": 2
+    },
+    "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-compound-previews-offer-passed-removal-stopped-2026-09-27",
+    "recorded_live_corpus": false,
+    "scroll_boxes_precise_scissors": {
+      "controller_reads": 39,
+      "counts": [
+        5,
+        5,
+        3
+      ],
+      "decisions": 5,
+      "pending": true,
+      "removal_input_dispatched": false,
+      "stale_rejections": 0,
+      "status": "read_native_event_pending_ownership"
+    },
+    "setup": "Native seeded Custom Mode, Ironclad A0, no modifiers; Neow Bones prepared before attachment; Profile 3 manually launched."
+  },
   "change": "Full client bounds consecutive confirmed no-mutation stale rejections, resetting only after validated accepted dispatch; keeps cumulative reporting and legacy cumulative cap. Native package and policy unchanged.",
   "changed_bound_files": [
     "apps/bridge/client/agent_host.py",
@@ -10,13 +42,12 @@
     "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
     "game_process_running": false,
     "generated_files_removed": 4,
-    "installed_state_sha256": "f98b4d04bc9f49be87e6761f9f9fd6e8d14c1d71627fac7c42c0569f50a1223b",
-    "local_invocation_error": "One truncated release digest was rejected before purge performed any operation; the corrected invocation passed.",
+    "installed_state_sha256": "bb9ed1f8e6230ac7b535ddea5bcd5ba181ea6ee6156c69acaf76ac92957cfca0",
     "overlay_count": 0,
     "port_accepting": false,
-    "quarantined_state_sha256": "4964946863fca7c77ef1555c28f54ab3dc6aedf34884e3bc920253bb79f3bb07",
+    "quarantined_state_sha256": "0259a99cc3919265d22cca0e9c072cfe28765a89b3cb9018b54cbb168380eb80",
     "status": "passed",
-    "verified_by_utc": "2026-09-27 12:56:22 UTC"
+    "verified_by_utc": "2026-09-27 13:29:46 UTC"
   },
   "elapsed_times": {
     "design_review_seconds": 85,
@@ -549,12 +580,11 @@
   },
   "native_package_unchanged": true,
   "next_live_test": {
-    "first_case": "resume_floor99_combat",
-    "game_restart_required": false,
-    "new_campaign_required": false,
-    "prerequisites_verified": "Fresh running/health/compatibility/owned-package checks and settled public counts passed before policy attachment.",
-    "remaining_work": "Broader native variants and a fresh uninterrupted shared-v2 campaign remain unverified; see docs/STATUS.md.",
-    "status": "completed_assisted_continuation_victory"
+    "first_case": "Neow Scroll Boxes then Precise Scissors",
+    "game_restart_required": true,
+    "new_campaign_required": true,
+    "remaining_work": "Reproduce and correct native grid preview upgrade observation, validate and package before manual launch.",
+    "status": "correction_required"
   },
   "package": {
     "Sts2AgentBridgeUnified-1.0.0.zip": [

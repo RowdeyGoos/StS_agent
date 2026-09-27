@@ -2199,3 +2199,68 @@ validation before any operation; the corrected invocation removed exactly
 `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
 Separate implementation, user-wait and live-controller durations were not measured;
 the recorded timestamps and review/release durations are the available timing evidence.
+
+
+## Neow compound previews: offer passed, removal stopped (2026-09-27)
+
+Both cases used the accepted manifest
+`325f2611735c00376775a0d6f4c2c4c1aa1657a93477e056cf777a318321bf20`, source
+`2e9e66d4403e50dfcc7242498af49b7026b0f0d2`, and the unchanged native package.
+The user manually launched Profile 3. Each fresh controlled campaign used native
+Custom Mode, Ironclad, A0, an explicit seed and no gameplay modifiers, with
+Neow's Bones prepared through the native console before attachment. This is
+narrow seeded Custom-mode evidence, not general alternate-mode support.
+Clean starting inventory was 80/80 HP, 99 gold, ten cards, Burning Blood and
+three empty potion slots. Exact overlays/base files, installed metadata,
+authenticated health and release compatibility passed before both attachments.
+No profile/save/history/Cloud filesystem access or live corpus was retained.
+
+The first seed input, `BRIDGE92`, was canonicalized by the native lobby to
+`BR1DGE92` (`I` becomes `1`, `O` becomes `0`). It produced Hefty Tablet and
+Kaleidoscope, not the intended Scroll Boxes/Precise Scissors pair. The policy
+completed the card offer, two nested card rewards, final curse and event exit:
+**9 attempted / 9 accepted / 9 reconciled**, nine decisions, zero stale rejections,
+nothing pending, settled actionable map and `truncated/external_stop`.
+Final inventory was 80/80 HP, 99 gold and 15 cards, with Burning Blood,
+Neow's Bones, Hefty Tablet and Kaleidoscope. The helper's branch-specific
+postcondition failed because it expected a different deck delta; this was not a
+bridge failure. Its error handler lost the controller read count; that count is
+unknown. Two separate verification reads confirmed the settled result.
+Source inspection and canonicalized-seed prediction explained the setup mismatch.
+
+After normal quit, stopped-process/closed-listener checks and exact owned
+quarantine/purge passed by **13:23:54 UTC**. Installed state
+`e4702f32281953eeb56a6173a8383a475e470e897f2a735448012428fb23a61b`
+became quarantine state
+`5702f4ef4770c80db472c9d7c6148ca4228a42d694891e8cc966cac4ef601e64`;
+four owned files were removed, zero overlays remained and all 429 base files
+were unchanged. A sandbox process-check failure, then the native Quit confirmation,
+were resolved before the successful stopped check; no cleanup occurred while running.
+
+The second campaign used canonical seed `TEST614` and reached the intended pair.
+A console input missing its first two characters was rejected as an unknown command
+before the corrected setup command succeeded. The policy chose Neow's Bones,
+claimed Scroll Boxes, chose and confirmed its three-card bundle, then claimed
+Precise Scissors. The bridge stopped at `read_native_event_pending_ownership`:
+**5 attempted / 5 accepted / 3 reconciled**, five decisions, **39 controller reads**,
+zero stale rejections and an unresolved pending action. No removal input was
+dispatched. The visible removal grid was empty; the deck contained 13 cards,
+with HP/gold unchanged and both relics obtained. Bundle child completion does not
+establish completion of the enclosing pickup or removal chain.
+
+Source inspection found that `NGridCardHolder.UpdateCardModel` clones and upgrades
+an eligible card for its UI preview before the holder is registered in the grid.
+The compound effect observer rejects that detached upgrade. This is a concrete
+source-backed mismatch consistent with the empty grid; the coarse live diagnostic
+did not identify the exact failed predicate. A scoped preview correction and live
+retest remain required. The failed mutation was neither retried nor adopted.
+
+Normal quit and stopped-process/closed-listener checks passed. Installed state
+`bb9ed1f8e6230ac7b535ddea5bcd5ba181ea6ee6156c69acaf76ac92957cfca0`
+became quarantine state
+`0259a99cc3919265d22cca0e9c072cfe28765a89b3cb9018b54cbb168380eb80`.
+Exact purge removed four owned files; verification passed by **13:29:46 UTC**:
+zero overlays, all **429 base files** unchanged, aggregate SHA-256
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Cleanup does not reconcile the failed action. Separate controller, implementation
+and user-wait durations were not measured for these cases.

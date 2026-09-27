@@ -12,6 +12,15 @@ Quick navigation: [supported interactions](#supported-interactions) ·
 [missing features versus remaining tests](#implementation-gaps-versus-remaining-live-tests) ·
 [release and evidence](#release-and-latest-evidence).
 
+The subsequent [Neow compound cases](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-compound-previews-offer-passed-removal-stopped-2026-09-27)
+completed Hefty Tablet plus Kaleidoscope at **9/9/9**, but Scroll Boxes followed
+by Precise Scissors stopped at an empty removal grid: **5/5/3**, pending, before
+any removal input. Native grid preview clones are upgraded during construction;
+the compound observer currently rejects those detached upgrades. Correction and
+live retest remain open. Both controlled cases used seeded Custom Mode with no
+modifiers. Cleanup passed at **13:29:46 UTC**; game stopped, zero overlays and all
+429 base files unchanged.
+
 ## How to read support
 
 **Implemented** means the adapter/controller exists within the stated bounds.

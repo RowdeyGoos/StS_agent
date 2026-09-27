@@ -37,5 +37,12 @@ and nothing pending. Native Victory was also observed. This is an assisted saved
 continuation, not a fresh uninterrupted campaign; separated-stale recovery remains
 fixture-tested because the final segment had no stale rejections.
 
+Subsequent controlled Neow tests completed Hefty Tablet plus Kaleidoscope at
+**9/9/9**, then stopped at the Precise Scissors removal grid after Scroll Boxes:
+**5/5/3**, with a pending action and no removal input dispatched. The native grid
+upgrades detached preview copies, which the compound observer currently rejects.
+See the [case evidence](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-compound-previews-offer-passed-removal-stopped-2026-09-27).
+
 Normal quit, exact owned-file removal and base verification passed by
-**2026-09-27 12:56:22 UTC**: zero overlays and all **429** base files unchanged.
+**2026-09-27 13:29:46 UTC**: zero overlays and all **429** base files unchanged.
+The game is stopped; a corrected release and manual launch are required for retest.
