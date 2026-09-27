@@ -1,6 +1,6 @@
 # Bridge support and status
 
-Updated 2026-09-27 for shared-producer shop, rest, treasure, Trial and Sphere
+Updated 2026-09-27 for shared-producer shop, rest, treasure, event and ending
 coverage; other capability review remains
 2026-09-19 against bridge source, pinned native game IL and retained evidence. Latest live
 session: **2026-09-27**. This is the authoritative summary of bridge support;
@@ -30,7 +30,8 @@ are verified. Final Proceed does not erase earlier verified child results.
 
 The new native `agent_v2` / `full_run_v2` candidate connects rich observations and
 nested decisions to the same public-only chooser as headless. Its first controlled
-rest/card-reward/map path passed live; broader v2 acceptance remains open. Its [coverage and remaining gaps](AGENT_CONTRACT.md#native-full-run-v2-candidate)
+rest/card-reward/map path and an assisted saved continuation through the Architect
+and native Victory passed live; broader v2 acceptance remains open. Its [coverage and remaining gaps](AGENT_CONTRACT.md#native-full-run-v2-candidate)
 now include hand/optional combat choices, general potion use/discard and owned
 selectors, chest claims/empty chests, reward reroll/sacrifice, shop removal cancel,
 automatic relic effects, Cauldron/Orrery rewards and shared event reward children.
@@ -194,7 +195,7 @@ extend standalone rest/shop contracts.
 | Fake Merchant fight/healing | Initial owned Foul Potion starts combat; terminal Fake Lee’s Waffle verifies capped 10% max-HP healing; terminal schemas 9–10 support 32 entries; schema 10 adds exact Fake Mango +3 max HP/+3 HP | Original ten-entry rewards passed after native Continue: 12/12/12 actions, all rewards collected, HP10/80→21/83 and actionable map. Earlier assisted seven-relic collection and the failed 8/8/7 Mango attempt retain separate evidence. Fight after shopping unsupported |
 | Crystal Sphere | Owned Uncover Future/Payment Plan entry, small/big tool, legal 11×11 fog reveals, earned rewards and exact native exit/overlay cleanup | Both entry paths demonstrated. Shared v2 Payment Plan passed 17/17/17 with big→small→big switching, all six exact fog/count changes, earned gold/two potions/card and map return. Earned relics and other outcomes remain separate. Hidden items are not projected; already-open adoption and full-belt replacement unsupported |
 | Trial abandonment | Owned popup Cancel or explicit Confirm, exact native abandonment task | Both demonstrated; Cancel continued to rewards/map/next room, Confirm produced `run_abandoned` and native Defeat/HP0 |
-| Architect ending | Native vote/queued action/next-act/WinRun task chain, terminal `run_won`; exact owned victory event with its combat layout and retained map-travel flag | Empty final-boss reward Proceed and the Architect parent sequence reached `run_won`; native Victory observed in both controlled saved runs. The latest ending used three reconciled parent actions. Saved continuations report `continued_victory`, not full-campaign certification |
+| Architect ending | Native vote/queued action/next-act/WinRun task chain, terminal `run_won`; exact owned victory event with its combat layout and retained map-travel flag | Legacy controlled saved runs reached `run_won` and native Victory. The shared-v2 chooser also completed final combat, rewards and Architect at 12/12/12 new actions, returning `victory/none` with native Victory observed. These are assisted saved continuations, not fresh full-campaign certification |
 
 <a id="current-exclusions"></a>
 
@@ -268,7 +269,8 @@ extend standalone rest/shop contracts.
   counts remain unchanged. The corrected continuation admitted floor-81 combat,
   cleared the fight/rewards, and retained the next map completion at **10/10/10**
   when rest entry stopped explicitly at Clone's 128-card capacity guard. Nothing
-  remained pending. The ending is still open.
+  remained pending. A later shared-v2 continuation reached the native ending,
+  as recorded under [latest evidence](#release-and-latest-evidence).
   [Result](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#large-rest-recovery-and-floor-81-stop-2026-09-27).
 - **Single-card shop enchant preview:** Punch Dagger stopped after purchase and
   selection at **2/2/0**, before confirmation. The pinned preview queues old scene
@@ -367,8 +369,7 @@ These are **not an implementation queue or required live-test checklist**:
 
 - Other full-producer Neow’s Bones compound branches, including offer/bundle and
   deck selectors and potion procurement; remaining automatic
-  pickup effects and additional shared event reward callers,
-  plus an ending test.
+  pickup effects and additional shared event reward callers.
   Representative hand/optional offers, potion use/discard and potion-owned choices,
   chest claiming, reroll and Sacrifice passed live, including the corrected
   Whetstone-granting second Sacrifice. Shop-removal preview cancellation also
@@ -405,6 +406,9 @@ These are **not an implementation queue or required live-test checklist**:
   six exact reveals and earned gold/card/potions passed through the shared producer
   at 17/17/17; other outcomes retain separate limits.
 - Held-out elite and room-handoff variants beyond the accepted campaign route.
+- A fresh uninterrupted shared-v2 campaign. The assisted saved continuation now
+  demonstrates the ending, with earlier stops, corrections and reloads retained
+  in its evidence.
   The demonstrated long traversal does not establish all-branch coverage or
   strategic quality. Another fresh run is not required for milestone 7 acceptance.
 
@@ -415,35 +419,35 @@ supplies dated source candidates rather than a current implementation checklist.
 ## Release and latest evidence
 
 The current [release manifest](../bridge/Sts2AgentBridge/releases/current/bridge.json)
-is **`c78ae051419d0b5db6c3693530f47577fa929b439fb43c34acf2124215d85971`**.
-It binds 489 inputs across 52 projects, feature `2246d40`, source
-`b5f6f09` and the generated package identity. Full-producer `card_grid_v1`
-provides single upgrade/enchant events with 2–128 eligible originals independent
-of holder allocation, using existing bounded native scrolling. Exact preview,
-selected-only effect, unchanged survivors, successful owned callbacks and closed
-selector remain required. The shared graph includes the pending enchantment.
-Legacy selectors retain their bounds. Closed preparation diagnostics survive the
-shared client. Independent review cleared the correction; the final gate passed
-**85 groups in 461.83 seconds**, including 168 client tests, 1,719 router
-checks and 17,151 native event checks. Only the bridge client diagnostic
-allowlist and test-runner/timeout regression changed among 102 bound Python
-inputs; game.agent sources are unchanged.
+is **`325f2611735c00376775a0d6f4c2c4c1aa1657a93477e056cf777a318321bf20`**. Source `2e9e66d` changes only the full client and
+its two regression files among 489 bound inputs across 52 projects. Full mode
+now stops after four consecutive confirmed no-mutation stale rejections; only
+validated acceptance resets that streak. Cumulative reporting, the legacy cap,
+uncertain-dispatch stops and time/read/action limits remain intact. Independent
+review cleared the correction; the final gate passed **85 groups in
+399.505 seconds**, including 173 client tests, 1,719 router checks and
+17,151 native event checks.
 
-The saved Symbiote retest passed through the Corrupted chooser and settled map
-return at **4/4/4** on a **105-card** deck. The unchanged chooser then continued
-through further combats, treasure, rest and Tinker Time. It stopped at floor 99
-with `stale_limit`: **116/112/112** controller counts, four cumulative rejections
-and no pending action. Three subsequent read-only decisions had identical tokens
-and public graphs. The shared-v2 ending remains open. The full client now bounds
-consecutive rejections in source while retaining the reported total and legacy
-cap; focused checks and independent review passed, release validation is pending.
-The game remains open at the settled combat boundary for a possible client-only
-resumption after exact native-package verification.
+The native DLL and package exactly match the preceding accepted release. Fresh
+installed/runtime, authenticated health and compatibility checks passed before
+resuming the same settled combat, without restarting or reinstalling the game.
+The preceding release passed the 105-card Symbiote Corrupted chooser and map
+return at **4/4/4**, then completed further combats, treasure, rest and Tinker
+Time before the floor-99 `stale_limit` stop at **116/112/112**, nothing pending.
+Three subsequent read-only decisions had identical tokens and public graphs.
+The corrected client then completed final combat, rewards and the Architect,
+returning **`victory/none`** with **12/12/12 new actions**, 262 reads, zero stale
+rejections and nothing pending. Native Victory was observed; cumulative native
+counts were **124/124/124**. This demonstrates the shared-v2 ending for the
+assisted saved continuation. The corrected segment did not encounter stale
+rejections, so separated-stale recovery is still fixture evidence. Normal quit,
+owned-file cleanup and base verification passed by **12:56:22 UTC**: zero overlays
+and all **429** base files unchanged.
 [Latest result](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#symbiote-passed-and-settled-combat-stale-stop-2026-09-27).
 
-The preceding package's Symbiote Approach stopped at **84/81/80**, one pending
-action. That failed attempt and its **11:11:57 UTC** exact cleanup retain their
-original artifact in the ledger; the successful retest does not reconcile it.
+The older package's Symbiote Approach stopped at **84/81/80**, one pending action.
+That failed attempt and its **11:11:57 UTC** exact cleanup retain their original
+artifact in the ledger; the successful retest does not reconcile it.
 
 An earlier package passed the saved-run rest cycle at **14/14/14**, with Clone
 expanding the deck to 86 and a verified map return. Its next shop completed,

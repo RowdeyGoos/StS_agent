@@ -467,7 +467,7 @@ the [finite profile](AGENT_ENCODING.md#full-run-profile-and-environment).
 | `ChooseEventOption`, `ChooseEventCard`, `LeaveEvent`; options/page/select_card/resolved/fight | All 65 events' initial branches plus bounded nested continuations, selected card operations and event combat resumption | Legacy generic event families; outside `agent_v1` | Representative pages/selectors/combat/resumption; no all-branch claim |
 | Same event commands; event_rewards/card_rewards/potion_rewards/relic_reward/gold_reward/special_card_reward | Mixed rewards, multi-pick identity, current offers, duplicate items and terminal effects | Legacy bounded child controllers; outside `agent_v1` | Representative mixed/item/card results only |
 | Same event commands; Crystal Sphere board and Trial confirmation | Uncovered fragments only, legal cell choices, explicit `abandon_run` outcome | Legacy specialized controllers; outside `agent_v1` | Representative Sphere and Trial cancel/confirm accepted |
-| `ContinueAct`, final Architect option; act_complete/epilogue/terminal | Controlled three-act A0/A10 routes, second Glory boss and Gym reward 1 only after Architect | Outside `agent_v1`; legacy ending code exists | Assisted milestone 7 campaign through Architect accepted; no v2 shared-policy ending evidence |
+| `ContinueAct`, final Architect option; act_complete/epilogue/terminal | Controlled three-act A0/A10 routes, second Glory boss and Gym reward 1 only after Architect | Outside `agent_v1`; legacy ending code exists | Assisted milestone 7 campaign through Architect accepted; [shared-v2 assisted saved continuation](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#symbiote-passed-and-settled-combat-stale-stop-2026-09-27) also reached `victory/none` and native Victory. No fresh uninterrupted v2 campaign claim |
 
 [`test_full_profile.py`](../tests/agent/test_full_profile.py) checks the command
 census against real legal commands, differential dispatch, serialization/tensor
@@ -481,8 +481,10 @@ the stated interface coverage; they do not enumerate every content permutation.
 
 The opt-in `agent_v2` producer is implemented in the single production bridge and
 has passed a controlled shared-policy rest/card-reward/map test (4/4/4 actions,
-27 reads, no pending work). It does **not** yet establish complete native command
-coverage or campaign acceptance. `agent_v1` retains its original semantics and evidence.
+27 reads, no pending work) and an assisted saved continuation through final combat,
+rewards and Architect to native Victory (12/12/12 new actions, 262 reads, no pending
+work). These do **not** yet establish complete native command coverage or a fresh
+uninterrupted campaign. `agent_v1` retains its original semantics and evidence.
 
 [`FullNativeBackend`](../bridge/Sts2AgentBridge/apps/bridge/native/FullNativeBackend.cs)
 builds the same immutable graph and semantic candidates used by the headless
@@ -559,7 +561,7 @@ private. Revealed Sphere cells retain their visible rarity/gold-size variant.
 | Rest | `rest_v4`: native options, Smith/Cook toggles/confirmation/cancel, Heal rewards with shared reward alternatives, and separately reconciled Leave; supported pickup choices use `relic_choice` | 128 starting-deck cards and selector originals; Clone's predicted result must fit 128 before any input. Legacy v2/v3 retain 64 starting cards. Other reward/pickup bounds remain; no multiplayer Mend |
 | Shop | `shop_v8`: Open/Close/Leave, stock/prices, purchases, removal confirmation/cancel, existing pickup selectors, certified automatic relic effects, and Cauldron/Orrery reward decisions | Eight purchases per visit; arbitrary pickup callbacks remain unsupported. Every nested reward receipt precedes the purchase receipt |
 | Events/Ancients | Existing children, full-producer single upgrade/enchant `card_grid_v1`, plus `full_rewards_v1` shared rewards and a Neow’s Bones `full_rewards_v2` compound child: nested reward sets, offers/bundles, deck choices, observed pickup effects, nested Sacrifice and the final curse; combat and owned item resumption | Eight rows per reward set, at most five compound sets and 40 child inputs within the 52-total-action event budget. Arbitrary nested pickup/selector callbacks remain unsupported. Controlled Large Capsule/Lost Coffer, nested Sacrifice and final curse passed through map return at 7/7/7; other compound branches remain fixture evidence |
-| Treasure/ending | `campaign_v3`: native chest Open, offered relic Claim or Skip, separate Proceed, and certified empty-chest completion; existing act/Architect continuation | Native Open/award/picking tasks must finish before handoff. Chest claiming and Silver Crucible’s empty-chest Open/Proceed are live demonstrated; broader pickup effects and the v2 ending need live validation |
+| Treasure/ending | `campaign_v3`: native chest Open, offered relic Claim or Skip, separate Proceed, and certified empty-chest completion; existing act/Architect continuation | Native Open/award/picking tasks must finish before handoff. Chest claiming, Silver Crucible’s empty-chest Open/Proceed and the shared-v2 Architect ending are live demonstrated in assisted saved runs; broader pickup effects still need live validation |
 
 The shared deck-choice driver used by shop, rest, compound pickups and full event
 card grids retains its full eligible domain (128 originals for full rest and event

@@ -2124,7 +2124,7 @@ continuation decisions, 1,452 reads, one preflight read, four cumulative stale
 rejections and 112 policy calls. Relative to its initial counts, the controller
 attempt/accept/reconcile delta was **112/108/108**. Its last attempted semantic
 action was Setup Strike; the last public view had HP **2149/2151**, gold **280**.
-No Architect or victory was observed. No manual gameplay input followed initial
+No Architect or victory was observed before this stop. No manual gameplay input followed initial
 policy attachment.
 
 A later read-only inspection showed 108 deck cards and native counts
@@ -2148,8 +2148,54 @@ Independent source review cleared the plan (**12:37:33–12:38:58 UTC, 85 second
 including waiting) and implementation (**12:39:32–12:39:46 UTC, 14 seconds**).
 The reviewer did not run tests or access the game.
 
-The game remains open at the settled combat state while the client correction
-is validated. Resumption requires an accepted source binding and verification
-that the installed native package is exactly unchanged. No runtime guard was
+The game stayed open at the settled combat state while the client correction
+was validated. Resumption required an accepted source binding and verification
+that the installed native package was exactly unchanged. No runtime guard was
 bypassed, no uncertain mutation was adopted, and no profile/save/history/Cloud
-filesystem access or retained live corpus occurred. Cleanup is not yet performed.
+filesystem access or retained live corpus occurred. Cleanup followed the final
+continuation below.
+
+The client correction was committed as `2e9e66d4403e50dfcc7242498af49b7026b0f0d2`. Its final release gate
+passed **85 groups in 399.505 seconds** at `/private/tmp/sts-bridge-hs1bsp44`,
+including **173 client tests**, **1,719 router checks** and **17,151 native event
+checks**. Accepted manifest: `325f2611735c00376775a0d6f4c2c4c1aa1657a93477e056cf777a318321bf20`.
+Only the client and its two regression files differ from the preceding release's
+489 bound inputs. The native DLL, all three package files, references and SDK
+are exactly unchanged. The fixed install inputs also passed exact identity
+checks. Release acceptance alone did not establish a new live result.
+
+Fresh running-process, exact overlay/base, authenticated health and compatibility
+checks passed by **12:50:24 UTC**, using the newly accepted manifest and unchanged
+installed state. There was no reinstall, game restart or manual gameplay input.
+One fresh public preflight confirmed settled native counts **112/112/112**,
+floor **99**, HP **2149/2151**, gold **280** and a **108-card deck**. The unchanged
+`game.agent.full_policy.choose_action` then successfully dispatched Setup Strike
+and continued the final combat, ordinary rewards and `the_architect` event.
+
+The continuation completed by **12:51:10 UTC**, returning the shared outcome
+`sts_run_outcome_v1` / **`victory`** / **`none`**. It took **12 attempted / 12 accepted /
+12 reconciled new actions**, **12 decisions**, **262 controller reads**, **zero
+stale rejections** and **12 policy calls**, with nothing pending. Cumulative native
+counts reached **124/124/124**. The controller observed only Act 3 in this segment
+and set `architect_observed: true`, `continuation_acceptance_passed: true`,
+`route_acceptance_passed: false` and `uninterrupted_fresh_campaign: false`.
+The native **Victory...?** screen independently confirmed the ending.
+
+This establishes the shared-v2 ending for the assisted saved continuation. It
+does not certify a fresh uninterrupted campaign or erase earlier campaign setup,
+stops, corrections, reloads or unresolved actions under their original packages.
+The client correction's separated-stale behavior remains fixture-tested because
+the corrected live segment encountered no stale rejections. No policy or native
+bridge behavior was changed for this continuation, and no live corpus was retained.
+
+Normal quit was followed by confirmed process/listener shutdown and exact
+quarantine of installed state
+`f98b4d04bc9f49be87e6761f9f9fd6e8d14c1d71627fac7c42c0569f50a1223b` to state
+`4964946863fca7c77ef1555c28f54ab3dc6aedf34884e3bc920253bb79f3bb07`.
+One purge invocation had a truncated release-digest argument and failed local
+validation before any operation; the corrected invocation removed exactly
+**four owned generated files**. Base verification passed by **12:56:22 UTC**:
+**zero overlays**, all **429 base files** unchanged, aggregate SHA-256
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Separate implementation, user-wait and live-controller durations were not measured;
+the recorded timestamps and review/release durations are the available timing evidence.
