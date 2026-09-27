@@ -12,6 +12,15 @@ Quick navigation: [supported interactions](#supported-interactions) ·
 [missing features versus remaining tests](#implementation-gaps-versus-remaining-live-tests) ·
 [release and evidence](#release-and-latest-evidence).
 
+The [Fake Merchant six-purchase case](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#fake-merchant-six-purchases-passed)
+passed **9/9/9**, with 44 controller reads and nothing pending. Six exact purchases
+cost 280 gold; Fake Mango raised HP/max HP from 68/68 to 71/71. The original deck,
+relics and potion slots were preserved through Close/Leave and map return.
+Cleanup passed by **18:10:49 UTC**, with zero overlays and all 429 base files unchanged.
+The [Steam launch workflow](LIVE_DEVELOPMENT.md#agent-managed-steam-launch-on-this-mac)
+now supports user-authorized agent launches; two main-menu launches and bridge
+health checks passed with a normal quit between them.
+
 The [Neow offer Skip / Leafy Poultice case](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-offer-skip-and-leafy-poultice-passed)
 passed **5/5/5**, with 57 controller reads and nothing pending. Skip retained the
 exact deck; Leafy Poultice automatically replaced the first Strike and Defend
@@ -460,11 +469,13 @@ These are **not an implementation queue or required live-test checklist**:
   campaign's branch; the saved TEST531 campaign produced Merchant as predicted.
 - Other natural ancient entry/dialogue routes beyond the demonstrated Nonupeipe continuation.
 - Broader reward orders/outcomes with a concrete offered screen, Sphere earned
-  relics, and Fake Merchant zero/six-purchase variants. Sphere small/big tools,
+  relics, and Fake Merchant's zero-purchase variant. Sphere small/big tools,
   six exact reveals and earned gold/card/potions passed through the shared producer
   at 17/17/17; other outcomes retain separate limits. Fake Merchant's six-purchase
-  inventory path is prepared next, with exact visible payments, pickup effects
-  and Close/Leave/map return; no live result is claimed yet.
+  inventory path passed at 9/9/9, with exact visible payments, six relic appends,
+  Fake Mango's +3 HP/max-HP effect and Close/Leave/map return. Its zero-purchase
+  variant remains the next narrow case; it needs fresh installation and setup,
+  with agent-managed launch now available.
 - Held-out elite and room-handoff variants beyond the accepted campaign route.
 - A fresh uninterrupted shared-v2 campaign. The assisted saved continuation now
   demonstrates the ending, with earlier stops, corrections and reloads retained
@@ -508,7 +519,11 @@ Neow's Lead Paperweight Skip / Leafy Poultice case then passed **5/5/5**, 57
 controller reads and one verification read. The skipped offer retained the deck;
 two exact automatic transformations, twelve max-HP loss, final Writhe and map
 return settled with other originals, gold and potions unchanged.
-Latest exact owned cleanup and base verification passed by **17:44:17 UTC**:
+Fake Merchant's six-purchase inventory path then passed **9/9/9**, 44 controller
+reads and one verification read. Exact payments totaled 280 gold, six relics were
+appended, Fake Mango added three HP/max HP, and the original deck/relics/potions
+were preserved through map return.
+Latest exact owned cleanup and base verification passed by **18:10:49 UTC**:
 zero overlays and all 429 base files unchanged.
 
 The prior manifest **`14772d59c22d9d630bc71780c3871fedd95331e9c6797267a5fe0acd5ab0582a`**,

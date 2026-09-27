@@ -44,10 +44,12 @@ Keep other branches explicitly untested until a matching campaign is available.
 - Use the user's actual authorization and launch preferences. Existing approval
   covers routine preparation and corrections within that scope; a new contract
   filename is not itself a reason to ask again.
-- Prepare and validate the concrete build before requesting manual game setup.
+- Prepare and validate the concrete build before game setup.
   State only conditions necessary for the experiment, and verify the requested
-  target before acting. The established test profile is Profile 3 and launch is
-  manual unless the user changes that preference.
+  target before acting. The established test profile is Profile 3. On 2026-09-27
+  the user authorized agent-managed launches and restarts for this workflow;
+  use the verified Steam launch below rather than routinely requesting a
+  manual launch. Ask for readiness only when a concrete blocker requires it.
 - Verify the pinned game/build, actual selected artifact, current stopped/running
   state and owned overlay/configuration using the applicable operational tools.
   Historical readiness, credentials and campaign state hashes cannot be reused.
@@ -62,6 +64,31 @@ Keep other branches explicitly untested until a matching campaign is available.
 
 A historical cleanup result is a dated observation, not a current process check.
 This guide does not authorize a live campaign outside the user's requested work.
+
+### Agent-managed Steam launch on this Mac
+
+After fresh stopped-process/listener and owned-installation checks, send one
+launch request through the installed Steam client:
+
+```bash
+'/Applications/Steam.app/Contents/MacOS/steam_osx' -applaunch 2868840
+```
+
+Run it with the Steam executable's directory as its working directory and
+discard launcher stdout/stderr; do not collect Steam or game logs. Use the
+existing runtime checker to establish the expected game process, inspect
+Profile 3 at the main menu through native UI, and check the authenticated bridge
+health/manifest before attaching gameplay. A zero launcher exit code alone does
+not establish readiness. Do not launch again while the first result is uncertain.
+
+This path reached the modded Profile 3 main menu twice on 2026-09-27, including
+a normal quit with confirmed process/listener shutdown between launches. Both
+launches passed authenticated health and compatibility checks. Steam was already
+running and signed in; a cold Steam start or sign-in prompt remains untested.
+Direct game-app launch produced a Steam initialization error. Browser automation
+blocks Steam URL links, and native Steam-window capture failed; neither is needed
+for this verified command. No launch preferences, credentials or save files were
+edited. Keep the normal owned cleanup after live testing.
 
 ## Develop once; release one package
 

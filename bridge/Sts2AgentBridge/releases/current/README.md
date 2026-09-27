@@ -73,9 +73,18 @@ HP/max HP became 68/68, and Writhe/map return completed. The eight other origina
 gold and potions were unchanged. Exact cleanup passed by **17:44:17 UTC**, leaving
 zero overlays and all 429 base files unchanged.
 
-The latest installation was verified by **17:50:30 UTC** for Fake Merchant's
-six-purchase inventory path: two exact overlays and all 429 base files unchanged.
-The nine-action/90-second helper checks visible payments, exact relic additions,
-preserved originals/potions, any Fake Mango HP gain and Close/Leave/map return.
-Manual Profile 3 launch is pending; the saved TEST74 campaign can be continued.
-This preparation has no live acceptance yet.
+Fake Merchant's six-purchase inventory path then passed **9/9/9**, 44 controller
+reads and one verification read. Six exact payments totaled 280 gold; six relics
+were appended and Fake Mango raised HP/max HP from 68/68 to 71/71. Original
+deck/relics/potions were unchanged through Close/Leave and actionable map return.
+The saved TEST74 setup used 400 added gold before attachment. Exact cleanup and
+base verification passed by **18:10:49 UTC**: zero overlays, game/listener stopped
+and all 429 base files unchanged. Nothing is currently installed for the next case.
+
+At the user's request, two agent-managed Steam launches reached Profile 3's main
+menu and passed bridge health/compatibility checks, with normal quit and confirmed
+shutdown between them. The [live guide](../../../../docs/LIVE_DEVELOPMENT.md#agent-managed-steam-launch-on-this-mac)
+records the verified command and replaces routine manual-launch requests. Steam
+was already signed in and running; cold Steam startup remains untested. The next
+narrow case is Fake Merchant's zero-purchase path, requiring fresh installation
+and controlled setup before attachment.

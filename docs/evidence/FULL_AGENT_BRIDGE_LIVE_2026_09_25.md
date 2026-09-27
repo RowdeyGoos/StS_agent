@@ -2913,3 +2913,74 @@ will add 400 gold, verify full HP and no already-owned fake relics, and console-
 create Fake Merchant with its inventory closed. A connected native room entry
 will be used if needed to clear travel state. No new campaign is required;
 manual Profile 3 launch is the remaining prerequisite.
+
+### Fake Merchant six purchases passed
+
+On 2026-09-27 the user requested agent-managed launches so repeated manual
+readiness was no longer needed. The installed Steam client's `-applaunch 2868840`
+command reached the modded Profile 3 main menu twice, with normal quit and fresh
+stopped-process/closed-listener checks between launches. Both launches passed
+source/owned-installation checks and authenticated health/build compatibility.
+The [live guide](../LIVE_DEVELOPMENT.md#agent-managed-steam-launch-on-this-mac)
+records the command, scope and current Steam-running/sign-in prerequisite.
+Launcher return times were 0.441 and 0.18 seconds; these are not readiness times.
+The earlier direct game-app launch failed Steam initialization and was closed;
+browser launch links were blocked and Steam-window capture failed. Neither
+failure was a gameplay attempt or was retried through a blocked browser path.
+
+The unchanged release manifest was
+`69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639`, source
+`0fb2972acf5475de36908beac2b89c4d50a60a93`, installed state
+`7ba782981a1a3be6d8a1ea05dcb848c8600ac03abfa5a6abf339e1d53bda2eb7`.
+Native Continue restored saved **TEST74**, Ironclad A0 Custom without modifiers,
+at completed Neow: **68/68 HP, 99 gold, eleven cards, four relics and three empty
+potion slots**. Native Proceed and a connected combat-room entry cleared travel
+state. Before attachment, console `gold 400` added the agreed test funds and
+`event FAKE_MERCHANT` prepared the event. No combat card or potion was played.
+The console was closed and the merchant inventory was initially closed.
+
+The bounded helper opened the inventory, checked all six distinct visible slots
+and their affordability, then bought each once in native order:
+
+| Slot | Relic | Gold paid |
+| --- | --- | --- |
+| 0 | Fake Orichalcum | 47 |
+| 1 | Fake Mango | 48 |
+| 2 | Fake Snecko Eye | 44 |
+| 3 | Fake Lee's Waffle | 47 |
+| 4 | Fake Strike Dummy | 44 |
+| 5 | Fake Venerable Tea Set | 50 |
+
+Every following public decision checked the prior exact payment, sole relic
+append, unchanged earlier relics/deck/potions, stable remaining stock and expected
+HP/max HP. Total payment was **280**, taking gold **499→219**. Fake Mango raised
+HP/max HP **68/68→71/71**; Waffle's heal was capped at full HP. The original eleven
+card nodes, four relic nodes and empty potion slots remained exact, with six
+relics appended. The helper then closed the inventory and left for the map.
+
+All **9 attempted / 9 accepted / 9 reconciled** actions passed: Open, six Buys,
+Close and Leave. There were nine decisions, **44 controller reads**, zero stale
+rejections and nothing pending. One separate verification read checked exact
+final inventory, actionable map and native counts **9/9/9**, ending with
+`truncated/external_stop`. Native map/counters were visually confirmed by
+**18:08:52 UTC**. No manual gameplay input occurred after attachment. This
+establishes the six-purchase inventory path for this stock set; zero purchases,
+other stocks, non-capped Waffle healing and natural Act 2+ eligibility remain
+separate. Controlled console entry occurred in Act 1.
+
+Normal Save and Quit, visible main menu and app Quit completed. Fresh stopped-
+process/closed-listener checks passed. Exact quarantine produced
+`086348af2c304a894b31f0935c38d64b880b207e44c68ddadf017c025aa9a9e3`;
+purge removed four owned files. Base verification passed by **18:10:49 UTC**:
+zero overlays, all 429 base files unchanged, aggregate
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+No profile/save/history/Cloud filesystem access or retained live corpus occurred.
+Launch investigation plus test/cleanup spanned **18:01:42–18:10:49 UTC** (547
+seconds). Controller, documentation and user-wait times were not separately
+measured. No production source or package changed, so no release gate was rerun.
+
+The next narrow case is Fake Merchant with zero purchases, checking the exact
+unchanged inventory through Open/Close/Leave and map return. The helper supports
+three decisions/90 seconds, but needs a fresh installation and a matching native
+setup without already-owned fake relics. No package is currently installed;
+agent-managed Steam launch can be used after that preparation.

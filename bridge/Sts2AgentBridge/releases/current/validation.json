@@ -11,14 +11,14 @@
     "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
     "game_process_running": false,
     "generated_files_removed": 4,
-    "installed_state_sha256": "5dd2560fec972e14597693a012d0c450829f95aa043ffef44c9ad696a07b3a41",
+    "installed_state_sha256": "7ba782981a1a3be6d8a1ea05dcb848c8600ac03abfa5a6abf339e1d53bda2eb7",
     "normal_app_quit": true,
     "normal_save_and_quit": true,
     "overlay_count": 0,
     "port_accepting": false,
-    "quarantined_state_sha256": "8d3f722fdc4adef51e974d25c0ffb3030f53df12e1c7d3ce7b1cf285f4ee544e",
+    "quarantined_state_sha256": "086348af2c304a894b31f0935c38d64b880b207e44c68ddadf017c025aa9a9e3",
     "status": "passed",
-    "verified_by_utc": "2026-09-27 17:44:17 UTC"
+    "verified_by_utc": "2026-09-27 18:10:49 UTC"
   },
   "completed_cleanups": [
     {
@@ -104,6 +104,20 @@
       "quarantined_state_sha256": "b8318bdde4f7d28003969182df6202f00a774abd6be562214520c16ff5b895f0",
       "status": "passed",
       "verified_by_utc": "2026-09-27 17:30:13 UTC"
+    },
+    {
+      "base_file_count": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "game_process_running": false,
+      "generated_files_removed": 4,
+      "installed_state_sha256": "5dd2560fec972e14597693a012d0c450829f95aa043ffef44c9ad696a07b3a41",
+      "normal_app_quit": true,
+      "normal_save_and_quit": true,
+      "overlay_count": 0,
+      "port_accepting": false,
+      "quarantined_state_sha256": "8d3f722fdc4adef51e974d25c0ffb3030f53df12e1c7d3ce7b1cf285f4ee544e",
+      "status": "passed",
+      "verified_by_utc": "2026-09-27 17:44:17 UTC"
     }
   ],
   "completed_installations": [
@@ -661,16 +675,38 @@
     "overlay_count": 2,
     "port_accepting_at_install": false,
     "state_sha256": "7ba782981a1a3be6d8a1ea05dcb848c8600ac03abfa5a6abf339e1d53bda2eb7",
-    "status": "installed_verified",
+    "status": "tested_cleaned",
     "verified_by_utc": "2026-09-27 17:50:30 UTC"
   },
+  "launch_verification": {
+    "authenticated_health_and_manifest_passed_each_time": true,
+    "cold_steam_start_tested": false,
+    "command": [
+      "/Applications/Steam.app/Contents/MacOS/steam_osx",
+      "-applaunch",
+      "2868840"
+    ],
+    "guide": "docs/LIVE_DEVELOPMENT.md#agent-managed-steam-launch-on-this-mac",
+    "launcher_return_seconds": [
+      0.441,
+      0.18
+    ],
+    "normal_quit_between_launches": true,
+    "process_and_listener_stopped_between_launches": true,
+    "profile": 3,
+    "status": "passed",
+    "steam_already_running_and_signed_in": true,
+    "successful_main_menu_launches": 2,
+    "timing_note": "Launcher return times are not game-readiness durations; readiness was checked independently.",
+    "user_authorized_agent_launch_and_restart_date": "2026-09-27"
+  },
   "live": {
-    "accepted": 49,
-    "attempted": 50,
-    "case_count": 7,
+    "accepted": 58,
+    "attempted": 59,
+    "case_count": 8,
     "full_shared_native_interface_complete": false,
     "pending": false,
-    "reconciled": 49,
+    "reconciled": 58,
     "stale_rejections": 1,
     "status": "passed"
   },
@@ -1291,20 +1327,136 @@
       "user_wait_seconds": null,
       "verification_reads": 1,
       "verified_by_utc": "2026-09-27 17:42:41 UTC"
+    },
+    {
+      "accepted": 9,
+      "actionable_map": true,
+      "actions": [
+        "open",
+        "buy",
+        "buy",
+        "buy",
+        "buy",
+        "buy",
+        "buy",
+        "close",
+        "leave"
+      ],
+      "after": {
+        "deck_count": 11,
+        "gold": 219,
+        "hp": 71,
+        "max_hp": 71,
+        "potion_capacity": 3,
+        "relic_count": 10
+      },
+      "attempted": 9,
+      "before": {
+        "deck_count": 11,
+        "gold": 499,
+        "hp": 68,
+        "max_hp": 68,
+        "potion_capacity": 3,
+        "relic_count": 4
+      },
+      "case": "fake_merchant_six_purchases",
+      "controller_reads": 44,
+      "controller_seconds": null,
+      "decisions": 9,
+      "evidence": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#fake-merchant-six-purchases-passed",
+      "installed_state_sha256": "7ba782981a1a3be6d8a1ea05dcb848c8600ac03abfa5a6abf339e1d53bda2eb7",
+      "launch_investigation_and_test_seconds": 547,
+      "launch_investigation_and_test_window_utc": [
+        "2026-09-27 18:01:42 UTC",
+        "2026-09-27 18:10:49 UTC"
+      ],
+      "limits": [
+        "Controlled Act 1 console entry; natural event eligibility and other stock sets remain separate.",
+        "Zero purchases remain untested; full-HP Waffle demonstrates only the capped healing result.",
+        "No reward or event save/reload persistence claim."
+      ],
+      "manual_gameplay_after_attachment": false,
+      "native_verification_counts": [
+        9,
+        9,
+        9
+      ],
+      "original_deck_potions_relics_preserved": true,
+      "outcome": {
+        "kind": "truncated",
+        "reason": "external_stop"
+      },
+      "pending": false,
+      "purchases": [
+        {
+          "price": 47,
+          "relic": "fake_orichalcum",
+          "slot": 0
+        },
+        {
+          "price": 48,
+          "relic": "fake_mango",
+          "slot": 1
+        },
+        {
+          "price": 44,
+          "relic": "fake_snecko_eye",
+          "slot": 2
+        },
+        {
+          "price": 47,
+          "relic": "fake_lees_waffle",
+          "slot": 3
+        },
+        {
+          "price": 44,
+          "relic": "fake_strike_dummy",
+          "slot": 4
+        },
+        {
+          "price": 50,
+          "relic": "fake_venerable_tea_set",
+          "slot": 5
+        }
+      ],
+      "reconciled": 9,
+      "release_manifest_sha256": "69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639",
+      "setup": {
+        "ascension": 0,
+        "character": "ironclad",
+        "combat_cards_or_potions_used_in_setup": false,
+        "console_setup_before_attachment": true,
+        "gold_added": 400,
+        "initial_hp_full": true,
+        "initial_inventory_closed": true,
+        "launch_method": "installed Steam client -applaunch 2868840",
+        "manual_launch": false,
+        "mode": "saved_native_seeded_custom_without_gameplay_modifiers",
+        "new_campaign": false,
+        "profile": 3,
+        "restored_checkpoint": "Completed Neow; native Proceed and connected combat-room entry preceded console Fake Merchant.",
+        "seed": "TEST74"
+      },
+      "source_commit": "0fb2972acf5475de36908beac2b89c4d50a60a93",
+      "stale_rejections": 0,
+      "status": "passed",
+      "total_paid": 280,
+      "user_wait_seconds": null,
+      "verification_reads": 1,
+      "verified_by_utc": "2026-09-27 18:08:52 UTC"
     }
   ],
   "next_live_test": {
-    "acceptance": "Open the initially closed inventory, verify all six distinct advertised relics and prices, buy each exact slot once, verify each debit and relic append, then Close/Leave to the actionable map. Preserve original deck/potions/relics and check any Fake Mango +3 HP/max-HP effect from a full-HP baseline.",
-    "baseline": "Continue saved TEST74 and inspect the restored checkpoint. Before attachment, add 400 gold through the native console and prepare Fake Merchant with its inventory closed, no fake relics already owned and full HP. Use a connected room entry if needed to clear travel state.",
-    "decision_limit": 9,
-    "first_case": "Fake Merchant: six purchases, Close and Leave through the full producer.",
-    "game_restart_required": true,
-    "helper_case": "fake-merchant 6",
-    "installed_state_sha256": "7ba782981a1a3be6d8a1ea05dcb848c8600ac03abfa5a6abf339e1d53bda2eb7",
-    "new_campaign_required": false,
+    "acceptance": "Open the six-slot inventory, buy nothing, Close and Leave; verify exact unchanged deck, relics, potions, HP/max HP and gold through the actionable map.",
+    "agent_managed_launch_authorized": true,
+    "baseline": "Inspect the saved checkpoint and prepare a full-HP Fake Merchant entry with inventory closed and no fake relics already owned. If the saved purchases remain, establish the matching controlled setup before attachment.",
+    "decision_limit": 3,
+    "first_case": "Fake Merchant: zero purchases, Close and Leave through the full producer.",
+    "fresh_installation_required": true,
+    "helper_case": "fake-merchant 0",
     "prepared_helper": "/private/tmp/sts-broader-live-check.py",
     "seconds": 90,
-    "status": "awaiting_manual_launch"
+    "status": "requires_installation_and_controlled_setup"
   },
   "package": {
     "Sts2AgentBridgeUnified-1.0.0.zip": [
@@ -1355,7 +1507,7 @@
   "release_manifest_sha256": "69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639",
   "remaining_limits": [
     "The fresh Shears/full-belt Phial correction passed at 7/7/7 through final curse and map return. The prior 6/5/4 action remains uncertain under its original release.",
-    "Other named variants remain in docs/STATUS.md; no exhaustive fidelity claim. Compound offer Skip and Leafy Poultice automatic transformations passed at 5/5/5. Fake Merchant six purchases are prepared next; zero-purchase and other named paths retain separate evidence limits.",
+    "Other named variants remain in docs/STATUS.md; no exhaustive fidelity claim. Compound offer Skip/Leafy Poultice passed at 5/5/5 and Fake Merchant six purchases at 9/9/9. Zero-purchase and other named paths retain separate evidence limits.",
     "Earlier assisted shared-v2 campaign and Neow passes retain their original artifacts."
   ],
   "schema_version": 1,
