@@ -2705,3 +2705,66 @@ attachment. The existing five-action/60-second helper checks Shame before the
 two-card upgrade selector, exact +1 upgrades, unchanged survivors/inventory and
 map return. No new campaign or production change is required. Manual launch is
 the remaining prerequisite for that separate live case.
+
+
+### Trial curse and two upgrades passed
+
+After the user reported manual Profile 3 launch, fresh running-state,
+source/owned-installation, authenticated health and pinned-build compatibility
+checks passed. The unchanged manifest was
+`69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639`, source
+`0fb2972acf5475de36908beac2b89c4d50a60a93`, installed state
+`f95a03749602c8100a8e3e3558d4f0fad47e7abb6808f29edf9dba9624ffacad`.
+Native Continue restored the saved **TEST531** Ironclad A0 campaign at Punch Off's
+pre-claim reward checkpoint: 186/204 HP, 99 gold, thirteen cards, Burning Blood
+and three original potions. This restored setup is separate from the previous
+live reward result; no save/reload persistence claim is made.
+
+Before attachment, native Skip opened the map. A connected combat node was
+entered normally to clear travel eligibility. The console then entered Trial;
+native EnterRoom exits the preceding room, and CombatRoom.Exit resets combat.
+No combat card or potion was played during setup. Native Accept visibly produced
+the Merchant branch, confirming the seed prediction. The Innocent option offered
+Shame and two upgrades. All setup preceded the helper's first public decision.
+
+The existing bounded helper completed **5 attempted / 5 accepted / 5 reconciled**
+actions: Innocent, select two exact originals, Confirm and Leave. **Shame** was
+observed as the sole added card before the fixed-two upgrade selector. Two
+original **Strikes changed from upgrade 0 to 1**. All other original cards and
+the new Shame remained exact; no card was replaced. HP/max HP, gold, Burning Blood
+and the three potion slots/models were unchanged. The final deck had fourteen
+cards and the policy reached an actionable map, with nothing pending.
+
+There were **34 bounded preflight reads**, **15 controller reads**, five decisions,
+zero stale rejections and one separate verification read. The fresh public read
+confirmed native counts **5/5/5**, exact inventory and `truncated/external_stop`.
+The native map and inventory counters were visually confirmed by **16:54:01 UTC
+on 2026-09-27**. No manual gameplay input occurred after attachment. This adds a
+representative conditional curse-plus-two-upgrade case to the earlier separate
+Trial/Nondescript two-transform result. Automatic grant provenance and natural
+entry retain their existing limits.
+
+Normal Save and Quit, visible main menu and app Quit completed. Fresh stopped-
+process/closed-listener checks passed, followed by exact quarantine to
+`76b9d52def81edd73495ebe6328081ae0ff0d46447a8cb472a66f59500842061`
+and purge of four owned files. Base verification passed by **16:55:30 UTC**:
+zero overlays, all 429 base files unchanged, aggregate
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+No profile/save/history/Cloud filesystem access or retained live corpus occurred.
+The preparation-to-cleanup window was **16:50:08–16:55:30 UTC** (322 seconds);
+controller and user-wait durations were not separately measured. No production
+source changed; the accepted release checks were reused without another gate.
+
+The same accepted package was reinstalled for Wood Carvings/Torus under state
+`ea2ad3d2f5a76e9da885f72a67fe9c4fade0052e296eb89da037bdfa6f4f22cb`.
+Exact overlays and installed PE metadata checked by **16:58:32 UTC**: two owned
+overlays and all 429 base files unchanged. Pinned WoodCarvings.Torus uses a
+fixed-one generic transform prompt filtered to transformable Basic cards, then
+transforms the selected original to Toric Toughness. The full producer retains
+that exact domain, selection preview and Confirm through its existing card-grid
+adapter. The prepared four-action/60-second helper targets an eligible upgrade-0
+Strike, checks its exact replacement and all survivors/inventory, and stops on a
+settled map. Native Continue and controlled console setup will use the saved
+campaign; the actual restored room and legal option will be checked before
+attachment. The package is prepared and awaiting manual launch; Torus is not yet
+a live result.

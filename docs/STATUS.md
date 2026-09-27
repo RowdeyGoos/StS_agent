@@ -12,6 +12,13 @@ Quick navigation: [supported interactions](#supported-interactions) ·
 [missing features versus remaining tests](#implementation-gaps-versus-remaining-live-tests) ·
 [release and evidence](#release-and-latest-evidence).
 
+The [Trial Merchant/Innocent case](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#trial-curse-and-two-upgrades-passed)
+passed **5/5/5**, with fifteen controller reads and nothing pending. Shame was
+observed before the fixed-two selector; two original Strikes gained one upgrade,
+with all other cards and inventory unchanged through map return. Both named
+Trial selector branches now have live evidence. Cleanup passed by **16:55:30 UTC**,
+with zero overlays and all 429 base files unchanged.
+
 The [Punch Off full-belt Potion Belt case](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#punch-off-capacity-first-potion-belt-passed)
 passed **17 attempted / 16 accepted / 16 reconciled**, with one non-mutating stale
 rejection, 234 controller reads and nothing pending. Belt added two empty slots
@@ -189,8 +196,8 @@ extend standalone rest/shop contracts.
 | Interaction | Implemented scope | Live evidence and limits |
 | --- | --- | --- |
 | Ordinary and repeated option pages | Owned choices, completed callbacks, fresh native controls and bounded revisits | Abyssal Baths two Lingers/exit demonstrated; other long chains need caller coverage |
-| Deck changes around a selector | Append-only baseline before the first selector; removal followed by at most one separate appended grant | Grave/Confront, Amalgamator/CombineStrikes and Trial/NondescriptInnocent demonstrated; grant provenance unverified; arbitrary survivor changes/multiple grants unsupported |
-| Upgrade | Fixed selection counts 1–8; eligible allocated off-screen holders | Sapphire Seed single upgrade at slot 20 of 23 demonstrated. Yummy Cookie's fixed-four selector passed through the full producer at 7/7/7, with exact upgrades and map return. Other counts/callers retain separate limits; Dummy automatic upgrades are not selector evidence |
+| Deck changes around a selector | Append-only baseline before the first selector; removal followed by at most one separate appended grant | Grave/Confront, Amalgamator/CombineStrikes and both Trial/Innocent selector branches demonstrated; grant provenance unverified; arbitrary survivor changes/multiple grants unsupported |
+| Upgrade | Fixed selection counts 1–8; eligible allocated off-screen holders | Sapphire Seed single upgrade at slot 20 of 23 demonstrated. Full-producer Trial/MerchantInnocent fixed-two passed 5/5/5 after Shame addition, and Yummy Cookie fixed-four passed 7/7/7, with exact upgrades and map return. Other counts/callers retain separate limits; Dummy automatic upgrades are not selector evidence |
 | Enchant | Single selection and fixed 2–8 selections with exact preview/effects | Sapphire Seed, Grave and Prickly Sponge fixed-two demonstrated; other counts/callers offline only; stacking/replacement and optional counts unsupported |
 | Remove | Positive selections up to eight with exact original preview/removal; owned automatic removal without a selector | Amalgamator fixed-two and one-card Dark Door automatic completion/map demonstrated; other counts/callers need evidence |
 | Transform | Fixed/positive variable counts up to eight; optional 0..8; fixed-one generic transform-prompt surface | Allocated off-screen input, Wood Carvings/Bird and Claws zero/three/six demonstrated. Trial/NondescriptInnocent passed 5/5/5 after observed Doubt addition: two exact originals transformed, survivors/inventory preserved and map returned. Torus and other callers need evidence |
@@ -428,13 +435,12 @@ These are **not an implementation queue or required live-test checklist**:
   original potions and filled both added slots. Console-created Repy had no
   Lantern Key; quest removal and natural entry remain separate evidence limits.
   Resume capacity has no identified native caller.
-- Yummy Cookie's fixed-four upgrade selection has representative live acceptance.
-  Trial/NondescriptInnocent’s curse-plus-two-transform path also passed at 5/5/5.
-  Trial/MerchantInnocent's conditional curse-plus-two-upgrade path remains
-  untested. Native RNG inspection predicts the saved TEST531 campaign selects
-  Merchant; this is prepared for a controlled test, with the actual branch
-  checked before attachment. Recreating Trial repeats a campaign's branch. Held-out
-  enchant/removal/transform callers such as Torus retain separate evidence limits.
+- Held-out enchant/removal/transform callers such as Wood Carvings/Torus retain
+  separate evidence limits. Its fixed-one basic-card choice and exact Toric
+  Toughness replacement are prepared as the next case. Yummy Cookie's fixed-four
+  upgrades and both Trial/Innocent curse-plus-two selectors now have representative
+  live acceptance; each Trial branch passed 5/5/5. Recreating Trial repeats a
+  campaign's branch; the saved TEST531 campaign produced Merchant as predicted.
 - Other natural ancient entry/dialogue routes beyond the demonstrated Nonupeipe continuation.
 - Broader reward orders/outcomes with a concrete offered screen, Sphere earned
   relics, and Fake Merchant zero/six-purchase variants. Sphere small/big tools,
@@ -473,7 +479,10 @@ Punch Off's full-belt terminal variant passed **17/16/16**, 234 controller reads
 plus one verification read, one non-mutating stale rejection and nothing pending.
 Both added slots contained the exact offered Fire Potions, and the original deck
 was preserved with Whirlwind appended.
-Latest exact owned cleanup and base verification passed by **16:44:24 UTC**:
+Trial/MerchantInnocent then passed **5/5/5**, 34 preflight reads, fifteen controller
+reads and one verification read. Shame and two exact Strike upgrades settled
+through map return without changing other inventory.
+Latest exact owned cleanup and base verification passed by **16:55:30 UTC**:
 zero overlays and all 429 base files unchanged.
 
 The prior manifest **`14772d59c22d9d630bc71780c3871fedd95331e9c6797267a5fe0acd5ab0582a`**,

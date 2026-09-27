@@ -1,6 +1,6 @@
 # Roadmap
 
-Priorities updated 2026-09-26. This file owns priorities;
+Priorities updated 2026-09-27. This file owns priorities;
 [current status](docs/STATUS.md) owns capability and evidence. Follow [AGENTS.md](AGENTS.md) for the development
 process. Completed packets and old campaign instructions are historical references.
 
@@ -21,15 +21,15 @@ another fresh campaign is not an acceptance requirement. See the
 1. **Finish representative coverage of remaining pickup and selector variants.**
    Custom screens, Trial abandonment Cancel/Confirm, event combat/reward/map paths,
    Dummy victory with automatic upgrades, terminal potion policies and assisted
-   Fake Merchant seven-relic collection now have live results. Remaining targets
-   include capacity-first terminal/event rewards,
-   other Neow compound branches,
+   Fake Merchant seven-relic collection now have live results. Capacity-first
+   terminal/event rewards and both Trial/Innocent selector branches also have
+   representative acceptance. Remaining targets include other Neow compound branches
    and concrete remaining pickup effects. Sphere's small/big tools and earned
    gold/card/potions passed; earned relics retain a separate evidence limit.
    Yummy Cookie's true four-card upgrade
    selector, all five supported shop card-selector families and Cauldron/Orrery
    rewards, plus Silver Crucible’s empty chest, now have representative live
-   acceptance; conditional Trial paths retain their separate evidence limits.
+   acceptance; held-out callers such as Wood Carvings/Torus retain separate limits.
    Choose a concrete native caller and observable outcome before extending a mechanism.
    [Current status](docs/STATUS.md) owns exact evidence and practical limits.
 2. **Exercise remaining handoff variants in useful live runs.**

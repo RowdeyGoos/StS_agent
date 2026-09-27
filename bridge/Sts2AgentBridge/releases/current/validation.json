@@ -11,14 +11,14 @@
     "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
     "game_process_running": false,
     "generated_files_removed": 4,
-    "installed_state_sha256": "4f2ca6cf55ffc0449db2cbb7928727a8a14fa86f80a5b39c20776dd5dadd7ec5",
+    "installed_state_sha256": "f95a03749602c8100a8e3e3558d4f0fad47e7abb6808f29edf9dba9624ffacad",
     "normal_app_quit": true,
     "normal_save_and_quit": true,
     "overlay_count": 0,
     "port_accepting": false,
-    "quarantined_state_sha256": "26866a40d4bd485a2f5fc62d36a7d6bb1121a2bb5d5a8ce5bcb5b4116689cdbb",
+    "quarantined_state_sha256": "76b9d52def81edd73495ebe6328081ae0ff0d46447a8cb472a66f59500842061",
     "status": "passed",
-    "verified_by_utc": "2026-09-27 16:44:24 UTC"
+    "verified_by_utc": "2026-09-27 16:55:30 UTC"
   },
   "completed_cleanups": [
     {
@@ -62,6 +62,20 @@
       "quarantined_state_sha256": "19e5eceae0f1ce770143f6eef47bba79a15349a6c3f4596bfb67fc4482af7150",
       "status": "passed",
       "verified_by_utc": "2026-09-27 16:24:34 UTC"
+    },
+    {
+      "base_file_count": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "game_process_running": false,
+      "generated_files_removed": 4,
+      "installed_state_sha256": "4f2ca6cf55ffc0449db2cbb7928727a8a14fa86f80a5b39c20776dd5dadd7ec5",
+      "normal_app_quit": true,
+      "normal_save_and_quit": true,
+      "overlay_count": 0,
+      "port_accepting": false,
+      "quarantined_state_sha256": "26866a40d4bd485a2f5fc62d36a7d6bb1121a2bb5d5a8ce5bcb5b4116689cdbb",
+      "status": "passed",
+      "verified_by_utc": "2026-09-27 16:44:24 UTC"
     }
   ],
   "completed_installations": [
@@ -108,6 +122,17 @@
       "state_sha256": "4f2ca6cf55ffc0449db2cbb7928727a8a14fa86f80a5b39c20776dd5dadd7ec5",
       "status": "tested_cleaned",
       "verified_by_utc": "2026-09-27 16:30:23 UTC"
+    },
+    {
+      "base_file_count": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "game_process_running_at_install": false,
+      "metadata_verifier": "passed",
+      "overlay_count": 2,
+      "port_accepting_at_install": false,
+      "state_sha256": "f95a03749602c8100a8e3e3558d4f0fad47e7abb6808f29edf9dba9624ffacad",
+      "status": "tested_cleaned",
+      "verified_by_utc": "2026-09-27 16:46:13 UTC"
     }
   ],
   "elapsed_times": {
@@ -585,17 +610,17 @@
     "metadata_verifier": "passed",
     "overlay_count": 2,
     "port_accepting_at_install": false,
-    "state_sha256": "f95a03749602c8100a8e3e3558d4f0fad47e7abb6808f29edf9dba9624ffacad",
+    "state_sha256": "ea2ad3d2f5a76e9da885f72a67fe9c4fade0052e296eb89da037bdfa6f4f22cb",
     "status": "installed_verified",
-    "verified_by_utc": "2026-09-27 16:46:13 UTC"
+    "verified_by_utc": "2026-09-27 16:58:32 UTC"
   },
   "live": {
-    "accepted": 35,
-    "attempted": 36,
-    "case_count": 4,
+    "accepted": 40,
+    "attempted": 41,
+    "case_count": 5,
     "full_shared_native_interface_complete": false,
     "pending": false,
-    "reconciled": 35,
+    "reconciled": 40,
     "stale_rejections": 1,
     "status": "passed"
   },
@@ -942,18 +967,111 @@
       "user_wait_seconds": null,
       "verification_reads": 1,
       "verified_by_utc": "2026-09-27 16:43:03 UTC"
+    },
+    {
+      "accepted": 5,
+      "actionable_map": true,
+      "actions": [
+        "choose_event_option",
+        "choose_event_card",
+        "choose_event_card",
+        "confirm_selection",
+        "leave_event"
+      ],
+      "after": {
+        "deck": 14,
+        "gold": 99,
+        "hp": 186,
+        "max_hp": 204,
+        "potion_capacity": 3,
+        "relic_count": 1
+      },
+      "attempted": 5,
+      "before": {
+        "deck": 13,
+        "gold": 99,
+        "hp": 186,
+        "max_hp": 204,
+        "potion_capacity": 3,
+        "relic_count": 1
+      },
+      "case": "trial_merchant_innocent_curse_two_upgrades",
+      "controller_reads": 15,
+      "controller_seconds": null,
+      "curse_added": "shame",
+      "curse_observed_before_selector": true,
+      "decisions": 5,
+      "evidence": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#trial-curse-and-two-upgrades-passed",
+      "installed_state_sha256": "f95a03749602c8100a8e3e3558d4f0fad47e7abb6808f29edf9dba9624ffacad",
+      "limits": [
+        "Automatic Shame grant provenance and natural event entry remain separate from exact observed selector effects.",
+        "No reward or selector save/reload persistence claim."
+      ],
+      "manual_gameplay_after_attachment": false,
+      "native_verification_counts": [
+        5,
+        5,
+        5
+      ],
+      "other_inventory_unchanged": true,
+      "outcome": {
+        "kind": "truncated",
+        "reason": "external_stop"
+      },
+      "pending": false,
+      "preflight_reads": 34,
+      "preparation_to_cleanup_seconds": 322,
+      "preparation_to_cleanup_window_utc": [
+        "2026-09-27 16:50:08 UTC",
+        "2026-09-27 16:55:30 UTC"
+      ],
+      "reconciled": 5,
+      "release_manifest_sha256": "69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639",
+      "selected_cards": [
+        {
+          "after": 1,
+          "before": 0,
+          "id": "strike"
+        },
+        {
+          "after": 1,
+          "before": 0,
+          "id": "strike"
+        }
+      ],
+      "setup": {
+        "actual_merchant_branch_verified": true,
+        "ascension": 0,
+        "character": "ironclad",
+        "console_setup_before_attachment": true,
+        "manual_launch": true,
+        "mode": "saved_native_seeded_custom_without_gameplay_modifiers",
+        "native_accept_before_attachment": true,
+        "new_campaign": false,
+        "profile": 3,
+        "restored_checkpoint": "Punch Off pre-claim rewards; native Skip/map and a connected combat-room entry preceded console Trial.",
+        "seed": "TEST531"
+      },
+      "source_commit": "0fb2972acf5475de36908beac2b89c4d50a60a93",
+      "stale_rejections": 0,
+      "status": "passed",
+      "surviving_unselected_cards_unchanged": true,
+      "user_wait_seconds": null,
+      "verification_reads": 1,
+      "verified_by_utc": "2026-09-27 16:54:01 UTC"
     }
   ],
   "next_live_test": {
-    "acceptance": "Observe exactly Shame added before the fixed-two selector; upgrade two exact originals by one, retain all other cards and inventory, then settle event/map return.",
-    "baseline": "Continue the saved TEST531 campaign; console-created Trial and native Accept before attachment. Verify actual Merchant/Innocent option before the bounded five-action test.",
-    "first_case": "Trial Merchant/Innocent curse followed by two upgrades.",
+    "acceptance": "Choose Torus, select one exact eligible original Strike, verify its preview and confirm; verify only that original becomes Toric Toughness at upgrade 0, preserve other cards/inventory and settle map return.",
+    "baseline": "Continue the saved TEST531 campaign and inspect its restored checkpoint. Use a connected room entry if travel is enabled, then console-create Wood Carvings before attachment. Require Burning Blood alone and a legal upgrade-0 Strike.",
+    "decision_limit": 4,
+    "first_case": "Wood Carvings/Torus fixed-one basic-card transformation.",
     "game_restart_required": true,
-    "helper_case": "trial-selector upgrade",
-    "installed_state_sha256": "f95a03749602c8100a8e3e3558d4f0fad47e7abb6808f29edf9dba9624ffacad",
+    "helper_case": "wood-torus",
+    "installed_state_sha256": "ea2ad3d2f5a76e9da885f72a67fe9c4fade0052e296eb89da037bdfa6f4f22cb",
     "new_campaign_required": false,
     "prepared_helper": "/private/tmp/sts-broader-live-check.py",
-    "setup_prediction": "Pinned EventModel.BeginEvent seeds from the run seed plus player slot and TRIAL hash; Trial Accept first NextInt(3) is 0 (Merchant) for TEST531.",
+    "seconds": 60,
     "status": "awaiting_manual_launch"
   },
   "package": {
@@ -1005,7 +1123,7 @@
   "release_manifest_sha256": "69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639",
   "remaining_limits": [
     "The fresh Shears/full-belt Phial correction passed at 7/7/7 through final curse and map return. The prior 6/5/4 action remains uncertain under its original release.",
-    "Other named variants including Trial/MerchantInnocent upgrades remain in docs/STATUS.md; no exhaustive fidelity claim. New Leaf/empty-belt Holster and full-belt capacity-first Repy event/Punch Off terminal rewards passed.",
+    "Other named variants including Wood Carvings/Torus remain in docs/STATUS.md; no exhaustive fidelity claim. New Leaf/empty-belt Holster, capacity-first Repy/Punch Off rewards and Trial/MerchantInnocent two upgrades passed.",
     "Earlier assisted shared-v2 campaign and Neow passes retain their original artifacts."
   ],
   "schema_version": 1,

@@ -55,8 +55,14 @@ Potions filled them. Gold, Whirlwind and map return completed. HP/damage assista
 was applied before attachment. Exact cleanup passed by **16:44:24 UTC**, leaving
 zero overlays and all 429 base files unchanged.
 
-The same package is reinstalled and verified by **16:46:13 UTC** for Trial’s
-Merchant/Innocent two-upgrade test. Two exact overlays are installed and all
-429 base files are unchanged. The saved TEST531 campaign predicts Merchant;
-the actual branch will be checked before attachment. Manual Profile 3 launch
-is pending; no fresh campaign is required.
+Trial’s Merchant/Innocent case then passed **5/5/5**, 34 preflight reads, fifteen
+controller reads and one verification read. Shame appeared before the fixed-two
+selector; two original Strikes gained one upgrade, with all other cards/inventory
+preserved through map return. Exact cleanup passed by **16:55:30 UTC**, leaving
+zero overlays and all 429 base files unchanged.
+
+The same package is reinstalled and verified by **16:58:32 UTC** for Wood Carvings’
+Torus test. Two exact overlays are installed and all 429 base files are unchanged.
+The prepared helper checks one original basic card becoming Toric Toughness,
+unchanged survivors/inventory and map return. Manual Profile 3 launch is pending;
+the saved campaign can be continued.
