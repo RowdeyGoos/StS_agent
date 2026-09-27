@@ -2438,3 +2438,19 @@ zero overlays, all 429 base files unchanged, aggregate
 `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
 Cleanup does not reconcile the failed action. Separate controller and user-wait
 elapsed durations were not measured.
+
+Post-run fixture diagnosis reproduced Shears → full-belt Holster failing in
+reward-set completion. Settled claims recognized capacity growth only through
+the legacy Potion Belt field, so Shears' stored capacity of three rejected
+Holster's correctly observed fourth slot. Old Coin → Holster exposes the same
+ordering defect. The correction carries only capacity validated by the pending
+effect owner's exact inventory proof and advances stored capacities only after
+successful settlement. It also covers capacity granted through Large Capsule;
+no procurement hook or ownership guard was relaxed.
+
+Focused validation passed **3,487 full-event reward checks** and **216 reward
+alternative checks**, four groups in **61.067 seconds**, at
+`/private/tmp/sts-bridge-3jgtcyat`. Combined delayed/faulted callback and foreign
+capacity/potion cases retain waiting or failure as appropriate. Independent
+source review found no blocker in **59 seconds** (14:55:49–14:56:48 UTC).
+This is correction evidence, not a successful live retest of the stopped action.

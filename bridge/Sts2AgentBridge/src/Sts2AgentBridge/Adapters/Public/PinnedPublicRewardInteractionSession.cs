@@ -281,8 +281,8 @@ internal sealed class PinnedPublicRewardInteractionSession
     }
     internal bool UsesItemIndices => _itemDomain is not null;
     internal bool SettledItemsValid(int certifiedCapacity=-1) {
-        var growth=_pending?.Item;
-        int capacity=growth is {PotionCapacityGain:>0} && growth.Valid(true)?growth.ResultCapacity:certifiedCapacity;
+        int capacity=_pending?.Item?.CertifiedCapacity??-1;
+        if(capacity<0)capacity=certifiedCapacity;
         return _settledItems.TrueForAll(item=>item.SettledValid(capacity));
     }
     internal void AcceptCapacity(int capacity) {
@@ -294,12 +294,9 @@ internal sealed class PinnedPublicRewardInteractionSession
         }
     }
     internal void SettleItem(PinnedPublicItemRewardClaim item) {
+        int capacity=item.CertifiedCapacity;
         item.Settle();
-        if(item.PotionCapacityGain>0) {
-            foreach(var settled in _settledItems)settled.AcceptCapacity(item.ResultCapacity);
-            Array.Resize(ref _initialPotions,item.ResultCapacity);
-            Array.Resize(ref _initialPotionKeys,item.ResultCapacity);
-        }
+        if(capacity>=0)AcceptCapacity(capacity);
         _settledItems.Add(item);
     }
     internal bool ForceRewardOrdinals;

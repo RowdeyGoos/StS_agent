@@ -77,6 +77,11 @@ internal sealed class PinnedPublicItemRewardClaim
         after==before with {MaxHp=before.MaxHp+MaxHpGain,Hp=(int)Math.Min((long)before.Hp+HealAmount,(long)before.MaxHp+MaxHpGain)};
     internal int PotionCapacityGain {get;}
     internal int ResultCapacity=>_potions.Length+PotionCapacityGain;
+    // Full effect owners certify the entire current inventory, including
+    // capacity granted by nested pickups and slots already filled by Phial.
+    // A pending native callback is not completion, but its validated capacity
+    // can keep previously settled claims valid until this item settles.
+    internal int CertifiedCapacity=>(_effect is not null||PotionCapacityGain>0)&&Valid(true)&&Slots(_player,out var slots)?slots.Length:-1;
     private int _settledCapacity;
     private readonly Reward _reward;
     private readonly Player _player;

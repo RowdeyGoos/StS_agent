@@ -611,6 +611,13 @@ ordinary events retain the v1 child contract. Nested Sacrifice retains its exact
 Pael’s Wing callback while the existing compound pickup chain certifies any granted
 relic; it does not install a competing pickup observer or omit the visible action.
 
+During a compound pickup, previously settled rewards accept the potion capacity
+validated by that pickup's exact inventory proof, including filled Phial Holster
+slots and capacity granted through nested relics. This pending proof does not
+complete the pickup. Stored capacity advances only after successful settlement;
+earlier collected potions retain their exact slots and identities. The legacy
+Potion Belt field remains its specific two-slot effect, not a general grant.
+
 Compound deck grids build temporary upgraded previews inside the retained pickup
 invocation. The observer permits one upgrade only of the fresh copy assigned by
 the exact native holder refresh, bound to an eligible original. It verifies the
