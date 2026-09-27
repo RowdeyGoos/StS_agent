@@ -244,7 +244,7 @@ internal static partial class Program
             deck.Act(c,"select:0");if(deck.Count==2)deck.Act(c,"select:1");
             Check(deck.Act(c,"confirm").Status=="resolved","real effect remains certified after preview work "+kind);
         }
-        foreach(string mode in new[]{"original","foreign","wrong_clone","twice","survivor","nested","throw","stale_clone"}) {
+        foreach(string mode in new[]{"original","foreign","wrong_clone","twice","survivor","nested","throw","stale_clone","missing_node"}) {
             using var f=new CompoundRewardFixture();using var deck=new CompoundDeckFixture(f,"remove");
             deck.ConfigurePreview=(holder,card)=>{
                 if(mode=="wrong_clone")holder.PreviewCloneFactory=_=>deck.NewCard("WRONG");
@@ -255,6 +255,7 @@ internal static partial class Program
                 if(mode=="nested")holder.BeforePreviewUpgrade=_=>holder.BuildPreview();
                 if(mode=="throw")holder.AfterPreviewUpgrade=_=>throw new InvalidOperationException("native preview failure");
                 if(mode=="stale_clone"){deck.PreviewPasses=2;holder.PreviewCloneFactory=_=>holder.UpgradedPreview??card.PreviewClone();}
+                if(mode=="missing_node")holder.CardNode=null!;
             };
             var c=f.Start();var ready=f.Read(c);
             var receipt=(GenericEventV7RewardChildApply)f.World.Session.ApplyChild(c.Child!.ParentDecisionId,c.Child.ParentActionId,c.Child.Ordinal,ready.DecisionId,"collect:0");

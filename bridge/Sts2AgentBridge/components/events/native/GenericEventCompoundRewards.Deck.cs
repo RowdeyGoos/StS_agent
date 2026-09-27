@@ -247,9 +247,9 @@ internal sealed partial class GenericEventCompoundRewards
         internal readonly int Level;
         internal readonly bool Upgradable;
         internal CardModel? Clone;
-        internal GridPreview(DeckLeaf leaf,NGridCardHolder holder)
+        internal GridPreview(DeckLeaf leaf,NGridCardHolder holder,CardModel original)
         {
-            Leaf=leaf;Holder=holder;Original=holder.CardNode.Model;Previous=Field(holder,"_upgradedCard");
+            Leaf=leaf;Holder=holder;Original=original;Previous=Field(holder,"_upgradedCard");
             Before=new(leaf.Owner._binding.Player);Level=Original.CurrentUpgradeLevel;Upgradable=Original.IsUpgradable;
         }
     }
@@ -271,10 +271,11 @@ internal sealed partial class GenericEventCompoundRewards
     {
         __state=null;var owner=Active;if(owner is null)return;
         var leaf=owner._decks.SingleOrDefault(d=>d.Effects?.IsCurrent==true);if(leaf is null)return;
-        owner.Require(owner.Context()&&owner._gridPreview is null&&ReferenceEquals(owner.NativePickup,leaf.Pickup)&&
+        var original=__instance.CardNode?.Model;
+        owner.Require(original is not null&&owner.Context()&&owner._gridPreview is null&&ReferenceEquals(owner.NativePickup,leaf.Pickup)&&
             ReferenceEquals(owner.CurrentFrame(),leaf.Reward)&&!leaf.EffectCertified&&leaf.Requests.Count>0&&
-            __instance.GetType()==typeof(NGridCardHolder)&&leaf.Eligible.Contains(__instance.CardNode.Model)&&leaf.Effects!.Valid());
-        var call=new GridPreview(leaf,__instance);
+            __instance.GetType()==typeof(NGridCardHolder)&&leaf.Eligible.Contains(original)&&leaf.Effects!.Valid());
+        var call=new GridPreview(leaf,__instance,original);
         owner.Require(call.Before.Deck.Any(c=>ReferenceEquals(c.Model,call.Original)));
         owner._gridPreview=__state=call;
     }
