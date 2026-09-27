@@ -3067,3 +3067,54 @@ zero overlays and all 429 base files unchanged, aggregate
 `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`. Separate controller
 times were not measured; no user wait was needed. No release gate was repeated
 for these unchanged-package tests.
+
+
+### Enchant legal minimum correction prepared — 2026-09-27
+
+The pinned `NDeckEnchantSelectScreen.ConfirmSelection` ignores zero selected
+cards even when its request declares `MinSelect=0`. The correction preserves
+validation of the original request and exposes/enforces an effective minimum of
+one for that exact screen. Plain card grids retain genuine zero confirmation;
+cancellation still requires the native request and enabled retained control.
+The failed 2/2/0 action above remains unresolved under its original artifact.
+
+Source **`7b892d2ce13bd1c884af30f0baa81bd83bfb197b`**, manifest
+**`5ece253f925f3aa766f6c21095d1017aa04f2c5ce366656720f934e354d50c9c`**.
+Focused validation passed **1,010 shop pickup checks** and **3,487 full-event
+reward checks** in 61.859 seconds (`/private/tmp/sts-bridge-mmiuuc0_`). The fixtures
+model the native empty-confirm no-op and verify rejection before input, selections
+of one through three, deselection to zero, genuine versus blocked cancellation,
+invalid raw bounds and plain-grid zero confirmation. Independent semantic review
+was clear, **18:47:15–18:49:29 UTC**, 134 seconds, source-only.
+
+The final gate passed **85 groups in 410.372 seconds**, 489 bound files and
+52 projects, in `/private/tmp/sts-bridge-_r623s93`. Counts: 173 client tests,
+1,719 router checks, 17,745 native event checks and 284 campaign checks.
+The previous exact current record is retained in Git `c4ee750f` and that gate's
+`previous-release-record`; its package remains in `previous-install-inputs`.
+The accepted DLL SHA-256 is
+`d73b988f8d3ebc4387c2f889374b35647c65205b11b2b72dcd7bd07b70811d4a`;
+ZIP SHA-256 is `d3bfa8b9b14fc7a84422d81a250dbbe88fdae71b9cd62cff7550446797ad419e`.
+
+Owned installation **`d0f1fe51132d889aa804cbe5df64158dae113a1ac86449d2c9d457cef3267dd0`**
+and initializer/dependency verification passed by **18:57:12 UTC**, with two
+owned overlays and all 429 base files unchanged. Results-hook metadata was not
+checked by that invocation. A single Steam launch returned zero in 0.149 seconds;
+fresh runtime, authenticated health and manifest compatibility checks passed by
+**18:58:39 UTC**. The UI tool then reported that the Mac was locked. Profile 3
+and menu readiness have not yet been observed, no gameplay bridge attachment
+occurred, and the game/owned installation remain present awaiting unlock. The
+user was asked only to unlock the Mac; autonomous launch/restart authorization
+remains effective. This is preparation, not live acceptance or cleanup.
+
+The next bounded helper checks minimum one and absence of empty confirm/cancel,
+selects/deselects/reselects one Kifuda card, verifies the exact enchantment and
+payment, then Close/Leave and an actionable map. Four additional setup predictions
+cover the seven automatic Neow pickup families: `TEST20` (Silken Tress/Talisman),
+`TEST61` (Golden Pearl/Torment), `TEST264` (Cursed Pearl/Oyster), and `TEST54`
+(Arcane Scroll/Silken Tress). The existing native RNG calculation reproduces
+five earlier observed pairs (TEST74, TEST407, TEST91, TEST475 and TEST614). These
+are setup predictions only; each prepared helper checks the actual offered pair
+and exact outcome. No profile/save/history/Cloud filesystem access or raw live
+corpus was used. Separate implementation/release preparation timing was not
+measured; user-unlock wait is ongoing.

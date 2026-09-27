@@ -15,8 +15,10 @@ Quick navigation: [supported interactions](#supported-interactions) ·
 The latest shop test found a concrete legal-action defect: Kifuda zero-card
 confirmation stopped at **2/2/0**, with both actions unresolved. The pinned native
 enchant confirmation ignores an empty selection despite declared MinSelect=0;
-the bridge must require at least one card. The failed session was closed and
-cleaned by **18:41:59 UTC**. [Sphere/Kifuda evidence](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#sphere-relic-and-kifuda-empty-selection).
+the corrected release now requires at least one card, with raw bounds and native
+cancellation preserved. Its 85-group gate and independent review passed; the live
+one-card retest is pending. The failed session was closed and cleaned by
+**18:41:59 UTC**. [Sphere/Kifuda evidence](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#sphere-relic-and-kifuda-empty-selection).
 Crystal Sphere earned Red Mask, a potion and 70 gold at **13/13/13**, preserving
 originals through the map; its cleanup passed by **18:35:08 UTC**.
 
@@ -503,44 +505,20 @@ supplies dated source candidates rather than a current implementation checklist.
 ## Release and latest evidence
 
 The current [release manifest](../bridge/Sts2AgentBridge/releases/current/bridge.json)
-is **`69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639`**, source
-`0fb2972`. Reward claims now propagate capacity validated by the exact full effect
-owner, including Phial Holster and nested relic grants. Stored capacity advances
-only after successful settlement; pending callbacks and unexpected inventory
-changes retain their waiting/failure behavior. Focused checks passed **3,487 reward
-checks and 216 alternative checks** in 61.067 seconds. Independent review found no
-blocker. The final gate passed **85 groups in 379.888 seconds**, including production
-build/package reproducibility and operational checks. Installation and metadata
-verification passed by **15:07:20 UTC**. The fresh full-belt Holster retest passed
-**7/7/7**, 61 controller reads plus one verification read. The same artifact's
-New Leaf/empty-belt Holster case then passed **6/6/6**, 53 controller reads plus
-one verification read. Both completed the final curse and actionable map.
-Repy's full-belt capacity-first event rewards then passed **6/6/6**, 42 controller
-reads plus one verification read, with exact originals retained and both added
-slots filled before map return.
-Punch Off's full-belt terminal variant passed **17/16/16**, 234 controller reads
-plus one verification read, one non-mutating stale rejection and nothing pending.
-Both added slots contained the exact offered Fire Potions, and the original deck
-was preserved with Whirlwind appended.
-Trial/MerchantInnocent then passed **5/5/5**, 34 preflight reads, fifteen controller
-reads and one verification read. Shame and two exact Strike upgrades settled
-through map return without changing other inventory.
-Wood Carvings/Torus then passed **4/4/4**, forty controller reads and one
-verification read. One exact Strike became Toric Toughness, with unchanged
-survivors/inventory and settled map return.
-Neow's Lead Paperweight Skip / Leafy Poultice case then passed **5/5/5**, 57
-controller reads and one verification read. The skipped offer retained the deck;
-two exact automatic transformations, twelve max-HP loss, final Writhe and map
-return settled with other originals, gold and potions unchanged.
-Fake Merchant's six-purchase inventory path then passed **9/9/9**, 44 controller
-reads and one verification read. Exact payments totaled 280 gold, six relics were
-appended, Fake Mango added three HP/max HP, and the original deck/relics/potions
-were preserved through map return.
-Fake Merchant's zero-purchase path then passed **3/3/3**, 38 controller reads and
-one verification read, preserving the entire inventory through the map.
-Sphere then passed 13/13/13; Kifuda empty confirmation stopped at 2/2/0.
-Latest exact owned cleanup and base verification passed by **18:41:59 UTC**:
-zero overlays and all 429 base files unchanged.
+is **`5ece253f925f3aa766f6c21095d1017aa04f2c5ce366656720f934e354d50c9c`**, source
+`7b892d2`. It corrects the pinned enchant selector's legal minimum to one without
+changing the native cancellation or plain-grid zero paths. Focused checks passed
+1,010 shop pickup checks and 3,487 full-event reward checks in 61.859 seconds.
+Independent semantic review found no blocker. The final release gate passed
+**85 groups in 410.372 seconds**, including reproducible builds, 173 client tests,
+1,719 router checks, 17,745 native event checks and 284 campaign checks. Installation,
+metadata and unchanged-base verification passed by **18:57:12 UTC**. The subsequent
+Steam launch and authenticated health checks passed by **18:58:39 UTC**; a locked Mac currently
+prevents the Profile 3 UI check and one-card Kifuda toggle test.
+
+The preceding manifest `69bfd021…`, source `0fb2972`, corrected reward capacity
+settlement and owns the following live results. Those results retain their exact
+original artifact; they are not tests of the new enchant correction.
 
 The prior manifest **`14772d59c22d9d630bc71780c3871fedd95331e9c6797267a5fe0acd5ab0582a`**,
 source `988f2b5`, carried the scoped compound-grid preview correction. Its release

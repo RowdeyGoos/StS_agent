@@ -26,7 +26,8 @@ another fresh campaign is not an acceptance requirement. See the
    representative acceptance. Remaining targets include other Neow compound branches
    and concrete remaining pickup effects. Sphere's small/big tools and earned
    gold/card/potions and an earned relic passed. The zero-card Kifuda test found a
-   native no-op confirmation; correct bridge legality before the fewer-card retest.
+   native no-op confirmation. The legal-minimum correction passed its release gate;
+   the fewer-card/deselection live retest awaits Mac unlock.
    Yummy Cookie's true four-card upgrade
    selector, all five supported shop card-selector families and Cauldron/Orrery
    rewards, Silver Crucible’s empty chest and Wood Carvings/Torus now have

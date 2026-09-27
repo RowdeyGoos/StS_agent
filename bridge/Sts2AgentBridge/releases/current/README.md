@@ -1,10 +1,9 @@
 # Current unified release
 
-Reward claims now carry potion capacity validated by the exact pickup effect
-owner. Previously settled items accept this capacity while the native callback
-is pending, then store it only after successful settlement. This fixes Phial
-Holster after another reward and capacity granted through Large Capsule, while
-preserving exact earlier potion slots and identities.
+The pinned enchant selector now exposes and enforces a minimum of one card. Native
+empty confirmation is a no-op, although Kifuda/Gnarled Hammer request zero. Raw
+request validation, plain optional-grid zero confirmation and native cancellation
+remain intact.
 
 [Current status](../../../../docs/STATUS.md#release-and-latest-evidence) owns support;
 [bridge usage](../../README.md#client-modes) owns commands.
@@ -14,84 +13,15 @@ preserving exact earlier potion slots and identities.
 | [bridge.json](bridge.json) | Exact source/test, toolchain, reference, binary and package identities |
 | [validation.json](validation.json) | Release checks, independent review and separately bound live evidence |
 
-Manifest SHA-256: `69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639`. Source: `0fb2972acf5475de36908beac2b89c4d50a60a93`.
-The final gate passed **85 groups in 379.888 seconds**, including reproducible
-production builds, package metadata, integration and operational fixtures.
-Focused checks passed **3,487 full-event reward checks** and **216 reward
-alternative checks** in 61.067 seconds. Independent semantic review found no blocker.
+Manifest SHA-256: `5ece253f925f3aa766f6c21095d1017aa04f2c5ce366656720f934e354d50c9c`. Source: `7b892d2ce13bd1c884af30f0baa81bd83bfb197b`.
+The final gate passed **85 groups in 410.372 seconds**. Focused checks passed
+**1,010 shop pickup checks** and **3,487 full-event reward checks** in 61.859 seconds.
+Independent semantic review found no blocker. Installation and initializer/dependency
+verification passed, with 429 unchanged base files and two owned overlays. Steam
+launch and authenticated health/manifest checks passed; the Mac lock screen prevents
+Profile 3 verification and the corrected one-card toggle retest. No gameplay
+actions have run under this release, and cleanup is still pending.
 
-Installation and metadata verification passed by **15:07:20 UTC**. After manual
-Profile 3 launch, the fresh `TEST91` Shears/full-belt Holster retest passed
-**7/7/7**, 61 controller reads plus one verification read, with nothing pending.
-The exact removals, capacity growth, original potions, final curse and map return
-were verified. Normal quit, exact owned cleanup and base verification passed
-by **15:18:36 UTC**: zero overlays and all **429** base files unchanged.
-
-The [previous live failure](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-phial-holster-pickup-stopped)
-remains **6/5/4**, with one uncertain action, under manifest `14772d59…`.
-Its package, original record and cleanup evidence are retained separately.
-The earlier bundle/removal **8/8/8** and offer/upgrade **7/7/7** passes retain that
-same original artifact. Other compound branches retain separate live limits.
-
-After reinstallation and the user's manual launch, New Leaf followed by
-empty-belt Phial Holster passed **6/6/6**, 53 controller reads plus one verification
-read. The selected Strike became Body Slam; the two potion grants, final Writhe
-and map return completed. Other originals, HP and gold were unchanged. Exact
-cleanup passed by **15:31:24 UTC**, with zero overlays and all 429 base files
-unchanged.
-
-War Historian Repy’s full-belt Potion Belt ordering then passed **6/6/6**, 42
-controller reads plus one verification read. Belt added two empty slots before
-either potion claim; all three original potions were preserved, both generated
-potions were collected and map return settled. Deck/HP/gold were unchanged.
-Exact cleanup passed by **16:24:34 UTC**, with zero overlays and all 429 base files
-unchanged. Console setup omitted Lantern Key; quest removal was not tested.
-
-Punch Off’s terminal full-belt Potion Belt case then passed **17 attempted /
-16 accepted / 16 reconciled**, 234 controller reads plus one verification read,
-one non-mutating stale rejection and nothing pending. The three original potions
-were retained; Belt added two empty slots and the two distinct offered Fire
-Potions filled them. Gold, Whirlwind and map return completed. HP/damage assistance
-was applied before attachment. Exact cleanup passed by **16:44:24 UTC**, leaving
-zero overlays and all 429 base files unchanged.
-
-Trial’s Merchant/Innocent case then passed **5/5/5**, 34 preflight reads, fifteen
-controller reads and one verification read. Shame appeared before the fixed-two
-selector; two original Strikes gained one upgrade, with all other cards/inventory
-preserved through map return. Exact cleanup passed by **16:55:30 UTC**, leaving
-zero overlays and all 429 base files unchanged.
-
-Wood Carvings/Torus then passed **4/4/4**, forty controller reads and one
-verification read. The selected upgrade-0 Strike became Toric Toughness; all
-other cards/inventory were preserved through map return. Exact cleanup passed
-by **17:30:13 UTC**, leaving zero overlays and all 429 base files unchanged.
-
-Neow's Lead Paperweight Skip / Leafy Poultice case then passed **5/5/5**, 57
-controller reads and one verification read. Skip retained the exact deck; the
-first Strike and Defend were automatically replaced by Cinder and Dismantle,
-HP/max HP became 68/68, and Writhe/map return completed. The eight other originals,
-gold and potions were unchanged. Exact cleanup passed by **17:44:17 UTC**, leaving
-zero overlays and all 429 base files unchanged.
-
-Fake Merchant's six-purchase inventory path then passed **9/9/9**, 44 controller
-reads and one verification read. Six exact payments totaled 280 gold; six relics
-were appended and Fake Mango raised HP/max HP from 68/68 to 71/71. Original
-deck/relics/potions were unchanged through Close/Leave and actionable map return.
-The saved TEST74 setup used 400 added gold before attachment. Exact cleanup and
-base verification passed by **18:10:49 UTC**: zero overlays, game/listener stopped
-and all 429 base files unchanged. The zero-purchase case followed below.
-
-At the user's request, two agent-managed Steam launches reached Profile 3's main
-menu and passed bridge health/compatibility checks, with normal quit and confirmed
-shutdown between them. The [live guide](../../../../docs/LIVE_DEVELOPMENT.md#agent-managed-steam-launch-on-this-mac)
-records the verified command and replaces routine manual-launch requests. Steam
-was already signed in and running; cold Steam startup remains untested.
-
-Fake Merchant's zero-purchase path then passed **3/3/3**, 38 controller reads and
-one verification read, preserving the entire inventory through Open/Close/Leave
-and map return. Normal quit and exact cleanup passed by **18:27:56 UTC**, leaving
-zero overlays and all 429 base files unchanged. Crystal Sphere's earned-relic
-case subsequently passed at 13/13/13. Kifuda empty confirmation then stopped at
-2/2/0: the pinned native confirm ignores zero cards. A corrected legal minimum
-and nonempty-selection retest are required. Both sessions are cleaned; latest
-cleanup passed by 18:41:59 UTC with zero overlays and 429 unchanged base files.
+The [original Kifuda empty attempt](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#sphere-relic-and-kifuda-empty-selection)
+remains failed at **2/2/0** under manifest `69bfd021…`, with its original package,
+record and cleanup retained. Earlier passes retain their original artifacts.

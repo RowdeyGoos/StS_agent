@@ -1,303 +1,32 @@
 {
-  "change": "Reward claims carry potion capacity only after the exact full effect inventory proof succeeds. Earlier settled claims accept that pending capacity without completing the action, then store it after successful settlement. Phial Holster and nested Large Capsule capacity no longer rely on the legacy Potion Belt field.",
+  "change": "Expose and enforce minimum one on the pinned enchant selector because native empty confirmation is a no-op. Preserve raw request validation, plain optional zero confirmation and native cancellation.",
   "changed_bound_files": [
     "apps/bridge/package/identity.json",
-    "components/events/native_tests/CompoundRemainingFixtures.cs",
-    "src/Sts2AgentBridge/Adapters/Public/PinnedPublicItemRewardClaim.cs",
-    "src/Sts2AgentBridge/Adapters/Public/PinnedPublicRewardInteractionSession.cs"
+    "components/events/native_tests/ShopPickupFixtures.cs",
+    "components/rooms/shop/native/PinnedDeckCardChoice.cs"
   ],
-  "cleanup": {
-    "base_file_count": 429,
-    "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-    "game_process_running": false,
-    "generated_files_removed": 4,
-    "installed_state_sha256": "25804b0bce97486eef1badce26609e9226ea8a5a82874e4983fd65b700dcec7e",
-    "normal_app_quit": true,
-    "normal_save_and_quit": false,
-    "overlay_count": 0,
-    "port_accepting": false,
-    "quarantined_state_sha256": "17fed34f7182ec1007baf82e895607170f16fa3deb892e9c60897d59638d8aad",
-    "status": "passed",
-    "verified_by_utc": "2026-09-27 18:41:59 UTC"
-  },
-  "completed_cleanups": [
-    {
-      "base_file_count": 429,
-      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "game_process_running": false,
-      "generated_files_removed": 4,
-      "installed_state_sha256": "264f962a707d35ac1645b19c01a44f5e0632ff8acbc684dbb80c913db77ef738",
-      "normal_app_quit": true,
-      "normal_save_and_quit": true,
-      "overlay_count": 0,
-      "port_accepting": false,
-      "quarantined_state_sha256": "473a56ef49b427c1ca7c95690b0c84826432327e6c4b2bd90209d0a8db2696dd",
-      "status": "passed",
-      "verified_by_utc": "2026-09-27 15:18:36 UTC"
-    },
-    {
-      "base_file_count": 429,
-      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "game_process_running": false,
-      "generated_files_removed": 4,
-      "installed_state_sha256": "59421f560ca9c00d2024e6eb45abb5d5857dbedec2c1295e34ff5cf68903807a",
-      "normal_app_quit": true,
-      "normal_save_and_quit": true,
-      "overlay_count": 0,
-      "port_accepting": false,
-      "quarantined_state_sha256": "4599968277a70821e50b58f4d237203f6e120fa382e2754dc2c9310c289fb165",
-      "status": "passed",
-      "verified_by_utc": "2026-09-27 15:31:24 UTC"
-    },
-    {
-      "base_file_count": 429,
-      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "game_process_running": false,
-      "generated_files_removed": 4,
-      "installed_state_sha256": "48dd01a2adf0a8956416773d11788f49b66ff93a8fd6583c49c89eb13fef7996",
-      "normal_app_quit": true,
-      "normal_save_and_quit": true,
-      "overlay_count": 0,
-      "port_accepting": false,
-      "quarantined_state_sha256": "19e5eceae0f1ce770143f6eef47bba79a15349a6c3f4596bfb67fc4482af7150",
-      "status": "passed",
-      "verified_by_utc": "2026-09-27 16:24:34 UTC"
-    },
-    {
-      "base_file_count": 429,
-      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "game_process_running": false,
-      "generated_files_removed": 4,
-      "installed_state_sha256": "4f2ca6cf55ffc0449db2cbb7928727a8a14fa86f80a5b39c20776dd5dadd7ec5",
-      "normal_app_quit": true,
-      "normal_save_and_quit": true,
-      "overlay_count": 0,
-      "port_accepting": false,
-      "quarantined_state_sha256": "26866a40d4bd485a2f5fc62d36a7d6bb1121a2bb5d5a8ce5bcb5b4116689cdbb",
-      "status": "passed",
-      "verified_by_utc": "2026-09-27 16:44:24 UTC"
-    },
-    {
-      "base_file_count": 429,
-      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "game_process_running": false,
-      "generated_files_removed": 4,
-      "installed_state_sha256": "f95a03749602c8100a8e3e3558d4f0fad47e7abb6808f29edf9dba9624ffacad",
-      "normal_app_quit": true,
-      "normal_save_and_quit": true,
-      "overlay_count": 0,
-      "port_accepting": false,
-      "quarantined_state_sha256": "76b9d52def81edd73495ebe6328081ae0ff0d46447a8cb472a66f59500842061",
-      "status": "passed",
-      "verified_by_utc": "2026-09-27 16:55:30 UTC"
-    },
-    {
-      "base_file_count": 429,
-      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "game_process_running": false,
-      "generated_files_removed": 4,
-      "installed_state_sha256": "ea2ad3d2f5a76e9da885f72a67fe9c4fade0052e296eb89da037bdfa6f4f22cb",
-      "normal_app_quit": true,
-      "normal_save_and_quit": true,
-      "overlay_count": 0,
-      "port_accepting": false,
-      "quarantined_state_sha256": "b8318bdde4f7d28003969182df6202f00a774abd6be562214520c16ff5b895f0",
-      "status": "passed",
-      "verified_by_utc": "2026-09-27 17:30:13 UTC"
-    },
-    {
-      "base_file_count": 429,
-      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "game_process_running": false,
-      "generated_files_removed": 4,
-      "installed_state_sha256": "5dd2560fec972e14597693a012d0c450829f95aa043ffef44c9ad696a07b3a41",
-      "normal_app_quit": true,
-      "normal_save_and_quit": true,
-      "overlay_count": 0,
-      "port_accepting": false,
-      "quarantined_state_sha256": "8d3f722fdc4adef51e974d25c0ffb3030f53df12e1c7d3ce7b1cf285f4ee544e",
-      "status": "passed",
-      "verified_by_utc": "2026-09-27 17:44:17 UTC"
-    },
-    {
-      "base_file_count": 429,
-      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "game_process_running": false,
-      "generated_files_removed": 4,
-      "installed_state_sha256": "7ba782981a1a3be6d8a1ea05dcb848c8600ac03abfa5a6abf339e1d53bda2eb7",
-      "normal_app_quit": true,
-      "normal_save_and_quit": true,
-      "overlay_count": 0,
-      "port_accepting": false,
-      "quarantined_state_sha256": "086348af2c304a894b31f0935c38d64b880b207e44c68ddadf017c025aa9a9e3",
-      "status": "passed",
-      "verified_by_utc": "2026-09-27 18:10:49 UTC"
-    },
-    {
-      "base_file_count": 429,
-      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "game_process_running": false,
-      "generated_files_removed": 4,
-      "installed_state_sha256": "bf6c8a68a7cf39c5ca9966f888e416f1d8ffab0809c08fc8e845fd3aeb5fbca9",
-      "normal_app_quit": true,
-      "normal_save_and_quit": true,
-      "overlay_count": 0,
-      "port_accepting": false,
-      "quarantined_state_sha256": "a1542afae191b199f11d6fc7e95a25aa489d73a520331b167f98d4f044cd3c11",
-      "status": "passed",
-      "verified_by_utc": "2026-09-27 18:27:56 UTC"
-    },
-    {
-      "base_file_count": 429,
-      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "game_process_running": false,
-      "generated_files_removed": 4,
-      "installed_state_sha256": "601ddb7863d3dc545bffc7f7262bce9d2cdf46d484e9797658ef526d2bb17e1b",
-      "normal_app_quit": true,
-      "normal_save_and_quit": true,
-      "overlay_count": 0,
-      "port_accepting": false,
-      "quarantined_state_sha256": "f93735aff0687a58658ff38949c43e87683a387a31308a009c880e28bcadb75e",
-      "status": "passed",
-      "verified_by_utc": "2026-09-27 18:35:08 UTC"
-    }
-  ],
-  "completed_installations": [
-    {
-      "base_file_count": 429,
-      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "game_process_running_at_install": false,
-      "metadata_verifier": "passed",
-      "overlay_count": 2,
-      "port_accepting_at_install": false,
-      "state_sha256": "264f962a707d35ac1645b19c01a44f5e0632ff8acbc684dbb80c913db77ef738",
-      "status": "tested_cleaned",
-      "verified_by_utc": "2026-09-27 15:07:20 UTC"
-    },
-    {
-      "base_file_count": 429,
-      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "game_process_running_at_install": false,
-      "metadata_verifier": "passed",
-      "overlay_count": 2,
-      "port_accepting_at_install": false,
-      "state_sha256": "59421f560ca9c00d2024e6eb45abb5d5857dbedec2c1295e34ff5cf68903807a",
-      "status": "tested_cleaned",
-      "verified_by_utc": "2026-09-27 15:24:48 UTC"
-    },
-    {
-      "base_file_count": 429,
-      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "game_process_running_at_install": false,
-      "metadata_verifier": "passed",
-      "overlay_count": 2,
-      "port_accepting_at_install": false,
-      "state_sha256": "48dd01a2adf0a8956416773d11788f49b66ff93a8fd6583c49c89eb13fef7996",
-      "status": "tested_cleaned",
-      "verified_by_utc": "2026-09-27 15:39:18 UTC"
-    },
-    {
-      "base_file_count": 429,
-      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "game_process_running_at_install": false,
-      "metadata_verifier": "passed",
-      "overlay_count": 2,
-      "port_accepting_at_install": false,
-      "state_sha256": "4f2ca6cf55ffc0449db2cbb7928727a8a14fa86f80a5b39c20776dd5dadd7ec5",
-      "status": "tested_cleaned",
-      "verified_by_utc": "2026-09-27 16:30:23 UTC"
-    },
-    {
-      "base_file_count": 429,
-      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "game_process_running_at_install": false,
-      "metadata_verifier": "passed",
-      "overlay_count": 2,
-      "port_accepting_at_install": false,
-      "state_sha256": "f95a03749602c8100a8e3e3558d4f0fad47e7abb6808f29edf9dba9624ffacad",
-      "status": "tested_cleaned",
-      "verified_by_utc": "2026-09-27 16:46:13 UTC"
-    },
-    {
-      "base_file_count": 429,
-      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "game_process_running_at_install": false,
-      "metadata_verifier": "passed",
-      "overlay_count": 2,
-      "port_accepting_at_install": false,
-      "state_sha256": "ea2ad3d2f5a76e9da885f72a67fe9c4fade0052e296eb89da037bdfa6f4f22cb",
-      "status": "tested_cleaned",
-      "verified_by_utc": "2026-09-27 16:58:32 UTC"
-    },
-    {
-      "base_file_count": 429,
-      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "game_process_running_at_install": false,
-      "metadata_verifier": "passed",
-      "overlay_count": 2,
-      "port_accepting_at_install": false,
-      "state_sha256": "5dd2560fec972e14597693a012d0c450829f95aa043ffef44c9ad696a07b3a41",
-      "status": "tested_cleaned",
-      "verified_by_utc": "2026-09-27 17:36:47 UTC"
-    },
-    {
-      "base_file_count": 429,
-      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "game_process_running_at_install": false,
-      "metadata_verifier": "passed",
-      "overlay_count": 2,
-      "port_accepting_at_install": false,
-      "state_sha256": "7ba782981a1a3be6d8a1ea05dcb848c8600ac03abfa5a6abf339e1d53bda2eb7",
-      "status": "tested_cleaned",
-      "verified_by_utc": "2026-09-27 17:50:30 UTC"
-    },
-    {
-      "base_file_count": 429,
-      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "game_process_running_at_install": false,
-      "metadata_verifier": "passed",
-      "overlay_count": 2,
-      "port_accepting_at_install": false,
-      "state_sha256": "bf6c8a68a7cf39c5ca9966f888e416f1d8ffab0809c08fc8e845fd3aeb5fbca9",
-      "status": "tested_cleaned",
-      "verified_by_utc": "2026-09-27 18:20:57 UTC"
-    },
-    {
-      "base_file_count": 429,
-      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "game_process_running_at_install": false,
-      "metadata_verifier": "passed",
-      "overlay_count": 2,
-      "port_accepting_at_install": false,
-      "state_sha256": "601ddb7863d3dc545bffc7f7262bce9d2cdf46d484e9797658ef526d2bb17e1b",
-      "status": "tested_cleaned",
-      "verified_by_utc": "2026-09-27 18:30:36 UTC"
-    }
-  ],
+  "completed_cleanups": [],
   "elapsed_times": {
-    "focused_validation_seconds": 61.067,
-    "implementation_review_seconds": 59,
-    "note": "Separate implementation, release preparation and user-wait durations were not measured.",
-    "release_gate_seconds": 379.888
+    "final_review_seconds": 134,
+    "focused_check_seconds": 61.859,
+    "note": "Implementation and release preparation durations were not measured separately. Mac-unlock wait is ongoing.",
+    "release_gate_seconds": 410.372,
+    "user_wait_seconds": null
   },
-  "evidence_root": "/private/tmp/sts-bridge-wi7n9c_p",
-  "feature_commits": [
-    "0fb2972acf5475de36908beac2b89c4d50a60a93"
-  ],
-  "focused_validation": {
-    "check_groups": 4,
-    "native_full_reward_checks": 3487,
-    "reward_alternative_checks": 216,
-    "scratch": "/private/tmp/sts-bridge-3jgtcyat",
-    "seconds": 61.067,
-    "status": "passed"
+  "evidence_root": "/private/tmp/sts-bridge-_r623s93",
+  "focused_checks": {
+    "full_event_reward_checks": 3487,
+    "root": "/private/tmp/sts-bridge-mmiuuc0_",
+    "seconds": 61.859,
+    "shop_pickup_checks": 1010,
+    "status": "passed",
+    "target_game_executed": false
   },
-  "full_shared_native_interface_complete": false,
-  "gate_result": {
+  "gate": {
     "checks": {
       "agent:paired": {
         "log": "log-078.txt",
-        "seconds": 0.149,
+        "seconds": 0.155,
         "status": "passed"
       },
       "apps/bridge/operations/check_live_runtime_fixtures.py": {
@@ -307,12 +36,12 @@
       },
       "apps/bridge/operations/manage_live_campaign_fixtures.py": {
         "log": "log-014.txt",
-        "seconds": 2.791,
+        "seconds": 2.848,
         "status": "passed"
       },
       "apps/bridge/operations/predecessor_conflict_fixtures.py": {
         "log": "log-015.txt",
-        "seconds": 0.892,
+        "seconds": 0.931,
         "status": "passed"
       },
       "build:apps/bridge/agent_native_tests/AgentNative.Tests.csproj": {
@@ -322,217 +51,217 @@
       },
       "build:apps/bridge/campaign_native_tests/CampaignNative.Tests.csproj": {
         "log": "log-019.txt",
-        "seconds": 3.265,
+        "seconds": 3.322,
         "status": "passed"
       },
       "build:apps/bridge/full_native_tests/FullNative.Tests.csproj": {
         "log": "log-021.txt",
-        "seconds": 2.766,
+        "seconds": 2.826,
         "status": "passed"
       },
       "build:apps/bridge/potion_native_tests/CombatPotions.Tests.csproj": {
         "log": "log-023.txt",
-        "seconds": 1.101,
+        "seconds": 1.176,
         "status": "passed"
       },
       "build:apps/bridge/production/Sts2AgentBridge.csproj": {
         "log": "log-001.txt",
-        "seconds": 1.686,
+        "seconds": 1.703,
         "status": "passed"
       },
       "build:apps/bridge/tests/Sts2AgentBridge.Unified.Tests.csproj": {
         "log": "log-025.txt",
-        "seconds": 1.44,
+        "seconds": 1.435,
         "status": "passed"
       },
       "build:apps/bridge/verifier/Sts2AgentBridge.Unified.Verifier.csproj": {
         "log": "log-080.txt",
-        "seconds": 1.069,
+        "seconds": 1.124,
         "status": "passed"
       },
       "build:components/cards/combat_tests/CombatCardChoice.Tests.csproj": {
         "log": "log-027.txt",
-        "seconds": 1.155,
+        "seconds": 1.162,
         "status": "passed"
       },
       "build:components/cards/completion_tests/Sts2AgentBridge.CardSelectionCompletionV1.Native.Tests.csproj": {
         "log": "log-029.txt",
-        "seconds": 1.103,
+        "seconds": 1.177,
         "status": "passed"
       },
       "build:components/cards/native_tests/Sts2AgentBridge.CardSelectionV1.Native.Tests.csproj": {
         "log": "log-031.txt",
-        "seconds": 1.854,
+        "seconds": 1.872,
         "status": "passed"
       },
       "build:components/cards/parent_native_adapter_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Adapter.Tests.csproj": {
         "log": "log-033.txt",
-        "seconds": 1.891,
+        "seconds": 1.964,
         "status": "passed"
       },
       "build:components/cards/parent_native_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Tests.csproj": {
         "log": "log-035.txt",
-        "seconds": 1.056,
+        "seconds": 1.119,
         "status": "passed"
       },
       "build:components/cards/parent_tests/Sts2AgentBridge.CardSelectionV1.Parent.Tests.csproj": {
         "log": "log-037.txt",
-        "seconds": 1.303,
+        "seconds": 1.294,
         "status": "passed"
       },
       "build:components/cards/tests/Sts2AgentBridge.CardSelectionV1.Core.Tests.csproj": {
         "log": "log-039.txt",
-        "seconds": 1.222,
+        "seconds": 1.271,
         "status": "passed"
       },
       "build:components/cards/wire_tests/Sts2AgentBridge.CardSelectionV1.Wire.Tests.csproj": {
         "log": "log-041.txt",
-        "seconds": 1.965,
+        "seconds": 2.183,
         "status": "passed"
       },
       "build:components/events/direct_input_tests/DirectTransformInput.Tests.csproj": {
         "log": "log-043.txt",
-        "seconds": 2.103,
+        "seconds": 2.172,
         "status": "passed"
       },
       "build:components/events/integration/GenericEventV7.Native.Integration.csproj": {
         "log": "log-071.txt",
-        "seconds": 2.235,
+        "seconds": 2.247,
         "status": "passed"
       },
       "build:components/events/integration/Sts2AgentBridge.GenericEventV7.Integration.csproj": {
         "log": "log-070.txt",
-        "seconds": 1.276,
+        "seconds": 1.301,
         "status": "passed"
       },
       "build:components/events/item_tests/GenericEventV7.Item.Tests.csproj": {
         "log": "log-045.txt",
-        "seconds": 1.243,
+        "seconds": 1.273,
         "status": "passed"
       },
       "build:components/events/native_tests/GenericEventV7.Native.Tests.csproj": {
         "log": "log-047.txt",
-        "seconds": 2.19,
+        "seconds": 2.207,
         "status": "passed"
       },
       "build:components/events/transform_tests/CardTransformV2.Tests.csproj": {
         "log": "log-048.txt",
-        "seconds": 1.29,
+        "seconds": 1.25,
         "status": "passed"
       },
       "build:components/events/wire_tests/Sts2AgentBridge.GenericEventV7.WireTests.csproj": {
         "log": "log-050.txt",
-        "seconds": 1.286,
+        "seconds": 1.342,
         "status": "passed"
       },
       "build:components/item_bootstrap/lifecycle_tests/Sts2AgentBridge.ItemV1.Bootstrap.Tests.csproj": {
         "log": "log-052.txt",
-        "seconds": 1.114,
+        "seconds": 1.123,
         "status": "passed"
       },
       "build:components/item_bootstrap/operator_tests/Sts2AgentBridge.ItemV1.Operator.Tests.csproj": {
         "log": "log-054.txt",
-        "seconds": 1.147,
+        "seconds": 1.109,
         "status": "passed"
       },
       "build:components/item_transport/runtime_tests/Sts2AgentBridge.ItemV1.Transport.Tests.csproj": {
         "log": "log-056.txt",
-        "seconds": 2.719,
+        "seconds": 2.744,
         "status": "passed"
       },
       "build:components/item_wire/producer_tests/Sts2AgentBridge.ItemV1.Wire.Tests.csproj": {
         "log": "log-058.txt",
-        "seconds": 1.316,
+        "seconds": 1.327,
         "status": "passed"
       },
       "build:components/items/tests/Sts2AgentBridge.ItemV1.Tests.csproj": {
         "log": "log-060.txt",
-        "seconds": 1.27,
+        "seconds": 1.256,
         "status": "passed"
       },
       "build:components/rooms/broker_tests/Sts2AgentBridge.RoomFlowsV1.Broker.Tests.csproj": {
         "log": "log-062.txt",
-        "seconds": 2.096,
+        "seconds": 2.094,
         "status": "passed"
       },
       "build:components/rooms/event/tests/Sts2AgentBridge.RoomFlowsV1.Event.Tests.csproj": {
         "log": "log-064.txt",
-        "seconds": 2.008,
+        "seconds": 2.03,
         "status": "passed"
       },
       "build:components/rooms/rest/tests/Sts2AgentBridge.RestV2.Tests.csproj": {
         "log": "log-066.txt",
-        "seconds": 2.99,
+        "seconds": 2.973,
         "status": "passed"
       },
       "build:components/rooms/shop/tests/Sts2AgentBridge.RoomFlowsV1.Shop.Tests.csproj": {
         "log": "log-068.txt",
-        "seconds": 1.388,
+        "seconds": 1.347,
         "status": "passed"
       },
       "cards:combat_host_native": {
         "log": "log-075.txt",
-        "seconds": 0.404,
+        "seconds": 0.416,
         "status": "passed"
       },
       "cards:host_wire": {
         "log": "log-076.txt",
-        "seconds": 0.122,
+        "seconds": 0.129,
         "status": "passed"
       },
       "clean_install": {
         "log": "log-084.txt",
-        "seconds": 0.079,
+        "seconds": 0.082,
         "status": "passed"
       },
       "client": {
         "log": "log-009.txt",
-        "seconds": 1.352,
+        "seconds": 1.386,
         "status": "passed"
       },
       "components/cards/host_tests": {
         "log": "log-003.txt",
-        "seconds": 0.054,
+        "seconds": 0.057,
         "status": "passed"
       },
       "components/events/host_tests": {
         "log": "log-004.txt",
-        "seconds": 2.371,
+        "seconds": 2.444,
         "status": "passed"
       },
       "components/item_transport/transport_tests": {
         "log": "log-005.txt",
-        "seconds": 0.044,
+        "seconds": 0.045,
         "status": "passed"
       },
       "components/item_wire/host_tests": {
         "log": "log-006.txt",
-        "seconds": 0.05,
+        "seconds": 0.053,
         "status": "passed"
       },
       "components/rooms/rest/host_tests": {
         "log": "log-007.txt",
-        "seconds": 0.048,
+        "seconds": 0.051,
         "status": "passed"
       },
       "core_client": {
         "log": "log-010.txt",
-        "seconds": 0.04,
+        "seconds": 0.052,
         "status": "passed"
       },
       "events:host_native": {
         "log": "log-073.txt",
-        "seconds": 78.371,
+        "seconds": 78.555,
         "status": "passed"
       },
       "package": {
         "log": "log-083.txt",
-        "seconds": 0.073,
+        "seconds": 0.086,
         "status": "passed"
       },
       "package_identity": {
         "log": "log-002.txt",
-        "seconds": 0.035,
+        "seconds": 0.033,
         "status": "passed"
       },
       "package_output": {
@@ -542,112 +271,112 @@
       },
       "production_surface": {
         "log": "log-081.txt",
-        "seconds": 0.051,
+        "seconds": 0.057,
         "status": "passed"
       },
       "production_surface_rejections": {
         "log": "log-082.txt",
-        "seconds": 0.073,
+        "seconds": 0.077,
         "status": "passed"
       },
       "reproducible_build": {
         "log": "log-079.txt",
-        "seconds": 1.637,
+        "seconds": 1.834,
         "status": "passed"
       },
       "reward_codec": {
         "log": "log-011.txt",
-        "seconds": 0.04,
+        "seconds": 0.041,
         "status": "passed"
       },
       "room_codec": {
         "log": "log-012.txt",
-        "seconds": 0.15,
+        "seconds": 0.151,
         "status": "passed"
       },
       "rooms:rest_host_native": {
         "log": "log-074.txt",
-        "seconds": 6.367,
+        "seconds": 28.21,
         "status": "passed"
       },
       "sdk": {
         "log": "log-016.txt",
-        "seconds": 0.046,
+        "seconds": 0.05,
         "status": "passed"
       },
       "shared_client:socket": {
         "log": "log-077.txt",
-        "seconds": 84.0,
+        "seconds": 87.438,
         "status": "passed"
       },
       "test:apps/bridge/agent_native_tests/AgentNative.Tests.csproj": {
         "log": "log-018.txt",
-        "seconds": 0.075,
+        "seconds": 0.074,
         "status": "passed"
       },
       "test:apps/bridge/campaign_native_tests/CampaignNative.Tests.csproj": {
         "log": "log-020.txt",
-        "seconds": 0.475,
+        "seconds": 0.476,
         "status": "passed"
       },
       "test:apps/bridge/full_native_tests/FullNative.Tests.csproj": {
         "log": "log-022.txt",
-        "seconds": 0.066,
+        "seconds": 0.069,
         "status": "passed"
       },
       "test:apps/bridge/potion_native_tests/CombatPotions.Tests.csproj": {
         "log": "log-024.txt",
-        "seconds": 0.356,
+        "seconds": 0.366,
         "status": "passed"
       },
       "test:apps/bridge/tests/Sts2AgentBridge.Unified.Tests.csproj": {
         "log": "log-026.txt",
-        "seconds": 11.828,
+        "seconds": 11.813,
         "status": "passed"
       },
       "test:components/cards/combat_tests/CombatCardChoice.Tests.csproj": {
         "log": "log-028.txt",
-        "seconds": 0.101,
+        "seconds": 0.103,
         "status": "passed"
       },
       "test:components/cards/completion_tests/Sts2AgentBridge.CardSelectionCompletionV1.Native.Tests.csproj": {
         "log": "log-030.txt",
-        "seconds": 0.051,
+        "seconds": 0.052,
         "status": "passed"
       },
       "test:components/cards/native_tests/Sts2AgentBridge.CardSelectionV1.Native.Tests.csproj": {
         "log": "log-032.txt",
-        "seconds": 0.038,
+        "seconds": 0.042,
         "status": "passed"
       },
       "test:components/cards/parent_native_adapter_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Adapter.Tests.csproj": {
         "log": "log-034.txt",
-        "seconds": 0.032,
+        "seconds": 0.033,
         "status": "passed"
       },
       "test:components/cards/parent_native_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Tests.csproj": {
         "log": "log-036.txt",
-        "seconds": 0.024,
+        "seconds": 0.025,
         "status": "passed"
       },
       "test:components/cards/parent_tests/Sts2AgentBridge.CardSelectionV1.Parent.Tests.csproj": {
         "log": "log-038.txt",
-        "seconds": 0.043,
+        "seconds": 0.046,
         "status": "passed"
       },
       "test:components/cards/tests/Sts2AgentBridge.CardSelectionV1.Core.Tests.csproj": {
         "log": "log-040.txt",
-        "seconds": 0.046,
+        "seconds": 0.05,
         "status": "passed"
       },
       "test:components/cards/wire_tests/Sts2AgentBridge.CardSelectionV1.Wire.Tests.csproj": {
         "log": "log-042.txt",
-        "seconds": 0.056,
+        "seconds": 0.058,
         "status": "passed"
       },
       "test:components/events/direct_input_tests/DirectTransformInput.Tests.csproj": {
         "log": "log-044.txt",
-        "seconds": 0.966,
+        "seconds": 0.977,
         "status": "passed"
       },
       "test:components/events/item_tests/GenericEventV7.Item.Tests.csproj": {
@@ -657,37 +386,37 @@
       },
       "test:components/events/native_tests/GenericEventV7.Native.Tests.csproj": {
         "log": "log-072.txt",
-        "seconds": 203.73,
+        "seconds": 207.438,
         "status": "passed"
       },
       "test:components/events/transform_tests/CardTransformV2.Tests.csproj": {
         "log": "log-049.txt",
-        "seconds": 0.078,
+        "seconds": 0.077,
         "status": "passed"
       },
       "test:components/events/wire_tests/Sts2AgentBridge.GenericEventV7.WireTests.csproj": {
         "log": "log-051.txt",
-        "seconds": 0.136,
+        "seconds": 0.137,
         "status": "passed"
       },
       "test:components/item_bootstrap/lifecycle_tests/Sts2AgentBridge.ItemV1.Bootstrap.Tests.csproj": {
         "log": "log-053.txt",
-        "seconds": 0.027,
+        "seconds": 0.028,
         "status": "passed"
       },
       "test:components/item_bootstrap/operator_tests/Sts2AgentBridge.ItemV1.Operator.Tests.csproj": {
         "log": "log-055.txt",
-        "seconds": 0.285,
+        "seconds": 0.281,
         "status": "passed"
       },
       "test:components/item_transport/runtime_tests/Sts2AgentBridge.ItemV1.Transport.Tests.csproj": {
         "log": "log-057.txt",
-        "seconds": 6.459,
+        "seconds": 6.468,
         "status": "passed"
       },
       "test:components/item_wire/producer_tests/Sts2AgentBridge.ItemV1.Wire.Tests.csproj": {
         "log": "log-059.txt",
-        "seconds": 0.036,
+        "seconds": 0.035,
         "status": "passed"
       },
       "test:components/items/tests/Sts2AgentBridge.ItemV1.Tests.csproj": {
@@ -697,7 +426,7 @@
       },
       "test:components/rooms/broker_tests/Sts2AgentBridge.RoomFlowsV1.Broker.Tests.csproj": {
         "log": "log-063.txt",
-        "seconds": 0.045,
+        "seconds": 0.043,
         "status": "passed"
       },
       "test:components/rooms/event/tests/Sts2AgentBridge.RoomFlowsV1.Event.Tests.csproj": {
@@ -707,7 +436,7 @@
       },
       "test:components/rooms/rest/tests/Sts2AgentBridge.RestV2.Tests.csproj": {
         "log": "log-067.txt",
-        "seconds": 0.503,
+        "seconds": 0.518,
         "status": "passed"
       },
       "test:components/rooms/shop/tests/Sts2AgentBridge.RoomFlowsV1.Shop.Tests.csproj": {
@@ -717,7 +446,7 @@
       },
       "tests/maintenance": {
         "log": "log-008.txt",
-        "seconds": 1.37,
+        "seconds": 1.359,
         "status": "passed"
       }
     },
@@ -726,9 +455,9 @@
     "integration_jobs": 4,
     "live_campaign_started": false,
     "release_manifests": {
-      "bridge": "69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639"
+      "bridge": "5ece253f925f3aa766f6c21095d1017aa04f2c5ce366656720f934e354d50c9c"
     },
-    "seconds": 379.888,
+    "seconds": 410.372,
     "selected_checks": [],
     "source": {
       "files": 489,
@@ -745,1025 +474,126 @@
   "installation": {
     "base_file_count": 429,
     "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-    "game_process_running_at_install": false,
-    "metadata_verifier": "passed",
+    "initializer_dependencies_verified": true,
+    "installed_state_sha256": "d0f1fe51132d889aa804cbe5df64158dae113a1ac86449d2c9d457cef3267dd0",
     "overlay_count": 2,
-    "port_accepting_at_install": false,
-    "state_sha256": "25804b0bce97486eef1badce26609e9226ea8a5a82874e4983fd65b700dcec7e",
-    "status": "failed_test_cleaned",
-    "verified_by_utc": "2026-09-27 18:36:21 UTC"
-  },
-  "launch_verification": {
-    "authenticated_health_and_manifest_passed_each_time": true,
-    "cold_steam_start_tested": false,
-    "command": [
-      "/Applications/Steam.app/Contents/MacOS/steam_osx",
-      "-applaunch",
-      "2868840"
-    ],
-    "guide": "docs/LIVE_DEVELOPMENT.md#agent-managed-steam-launch-on-this-mac",
-    "launcher_return_seconds": [
-      0.441,
-      0.18
-    ],
-    "normal_quit_between_launches": true,
-    "process_and_listener_stopped_between_launches": true,
-    "profile": 3,
+    "results_hook_metadata_checked": false,
     "status": "passed",
-    "steam_already_running_and_signed_in": true,
-    "successful_main_menu_launches": 2,
-    "timing_note": "Launcher return times are not game-readiness durations; readiness was checked independently.",
-    "user_authorized_agent_launch_and_restart_date": "2026-09-27"
+    "verified_by_utc": "2026-09-27 18:57:12 UTC"
   },
   "live": {
-    "accepted": 76,
-    "attempted": 77,
-    "case_count": 11,
-    "full_shared_native_interface_complete": false,
-    "pending": true,
-    "reconciled": 74,
-    "stale_rejections": 1,
-    "status": "partial_with_stopped_case"
+    "gameplay_actions": 0,
+    "health_manifest_compatibility": "passed",
+    "health_verified_by_utc": "2026-09-27 18:58:39 UTC",
+    "profile3_verified": false,
+    "reason": "The native UI tool reported the Mac locked before Profile 3/menu verification. No gameplay attachment occurred.",
+    "recorded_live_corpus": false,
+    "status": "awaiting_mac_unlock_before_profile_check",
+    "steam_launch_request_seconds": 0.149,
+    "target_game_executed": true
   },
-  "live_cases": [
-    {
-      "accepted": 7,
-      "actionable_map": true,
-      "after": {
-        "deck": 9,
-        "gold": 99,
-        "hp": 64,
-        "max_hp": 80,
-        "potion_capacity": 4
-      },
-      "attempted": 7,
-      "before": {
-        "deck": 10,
-        "gold": 99,
-        "hp": 80,
-        "max_hp": 80,
-        "potion_capacity": 3
-      },
-      "case": "neow_bones_shears_full_belt_phial_holster",
-      "controller_reads": 61,
-      "controller_seconds": null,
-      "decisions": 7,
-      "evidence": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-precarious-shears-and-full-belt-phial-holster-passed",
-      "final_curse": "injury",
-      "installed_state_sha256": "264f962a707d35ac1645b19c01a44f5e0632ff8acbc684dbb80c913db77ef738",
-      "manual_gameplay_after_attachment": false,
-      "new_potion": "explosive_ampoule",
-      "new_relics": [
-        "neows_bones",
-        "precarious_shears",
-        "phial_holster"
-      ],
-      "original_potion_slots_and_models_unchanged": true,
-      "other_potion_procurement": "certified_prevented_full_belt",
-      "outcome": {
-        "kind": "truncated",
-        "reason": "external_stop"
-      },
-      "pending": false,
-      "preparation_to_cleanup_seconds": 487,
-      "preparation_to_cleanup_window_utc": [
-        "2026-09-27 15:10:29 UTC",
-        "2026-09-27 15:18:36 UTC"
-      ],
-      "reconciled": 7,
-      "release_manifest_sha256": "69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639",
-      "removed_cards": [
-        "strike",
-        "strike"
-      ],
-      "setup": {
-        "ascension": 0,
-        "character": "ironclad",
-        "console_setup_before_attachment": true,
-        "initial_potions": [
-          "fire_potion",
-          "strength_potion",
-          "block_potion"
-        ],
-        "manual_launch": true,
-        "mode": "native_seeded_custom_without_gameplay_modifiers",
-        "profile": 3,
-        "seed": "TEST91"
-      },
-      "source_commit": "0fb2972acf5475de36908beac2b89c4d50a60a93",
-      "stale_rejections": 0,
-      "status": "passed",
-      "surviving_original_cards_unchanged": true,
-      "user_wait_seconds": null,
-      "verification_reads": 1,
-      "verified_by_utc": "2026-09-27 15:17:02 UTC"
-    },
-    {
-      "accepted": 6,
-      "actionable_map": true,
-      "after": {
-        "deck": 11,
-        "gold": 99,
-        "hp": 80,
-        "max_hp": 80,
-        "potion_capacity": 4
-      },
-      "attempted": 6,
-      "before": {
-        "deck": 10,
-        "gold": 99,
-        "hp": 80,
-        "max_hp": 80,
-        "potion_capacity": 3
-      },
-      "case": "neow_bones_new_leaf_empty_belt_phial_holster",
-      "controller_reads": 53,
-      "controller_seconds": null,
-      "decisions": 6,
-      "empty_slot_indices": [
-        2,
-        3
-      ],
-      "evidence": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-new-leaf-and-empty-belt-phial-holster-passed",
-      "final_curse": "writhe",
-      "hp_max_hp_gold_unchanged": true,
-      "installed_state_sha256": "59421f560ca9c00d2024e6eb45abb5d5857dbedec2c1295e34ff5cf68903807a",
-      "manual_gameplay_after_attachment": false,
-      "new_potion_slot_indices": [
-        0,
-        1
-      ],
-      "new_potions": [
-        "attack_potion",
-        "weak_potion"
-      ],
-      "new_relics": [
-        "neows_bones",
-        "new_leaf",
-        "phial_holster"
-      ],
-      "outcome": {
-        "kind": "truncated",
-        "reason": "external_stop"
-      },
-      "pending": false,
-      "preparation_to_cleanup_seconds": 283,
-      "preparation_to_cleanup_window_utc": [
-        "2026-09-27 15:26:41 UTC",
-        "2026-09-27 15:31:24 UTC"
-      ],
-      "reconciled": 6,
-      "release_manifest_sha256": "69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639",
-      "setup": {
-        "ascension": 0,
-        "character": "ironclad",
-        "console_setup_before_attachment": true,
-        "initial_potion_capacity": 3,
-        "initial_potions": [],
-        "manual_launch": true,
-        "mode": "native_seeded_custom_without_gameplay_modifiers",
-        "profile": 3,
-        "seed": "TEST475"
-      },
-      "source_commit": "0fb2972acf5475de36908beac2b89c4d50a60a93",
-      "stale_rejections": 0,
-      "status": "passed",
-      "surviving_original_cards_unchanged": true,
-      "transformed_card": "body_slam",
-      "transformed_original": "strike",
-      "user_wait_seconds": null,
-      "verification_reads": 1,
-      "verified_by_utc": "2026-09-27 15:29:56 UTC"
-    },
-    {
-      "accepted": 6,
-      "actionable_map": true,
-      "actions": [
-        "choose_event_option",
-        "claim_relic",
-        "claim_relic",
-        "claim_potion",
-        "claim_potion",
-        "leave_event"
-      ],
-      "after": {
-        "deck": 10,
-        "gold": 99,
-        "hp": 80,
-        "max_hp": 80,
-        "potion_capacity": 5
-      },
-      "attempted": 6,
-      "before": {
-        "deck": 10,
-        "gold": 99,
-        "hp": 80,
-        "max_hp": 80,
-        "potion_capacity": 3
-      },
-      "case": "repy_capacity_first_potion_belt",
-      "controller_reads": 42,
-      "controller_seconds": null,
-      "decisions": 6,
-      "deck_hp_max_hp_gold_unchanged": true,
-      "evidence": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#repy-capacity-first-potion-belt-passed",
-      "generated_rewards_order": [
-        "weak_potion",
-        "fysh_oil",
-        "potion_belt",
-        "bag_of_preparation"
-      ],
-      "initial_potions": [
-        "fire_potion",
-        "strength_potion",
-        "block_potion"
-      ],
-      "installed_state_sha256": "48dd01a2adf0a8956416773d11788f49b66ff93a8fd6583c49c89eb13fef7996",
-      "limits": [
-        "Lantern Key removal and natural event entry were not tested.",
-        "Terminal full-belt reward ordering remains separate."
-      ],
-      "manual_gameplay_after_attachment": false,
-      "new_potion_slot_indices": [
-        3,
-        4
-      ],
-      "new_potions": [
-        "weak_potion",
-        "fysh_oil"
-      ],
-      "new_relics": [
-        "potion_belt",
-        "bag_of_preparation"
-      ],
-      "original_potions_unchanged": true,
-      "outcome": {
-        "kind": "truncated",
-        "reason": "external_stop"
-      },
-      "pending": false,
-      "potions_unavailable_before_belt": true,
-      "preparation_to_cleanup_seconds": 295,
-      "preparation_to_cleanup_window_utc": [
-        "2026-09-27 16:19:39 UTC",
-        "2026-09-27 16:24:34 UTC"
-      ],
-      "reconciled": 6,
-      "release_manifest_sha256": "69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639",
-      "setup": {
-        "ascension": 0,
-        "character": "ironclad",
-        "console_setup_before_attachment": true,
-        "lantern_key_present": false,
-        "manual_launch": true,
-        "mode": "native_seeded_custom_without_gameplay_modifiers",
-        "profile": 3,
-        "seed": "TEST168"
-      },
-      "source_commit": "0fb2972acf5475de36908beac2b89c4d50a60a93",
-      "stale_rejections": 0,
-      "status": "passed",
-      "two_new_empty_slots_verified_before_potion_claims": true,
-      "user_wait_seconds": null,
-      "verification_reads": 1,
-      "verified_by_utc": "2026-09-27 16:23:08 UTC"
-    },
-    {
-      "accepted": 16,
-      "actionable_map": true,
-      "after": {
-        "deck": 14,
-        "gold": 109,
-        "hp": 186,
-        "max_hp": 204,
-        "potion_capacity": 5
-      },
-      "attempted": 17,
-      "before": {
-        "deck": 13,
-        "gold": 99,
-        "hp": 204,
-        "max_hp": 204,
-        "potion_capacity": 3
-      },
-      "case": "punch_off_capacity_first_potion_belt",
-      "controller_reads": 234,
-      "controller_seconds": null,
-      "decisions": 16,
-      "distinct_offered_potion_identities_verified": true,
-      "evidence": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#punch-off-capacity-first-potion-belt-passed",
-      "initial_potions": [
-        "fire_potion",
-        "strength_potion",
-        "block_potion"
-      ],
-      "installed_state_sha256": "4f2ca6cf55ffc0449db2cbb7928727a8a14fa86f80a5b39c20776dd5dadd7ec5",
-      "limits": [
-        "Controlled console-created event with upfront HP/damage assistance; natural entry and other reward outcomes remain separate."
-      ],
-      "manual_gameplay_after_attachment": false,
-      "native_verification_counts": [
-        16,
-        16,
-        16
-      ],
-      "new_card": "whirlwind",
-      "new_potion_slot_indices": [
-        3,
-        4
-      ],
-      "new_potions": [
-        "fire_potion",
-        "fire_potion"
-      ],
-      "new_relics": [
-        "potion_belt"
-      ],
-      "original_cards_unchanged": true,
-      "original_potions_unchanged": true,
-      "outcome": {
-        "kind": "truncated",
-        "reason": "external_stop"
-      },
-      "pending": false,
-      "post_combat": {
-        "deck": 13,
-        "gold": 99,
-        "hp": 186,
-        "max_hp": 204,
-        "potion_capacity": 3
-      },
-      "potions_unavailable_before_belt": true,
-      "preparation_to_cleanup_seconds": 600,
-      "preparation_to_cleanup_window_utc": [
-        "2026-09-27 16:34:24 UTC",
-        "2026-09-27 16:44:24 UTC"
-      ],
-      "reconciled": 16,
-      "release_manifest_sha256": "69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639",
-      "setup": {
-        "added_cards": [
-          "bludgeon",
-          "bludgeon",
-          "bludgeon"
-        ],
-        "ascension": 0,
-        "character": "ironclad",
-        "console_setup_before_attachment": true,
-        "hp_setup": "Four Looming Fruit add/remove pairs; none remains at attachment.",
-        "initial_potions": [
-          "fire_potion",
-          "strength_potion",
-          "block_potion"
-        ],
-        "manual_launch": true,
-        "mode": "native_seeded_custom_without_gameplay_modifiers",
-        "profile": 3,
-        "seed": "TEST531"
-      },
-      "source_commit": "0fb2972acf5475de36908beac2b89c4d50a60a93",
-      "stale_rejections": 1,
-      "status": "passed",
-      "two_new_empty_slots_verified_before_potion_claims": true,
-      "user_wait_seconds": null,
-      "verification_reads": 1,
-      "verified_by_utc": "2026-09-27 16:43:03 UTC"
-    },
-    {
-      "accepted": 5,
-      "actionable_map": true,
-      "actions": [
-        "choose_event_option",
-        "choose_event_card",
-        "choose_event_card",
-        "confirm_selection",
-        "leave_event"
-      ],
-      "after": {
-        "deck": 14,
-        "gold": 99,
-        "hp": 186,
-        "max_hp": 204,
-        "potion_capacity": 3,
-        "relic_count": 1
-      },
-      "attempted": 5,
-      "before": {
-        "deck": 13,
-        "gold": 99,
-        "hp": 186,
-        "max_hp": 204,
-        "potion_capacity": 3,
-        "relic_count": 1
-      },
-      "case": "trial_merchant_innocent_curse_two_upgrades",
-      "controller_reads": 15,
-      "controller_seconds": null,
-      "curse_added": "shame",
-      "curse_observed_before_selector": true,
-      "decisions": 5,
-      "evidence": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#trial-curse-and-two-upgrades-passed",
-      "installed_state_sha256": "f95a03749602c8100a8e3e3558d4f0fad47e7abb6808f29edf9dba9624ffacad",
-      "limits": [
-        "Automatic Shame grant provenance and natural event entry remain separate from exact observed selector effects.",
-        "No reward or selector save/reload persistence claim."
-      ],
-      "manual_gameplay_after_attachment": false,
-      "native_verification_counts": [
-        5,
-        5,
-        5
-      ],
-      "other_inventory_unchanged": true,
-      "outcome": {
-        "kind": "truncated",
-        "reason": "external_stop"
-      },
-      "pending": false,
-      "preflight_reads": 34,
-      "preparation_to_cleanup_seconds": 322,
-      "preparation_to_cleanup_window_utc": [
-        "2026-09-27 16:50:08 UTC",
-        "2026-09-27 16:55:30 UTC"
-      ],
-      "reconciled": 5,
-      "release_manifest_sha256": "69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639",
-      "selected_cards": [
-        {
-          "after": 1,
-          "before": 0,
-          "id": "strike"
-        },
-        {
-          "after": 1,
-          "before": 0,
-          "id": "strike"
-        }
-      ],
-      "setup": {
-        "actual_merchant_branch_verified": true,
-        "ascension": 0,
-        "character": "ironclad",
-        "console_setup_before_attachment": true,
-        "manual_launch": true,
-        "mode": "saved_native_seeded_custom_without_gameplay_modifiers",
-        "native_accept_before_attachment": true,
-        "new_campaign": false,
-        "profile": 3,
-        "restored_checkpoint": "Punch Off pre-claim rewards; native Skip/map and a connected combat-room entry preceded console Trial.",
-        "seed": "TEST531"
-      },
-      "source_commit": "0fb2972acf5475de36908beac2b89c4d50a60a93",
-      "stale_rejections": 0,
-      "status": "passed",
-      "surviving_unselected_cards_unchanged": true,
-      "user_wait_seconds": null,
-      "verification_reads": 1,
-      "verified_by_utc": "2026-09-27 16:54:01 UTC"
-    },
-    {
-      "accepted": 4,
-      "actionable_map": true,
-      "actions": [
-        "choose_event_option",
-        "choose_event_card",
-        "confirm_selection",
-        "leave_event"
-      ],
-      "after": {
-        "deck": 13,
-        "gold": 99,
-        "hp": 186,
-        "max_hp": 204,
-        "potion_capacity": 3,
-        "relic_count": 1
-      },
-      "attempted": 4,
-      "before": {
-        "deck": 13,
-        "gold": 99,
-        "hp": 186,
-        "max_hp": 204,
-        "potion_capacity": 3,
-        "relic_count": 1
-      },
-      "case": "wood_carvings_torus",
-      "controller_reads": 40,
-      "controller_seconds": null,
-      "decisions": 4,
-      "evidence": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#wood-carvings-torus-passed",
-      "installed_state_sha256": "ea2ad3d2f5a76e9da885f72a67fe9c4fade0052e296eb89da037bdfa6f4f22cb",
-      "limits": [
-        "Controlled event entry; natural entry, other callers and arbitrary deck sizes retain separate limits.",
-        "No save/reload persistence claim."
-      ],
-      "manual_gameplay_after_attachment": false,
-      "native_verification_counts": [
-        4,
-        4,
-        4
-      ],
-      "other_inventory_unchanged": true,
-      "outcome": {
-        "kind": "truncated",
-        "reason": "external_stop"
-      },
-      "pending": false,
-      "preparation_to_cleanup_seconds": 373,
-      "preparation_to_cleanup_window_utc": [
-        "2026-09-27 17:24:00 UTC",
-        "2026-09-27 17:30:13 UTC"
-      ],
-      "reconciled": 4,
-      "release_manifest_sha256": "69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639",
-      "replacement": {
-        "id": "toric_toughness",
-        "upgrade_level": 0
-      },
-      "selected_original": {
-        "id": "strike",
-        "upgrade_level": 0
-      },
-      "setup": {
-        "ascension": 0,
-        "character": "ironclad",
-        "combat_cards_or_potions_used_in_setup": false,
-        "console_setup_before_attachment": true,
-        "manual_launch": true,
-        "mode": "saved_native_seeded_custom_without_gameplay_modifiers",
-        "new_campaign": false,
-        "profile": 3,
-        "restored_checkpoint": "Corpse Slugs combat, before the previous console Trial setup.",
-        "seed": "TEST531"
-      },
-      "source_commit": "0fb2972acf5475de36908beac2b89c4d50a60a93",
-      "stale_rejections": 0,
-      "status": "passed",
-      "survivors_unchanged": true,
-      "user_wait_seconds": null,
-      "verification_reads": 1,
-      "verified_by_utc": "2026-09-27 17:28:54 UTC"
-    },
-    {
-      "accepted": 5,
-      "actionable_map": true,
-      "actions": [
-        "choose_ancient_relic",
-        "claim_relic",
-        "skip_reward",
-        "claim_relic",
-        "leave_event"
-      ],
-      "after": {
-        "deck": 11,
-        "gold": 99,
-        "hp": 68,
-        "max_hp": 68,
-        "potion_capacity": 3,
-        "relic_count": 4
-      },
-      "attempted": 5,
-      "automatic_transformed_originals": [
-        "strike",
-        "defend"
-      ],
-      "before": {
-        "deck": 10,
-        "gold": 99,
-        "hp": 80,
-        "max_hp": 80,
-        "potion_capacity": 3,
-        "relic_count": 1
-      },
-      "case": "neow_offer_skip_leafy_poultice",
-      "controller_reads": 57,
-      "controller_seconds": null,
-      "decisions": 5,
-      "evidence": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-offer-skip-and-leafy-poultice-passed",
-      "expected_max_hp_loss": 12,
-      "final_curse": "writhe",
-      "helper_preparation": "Offer count corrected to two from visible native description and pinned LeadPaperweight source before any gameplay POST.",
-      "installed_state_sha256": "5dd2560fec972e14597693a012d0c450829f95aa043ffef44c9ad696a07b3a41",
-      "limits": [
-        "Owned compound pickup; no general selectorless-transform support claim.",
-        "Controlled Bones entry; natural Neow pool selection and all generated card outcomes retain separate limits."
-      ],
-      "manual_gameplay_after_attachment": false,
-      "native_verification_counts": [
-        5,
-        5,
-        5
-      ],
-      "new_relics": [
-        "neows_bones",
-        "lead_paperweight",
-        "leafy_poultice"
-      ],
-      "outcome": {
-        "kind": "truncated",
-        "reason": "external_stop"
-      },
-      "pending": false,
-      "potions_gold_unchanged": true,
-      "preparation_to_cleanup_seconds": 284,
-      "preparation_to_cleanup_window_utc": [
-        "2026-09-27 17:39:33 UTC",
-        "2026-09-27 17:44:17 UTC"
-      ],
-      "reconciled": 5,
-      "release_manifest_sha256": "69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639",
-      "setup": {
-        "actual_relic_pair_verified_before_claims": true,
-        "ascension": 0,
-        "character": "ironclad",
-        "console_setup_before_attachment": true,
-        "hp_damage_assistance": false,
-        "initial_potion_slots_empty": true,
-        "manual_launch": true,
-        "mode": "native_seeded_custom_without_gameplay_modifiers",
-        "new_campaign": true,
-        "profile": 3,
-        "seed": "TEST74"
-      },
-      "skip_preserved_exact_deck": true,
-      "skipped_offer_cards": [
-        "mind_blast",
-        "ultimate_defend"
-      ],
-      "source_commit": "0fb2972acf5475de36908beac2b89c4d50a60a93",
-      "stale_rejections": 0,
-      "status": "passed",
-      "surviving_original_count": 8,
-      "survivors_unchanged": true,
-      "transformed_cards": [
-        "cinder",
-        "dismantle"
-      ],
-      "user_wait_seconds": null,
-      "verification_reads": 1,
-      "verified_by_utc": "2026-09-27 17:42:41 UTC"
-    },
-    {
-      "accepted": 9,
-      "actionable_map": true,
-      "actions": [
-        "open",
-        "buy",
-        "buy",
-        "buy",
-        "buy",
-        "buy",
-        "buy",
-        "close",
-        "leave"
-      ],
-      "after": {
-        "deck_count": 11,
-        "gold": 219,
-        "hp": 71,
-        "max_hp": 71,
-        "potion_capacity": 3,
-        "relic_count": 10
-      },
-      "attempted": 9,
-      "before": {
-        "deck_count": 11,
-        "gold": 499,
-        "hp": 68,
-        "max_hp": 68,
-        "potion_capacity": 3,
-        "relic_count": 4
-      },
-      "case": "fake_merchant_six_purchases",
-      "controller_reads": 44,
-      "controller_seconds": null,
-      "decisions": 9,
-      "evidence": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#fake-merchant-six-purchases-passed",
-      "installed_state_sha256": "7ba782981a1a3be6d8a1ea05dcb848c8600ac03abfa5a6abf339e1d53bda2eb7",
-      "launch_investigation_and_test_seconds": 547,
-      "launch_investigation_and_test_window_utc": [
-        "2026-09-27 18:01:42 UTC",
-        "2026-09-27 18:10:49 UTC"
-      ],
-      "limits": [
-        "Controlled Act 1 console entry; natural event eligibility and other stock sets remain separate.",
-        "Zero purchases remain untested; full-HP Waffle demonstrates only the capped healing result.",
-        "No reward or event save/reload persistence claim."
-      ],
-      "manual_gameplay_after_attachment": false,
-      "native_verification_counts": [
-        9,
-        9,
-        9
-      ],
-      "original_deck_potions_relics_preserved": true,
-      "outcome": {
-        "kind": "truncated",
-        "reason": "external_stop"
-      },
-      "pending": false,
-      "purchases": [
-        {
-          "price": 47,
-          "relic": "fake_orichalcum",
-          "slot": 0
-        },
-        {
-          "price": 48,
-          "relic": "fake_mango",
-          "slot": 1
-        },
-        {
-          "price": 44,
-          "relic": "fake_snecko_eye",
-          "slot": 2
-        },
-        {
-          "price": 47,
-          "relic": "fake_lees_waffle",
-          "slot": 3
-        },
-        {
-          "price": 44,
-          "relic": "fake_strike_dummy",
-          "slot": 4
-        },
-        {
-          "price": 50,
-          "relic": "fake_venerable_tea_set",
-          "slot": 5
-        }
-      ],
-      "reconciled": 9,
-      "release_manifest_sha256": "69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639",
-      "setup": {
-        "ascension": 0,
-        "character": "ironclad",
-        "combat_cards_or_potions_used_in_setup": false,
-        "console_setup_before_attachment": true,
-        "gold_added": 400,
-        "initial_hp_full": true,
-        "initial_inventory_closed": true,
-        "launch_method": "installed Steam client -applaunch 2868840",
-        "manual_launch": false,
-        "mode": "saved_native_seeded_custom_without_gameplay_modifiers",
-        "new_campaign": false,
-        "profile": 3,
-        "restored_checkpoint": "Completed Neow; native Proceed and connected combat-room entry preceded console Fake Merchant.",
-        "seed": "TEST74"
-      },
-      "source_commit": "0fb2972acf5475de36908beac2b89c4d50a60a93",
-      "stale_rejections": 0,
-      "status": "passed",
-      "total_paid": 280,
-      "user_wait_seconds": null,
-      "verification_reads": 1,
-      "verified_by_utc": "2026-09-27 18:08:52 UTC"
-    },
-    {
-      "accepted": 3,
-      "actionable_map": true,
-      "actions": [
-        "open",
-        "close",
-        "leave"
-      ],
-      "after": {
-        "deck_count": 11,
-        "gold": 99,
-        "hp": 68,
-        "max_hp": 68,
-        "potion_capacity": 3,
-        "relic_count": 4
-      },
-      "attempted": 3,
-      "before": {
-        "deck_count": 11,
-        "gold": 99,
-        "hp": 68,
-        "max_hp": 68,
-        "potion_capacity": 3,
-        "relic_count": 4
-      },
-      "case": "fake_merchant_zero_purchases",
-      "controller_reads": 38,
-      "controller_seconds": null,
-      "decisions": 3,
-      "evidence": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#fake-merchant-zero-purchases-passed",
-      "installed_state_sha256": "bf6c8a68a7cf39c5ca9966f888e416f1d8ffab0809c08fc8e845fd3aeb5fbca9",
-      "limits": [
-        "Controlled Act 1 console entry; natural event eligibility remains separate.",
-        "No save/reload persistence claim; the prior six purchases were absent after Continue."
-      ],
-      "manual_gameplay_after_attachment": false,
-      "native_verification_counts": [
-        3,
-        3,
-        3
-      ],
-      "original_deck_potions_relics_preserved": true,
-      "outcome": {
-        "kind": "truncated",
-        "reason": "external_stop"
-      },
-      "pending": false,
-      "purchases": [],
-      "reconciled": 3,
-      "release_manifest_sha256": "69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639",
-      "setup": {
-        "ascension": 0,
-        "character": "ironclad",
-        "combat_cards_or_potions_used_in_setup": false,
-        "console_setup_before_attachment": true,
-        "gold_added": 0,
-        "initial_hp_full": true,
-        "initial_inventory_closed": true,
-        "launch_method": "installed Steam client -applaunch 2868840",
-        "manual_launch": false,
-        "new_campaign": false,
-        "profile": 3,
-        "restored_checkpoint": "Pre-merchant combat; no previously bought fake relics were present.",
-        "seed": "TEST74"
-      },
-      "source_commit": "0fb2972acf5475de36908beac2b89c4d50a60a93",
-      "stale_rejections": 0,
-      "status": "passed",
-      "total_paid": 0,
-      "user_wait_seconds": 0,
-      "verification_reads": 1,
-      "verified_by_utc": "2026-09-27 18:23:08 UTC"
-    },
-    {
-      "accepted": 13,
-      "actionable_map": true,
-      "after": {
-        "deck_count": 12,
-        "gold": 169,
-        "hp": 68,
-        "max_hp": 68,
-        "potion_capacity": 3,
-        "potion_count": 1,
-        "relic_count": 5
-      },
-      "attempted": 13,
-      "before": {
-        "deck_count": 11,
-        "gold": 99,
-        "hp": 68,
-        "max_hp": 68,
-        "potion_capacity": 3,
-        "potion_count": 0,
-        "relic_count": 4
-      },
-      "case": "sphere_earned_relic",
-      "controller_reads": 60,
-      "controller_seconds": null,
-      "evidence": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#sphere-relic-and-kifuda-empty-selection",
-      "installed_state_sha256": "601ddb7863d3dc545bffc7f7262bce9d2cdf46d484e9797658ef526d2bb17e1b",
-      "manual_gameplay_after_attachment": false,
-      "new_cards": [
-        "debt"
-      ],
-      "new_potions": [
-        "vulnerable_potion"
-      ],
-      "new_relics": [
-        "red_mask"
-      ],
-      "original_deck_potions_relics_preserved": true,
-      "pending": false,
-      "reconciled": 13,
-      "release_manifest_sha256": "69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639",
-      "revealed_cell_counts": [
-        9,
-        7,
-        7,
-        7,
-        8,
-        8
-      ],
-      "reveals": [
-        60,
-        37,
-        73,
-        81,
-        40,
-        105
-      ],
-      "setup": "Profile 3 TEST74 restored combat; console event CRYSTAL_SPHERE before attachment; no additional inventory assistance. Payment Plan and six big-tool reveals through public fragments only.",
-      "source_commit": "0fb2972acf5475de36908beac2b89c4d50a60a93",
-      "stale_rejections": 0,
-      "status": "passed",
-      "user_wait_seconds": 0,
-      "verified_by_utc": "2026-09-27 18:33:48 UTC"
-    },
-    {
-      "accepted": 2,
-      "actions": [
-        "buy_shop_item",
-        "confirm_relic_selection"
-      ],
-      "attempted": 2,
-      "before_gold": 1099,
-      "case": "shop_kifuda_zero",
-      "code": "read_native_failed",
-      "controller_reads": 222,
-      "controller_seconds": null,
-      "decisions": 2,
-      "diagnosis": "Pinned NDeckEnchantSelectScreen.ConfirmSelection ignores an empty set even though Kifuda declares MinSelect=0. Its Cancelable=false disables empty CloseSelection. No native empty-confirm completion exists. Bridge exposed that unusable candidate.",
-      "effect_verified": false,
-      "evidence": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#sphere-relic-and-kifuda-empty-selection",
-      "expected_after_gold": 909,
-      "installed_state_sha256": "25804b0bce97486eef1badce26609e9226ea8a5a82874e4983fd65b700dcec7e",
-      "manual_gameplay_after_attachment": false,
-      "native_visible_after_gold": 909,
-      "normal_app_quit": true,
-      "normal_save_and_quit": false,
-      "pending": true,
-      "price": 190,
-      "reconciled": 0,
-      "release_manifest_sha256": "69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639",
-      "selected_cards": [],
-      "setup": "Profile 3 TEST74 saved combat; gold 1000 and two native room shop preparations before attachment; second offered Kifuda for 190. No purchase before attachment.",
-      "source_commit": "0fb2972acf5475de36908beac2b89c4d50a60a93",
-      "stale_rejections": 0,
-      "status": "failed",
-      "target_relic": "kifuda",
-      "user_wait_seconds": 0,
-      "verified_by_utc": "2026-09-27 18:40:20 UTC"
-    }
-  ],
-  "next_live_test": {
-    "agent_managed_launch_authorized": true,
-    "first_case": "Reject empty enchant confirmation and complete a one-card Kifuda/Gnarled Hammer selection with deselection.",
-    "status": "requires_corrected_release"
-  },
+  "live_cases": [],
   "package": {
     "Sts2AgentBridgeUnified-1.0.0.zip": [
       1823414,
-      "bbc3b580694d1b03d50738a5cab6b322926e9c1bfd89b76f703a408676da82ed"
+      "d3bfa8b9b14fc7a84422d81a250dbbe88fdae71b9cd62cff7550446797ad419e"
     ],
     "Sts2AgentBridgeUnified.dll": [
       1822720,
-      "8096d048ef8c777c27d8bc4dd6e3f4da582c342dd0a3082ba08e38e69065800c"
+      "d73b988f8d3ebc4387c2f889374b35647c65205b11b2b72dcd7bd07b70811d4a"
     ],
     "Sts2AgentBridgeUnified.json": [
       322,
       "bfb70a5edd38b1f9bcf8254e5fea117c6d9bf5ef3988431d2077436aca710955"
     ]
   },
+  "prepared_cases": {
+    "acceptance": "Helper requires the actual offered pair, exact automatic effects, original inventory preservation and settled map; no live pass claimed.",
+    "automatic_neow": [
+      {
+        "pair": [
+          "silken_tress",
+          "neows_talisman"
+        ],
+        "seed": "TEST20"
+      },
+      {
+        "pair": [
+          "golden_pearl",
+          "neows_torment"
+        ],
+        "seed": "TEST61"
+      },
+      {
+        "pair": [
+          "cursed_pearl",
+          "nutritious_oyster"
+        ],
+        "seed": "TEST264"
+      },
+      {
+        "pair": [
+          "arcane_scroll",
+          "silken_tress"
+        ],
+        "seed": "TEST54"
+      }
+    ],
+    "cross_checked_against_observed_seeds": [
+      "TEST74",
+      "TEST407",
+      "TEST91",
+      "TEST475",
+      "TEST614"
+    ],
+    "status": "setup_predictions_only"
+  },
   "previous_release": {
-    "live_ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-phial-holster-pickup-stopped",
-    "manifest_sha256": "14772d59c22d9d630bc71780c3871fedd95331e9c6797267a5fe0acd5ab0582a",
-    "package_copy": "/private/tmp/sts-bridge-wi7n9c_p/previous-package",
-    "record_copy": "/private/tmp/sts-bridge-wi7n9c_p/previous-release-record",
-    "record_git": "b16373ab1ec8b03e8dc99af31b2126df9617eedd",
-    "source_commit": "988f2b5286add8d669538ccdb71912c8e9b1b660"
+    "live_ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#sphere-relic-and-kifuda-empty-selection",
+    "manifest_sha256": "69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639",
+    "package_copy": "/private/tmp/sts-bridge-_r623s93/previous-install-inputs",
+    "record_copy": "/private/tmp/sts-bridge-_r623s93/previous-release-record",
+    "record_git": "c4ee750f",
+    "source_commit": "0fb2972acf5475de36908beac2b89c4d50a60a93"
   },
   "prior_cleanup": {
     "base_file_count": 429,
     "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
     "game_process_running": false,
     "generated_files_removed": 4,
-    "installed_state_sha256": "46e49ca12317201cc14f80c579f7edb6d967a3471a7305f97bce417b92b1e27c",
+    "installed_state_sha256": "25804b0bce97486eef1badce26609e9226ea8a5a82874e4983fd65b700dcec7e",
+    "normal_app_quit": true,
+    "normal_save_and_quit": false,
     "overlay_count": 0,
     "port_accepting": false,
-    "quarantined_state_sha256": "8a455a38657d24aae83216c5c46cb5e0069c03bac4d3e5781ad9cf3a8b6cfbc3",
+    "quarantined_state_sha256": "17fed34f7182ec1007baf82e895607170f16fa3deb892e9c60897d59638d8aad",
     "status": "passed",
-    "verified_by_utc": "2026-09-27 14:32:26 UTC"
-  },
-  "regression_reproduction": {
-    "case": "Shears then full-belt Phial, with a final Neow curse; completion rejects the prior item capacity.",
-    "log": "log-003.txt",
-    "scratch": "/private/tmp/sts-bridge-oj4hy7yz",
-    "status": "expected_failure_before_fix"
+    "verified_by_utc": "2026-09-27 18:41:59 UTC"
   },
   "release_check_counts": {
     "campaign_native_checks": 284,
     "client_tests": 173,
-    "native_event_checks": 17691,
+    "native_event_checks": 17745,
     "router_checks": 1719
   },
-  "release_manifest_sha256": "69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639",
+  "release_manifest_sha256": "5ece253f925f3aa766f6c21095d1017aa04f2c5ce366656720f934e354d50c9c",
   "remaining_limits": [
-    "The fresh Shears/full-belt Phial correction passed at 7/7/7 through final curse and map return. The prior 6/5/4 action remains uncertain under its original release.",
-    "Other named variants remain in docs/STATUS.md; no exhaustive fidelity claim. Compound offer Skip/Leafy Poultice passed at 5/5/5 and Fake Merchant six and zero purchases at 9/9/9 and 3/3/3.",
-    "Earlier assisted shared-v2 campaign and Neow passes retain their original artifacts.",
-    "Kifuda zero selection stopped at 2/2/0. Pinned native empty enchant confirmation is a no-op; bridge legal-minimum correction and nonempty live retest are required. Cleanup does not resolve the action."
+    "The original Kifuda empty attempt remains failed at 2/2/0 under manifest 69bfd021; clean shutdown does not resolve that action.",
+    "Corrected public minimum and one-card Kifuda toggle require a fresh live session. Other concrete remaining cases are tracked in docs/STATUS.md."
   ],
   "schema_version": 1,
   "semantic_review": {
     "game_access": false,
     "reviewer": "semantic_review",
-    "scope": "Pending capacity uses exact inventory proof; only settled tasks advance stored capacity; earlier potion slots/identities, legacy semantics and cleanup retained.",
-    "seconds": 59,
+    "scope": "Effective minimum in projection and dispatch; raw preference validation; native cancel; plain optional grids; 1-3 selections, deselection and invalid bounds.",
+    "seconds": 134,
     "source_only": true,
     "status": "clear",
     "window_utc": [
-      "2026-09-27 14:55:49 UTC",
-      "2026-09-27 14:56:48 UTC"
+      "2026-09-27 18:47:15 UTC",
+      "2026-09-27 18:49:29 UTC"
     ]
   },
-  "source_commit": "0fb2972acf5475de36908beac2b89c4d50a60a93",
-  "user_data_access": "No profile/save/history/Cloud filesystem access or retained live corpus; aggregate acceptance summaries only."
+  "source_commit": "7b892d2ce13bd1c884af30f0baa81bd83bfb197b",
+  "user_data_access": "No profile/save/history/Cloud filesystem access or retained live corpus; sanitized aggregate acceptance summaries only."
 }
