@@ -2454,3 +2454,64 @@ alternative checks**, four groups in **61.067 seconds**, at
 capacity/potion cases retain waiting or failure as appropriate. Independent
 source review found no blocker in **59 seconds** (14:55:49–14:56:48 UTC).
 This is correction evidence, not a successful live retest of the stopped action.
+
+
+### Neow Precarious Shears and full-belt Phial Holster passed
+
+The corrected release is manifest
+`69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639`, source
+`0fb2972acf5475de36908beac2b89c4d50a60a93`. Its final gate passed **85 groups in
+379.888 seconds**, with independent review and reproducible package verification.
+Installation and installed metadata checks passed by **15:07:20 UTC**, under state
+`264f962a707d35ac1645b19c01a44f5e0632ff8acbc684dbb80c913db77ef738`.
+
+After the user's manual Profile 3 launch, fresh running-state, exact source and
+owned-package identity, authenticated health and compatibility checks passed.
+Native controls abandoned the prior disposable uncertain campaign and created a
+fresh Ironclad A0 Custom campaign, canonical seed `TEST91`, without modifiers.
+Before attachment, the console added Fire, Strength and Block potions, in that
+order, and prepared Neow's Bones. The helper verified the clean 80/80 HP, 99 gold,
+ten-card/Burning Blood start and all three filled slots before its first action.
+No manual gameplay input occurred after the policy began.
+
+The helper selected the advertised Bones option, then the unchanged shared
+chooser claimed Shears, selected and confirmed two removals, claimed Holster
+and left Neow. All **7 attempted / 7 accepted / 7 reconciled** actions completed:
+seven decisions, **61 controller reads**, zero stale rejections and nothing pending.
+One separate public verification read confirmed **7/7/7**, actionable map and
+`truncated/external_stop`; the native map was also visually confirmed by
+**15:17:02 UTC on 2026-09-27**.
+
+Shears removed the exact two selected original **Strikes** and reduced HP from
+80 to **64/80**. Holster grew capacity from three to **four**, preserved the exact
+Fire, Strength and Block slots/models, and added **Explosive Ampoule** in the new
+slot. The exact effect certificate covered the second procurement being prevented
+by the now-full belt. No discard, potion claim or card-offer action was needed.
+Neow's final curse was **Injury**, giving a nine-card deck; every surviving original
+was unchanged. Gold stayed 99. The relic order was Burning Blood, Bones, Shears,
+Holster. This establishes this compound removal/full-belt procurement path,
+including final curse and map return. Other procurement outcomes, compound
+transforms and arbitrary Neow branches remain separate. The old **6/5/4** action
+under manifest `14772d59…` remains unreconciled; it was not retried or adopted.
+
+Normal Save and Quit and app Quit completed. Fresh stopped-process/closed-listener
+checks passed, followed by exact quarantine to
+`473a56ef49b427c1ca7c95690b0c84826432327e6c4b2bd90209d0a8db2696dd`
+and purge of four owned files. Base verification passed by **15:18:36 UTC**:
+zero overlays, all 429 base files unchanged, aggregate
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+No profile/save/history/Cloud filesystem access or retained live corpus occurred.
+The live preparation-to-cleanup window was **15:10:29–15:18:36 UTC** (487 seconds);
+controller and user-wait durations were not separately measured.
+
+
+The same accepted package was reinstalled for the next compound transform case,
+under state `59421f560ca9c00d2024e6eb45abb5d5857dbedec2c1295e34ff5cf68903807a`.
+Exact overlays and installed PE metadata checked by **15:24:48 UTC**: two owned
+overlay files, all 429 base files unchanged. Native-compatible reward-shuffle
+setup search predicts **TEST475** gives New Leaf then Phial Holster; the same
+calculation reproduces the observed TEST91, TEST407 and TEST614 reward pairs.
+The planned baseline has three empty potion slots. The helper checks the actual
+advertised relic before each claim and will verify the selected original's
+transformation, unchanged surviving originals, two acquired potions, final curse
+and settled map. This preparation is not a live result. Manual launch is pending.

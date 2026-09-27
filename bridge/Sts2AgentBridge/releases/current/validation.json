@@ -6,6 +6,33 @@
     "src/Sts2AgentBridge/Adapters/Public/PinnedPublicItemRewardClaim.cs",
     "src/Sts2AgentBridge/Adapters/Public/PinnedPublicRewardInteractionSession.cs"
   ],
+  "cleanup": {
+    "base_file_count": 429,
+    "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+    "game_process_running": false,
+    "generated_files_removed": 4,
+    "installed_state_sha256": "264f962a707d35ac1645b19c01a44f5e0632ff8acbc684dbb80c913db77ef738",
+    "normal_app_quit": true,
+    "normal_save_and_quit": true,
+    "overlay_count": 0,
+    "port_accepting": false,
+    "quarantined_state_sha256": "473a56ef49b427c1ca7c95690b0c84826432327e6c4b2bd90209d0a8db2696dd",
+    "status": "passed",
+    "verified_by_utc": "2026-09-27 15:18:36 UTC"
+  },
+  "completed_installations": [
+    {
+      "base_file_count": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "game_process_running_at_install": false,
+      "metadata_verifier": "passed",
+      "overlay_count": 2,
+      "port_accepting_at_install": false,
+      "state_sha256": "264f962a707d35ac1645b19c01a44f5e0632ff8acbc684dbb80c913db77ef738",
+      "status": "tested_cleaned",
+      "verified_by_utc": "2026-09-27 15:07:20 UTC"
+    }
+  ],
   "elapsed_times": {
     "focused_validation_seconds": 61.067,
     "implementation_review_seconds": 59,
@@ -481,18 +508,103 @@
     "metadata_verifier": "passed",
     "overlay_count": 2,
     "port_accepting_at_install": false,
-    "state_sha256": "264f962a707d35ac1645b19c01a44f5e0632ff8acbc684dbb80c913db77ef738",
+    "state_sha256": "59421f560ca9c00d2024e6eb45abb5d5857dbedec2c1295e34ff5cf68903807a",
     "status": "installed_verified",
-    "verified_by_utc": "2026-09-27 15:07:20 UTC"
+    "verified_by_utc": "2026-09-27 15:24:48 UTC"
   },
   "live": {
-    "status": "not_run"
+    "accepted": 7,
+    "attempted": 7,
+    "case_count": 1,
+    "full_shared_native_interface_complete": false,
+    "pending": false,
+    "reconciled": 7,
+    "status": "passed"
   },
-  "live_cases": [],
+  "live_cases": [
+    {
+      "accepted": 7,
+      "actionable_map": true,
+      "after": {
+        "deck": 9,
+        "gold": 99,
+        "hp": 64,
+        "max_hp": 80,
+        "potion_capacity": 4
+      },
+      "attempted": 7,
+      "before": {
+        "deck": 10,
+        "gold": 99,
+        "hp": 80,
+        "max_hp": 80,
+        "potion_capacity": 3
+      },
+      "case": "neow_bones_shears_full_belt_phial_holster",
+      "controller_reads": 61,
+      "decisions": 7,
+      "evidence": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-precarious-shears-and-full-belt-phial-holster-passed",
+      "final_curse": "injury",
+      "installed_state_sha256": "264f962a707d35ac1645b19c01a44f5e0632ff8acbc684dbb80c913db77ef738",
+      "manual_gameplay_after_attachment": false,
+      "new_potion": "explosive_ampoule",
+      "new_relics": [
+        "neows_bones",
+        "precarious_shears",
+        "phial_holster"
+      ],
+      "original_potion_slots_and_models_unchanged": true,
+      "other_potion_procurement": "certified_prevented_full_belt",
+      "outcome": {
+        "kind": "truncated",
+        "reason": "external_stop"
+      },
+      "pending": false,
+      "reconciled": 7,
+      "release_manifest_sha256": "69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639",
+      "removed_cards": [
+        "strike",
+        "strike"
+      ],
+      "setup": {
+        "ascension": 0,
+        "character": "ironclad",
+        "console_setup_before_attachment": true,
+        "initial_potions": [
+          "fire_potion",
+          "strength_potion",
+          "block_potion"
+        ],
+        "manual_launch": true,
+        "mode": "native_seeded_custom_without_gameplay_modifiers",
+        "profile": 3,
+        "seed": "TEST91"
+      },
+      "source_commit": "0fb2972acf5475de36908beac2b89c4d50a60a93",
+      "stale_rejections": 0,
+      "status": "passed",
+      "surviving_original_cards_unchanged": true,
+      "verification_reads": 1,
+      "verified_by_utc": "2026-09-27 15:17:02 UTC"
+    }
+  ],
+  "live_timing": {
+    "controller_seconds": null,
+    "preparation_to_cleanup_seconds": 487,
+    "preparation_to_cleanup_window_utc": [
+      "2026-09-27 15:10:29 UTC",
+      "2026-09-27 15:18:36 UTC"
+    ],
+    "user_wait_seconds": null
+  },
   "next_live_test": {
-    "first_case": "Fresh Neow Bones Precarious Shears then Phial Holster, initially full belt; seed TEST91.",
+    "first_case": "Fresh Neow Bones New Leaf then Phial Holster, initially empty belt; predicted seed TEST475.",
     "game_restart_required": true,
+    "helper_case": "neow-bones transform-holster",
+    "installed_state_sha256": "59421f560ca9c00d2024e6eb45abb5d5857dbedec2c1295e34ff5cf68903807a",
     "new_campaign_required": true,
+    "prepared_helper": "/private/tmp/sts-broader-live-check.py",
+    "setup_prediction": "Native-compatible reward shuffle; calibrated against observed TEST91, TEST407 and TEST614. Confirm actual offered relics before each claim.",
     "status": "awaiting_manual_launch"
   },
   "package": {
@@ -543,7 +655,7 @@
   },
   "release_manifest_sha256": "69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639",
   "remaining_limits": [
-    "The Phial correction has focused and release evidence; a fresh controlled live retest is pending. The prior 6/5/4 action remains uncertain.",
+    "The fresh Shears/full-belt Phial correction passed at 7/7/7 through final curse and map return. The prior 6/5/4 action remains uncertain under its original release.",
     "Other named variants including compound transforms and capacity-first rewards remain in docs/STATUS.md; no exhaustive fidelity claim.",
     "Earlier assisted shared-v2 campaign and Neow passes retain their original artifacts."
   ],

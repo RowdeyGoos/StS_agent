@@ -20,10 +20,12 @@ production builds, package metadata, integration and operational fixtures.
 Focused checks passed **3,487 full-event reward checks** and **216 reward
 alternative checks** in 61.067 seconds. Independent semantic review found no blocker.
 
-Installation and metadata verification passed by **15:07:20 UTC**: the exact two
-overlay files are installed and all **429** base files are unchanged. The game
-was stopped for installation. Manual Profile 3 launch and a fresh `TEST91`
-Shears/full-belt Holster retest are pending.
+Installation and metadata verification passed by **15:07:20 UTC**. After manual
+Profile 3 launch, the fresh `TEST91` Shears/full-belt Holster retest passed
+**7/7/7**, 61 controller reads plus one verification read, with nothing pending.
+The exact removals, capacity growth, original potions, final curse and map return
+were verified. Normal quit, exact owned cleanup and base verification passed
+by **15:18:36 UTC**: zero overlays and all **429** base files unchanged.
 
 The [previous live failure](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-phial-holster-pickup-stopped)
 remains **6/5/4**, with one uncertain action, under manifest `14772d59…`.
@@ -31,3 +33,8 @@ Its package, original record and cleanup evidence are retained separately.
 The earlier bundle/removal **8/8/8** and offer/upgrade **7/7/7** passes retain that
 same original artifact. Other compound branches and capacity-first rewards remain
 separate live cases.
+
+The same validated package was reinstalled and checked by **15:24:48 UTC** for
+New Leaf followed by empty-belt Phial Holster. Two exact overlays are installed;
+all 429 base files remain unchanged. The next controlled case awaits the user’s
+manual Profile 3 launch. Its live result is not yet established.
