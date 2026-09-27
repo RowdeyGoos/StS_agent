@@ -2642,3 +2642,66 @@ the two distinct offered Fire Potions in those slots before settled map return.
 No temporary Looming Fruit remains in the starting relic inventory. A fresh
 campaign and the user's manual launch are required; no further live input has
 occurred for this prepared case.
+
+
+### Punch Off capacity-first Potion Belt passed
+
+After manual Profile 3 launch, fresh running-state, source/owned-package identity,
+authenticated health and compatibility checks passed. The unchanged manifest was
+`69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639`, source
+`0fb2972acf5475de36908beac2b89c4d50a60a93`, under installed state
+`4f2ca6cf55ffc0449db2cbb7928727a8a14fa86f80a5b39c20776dd5dadd7ec5`.
+Native controls retired the completed TEST168 campaign and started fresh Ironclad
+A0 Custom with seed **TEST531**, without modifiers. Before attachment, four
+Looming Fruit add/remove pairs established **204/204 HP**, three Bludgeons were
+added to the deck, Fire/Strength/Block filled the original slots, and the console
+opened Punch Off. Every setup command was visibly confirmed. The first public
+decision verified those thirteen upgrade-0 cards, 99 gold, only Burning Blood and
+the three exact occupied slots. No temporary Looming Fruit remained.
+
+The helper selected Take Them then Fight and used the unchanged shared chooser
+for combat and rewards. No manual gameplay input occurred after attachment and
+no potion was used. Before any reward claim, the actual terminal offer contained
+five rows: ten gold, one card reward, Potion Belt and two distinct Fire Potions.
+Post-combat HP was **186/204**; deck, gold, relics and original potions were unchanged.
+Potion claims were absent from legal actions while the belt was full. The chooser
+claimed gold, then Belt; the next decision verified exactly two new empty slots
+and unchanged original slots/models. Both exact offered Fire Potions filled slots
+3 and 4. The card reward added the selected **Whirlwind**, then Leave settled on
+an actionable map. All thirteen original cards remained exact, and the final
+values were **186/204 HP, 109 gold, fourteen cards, Burning Blood/Potion Belt and
+five full potion slots**.
+
+The controller reported **17 attempted / 16 accepted / 16 reconciled**, sixteen
+decisions, **234 reads**, one confirmed non-mutating stale rejection and nothing
+pending. One separate public verification read reported native counts **16/16/16**
+and `truncated/external_stop`; it also rechecked the exact final inventory. The
+native map and inventory counters were visually confirmed by **16:43:03 UTC on
+2026-09-27**. The stale rejection was handled by the existing controller; no
+uncertain mutation was retried or adopted. This establishes representative
+capacity-first terminal reward behavior alongside the separate Repy event case.
+It does not certify natural entry, other callers or unassisted policy strength.
+
+Normal Save and Quit and app Quit completed. Fresh stopped-process/closed-listener
+checks passed, followed by exact quarantine to
+`26866a40d4bd485a2f5fc62d36a7d6bb1121a2bb5d5a8ce5bcb5b4116689cdbb`
+and purge of four owned files. Base verification passed by **16:44:24 UTC**:
+zero overlays, all 429 base files unchanged, aggregate
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+No profile/save/history/Cloud filesystem access or retained live corpus occurred.
+The preparation-to-cleanup window was **16:34:24–16:44:24 UTC** (600 seconds);
+controller and user-wait durations were not separately measured. No production
+source changed; the accepted release checks were reused without another gate.
+
+The same accepted package was reinstalled for Trial under state
+`f95a03749602c8100a8e3e3558d4f0fad47e7abb6808f29edf9dba9624ffacad`.
+Exact overlays and installed PE metadata checked by **16:46:13 UTC**: two owned
+overlays and all 429 base files unchanged. Pinned EventModel.BeginEvent derives
+its event RNG from the campaign seed, player slot and event ID; Trial Accept uses
+the first NextInt(3), with 0 selecting Merchant. The existing native RNG model
+predicts **TEST531 → Merchant**, so the saved campaign can be continued. This is
+a setup prediction; the actual Merchant/Innocent option must be verified before
+attachment. The existing five-action/60-second helper checks Shame before the
+two-card upgrade selector, exact +1 upgrades, unchanged survivors/inventory and
+map return. No new campaign or production change is required. Manual launch is
+the remaining prerequisite for that separate live case.

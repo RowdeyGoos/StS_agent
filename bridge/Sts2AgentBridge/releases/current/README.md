@@ -31,8 +31,7 @@ The [previous live failure](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_202
 remains **6/5/4**, with one uncertain action, under manifest `14772d59…`.
 Its package, original record and cleanup evidence are retained separately.
 The earlier bundle/removal **8/8/8** and offer/upgrade **7/7/7** passes retain that
-same original artifact. Other compound branches and capacity-first rewards remain
-separate live cases.
+same original artifact. Other compound branches retain separate live limits.
 
 After reinstallation and the user's manual launch, New Leaf followed by
 empty-belt Phial Holster passed **6/6/6**, 53 controller reads plus one verification
@@ -48,6 +47,16 @@ potions were collected and map return settled. Deck/HP/gold were unchanged.
 Exact cleanup passed by **16:24:34 UTC**, with zero overlays and all 429 base files
 unchanged. Console setup omitted Lantern Key; quest removal was not tested.
 
-The same package is reinstalled and verified by **16:30:23 UTC** for Punch Off’s
-terminal full-belt capacity-first test. Two exact overlays are installed and all
-429 base files are unchanged. Manual Profile 3 launch is pending.
+Punch Off’s terminal full-belt Potion Belt case then passed **17 attempted /
+16 accepted / 16 reconciled**, 234 controller reads plus one verification read,
+one non-mutating stale rejection and nothing pending. The three original potions
+were retained; Belt added two empty slots and the two distinct offered Fire
+Potions filled them. Gold, Whirlwind and map return completed. HP/damage assistance
+was applied before attachment. Exact cleanup passed by **16:44:24 UTC**, leaving
+zero overlays and all 429 base files unchanged.
+
+The same package is reinstalled and verified by **16:46:13 UTC** for Trial’s
+Merchant/Innocent two-upgrade test. Two exact overlays are installed and all
+429 base files are unchanged. The saved TEST531 campaign predicts Merchant;
+the actual branch will be checked before attachment. Manual Profile 3 launch
+is pending; no fresh campaign is required.

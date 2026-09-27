@@ -12,12 +12,13 @@ Quick navigation: [supported interactions](#supported-interactions) ·
 [missing features versus remaining tests](#implementation-gaps-versus-remaining-live-tests) ·
 [release and evidence](#release-and-latest-evidence).
 
-The [Repy full-belt Potion Belt case](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#repy-capacity-first-potion-belt-passed)
-passed **6/6/6**, with 42 controller reads and nothing pending. Belt added two
-empty slots before either potion claim; the original Fire/Strength/Block potions
-were preserved, then Weak Potion and Fysh Oil filled the new slots. Deck, HP and
-gold were unchanged and the policy returned to the map. Cleanup passed by
-**16:24:34 UTC**, with zero overlays and all 429 base files unchanged.
+The [Punch Off full-belt Potion Belt case](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#punch-off-capacity-first-potion-belt-passed)
+passed **17 attempted / 16 accepted / 16 reconciled**, with one non-mutating stale
+rejection, 234 controller reads and nothing pending. Belt added two empty slots
+before either potion claim; the three originals were preserved and two distinct
+Fire Potions filled the new slots. Gold, Whirlwind and map return completed.
+This adds terminal reward evidence to the earlier Repy event **6/6/6** pass.
+Cleanup passed by **16:44:24 UTC**, with zero overlays and all 429 base files unchanged.
 
 The [New Leaf / empty-belt Phial Holster case](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-new-leaf-and-empty-belt-phial-holster-passed)
 passed **6/6/6**, with 53 controller reads and nothing pending. The selected
@@ -211,7 +212,7 @@ extend standalone rest/shop contracts.
 | Terminal Strawberry pickup | Exact native type/key/+7 max HP/+7 HP, ready schema 7 | Saved floor-8 native retest passed: five reward actions reconciled and reached the map; max HP 2,064→2,071 |
 | Modified terminal gold | Bowler Hat final integer gain, ready schema 8 in source | Saved floor-15 retest passed: printed 20 gold yielded and reconciled 25 gold (492 → 517), then reached the map |
 | Terminal reward potions | Stop-on-full, skip-full, skip-all, protected original-potion replacement | Skip-full, skip-all with full **and free** capacity, and replacement including distinct same-key potions demonstrated |
-| Potion Belt capacity | Exact +2 empty slots, retained prior inventory, at most eight slots; terminal, event and resume paths | Floor-31 terminal pickup increased capacity from three to five slots, retaining both original potions. Full-belt event ordering passed through Repy at 6/6/6, including both added slots filled. Terminal full-belt ordering remains unverified. Resume capacity handling is fixture-only with no identified native reward-set caller |
+| Potion Belt capacity | Exact +2 empty slots, retained prior inventory, at most eight slots; terminal, event and resume paths | Full-belt terminal ordering passed through Punch Off at 17/16/16, including one non-mutating stale rejection; event ordering passed through Repy at 6/6/6. Both retained three originals, verified two new empty slots before potion claims, filled both slots and returned to the map. Resume capacity handling is fixture-only with no identified native reward-set caller |
 | Special/extra combat rewards | At most eight event extras, at most one special card; gold/card/potion/relic collection | Lantern Key special card and Punch Off potion/relic extras demonstrated. Terminal schemas 9–10 support up to 32 total entries; event extras retain their eight-entry bound |
 | Non-resuming event combat | Exact entry ownership → combat → rewards → map | Dense Vegetation, Lantern Key, Punch Off and initial Fake Merchant fight demonstrated |
 | Resuming event combat | Exact original Resume callback/task → owned item reward if present → resumed event/Proceed/map | Dummy training expiry, Setting1 victory/potion and Setting2 victory demonstrated; consecutive matching combats also demonstrated. No recursive combat driver |
@@ -421,17 +422,18 @@ These are **not an implementation queue or required live-test checklist**:
   representative live acceptance. Zero-purchase
   Close/Leave passed with exact inventory preservation. The inherited passive Red Mask purchase
   passed through the full producer; other pickup effects remain separate cases.
-- Capacity-first Potion Belt collection in terminal reward flows. The earlier
-  terminal pickup verifies +2 capacity and retained potions; full-inventory
-  terminal ordering remains untested. The event variant passed through Repy at
-  6/6/6, preserving the three original potions and filling both added slots.
-  Console-created Repy had no Lantern Key; quest removal and natural entry remain
-  separate evidence limits. Resume capacity has no identified native caller.
+- Other capacity-reward callers retain separate limits. Representative full-belt
+  Potion Belt ordering now passed in terminal rewards through Punch Off at
+  17/16/16 and event rewards through Repy at 6/6/6. Both preserved the three
+  original potions and filled both added slots. Console-created Repy had no
+  Lantern Key; quest removal and natural entry remain separate evidence limits.
+  Resume capacity has no identified native caller.
 - Yummy Cookie's fixed-four upgrade selection has representative live acceptance.
   Trial/NondescriptInnocent’s curse-plus-two-transform path also passed at 5/5/5.
-  Trial/MerchantInnocent's conditional curse-plus-two-upgrade path requires a
-  different campaign seed: recreating Trial in the current campaign repeats
-  Nondescript. It remains untested. Held-out
+  Trial/MerchantInnocent's conditional curse-plus-two-upgrade path remains
+  untested. Native RNG inspection predicts the saved TEST531 campaign selects
+  Merchant; this is prepared for a controlled test, with the actual branch
+  checked before attachment. Recreating Trial repeats a campaign's branch. Held-out
   enchant/removal/transform callers such as Torus retain separate evidence limits.
 - Other natural ancient entry/dialogue routes beyond the demonstrated Nonupeipe continuation.
 - Broader reward orders/outcomes with a concrete offered screen, Sphere earned
@@ -467,7 +469,11 @@ one verification read. Both completed the final curse and actionable map.
 Repy's full-belt capacity-first event rewards then passed **6/6/6**, 42 controller
 reads plus one verification read, with exact originals retained and both added
 slots filled before map return.
-Latest exact owned cleanup and base verification passed by **16:24:34 UTC**:
+Punch Off's full-belt terminal variant passed **17/16/16**, 234 controller reads
+plus one verification read, one non-mutating stale rejection and nothing pending.
+Both added slots contained the exact offered Fire Potions, and the original deck
+was preserved with Whirlwind appended.
+Latest exact owned cleanup and base verification passed by **16:44:24 UTC**:
 zero overlays and all 429 base files unchanged.
 
 The prior manifest **`14772d59c22d9d630bc71780c3871fedd95331e9c6797267a5fe0acd5ab0582a`**,
