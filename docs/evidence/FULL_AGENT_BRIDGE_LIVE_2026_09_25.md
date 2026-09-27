@@ -1889,3 +1889,63 @@ explicit resumed-act acceptance and execution bounds. Its ninth continuation cas
 passed, bringing disposable helper coverage to **32 offline cases**. The next
 case checks the actual restored saved state before continuing combat/rewards/map
 and the remaining campaign. Corrected live continuation is not yet demonstrated.
+
+## Floor-81 recovery and settled Clone-capacity stop, 2026-09-27
+
+The user manually reopened Profile 3 on the same accepted manifest
+`418330cff79f95d517596c27929ac84a3440693d0aed716da0de563cdda97149`, source
+`2fbb99af3b0760ae79ca0c0e8fabe2352a9a7d3f`, installed state
+`b6ddfd36b730046504ec7f893fe9d9ae95feac721065347ec262541e7f275011`.
+Running-process and exact overlay/base checks passed by **10:51:59 UTC**.
+Authenticated health, installed/source identity and compatibility passed before
+native Continue. The initial metadata helper looked for the wrong compatibility
+field and raised a local KeyError; the documented `build_compatibility` check
+then passed. Both requests were read-only, with no gameplay mutation or credential
+output. The UI confirmed Profile 3, pinned v0.107.1 and one loaded mod.
+
+Continue restored Act 2 floor **81**, **93 deck cards**, HP **2126/2126**, gold
+**377**, four Break and two Flash of Steel. The shared controller's preflight
+confirmed a fresh **0/0/0** session and no pending work. No setup mutation, new
+campaign or manual gameplay intervention followed attachment. The unchanged
+`game.agent.full_policy.choose_action` admitted combat, cleared the three-enemy
+fight, processed rewards and returned to the map. It then selected the next node.
+
+The controller stopped with the explicit `read_native_rest_clone_capacity` code:
+**10 attempted / 10 accepted / 10 reconciled**, 10 decisions, 86 controller reads,
+one preflight read, zero stale rejections and **nothing pending**. The final
+semantic action was `choose_map_node`; no rest option was dispatched. Its final
+public map view had HP **2125/2126**, gold **389**. A read-only screenshot showed
+the next rest on floor **82**, **94 cards**, the same HP/gold and available Clone.
+The failed rest read retained the already verified map completion. This is live
+acceptance of floor-81 admission and certified receipt preservation, plus a
+representative pre-input Clone-capacity stop. The exact number of clonable cards
+was not sampled in this session; no predicted size beyond “over 128” is claimed.
+Only Act 2 was observed; no Architect, victory or complete campaign is claimed.
+
+Normal quit, stopped process/listener, exact quarantine/purge and base verification
+finished by **10:56:07 UTC**. Four generated files were removed, zero overlays
+remained and all 429 base files matched
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+Quarantine state: `b3cba01e6bcd619759086503b0ce93ba850abd9635fb75b98e03c4a884cc6157`.
+The stopped host was not resumed or bypassed. No profile/save/history/Cloud
+filesystem access or retained live corpus occurred.
+
+No production correction is needed for this explicit bound. To keep the
+remaining ending test within it, the next controlled setup will remove the exact
+`PAELS_GROWTH` relic through the native console before policy attachment and
+refresh the rest options with `room RestSite`. Source inspection confirms the
+exact relic-ID preference/removal operation and that Pael's Growth adds Clone
+when rest options are constructed. Removing a relic alone is not assumed to
+rewrite the already-open rest. The UI and fresh public view must confirm the
+new setup before policy attachment. These setup actions have **not yet occurred**.
+The existing continuation helper now accepts a settled rest entry and resolves
+its one final-action subject from the full public graph; ten continuation cases
+and the previous 23 helper cases passed (**33 total**), without running the game.
+
+The accepted package and gate were reused unchanged. Reinstallation, exact
+overlay/base verification and installed metadata checks passed by **10:57:23 UTC**,
+under installed state
+`79001d017b36208ef30280a0a1f1908a378f66961f0b75294cf0ee02d986fe0e`.
+Two exact overlays are installed; all 429 base files remain unchanged. The game
+is stopped for manual Profile 3 launch. Live controller/setup/cleanup durations
+were not separately measured; the above wall-clock milestones are retained.

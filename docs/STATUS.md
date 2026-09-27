@@ -262,7 +262,10 @@ extend standalone rest/shop contracts.
   navigation and loss of an already verified map receipt when the next read
   failed. The released correction separates full-profile progress from execution
   budgets and preserves certified receipts in terminal failures. Original live
-  counts remain unchanged; corrected live continuation is outstanding.
+  counts remain unchanged. The corrected continuation admitted floor-81 combat,
+  cleared the fight/rewards, and retained the next map completion at **10/10/10**
+  when rest entry stopped explicitly at Clone's 128-card capacity guard. Nothing
+  remained pending. The ending is still open.
   [Result](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#large-rest-recovery-and-floor-81-stop-2026-09-27).
 - **Single-card shop enchant preview:** Punch Dagger stopped after purchase and
   selection at **2/2/0**, before confirmation. The pinned preview queues old scene
@@ -419,11 +422,19 @@ Independent review cleared the correction. The final gate passed **85 groups in
 360.645 seconds**, including 168 client tests, 1,642 router checks, 284 campaign
 checks and 16,982 native event checks. All 102 bound Python files are unchanged.
 
-Installation and installed metadata/overlay checks passed by **2026-09-27
-10:48:07 UTC**: two exact overlays and all 429 base files unchanged. The game is
-stopped for manual Profile 3 launch and saved-campaign continuation; no fresh
-campaign is needed. Thirty-two disposable helper cases passed. Live acceptance
-of this correction and the shared-v2 ending remain open.
+The corrected saved continuation passed floor-81 combat, rewards and map travel
+at **10/10/10**, with no pending work. The next rest stopped before any option
+input with `read_native_rest_clone_capacity`: the 94-card deck's next Clone would
+exceed the declared 128-card inventory. This also demonstrated preserving a
+verified map receipt across a later native read failure. It does not establish
+the shared-v2 ending.
+
+Normal quit and exact cleanup passed by **10:56:07 UTC**. The same accepted
+package was reinstalled and checked by **10:57:23 UTC**: two exact overlays and
+all 429 base files unchanged. The game is stopped for manual Profile 3 launch.
+Before the next policy attachment, the controlled setup will remove Pael's Growth
+and refresh the rest options; no fresh campaign is needed. Thirty-three disposable
+helper cases passed. [Live result](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#floor-81-recovery-and-settled-clone-capacity-stop-2026-09-27).
 
 The preceding package passed the saved-run rest cycle at **14/14/14**, with Clone
 expanding the deck to 86 and a verified map return. Its next shop completed,

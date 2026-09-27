@@ -1,14 +1,25 @@
 {
   "change": "Full navigation accepts nonnegative native floor progress independently of execution budgets; legacy campaign_v2 retains0..80. Full backend preserves certified receipts in terminal failed captures, validates completion before settlement and latches failure; unresolved ancestors remain pending.",
   "cleanup": {
-    "note": "New release installed for manual launch. Preceding release exact cleanup is retained separately; it does not reconcile old pending work.",
-    "status": "not_yet_run"
+    "base_file_count": 429,
+    "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+    "generated_files_removed": 4,
+    "installed_state_sha256": "b6ddfd36b730046504ec7f893fe9d9ae95feac721065347ec262541e7f275011",
+    "listener_closed": true,
+    "normal_quit": true,
+    "note": "Completed live session cleaned. Same package subsequently reinstalled under the distinct installation state below; no new game launch yet.",
+    "overlay_count": 0,
+    "process_stopped": true,
+    "quarantine_state_sha256": "b3cba01e6bcd619759086503b0ce93ba850abd9635fb75b98e03c4a884cc6157",
+    "status": "passed",
+    "verified_by_utc": "2026-09-27 10:56:07 UTC"
   },
   "elapsed_times": {
     "focused_final_seconds": 17.659,
     "independent_review_seconds": 318,
     "installation_verified_by_utc": "2026-09-27 10:48:07 UTC",
     "note": "Implementation, review and checks overlapped; exclusive implementation, live-controller, release-preparation and user-wait durations were not measured.",
+    "reinstallation_verified_by_utc": "2026-09-27 10:57:23 UTC",
     "release_gate_seconds": 360.645
   },
   "evidence_root": "/private/tmp/sts-bridge-2347lgir",
@@ -484,26 +495,71 @@
   "installation": {
     "base_file_count": 429,
     "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+    "first_verified_by_utc": "2026-09-27 10:48:07 UTC",
     "game_running_before_install": false,
     "installed_metadata_checked": true,
-    "note": "Fresh stopped/listener check, accepted-source publication, install, exact overlay/base verification and installed metadata checks passed. Game not launched by agent.",
+    "note": "Same accepted package reinstalled after exact cleanup. Exact overlay/base and installed metadata checks passed; agent did not launch game.",
     "overlay_count": 2,
-    "state_sha256": "b6ddfd36b730046504ec7f893fe9d9ae95feac721065347ec262541e7f275011",
+    "state_sha256": "79001d017b36208ef30280a0a1f1908a378f66961f0b75294cf0ee02d986fe0e",
     "status": "passed",
-    "verified_by_utc": "2026-09-27 10:48:07 UTC"
+    "verified_by_utc": "2026-09-27 10:57:23 UTC"
   },
   "live": {
+    "initial": {
+      "act": 2,
+      "counts": [
+        0,
+        0,
+        0
+      ],
+      "deck_count": 93,
+      "floor": 81,
+      "gold": 377,
+      "hp": 2126,
+      "max_hp": 2126
+    },
+    "installed_state_sha256": "b6ddfd36b730046504ec7f893fe9d9ae95feac721065347ec262541e7f275011",
+    "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#floor-81-recovery-and-settled-clone-capacity-stop-2026-09-27",
+    "policy": "unchanged_game.agent.full_policy.choose_action",
     "recorded_live_corpus": false,
-    "status": "not_run",
-    "target_game_executed": false
+    "result": {
+      "code": "read_native_rest_clone_capacity",
+      "combat_rewards_map_passed": true,
+      "controller_reads": 86,
+      "controller_status": "failed",
+      "counts": [
+        10,
+        10,
+        10
+      ],
+      "decisions": 10,
+      "ending_observed": false,
+      "last_action": "choose_map_node",
+      "last_public_gold": 389,
+      "last_public_hp": 2125,
+      "last_public_max_hp": 2126,
+      "observed_acts": [
+        2
+      ],
+      "pending": false,
+      "preflight_reads": 1,
+      "rest_option_inputs": 0,
+      "screenshot_deck_count": 94,
+      "screenshot_floor": 82,
+      "stale_rejections": 0,
+      "verified_map_receipt_retained": true
+    },
+    "scope": "Live floor81 admission and certified receipt preservation passed. Declared Clone-capacity guard stopped before rest input. No complete campaign or exact clone count claimed.",
+    "status": "floor_progress_and_receipts_passed_then_capacity_stop",
+    "target_game_executed": true
   },
   "next_live_test": {
-    "acceptance": "Check actual restored public state and fresh settled counts, then run unchanged common policy from the saved campaign. Verify combat/rewards/map continuation and remaining acts/ending within existing profile bounds. Never adopt/retry the preceding pending map action.",
-    "first_case": "saved_floor_81_combat_continuation",
-    "helper": "Existing continue-route mode reuses LiveAdapter/run_agent and accepts settled combat entry as well as map/event; no public schema or policy change.",
+    "acceptance": "Continue unchanged shared policy through remaining acts and ending within existing bounds; report resumed-act scope separately from a fresh uninterrupted campaign.",
+    "first_case": "saved_rest_setup_then_remaining_campaign",
+    "helper": "Existing continue-route with settled event/map/combat/rest entry; bounded last action uses only full public graph.",
     "helper_validation": {
-      "cases": 32,
-      "continuation_cases": 9,
+      "cases": 33,
+      "continuation_cases": 10,
       "cook_cases": 6,
       "rest_cycle_cases": 10,
       "rest_exit_cases": 7,
@@ -512,6 +568,7 @@
       "target_game_executed": false
     },
     "new_campaign_required": false,
+    "setup": "Before policy attachment, native console removes exact PAELS_GROWTH then room RestSite refreshes options. Confirm restored deck/HP, absent relic/Clone option and fresh settled counts. These setup actions have not yet occurred.",
     "status": "awaiting_manual_profile_3_launch"
   },
   "package": {
@@ -550,7 +607,7 @@
   },
   "release_manifest_sha256": "418330cff79f95d517596c27929ac84a3440693d0aed716da0de563cdda97149",
   "remaining_limits": [
-    "Corrected floor81 continuation and shared-v2 ending remain unverified live. The preceding artifact demonstrated86-card rest/map recovery.",
+    "Floor81 combat/rewards/map admission and retention of a verified map receipt across the following Clone-capacity failure passed live at10/10/10, pendingfalse. Shared-v2 ending remains open.",
     "The128-card full inventory and predictive Clone bound remain; other shop/compound/combat selection bounds are unchanged.",
     "Named representative compound/pickup/event branches retain separate coverage limits; no exhaustive native equivalence or complete shared-v2 campaign claimed."
   ],

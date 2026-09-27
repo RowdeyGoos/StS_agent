@@ -24,15 +24,22 @@ builds, metadata/dependency checks, packaging and disposable cleanup. It include
 **16,982 native event checks**. The final focused coordinator/router/client run
 passed six groups in **17.659 seconds**. Independent source review took **318
 seconds**. All 102 bound Python files match the preceding accepted release.
-These are fixture/build results; live floor-81 continuation remains outstanding.
+These are fixture/build results. The corrected floor-81 combat, rewards and map
+continuation also passed live at **10/10/10**, with nothing pending. The next rest
+stopped before input at the declared Clone capacity guard, preserving the verified
+map receipt. The campaign ending remains open.
 
 Publish, stopped-game installation, exact overlay/base and installed metadata
-checks passed by **2026-09-27 10:48:07 UTC**. Two exact overlay files are installed;
+checks first passed by **2026-09-27 10:48:07 UTC**. After the live test, normal quit
+and exact cleanup passed by **10:56:07 UTC**. Reinstallation and verification of
+the same package passed by **10:57:23 UTC**. Two exact overlay files are installed;
 all 429 base files are unchanged. Installed state:
-`b6ddfd36b730046504ec7f893fe9d9ae95feac721065347ec262541e7f275011`.
-The game remains stopped for manual Profile 3 launch. The next test verifies the
-restored saved state, then resumes the shared policy through combat, rewards and
-map return. No fresh campaign is needed. Thirty-two disposable helper cases pass.
+`79001d017b36208ef30280a0a1f1908a378f66961f0b75294cf0ee02d986fe0e`.
+The game remains stopped for manual Profile 3 launch. Before the next policy
+attachment, the controlled setup will remove Pael's Growth and refresh the rest
+options, retaining the 128-card bound. No fresh campaign is needed. Thirty-three
+disposable helper cases pass. The [live ledger](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#floor-81-recovery-and-settled-clone-capacity-stop-2026-09-27)
+records the accepted scope and cleanup.
 
 The preceding package passed the [86-card rest/map cycle at 14/14/14](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#large-rest-recovery-and-floor-81-stop-2026-09-27),
 then stopped entering floor 81 at **27/27/26**, one pending map action. Normal
