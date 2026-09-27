@@ -490,6 +490,7 @@ internal static partial class Program
         PatchOwnership();
         LifecycleTests();
         Check(_checks==745,"preserved predecessor assertion count");
+        Console.WriteLine("native regression stage: predecessor, checks="+_checks);
         IncrementalHooks();
         RewardSurfaceTests();
         EnchantmentTests();
@@ -508,18 +509,24 @@ internal static partial class Program
         RemovalHitboxTests();
         RemovalLayoutTests();
         MultiEnchantmentTests();
+        Console.WriteLine("native regression stage: selectors, checks="+_checks);
 #if TERMINAL_REWARD_TESTS
         ShopInteractiveCases();
         ShopEffectCases();
         FullRewardCases();
 #endif
-        GridCardCases();ItemSetTests();EventCapacityCases(); ItemPolicyCases();MerchantScreenCases();ShopPotionOwnershipCases();ShopRelicCases();ShopPickupCases();MerchantFightCases();ShopRemovalCases();SphereCases();AbandonPopupCases();TerminalCases();
+        Console.WriteLine("native regression stage: compound rewards, checks="+_checks);
+        GridCardCases();
+        Console.WriteLine("native regression stage: card grid, checks="+_checks);
+        ItemSetTests();EventCapacityCases(); ItemPolicyCases();MerchantScreenCases();ShopPotionOwnershipCases();ShopRelicCases();ShopPickupCases();MerchantFightCases();ShopRemovalCases();SphereCases();AbandonPopupCases();TerminalCases();
+        Console.WriteLine("native regression stage: room and custom screens, checks="+_checks);
         AutomaticRemovalTests();CardRewardTests();
         CardRewardSetTests();
         CombatHandoffCases();OwnershipDiagnosticCases();
 #if TERMINAL_REWARD_TESTS
         EmbeddedCombatCases();SpecialCardCases();CombatItemCases();RestRewardCases();RewardAlternativeCases();
 #endif
+        Console.WriteLine("native regression stage: combat and rewards, checks="+_checks);
         CombatResumeCases();FinishedProceedCases();ResumeItemCases();
         Console.WriteLine("generic native checks: "+_checks);
     }

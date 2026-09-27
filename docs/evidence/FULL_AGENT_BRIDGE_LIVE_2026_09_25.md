@@ -2041,3 +2041,20 @@ internal legacy action predicate. The classifier now applies the same closed
 plus the explicit legacy slot bound. No action bound was broadened. The focused
 wire/native-host integration passed **five groups in 8.145 seconds** at
 `/private/tmp/sts-bridge-bi_xrl3o`. The failed release emitted no accepted manifest.
+
+The next release attempt at `/private/tmp/sts-bridge-121w8t6b` passed the complete
+event integration matrix (**89.784 seconds**) but the combined inert native suite
+hit its **240-second test-process timeout**, without an assertion diagnostic.
+An isolated run at `/private/tmp/sts-bridge-uh08npsc` also timed out. A bounded
+diagnostic run at `/private/tmp/sts-native-timing-euw02sn2` added fixed progress
+markers: it passed the 746-check predecessor section, 6,599 checks through legacy
+selectors, 9,893 through compound rewards, 10,062 including all new grid cases,
+and 12,801 through room/custom screens before reaching the same timeout during
+later regressions. No completed full native pass is inferred from these prefixes.
+
+The combined inert native suite now has a **360-second test-process allowance**;
+other checks retain 240 seconds. Stage/count markers are retained in test logs.
+The runner still kills the entire process group on timeout and cannot publish a
+release after failure. A focused runner regression checks exact suite selection,
+both deadline values and failure/cleanup after expiry. This changes validation
+scheduling only; production source and all live deadlines remain unchanged.

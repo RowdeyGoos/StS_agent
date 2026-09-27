@@ -20,6 +20,7 @@ from release_support import (PRODUCTION, REFERENCES, SDK_VERSION, TARGET_COMPONE
                              read_regular, require, sha, validate_sources)
 
 ROOT = Path(__file__).absolute().parent
+NATIVE_EVENT_SUITE = "test:components/events/native_tests/GenericEventV7.Native.Tests.csproj"
 
 
 class Gate:
@@ -78,7 +79,10 @@ class Gate:
             self._active[process.pid] = process
         timed_out = False
         try:
-            output, _ = process.communicate(timeout=240)
+            # The combined inert native matrix includes all selector, reward,
+            # room and combat regressions. Keep its larger test-only allowance
+            # separate from both other checks and live execution deadlines.
+            output, _ = process.communicate(timeout=360 if name == NATIVE_EVENT_SUITE else 240)
         except BaseException as error:
             try:
                 os.killpg(process.pid, signal.SIGKILL)

@@ -80,6 +80,23 @@ class CheckSelectionTests(unittest.TestCase):
         self.assertEqual(self.gate.checks['fixture']['failure'], 'timeout')
         self.assertEqual((self.gate.scratch / self.gate.checks['fixture']['log']).read_bytes(), b'partial')
 
+    def test_only_combined_native_suite_gets_larger_bounded_test_allowance(self):
+        for name, limit in ((check.NATIVE_EVENT_SUITE, 360), ('events:host_native', 240), ('fixture', 240)):
+            with self.subTest(name=name):
+                process = Mock(pid=12345, returncode=0)
+                process.communicate.return_value = (b'passed', None)
+                with patch.object(check.subprocess, 'Popen', return_value=process):
+                    self.gate.run(name, ['fixture'])
+                process.communicate.assert_called_once_with(timeout=limit)
+        process = Mock(pid=12345, returncode=0)
+        process.communicate.side_effect = [subprocess.TimeoutExpired('native', 360), (b'stage reached', None)]
+        with patch.object(check.subprocess, 'Popen', return_value=process), patch.object(check.os, 'killpg') as kill, \
+             patch.object(check.sys, 'stderr', io.StringIO()):
+            with self.assertRaisesRegex(ValueError, 'check_failed:'):
+                self.gate.run(check.NATIVE_EVENT_SUITE, ['fixture'])
+        kill.assert_called_once_with(process.pid, check.signal.SIGKILL)
+        self.assertEqual(self.gate.checks[check.NATIVE_EVENT_SUITE]['failure'], 'timeout')
+
     def test_interruption_kills_worker_tree_and_propagates(self):
         process = Mock(pid=12345)
         process.communicate.side_effect = [KeyboardInterrupt(), (b'', None)]

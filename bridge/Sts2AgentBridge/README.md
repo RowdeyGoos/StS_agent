@@ -148,6 +148,10 @@ When both are selected, the native event regression suite overlaps integration
 after their fixtures have been built. This adds one C# test process alongside
 the integration workers. Failures stop the peer suite and prevent release output;
 logs remain separate for each check. Builds and other check groups stay sequential.
+The combined inert native event regression process has a six-minute test limit;
+other check processes have four minutes. Its fixed stage/count markers locate
+slow sections. Expiry still kills the entire test process group and fails the gate.
+These test allowances do not change any live execution deadline.
 Use `--jobs 1` to disable both kinds of overlap for serial diagnosis, or
 `--jobs N` (1–8) to bound integration concurrency. The full event matrix runs when
 `--event-group` is omitted. Per-check timings can overlap, so their sum need not
