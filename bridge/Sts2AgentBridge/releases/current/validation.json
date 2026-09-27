@@ -1,5 +1,9 @@
 {
   "change": "Full-producer card_grid_v1 supports single upgrade/enchant events with 2..128 public model candidates independent of recycled holder allocation. Reuses exact bounded native scrolling, preview and owned callback/effect settlement; legacy selectors retain allocated-holder and 64-candidate limits. Preserves closed Prepare diagnostics through the full client.",
+  "cleanup": {
+    "reason": "Game remains open at a reconciled combat boundary while the client-only correction is validated.",
+    "status": "not_yet_performed"
+  },
   "compiler_retry_evidence": {
     "failed_check": "build:components/cards/combat_tests/CombatCardChoice.Tests.csproj",
     "failed_release_root": "/private/tmp/sts-bridge-b3a1a0hq",
@@ -512,16 +516,89 @@
     "installed_metadata_checked": true,
     "overlay_count": 2,
     "state_sha256": "f98b4d04bc9f49be87e6761f9f9fd6e8d14c1d71627fac7c42c0569f50a1223b",
-    "status": "installed_and_verified",
+    "status": "installed_running_settled_client_stop",
     "verified_by_utc": "2026-09-27 12:17:58 UTC"
   },
   "live": {
+    "continuation": {
+      "action_delta": [
+        112,
+        108,
+        108
+      ],
+      "architect_observed": false,
+      "code": "stale_limit",
+      "controller_counts": [
+        116,
+        112,
+        112
+      ],
+      "decisions": 108,
+      "deck_count_at_later_read": 108,
+      "floor": 99,
+      "gold": 280,
+      "hp": 2149,
+      "initial_counts": [
+        4,
+        4,
+        4
+      ],
+      "last_action": "play_card",
+      "last_subject": "setup_strike",
+      "max_hp": 2151,
+      "native_counts_after_read": [
+        112,
+        112,
+        112
+      ],
+      "pending": false,
+      "policy_calls": 112,
+      "preflight_reads": 1,
+      "reads": 1452,
+      "stale_rejections": 4,
+      "status": "failed",
+      "stopped_by_utc": "2026-09-27 12:33:20 UTC",
+      "victory_observed": false
+    },
+    "initial": {
+      "act": 3,
+      "deck_count": 105,
+      "floor": 90,
+      "gold": 124,
+      "hp": 2135,
+      "max_hp": 2135
+    },
     "installed_state_sha256": "f98b4d04bc9f49be87e6761f9f9fd6e8d14c1d71627fac7c42c0569f50a1223b",
-    "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#act-3-continuation-and-symbiote-grid-stop-2026-09-27",
+    "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#symbiote-passed-and-settled-combat-stale-stop-2026-09-27",
+    "policy": "unchanged_game.agent.full_policy.choose_action",
+    "read_only_diagnostic": {
+      "by_utc": "2026-09-27 12:36:09 UTC",
+      "pending": false,
+      "public_graphs_unchanged": true,
+      "reads": 3,
+      "tokens_unchanged": true
+    },
     "recorded_live_corpus": false,
-    "scope": "Corrected Symbiote single enchantment and remaining saved-run campaign; no new campaign and no adoption/retry of prior uncertain selector.",
-    "status": "awaiting_manual_launch",
-    "target_game_executed": false
+    "scope": "Saved event and subsequent Act-3 continuation; no fresh uninterrupted-campaign acceptance, no setup mutation and no manual gameplay intervention after attachment.",
+    "status": "symbiote_passed_continuation_stale_limit",
+    "symbiote": {
+      "counts": [
+        4,
+        4,
+        4
+      ],
+      "decisions": 4,
+      "eligible_count": null,
+      "finished_by_utc": "2026-09-27 12:30:24 UTC",
+      "holder_allocation": null,
+      "pending": false,
+      "reads": 42,
+      "selected_slot": null,
+      "stale_rejections": 0,
+      "status": "passed",
+      "stop": "actionable_map"
+    },
+    "target_game_executed": true
   },
   "native_suite_timeout_evidence": {
     "current_test_limit_seconds": 360,
@@ -535,11 +612,10 @@
     "runner_regression_tests": 19
   },
   "next_live_test": {
-    "acceptance": "Complete public eligible domain, unchanged shared-policy selected original preview/enchantment, owned callback and selector closure, event/map return; then remaining campaign within existing bounds.",
-    "first_case": "saved_symbiote_event_then_remaining_campaign",
+    "first_case": "resume_floor99_combat",
     "new_campaign_required": false,
-    "setup": "Manual Profile3 launch at main menu, inspect actual restored event before attachment. Paels Growth was removed in the preceding assisted setup; do not repeat without a demonstrated need.",
-    "status": "awaiting_manual_launch"
+    "setup": "Retain current game process only if the accepted correction has exactly unchanged native DLL/package, fresh authenticated checks pass and a public read confirms no pending work. Never restart merely to reset a stale counter.",
+    "status": "awaiting_client_correction_release"
   },
   "package": {
     "Sts2AgentBridgeUnified-1.0.0.zip": [
@@ -648,7 +724,7 @@
   },
   "release_manifest_sha256": "c78ae051419d0b5db6c3693530f47577fa929b439fb43c34acf2124215d85971",
   "remaining_limits": [
-    "Corrected card_grid_v1 is fixture tested and released, not yet live demonstrated. Prior Symbiote Approach remains unresolved at84/81/80.",
+    "Symbiote card_grid_v1 passed at4/4/4 on a105-card deck. Eligible count and holder allocation were not sampled; other domain/viewport cases remain fixture evidence. The preceding release original84/81/80 stop is separate.",
     "Deck and single-grid domain capped at128. Other generic card families retain existing allocated-holder/64-candidate scope.",
     "Shared-v2 ending and named remaining reward/compound/event variants retain separate limits; no exhaustive native equivalence or full-v2 campaign acceptance."
   ],

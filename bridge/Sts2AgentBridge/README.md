@@ -245,6 +245,12 @@ its [explicit coverage and gaps](../../docs/AGENT_CONTRACT.md#native-full-run-v2
 are narrower than the full headless engine. It retains bounded summaries and
 actual outcomes, with no mutation retries.
 
+Full mode stops after four consecutive confirmed no-mutation stale rejections.
+Only a validated accepted dispatch resets that streak; waiting or changed
+observations do not. The summary retains the total number of rejections across
+the run. Uncertain receipts stop immediately. Legacy agent mode retains its
+cumulative three-rejection allowance.
+
 Optional public recording requires all three flags:
 `--public-trajectory /ABS/attempt.live.jsonl --trajectory-split test --trajectory-setup controlled`.
 Splits are `train`, `validation` or `test`; setup is `normal`, `assisted`,

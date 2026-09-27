@@ -241,8 +241,9 @@ extend standalone rest/shop contracts.
   deck: public deck positions 0/31, deselection/reselection, exact Blood Wall+/Stomp
   removal, +9 HP/max HP and map return. No exact live allocation count was sampled.
   Full-producer single upgrade/enchant event selectors use released `card_grid_v1`
-  with up to 128 public originals; corrected Symbiote live acceptance is
-  pending. Other generic selectors retain their allocated-holder boundary.
+  with up to 128 public originals. Symbiote's 105-card retest passed at **4/4/4**
+  with settled map return; exact eligible count and holder allocation were not
+  sampled. Other generic selectors retain their allocated-holder boundary.
   [Retest](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#large-deck-cook-retest-passed-2026-09-27) and
   [original failure](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#shared-v2-neow-recovery-and-large-deck-cook-stop-2026-09-26).
   Optional zero confirmation is contract-specific and is not native cancellation.
@@ -428,17 +429,21 @@ checks and 17,151 native event checks. Only the bridge client diagnostic
 allowlist and test-runner/timeout regression changed among 102 bound Python
 inputs; game.agent sources are unchanged.
 
-The preceding saved continuation removed Pael's Growth and refreshed the rest
-before policy attachment, then passed the rest, Act-2 boss, natural Nonupeipe
-entry and several Act-3 rooms. Symbiote's Approach opened a Corrupted card selector
-and stopped at **84/81/80**, one pending action. The screenshot showed 105 deck
-cards; the eligible count and exact failed preparation predicate were not captured.
-No selector input occurred. Normal quit and exact cleanup passed by **11:11:57
-UTC**, leaving zero overlays and all 429 base files unchanged. Corrected live
-acceptance and the shared-v2 ending remain open. The corrected package is
-installed and verified by **12:17:58 UTC**, with both exact overlays and all 429
-base files unchanged. The game is stopped, awaiting manual Profile 3 launch.
-[Latest result](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#act-3-continuation-and-symbiote-grid-stop-2026-09-27).
+The saved Symbiote retest passed through the Corrupted chooser and settled map
+return at **4/4/4** on a **105-card** deck. The unchanged chooser then continued
+through further combats, treasure, rest and Tinker Time. It stopped at floor 99
+with `stale_limit`: **116/112/112** controller counts, four cumulative rejections
+and no pending action. Three subsequent read-only decisions had identical tokens
+and public graphs. The shared-v2 ending remains open. The full client now bounds
+consecutive rejections in source while retaining the reported total and legacy
+cap; focused checks and independent review passed, release validation is pending.
+The game remains open at the settled combat boundary for a possible client-only
+resumption after exact native-package verification.
+[Latest result](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#symbiote-passed-and-settled-combat-stale-stop-2026-09-27).
+
+The preceding package's Symbiote Approach stopped at **84/81/80**, one pending
+action. That failed attempt and its **11:11:57 UTC** exact cleanup retain their
+original artifact in the ledger; the successful retest does not reconcile it.
 
 An earlier package passed the saved-run rest cycle at **14/14/14**, with Clone
 expanding the deck to 86 and a verified map return. Its next shop completed,

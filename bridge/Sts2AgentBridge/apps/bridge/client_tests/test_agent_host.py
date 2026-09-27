@@ -98,6 +98,17 @@ class AgentTests(unittest.TestCase):
                 self.assertEqual(result['accepted'], 0)
                 self.assertEqual(len(wire.posts), 4)
 
+    def test_legacy_stale_limit_remains_cumulative_after_progress(self):
+        wire = Wire(); rejected = set()
+        def request(method, route, body):
+            if method == 'POST' and wire.stage not in rejected:
+                rejected.add(wire.stage); wire.stale = 1
+            return wire.request(method, route, body)
+        result = host.run_agent(request, sleep=lambda _: None)
+        self.assertEqual((result['code'], result['stale_rejections'], result['accepted'], len(wire.posts)),
+                         ('stale_limit', 4, 3, 7), result)
+        self.assertTrue(all(not any(buffer) for buffer in wire.buffers))
+
     def test_uncertain_receipts_never_retry(self):
         for error in (ConnectionError(), KeyboardInterrupt()):
             wire = Wire()

@@ -126,6 +126,70 @@ class FullAgentTests(unittest.TestCase):
             self.assertEqual(adapter.step(child.binding, 'action:0').reason, 'stale_decision')
             self.assertEqual(len(wire.posts), 2)
 
+    def test_stale_budget_resets_only_after_accepted_progress(self):
+        wire = FullWire(); remaining = {stage: 3 for stage in range(len(wire.frames))}
+        def request(method, route, body):
+            if method == 'POST' and remaining[wire.stage]:
+                remaining[wire.stage] -= 1; wire.stale = True
+            return wire.request(method, route, body)
+        result = host.run_agent(request, full=True, sleep=lambda _: None)
+        self.assertEqual((result['status'], result['stale_rejections'], result['attempted'],
+                          result['accepted'], result['reconciled'], result['pending']),
+                         ('resolved', 24, 32, 8, 8, False), result)
+        self.assertEqual(len(wire.posts), 32)
+        self.assertTrue(all(not any(buffer) for buffer in wire.buffers))
+
+    def test_consecutive_stale_limit_survives_waiting_and_changed_tokens(self):
+        wire = FullWire(); waiting = False
+        def corrupt(row):
+            nonlocal waiting
+            if row['status'] == 'rejected': waiting = True
+            elif row['status'] == 'ready':
+                if waiting:
+                    waiting = False
+                    row.update(status='waiting', decision_id=None, observation=None)
+                else:
+                    row['decision_id'] = format(len(wire.posts) + 1, '064x')
+            return row
+        wire.corrupt = corrupt
+        def request(method, route, body):
+            if method == 'POST': wire.stale = True
+            return wire.request(method, route, body)
+        result = host.run_agent(request, full=True, sleep=lambda _: None)
+        self.assertEqual((result['code'], result['stale_rejections'], result['accepted'],
+                          result['pending'], result['reads'], len(wire.posts)),
+                         ('stale_limit', 4, 0, False, 7, 4), result)
+        self.assertTrue(all(not any(buffer) for buffer in wire.buffers))
+
+    def test_uncertain_dispatch_after_stale_never_retries(self):
+        for failure in ('lost', 'invalid_receipt'):
+            with self.subTest(failure=failure):
+                wire = FullWire(); wire.stale = True
+                if failure == 'invalid_receipt':
+                    wire.corrupt = lambda row: dict(row, pending=0) if row['status'] == 'accepted' else row
+                def request(method, route, body):
+                    if failure == 'lost' and method == 'POST' and wire.posts:
+                        wire.posts.append(1); wire.buffers.append(body); raise ConnectionError()
+                    return wire.request(method, route, body)
+                result = host.run_agent(request, full=True, sleep=lambda _: None)
+                self.assertEqual((result['code'], result['stale_rejections'], result['pending'], len(wire.posts)),
+                                 ('uncertain_dispatch', 1, True, 2), result)
+                self.assertTrue(all(not any(buffer) for buffer in wire.buffers))
+
+    def test_stale_recovery_keeps_action_and_time_budgets(self):
+        for boundary in ('decisions', 'time'):
+            with self.subTest(boundary=boundary):
+                wire = FullWire(); rejected = set()
+                def request(method, route, body):
+                    if method == 'POST' and wire.stage not in rejected:
+                        rejected.add(wire.stage); wire.stale = True
+                    return wire.request(method, route, body)
+                options = ({'decision_limit': 2} if boundary == 'decisions' else
+                           {'seconds': 1, 'clock': lambda: float(wire.accepted >= 2)})
+                result = host.run_agent(request, full=True, sleep=lambda _: None, **options)
+                self.assertEqual((result['code'], result['accepted'], result['stale_rejections'], len(wire.posts)),
+                                 ('decision_limit' if boundary == 'decisions' else 'deadline_pending', 2, 2, 4), result)
+
     def test_slot_capacity_and_private_or_malformed_graph_stop_before_input(self):
         for count in (2048, 2049):
             wire = FullWire(); wire.frames[0] = graph('event', 'choose_event_option', count)

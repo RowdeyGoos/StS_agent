@@ -527,6 +527,13 @@ scalar string; the fixed tensor encoder keeps its own explicit capacity checks.
 The appended `open_shop` and `close_shop` action kinds preserve earlier vocabulary
 indexes and the 2,048-slot action space.
 
+The full client permits at most three consecutive confirmed no-mutation stale
+rejections before stopping on the fourth. Only a validated accepted dispatch
+resets this streak; waiting reads, changed tokens and reconciliation alone do
+not. Reports retain the cumulative rejection count. Uncertain receipts still
+stop immediately, and all time/read/action limits remain active. The legacy
+slice client retains its three-rejection cumulative allowance.
+
 Full navigation accepts the nonnegative native integer floor counter. This is
 persisted public progress, not an execution budget; starting after floor 80 does
 not relax action/read, navigation-room, map-action or feature-session limits.
@@ -581,8 +588,10 @@ effect, unchanged ordered survivors, successful request/parent callbacks and a
 closed owned selector are required before completion. Decisions bind parent
 lineage, operation, effect and selection. Reads/actions remain bounded and failures
 never permit replay or clean handoff. Other generic-event selectors retain their
-legacy allocated-holder and 64-candidate limits. Symbiote is the identified live
-caller; corrected live acceptance remains pending.
+legacy allocated-holder and 64-candidate limits. Symbiote's Approach passed on
+a 105-card deck at 4/4/4 with the unchanged shared chooser and settled map return.
+The exact eligible count and holder allocation were not sampled; 128-card and
+specific off-screen cases retain fixture evidence.
 
 The Neow compound child retains exact native offer, collection, pickup and
 card-command tasks under one event owner. `full_rewards_v2` adds `card_offer`,

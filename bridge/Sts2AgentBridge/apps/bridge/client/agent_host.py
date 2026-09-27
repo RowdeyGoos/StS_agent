@@ -223,7 +223,7 @@ def run_agent(request, *, policy=None, full=False, dispatch_map=False, stop_at_m
     adapter = LiveAdapter(request, full=full)
     policy = policy or (choose_full_action if full else choose_action)
     deadline = clock() + seconds
-    decisions = stale = 0
+    decisions = stale = stale_streak = 0
     kinds = set()
     outcome = None
     status, code = 'failed', 'time_limit'
@@ -256,9 +256,14 @@ def run_agent(request, *, policy=None, full=False, dispatch_map=False, stop_at_m
                 recorder.action(candidate, report, adapter.counts)
             if report.status == 'rejected' and report.reason == 'stale_decision':
                 stale += 1
-                require(stale <= 3, 'stale_limit')
+                stale_streak += 1
+                # Long full runs can cross many independently changing native
+                # frames. Bound retries without accepted progress, while still
+                # reporting every rejection and retaining the legacy total cap.
+                require((stale_streak if full else stale) <= 3, 'stale_limit')
                 continue
             require(report.status == 'pending', 'uncertain_dispatch')
+            stale_streak = 0
             decisions += 1
         if clock() >= deadline:
             code = 'deadline_pending' if adapter.pending else 'time_limit'

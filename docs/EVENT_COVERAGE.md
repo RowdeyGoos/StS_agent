@@ -1,18 +1,19 @@
 # Event caller evidence index
 
-Updated 2026-09-26; latest live evidence is September 26. Use
+Updated 2026-09-27; latest live evidence is September 27. Use
 [bridge status](STATUS.md) for current support and gaps, and
 [generic event contracts](GENERIC_EVENTS.md) for exact semantics. This page maps
 **named tested paths to their evidence**. It is not an event allowlist or a second
 family support matrix. No row establishes every branch of an event.
 
-## September 25–26 shared full-producer events
+## September 25–27 shared full-producer events
 
 The [full-agent ledger](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md) binds each
 controlled Profile 3 case to its own release, setup, counters and cleanup.
 
 | Caller/path | Recorded result | Qualification |
 | --- | --- | --- |
+| [Symbiote: Approach](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#symbiote-passed-and-settled-combat-stale-stop-2026-09-27) | Single Corrupted selection/confirmation and map return passed at 4/4/4 on a 105-card deck | Saved native event; unchanged common chooser and no setup mutation in this session. Exact eligible count/holder allocation not sampled. The preceding 84/81/80 stop retains its original artifact and unresolved parent |
 | [Crystal Sphere: Payment Plan/tools/rewards](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#sphere-small-and-big-tools-passed-2026-09-26) | Big→small→big, six exact public fog/divination changes, three gold entries, two potions, one card and map return passed at 17/17/17 | User freed three potion slots before console setup/attachment. Earned relics, other outcomes, automatic-grant provenance and reload persistence remain separate |
 | Neow/Lost Coffer | Potion replacement, card choice and event/map return passed at 6/6/6 | Console-forced option; uses the shared full producer, with its original release identity retained |
 | [Neow/Small Capsule → Stone Cracker](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#shared-v2-neow-recovery-and-large-deck-cook-stop-2026-09-26) | Corrected reward and event/map return recovered; later route stopped at large-deck Cook at 51/51/50 | No separate Neow counter total, act transition or ending claimed. Upfront HP/cards and unchanged common policy, no gameplay intervention after attachment. Earlier [2/1/0 uncertainty](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#shared-v2-route-stopped-at-small-capsule-2026-09-26) remains bound to its original package and unreconciled |
@@ -97,7 +98,7 @@ and [Potion Courier singleton](archive/phase-1/research/PHASE_1_GENERIC_EVENT_V6
 records retain their exact original scope.
 
 For untested caller candidates—including Endless Conveyor, Morphic Grove,
-Symbiote, Whispering Hollow and Trial’s Merchant/Innocent selector—use the
+Symbiote's transform branch, Whispering Hollow and Trial’s Merchant/Innocent selector—use the
 [static research map](EVENT_INTERACTION_MAP.md). Its 68 types/105 branch groups
 are a source census, not a count of supported events, reachable events or remaining
 features. Keep future attempt chronology in the dated evidence ledger.

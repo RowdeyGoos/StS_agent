@@ -26,7 +26,8 @@ It includes **168 client tests**, **1,719 router checks**, **284 campaign
 checks** and **17,151 native event checks**. Independent source review cleared
 the correction. The new grid's focused 169 assertions include actual native
 owner → wire → production graph projection with inert game objects. These are
-fixture/build results; corrected Symbiote live acceptance is pending.
+fixture/build results. The corrected Symbiote retest subsequently passed live
+at **4/4/4** on the restored 105-card deck, with settled map return.
 
 The preceding package's assisted saved continuation crossed into Act 3 through
 Nonupeipe, then stopped at Symbiote's Corrupted chooser at **84/81/80**, one
@@ -40,4 +41,8 @@ The corrected bridge was installed and verified by **2026-09-27 12:17:58 UTC**.
 Both exact overlays and installed metadata passed, with all 429 base files
 unchanged. Installed state:
 `f98b4d04bc9f49be87e6761f9f9fd6e8d14c1d71627fac7c42c0569f50a1223b`.
-The game is stopped, awaiting manual Profile 3 launch for the saved-event retest.
+The [saved-event retest](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#symbiote-passed-and-settled-combat-stale-stop-2026-09-27) passed.
+Its subsequent continuation stopped at floor 99 on the client's cumulative stale
+limit: **116/112/112**, nothing pending. Three later read-only decisions had stable
+tokens and public graphs. The game remains open while a client-only correction
+is validated; its acceptance must preserve the exact installed native package.

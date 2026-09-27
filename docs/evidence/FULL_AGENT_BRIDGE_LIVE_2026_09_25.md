@@ -2088,3 +2088,68 @@ metadata verification passed by **12:17:58 UTC**, under installed state
 Both owned overlays are installed and all 429 base files retain the recorded
 base digest. The game is stopped for manual Profile 3 launch and the saved
 Symbiote retest; corrected native behavior is not yet live demonstrated.
+
+## Symbiote passed and settled combat stale stop, 2026-09-27
+
+The user's fresh Profile 3 readiness used manifest
+`c78ae051419d0b5db6c3693530f47577fa929b439fb43c34acf2124215d85971`,
+source `b5f6f0945745b5ba08cb15e9095f919bba0f4f24`, release record `b1b6bcd`,
+and installed state
+`f98b4d04bc9f49be87e6761f9f9fd6e8d14c1d71627fac7c42c0569f50a1223b`.
+Running-process, exact overlay/base, authenticated health and build compatibility
+checks passed by **12:29:03 UTC**. Two earlier local preflight calls supplied a
+relative manifest path and stopped before connection; the required absolute path
+resolved that invocation error. The UI confirmed Profile 3, v0.107.1 and one mod.
+Native Continue restored Symbiote's initial page at floor **90**, with **105 deck
+cards**, HP **2135/2135** and gold **124**. No setup mutation was made this session.
+
+The unchanged common chooser ran through the full producer with stop-at-map.
+Symbiote's Approach, single-card Corrupted selection/confirmation and Leave
+completed by **12:30:24 UTC**: **4/4/4**, four decisions, 42 reads, zero stale
+rejections and no pending action. The native owner certified preview, the exact
+selected-only enchantment effect, survivors, callbacks and selector closure
+before reconciliation. This retest demonstrates the 105-card setup; the exact
+eligible count, selected slot and holder allocation were not sampled. It does
+not separately establish the 128-card endpoint or off-screen selection. The
+controller's `truncated/external_stop` result denotes the intentional settled
+map stop. The earlier package's unresolved 84/81/80 attempt remains separate.
+
+The existing continuation helper then attached at the map with native counts
+4/4/4 and the same 105-card deck, including four Break and two Flash of Steel.
+It completed combat/rewards at floors **91**, **93**, **95** and **96**, treasure
+**92**, rest **94** and **98**, and Tinker Time **97**, before stopping in combat
+**99** by **12:33:20 UTC** with `stale_limit`. Controller totals were **116
+attempted / 112 accepted / 112 reconciled**, **no pending action**, 108 accepted
+continuation decisions, 1,452 reads, one preflight read, four cumulative stale
+rejections and 112 policy calls. Relative to its initial counts, the controller
+attempt/accept/reconcile delta was **112/108/108**. Its last attempted semantic
+action was Setup Strike; the last public view had HP **2149/2151**, gold **280**.
+No Architect or victory was observed. No manual gameplay input followed initial
+policy attachment.
+
+A later read-only inspection showed 108 deck cards and native counts
+**112/112/112**, no pending action, and an advertised Setup Strike. The difference
+from controller attempts is its four locally counted no-mutation rejections;
+those had stopped before the full native dispatch counter incremented. Three
+bounded public reads by **12:36:09 UTC** had identical decision tokens and graphs.
+The rejection distribution was not captured, so consecutive versus separated
+live rejections is not inferred. No rejected card was manually retried.
+
+Source inspection found the full client shared the legacy three-rejection
+*cumulative* cap even for a long campaign. The correction retains cumulative
+reporting but bounds the full-mode *consecutive* streak: the fourth rejection
+without a validated accepted dispatch still stops. Waiting, changed tokens and
+reconciliation do not reset it; uncertain receipts and existing time/read/action
+limits retain their stops. Legacy mode keeps the cumulative cap. Focused full,
+legacy and live-recording checks passed **23 tests in 0.823 seconds**. These cover
+24 separated rejections with progress, waiting/changed-token churn, lost or
+invalid acceptance after stale, unchanged time/action budgets and legacy limits.
+Independent source review cleared the plan (**12:37:33–12:38:58 UTC, 85 seconds**,
+including waiting) and implementation (**12:39:32–12:39:46 UTC, 14 seconds**).
+The reviewer did not run tests or access the game.
+
+The game remains open at the settled combat state while the client correction
+is validated. Resumption requires an accepted source binding and verification
+that the installed native package is exactly unchanged. No runtime guard was
+bypassed, no uncertain mutation was adopted, and no profile/save/history/Cloud
+filesystem access or retained live corpus occurred. Cleanup is not yet performed.
