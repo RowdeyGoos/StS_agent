@@ -142,8 +142,9 @@ matching the shared run inventory. Clone's predictable result must fit that boun
 before any option is published or clicked; overflow stops explicitly without
 hiding native actions. Legacy v2/v3 keep their 64-card entry bound. Completed
 rest/shop receipts are returned before reading the successor surface. These
-corrections have focused regression evidence; the saved 86-card rest retest is
-still required.
+corrections passed a saved-run rest cycle: the shared policy reached 86 cards
+through Clone, then returned to the map at **14/14/14**, with nothing pending.
+The 128-card selector endpoint remains fixture evidence.
 
 **Smith correction:** its constructor sets `SmithCount = 1`. An assembly-wide
 IL scan found no call to `set_SmithCount` and no other write to its backing field
@@ -251,8 +252,18 @@ extend standalone rest/shop contracts.
   Both corrections are implemented with pre-input capacity guards and focused
   tests. The original final action was not logged, so Clone is a
   source-consistent explanation, not an observed final action. Normal quit and
-  exact cleanup passed; the new recovery test remains open.
+  exact cleanup passed. The corrected saved-run rest cycle then passed
+  **14/14/14**, including 24 verified Clone additions, an 86-card rest and map
+  return. This does not reconcile the original failed attempt.
   [Result and diagnosis](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#shared-v2-act-2-rest-handoff-stop-2026-09-27).
+- **Extended saved-campaign navigation:** the subsequent shop passed through map
+  return, then the route stopped while entering floor 81 at **27/27/26**, one
+  pending action. Source inspection identified the legacy 80-floor cap in full
+  navigation and loss of an already verified map receipt when the next read
+  failed. A correction separates full-profile progress from execution budgets
+  and preserves certified receipts in terminal failures. Original live counts
+  remain unchanged; corrected live continuation is outstanding.
+  [Result](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#large-rest-recovery-and-floor-81-stop-2026-09-27).
 - **Single-card shop enchant preview:** Punch Dagger stopped after purchase and
   selection at **2/2/0**, before confirmation. The pinned preview queues old scene
   children for deletion until frame end; a matching fixture reproduced the
@@ -408,10 +419,13 @@ gate passed **85 groups in 356.419 seconds**, including 168 client tests, 1,642
 router checks, 694 rest checks and 16,982 native event checks.
 
 Installation and installed metadata/overlay checks passed by **2026-09-27
-10:16:59 UTC**: two exact overlays and all 429 base files unchanged. The game is
-stopped for manual Profile 3 launch and the saved large-rest Proceed retest.
-Twenty-one offline helper cases passed. Live recovery and the remaining shared-v2
-ending are still open.
+10:16:59 UTC**. The manually launched saved-run rest cycle passed **14/14/14**,
+with Clone expanding the deck to 86 and a verified map return. The next shop
+completed, but floor-81 navigation stopped at **27/27/26**, one pending action.
+Normal quit and exact cleanup passed by **10:31:01 UTC**: zero overlays and all
+429 base files unchanged. Thirty-one disposable helper cases passed. The
+floor-counter/receipt correction is being prepared; the shared-v2 ending remains
+open.
 
 The preceding `fed09e93…` package passed the saved Cook retest at **7/7/7** on
 2026-09-27. Its unchanged-policy continuation crossed Act 1 into Act 2, then

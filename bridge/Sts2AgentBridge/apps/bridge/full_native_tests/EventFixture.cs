@@ -172,9 +172,9 @@ internal static partial class Program
             var model = new AncientEventModel { Description = new FixtureText { FormatFails = !titleFailure } };
             model.Title.Present = !titleFailure;
             backend.SetEvent(model);
-            bool rejected = false;
-            try { backend.Read(); } catch (Sts2AgentBridge.Unified.FullReadFailure e) { rejected = e.Code == "read_context_failed"; }
-            Check(rejected && router.EventAdapter!.Inputs == 0, "actual title/description formatting errors still stop before input");
+            var failure = backend.Read();
+            Check(failure.Status == "failed" && failure.Code == "read_context_failed" && failure.Completed.Length == 0 &&
+                router.EventAdapter!.Inputs == 0, "actual title/description formatting errors still stop before input");
             router.EventWire!.Dispose();
         }
     }

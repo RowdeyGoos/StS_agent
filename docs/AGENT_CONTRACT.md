@@ -514,8 +514,11 @@ changing action semantics, response fields, counts, or the stopped state.
 Full-rest capacity failures use `read_native_rest_deck_capacity` or
 `read_native_rest_clone_capacity`. A completed rest/shop owner returns its
 verified receipts before reading the next surface, so a later unsupported screen
-does not strand already reconciled work. Failed native cleanup still prevents
-completion credit.
+does not strand already reconciled work. Other certified receipts survive a later
+native read or projection failure in that same read: the backend returns them
+with its closed terminal failure, and the outer session accounts for them before
+stopping. Completion-specific validation still precedes credit; unverified
+parents and failed native cleanup remain unresolved.
 
 The transport admits up to 2 MiB only on these two routes, at most 2,048 candidate
 slots, 8,192 action attempts and 131,072 reads. Existing controller limits also
@@ -523,6 +526,11 @@ apply. The graph is bounded to depth 24, 32,768 nodes and 8,192 characters per
 scalar string; the fixed tensor encoder keeps its own explicit capacity checks.
 The appended `open_shop` and `close_shop` action kinds preserve earlier vocabulary
 indexes and the 2,048-slot action space.
+
+Full navigation accepts the nonnegative native integer floor counter. This is
+persisted public progress, not an execution budget; starting after floor 80 does
+not relax action/read, navigation-room, map-action or feature-session limits.
+The legacy `campaign_v2` route retains its client's 0–80 floor range.
 
 Native cards expose formatted visible descriptions, costs, keywords, enchantments,
 afflictions and detached damage/block **previews**, not reconstructed headless

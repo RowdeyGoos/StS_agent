@@ -1,8 +1,17 @@
 {
   "change": "Full-rest capture and selector domain128 with legacy64 defaults; predictable Clone overflow stops before input. Deliver verified rest/shop completion receipts before successor reads. Bounded repeated-window handling prevents native page-allocation cycles from stranding an explicit target.",
   "cleanup": {
-    "note": "Current package installed for manual launch. Prior live package cleanup passed separately; it does not reconcile old pending work.",
-    "status": "not_yet_run"
+    "base_file_count": 429,
+    "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+    "generated_files_removed": 4,
+    "listener_closed": true,
+    "normal_quit": true,
+    "note": "Cleanup does not reconcile the pending map action.",
+    "overlay_count": 0,
+    "process_stopped": true,
+    "quarantine_state_sha256": "0afbf36e7ab3837f6f392f3c612b1339aa3d4da3919a152aafd005ca8af645d9",
+    "status": "passed",
+    "verified_by_utc": "2026-09-27 10:31:01 UTC"
   },
   "elapsed_times": {
     "final_pickup_focus_seconds": 4.239,
@@ -501,26 +510,77 @@
     "verified_by_utc": "2026-09-27 10:16:59 UTC"
   },
   "live": {
+    "continuation": {
+      "action_delta": [
+        13,
+        13,
+        12
+      ],
+      "code": "read_native_failed",
+      "controller_reads": 35,
+      "counts": [
+        27,
+        27,
+        26
+      ],
+      "decisions": 13,
+      "ending_observed": false,
+      "last_action": "choose_map_node",
+      "last_public_floor": 80,
+      "note": "Source identified full navigation floor<=80 plus loss of internally verified map receipt before successor failure. Original live counts remain unreconciled.",
+      "observed_acts": [
+        2
+      ],
+      "pending": true,
+      "preflight_reads": 1,
+      "screenshot_deck_count": 93,
+      "screenshot_floor": 81,
+      "stale_rejections": 0,
+      "status": "failed"
+    },
+    "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#large-rest-recovery-and-floor-81-stop-2026-09-27",
+    "policy": "unchanged_game.agent.full_policy.choose_action",
     "recorded_live_corpus": false,
-    "status": "not_run",
-    "target_game_executed": false
+    "rest_cycle": {
+      "actionable_map": true,
+      "clone_additions": 24,
+      "controller_reads": 134,
+      "counts": [
+        14,
+        14,
+        14
+      ],
+      "deck_after": 86,
+      "deck_before": 63,
+      "gold": 1142,
+      "hp_after": 2126,
+      "hp_before": 2117,
+      "initial_diagnostic_reads": 1,
+      "pending": false,
+      "preflight_reads": 1,
+      "stale_rejections": 0,
+      "status": "passed",
+      "verification_reads": 1,
+      "verified_by_utc": "2026-09-27 10:29:06 UTC"
+    },
+    "status": "rest_cycle_passed_then_continuation_failed",
+    "target_game_executed": true
   },
   "next_live_test": {
-    "acceptance": "Observe saved Act2 floor79 rest with65\u2013128 cards, only native Proceed, no pending work and fresh zero counters. Leave once; verify unchanged exact inventory and actionable map at1/1/1. Do not retry/adopt the preceding package pending action.",
-    "first_case": "large_deck_rest_exit",
-    "helper": "Disposable rest-large-exit and continue-route modes reuse LiveAdapter/run_agent. Exit bounded to one action/30seconds; continuation retains existing8192-decision/90-minute bound. Last semantic action has a bounded public summary.",
+    "acceptance": "Verify restored state, then resume the saved campaign only under a released floor-counter and certified-failure-receipt correction. Do not retry or adopt the old uncertain action.",
+    "first_case": "saved_floor_81_continuation",
     "helper_validation": {
-      "cases": 21,
+      "cases": 31,
       "continuation_cases": 8,
       "cook_cases": 6,
+      "rest_cycle_cases": 10,
       "rest_exit_cases": 7,
       "script": "/private/tmp/sts-large-cook-helper-check.py",
       "status": "passed",
       "target_game_executed": false
     },
     "new_campaign_required": false,
-    "status": "awaiting_manual_profile_3_launch",
-    "then": "Continue unchanged shared policy through remaining acts and ending when within the declared profile. Report resumed-act acceptance separately from full three-act coverage."
+    "status": "requires_corrected_release"
   },
   "package": {
     "Sts2AgentBridgeUnified-1.0.0.zip": [
@@ -560,7 +620,8 @@
   },
   "release_manifest_sha256": "da706c27c151f0e8e1d286a1f16dc48a0770ec17f04e69598b677979f944b3dd",
   "remaining_limits": [
-    "New86-card rest recovery and128-card native selectors remain unverified live. Large Cook32 passed on the preceding artifact.",
+    "Full navigation floor81 failed; correction and live continuation require a new artifact. The original27/27/26 counts remain unchanged.",
+    "The saved63-card rest cycle passed Clone growth to86 and map return at14/14/14. Native128-card selector endpoints remain fixture evidence.",
     "Existing shop/compound and other native selection bounds remain explicit; this correction is full-rest-only. Repeated Clone cannot exceed the128-card public inventory.",
     "Shared-v2 continued campaign ending and named representative branches remain open; no complete campaign or exhaustive native equivalence claimed."
   ],

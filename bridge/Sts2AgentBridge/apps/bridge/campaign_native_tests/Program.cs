@@ -333,5 +333,34 @@ internal static class Program
             if(guard=="tutorial")Check(Throws(guarded.Dispose),"tutorial unresolved cleanup remains failed");
         }
     }
-    private static void Main(){Transitions();Admission();Navigation();TreasureOwnership();MapIdentity();Shops();RewardMapRouting();TreasureClaims();CleanupFailure();Console.WriteLine("campaign native checks: "+_checks);}
+    private static void ExtendedFloorNavigation() {
+        foreach(bool full in new[]{false,true})foreach(int floor in new[]{-1,0,80,81,int.MaxValue}) {
+            var f=new Fixture();f.Node.GlobalUi.Overlays.Screens.Clear();f.Run.TotalFloor=floor;
+            MegaCrit.Sts2.Core.Combat.CombatManager.Instance=new(){IsInProgress=true};
+            using var nav=new CampaignNavigation();
+            var reply=nav.Handle(new(false,Path:full?CampaignRoutes.FullDecision:CampaignRoutes.Decision));
+            bool supported=floor>=0&&(full||floor<=80);
+            Check(reply.Terminal!=supported,"floor admission follows selected profile");
+            using var view=JsonDocument.Parse(reply.Body);
+            if(supported)Check(view.RootElement.GetProperty("surface").GetString()=="combat"&&
+                view.RootElement.GetProperty("floor").GetInt32()==floor&&!nav.Active,"extended floor routes public combat without input");
+            else Check(view.RootElement.GetProperty("code").GetString()=="campaign_context_failed","unsupported floor remains terminal");
+            MegaCrit.Sts2.Core.Combat.CombatManager.Instance=null;
+        }
+        foreach(string guard in new[]{"run","player","network","act","abandoned","profile_switch"}) {
+            var f=new Fixture();f.Node.GlobalUi.Overlays.Screens.Clear();f.Run.TotalFloor=81;
+            MegaCrit.Sts2.Core.Combat.CombatManager.Instance=new(){IsInProgress=true};
+            using var nav=new CampaignNavigation();
+            Check(!nav.Handle(new(false,Path:CampaignRoutes.FullDecision)).Terminal,"full high-floor entry");
+            if(guard=="run")f.Manager.State=new();
+            if(guard=="player")f.Run.Players[0]=new();
+            if(guard=="network")f.Manager.NetService.Type=2;
+            if(guard=="act")f.Run.CurrentActIndex=3;
+            if(guard=="abandoned")f.Manager.IsAbandoned=true;
+            Check(nav.Handle(new(false,Path:guard=="profile_switch"?CampaignRoutes.Decision:CampaignRoutes.FullDecision)).Terminal,
+                "high floor preserves ownership and profile guard: "+guard);
+            MegaCrit.Sts2.Core.Combat.CombatManager.Instance=null;
+        }
+    }
+    private static void Main(){Transitions();Admission();Navigation();TreasureOwnership();MapIdentity();Shops();RewardMapRouting();TreasureClaims();CleanupFailure();ExtendedFloorNavigation();Console.WriteLine("campaign native checks: "+_checks);}
 }

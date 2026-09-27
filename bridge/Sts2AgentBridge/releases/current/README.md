@@ -26,17 +26,26 @@ native event checks**. The final focused pickup run passed **956 checks in 4.239
 seconds**. Independent source reviews took **513 seconds** across diagnosis,
 implementation and the allocation-cycle correction. The only changed bound
 Python file is the tested agent failure-code consumer; the other 101 are unchanged.
-These are fixture/build results, not live large-rest acceptance.
+These checks are fixture/build evidence; the live result is recorded below.
 
 Installation, exact overlay/base verification and installed metadata checks passed
-by **2026-09-27 10:16:59 UTC**. Two exact overlay files are installed; all 429 base
-files are unchanged. Installed state:
+by **2026-09-27 10:16:59 UTC**. Two exact overlay files were installed; all 429 base
+files were unchanged. Installed state:
 `13420352011a5c163e0559333bb4a02a01da87d6d9648f934e879ed9f5f31aa8`.
-The game remains stopped for manual Profile 3 launch. The first test continues
-the saved Act 2 rest site, takes Proceed once and verifies unchanged inventory,
-map return and settled counts. It does not retry the preceding unresolved action.
-The existing disposable helpers passed **21 offline cases**. Continued ending
-acceptance will be reported separately from a complete three-act campaign.
+The user manually launched Profile 3. The saved rest restored 63 cards and all
+options, so the helper was adapted before input; **31 offline helper cases**
+passed. The unchanged shared policy completed Smith, Heal/reward, Dig, Cook,
+Kindle, Clone and Leave at **14/14/14**, with Clone adding 24 cards to reach 86
+and a verified map return. This is a fresh test session, not adoption of the
+preceding unresolved action.
+
+Continuation completed the next shop, then stopped while entering floor 81 at
+**27/27/26**, one pending action. The final public action was `choose_map_node`;
+no combat decision was published. Source inspection found full navigation's old
+80-floor guard and receipt loss on the subsequent failed read. Normal quit and
+exact cleanup passed by **10:31:01 UTC**: four files purged, zero overlays and
+all 429 base files unchanged. Corrected navigation and ending acceptance remain
+outstanding; these counts are not retrospectively reconciled.
 
 The preceding package passed [large Cook at 7/7/7](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#large-deck-cook-retest-passed-2026-09-27)
 on a public 32-card deck. Its unchanged-policy route reached Act 2, then stopped

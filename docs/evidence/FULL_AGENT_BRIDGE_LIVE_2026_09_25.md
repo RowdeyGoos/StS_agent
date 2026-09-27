@@ -1780,3 +1780,88 @@ Continuation can start in Act 2 or 3 and keeps that scope separate from full
 three-act acceptance; it retains one bounded final-action summary for failures.
 Six Cook, eight continuation and seven large-rest-exit offline cases passed.
 These helper results do not establish live recovery on the corrected artifact.
+
+## Large-rest recovery and floor-81 stop, 2026-09-27
+
+The user manually launched Profile 3 on manifest
+`da706c27c151f0e8e1d286a1f16dc48a0770ec17f04e69598b677979f944b3dd`, source
+`1f74e084ee9a182a8062c6f13e7ff2f3eab7c0a1`, installed state
+`13420352011a5c163e0559333bb4a02a01da87d6d9648f934e879ed9f5f31aa8`.
+Running-process, exact installed/source identity, overlay/base, authenticated
+health and compatibility checks passed before native Continue. The HUD and a
+public read independently showed Act 2 floor 79, **63 cards**, HP **2117/2117**,
+gold **1142**, 24 Clone-enchanted cards and all rest options, at **0/0/0** with
+nothing pending. This was an earlier rest state than the previous session's
+86-card Proceed screen; no persistence explanation is claimed. There was no
+setup mutation, new campaign or adoption of the old unresolved action.
+
+Before input, the existing disposable helper was adapted to this premise. Ten
+new offline cases checked restored-state admission, Clone growth and preserved
+originals/inventory, premature exit rejection and exact final inventory/counts;
+the preceding 21 helper cases also passed. Using the unchanged
+`game.agent.full_policy.choose_action`, the bounded rest controller completed
+Smith, Heal and its card reward, Dig, Cook, Kindle, Clone and Leave. By
+**10:29:06 UTC**, it passed **14 attempted / 14 accepted / 14 reconciled**,
+134 controller reads, one preflight read, one independent verification read,
+zero stale rejections and nothing pending. Clone added 24 cards to the 62-card
+post-Cook deck, yielding **86**. Original cards and non-deck inventory at the
+Clone boundary were preserved; native effect ownership certified its additions.
+HP/max HP ended at **2126/2126**, gold remained **1142**, and Leave preserved the
+exact final rest inventory through an actionable map. This demonstrates the
+large rest handoff; it does not establish every 128-card selector or campaign
+ending. A separate initial diagnostic public read established the restored setup.
+
+The same unchanged policy then continued without manual gameplay intervention.
+It entered the floor-80 shop and returned to the map with gold **377**, then
+selected another map node. `read_native_failed` stopped it at **27/27/26**, one
+pending action, zero stale rejections, 13 decisions, 35 controller reads and one
+preflight read. Its continuation delta was **13/13/12**. The final semantic action
+was `choose_map_node`; no combat action or combat decision was published. A
+read-only screenshot showed an ordinary three-enemy fight on floor **81**,
+**93 deck cards**, HP **2126/2126** and gold **377**. Only Act 2 was observed in this
+continuation; no Architect or victory was observed. No full per-stage record,
+observation corpus or profile/save/history/Cloud filesystem data was retained.
+
+No uncertain action was retried or adopted. Normal quit and exact owned cleanup
+passed by **10:31:01 UTC**: process/listener stopped, four generated files purged,
+zero overlays and all 429 base files unchanged
+(`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`).
+Quarantine state: `0afbf36e7ab3837f6f392f3c612b1339aa3d4da3919a152aafd005ca8af645d9`.
+Cleanup does not change the failed attempt's unreconciled count.
+
+Source inspection identified an exact matching failure path: full navigation
+still required `TotalFloor <= 80`, so the floor-81 read could fail before reading
+combat at all. Native `TotalFloor` counts retained map history; it is not an
+execution counter and does not index or allocate bridge state. The coordinator
+also settled the map action internally before reading navigation, but lost that
+receipt when the later read threw. This explains the observed shape independently
+of deck size, without claiming the live predicate itself was captured.
+
+The correction keeps nonnegative native integer floors for full navigation and
+retains 0–80 for legacy `campaign_v2`, whose client requires that range. Existing
+run/player/network/act checks, map-action and navigation-room budgets, shared
+read/action limits and feature-session limits remain in force. Failed full
+captures now deliver certified receipts with the same terminal failure; the
+outer session accounts for them before stopping. Combat outcomes and successor
+ready IDs are validated before credit, and unresolved ancestors remain pending.
+The backend also latches failure. Existing rest/shop success barriers are retained.
+
+Independent diagnosis/design review ran **10:31:24–10:33:16 UTC** and
+implementation review **10:34:09–10:37:35 UTC**, **318 seconds total**. The reviewer
+identified combat outcome validation occurring after settlement; it was moved
+before settlement and covered by malformed/missing-outcome regressions. No
+remaining blocking finding was reported. Review was source-only.
+
+Focused campaign checks passed **284 assertions** at
+`/private/tmp/sts-bridge-zec86m5e`; that combined attempt later hit a sandbox
+loopback-listener permission error. A follow-up at
+`/private/tmp/sts-bridge-g6qy_uq9` exposed an inert fixture still withholding its
+successor after simulated combat completion. Correcting that fixture did not
+change production behavior. The final selected coordinator/router/client run
+passed **six check groups in 17.659 seconds** at
+`/private/tmp/sts-bridge-op1tul79`. It covers map successor/projection failures,
+unverified travel, malformed combat completion, missing next decisions, potion
+completion and verified children whose combat/potion parent then fails. Repeated
+reads do not retry or double-credit; uncertain cleanup remains unresolved.
+Implementation, review and testing overlapped; exclusive implementation, live
+controller, release-preparation and user-wait durations were not measured.

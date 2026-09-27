@@ -103,9 +103,12 @@ internal sealed class CampaignNavigation : ICampaignNavigation
             return View("waiting","unknown");
         }catch {return Fault();}
     }
+    // TotalFloor counts persisted native history, including rooms entered before
+    // attachment. Full mode budgets actual work independently; legacy v2 keeps
+    // the 0..80 public range required by its existing client.
     private bool Context()=>_run is not null&&ReferenceEquals(RunManager.Instance?.DebugOnlyGetState(),_run)&&
         !RunManager.Instance.IsAbandoned&&(int)RunManager.Instance.NetService.Type==1&&_run.Players.Count==1&&ReferenceEquals(_player,_run.Players[0])&&
-        _run.CurrentActIndex is >=0 and <=2&&_run.TotalFloor is >=0 and <=80;
+        _run.CurrentActIndex is >=0 and <=2&&_run.TotalFloor>=0&&(_full==true||_run.TotalFloor<=80);
     private ModuleReply View(string status,string surface,string? action=null)
     {
         string? decision=null;

@@ -30,9 +30,10 @@ namespace Sts2AgentBridge.Unified {
   private void AdoptAcquisitions() {}
   private bool _eventResume=false;
   private FullCapture ReadResumeItem()=>throw new AgentUnsupported();
-  private JsonObject Combat(JsonElement wire){Command(_router.Potion?"potion":"combat",Text(wire,"decision_id")!,_router.Discard?"discard:0":"end_turn",_router.Discard?"discard_potion":"end_turn");return Node("combat");}
+  private JsonObject Combat(JsonElement wire){if(_router.FailCombatProjection&&_router.Started)throw new AgentUnsupported();Command(_router.Potion?"potion":"combat",Text(wire,"decision_id")!,_router.Discard?"discard:0":"end_turn",_router.Discard?"discard_potion":"end_turn");return Node("combat");}
   private JsonObject Selection(JsonElement wire){Command("choice",Text(wire,"decision_id")!,"select:0","select_card");return Node("combat");}
-  private JsonObject Rewards(JsonElement wire)=>throw new AgentUnsupported();private JsonObject Map(JsonElement wire)=>throw new AgentUnsupported();
+  private JsonObject Rewards(JsonElement wire)=>throw new AgentUnsupported();
+  private JsonObject Map(JsonElement wire){Command("map",Text(wire,"decision_id")!,"node:0","choose_map_node");return Node("map");}
   private JsonObject Rest(JsonElement wire){Command("rest",Text(wire,"decision_id")!,"option:clone","use_rest_relic");return Node("rest");}
   private JsonObject Shop(JsonElement wire){Command("shop",Text(wire,"decision_id")!,"close","close_shop");return Node("shop");}
   private JsonObject Navigation(JsonElement wire)=>throw new AgentUnsupported();
@@ -46,11 +47,20 @@ namespace Sts2AgentBridge.Unified {
  internal sealed partial class BridgeRouter {
   internal readonly bool Potion,Discard;internal readonly CombatCardChoiceService Choice;internal readonly DelayedChoice Adapter=new();
   internal int ParentPosts,ParentReadsWhileChildOwned;private bool _started;
+  internal bool Started=>_started;
+  internal bool MapHandoff,FailMapCompletion,FailMapSuccessor,FailCombatProjection,FailParentAfterChoice;
+  internal string? CombatCompletionOutcome;internal bool MissingReadyDecision;
   internal string? RoomFamily; internal bool FailRoomCompletion;
   internal int NavigationReads; private bool _roomCompleted;
   internal BridgeRouter(bool potion,bool discard=false){Potion=potion;Discard=discard;Choice=new(()=>Adapter.Done?null:Adapter,"coordinator");}
   private static ModuleReply Json(object value)=>new(JsonSerializer.SerializeToUtf8Bytes(value));
   internal ModuleReply Dispatch(BridgeRequest r){
+   if(MapHandoff){
+    if(r.Path==CampaignRoutes.FullDecision){NavigationReads++;return _started&&FailMapSuccessor?new("{}"u8.ToArray(),Terminal:true):Json(new{status="ready",surface=_started?"combat":"map"});}
+    if(r.IsPost){ParentPosts++;_started=true;return Json(new{status="accepted",decision_id=r.Decision,action_id=r.Action});}
+    if(r.Path=="/probe/v0/public/map-decision")return _started?(FailMapCompletion?new("{}"u8.ToArray(),Terminal:true):Json(new{status="complete"})):Json(new{status="ready",decision_id="map"});
+    return Json(new{status="ready",decision_id="combat"});
+   }
    if(RoomFamily is not null){
     if(r.Path==CampaignRoutes.FullDecision){NavigationReads++;return _roomCompleted?new("{}"u8.ToArray(),Terminal:true):Json(new{status="ready",surface=RoomFamily});}
     string action=RoomFamily=="rest"?"option:clone":"close";
@@ -63,6 +73,9 @@ namespace Sts2AgentBridge.Unified {
    if(r.Path is CombatCardChoiceService.DecisionRouteV4 or CombatCardChoiceService.ActionRouteV4){var reply=r.IsPost?Choice.Apply(r.Decision!,r.Action!,4):Choice.Read(4);return new(reply.Body,reply.Terminal);}
    if(Choice.IsActive){ParentReadsWhileChildOwned++;return Json(new{status="failed",code="capability_busy"});}
    if(r.IsPost){ParentPosts++;_started=true;return Json(new{status="accepted",decision_id=r.Decision,action_id=r.Action});}
+   if(_started&&FailParentAfterChoice&&Adapter.Done)return new("{}"u8.ToArray(),Terminal:true);
+   if(_started&&r.Path=="/probe/v0/public/combat-decision"&&CombatCompletionOutcome is not null)return Json(new{status="complete",outcome=CombatCompletionOutcome=="missing"?null:CombatCompletionOutcome});
+   if(_started&&r.Path=="/probe/v0/public/combat-decision"&&MissingReadyDecision)return Json(new{status="ready"});
    if(_started&&!Adapter.Done)return Json(new{status="waiting"});
    if(r.Path==CombatPotionRoutes.FullDecision)return Json(new{status="resolved",decision_id="parent",action_id=Discard?"discard:0":"end_turn"});
    return Json(new{status="ready",decision_id=_started?"after":"parent"});

@@ -31,7 +31,7 @@ internal sealed partial class FullNativeBackend : IFullAgentBackend
     private BridgeRequest? _eventOrigin;
     private string _family = "navigation", _potionReturn = "combat";
     private string? _source;
-    private bool _inChoice, _disposed;
+    private bool _inChoice, _disposed, _failed;
     internal FullNativeBackend(BridgeRouter router, PinnedPublicRewardDecisionReader rewards, CombatCardChoiceService choice)
     { _router = router; _rewards = rewards; _choice = choice; }
 
@@ -71,10 +71,23 @@ internal sealed partial class FullNativeBackend : IFullAgentBackend
     private void Settle(ref BridgeRequest? request)
     { if (request is not null) Settle(request); request = null; }
 
-    public FullCapture Read() => FullReadFailure.At(FullReadStage.Context, ReadCore);
+    public FullCapture Read()
+    {
+        _completed.Clear();
+        try { return FullReadFailure.At(FullReadStage.Context, ReadCore); }
+        catch (FullReadFailure failure)
+        {
+            // A later read/projection failure cannot revoke receipts already
+            // certified by their native owners. Deliver those receipts with
+            // the terminal failure; unresolved ancestors stay pending.
+            _failed = true;
+            return new("failed", null, Array.Empty<FullCommand>(), Array.Empty<object>(),
+                _completed.ToArray(), Code: failure.Code);
+        }
+    }
     private FullCapture ReadCore()
     {
-        Require(!_disposed); _completed.Clear();
+        Require(!_disposed && !_failed);
         for (int transition = 0; transition < 8; transition++)
         {
             string family = _inChoice ? "choice" : _family;
@@ -93,6 +106,7 @@ internal sealed partial class FullNativeBackend : IFullAgentBackend
             string? status = Text(wire, "status");
             if (family is "rest" or "shop")
             {
+                Require(status is "ready" or "waiting" or "complete");
                 foreach (var row in wire.GetProperty("completed").EnumerateArray())
                 {
                     Require(Text(row, "result") is "reconciled" or "cancelled");
@@ -107,6 +121,7 @@ internal sealed partial class FullNativeBackend : IFullAgentBackend
             }
             if (family == "navigation")
             {
+                Require(status is "ready" or "waiting");
                 if (_parent is not null && Text(wire, "completed_decision_id") == _parent.Decision) Settle(ref _parent);
                 if (status == "waiting") return Waiting();
                 Require(status == "ready");
@@ -141,21 +156,23 @@ internal sealed partial class FullNativeBackend : IFullAgentBackend
                     Require(_child is not null && Text(wire, "result") == "selection_verified");
                     Settle(ref _child); _inChoice = false; continue;
                 }
-                Settle(ref _parent);
                 if (family == "combat")
                 {
-                    if (Text(wire, "outcome") == "defeat") return Complete("defeat");
-                    Require(Text(wire, "outcome") == "victory");
+                    string? outcome = Text(wire, "outcome");
+                    Require(outcome is "victory" or "defeat");
+                    Settle(ref _parent);
+                    if (outcome == "defeat") return Complete("defeat");
                     if (_eventResume) return Waiting();
                     _family = "reward";
                 }
-                else _family = "navigation";
+                else { Settle(ref _parent); _family = "navigation"; }
                 continue;
             }
             Require(status == "ready");
             var pending = family == "choice" ? _child : _parent;
             if (pending is not null)
             {
+                Require(!string.IsNullOrEmpty(Text(wire, "decision_id")));
                 if (Text(wire, "decision_id") == pending.Decision) return Waiting();
                 if (family == "choice") Settle(ref _child); else Settle(ref _parent);
             }
@@ -182,7 +199,7 @@ internal sealed partial class FullNativeBackend : IFullAgentBackend
         _commands.Add(new(Request(family, true, decision, action), Candidate(_commands.Count, kind, subject, target)));
     public ModuleReply Apply(BridgeRequest request)
     {
-        Require(!_disposed);
+        Require(!_disposed && !_failed);
         var command = _commands.Single(c => c.Request == request);
         var reply = _router.Dispatch(request);
         if ((request.Capability == Capability.Events || CoreBridgeModule.IsResumeItem(request)) && !reply.Terminal)
