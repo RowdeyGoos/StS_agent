@@ -12,16 +12,21 @@ Quick navigation: [supported interactions](#supported-interactions) ·
 [missing features versus remaining tests](#implementation-gaps-versus-remaining-live-tests) ·
 [release and evidence](#release-and-latest-evidence).
 
+The [full-belt Phial Holster case](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-phial-holster-pickup-stopped)
+stopped at **6/5/4**, with one pending action. The reproduced defect was reward
+bookkeeping: a previously settled claim rejected Holster's certified fourth
+potion slot. The correction now passes focused regressions, independent review
+and **85 release groups**. Installation was verified by **15:07:20 UTC** with all
+429 base files unchanged; manual launch and a fresh controlled retest are pending.
+The earlier two removals, 16 HP loss and one potion addition remain partial live
+effects, not acceptance of the failed action.
+
 The [Neow offer/upgrade case](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-lead-paperweight-and-pomander-passed)
-passed **7/7/7**, following the corrected bundle/removal case's **8/8/8**. The
-subsequent [full-belt Phial Holster case](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-phial-holster-pickup-stopped)
-stopped during its pickup at **6/5/4**, with one pending action. Shears' two
-removals and 16 HP loss were visible, as was one added potion, but Holster's
-completion, final curse and map return were not verified. No retry occurred.
-Latest owned cleanup passed at **14:32:26 UTC**: installation absent, zero overlays
-and all 429 base files unchanged. These seeded Custom-mode cases used no modifiers
-and console setup before attachment. The prior empty-grid **5/5/3** failure and
-Hefty Tablet/Kaleidoscope **9/9/9** result retain their original release.
+passed **7/7/7**, following bundle/removal at **8/8/8**. These results retain manifest
+`14772d59…`, as does the stopped Holster attempt and its **14:32:26 UTC** cleanup.
+Seeded Custom-mode cases used no modifiers and console setup before attachment.
+The prior empty-grid **5/5/3** failure and Hefty Tablet/Kaleidoscope **9/9/9** result
+retain their own original release.
 
 ## How to read support
 
@@ -432,16 +437,23 @@ supplies dated source candidates rather than a current implementation checklist.
 ## Release and latest evidence
 
 The current [release manifest](../bridge/Sts2AgentBridge/releases/current/bridge.json)
-is **`14772d59c22d9d630bc71780c3871fedd95331e9c6797267a5fe0acd5ab0582a`**, source `988f2b5`. The scoped
-compound-grid preview correction passed independent review and **85 release groups
-in 386.222 seconds**, including production build/package reproducibility and
-operational checks. Focused checks passed 3,304 reward checks and 39 direct-holder
-checks. The native bundle/removal retest passed at **8/8/8**, 56 reads; the
-offer/upgrade case passed at **7/7/7**, 60 reads. Neither left anything pending.
-The subsequent full-belt Phial Holster pickup stopped at **6/5/4**, one pending
-action, with its correction/retest still required. Latest exact cleanup passed
-at **14:32:26 UTC**. This and the preceding **5/5/3** failure remain unreconciled
-in their historical records.
+is **`69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639`**, source
+`0fb2972`. Reward claims now propagate capacity validated by the exact full effect
+owner, including Phial Holster and nested relic grants. Stored capacity advances
+only after successful settlement; pending callbacks and unexpected inventory
+changes retain their waiting/failure behavior. Focused checks passed **3,487 reward
+checks and 216 alternative checks** in 61.067 seconds. Independent review found no
+blocker. The final gate passed **85 groups in 379.888 seconds**, including production
+build/package reproducibility and operational checks. Installation and metadata
+verification passed by **15:07:20 UTC**, with two exact overlay files and all 429
+base files unchanged. The fresh full-belt Holster live retest is pending.
+
+The prior manifest **`14772d59c22d9d630bc71780c3871fedd95331e9c6797267a5fe0acd5ab0582a`**,
+source `988f2b5`, carried the scoped compound-grid preview correction. Its release
+gate passed 85 groups in 386.222 seconds. Bundle/removal passed **8/8/8**, 56 reads;
+offer/upgrade passed **7/7/7**, 60 reads. Holster then stopped at **6/5/4**, one
+pending action; exact cleanup passed at **14:32:26 UTC**. The stopped action stays
+unreconciled in that artifact's historical record.
 
 The preceding manifest
 **`325f2611735c00376775a0d6f4c2c4c1aa1657a93477e056cf777a318321bf20`**. Source `2e9e66d` changes only the full client and

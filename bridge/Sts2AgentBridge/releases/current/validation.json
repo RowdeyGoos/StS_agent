@@ -1,84 +1,27 @@
 {
-  "change": "Compound deck grids admit the exact temporary preview clone during synchronous native holder refresh, with unchanged real inventory, one clone upgrade and strict retained pickup ownership. Preview work is separate from the effect mutation budget.",
+  "change": "Reward claims carry potion capacity only after the exact full effect inventory proof succeeds. Earlier settled claims accept that pending capacity without completing the action, then store it after successful settlement. Phial Holster and nested Large Capsule capacity no longer rely on the legacy Potion Belt field.",
   "changed_bound_files": [
     "apps/bridge/package/identity.json",
-    "components/events/direct_input_tests/TargetStubs.cs",
-    "components/events/native/GenericEventCompoundRewards.Deck.cs",
-    "components/events/native/GenericEventCompoundRewards.cs",
-    "components/events/native_tests/CompoundDeckFixtures.cs",
-    "components/events/native_tests/CompoundRewardFixtures.cs",
-    "components/events/native_tests/TargetStubs.cs",
-    "components/items/native/PinnedAutomaticRelicEffects.cs"
-  ],
-  "cleanup": {
-    "base_file_count": 429,
-    "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-    "game_process_running": false,
-    "generated_files_removed": 4,
-    "installed_state_sha256": "46e49ca12317201cc14f80c579f7edb6d967a3471a7305f97bce417b92b1e27c",
-    "overlay_count": 0,
-    "port_accepting": false,
-    "quarantined_state_sha256": "8a455a38657d24aae83216c5c46cb5e0069c03bac4d3e5781ad9cf3a8b6cfbc3",
-    "status": "passed",
-    "verified_by_utc": "2026-09-27 14:32:26 UTC"
-  },
-  "cleanup_cases": [
-    {
-      "base_file_count": 429,
-      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "game_process_running": false,
-      "generated_files_removed": 4,
-      "installed_state_sha256": "2637ef75ae81512eceb1597e9eb0e39319aa6d8f712758ec302a81e086c2edd3",
-      "overlay_count": 0,
-      "port_accepting": false,
-      "quarantined_state_sha256": "7d52311f2b2d11515bb96f1d641d0ff21ad316ff759ac655048aba6e445ba0b0",
-      "status": "passed",
-      "verified_by_utc": "2026-09-27 14:10:28 UTC"
-    },
-    {
-      "base_file_count": 429,
-      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "game_process_running": false,
-      "generated_files_removed": 4,
-      "installed_state_sha256": "970bb7b18cf1b76185fa8214228bf5f40c8d15a14319d9839fa292b561cea596",
-      "overlay_count": 0,
-      "port_accepting": false,
-      "quarantined_state_sha256": "39948aa66ed11ce50221769bc6453385dbab2ca3d29b8b6200079bce446fc4d4",
-      "status": "passed",
-      "verified_by_utc": "2026-09-27 14:21:36 UTC"
-    },
-    {
-      "base_file_count": 429,
-      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "game_process_running": false,
-      "generated_files_removed": 4,
-      "installed_state_sha256": "46e49ca12317201cc14f80c579f7edb6d967a3471a7305f97bce417b92b1e27c",
-      "overlay_count": 0,
-      "port_accepting": false,
-      "quarantined_state_sha256": "8a455a38657d24aae83216c5c46cb5e0069c03bac4d3e5781ad9cf3a8b6cfbc3",
-      "status": "passed",
-      "verified_by_utc": "2026-09-27 14:32:26 UTC"
-    }
+    "components/events/native_tests/CompoundRemainingFixtures.cs",
+    "src/Sts2AgentBridge/Adapters/Public/PinnedPublicItemRewardClaim.cs",
+    "src/Sts2AgentBridge/Adapters/Public/PinnedPublicRewardInteractionSession.cs"
   ],
   "elapsed_times": {
-    "design_review_seconds": 288,
-    "focused_validation_seconds": 61.856,
-    "implementation_review_seconds": 109,
+    "focused_validation_seconds": 61.067,
+    "implementation_review_seconds": 59,
     "note": "Separate implementation, release preparation and user-wait durations were not measured.",
-    "release_gate_seconds": 386.222
+    "release_gate_seconds": 379.888
   },
-  "evidence_root": "/private/tmp/sts-bridge-ndvgcami",
+  "evidence_root": "/private/tmp/sts-bridge-wi7n9c_p",
   "feature_commits": [
-    "845df307137f17f13e46f32c742d59a678873ddf",
-    "ec76b0c17326822e0adfb162c8c1c727266ea73d",
-    "988f2b5286add8d669538ccdb71912c8e9b1b660"
+    "0fb2972acf5475de36908beac2b89c4d50a60a93"
   ],
   "focused_validation": {
-    "check_groups": 5,
-    "direct_holder_checks": 39,
-    "native_full_reward_checks": 3304,
-    "scratch": "/private/tmp/sts-bridge-ybthv58q",
-    "seconds": 61.856,
+    "check_groups": 4,
+    "native_full_reward_checks": 3487,
+    "reward_alternative_checks": 216,
+    "scratch": "/private/tmp/sts-bridge-3jgtcyat",
+    "seconds": 61.067,
     "status": "passed"
   },
   "full_shared_native_interface_complete": false,
@@ -86,7 +29,7 @@
     "checks": {
       "agent:paired": {
         "log": "log-078.txt",
-        "seconds": 0.156,
+        "seconds": 0.149,
         "status": "passed"
       },
       "apps/bridge/operations/check_live_runtime_fixtures.py": {
@@ -96,177 +39,177 @@
       },
       "apps/bridge/operations/manage_live_campaign_fixtures.py": {
         "log": "log-014.txt",
-        "seconds": 2.958,
+        "seconds": 2.791,
         "status": "passed"
       },
       "apps/bridge/operations/predecessor_conflict_fixtures.py": {
         "log": "log-015.txt",
-        "seconds": 0.875,
+        "seconds": 0.892,
         "status": "passed"
       },
       "build:apps/bridge/agent_native_tests/AgentNative.Tests.csproj": {
         "log": "log-017.txt",
-        "seconds": 1.204,
+        "seconds": 1.18,
         "status": "passed"
       },
       "build:apps/bridge/campaign_native_tests/CampaignNative.Tests.csproj": {
         "log": "log-019.txt",
-        "seconds": 3.399,
+        "seconds": 3.265,
         "status": "passed"
       },
       "build:apps/bridge/full_native_tests/FullNative.Tests.csproj": {
         "log": "log-021.txt",
-        "seconds": 2.868,
+        "seconds": 2.766,
         "status": "passed"
       },
       "build:apps/bridge/potion_native_tests/CombatPotions.Tests.csproj": {
         "log": "log-023.txt",
-        "seconds": 1.191,
+        "seconds": 1.101,
         "status": "passed"
       },
       "build:apps/bridge/production/Sts2AgentBridge.csproj": {
         "log": "log-001.txt",
-        "seconds": 1.733,
+        "seconds": 1.686,
         "status": "passed"
       },
       "build:apps/bridge/tests/Sts2AgentBridge.Unified.Tests.csproj": {
         "log": "log-025.txt",
-        "seconds": 1.482,
+        "seconds": 1.44,
         "status": "passed"
       },
       "build:apps/bridge/verifier/Sts2AgentBridge.Unified.Verifier.csproj": {
         "log": "log-080.txt",
-        "seconds": 1.102,
+        "seconds": 1.069,
         "status": "passed"
       },
       "build:components/cards/combat_tests/CombatCardChoice.Tests.csproj": {
         "log": "log-027.txt",
-        "seconds": 1.172,
+        "seconds": 1.155,
         "status": "passed"
       },
       "build:components/cards/completion_tests/Sts2AgentBridge.CardSelectionCompletionV1.Native.Tests.csproj": {
         "log": "log-029.txt",
-        "seconds": 1.18,
+        "seconds": 1.103,
         "status": "passed"
       },
       "build:components/cards/native_tests/Sts2AgentBridge.CardSelectionV1.Native.Tests.csproj": {
         "log": "log-031.txt",
-        "seconds": 1.889,
+        "seconds": 1.854,
         "status": "passed"
       },
       "build:components/cards/parent_native_adapter_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Adapter.Tests.csproj": {
         "log": "log-033.txt",
-        "seconds": 2.001,
+        "seconds": 1.891,
         "status": "passed"
       },
       "build:components/cards/parent_native_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Tests.csproj": {
         "log": "log-035.txt",
-        "seconds": 1.09,
+        "seconds": 1.056,
         "status": "passed"
       },
       "build:components/cards/parent_tests/Sts2AgentBridge.CardSelectionV1.Parent.Tests.csproj": {
         "log": "log-037.txt",
-        "seconds": 1.309,
+        "seconds": 1.303,
         "status": "passed"
       },
       "build:components/cards/tests/Sts2AgentBridge.CardSelectionV1.Core.Tests.csproj": {
         "log": "log-039.txt",
-        "seconds": 1.291,
+        "seconds": 1.222,
         "status": "passed"
       },
       "build:components/cards/wire_tests/Sts2AgentBridge.CardSelectionV1.Wire.Tests.csproj": {
         "log": "log-041.txt",
-        "seconds": 2.04,
+        "seconds": 1.965,
         "status": "passed"
       },
       "build:components/events/direct_input_tests/DirectTransformInput.Tests.csproj": {
         "log": "log-043.txt",
-        "seconds": 2.199,
+        "seconds": 2.103,
         "status": "passed"
       },
       "build:components/events/integration/GenericEventV7.Native.Integration.csproj": {
         "log": "log-071.txt",
-        "seconds": 2.366,
+        "seconds": 2.235,
         "status": "passed"
       },
       "build:components/events/integration/Sts2AgentBridge.GenericEventV7.Integration.csproj": {
         "log": "log-070.txt",
-        "seconds": 1.443,
+        "seconds": 1.276,
         "status": "passed"
       },
       "build:components/events/item_tests/GenericEventV7.Item.Tests.csproj": {
         "log": "log-045.txt",
-        "seconds": 1.294,
+        "seconds": 1.243,
         "status": "passed"
       },
       "build:components/events/native_tests/GenericEventV7.Native.Tests.csproj": {
         "log": "log-047.txt",
-        "seconds": 2.274,
+        "seconds": 2.19,
         "status": "passed"
       },
       "build:components/events/transform_tests/CardTransformV2.Tests.csproj": {
         "log": "log-048.txt",
-        "seconds": 1.265,
+        "seconds": 1.29,
         "status": "passed"
       },
       "build:components/events/wire_tests/Sts2AgentBridge.GenericEventV7.WireTests.csproj": {
         "log": "log-050.txt",
-        "seconds": 1.302,
+        "seconds": 1.286,
         "status": "passed"
       },
       "build:components/item_bootstrap/lifecycle_tests/Sts2AgentBridge.ItemV1.Bootstrap.Tests.csproj": {
         "log": "log-052.txt",
-        "seconds": 1.136,
+        "seconds": 1.114,
         "status": "passed"
       },
       "build:components/item_bootstrap/operator_tests/Sts2AgentBridge.ItemV1.Operator.Tests.csproj": {
         "log": "log-054.txt",
-        "seconds": 1.156,
+        "seconds": 1.147,
         "status": "passed"
       },
       "build:components/item_transport/runtime_tests/Sts2AgentBridge.ItemV1.Transport.Tests.csproj": {
         "log": "log-056.txt",
-        "seconds": 2.76,
+        "seconds": 2.719,
         "status": "passed"
       },
       "build:components/item_wire/producer_tests/Sts2AgentBridge.ItemV1.Wire.Tests.csproj": {
         "log": "log-058.txt",
-        "seconds": 1.329,
+        "seconds": 1.316,
         "status": "passed"
       },
       "build:components/items/tests/Sts2AgentBridge.ItemV1.Tests.csproj": {
         "log": "log-060.txt",
-        "seconds": 1.273,
+        "seconds": 1.27,
         "status": "passed"
       },
       "build:components/rooms/broker_tests/Sts2AgentBridge.RoomFlowsV1.Broker.Tests.csproj": {
         "log": "log-062.txt",
-        "seconds": 2.095,
+        "seconds": 2.096,
         "status": "passed"
       },
       "build:components/rooms/event/tests/Sts2AgentBridge.RoomFlowsV1.Event.Tests.csproj": {
         "log": "log-064.txt",
-        "seconds": 2.017,
+        "seconds": 2.008,
         "status": "passed"
       },
       "build:components/rooms/rest/tests/Sts2AgentBridge.RestV2.Tests.csproj": {
         "log": "log-066.txt",
-        "seconds": 3.072,
+        "seconds": 2.99,
         "status": "passed"
       },
       "build:components/rooms/shop/tests/Sts2AgentBridge.RoomFlowsV1.Shop.Tests.csproj": {
         "log": "log-068.txt",
-        "seconds": 1.44,
+        "seconds": 1.388,
         "status": "passed"
       },
       "cards:combat_host_native": {
         "log": "log-075.txt",
-        "seconds": 0.385,
+        "seconds": 0.404,
         "status": "passed"
       },
       "cards:host_wire": {
         "log": "log-076.txt",
-        "seconds": 0.123,
+        "seconds": 0.122,
         "status": "passed"
       },
       "clean_install": {
@@ -276,52 +219,52 @@
       },
       "client": {
         "log": "log-009.txt",
-        "seconds": 1.4,
+        "seconds": 1.352,
         "status": "passed"
       },
       "components/cards/host_tests": {
         "log": "log-003.txt",
-        "seconds": 0.051,
+        "seconds": 0.054,
         "status": "passed"
       },
       "components/events/host_tests": {
         "log": "log-004.txt",
-        "seconds": 2.491,
+        "seconds": 2.371,
         "status": "passed"
       },
       "components/item_transport/transport_tests": {
         "log": "log-005.txt",
-        "seconds": 0.046,
+        "seconds": 0.044,
         "status": "passed"
       },
       "components/item_wire/host_tests": {
         "log": "log-006.txt",
-        "seconds": 0.054,
+        "seconds": 0.05,
         "status": "passed"
       },
       "components/rooms/rest/host_tests": {
         "log": "log-007.txt",
-        "seconds": 0.051,
+        "seconds": 0.048,
         "status": "passed"
       },
       "core_client": {
         "log": "log-010.txt",
-        "seconds": 0.051,
+        "seconds": 0.04,
         "status": "passed"
       },
       "events:host_native": {
         "log": "log-073.txt",
-        "seconds": 79.164,
+        "seconds": 78.371,
         "status": "passed"
       },
       "package": {
         "log": "log-083.txt",
-        "seconds": 0.074,
+        "seconds": 0.073,
         "status": "passed"
       },
       "package_identity": {
         "log": "log-002.txt",
-        "seconds": 0.032,
+        "seconds": 0.035,
         "status": "passed"
       },
       "package_output": {
@@ -331,102 +274,102 @@
       },
       "production_surface": {
         "log": "log-081.txt",
-        "seconds": 0.052,
+        "seconds": 0.051,
         "status": "passed"
       },
       "production_surface_rejections": {
         "log": "log-082.txt",
-        "seconds": 0.077,
+        "seconds": 0.073,
         "status": "passed"
       },
       "reproducible_build": {
         "log": "log-079.txt",
-        "seconds": 1.723,
+        "seconds": 1.637,
         "status": "passed"
       },
       "reward_codec": {
         "log": "log-011.txt",
-        "seconds": 0.041,
+        "seconds": 0.04,
         "status": "passed"
       },
       "room_codec": {
         "log": "log-012.txt",
-        "seconds": 0.152,
+        "seconds": 0.15,
         "status": "passed"
       },
       "rooms:rest_host_native": {
         "log": "log-074.txt",
-        "seconds": 6.177,
+        "seconds": 6.367,
         "status": "passed"
       },
       "sdk": {
         "log": "log-016.txt",
-        "seconds": 0.048,
+        "seconds": 0.046,
         "status": "passed"
       },
       "shared_client:socket": {
         "log": "log-077.txt",
-        "seconds": 87.533,
+        "seconds": 84.0,
         "status": "passed"
       },
       "test:apps/bridge/agent_native_tests/AgentNative.Tests.csproj": {
         "log": "log-018.txt",
-        "seconds": 0.079,
+        "seconds": 0.075,
         "status": "passed"
       },
       "test:apps/bridge/campaign_native_tests/CampaignNative.Tests.csproj": {
         "log": "log-020.txt",
-        "seconds": 0.482,
+        "seconds": 0.475,
         "status": "passed"
       },
       "test:apps/bridge/full_native_tests/FullNative.Tests.csproj": {
         "log": "log-022.txt",
-        "seconds": 0.074,
+        "seconds": 0.066,
         "status": "passed"
       },
       "test:apps/bridge/potion_native_tests/CombatPotions.Tests.csproj": {
         "log": "log-024.txt",
-        "seconds": 0.333,
+        "seconds": 0.356,
         "status": "passed"
       },
       "test:apps/bridge/tests/Sts2AgentBridge.Unified.Tests.csproj": {
         "log": "log-026.txt",
-        "seconds": 11.87,
+        "seconds": 11.828,
         "status": "passed"
       },
       "test:components/cards/combat_tests/CombatCardChoice.Tests.csproj": {
         "log": "log-028.txt",
-        "seconds": 0.108,
+        "seconds": 0.101,
         "status": "passed"
       },
       "test:components/cards/completion_tests/Sts2AgentBridge.CardSelectionCompletionV1.Native.Tests.csproj": {
         "log": "log-030.txt",
-        "seconds": 0.053,
+        "seconds": 0.051,
         "status": "passed"
       },
       "test:components/cards/native_tests/Sts2AgentBridge.CardSelectionV1.Native.Tests.csproj": {
         "log": "log-032.txt",
-        "seconds": 0.04,
+        "seconds": 0.038,
         "status": "passed"
       },
       "test:components/cards/parent_native_adapter_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Adapter.Tests.csproj": {
         "log": "log-034.txt",
-        "seconds": 0.034,
+        "seconds": 0.032,
         "status": "passed"
       },
       "test:components/cards/parent_native_tests/Sts2AgentBridge.CardSelectionV1.Parent.Native.Tests.csproj": {
         "log": "log-036.txt",
-        "seconds": 0.025,
+        "seconds": 0.024,
         "status": "passed"
       },
       "test:components/cards/parent_tests/Sts2AgentBridge.CardSelectionV1.Parent.Tests.csproj": {
         "log": "log-038.txt",
-        "seconds": 0.045,
+        "seconds": 0.043,
         "status": "passed"
       },
       "test:components/cards/tests/Sts2AgentBridge.CardSelectionV1.Core.Tests.csproj": {
         "log": "log-040.txt",
-        "seconds": 0.049,
+        "seconds": 0.046,
         "status": "passed"
       },
       "test:components/cards/wire_tests/Sts2AgentBridge.CardSelectionV1.Wire.Tests.csproj": {
@@ -436,7 +379,7 @@
       },
       "test:components/events/direct_input_tests/DirectTransformInput.Tests.csproj": {
         "log": "log-044.txt",
-        "seconds": 0.977,
+        "seconds": 0.966,
         "status": "passed"
       },
       "test:components/events/item_tests/GenericEventV7.Item.Tests.csproj": {
@@ -446,17 +389,17 @@
       },
       "test:components/events/native_tests/GenericEventV7.Native.Tests.csproj": {
         "log": "log-072.txt",
-        "seconds": 204.512,
+        "seconds": 203.73,
         "status": "passed"
       },
       "test:components/events/transform_tests/CardTransformV2.Tests.csproj": {
         "log": "log-049.txt",
-        "seconds": 0.077,
+        "seconds": 0.078,
         "status": "passed"
       },
       "test:components/events/wire_tests/Sts2AgentBridge.GenericEventV7.WireTests.csproj": {
         "log": "log-051.txt",
-        "seconds": 0.14,
+        "seconds": 0.136,
         "status": "passed"
       },
       "test:components/item_bootstrap/lifecycle_tests/Sts2AgentBridge.ItemV1.Bootstrap.Tests.csproj": {
@@ -466,17 +409,17 @@
       },
       "test:components/item_bootstrap/operator_tests/Sts2AgentBridge.ItemV1.Operator.Tests.csproj": {
         "log": "log-055.txt",
-        "seconds": 0.211,
+        "seconds": 0.285,
         "status": "passed"
       },
       "test:components/item_transport/runtime_tests/Sts2AgentBridge.ItemV1.Transport.Tests.csproj": {
         "log": "log-057.txt",
-        "seconds": 6.476,
+        "seconds": 6.459,
         "status": "passed"
       },
       "test:components/item_wire/producer_tests/Sts2AgentBridge.ItemV1.Wire.Tests.csproj": {
         "log": "log-059.txt",
-        "seconds": 0.035,
+        "seconds": 0.036,
         "status": "passed"
       },
       "test:components/items/tests/Sts2AgentBridge.ItemV1.Tests.csproj": {
@@ -486,27 +429,27 @@
       },
       "test:components/rooms/broker_tests/Sts2AgentBridge.RoomFlowsV1.Broker.Tests.csproj": {
         "log": "log-063.txt",
-        "seconds": 0.044,
+        "seconds": 0.045,
         "status": "passed"
       },
       "test:components/rooms/event/tests/Sts2AgentBridge.RoomFlowsV1.Event.Tests.csproj": {
         "log": "log-065.txt",
-        "seconds": 0.037,
+        "seconds": 0.038,
         "status": "passed"
       },
       "test:components/rooms/rest/tests/Sts2AgentBridge.RestV2.Tests.csproj": {
         "log": "log-067.txt",
-        "seconds": 0.537,
+        "seconds": 0.503,
         "status": "passed"
       },
       "test:components/rooms/shop/tests/Sts2AgentBridge.RoomFlowsV1.Shop.Tests.csproj": {
         "log": "log-069.txt",
-        "seconds": 0.057,
+        "seconds": 0.051,
         "status": "passed"
       },
       "tests/maintenance": {
         "log": "log-008.txt",
-        "seconds": 1.455,
+        "seconds": 1.37,
         "status": "passed"
       }
     },
@@ -515,9 +458,9 @@
     "integration_jobs": 4,
     "live_campaign_started": false,
     "release_manifests": {
-      "bridge": "14772d59c22d9d630bc71780c3871fedd95331e9c6797267a5fe0acd5ab0582a"
+      "bridge": "69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639"
     },
-    "seconds": 386.222,
+    "seconds": 379.888,
     "selected_checks": [],
     "source": {
       "files": 489,
@@ -534,202 +477,32 @@
   "installation": {
     "base_file_count": 429,
     "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-    "last_installed_state_sha256": "46e49ca12317201cc14f80c579f7edb6d967a3471a7305f97bce417b92b1e27c",
-    "overlay_count": 0,
-    "status": "absent_after_owned_cleanup",
-    "verified_by_utc": "2026-09-27 14:32:26 UTC"
+    "game_process_running_at_install": false,
+    "metadata_verifier": "passed",
+    "overlay_count": 2,
+    "port_accepting_at_install": false,
+    "state_sha256": "264f962a707d35ac1645b19c01a44f5e0632ff8acbc684dbb80c913db77ef738",
+    "status": "installed_verified",
+    "verified_by_utc": "2026-09-27 15:07:20 UTC"
   },
   "live": {
-    "before": {
-      "deck": 10,
-      "gold": 99,
-      "hp": 80,
-      "max_hp": 80,
-      "potion_capacity": 3,
-      "potions": [
-        "fire_potion",
-        "strength_potion",
-        "block_potion"
-      ]
-    },
-    "case": "Neow Bones Precarious Shears then full-belt Phial Holster",
-    "code": "uncertain_dispatch",
-    "controller_reads": 48,
-    "counts": [
-      6,
-      5,
-      4
-    ],
-    "decisions": 5,
-    "installed_state_sha256": "46e49ca12317201cc14f80c579f7edb6d967a3471a7305f97bce417b92b1e27c",
-    "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-phial-holster-pickup-stopped",
-    "manual_gameplay_after_attachment": false,
-    "outcome": null,
-    "pending": true,
-    "policy_calls": 6,
-    "recorded_live_corpus": false,
-    "retry_or_adoption": false,
-    "setup": "Fresh native Custom Mode, Ironclad A0, TEST91, no modifiers; Fire/Strength/Block potions and Neow Bones console-prepared before attachment.",
-    "stale_rejections": 0,
-    "status": "failed",
-    "target_game_executed": true,
-    "visual_after": {
-      "deck": 8,
-      "filled_potion_slots": 4,
-      "final_curse_and_map_completed": false,
-      "gold": 99,
-      "holster_relic_present": true,
-      "holster_reward_row_present": true,
-      "hp": 64,
-      "max_hp": 80
-    }
+    "status": "not_run"
   },
-  "live_cases": [
-    {
-      "actionable_map": true,
-      "bundle_cards": [
-        "setup_strike",
-        "tremble",
-        "taunt"
-      ],
-      "case": "Neow Bones Scroll Boxes then Precise Scissors",
-      "completed_by_utc": "2026-09-27 14:08:52 UTC",
-      "controller_reads": 56,
-      "counts": [
-        8,
-        8,
-        8
-      ],
-      "decisions": 8,
-      "final_curse": "regret",
-      "final_deck_count": 13,
-      "gold": 99,
-      "hp": [
-        80,
-        80
-      ],
-      "initial_deck_count": 10,
-      "installed_state_sha256": "2637ef75ae81512eceb1597e9eb0e39319aa6d8f712758ec302a81e086c2edd3",
-      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-scroll-boxes-and-precise-scissors-passed",
-      "manual_gameplay_after_attachment": false,
-      "map_visually_confirmed": true,
-      "other_originals_unchanged": true,
-      "outcome": {
-        "kind": "truncated",
-        "reason": "external_stop"
-      },
-      "pending": false,
-      "policy": "Force advertised Bones option, then unchanged game.agent.full_policy.choose_action; no Sacrifice alternative arose.",
-      "potions_unchanged": true,
-      "recorded_live_corpus": false,
-      "removed_original": "strike",
-      "setup": "Fresh native Custom Mode, Ironclad A0, TEST614, no modifiers; console-prepared Neow Bones before attachment.",
-      "stale_rejections": 0,
-      "status": "passed",
-      "target_game_executed": true,
-      "verification_reads": 1
-    },
-    {
-      "actionable_map": true,
-      "case": "Neow Bones Lead Paperweight then Pomander",
-      "completed_by_utc": "2026-09-27 14:20:19 UTC",
-      "controller_reads": 60,
-      "counts": [
-        7,
-        7,
-        7
-      ],
-      "decisions": 7,
-      "final_curse": "guilty",
-      "final_deck_count": 12,
-      "gold": 99,
-      "hp": [
-        80,
-        80
-      ],
-      "initial_deck_count": 10,
-      "installed_state_sha256": "970bb7b18cf1b76185fa8214228bf5f40c8d15a14319d9839fa292b561cea596",
-      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-lead-paperweight-and-pomander-passed",
-      "manual_gameplay_after_attachment": false,
-      "map_visually_confirmed": true,
-      "offered_card": "the_bomb",
-      "other_originals_unchanged": true,
-      "outcome": {
-        "kind": "truncated",
-        "reason": "external_stop"
-      },
-      "pending": false,
-      "policy": "Force advertised Bones option, then unchanged game.agent.full_policy.choose_action; no Sacrifice alternative arose.",
-      "potions_unchanged": true,
-      "recorded_live_corpus": false,
-      "setup": "Fresh native Custom Mode, Ironclad A0, TEST407, no modifiers; console-prepared Neow Bones before attachment.",
-      "stale_rejections": 0,
-      "status": "passed",
-      "target_game_executed": true,
-      "upgrade_delta": 1,
-      "upgraded_original": "strike",
-      "verification_reads": 1
-    },
-    {
-      "before": {
-        "deck": 10,
-        "gold": 99,
-        "hp": 80,
-        "max_hp": 80,
-        "potion_capacity": 3,
-        "potions": [
-          "fire_potion",
-          "strength_potion",
-          "block_potion"
-        ]
-      },
-      "case": "Neow Bones Precarious Shears then full-belt Phial Holster",
-      "code": "uncertain_dispatch",
-      "controller_reads": 48,
-      "counts": [
-        6,
-        5,
-        4
-      ],
-      "decisions": 5,
-      "installed_state_sha256": "46e49ca12317201cc14f80c579f7edb6d967a3471a7305f97bce417b92b1e27c",
-      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-phial-holster-pickup-stopped",
-      "manual_gameplay_after_attachment": false,
-      "outcome": null,
-      "pending": true,
-      "policy_calls": 6,
-      "recorded_live_corpus": false,
-      "retry_or_adoption": false,
-      "setup": "Fresh native Custom Mode, Ironclad A0, TEST91, no modifiers; Fire/Strength/Block potions and Neow Bones console-prepared before attachment.",
-      "stale_rejections": 0,
-      "status": "failed",
-      "target_game_executed": true,
-      "visual_after": {
-        "deck": 8,
-        "filled_potion_slots": 4,
-        "final_curse_and_map_completed": false,
-        "gold": 99,
-        "holster_relic_present": true,
-        "holster_reward_row_present": true,
-        "hp": 64,
-        "max_hp": 80
-      }
-    }
-  ],
+  "live_cases": [],
   "next_live_test": {
-    "first_case": "Neow Bones Precarious Shears then Phial Holster, initially full belt; seed TEST91.",
+    "first_case": "Fresh Neow Bones Precarious Shears then Phial Holster, initially full belt; seed TEST91.",
     "game_restart_required": true,
     "new_campaign_required": true,
-    "status": "requires_correction_and_fresh_controlled_retest"
+    "status": "awaiting_manual_launch"
   },
   "package": {
     "Sts2AgentBridgeUnified-1.0.0.zip": [
       1823414,
-      "05abf0d82caffe86207ab5de92d3cd368b3692441bcfdc97bd08b4ef40d3f6b7"
+      "bbc3b580694d1b03d50738a5cab6b322926e9c1bfd89b76f703a408676da82ed"
     ],
     "Sts2AgentBridgeUnified.dll": [
       1822720,
-      "5c039250832e579022e5a53f6a393aefbc000335c5c19586206eca78647536d7"
+      "8096d048ef8c777c27d8bc4dd6e3f4da582c342dd0a3082ba08e38e69065800c"
     ],
     "Sts2AgentBridgeUnified.json": [
       322,
@@ -737,63 +510,56 @@
     ]
   },
   "previous_release": {
-    "live_ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-compound-previews-offer-passed-removal-stopped-2026-09-27",
-    "manifest_sha256": "325f2611735c00376775a0d6f4c2c4c1aa1657a93477e056cf777a318321bf20",
-    "record_copy": "/private/tmp/sts-bridge-ndvgcami/previous-release-record",
-    "record_git": "6c8938a00769987813bfafd9914d063b425a3f95",
-    "source_commit": "2e9e66d4403e50dfcc7242498af49b7026b0f0d2"
+    "live_ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-phial-holster-pickup-stopped",
+    "manifest_sha256": "14772d59c22d9d630bc71780c3871fedd95331e9c6797267a5fe0acd5ab0582a",
+    "package_copy": "/private/tmp/sts-bridge-wi7n9c_p/previous-package",
+    "record_copy": "/private/tmp/sts-bridge-wi7n9c_p/previous-release-record",
+    "record_git": "b16373ab1ec8b03e8dc99af31b2126df9617eedd",
+    "source_commit": "988f2b5286add8d669538ccdb71912c8e9b1b660"
+  },
+  "prior_cleanup": {
+    "base_file_count": 429,
+    "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+    "game_process_running": false,
+    "generated_files_removed": 4,
+    "installed_state_sha256": "46e49ca12317201cc14f80c579f7edb6d967a3471a7305f97bce417b92b1e27c",
+    "overlay_count": 0,
+    "port_accepting": false,
+    "quarantined_state_sha256": "8a455a38657d24aae83216c5c46cb5e0069c03bac4d3e5781ad9cf3a8b6cfbc3",
+    "status": "passed",
+    "verified_by_utc": "2026-09-27 14:32:26 UTC"
   },
   "regression_reproduction": {
-    "case": "native-shaped detached grid preview inside the compound pickup scope",
+    "case": "Shears then full-belt Phial, with a final Neow curse; completion rejects the prior item capacity.",
     "log": "log-003.txt",
-    "scratch": "/private/tmp/sts-bridge-ub_8iatp",
-    "status": "expected_rejection_before_fix"
+    "scratch": "/private/tmp/sts-bridge-oj4hy7yz",
+    "status": "expected_failure_before_fix"
   },
   "release_check_counts": {
     "campaign_native_checks": 284,
     "client_tests": 173,
-    "native_event_checks": 17508,
+    "native_event_checks": 17691,
     "router_checks": 1719
   },
-  "release_manifest_sha256": "14772d59c22d9d630bc71780c3871fedd95331e9c6797267a5fe0acd5ab0582a",
+  "release_manifest_sha256": "69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639",
   "remaining_limits": [
-    "Optional offer/upgrade passed at 7/7/7; full-belt Phial Holster stopped at 6/5/4 and requires correction/retest. Transform and other procurement variants remain separate limits.",
-    "Other named native variants remain in docs/STATUS.md; no exhaustive fidelity claim.",
-    "The shared-v2 assisted saved-campaign victory remains historical evidence under its original release."
+    "The Phial correction has focused and release evidence; a fresh controlled live retest is pending. The prior 6/5/4 action remains uncertain.",
+    "Other named variants including compound transforms and capacity-first rewards remain in docs/STATUS.md; no exhaustive fidelity claim.",
+    "Earlier assisted shared-v2 campaign and Neow passes retain their original artifacts."
   ],
   "schema_version": 1,
   "semantic_review": {
-    "author_followup": "Production nullable guard binds one checked original; missing-node regression added. The direct-input companion uses the identical preview fixture.",
-    "design_seconds": 288,
     "game_access": false,
-    "implementation_seconds": 109,
     "reviewer": "semantic_review",
-    "scope": "Exact eligible original and fresh clone, single upgrade, conserved real inventory, separate budget, sticky failure and hook cleanup; bundle/removal and adversarial fixtures.",
+    "scope": "Pending capacity uses exact inventory proof; only settled tasks advance stored capacity; earlier potion slots/identities, legacy semantics and cleanup retained.",
+    "seconds": 59,
     "source_only": true,
     "status": "clear",
-    "windows_utc": [
-      [
-        "2026-09-27 13:34:24 UTC",
-        "2026-09-27 13:39:12 UTC"
-      ],
-      [
-        "2026-09-27 13:47:41 UTC",
-        "2026-09-27 13:49:30 UTC"
-      ]
+    "window_utc": [
+      "2026-09-27 14:55:49 UTC",
+      "2026-09-27 14:56:48 UTC"
     ]
   },
-  "source_commit": "988f2b5286add8d669538ccdb71912c8e9b1b660",
-  "user_data_access": "No profile/save/history/Cloud filesystem access or retained live corpus; aggregate acceptance summaries only.",
-  "validation_corrections": [
-    {
-      "failure": "production nullable native card annotations",
-      "resolution": "Explicit original null guard; production build passed in 1.929 seconds.",
-      "scratch": "/private/tmp/sts-bridge-icjawzsq"
-    },
-    {
-      "failure": "direct-input companion fixture lacked new native preview methods",
-      "resolution": "Matching fixture added; both focused checks passed.",
-      "scratch": "/private/tmp/sts-bridge-t6qeyw9e"
-    }
-  ]
+  "source_commit": "0fb2972acf5475de36908beac2b89c4d50a60a93",
+  "user_data_access": "No profile/save/history/Cloud filesystem access or retained live corpus; aggregate acceptance summaries only."
 }
