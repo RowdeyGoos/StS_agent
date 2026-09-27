@@ -25,6 +25,7 @@ internal static partial class Program {
         public void Dispose()=>Disposed=true;
     }
     private static void ShopPickupCases() {
+        OptionalEnchantMinimumCases();
         InteractiveChoiceCases();
         SingleEnchantPreviewCases();
         foreach(string type in new[]{"mirror","hammer","kifuda","dagger","stamp"})foreach(int count in new[]{1,2,4})foreach(bool delayed in new[]{false,true})foreach(string mode in new[]{"success","wrong_result","wrong_effect","pending_dispose"}) foreach(bool interactive in new[]{false,true}) {
@@ -86,6 +87,69 @@ internal static partial class Program {
                 Check(confirms==(clicks==0?0:1)&&previews==confirms,"one native preview/confirm");dispatch.Dispose();Check(purchase.Disposed,"pickup detaches purchase");
             }finally{try{dispatch.Dispose();}catch{}typeof(PinnedShopPickupDispatch).GetField("Active",BindingFlags.Static|BindingFlags.NonPublic)!.SetValue(null,null);CardSelectCmd.GenericHandler=null;CardSelectCmd.EnchantHandler=null;NDeckCardSelectScreen.Factory=null;NDeckEnchantSelectScreen.Factory=null;}
         }
+    }
+    private static void OptionalEnchantMinimumCases()
+    {
+        foreach (bool enchant in new[] { false, true })
+        foreach (string mode in new[] { "zero", "one", "two", "three", "deselect_zero", "cancel", "blocked_cancel", "negative_minimum", "excessive_minimum" })
+        {
+            var player = new Player();
+            var cards = Enumerable.Range(0, 4).Select(i => { var c = new CardModel { Owner = player }; c.Id.Entry = "CARD_" + i; return c; }).ToArray();
+            player.Deck.Cards.AddRange(cards);
+            NCardGridSelectionScreen screen = enchant ? new NDeckEnchantSelectScreen() : new NDeckCardSelectScreen();
+            var completed = new TaskCompletionSource<IEnumerable<CardModel>>(); screen.SelectionTask = completed.Task;
+            var overlays = new NOverlayStack(); overlays.Screens.Add(screen);
+            MegaCrit.Sts2.Core.Nodes.Screens.ScreenContext.ActiveScreenContext.Instance = new() { Current = screen };
+            var grid = new NCardGrid(); var container = new Control { Visible = false }; var preview = new Control();
+            var confirm = new NConfirmButton(); var open = new NConfirmButton();
+            bool cancelable = mode == "cancel";
+            var back = new NBackButton { IsEnabled = cancelable }; var previewBack = new NBackButton();
+            screen.Bind("%CardGrid", grid); screen.Bind("%Close", back);
+            screen.Bind(enchant ? "%EnchantMultiPreviewContainer" : "%PreviewContainer", container);
+            screen.Bind(enchant ? "Confirm" : "%Confirm", open);
+            container.Bind(enchant ? "Cards" : "%Cards", preview);
+            container.Bind(enchant ? "Confirm" : "%PreviewConfirm", confirm);
+            container.Bind(enchant ? "Cancel" : "%PreviewCancel", previewBack);
+            var selected = new List<CardModel>(); int inputs = 0, confirms = 0;
+            void Show() { inputs++; container.Visible = true; preview.Children.Clear(); foreach (var card in selected) preview.Children.Add(new NPreviewCardHolder { CardNode = new NCard { Model = card } }); }
+            foreach (var card in cards)
+            {
+                var material = new ShaderMaterial();
+                var holder = new NGridCardHolder { CardModel = card, CardNode = new NCard { Model = card, CardHighlight = new() { Material = material } }, Hitbox = new NClickableControl { IsEnabled = true } };
+                holder.Selected = () => { inputs++; if (selected.Contains(card)) { selected.Remove(card); material.Width = 0; } else { selected.Add(card); material.Width = BitConverter.Int32BitsToSingle(1033476506); } if (selected.Count == 3) Show(); };
+                grid.CurrentlyDisplayedCardHolders.Add(holder);
+            }
+            open.Clicked = Show;
+            // Native enchant ConfirmSelection ignores zero. The plain grid does not.
+            confirm.Clicked = () => { inputs++; confirms++; if (enchant && selected.Count == 0) return; overlays.Screens.Clear(); completed.SetResult(selected.ToArray()); };
+            back.Clicked = () => { inputs++; overlays.Screens.Clear(); completed.SetResult(Array.Empty<CardModel>()); };
+            previewBack.Clicked = () => { inputs++; container.Visible = false; preview.Children.Clear(); selected.Clear(); foreach (var h in grid.CurrentlyDisplayedCardHolders) ((ShaderMaterial)h.CardNode!.CardHighlight.Material!).Width = 0; };
+            int minimum = mode == "negative_minimum" ? -1 : mode == "excessive_minimum" ? 4 : 0;
+            PinnedDeckCardChoice? choice = null; bool rejected = false;
+            try { choice = new(screen, overlays, cards, () => true, enchant ? new EnchantmentModel { Amount = 3 } : null, enchant ? 3 : 0, minimum, 3, cancelable); }
+            catch (InvalidOperationException) { rejected = true; }
+            if (minimum != 0) { Check(rejected && inputs == 0, "raw optional minimum remains validated " + mode); continue; }
+            DeckChoiceView Ready()
+            {
+                for (int i = 0; i < 12; i++) if (choice!.Read() is {} view) return view;
+                throw new InvalidOperationException("Optional selection did not become ready.");
+            }
+            var initial = Ready(); Check(initial.Minimum == (enchant ? 1 : 0) && initial.Maximum == 3 && initial.Cancelable == cancelable, "usable minimum follows the exact native screen");
+            int count = mode switch { "one" or "deselect_zero" => 1, "two" => 2, "three" => 3, _ => 0 };
+            for (int i = 0; i < count; i++) { choice!.Apply("select", cards[i]); Ready(); }
+            if (mode == "deselect_zero") { choice!.Apply("deselect", cards[0]); var empty = Ready(); Check(empty.Selected.Length == 0 && empty.Minimum == (enchant ? 1 : 0), "deselection restores the correct confirmation bound"); }
+            int before = inputs;
+            string operation = mode is "cancel" or "blocked_cancel" ? "cancel" : "confirm";
+            bool shouldReject = mode == "blocked_cancel" || enchant && mode is "zero" or "deselect_zero";
+            try { choice!.Apply(operation); }
+            catch (InvalidOperationException) { rejected = true; }
+            if (shouldReject) { Check(rejected && inputs == before && !completed.Task.IsCompleted, "unusable confirm/cancel rejected before native input " + mode); continue; }
+            Check(!rejected, "legal optional action remains accepted " + mode);
+            for (int i = 0; i < 12 && !choice!.Completed; i++) choice.Read();
+            Check(choice!.Completed && completed.Task.IsCompletedSuccessfully && completed.Task.Result.SequenceEqual(mode is "cancel" or "deselect_zero" ? Array.Empty<CardModel>() : cards.Take(count)), "exact optional result " + mode);
+            Check(confirms == (mode == "cancel" ? 0 : 1) && choice.Cancelled == cancelable, "cancellation and confirmation retain separate native paths");
+        }
+        MegaCrit.Sts2.Core.Nodes.Screens.ScreenContext.ActiveScreenContext.Instance = new();
     }
     private sealed class InteractiveChoiceFixture
     {

@@ -576,6 +576,13 @@ allocation before rebinding. Hidden padding holders never become candidates.
 Native allocation can alternate adjacent windows at a settled page. A repeated
 validated window ends that page's allocation work and permits continued bounded
 navigation toward the same requested original; it is never a selection receipt.
+For the pinned enchant screen, the public minimum is at least one: its native
+confirmation ignores an empty selection even when the request declares zero.
+The driver retains validation of the original request bounds and never opens an
+empty enchant preview to finish an action. Plain deck selectors retain native
+zero confirmation; cancellation remains a separate action only when the native
+request and retained control permit it. Kifuda/Gnarled Hammer therefore require
+one through three selected cards, with deselection available before confirmation.
 The released correction passed a 32-card Cook retest: public deck positions 0/31,
 deselection/reselection, exact removal and map return at 7/7/7. Exact live holder
 allocation and frame timing were not sampled; larger bounds retain fixture

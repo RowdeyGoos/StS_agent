@@ -83,7 +83,11 @@ internal sealed class PinnedDeckCardChoice
     {
         _screen = screen; _overlays = overlays; _domain = domain.ToArray(); _context = context;
         _ancestors = new(overlays, ancestors);
-        _enchantment = enchantment; _amount = amount; _minimum = minimum; _maximum = maximum;
+        _enchantment = enchantment; _amount = amount; _maximum = maximum;
+        // The pinned enchant screen opens an empty preview at MinSelect=0,
+        // but ConfirmSelection deliberately does nothing without a card.
+        // Publish and enforce the usable bound; genuine cancellation is separate.
+        _minimum = enchantment is null ? minimum : Math.Max(1, minimum);
         Require(maximumDomain is 64 or 128 && (interactive || maximumDomain == 64)); _maximumDomain = maximumDomain;
         _cancelable = cancelable; _interactive = interactive; _upgrade = upgrade; _transform = transform;
         Require(!transform || !upgrade && enchantment is null);
