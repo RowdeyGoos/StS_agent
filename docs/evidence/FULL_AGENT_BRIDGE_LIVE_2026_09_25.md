@@ -2310,3 +2310,47 @@ was identity-checked and moved intact to this gate's `previous-install-inputs`.
 A relative manifest-path publication and then a missing-artifact install were
 rejected during local preflight before installation; corrected absolute-path
 publication and installation passed. The user was asked to launch manually.
+
+
+### Neow Scroll Boxes and Precise Scissors passed
+
+The user manually launched Profile 3 on the corrected release `14772d59…`.
+Fresh running-state, owned-package, authenticated health and compatibility checks
+passed. The previous disposable failed run was abandoned through native controls.
+A fresh native Custom campaign used Ironclad, A0, canonical seed `TEST614` and no
+gameplay modifiers. The native console prepared Neow's Bones before attachment;
+there was no manual gameplay input after the policy began.
+
+The policy chose Bones, claimed Scroll Boxes, chose and confirmed its bundle,
+claimed Precise Scissors, selected and confirmed one removal, then left Neow.
+**8 attempted / 8 accepted / 8 reconciled**, eight decisions, **56 controller reads**,
+zero stale rejections and nothing pending. One separate public verification read
+confirmed **8/8/8**, actionable map and `truncated/external_stop`; the map was also
+visually confirmed by **14:08:52 UTC**.
+
+Starting inventory was 80/80 HP, 99 gold, ten cards, Burning Blood and three empty
+potion slots. The bundle added **Setup Strike, Tremble and Taunt**. Precise Scissors
+removed the exact selected original **Strike**. Neow's final curse was **Regret**.
+The final 13-card deck preserved all other originals exactly; HP, gold and potions
+were unchanged. The new relics were Bones, Scroll Boxes and Precise Scissors.
+This establishes this compound bundle/removal chain in the controlled seeded
+setup; it does not establish every selector, deck size or Neow outcome. The old
+5/5/3 failure remains separate, under manifest `325f2611…`.
+
+Normal Save and Quit, then app Quit, completed after the settled case. Stopped
+process/closed listener, exact quarantine/purge and base verification passed by
+**14:10:28 UTC**. Installed state
+`2637ef75ae81512eceb1597e9eb0e39319aa6d8f712758ec302a81e086c2edd3`
+became quarantine state
+`7d52311f2b2d11515bb96f1d641d0ff21ad316ff759ac655048aba6e445ba0b0`;
+four owned files were removed. Zero overlays remained; all 429 base files were
+unchanged, aggregate `d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+No profile/save/history/Cloud filesystem access or retained live corpus occurred.
+Controller and user-wait elapsed durations were not separately measured.
+
+
+The same accepted package was reinstalled for the next Neow offer/upgrade case,
+with state `970bb7b18cf1b76185fa8214228bf5f40c8d15a14319d9839fa292b561cea596`.
+Exact overlay and installed metadata checks passed by **14:12:55 UTC**: two owned
+overlays and all 429 base files unchanged. A manual Profile 3 launch was requested.
+This new installation is separate from the successful case and cleanup above.

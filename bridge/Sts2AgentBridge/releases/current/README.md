@@ -26,7 +26,16 @@ reached Scroll Boxes then stopped before any Precise Scissors removal input at
 correction. Hefty Tablet/Kaleidoscope's **9/9/9** result and the assisted shared-v2
 ending likewise retain their original artifact.
 
-The corrected package is installed and verified by **14:03:51 UTC**: exactly two
-owned overlay files, all 429 base files unchanged, and installed initializer,
-dependencies and results-hook metadata checked. It awaits the user's manual launch
-for the same seeded bundle/removal retest. Corrected live behavior is not yet demonstrated.
+The corrected [live retest](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-scroll-boxes-and-precise-scissors-passed)
+passed **8/8/8**, with 56 controller reads, no stale rejections and nothing pending.
+The exact bundle, selected Strike removal, Regret addition and unchanged unrelated
+inventory were verified through map return. This is a seeded Custom-mode case
+with no gameplay modifiers and console setup before attachment.
+
+Normal quit, exact owned cleanup and base verification passed by **14:10:28 UTC**:
+four generated files removed, zero overlays and all **429** base files unchanged.
+Other compound branches and capacity-first rewards remain separate live cases.
+
+The same accepted package is reinstalled and checked by **14:12:55 UTC** for
+Neow's optional offer plus upgrade case: two owned overlays and unchanged base
+files. The game awaits the user's manual launch on Profile 3.

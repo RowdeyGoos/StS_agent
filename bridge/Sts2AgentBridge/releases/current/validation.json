@@ -11,20 +11,16 @@
     "components/items/native/PinnedAutomaticRelicEffects.cs"
   ],
   "cleanup": {
-    "record": {
-      "base_file_count": 429,
-      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
-      "game_process_running": false,
-      "generated_files_removed": 4,
-      "installed_state_sha256": "bb9ed1f8e6230ac7b535ddea5bcd5ba181ea6ee6156c69acaf76ac92957cfca0",
-      "overlay_count": 0,
-      "port_accepting": false,
-      "quarantined_state_sha256": "0259a99cc3919265d22cca0e9c072cfe28765a89b3cb9018b54cbb168380eb80",
-      "status": "passed",
-      "verified_by_utc": "2026-09-27 13:29:46 UTC"
-    },
-    "release_manifest_sha256": "325f2611735c00376775a0d6f4c2c4c1aa1657a93477e056cf777a318321bf20",
-    "status": "prior_release_cleanup_passed"
+    "base_file_count": 429,
+    "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+    "game_process_running": false,
+    "generated_files_removed": 4,
+    "installed_state_sha256": "2637ef75ae81512eceb1597e9eb0e39319aa6d8f712758ec302a81e086c2edd3",
+    "overlay_count": 0,
+    "port_accepting": false,
+    "quarantined_state_sha256": "7d52311f2b2d11515bb96f1d641d0ff21ad316ff759ac655048aba6e445ba0b0",
+    "status": "passed",
+    "verified_by_utc": "2026-09-27 14:10:28 UTC"
   },
   "elapsed_times": {
     "design_review_seconds": 288,
@@ -502,19 +498,59 @@
     "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
     "game_running_before_install": false,
     "installed_metadata_checked": true,
-    "local_preflight_corrections": "Relative manifest path was rejected before publication; install then reported missing artifact directory without mutation. Absolute-path publication and subsequent install passed.",
     "overlay_count": 2,
-    "state_sha256": "2637ef75ae81512eceb1597e9eb0e39319aa6d8f712758ec302a81e086c2edd3",
+    "purpose": "Next Neow offer/upgrade case; completed bundle/removal session and cleanup retain their separate installation identity.",
+    "same_accepted_package": true,
+    "state_sha256": "970bb7b18cf1b76185fa8214228bf5f40c8d15a14319d9839fa292b561cea596",
     "status": "installed_awaiting_manual_launch",
-    "verified_by_utc": "2026-09-27 14:03:51 UTC"
+    "verified_by_utc": "2026-09-27 14:12:55 UTC"
   },
   "live": {
+    "actionable_map": true,
+    "bundle_cards": [
+      "setup_strike",
+      "tremble",
+      "taunt"
+    ],
+    "case": "Neow Bones Scroll Boxes then Precise Scissors",
+    "completed_by_utc": "2026-09-27 14:08:52 UTC",
+    "controller_reads": 56,
+    "counts": [
+      8,
+      8,
+      8
+    ],
+    "decisions": 8,
+    "final_curse": "regret",
+    "final_deck_count": 13,
+    "gold": 99,
+    "hp": [
+      80,
+      80
+    ],
+    "initial_deck_count": 10,
+    "installed_state_sha256": "2637ef75ae81512eceb1597e9eb0e39319aa6d8f712758ec302a81e086c2edd3",
+    "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-scroll-boxes-and-precise-scissors-passed",
+    "manual_gameplay_after_attachment": false,
+    "map_visually_confirmed": true,
+    "other_originals_unchanged": true,
+    "outcome": {
+      "kind": "truncated",
+      "reason": "external_stop"
+    },
+    "pending": false,
+    "policy": "Force advertised Bones option, then unchanged game.agent.full_policy.choose_action; no Sacrifice alternative arose.",
+    "potions_unchanged": true,
     "recorded_live_corpus": false,
-    "status": "not_run",
-    "target_game_executed": false
+    "removed_original": "strike",
+    "setup": "Fresh native Custom Mode, Ironclad A0, TEST614, no modifiers; console-prepared Neow Bones before attachment.",
+    "stale_rejections": 0,
+    "status": "passed",
+    "target_game_executed": true,
+    "verification_reads": 1
   },
   "next_live_test": {
-    "first_case": "Seed TEST614: Neow Bones, Scroll Boxes bundle, Precise Scissors removal, final curse, settled map.",
+    "first_case": "Neow Bones Lead Paperweight offer then Pomander upgrade; seed TEST407.",
     "game_restart_required": true,
     "new_campaign_required": true,
     "status": "awaiting_user_manual_launch"
@@ -554,7 +590,7 @@
   },
   "release_manifest_sha256": "14772d59c22d9d630bc71780c3871fedd95331e9c6797267a5fe0acd5ab0582a",
   "remaining_limits": [
-    "Corrected native bundle/removal behavior requires live retest; old 5/5/3 pending failure stays bound to manifest 325f2611.",
+    "Compound bundle/removal passed at 8/8/8; other native selector and potion-procurement branches remain separate evidence limits.",
     "Other named native variants remain in docs/STATUS.md; no exhaustive fidelity claim.",
     "The shared-v2 assisted saved-campaign victory remains historical evidence under its original release."
   ],

@@ -12,14 +12,14 @@ Quick navigation: [supported interactions](#supported-interactions) ·
 [missing features versus remaining tests](#implementation-gaps-versus-remaining-live-tests) ·
 [release and evidence](#release-and-latest-evidence).
 
-The subsequent [Neow compound cases](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-compound-previews-offer-passed-removal-stopped-2026-09-27)
-completed Hefty Tablet plus Kaleidoscope at **9/9/9**, but Scroll Boxes followed
-by Precise Scissors stopped at an empty removal grid: **5/5/3**, pending, before
-any removal input. Native grid preview clones are upgraded during construction;
-the previous compound observer rejected those detached upgrades. The scoped
-correction is now released and fixture-tested; its live retest remains open. Both controlled cases used seeded Custom Mode with no
-modifiers. Prior cleanup passed at **13:29:46 UTC**. The corrected bridge is installed and
-verified at **14:03:51 UTC**, with two owned overlays and all 429 base files unchanged.
+The corrected [Neow bundle/removal case](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-scroll-boxes-and-precise-scissors-passed)
+passed **8/8/8**: Scroll Boxes' three-card bundle, Precise Scissors' exact Strike
+removal, final Regret and settled map return. Other originals, HP, gold and potions
+stayed unchanged. This used seeded Custom Mode with no modifiers and console
+setup before attachment. Cleanup passed at **14:10:28 UTC**. The same package
+was reinstalled and verified at **14:12:55 UTC** for the next offer/upgrade case:
+two owned overlays, all 429 base files unchanged, awaiting manual launch. The prior empty-grid **5/5/3** failure
+and Hefty Tablet/Kaleidoscope **9/9/9** result retain their original release.
 
 ## How to read support
 
@@ -330,7 +330,7 @@ This compound support is **released with representative live acceptance**:
 Neow’s Bones generated Large Capsule and Lost Coffer, nested Sacrifice granted
 Regal Pillow, and the final Decay curse settled before event/map return. All seven
 actions reconciled. Hefty Tablet/Kaleidoscope also completed at 9/9/9; the
-bundle/removal correction awaits its live retest. The
+bundle/removal correction passed its controlled live retest at 8/8/8. The
 [live ledger](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neows-bones-compound-rewards-passed)
 binds this controlled path to its tested artifact. The final focused owner/alternative regressions passed
 four groups in 49.605 s. Public projection and parent/wire checks also passed.
@@ -377,8 +377,8 @@ These are **not an implementation queue or required live-test checklist**:
 
 ### Implemented, but still needing representative live evidence
 
-- Other full-producer Neow’s Bones compound branches, including offer/bundle and
-  deck selectors and potion procurement; remaining automatic
+- Other full-producer Neow’s Bones compound branches, including upgrade/transform
+  selectors and potion procurement; remaining automatic
   pickup effects and additional shared event reward callers.
   Representative hand/optional offers, potion use/discard and potion-owned choices,
   chest claiming, reroll and Sacrifice passed live, including the corrected
@@ -433,9 +433,9 @@ is **`14772d59c22d9d630bc71780c3871fedd95331e9c6797267a5fe0acd5ab0582a`**, sourc
 compound-grid preview correction passed independent review and **85 release groups
 in 386.222 seconds**, including production build/package reproducibility and
 operational checks. Focused checks passed 3,304 reward checks and 39 direct-holder
-checks. The corrected package is installed and verified at **14:03:51 UTC** (two owned
-overlays, unchanged 429 base files). The native bundle/removal case awaits manual
-launch; the preceding **5/5/3** failure remains pending in its historical record.
+checks. The native bundle/removal retest passed at **8/8/8**, 56 reads and nothing pending;
+exact cleanup passed at **14:10:28 UTC**. The preceding **5/5/3** failure remains
+unreconciled in its historical record.
 
 The preceding manifest
 **`325f2611735c00376775a0d6f4c2c4c1aa1657a93477e056cf777a318321bf20`**. Source `2e9e66d` changes only the full client and

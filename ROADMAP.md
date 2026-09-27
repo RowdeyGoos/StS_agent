@@ -43,8 +43,8 @@ another fresh campaign is not an acceptance requirement. See the
    assisted saved campaign reached native Victory with the shared producer and
    chooser on September 27. Corrections, reloads and earlier stops remain in its
    evidence; a fresh uninterrupted v2 campaign is a separate unverified scope.
-   Retest the confirmed compound Neow removal-preview failure, then retain the
-   accepted ending evidence unless an affected input changes.
+   The compound Neow removal-preview correction also passed its 8/8/8 live retest.
+   Retain those results and the accepted ending evidence unless affected inputs change.
 4. **Close concrete fidelity and delivery issues.** Use focused native comparisons
    for identified rule/public-information discrepancies or a specific uncovered
    mechanism. Retain accepted unchanged engine and consumer evidence, including
