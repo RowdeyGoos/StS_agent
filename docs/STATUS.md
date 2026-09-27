@@ -12,13 +12,16 @@ Quick navigation: [supported interactions](#supported-interactions) ·
 [missing features versus remaining tests](#implementation-gaps-versus-remaining-live-tests) ·
 [release and evidence](#release-and-latest-evidence).
 
+The [New Leaf / empty-belt Phial Holster case](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-new-leaf-and-empty-belt-phial-holster-passed)
+passed **6/6/6**, with 53 controller reads and nothing pending. The selected
+Strike became Body Slam, Holster added Attack and Weak potions, and Writhe and
+map return completed. Other originals, HP and gold were unchanged. Cleanup passed
+by **15:31:24 UTC**, with zero overlays and all 429 base files unchanged.
+
 The corrected [full-belt Phial Holster case](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-precarious-shears-and-full-belt-phial-holster-passed)
-passed **7/7/7**, with 61 controller reads and nothing pending. Shears removed
-the two selected Strikes, Holster added its fourth slot and Explosive Ampoule
-while preserving the original potions, and the final Injury curse and map return
-completed. Cleanup passed by **15:18:36 UTC**, with zero overlays and all 429
-base files unchanged. The preceding **6/5/4** failure remains unreconciled under
-its original artifact; the fresh successful test does not adopt that action.
+also passed **7/7/7**: two exact Strike removals, fourth slot/Explosive Ampoule,
+preserved original potions, Injury and map return. The preceding **6/5/4** failure
+remains unreconciled under its original artifact; fresh passes do not adopt it.
 
 The [Neow offer/upgrade case](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-lead-paperweight-and-pomander-passed)
 passed **7/7/7**, following bundle/removal at **8/8/8**. These results retain manifest
@@ -384,9 +387,11 @@ These are **not an implementation queue or required live-test checklist**:
 
 ### Implemented, but still needing representative live evidence
 
-- Other full-producer Neow’s Bones compound branches, including transform
-  selectors and other potion-procurement outcomes; remaining automatic
+- Other full-producer Neow’s Bones compound branches and potion-procurement
+  outcomes; remaining automatic
   pickup effects and additional shared event reward callers.
+  New Leaf's selected transformation followed by empty-belt Phial Holster's two
+  potions, final curse and map return passed at 6/6/6 with unchanged survivors.
   Shears' two-card removal followed by full-belt Phial Holster, final curse and
   map return now passed at 7/7/7 with exact original-potion preservation.
   Representative hand/optional offers, potion use/discard and potion-owned choices,
@@ -447,9 +452,11 @@ checks and 216 alternative checks** in 61.067 seconds. Independent review found 
 blocker. The final gate passed **85 groups in 379.888 seconds**, including production
 build/package reproducibility and operational checks. Installation and metadata
 verification passed by **15:07:20 UTC**. The fresh full-belt Holster retest passed
-**7/7/7**, 61 controller reads plus one verification read, through the final curse
-and actionable map. Exact owned cleanup and base verification passed by
-**15:18:36 UTC**: zero overlays and all 429 base files unchanged.
+**7/7/7**, 61 controller reads plus one verification read. The same artifact's
+New Leaf/empty-belt Holster case then passed **6/6/6**, 53 controller reads plus
+one verification read. Both completed the final curse and actionable map.
+Latest exact owned cleanup and base verification passed by **15:31:24 UTC**:
+zero overlays and all 429 base files unchanged.
 
 The prior manifest **`14772d59c22d9d630bc71780c3871fedd95331e9c6797267a5fe0acd5ab0582a`**,
 source `988f2b5`, carried the scoped compound-grid preview correction. Its release

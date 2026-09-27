@@ -2515,3 +2515,65 @@ The planned baseline has three empty potion slots. The helper checks the actual
 advertised relic before each claim and will verify the selected original's
 transformation, unchanged surviving originals, two acquired potions, final curse
 and settled map. This preparation is not a live result. Manual launch is pending.
+
+
+### Neow New Leaf and empty-belt Phial Holster passed
+
+The user manually launched Profile 3 on the same accepted manifest
+`69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639`, source
+`0fb2972acf5475de36908beac2b89c4d50a60a93`, under installed state
+`59421f560ca9c00d2024e6eb45abb5d5857dbedec2c1295e34ff5cf68903807a`.
+Fresh running-state, source/owned-package identity, authenticated health and
+compatibility checks passed. Native controls retired the completed TEST91
+campaign and started a fresh Ironclad A0 Custom campaign with canonical seed
+**TEST475**, without modifiers. The console prepared Neow's Bones before
+attachment. The baseline was 80/80 HP, 99 gold, ten cards, Burning Blood and
+three empty potion slots. No manual gameplay input occurred after attachment.
+
+The helper selected the advertised Bones option and the unchanged shared chooser
+claimed New Leaf, selected and confirmed one transformation, claimed Phial Holster,
+then left Neow. Both actual relics matched their predicted order before their
+claim inputs. All **6 attempted / 6 accepted / 6 reconciled** actions completed:
+six decisions, **53 controller reads**, zero stale rejections and nothing pending.
+One separate public verification read confirmed **6/6/6**, actionable map and
+`truncated/external_stop`; the native map was visually confirmed by
+**15:29:56 UTC on 2026-09-27**.
+
+The exact selected original **Strike** was removed and **Body Slam** added. Every
+other original card was unchanged. Holster grew potion capacity from three to
+**four** and granted **Attack Potion** and **Weak Potion** in slots zero and one;
+slots two and three remained empty. Neow's final curse was **Writhe**, yielding
+an eleven-card deck. HP/max HP stayed 80/80 and gold stayed 99. Relic order was
+Burning Blood, Bones, New Leaf and Holster. This demonstrates the compound
+transformation and both successful empty-belt procurement calls through the final
+curse and map return. Other generated outcomes and callers remain separate.
+
+Normal Save and Quit and app Quit completed. Fresh stopped-process/closed-listener
+checks passed, followed by exact quarantine to
+`4599968277a70821e50b58f4d237203f6e120fa382e2754dc2c9310c289fb165`
+and purge of four owned files. Base verification passed by **15:31:24 UTC**:
+zero overlays, all 429 base files unchanged, aggregate
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+No profile/save/history/Cloud filesystem access or retained live corpus occurred.
+The preparation-to-cleanup window was **15:26:41–15:31:24 UTC** (283 seconds);
+controller and user-wait durations were not separately measured.
+
+
+The same accepted package was reinstalled for the next capacity-first event test,
+under state `48dd01a2adf0a8956416773d11788f49b66ff93a8fd6583c49c89eb13fef7996`.
+Exact overlays and installed PE metadata checked by **15:39:18 UTC**: two owned
+overlay files and all 429 base files unchanged. Inspection of the pinned native
+War Historian Repy Unlock Chest callback confirmed two PotionReward entries
+followed by two RelicReward entries. Existing native-compatible startup bags and
+reward draws predict **TEST168** offers Weak Potion, Fysh Oil, Potion Belt and
+Bag of Preparation. This prediction remains to be checked live.
+
+The controlled setup will use a fresh Ironclad A0 Custom campaign without
+modifiers, Fire/Strength/Block in the three initial slots, and console-created
+Repy with no Lantern Key. The helper checks the actual four-entry offer before
+claiming any reward and requires Belt collection first, two new empty slots,
+retained original potions, both generated potion claims and settled map return.
+The shared chooser handles the rewards after a targeted Unlock Chest option.
+Lantern Key quest removal and natural event entry remain separate evidence limits.
+The unchanged release binding passed again; no production source changed and
+no release suite was repeated. Manual launch is pending.

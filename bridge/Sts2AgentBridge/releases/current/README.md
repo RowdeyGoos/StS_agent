@@ -34,7 +34,13 @@ The earlier bundle/removal **8/8/8** and offer/upgrade **7/7/7** passes retain t
 same original artifact. Other compound branches and capacity-first rewards remain
 separate live cases.
 
-The same validated package was reinstalled and checked by **15:24:48 UTC** for
-New Leaf followed by empty-belt Phial Holster. Two exact overlays are installed;
-all 429 base files remain unchanged. The next controlled case awaits the user’s
-manual Profile 3 launch. Its live result is not yet established.
+After reinstallation and the user's manual launch, New Leaf followed by
+empty-belt Phial Holster passed **6/6/6**, 53 controller reads plus one verification
+read. The selected Strike became Body Slam; the two potion grants, final Writhe
+and map return completed. Other originals, HP and gold were unchanged. Exact
+cleanup passed by **15:31:24 UTC**, with zero overlays and all 429 base files
+unchanged. The next prepared case targets capacity-first event rewards.
+
+The same package is reinstalled and verified by **15:39:18 UTC** for War Historian
+Repy’s full-belt Potion Belt reward ordering case. Two exact overlays are installed
+and all 429 base files are unchanged. Manual Profile 3 launch is pending.
