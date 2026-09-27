@@ -260,9 +260,9 @@ extend standalone rest/shop contracts.
   return, then the route stopped while entering floor 81 at **27/27/26**, one
   pending action. Source inspection identified the legacy 80-floor cap in full
   navigation and loss of an already verified map receipt when the next read
-  failed. A correction separates full-profile progress from execution budgets
-  and preserves certified receipts in terminal failures. Original live counts
-  remain unchanged; corrected live continuation is outstanding.
+  failed. The released correction separates full-profile progress from execution
+  budgets and preserves certified receipts in terminal failures. Original live
+  counts remain unchanged; corrected live continuation is outstanding.
   [Result](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#large-rest-recovery-and-floor-81-stop-2026-09-27).
 - **Single-card shop enchant preview:** Punch Dagger stopped after purchase and
   selection at **2/2/0**, before confirmation. The pinned preview queues old scene
@@ -409,23 +409,27 @@ supplies dated source candidates rather than a current implementation checklist.
 ## Release and latest evidence
 
 The current [release manifest](../bridge/Sts2AgentBridge/releases/current/bridge.json)
-is **`da706c27c151f0e8e1d286a1f16dc48a0770ec17f04e69598b677979f944b3dd`**.
-It binds 485 inputs across 52 projects, feature/source `1f74e08` and the generated
-package identity. Full rest now uses the existing 128-card inventory bound,
-preflights Clone overflow, and supports the matching selector domain. Rest/shop
-completion receipts return before successor reads; shared selectors handle
-bounded allocation cycles. Independent review cleared the correction. The final
-gate passed **85 groups in 356.419 seconds**, including 168 client tests, 1,642
-router checks, 694 rest checks and 16,982 native event checks.
+is **`418330cff79f95d517596c27929ac84a3440693d0aed716da0de563cdda97149`**.
+It binds 485 inputs across 52 projects, feature/source `2fbb99a` and the generated
+package identity. Full navigation accepts nonnegative native floor progress;
+legacy campaign_v2 retains its 0–80 range. Certified completions survive later
+read/projection failures, while malformed completions and unverified parents
+remain unresolved. Existing execution budgets and cleanup rules remain intact.
+Independent review cleared the correction. The final gate passed **85 groups in
+360.645 seconds**, including 168 client tests, 1,642 router checks, 284 campaign
+checks and 16,982 native event checks. All 102 bound Python files are unchanged.
 
 Installation and installed metadata/overlay checks passed by **2026-09-27
-10:16:59 UTC**. The manually launched saved-run rest cycle passed **14/14/14**,
-with Clone expanding the deck to 86 and a verified map return. The next shop
-completed, but floor-81 navigation stopped at **27/27/26**, one pending action.
-Normal quit and exact cleanup passed by **10:31:01 UTC**: zero overlays and all
-429 base files unchanged. Thirty-one disposable helper cases passed. The
-floor-counter/receipt correction is being prepared; the shared-v2 ending remains
-open.
+10:48:07 UTC**: two exact overlays and all 429 base files unchanged. The game is
+stopped for manual Profile 3 launch and saved-campaign continuation; no fresh
+campaign is needed. Thirty-two disposable helper cases passed. Live acceptance
+of this correction and the shared-v2 ending remain open.
+
+The preceding package passed the saved-run rest cycle at **14/14/14**, with Clone
+expanding the deck to 86 and a verified map return. Its next shop completed,
+then floor-81 navigation stopped at **27/27/26**, one pending action. Normal quit
+and exact cleanup passed by **10:31:01 UTC**; original counts and artifact identity
+remain in the [ledger](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#large-rest-recovery-and-floor-81-stop-2026-09-27).
 
 The preceding `fed09e93…` package passed the saved Cook retest at **7/7/7** on
 2026-09-27. Its unchanged-policy continuation crossed Act 1 into Act 2, then

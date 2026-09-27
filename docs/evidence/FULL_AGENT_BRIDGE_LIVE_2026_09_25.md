@@ -1865,3 +1865,27 @@ completion and verified children whose combat/potion parent then fails. Repeated
 reads do not retry or double-credit; uncertain cleanup remains unresolved.
 Implementation, review and testing overlapped; exclusive implementation, live
 controller, release-preparation and user-wait durations were not measured.
+
+The stable source correction was committed as `2fbb99a`. The final release gate
+passed **85 groups in 360.645 seconds** at `/private/tmp/sts-bridge-2347lgir`,
+including **284 campaign checks**, **1,642 router checks**, **168 client tests**
+and **16,982 native event checks**. Accepted manifest:
+`418330cff79f95d517596c27929ac84a3440693d0aed716da0de563cdda97149`.
+DLL: **1,802,752 bytes**, SHA-256
+`0f9cc8c8286a45abb3516cca46192a1c64e8a88777e975b2cc7c03c9871aeb91`.
+All 102 bound Python files match the preceding accepted release; no new broad
+headless run is claimed. The preceding three package inputs were checked against
+their original manifest and preserved at this root's `previous-install-inputs`;
+Git `2fbb99a` retains their full release/live/cleanup record.
+
+Publish, fresh stopped-process/listener verification, installation, exact overlay/
+base checks and installed native metadata checks passed by **10:48:07 UTC**.
+Installed state:
+`b6ddfd36b730046504ec7f893fe9d9ae95feac721065347ec262541e7f275011`.
+Two exact overlay files are installed and all 429 base files are unchanged.
+The game remains stopped for manual Profile 3 launch. The existing continuation
+helper now permits a settled combat entry, retaining its unchanged common policy,
+explicit resumed-act acceptance and execution bounds. Its ninth continuation case
+passed, bringing disposable helper coverage to **32 offline cases**. The next
+case checks the actual restored saved state before continuing combat/rewards/map
+and the remaining campaign. Corrected live continuation is not yet demonstrated.

@@ -1,10 +1,9 @@
 # Current unified release
 
-This release fixes rest-site handoffs after deck growth. Full-profile rest entry
-and selectors now support the existing 128-card public inventory bound; legacy
-routes retain 64. Clone's predicted result is checked before input. Verified
-rest/shop receipts reach the client before a successor read can fail. Shared
-selectors also handle native allocation cycling under the same bounded pan.
+This release fixes full-navigation admission after floor 80 and preserves verified
+completion receipts when a later native read or projection fails. Full mode uses
+the nonnegative native floor counter; legacy campaign_v2 retains 0–80. Execution
+budgets, native ownership and unresolved-action cleanup remain unchanged.
 
 [Current status](../../../../docs/STATUS.md#release-and-latest-evidence) owns support;
 [bridge usage](../../README.md#client-modes) owns commands.
@@ -14,44 +13,30 @@ selectors also handle native allocation cycling under the same bounded pan.
 | [bridge.json](bridge.json) | Exact source/test, toolchain, reference, binary and package identities |
 | [validation.json](validation.json) | Release checks, review, installation and separately bound live evidence |
 
-Manifest SHA-256: `da706c27c151f0e8e1d286a1f16dc48a0770ec17f04e69598b677979f944b3dd`.
-It binds **485 inputs across 52 projects**, feature/source `1f74e08` plus the
-checker-generated package identity. DLL: **1,802,240 bytes**, SHA-256
-`3d1a78ac7a3e166372bc1f45d109d7c00ce73edecfeb720f1327e73846c165dd`.
+Manifest SHA-256: `418330cff79f95d517596c27929ac84a3440693d0aed716da0de563cdda97149`.
+It binds **485 inputs across 52 projects**, feature/source `2fbb99a` plus the
+checker-generated package identity. DLL: **1,802,752 bytes**, SHA-256
+`0f9cc8c8286a45abb3516cca46192a1c64e8a88777e975b2cc7c03c9871aeb91`.
 
-The final gate passed **85 groups in 356.419 seconds**, including reproducible
+The final gate passed **85 groups in 360.645 seconds**, including reproducible
 builds, metadata/dependency checks, packaging and disposable cleanup. It includes
-**168 client tests**, **1,642 router checks**, **694 rest checks** and **16,982
-native event checks**. The final focused pickup run passed **956 checks in 4.239
-seconds**. Independent source reviews took **513 seconds** across diagnosis,
-implementation and the allocation-cycle correction. The only changed bound
-Python file is the tested agent failure-code consumer; the other 101 are unchanged.
-These checks are fixture/build evidence; the live result is recorded below.
+**168 client tests**, **1,642 router checks**, **284 campaign checks** and
+**16,982 native event checks**. The final focused coordinator/router/client run
+passed six groups in **17.659 seconds**. Independent source review took **318
+seconds**. All 102 bound Python files match the preceding accepted release.
+These are fixture/build results; live floor-81 continuation remains outstanding.
 
-Installation, exact overlay/base verification and installed metadata checks passed
-by **2026-09-27 10:16:59 UTC**. Two exact overlay files were installed; all 429 base
-files were unchanged. Installed state:
-`13420352011a5c163e0559333bb4a02a01da87d6d9648f934e879ed9f5f31aa8`.
-The user manually launched Profile 3. The saved rest restored 63 cards and all
-options, so the helper was adapted before input; **31 offline helper cases**
-passed. The unchanged shared policy completed Smith, Heal/reward, Dig, Cook,
-Kindle, Clone and Leave at **14/14/14**, with Clone adding 24 cards to reach 86
-and a verified map return. This is a fresh test session, not adoption of the
-preceding unresolved action.
+Publish, stopped-game installation, exact overlay/base and installed metadata
+checks passed by **2026-09-27 10:48:07 UTC**. Two exact overlay files are installed;
+all 429 base files are unchanged. Installed state:
+`b6ddfd36b730046504ec7f893fe9d9ae95feac721065347ec262541e7f275011`.
+The game remains stopped for manual Profile 3 launch. The next test verifies the
+restored saved state, then resumes the shared policy through combat, rewards and
+map return. No fresh campaign is needed. Thirty-two disposable helper cases pass.
 
-Continuation completed the next shop, then stopped while entering floor 81 at
-**27/27/26**, one pending action. The final public action was `choose_map_node`;
-no combat decision was published. Source inspection found full navigation's old
-80-floor guard and receipt loss on the subsequent failed read. Normal quit and
-exact cleanup passed by **10:31:01 UTC**: four files purged, zero overlays and
-all 429 base files unchanged. Corrected navigation and ending acceptance remain
-outstanding; these counts are not retrospectively reconciled.
-
-The preceding package passed [large Cook at 7/7/7](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#large-deck-cook-retest-passed-2026-09-27)
-on a public 32-card deck. Its unchanged-policy route reached Act 2, then stopped
-at an 86-card rest at **236/234/233**, one pending action. The final action was
-not logged; Clone is a source-consistent explanation, not an observed action.
-Normal quit and exact cleanup passed by **09:49:02 UTC**. Cleanup does not reconcile
-that attempt. Its full original record is retained in Git `1f74e08`, with exact
-package inputs in `/private/tmp/sts-bridge-gi4ihmno/previous-install-inputs`.
-All prior live results retain their original artifact identities in the ledger.
+The preceding package passed the [86-card rest/map cycle at 14/14/14](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#large-rest-recovery-and-floor-81-stop-2026-09-27),
+then stopped entering floor 81 at **27/27/26**, one pending map action. Normal
+quit and exact cleanup passed by **10:31:01 UTC**; those counts remain unresolved.
+Its full record is retained in Git `2fbb99a`, and its exact package inputs in
+`/private/tmp/sts-bridge-2347lgir/previous-install-inputs`. Prior live results retain
+their original artifact identities in the existing ledger.
