@@ -12,6 +12,19 @@ Quick navigation: [supported interactions](#supported-interactions) ·
 [missing features versus remaining tests](#implementation-gaps-versus-remaining-live-tests) ·
 [release and evidence](#release-and-latest-evidence).
 
+The latest shop test found a concrete legal-action defect: Kifuda zero-card
+confirmation stopped at **2/2/0**, with both actions unresolved. The pinned native
+enchant confirmation ignores an empty selection despite declared MinSelect=0;
+the bridge must require at least one card. The failed session was closed and
+cleaned by **18:41:59 UTC**. [Sphere/Kifuda evidence](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#sphere-relic-and-kifuda-empty-selection).
+Crystal Sphere earned Red Mask, a potion and 70 gold at **13/13/13**, preserving
+originals through the map; its cleanup passed by **18:35:08 UTC**.
+
+The [Fake Merchant zero-purchase case](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#fake-merchant-zero-purchases-passed)
+passed **3/3/3**, with 38 controller reads and one verification read. Open, Close
+and Leave preserved the exact deck, relics, potions, HP and gold through the map.
+Cleanup passed by **18:27:56 UTC**, with zero overlays and all 429 base files unchanged.
+
 The [Fake Merchant six-purchase case](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#fake-merchant-six-purchases-passed)
 passed **9/9/9**, with 44 controller reads and nothing pending. Six exact purchases
 cost 280 gold; Fake Mango raised HP/max HP from 68/68 to 71/71. The original deck,
@@ -246,9 +259,9 @@ extend standalone rest/shop contracts.
 | Non-resuming event combat | Exact entry ownership → combat → rewards → map | Dense Vegetation, Lantern Key, Punch Off and initial Fake Merchant fight demonstrated |
 | Resuming event combat | Exact original Resume callback/task → owned item reward if present → resumed event/Proceed/map | Dummy training expiry, Setting1 victory/potion and Setting2 victory demonstrated; consecutive matching combats also demonstrated. No recursive combat driver |
 | Resume-time item rewards | One owned Offer with singleton or 2–8 potion/relic entries | Setting1 potion collect/skip/replacement demonstrated. Relic/set reward screens are fixture-only with no concrete resume caller identified; Setting3 obtains its relic directly. Resume-time cards/selectors unsupported |
-| Fake Merchant inventory | Initially closed inventory → 0–6 supported relic purchases → close/Leave | Two-purchase visit and full-producer six-purchase path demonstrated; six purchases passed 9/9/9 with exact payments, pickup effects and map return. Zero purchases remain offline only; already-open entry unsupported |
+| Fake Merchant inventory | Initially closed inventory → 0–6 supported relic purchases → close/Leave | Two-purchase visit and full-producer six-purchase path demonstrated; six purchases passed 9/9/9 with exact payments, pickup effects and map return. Zero purchases passed 3/3/3 with exact inventory preservation; already-open entry unsupported |
 | Fake Merchant fight/healing | Initial owned Foul Potion starts combat; terminal Fake Lee’s Waffle verifies capped 10% max-HP healing; terminal schemas 9–10 support 32 entries; schema 10 adds exact Fake Mango +3 max HP/+3 HP | Original ten-entry rewards passed after native Continue: 12/12/12 actions, all rewards collected, HP10/80→21/83 and actionable map. Earlier assisted seven-relic collection and the failed 8/8/7 Mango attempt retain separate evidence. Fight after shopping unsupported |
-| Crystal Sphere | Owned Uncover Future/Payment Plan entry, small/big tool, legal 11×11 fog reveals, earned rewards and exact native exit/overlay cleanup | Both entry paths demonstrated. Shared v2 Payment Plan passed 17/17/17 with big→small→big switching, all six exact fog/count changes, earned gold/two potions/card and map return. Earned relics and other outcomes remain separate. Hidden items are not projected; already-open adoption and full-belt replacement unsupported |
+| Crystal Sphere | Owned Uncover Future/Payment Plan entry, small/big tool, legal 11×11 fog reveals, earned rewards and exact native exit/overlay cleanup | Both entry paths demonstrated. Shared v2 Payment Plan passed 17/17/17 with big→small→big switching, all six exact fog/count changes, earned gold/two potions/card and map return. An earned Red Mask also passed at 13/13/13; other outcomes remain separate. Hidden items are not projected; already-open adoption and full-belt replacement unsupported |
 | Trial abandonment | Owned popup Cancel or explicit Confirm, exact native abandonment task | Both demonstrated; Cancel continued to rewards/map/next room, Confirm produced `run_abandoned` and native Defeat/HP0 |
 | Architect ending | Native vote/queued action/next-act/WinRun task chain, terminal `run_won`; exact owned victory event with its combat layout and retained map-travel flag | Legacy controlled saved runs reached `run_won` and native Victory. The shared-v2 chooser also completed final combat, rewards and Architect at 12/12/12 new actions, returning `victory/none` with native Victory observed. These are assisted saved continuations, not fresh full-campaign certification |
 
@@ -449,7 +462,8 @@ These are **not an implementation queue or required live-test checklist**:
   evidence, without a separately identified ordinary 32-entry gameplay caller.
 - Selectorless removal: one-card Dark Door passed live. Empty domains, retained
   Eternal cards, other callers and adversarial variants remain fixture evidence.
-- Kifuda/Gnarled Hammer zero/fewer-card and deselection variants, and remaining
+- Kifuda/Gnarled Hammer legal minimum correction (empty native confirmation is a no-op),
+  fewer-card and deselection variants, and remaining
   kind/gold-reserve variants. All five supported shop card selectors now have
   representative live acceptance. Zero-purchase
   Close/Leave passed with exact inventory preservation. The inherited passive Red Mask purchase
@@ -468,14 +482,13 @@ These are **not an implementation queue or required live-test checklist**:
   live acceptance; each Trial branch passed 5/5/5. Recreating Trial repeats a
   campaign's branch; the saved TEST531 campaign produced Merchant as predicted.
 - Other natural ancient entry/dialogue routes beyond the demonstrated Nonupeipe continuation.
-- Broader reward orders/outcomes with a concrete offered screen, Sphere earned
-  relics, and Fake Merchant's zero-purchase variant. Sphere small/big tools,
+- Broader reward orders/outcomes with a concrete offered screen, Sphere other
+  outcomes. Sphere small/big tools,
   six exact reveals and earned gold/card/potions passed through the shared producer
   at 17/17/17; other outcomes retain separate limits. Fake Merchant's six-purchase
   inventory path passed at 9/9/9, with exact visible payments, six relic appends,
   Fake Mango's +3 HP/max-HP effect and Close/Leave/map return. Its zero-purchase
-  variant remains the next narrow case; it needs fresh installation and setup,
-  with agent-managed launch now available.
+  variant also passed 3/3/3 with exact inventory preservation through the map.
 - Held-out elite and room-handoff variants beyond the accepted campaign route.
 - A fresh uninterrupted shared-v2 campaign. The assisted saved continuation now
   demonstrates the ending, with earlier stops, corrections and reloads retained
@@ -523,7 +536,10 @@ Fake Merchant's six-purchase inventory path then passed **9/9/9**, 44 controller
 reads and one verification read. Exact payments totaled 280 gold, six relics were
 appended, Fake Mango added three HP/max HP, and the original deck/relics/potions
 were preserved through map return.
-Latest exact owned cleanup and base verification passed by **18:10:49 UTC**:
+Fake Merchant's zero-purchase path then passed **3/3/3**, 38 controller reads and
+one verification read, preserving the entire inventory through the map.
+Sphere then passed 13/13/13; Kifuda empty confirmation stopped at 2/2/0.
+Latest exact owned cleanup and base verification passed by **18:41:59 UTC**:
 zero overlays and all 429 base files unchanged.
 
 The prior manifest **`14772d59c22d9d630bc71780c3871fedd95331e9c6797267a5fe0acd5ab0582a`**,

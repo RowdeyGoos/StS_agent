@@ -79,12 +79,19 @@ were appended and Fake Mango raised HP/max HP from 68/68 to 71/71. Original
 deck/relics/potions were unchanged through Close/Leave and actionable map return.
 The saved TEST74 setup used 400 added gold before attachment. Exact cleanup and
 base verification passed by **18:10:49 UTC**: zero overlays, game/listener stopped
-and all 429 base files unchanged. Nothing is currently installed for the next case.
+and all 429 base files unchanged. The zero-purchase case followed below.
 
 At the user's request, two agent-managed Steam launches reached Profile 3's main
 menu and passed bridge health/compatibility checks, with normal quit and confirmed
 shutdown between them. The [live guide](../../../../docs/LIVE_DEVELOPMENT.md#agent-managed-steam-launch-on-this-mac)
 records the verified command and replaces routine manual-launch requests. Steam
-was already signed in and running; cold Steam startup remains untested. The next
-narrow case is Fake Merchant's zero-purchase path, requiring fresh installation
-and controlled setup before attachment.
+was already signed in and running; cold Steam startup remains untested.
+
+Fake Merchant's zero-purchase path then passed **3/3/3**, 38 controller reads and
+one verification read, preserving the entire inventory through Open/Close/Leave
+and map return. Normal quit and exact cleanup passed by **18:27:56 UTC**, leaving
+zero overlays and all 429 base files unchanged. Crystal Sphere's earned-relic
+case subsequently passed at 13/13/13. Kifuda empty confirmation then stopped at
+2/2/0: the pinned native confirm ignores zero cards. A corrected legal minimum
+and nonempty-selection retest are required. Both sessions are cleaned; latest
+cleanup passed by 18:41:59 UTC with zero overlays and 429 unchanged base files.

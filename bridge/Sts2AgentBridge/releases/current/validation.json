@@ -11,14 +11,14 @@
     "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
     "game_process_running": false,
     "generated_files_removed": 4,
-    "installed_state_sha256": "7ba782981a1a3be6d8a1ea05dcb848c8600ac03abfa5a6abf339e1d53bda2eb7",
+    "installed_state_sha256": "25804b0bce97486eef1badce26609e9226ea8a5a82874e4983fd65b700dcec7e",
     "normal_app_quit": true,
-    "normal_save_and_quit": true,
+    "normal_save_and_quit": false,
     "overlay_count": 0,
     "port_accepting": false,
-    "quarantined_state_sha256": "086348af2c304a894b31f0935c38d64b880b207e44c68ddadf017c025aa9a9e3",
+    "quarantined_state_sha256": "17fed34f7182ec1007baf82e895607170f16fa3deb892e9c60897d59638d8aad",
     "status": "passed",
-    "verified_by_utc": "2026-09-27 18:10:49 UTC"
+    "verified_by_utc": "2026-09-27 18:41:59 UTC"
   },
   "completed_cleanups": [
     {
@@ -118,6 +118,48 @@
       "quarantined_state_sha256": "8d3f722fdc4adef51e974d25c0ffb3030f53df12e1c7d3ce7b1cf285f4ee544e",
       "status": "passed",
       "verified_by_utc": "2026-09-27 17:44:17 UTC"
+    },
+    {
+      "base_file_count": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "game_process_running": false,
+      "generated_files_removed": 4,
+      "installed_state_sha256": "7ba782981a1a3be6d8a1ea05dcb848c8600ac03abfa5a6abf339e1d53bda2eb7",
+      "normal_app_quit": true,
+      "normal_save_and_quit": true,
+      "overlay_count": 0,
+      "port_accepting": false,
+      "quarantined_state_sha256": "086348af2c304a894b31f0935c38d64b880b207e44c68ddadf017c025aa9a9e3",
+      "status": "passed",
+      "verified_by_utc": "2026-09-27 18:10:49 UTC"
+    },
+    {
+      "base_file_count": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "game_process_running": false,
+      "generated_files_removed": 4,
+      "installed_state_sha256": "bf6c8a68a7cf39c5ca9966f888e416f1d8ffab0809c08fc8e845fd3aeb5fbca9",
+      "normal_app_quit": true,
+      "normal_save_and_quit": true,
+      "overlay_count": 0,
+      "port_accepting": false,
+      "quarantined_state_sha256": "a1542afae191b199f11d6fc7e95a25aa489d73a520331b167f98d4f044cd3c11",
+      "status": "passed",
+      "verified_by_utc": "2026-09-27 18:27:56 UTC"
+    },
+    {
+      "base_file_count": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "game_process_running": false,
+      "generated_files_removed": 4,
+      "installed_state_sha256": "601ddb7863d3dc545bffc7f7262bce9d2cdf46d484e9797658ef526d2bb17e1b",
+      "normal_app_quit": true,
+      "normal_save_and_quit": true,
+      "overlay_count": 0,
+      "port_accepting": false,
+      "quarantined_state_sha256": "f93735aff0687a58658ff38949c43e87683a387a31308a009c880e28bcadb75e",
+      "status": "passed",
+      "verified_by_utc": "2026-09-27 18:35:08 UTC"
     }
   ],
   "completed_installations": [
@@ -197,6 +239,39 @@
       "state_sha256": "5dd2560fec972e14597693a012d0c450829f95aa043ffef44c9ad696a07b3a41",
       "status": "tested_cleaned",
       "verified_by_utc": "2026-09-27 17:36:47 UTC"
+    },
+    {
+      "base_file_count": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "game_process_running_at_install": false,
+      "metadata_verifier": "passed",
+      "overlay_count": 2,
+      "port_accepting_at_install": false,
+      "state_sha256": "7ba782981a1a3be6d8a1ea05dcb848c8600ac03abfa5a6abf339e1d53bda2eb7",
+      "status": "tested_cleaned",
+      "verified_by_utc": "2026-09-27 17:50:30 UTC"
+    },
+    {
+      "base_file_count": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "game_process_running_at_install": false,
+      "metadata_verifier": "passed",
+      "overlay_count": 2,
+      "port_accepting_at_install": false,
+      "state_sha256": "bf6c8a68a7cf39c5ca9966f888e416f1d8ffab0809c08fc8e845fd3aeb5fbca9",
+      "status": "tested_cleaned",
+      "verified_by_utc": "2026-09-27 18:20:57 UTC"
+    },
+    {
+      "base_file_count": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "game_process_running_at_install": false,
+      "metadata_verifier": "passed",
+      "overlay_count": 2,
+      "port_accepting_at_install": false,
+      "state_sha256": "601ddb7863d3dc545bffc7f7262bce9d2cdf46d484e9797658ef526d2bb17e1b",
+      "status": "tested_cleaned",
+      "verified_by_utc": "2026-09-27 18:30:36 UTC"
     }
   ],
   "elapsed_times": {
@@ -674,9 +749,9 @@
     "metadata_verifier": "passed",
     "overlay_count": 2,
     "port_accepting_at_install": false,
-    "state_sha256": "7ba782981a1a3be6d8a1ea05dcb848c8600ac03abfa5a6abf339e1d53bda2eb7",
-    "status": "tested_cleaned",
-    "verified_by_utc": "2026-09-27 17:50:30 UTC"
+    "state_sha256": "25804b0bce97486eef1badce26609e9226ea8a5a82874e4983fd65b700dcec7e",
+    "status": "failed_test_cleaned",
+    "verified_by_utc": "2026-09-27 18:36:21 UTC"
   },
   "launch_verification": {
     "authenticated_health_and_manifest_passed_each_time": true,
@@ -701,14 +776,14 @@
     "user_authorized_agent_launch_and_restart_date": "2026-09-27"
   },
   "live": {
-    "accepted": 58,
-    "attempted": 59,
-    "case_count": 8,
+    "accepted": 76,
+    "attempted": 77,
+    "case_count": 11,
     "full_shared_native_interface_complete": false,
-    "pending": false,
-    "reconciled": 58,
+    "pending": true,
+    "reconciled": 74,
     "stale_rejections": 1,
-    "status": "passed"
+    "status": "partial_with_stopped_case"
   },
   "live_cases": [
     {
@@ -1444,19 +1519,184 @@
       "user_wait_seconds": null,
       "verification_reads": 1,
       "verified_by_utc": "2026-09-27 18:08:52 UTC"
+    },
+    {
+      "accepted": 3,
+      "actionable_map": true,
+      "actions": [
+        "open",
+        "close",
+        "leave"
+      ],
+      "after": {
+        "deck_count": 11,
+        "gold": 99,
+        "hp": 68,
+        "max_hp": 68,
+        "potion_capacity": 3,
+        "relic_count": 4
+      },
+      "attempted": 3,
+      "before": {
+        "deck_count": 11,
+        "gold": 99,
+        "hp": 68,
+        "max_hp": 68,
+        "potion_capacity": 3,
+        "relic_count": 4
+      },
+      "case": "fake_merchant_zero_purchases",
+      "controller_reads": 38,
+      "controller_seconds": null,
+      "decisions": 3,
+      "evidence": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#fake-merchant-zero-purchases-passed",
+      "installed_state_sha256": "bf6c8a68a7cf39c5ca9966f888e416f1d8ffab0809c08fc8e845fd3aeb5fbca9",
+      "limits": [
+        "Controlled Act 1 console entry; natural event eligibility remains separate.",
+        "No save/reload persistence claim; the prior six purchases were absent after Continue."
+      ],
+      "manual_gameplay_after_attachment": false,
+      "native_verification_counts": [
+        3,
+        3,
+        3
+      ],
+      "original_deck_potions_relics_preserved": true,
+      "outcome": {
+        "kind": "truncated",
+        "reason": "external_stop"
+      },
+      "pending": false,
+      "purchases": [],
+      "reconciled": 3,
+      "release_manifest_sha256": "69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639",
+      "setup": {
+        "ascension": 0,
+        "character": "ironclad",
+        "combat_cards_or_potions_used_in_setup": false,
+        "console_setup_before_attachment": true,
+        "gold_added": 0,
+        "initial_hp_full": true,
+        "initial_inventory_closed": true,
+        "launch_method": "installed Steam client -applaunch 2868840",
+        "manual_launch": false,
+        "new_campaign": false,
+        "profile": 3,
+        "restored_checkpoint": "Pre-merchant combat; no previously bought fake relics were present.",
+        "seed": "TEST74"
+      },
+      "source_commit": "0fb2972acf5475de36908beac2b89c4d50a60a93",
+      "stale_rejections": 0,
+      "status": "passed",
+      "total_paid": 0,
+      "user_wait_seconds": 0,
+      "verification_reads": 1,
+      "verified_by_utc": "2026-09-27 18:23:08 UTC"
+    },
+    {
+      "accepted": 13,
+      "actionable_map": true,
+      "after": {
+        "deck_count": 12,
+        "gold": 169,
+        "hp": 68,
+        "max_hp": 68,
+        "potion_capacity": 3,
+        "potion_count": 1,
+        "relic_count": 5
+      },
+      "attempted": 13,
+      "before": {
+        "deck_count": 11,
+        "gold": 99,
+        "hp": 68,
+        "max_hp": 68,
+        "potion_capacity": 3,
+        "potion_count": 0,
+        "relic_count": 4
+      },
+      "case": "sphere_earned_relic",
+      "controller_reads": 60,
+      "controller_seconds": null,
+      "evidence": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#sphere-relic-and-kifuda-empty-selection",
+      "installed_state_sha256": "601ddb7863d3dc545bffc7f7262bce9d2cdf46d484e9797658ef526d2bb17e1b",
+      "manual_gameplay_after_attachment": false,
+      "new_cards": [
+        "debt"
+      ],
+      "new_potions": [
+        "vulnerable_potion"
+      ],
+      "new_relics": [
+        "red_mask"
+      ],
+      "original_deck_potions_relics_preserved": true,
+      "pending": false,
+      "reconciled": 13,
+      "release_manifest_sha256": "69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639",
+      "revealed_cell_counts": [
+        9,
+        7,
+        7,
+        7,
+        8,
+        8
+      ],
+      "reveals": [
+        60,
+        37,
+        73,
+        81,
+        40,
+        105
+      ],
+      "setup": "Profile 3 TEST74 restored combat; console event CRYSTAL_SPHERE before attachment; no additional inventory assistance. Payment Plan and six big-tool reveals through public fragments only.",
+      "source_commit": "0fb2972acf5475de36908beac2b89c4d50a60a93",
+      "stale_rejections": 0,
+      "status": "passed",
+      "user_wait_seconds": 0,
+      "verified_by_utc": "2026-09-27 18:33:48 UTC"
+    },
+    {
+      "accepted": 2,
+      "actions": [
+        "buy_shop_item",
+        "confirm_relic_selection"
+      ],
+      "attempted": 2,
+      "before_gold": 1099,
+      "case": "shop_kifuda_zero",
+      "code": "read_native_failed",
+      "controller_reads": 222,
+      "controller_seconds": null,
+      "decisions": 2,
+      "diagnosis": "Pinned NDeckEnchantSelectScreen.ConfirmSelection ignores an empty set even though Kifuda declares MinSelect=0. Its Cancelable=false disables empty CloseSelection. No native empty-confirm completion exists. Bridge exposed that unusable candidate.",
+      "effect_verified": false,
+      "evidence": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#sphere-relic-and-kifuda-empty-selection",
+      "expected_after_gold": 909,
+      "installed_state_sha256": "25804b0bce97486eef1badce26609e9226ea8a5a82874e4983fd65b700dcec7e",
+      "manual_gameplay_after_attachment": false,
+      "native_visible_after_gold": 909,
+      "normal_app_quit": true,
+      "normal_save_and_quit": false,
+      "pending": true,
+      "price": 190,
+      "reconciled": 0,
+      "release_manifest_sha256": "69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639",
+      "selected_cards": [],
+      "setup": "Profile 3 TEST74 saved combat; gold 1000 and two native room shop preparations before attachment; second offered Kifuda for 190. No purchase before attachment.",
+      "source_commit": "0fb2972acf5475de36908beac2b89c4d50a60a93",
+      "stale_rejections": 0,
+      "status": "failed",
+      "target_relic": "kifuda",
+      "user_wait_seconds": 0,
+      "verified_by_utc": "2026-09-27 18:40:20 UTC"
     }
   ],
   "next_live_test": {
-    "acceptance": "Open the six-slot inventory, buy nothing, Close and Leave; verify exact unchanged deck, relics, potions, HP/max HP and gold through the actionable map.",
     "agent_managed_launch_authorized": true,
-    "baseline": "Inspect the saved checkpoint and prepare a full-HP Fake Merchant entry with inventory closed and no fake relics already owned. If the saved purchases remain, establish the matching controlled setup before attachment.",
-    "decision_limit": 3,
-    "first_case": "Fake Merchant: zero purchases, Close and Leave through the full producer.",
-    "fresh_installation_required": true,
-    "helper_case": "fake-merchant 0",
-    "prepared_helper": "/private/tmp/sts-broader-live-check.py",
-    "seconds": 90,
-    "status": "requires_installation_and_controlled_setup"
+    "first_case": "Reject empty enchant confirmation and complete a one-card Kifuda/Gnarled Hammer selection with deselection.",
+    "status": "requires_corrected_release"
   },
   "package": {
     "Sts2AgentBridgeUnified-1.0.0.zip": [
@@ -1507,8 +1747,9 @@
   "release_manifest_sha256": "69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639",
   "remaining_limits": [
     "The fresh Shears/full-belt Phial correction passed at 7/7/7 through final curse and map return. The prior 6/5/4 action remains uncertain under its original release.",
-    "Other named variants remain in docs/STATUS.md; no exhaustive fidelity claim. Compound offer Skip/Leafy Poultice passed at 5/5/5 and Fake Merchant six purchases at 9/9/9. Zero-purchase and other named paths retain separate evidence limits.",
-    "Earlier assisted shared-v2 campaign and Neow passes retain their original artifacts."
+    "Other named variants remain in docs/STATUS.md; no exhaustive fidelity claim. Compound offer Skip/Leafy Poultice passed at 5/5/5 and Fake Merchant six and zero purchases at 9/9/9 and 3/3/3.",
+    "Earlier assisted shared-v2 campaign and Neow passes retain their original artifacts.",
+    "Kifuda zero selection stopped at 2/2/0. Pinned native empty enchant confirmation is a no-op; bridge legal-minimum correction and nonempty live retest are required. Cleanup does not resolve the action."
   ],
   "schema_version": 1,
   "semantic_review": {

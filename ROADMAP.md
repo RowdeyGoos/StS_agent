@@ -25,7 +25,8 @@ another fresh campaign is not an acceptance requirement. See the
    terminal/event rewards and both Trial/Innocent selector branches also have
    representative acceptance. Remaining targets include other Neow compound branches
    and concrete remaining pickup effects. Sphere's small/big tools and earned
-   gold/card/potions passed; earned relics retain a separate evidence limit.
+   gold/card/potions and an earned relic passed. The zero-card Kifuda test found a
+   native no-op confirmation; correct bridge legality before the fewer-card retest.
    Yummy Cookie's true four-card upgrade
    selector, all five supported shop card-selector families and Cauldron/Orrery
    rewards, Silver Crucible’s empty chest and Wood Carvings/Torus now have

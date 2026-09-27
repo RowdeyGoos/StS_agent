@@ -2984,3 +2984,86 @@ unchanged inventory through Open/Close/Leave and map return. The helper supports
 three decisions/90 seconds, but needs a fresh installation and a matching native
 setup without already-owned fake relics. No package is currently installed;
 agent-managed Steam launch can be used after that preparation.
+
+### Fake Merchant zero purchases passed
+
+The unchanged release `69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639`,
+source `0fb2972acf5475de36908beac2b89c4d50a60a93`, was installed under
+`bf6c8a68a7cf39c5ca9966f888e416f1d8ffab0809c08fc8e845fd3aeb5fbca9`. Overlay, 429 base
+files and initializer/dependency metadata checks passed by **18:20:57 UTC**.
+Agent-managed Steam launch returned in 0.182 seconds; fresh running-process,
+Profile 3 main-menu and authenticated health/compatibility checks established
+readiness separately. Native Continue restored TEST74's pre-merchant combat
+checkpoint, with **68/68 HP, 99 gold, eleven cards, four relics and three empty
+potion slots**. The preceding six purchased fake relics were absent; this is not
+save/reload persistence evidence. Console `event FAKE_MERCHANT` prepared closed
+inventory entry before attachment. No HP, gold, cards or potions were added or used.
+
+The bounded helper checked the six distinct visible stock entries, then performed
+Open, Close and Leave with no purchase. **3 attempted / 3 accepted / 3 reconciled**
+actions passed, with 38 controller reads, zero stale rejections and nothing
+pending. One verification read checked the actionable map, exact original card,
+relic and potion nodes and unchanged HP/max HP/gold. Native counters remained
+**3/3/3**, with `truncated/external_stop`, by **18:23:08 UTC**. No manual gameplay
+occurred after attachment. The test establishes this zero-purchase path; natural
+Act 2+ event eligibility and arbitrary already-owned fake stock are not claimed.
+
+Normal Save and Quit and app Quit completed. Stopped-process/closed-listener
+checks passed. Exact quarantine produced
+`a1542afae191b199f11d6fc7e95a25aa489d73a520331b167f98d4f044cd3c11`, then purge removed
+four owned files. Base verification passed by **18:27:56 UTC**: zero overlays,
+429 unchanged base files, aggregate
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`. No profile/save/
+history/Cloud filesystem access or retained live corpus occurred. Preparation
+through cleanup checkpoints span **18:19:31–18:27:56 UTC** (505 seconds), including
+source inspection and context restoration; controller time was not measured
+separately and no user wait was needed. No production source/package changed.
+
+### Sphere relic and Kifuda empty selection
+
+Both cases used unchanged manifest `69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639`
+and source `0fb2972acf5475de36908beac2b89c4d50a60a93`. Each had a fresh verified
+installation, agent-managed Steam launch, Profile 3 menu and authenticated health/
+compatibility check. Native Continue restored TEST74's 68/68 HP, 99 gold, eleven
+cards, four relics and three empty potion slots. No manual gameplay occurred
+after either attachment; no profile/save/history/Cloud files or live corpus
+were read or retained. Exact case and cleanup identities are in the current
+validation record. The two original records remain bound to this release.
+
+**Sphere passed by 18:33:48 UTC.** Console `event CRYSTAL_SPHERE` was the only
+setup change. The public controller chose Payment Plan and six big-tool reveals
+(60, 37, 73, 81, 40, 105); it inferred candidate 4×4 relic extents only from public
+fragments and fog, without reading hidden items. All six exact fog/count changes
+were checked (9, 7, 7, 7, 8, 8 newly revealed cells). It collected three gold rows,
+Red Mask and Vulnerable Potion, then left. **13/13/13**, sixty reads, zero stale
+rejections and no pending action passed through the actionable map. Debt was the
+sole added card, gold became 169, relics five and potions one; original deck/relic/
+potion nodes and HP remained exact. This establishes an earned passive relic,
+not arbitrary pickup callbacks, full-belt replacement or all possible outcomes.
+Installation `601ddb7863d3dc545bffc7f7262bce9d2cdf46d484e9797658ef526d2bb17e1b`
+was verified by 18:30:36. Normal Save and Quit/App Quit and cleanup passed by
+**18:35:08 UTC**, quarantine
+`f93735aff0687a58658ff38949c43e87683a387a31308a009c880e28bcadb75e`.
+
+**Kifuda zero selection stopped by 18:40:20 UTC.** Before attachment, console
+`gold 1000` and two `room shop` preparations produced Kifuda for 190. The full
+producer accepted Buy and Confirm with no selected cards: **2 attempted /
+2 accepted / 0 reconciled**, 222 reads, `read_native_failed`, pending true. The
+native screen remained on the empty enchant preview with Kifuda owned and gold
+909. Pinned `NDeckEnchantSelectScreen.ConfirmSelection` ignores an empty selected
+set; Kifuda and Gnarled Hammer declare MinSelect=0 but also Cancelable=false,
+so native CloseSelection is disabled. No valid zero-card completion was found.
+The bridge had advertised this non-working confirmation; it must require at least
+one card rather than forcing a disabled native control or fabricating completion.
+No action was retried or adopted. Installation
+`25804b0bce97486eef1badce26609e9226ea8a5a82874e4983fd65b700dcec7e`
+was verified by 18:36:21. Normal App Quit directly from the stuck selector and
+cleanup passed by **18:41:59 UTC**, quarantine
+`17fed34f7182ec1007baf82e895607170f16fa3deb892e9c60897d59638d8aad`.
+Cleanup does not certify either pending action.
+
+Both purges removed four owned files and confirmed the game/listener stopped,
+zero overlays and all 429 base files unchanged, aggregate
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`. Separate controller
+times were not measured; no user wait was needed. No release gate was repeated
+for these unchanged-package tests.
