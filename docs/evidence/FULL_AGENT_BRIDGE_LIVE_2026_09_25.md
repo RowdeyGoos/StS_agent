@@ -3118,3 +3118,76 @@ are setup predictions only; each prepared helper checks the actual offered pair
 and exact outcome. No profile/save/history/Cloud filesystem access or raw live
 corpus was used. Separate implementation/release preparation timing was not
 measured; user-unlock wait is ongoing.
+
+
+### Kifuda one-card toggle passed
+
+After the user unlocked the Mac, native UI verified Profile 3 and continued the
+saved TEST74 combat checkpoint (68/68 HP, 99 gold, eleven cards, four relics,
+three empty potion slots). Fresh authenticated health and compatibility passed.
+Before attachment, `gold 1000` and two native `room shop` preparations restored
+the Kifuda merchant; the displayed price was 190. No purchase was made manually.
+
+Under manifest `5ece253f…`, source `7b892d2`, installed state
+`d0f1fe51132d889aa804cbe5df64158dae113a1ac86449d2c9d457cef3267dd0`,
+the shared producer completed **7 attempted / 7 accepted / 7 reconciled** actions:
+buy, select, deselect, reselect, confirm, Close, Leave. Minimum one/maximum three
+were observed; empty confirmation and cancellation were absent both initially
+and after deselection. Exactly one upgrade-0 Strike gained Adroit 3. Gold changed
+1099 → 909, with the other ten cards, HP, relics and potions preserved.
+Seven decisions, **34 controller reads plus one verification read**, zero stale
+rejections, no pending action, and an actionable map were verified by
+**19:05:58 UTC**. This demonstrates fewer-than-maximum selection and a return to
+zero before reselection; native zero confirmation remains unsupported.
+
+Normal Save and Quit, app Quit, stopped process/listener, exact quarantine/purge
+and base verification passed by **19:07:01 UTC**. Quarantined state
+`0efba179deb3c426e2c01af262c8928ed5b6b6de1ff494e115fd33ac74a76288`; four
+generated files removed, zero overlays, all 429 base files unchanged. The
+earlier 2/2/0 attempt remains unresolved under its original release. No manual
+gameplay input occurred after attachment, no raw corpus was retained and no
+profile/save/history/Cloud filesystem access was used.
+
+
+### Automatic Neow pickup families passed
+
+Four fresh Profile 3 Ironclad A0 Custom runs without modifiers exercised the
+seven concrete automatic Neow pickup families under manifest `5ece253f…`, source
+`7b892d2`, installed state
+`e3d2c3b0eee7eaf008cf99d180cbbdf9c6c1679b22ccbd35c005af3847f69540`.
+Each started at 80/80 HP, 99 gold, ten starter cards, Burning Blood and three
+empty potion slots. No HP, damage, gold, deck or potion assistance was applied.
+The helper verified the actual two-relic offer before either claim and checked
+the exact inventory after each settled effect and at the final actionable map.
+
+| Seed | Pickup order | Observed effects | Actions | Reads + verification | Verified by UTC |
+| --- | --- | --- | --- | --- | --- |
+| TEST20 | Silken Tress, Neow's Talisman | Gold 99 → 0; last basic Strike and Defend upgraded once; final Debt; eleven cards | 4/4/4 | 50 + 1 | 19:10:53 |
+| TEST61 | Golden Pearl, Neow's Torment | Gold 99 → 249; Neow's Fury and final Writhe added; twelve cards | 4/4/4 | 50 + 1 | 19:14:22 |
+| TEST264 | Cursed Pearl, Nutritious Oyster | Gold 99 → 432; Greed added with Eternal; HP/max HP 80/80 → 91/91; final Clumsy; twelve cards | 4/4/4 | 50 + 1 | 19:17:09 |
+| TEST54 | Arcane Scroll, Silken Tress | Unupgraded rare Hellraiser added; gold 99 → 0; final Shame; twelve cards | 4/4/4 | 49 + 1 | 19:20:20 |
+
+All sixteen actions were attempted, accepted and reconciled, with zero stale
+rejections and nothing pending. All unmodified originals and potion slots stayed
+exact; each original relic was preserved and the expected relics were appended.
+TEST20 and TEST264 offered Bones naturally at the ordinary Neow start: no console
+entry or forced option was used for those two cases. TEST61 and TEST54 used
+`ancient NEOW NEOWS_BONES` before attachment; they do not establish natural Bones
+eligibility. No manual gameplay input occurred after any attachment.
+
+One verified installation was reused across fresh processes. Each case ended
+with normal Save and Quit and app Quit; stopped process/listener and exact
+owned overlays with 429 unchanged base files were checked before restart. The
+first three shutdowns were verified by **19:12:04**, **19:15:10** and **19:17:57 UTC**.
+Each Steam launch and authenticated health/manifest compatibility check passed.
+Final shutdown, exact quarantine/purge and base verification passed by
+**19:21:41 UTC**: quarantined state
+`2644123571a700c8d0099c2d88b75fa055a5f900dee69688ac718b5daa108a6d`, four
+generated files removed, zero overlays and all 429 base files unchanged.
+
+The observed initial installation-verification-to-final-cleanup window was
+19:08:37–19:21:41 UTC (784 seconds); controller durations were not measured
+separately. User wait was zero during this batch. These are representative native
+pickup results, not every seed, prevented card addition, localization or reload
+fidelity. Aggregate summaries only were retained; no profile/save/history/Cloud
+filesystem access or raw trajectory corpus was used.

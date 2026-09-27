@@ -115,3 +115,12 @@ Symbiote's transform branch and Whispering Hollow—use the
 [static research map](EVENT_INTERACTION_MAP.md). Its 68 types/105 branch groups
 are a source census, not a count of supported events, reachable events or remaining
 features. Keep future attempt chronology in the dated evidence ledger.
+
+The [automatic Neow pickup batch](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#automatic-neow-pickup-families-passed)
+on 2026-09-27 adds representative full-producer coverage for Golden Pearl,
+Nutritious Oyster, Silken Tress, Arcane Scroll, Neow's Torment, Cursed Pearl and
+Neow's Talisman: four 4/4/4 cases, exact effects and final map return. TEST20 and
+TEST264 used naturally offered Bones; TEST61 and TEST54 used console entry.
+The same release's [Kifuda one-card toggle](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#kifuda-one-card-toggle-passed)
+passed 7/7/7. Native empty enchant confirmation remains a no-op and is no longer
+advertised. Other prevention/outcome variants retain separate limits.

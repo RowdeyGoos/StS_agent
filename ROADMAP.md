@@ -23,11 +23,12 @@ another fresh campaign is not an acceptance requirement. See the
    Dummy victory with automatic upgrades, terminal potion policies and assisted
    Fake Merchant seven-relic collection now have live results. Capacity-first
    terminal/event rewards and both Trial/Innocent selector branches also have
-   representative acceptance. Remaining targets include other Neow compound branches
-   and concrete remaining pickup effects. Sphere's small/big tools and earned
+   representative acceptance. All seven automatic Neow pickup families now passed in four controlled cases.
+   Remaining targets include concrete potion/card prevention outcomes and reward
+   callback variants. Sphere's small/big tools and earned
    gold/card/potions and an earned relic passed. The zero-card Kifuda test found a
    native no-op confirmation. The legal-minimum correction passed its release gate;
-   the fewer-card/deselection live retest awaits Mac unlock.
+   the one-card Kifuda deselection/reselection retest passed 7/7/7 through the map.
    Yummy Cookie's true four-card upgrade
    selector, all five supported shop card-selector families and Cauldron/Orrery
    rewards, Silver Crucible’s empty chest and Wood Carvings/Torus now have

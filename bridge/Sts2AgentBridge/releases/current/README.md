@@ -18,10 +18,18 @@ The final gate passed **85 groups in 410.372 seconds**. Focused checks passed
 **1,010 shop pickup checks** and **3,487 full-event reward checks** in 61.859 seconds.
 Independent semantic review found no blocker. Installation and initializer/dependency
 verification passed, with 429 unchanged base files and two owned overlays. Steam
-launch and authenticated health/manifest checks passed; the Mac lock screen prevents
-Profile 3 verification and the corrected one-card toggle retest. No gameplay
-actions have run under this release, and cleanup is still pending.
+launch and authenticated health/manifest checks passed. After Mac unlock, the
+Profile 3 Kifuda one-card deselection/reselection case passed **7/7/7**, 34 controller
+reads plus one verification read, exact Adroit/payment and settled map return.
+Normal quit and exact cleanup passed by **19:07:01 UTC**, with zero overlays and
+all 429 base files unchanged.
 
 The [original Kifuda empty attempt](../../../../docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#sphere-relic-and-kifuda-empty-selection)
 remains failed at **2/2/0** under manifest `69bfd021…`, with its original package,
 record and cleanup retained. Earlier passes retain their original artifacts.
+
+The automatic Neow batch then passed four cases at **4/4/4 each**, covering seven
+scalar, upgrade and card-add families. Two cases used naturally offered Bones.
+All sixteen actions reconciled through map return, with zero stale rejections
+and nothing pending. Final normal shutdown and exact cleanup passed by
+**19:21:41 UTC**, leaving zero overlays and all 429 base files unchanged.

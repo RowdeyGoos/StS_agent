@@ -12,12 +12,20 @@ Quick navigation: [supported interactions](#supported-interactions) ·
 [missing features versus remaining tests](#implementation-gaps-versus-remaining-live-tests) ·
 [release and evidence](#release-and-latest-evidence).
 
+The [automatic Neow pickup batch](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#automatic-neow-pickup-families-passed)
+passed four cases at **4/4/4 each**, covering all seven scalar, upgrade and card-add
+families. Exact gold/HP effects, two automatic starter upgrades, rare Hellraiser,
+Neow's Fury, Eternal Greed, final curses and map return were verified. Two cases
+used naturally offered Bones at ordinary Neow entry. Cleanup passed by
+**19:21:41 UTC**, with zero overlays and all 429 base files unchanged.
+
 The latest shop test found a concrete legal-action defect: Kifuda zero-card
 confirmation stopped at **2/2/0**, with both actions unresolved. The pinned native
 enchant confirmation ignores an empty selection despite declared MinSelect=0;
 the corrected release now requires at least one card, with raw bounds and native
-cancellation preserved. Its 85-group gate and independent review passed; the live
-one-card retest is pending. The failed session was closed and cleaned by
+cancellation preserved. Its 85-group gate and independent review passed. The [one-card retest](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#kifuda-one-card-toggle-passed)
+passed **7/7/7**, including deselection/reselection, exact Adroit/payment and map
+return. Its cleanup passed by **19:07:01 UTC**. The failed session was closed and cleaned by
 **18:41:59 UTC**. [Sphere/Kifuda evidence](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#sphere-relic-and-kifuda-empty-selection).
 Crystal Sphere earned Red Mask, a potion and 70 gold at **13/13/13**, preserving
 originals through the map; its cleanup passed by **18:35:08 UTC**.
@@ -440,8 +448,9 @@ These are **not an implementation queue or required live-test checklist**:
 ### Implemented, but still needing representative live evidence
 
 - Other full-producer Neow’s Bones compound branches and potion-procurement
-  outcomes; remaining automatic pickup effects and additional shared event reward
-  callers. Lead Paperweight offer Skip followed by Leafy Poultice's automatic
+  outcomes; potion/card prevention variants and additional shared event reward callers.
+  All seven automatic scalar/upgrade/card-add families passed in four controlled
+  cases at 4/4/4 each, including naturally offered Bones in two cases. Lead Paperweight offer Skip followed by Leafy Poultice's automatic
   Strike/Defend transformations and twelve max-HP loss passed at 5/5/5 through
   final Writhe and map return. This is the owned compound pickup path; it does
   not broaden general selectorless-transform support.
@@ -464,9 +473,9 @@ These are **not an implementation queue or required live-test checklist**:
   evidence, without a separately identified ordinary 32-entry gameplay caller.
 - Selectorless removal: one-card Dark Door passed live. Empty domains, retained
   Eternal cards, other callers and adversarial variants remain fixture evidence.
-- Kifuda/Gnarled Hammer legal minimum correction (empty native confirmation is a no-op),
-  fewer-card and deselection variants, and remaining
-  kind/gold-reserve variants. All five supported shop card selectors now have
+- Remaining shop kind/gold-reserve variants. The legal minimum correction and
+  Kifuda one-card deselection/reselection passed at 7/7/7; native empty enchant
+  confirmation remains unsupported. All five supported shop card selectors now have
   representative live acceptance. Zero-purchase
   Close/Leave passed with exact inventory preservation. The inherited passive Red Mask purchase
   passed through the full producer; other pickup effects remain separate cases.
@@ -483,7 +492,8 @@ These are **not an implementation queue or required live-test checklist**:
   upgrades and both Trial/Innocent curse-plus-two selectors now have representative
   live acceptance; each Trial branch passed 5/5/5. Recreating Trial repeats a
   campaign's branch; the saved TEST531 campaign produced Merchant as predicted.
-- Other natural ancient entry/dialogue routes beyond the demonstrated Nonupeipe continuation.
+- Other natural ancient entry/dialogue routes beyond the demonstrated Nonupeipe
+  continuation and two ordinary Neow starts.
 - Broader reward orders/outcomes with a concrete offered screen, Sphere other
   outcomes. Sphere small/big tools,
   six exact reveals and earned gold/card/potions passed through the shared producer
@@ -513,8 +523,8 @@ Independent semantic review found no blocker. The final release gate passed
 **85 groups in 410.372 seconds**, including reproducible builds, 173 client tests,
 1,719 router checks, 17,745 native event checks and 284 campaign checks. Installation,
 metadata and unchanged-base verification passed by **18:57:12 UTC**. The subsequent
-Steam launch and authenticated health checks passed by **18:58:39 UTC**; a locked Mac currently
-prevents the Profile 3 UI check and one-card Kifuda toggle test.
+Steam launch and authenticated health checks passed by **18:58:39 UTC**; the subsequent Profile 3 Kifuda retest passed **7/7/7**, 34 controller reads plus
+one verification read, with nothing pending. Cleanup passed by **19:07:01 UTC**.
 
 The preceding manifest `69bfd021…`, source `0fb2972`, corrected reward capacity
 settlement and owns the following live results. Those results retain their exact
