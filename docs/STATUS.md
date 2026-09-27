@@ -12,6 +12,12 @@ Quick navigation: [supported interactions](#supported-interactions) ·
 [missing features versus remaining tests](#implementation-gaps-versus-remaining-live-tests) ·
 [release and evidence](#release-and-latest-evidence).
 
+The [Wood Carvings/Torus case](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#wood-carvings-torus-passed)
+passed **4/4/4**, with forty controller reads and nothing pending. One selected
+upgrade-0 Strike became Toric Toughness; every other card, HP, gold, relic and
+potion remained unchanged through map return. Cleanup passed by **17:30:13 UTC**,
+with zero overlays and all 429 base files unchanged.
+
 The [Trial Merchant/Innocent case](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#trial-curse-and-two-upgrades-passed)
 passed **5/5/5**, with fifteen controller reads and nothing pending. Shame was
 observed before the fixed-two selector; two original Strikes gained one upgrade,
@@ -200,7 +206,7 @@ extend standalone rest/shop contracts.
 | Upgrade | Fixed selection counts 1–8; eligible allocated off-screen holders | Sapphire Seed single upgrade at slot 20 of 23 demonstrated. Full-producer Trial/MerchantInnocent fixed-two passed 5/5/5 after Shame addition, and Yummy Cookie fixed-four passed 7/7/7, with exact upgrades and map return. Other counts/callers retain separate limits; Dummy automatic upgrades are not selector evidence |
 | Enchant | Single selection and fixed 2–8 selections with exact preview/effects | Sapphire Seed, Grave and Prickly Sponge fixed-two demonstrated; other counts/callers offline only; stacking/replacement and optional counts unsupported |
 | Remove | Positive selections up to eight with exact original preview/removal; owned automatic removal without a selector | Amalgamator fixed-two and one-card Dark Door automatic completion/map demonstrated; other counts/callers need evidence |
-| Transform | Fixed/positive variable counts up to eight; optional 0..8; fixed-one generic transform-prompt surface | Allocated off-screen input, Wood Carvings/Bird and Claws zero/three/six demonstrated. Trial/NondescriptInnocent passed 5/5/5 after observed Doubt addition: two exact originals transformed, survivors/inventory preserved and map returned. Torus and other callers need evidence |
+| Transform | Fixed/positive variable counts up to eight; optional 0..8; fixed-one generic transform-prompt surface | Allocated off-screen input, Wood Carvings/Bird and Claws zero/three/six demonstrated. Trial/NondescriptInnocent passed 5/5/5 after observed Doubt addition: two exact originals transformed, survivors/inventory preserved and map returned. Full-producer Torus passed 4/4/4 with the selected Strike becoming Toric Toughness and exact survivors/inventory through map return; other callers retain separate limits |
 | Add-card grid | Positive selection; optional 0..15 with explicit confirmation | Cheese two-of-eight and Sea Glass zero/three/fifteen demonstrated |
 | Ordinary card-reward menus | One or 2–8 menus, 1–5 cards/menu, native choice/Skip and final dismissal | Brain Leech singleton and Colorful Philosophers choose/Skip/choose demonstrated; other counts/outcomes offline only |
 | Direct offered card | Required `card_offer_v1`; optional v2 choice/Skip with zero/one observed appended grant | Lead Paperweight and Hefty Tablet choice/Skip demonstrated. Required-choice v1 is fixture-only capability with no identified native caller; not a pending gameplay test |
@@ -403,8 +409,10 @@ These are **not an implementation queue or required live-test checklist**:
 ### Implemented, but still needing representative live evidence
 
 - Other full-producer Neow’s Bones compound branches and potion-procurement
-  outcomes; remaining automatic
-  pickup effects and additional shared event reward callers.
+  outcomes; remaining automatic pickup effects and additional shared event reward
+  callers. Lead Paperweight offer Skip followed by Leafy Poultice's automatic
+  Strike/Defend transformations and twelve max-HP loss is prepared as the next
+  concrete case; it is not yet live demonstrated.
   New Leaf's selected transformation followed by empty-belt Phial Holster's two
   potions, final curse and map return passed at 6/6/6 with unchanged survivors.
   Shears' two-card removal followed by full-belt Phial Holster, final curse and
@@ -435,9 +443,10 @@ These are **not an implementation queue or required live-test checklist**:
   original potions and filled both added slots. Console-created Repy had no
   Lantern Key; quest removal and natural entry remain separate evidence limits.
   Resume capacity has no identified native caller.
-- Held-out enchant/removal/transform callers such as Wood Carvings/Torus retain
-  separate evidence limits. Its fixed-one basic-card choice and exact Toric
-  Toughness replacement are prepared as the next case. Yummy Cookie's fixed-four
+- Held-out enchant/removal/transform callers retain separate evidence limits.
+  Wood Carvings/Torus's fixed-one basic-card choice and exact Toric Toughness
+  replacement now passed through the full producer at 4/4/4, with unchanged
+  survivors/inventory. Yummy Cookie's fixed-four
   upgrades and both Trial/Innocent curse-plus-two selectors now have representative
   live acceptance; each Trial branch passed 5/5/5. Recreating Trial repeats a
   campaign's branch; the saved TEST531 campaign produced Merchant as predicted.
@@ -482,7 +491,10 @@ was preserved with Whirlwind appended.
 Trial/MerchantInnocent then passed **5/5/5**, 34 preflight reads, fifteen controller
 reads and one verification read. Shame and two exact Strike upgrades settled
 through map return without changing other inventory.
-Latest exact owned cleanup and base verification passed by **16:55:30 UTC**:
+Wood Carvings/Torus then passed **4/4/4**, forty controller reads and one
+verification read. One exact Strike became Toric Toughness, with unchanged
+survivors/inventory and settled map return.
+Latest exact owned cleanup and base verification passed by **17:30:13 UTC**:
 zero overlays and all 429 base files unchanged.
 
 The prior manifest **`14772d59c22d9d630bc71780c3871fedd95331e9c6797267a5fe0acd5ab0582a`**,

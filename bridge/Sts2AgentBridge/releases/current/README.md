@@ -61,8 +61,14 @@ selector; two original Strikes gained one upgrade, with all other cards/inventor
 preserved through map return. Exact cleanup passed by **16:55:30 UTC**, leaving
 zero overlays and all 429 base files unchanged.
 
-The same package is reinstalled and verified by **16:58:32 UTC** for Wood Carvings’
-Torus test. Two exact overlays are installed and all 429 base files are unchanged.
-The prepared helper checks one original basic card becoming Toric Toughness,
-unchanged survivors/inventory and map return. Manual Profile 3 launch is pending;
-the saved campaign can be continued.
+Wood Carvings/Torus then passed **4/4/4**, forty controller reads and one
+verification read. The selected upgrade-0 Strike became Toric Toughness; all
+other cards/inventory were preserved through map return. Exact cleanup passed
+by **17:30:13 UTC**, leaving zero overlays and all 429 base files unchanged.
+
+The same package is reinstalled and verified by **17:36:47 UTC** for the Neow
+Lead Paperweight Skip / Leafy Poultice case: two exact overlays and all 429 base
+files unchanged. The eight-action/90-second helper checks the skipped offer,
+two automatic transformations, twelve max-HP loss, final curse and map return.
+Manual Profile 3 launch is pending; fresh seed TEST74 is required for the
+prepared reward pair. This case has no live acceptance yet.

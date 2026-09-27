@@ -2768,3 +2768,73 @@ settled map. Native Continue and controlled console setup will use the saved
 campaign; the actual restored room and legal option will be checked before
 attachment. The package is prepared and awaiting manual launch; Torus is not yet
 a live result.
+
+
+### Wood Carvings Torus passed
+
+After manual Profile 3 launch, fresh running-state, source/owned-installation,
+authenticated health and pinned-build compatibility checks passed. The unchanged
+manifest was `69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639`,
+source `0fb2972acf5475de36908beac2b89c4d50a60a93`, installed state
+`ea2ad3d2f5a76e9da885f72a67fe9c4fade0052e296eb89da037bdfa6f4f22cb`.
+Native Continue restored the saved **TEST531** Ironclad A0 campaign at the earlier
+Corpse Slugs combat checkpoint: **186/204 HP, 99 gold, thirteen cards**, Burning
+Blood and Fire/Strength/Block in three occupied potion slots. This is separate
+from the previous Trial result; no save/reload persistence claim is made.
+
+Before attachment, the console entered Wood Carvings directly from that combat.
+Native room exit resets combat; no card or potion was played during setup. The
+initial page visibly offered Torus, transforming one starter card into Toric
+Toughness. The console was closed before the helper's first public decision.
+
+The four-action/60-second helper completed **4 attempted / 4 accepted /
+4 reconciled** actions: Torus, select one exact original Strike, Confirm and
+Leave. The fixed-one transform selector required manual confirmation and its
+selected link retained the same original card through preview. The selected
+upgrade-0 **Strike** was removed and exactly one upgrade-0 **Toric Toughness**
+appeared. All twelve surviving originals, HP/max HP, gold, Burning Blood and the
+three exact potion slots/models were unchanged. The deck remained thirteen cards.
+
+There were **40 controller reads**, four decisions, zero stale rejections and
+nothing pending. One fresh public verification read rechecked the exact final
+inventory and actionable map, with native counts **4/4/4** and
+`truncated/external_stop`. Native map return and counters were visually confirmed
+by **17:28:54 UTC on 2026-09-27**. No manual gameplay input occurred after
+attachment. This establishes the Torus fixed-one caller through the full producer;
+other callers, natural entry and arbitrary deck sizes retain their own limits.
+
+Normal Save and Quit, visible main menu and app Quit completed. Fresh stopped-
+process/closed-listener checks passed, then exact quarantine produced
+`b8318bdde4f7d28003969182df6202f00a774abd6be562214520c16ff5b895f0`.
+Purge removed four owned files. Base verification passed by **17:30:13 UTC**:
+zero overlays, all 429 base files unchanged, aggregate
+`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`.
+No profile/save/history/Cloud filesystem access or retained live corpus occurred.
+The preparation-to-cleanup window was **17:24:00–17:30:13 UTC** (373 seconds);
+controller and user-wait durations were not separately measured. No production
+source changed; accepted release checks were reused without another gate.
+
+The same accepted package was reinstalled for the next compound case under state
+`5dd2560fec972e14597693a012d0c450829f95aa043ffef44c9ad696a07b3a41`.
+Exact overlays and installed initializer/dependency metadata checked by
+**17:36:47 UTC**: two owned overlays and all 429 base files unchanged. Pinned
+LeafyPoultice.AfterObtained lowers maximum HP by twelve and automatically
+transforms the first Basic Strike-tagged and Defend-tagged originals. It has no
+card selector. Lead Paperweight's optional card offer provides a concrete Skip
+case before that second relic pickup.
+
+The pinned single-player Neow pool and existing native RNG model predict fresh
+canonical seed **TEST74 → Lead Paperweight, Leafy Poultice**. The same calculation
+reproduced all four previously demonstrated controlled pairs (TEST614, TEST407,
+TEST91 and TEST475); this is a setup prediction, not live acceptance. The helper
+checks the actual offered pair before claiming either relic. Fresh Ironclad A0
+Custom, no gameplay modifiers or assistance, provides the required ten starter
+cards, only Burning Blood, 80/80 HP, 99 gold and three empty potion slots.
+
+The prepared eight-action/90-second helper chooses Bones, claims Lead Paperweight,
+skips its visible optional offer, verifies the exact unchanged deck, then claims
+Leafy Poultice. It checks the two exact automatic originals, eight unchanged
+survivors, 68/68 HP, unchanged gold/potions, the final curse and actionable map.
+Only native dialogue decisions may precede that five-action sequence. Syntax and
+author review passed; no production change or new release gate was needed.
+Manual launch and the new seeded campaign are the remaining prerequisites.

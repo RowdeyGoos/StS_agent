@@ -11,14 +11,14 @@
     "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
     "game_process_running": false,
     "generated_files_removed": 4,
-    "installed_state_sha256": "f95a03749602c8100a8e3e3558d4f0fad47e7abb6808f29edf9dba9624ffacad",
+    "installed_state_sha256": "ea2ad3d2f5a76e9da885f72a67fe9c4fade0052e296eb89da037bdfa6f4f22cb",
     "normal_app_quit": true,
     "normal_save_and_quit": true,
     "overlay_count": 0,
     "port_accepting": false,
-    "quarantined_state_sha256": "76b9d52def81edd73495ebe6328081ae0ff0d46447a8cb472a66f59500842061",
+    "quarantined_state_sha256": "b8318bdde4f7d28003969182df6202f00a774abd6be562214520c16ff5b895f0",
     "status": "passed",
-    "verified_by_utc": "2026-09-27 16:55:30 UTC"
+    "verified_by_utc": "2026-09-27 17:30:13 UTC"
   },
   "completed_cleanups": [
     {
@@ -76,6 +76,20 @@
       "quarantined_state_sha256": "26866a40d4bd485a2f5fc62d36a7d6bb1121a2bb5d5a8ce5bcb5b4116689cdbb",
       "status": "passed",
       "verified_by_utc": "2026-09-27 16:44:24 UTC"
+    },
+    {
+      "base_file_count": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "game_process_running": false,
+      "generated_files_removed": 4,
+      "installed_state_sha256": "f95a03749602c8100a8e3e3558d4f0fad47e7abb6808f29edf9dba9624ffacad",
+      "normal_app_quit": true,
+      "normal_save_and_quit": true,
+      "overlay_count": 0,
+      "port_accepting": false,
+      "quarantined_state_sha256": "76b9d52def81edd73495ebe6328081ae0ff0d46447a8cb472a66f59500842061",
+      "status": "passed",
+      "verified_by_utc": "2026-09-27 16:55:30 UTC"
     }
   ],
   "completed_installations": [
@@ -133,6 +147,17 @@
       "state_sha256": "f95a03749602c8100a8e3e3558d4f0fad47e7abb6808f29edf9dba9624ffacad",
       "status": "tested_cleaned",
       "verified_by_utc": "2026-09-27 16:46:13 UTC"
+    },
+    {
+      "base_file_count": 429,
+      "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+      "game_process_running_at_install": false,
+      "metadata_verifier": "passed",
+      "overlay_count": 2,
+      "port_accepting_at_install": false,
+      "state_sha256": "ea2ad3d2f5a76e9da885f72a67fe9c4fade0052e296eb89da037bdfa6f4f22cb",
+      "status": "tested_cleaned",
+      "verified_by_utc": "2026-09-27 16:58:32 UTC"
     }
   ],
   "elapsed_times": {
@@ -610,17 +635,17 @@
     "metadata_verifier": "passed",
     "overlay_count": 2,
     "port_accepting_at_install": false,
-    "state_sha256": "ea2ad3d2f5a76e9da885f72a67fe9c4fade0052e296eb89da037bdfa6f4f22cb",
+    "state_sha256": "5dd2560fec972e14597693a012d0c450829f95aa043ffef44c9ad696a07b3a41",
     "status": "installed_verified",
-    "verified_by_utc": "2026-09-27 16:58:32 UTC"
+    "verified_by_utc": "2026-09-27 17:36:47 UTC"
   },
   "live": {
-    "accepted": 40,
-    "attempted": 41,
-    "case_count": 5,
+    "accepted": 44,
+    "attempted": 45,
+    "case_count": 6,
     "full_shared_native_interface_complete": false,
     "pending": false,
-    "reconciled": 40,
+    "reconciled": 44,
     "stale_rejections": 1,
     "status": "passed"
   },
@@ -1059,19 +1084,102 @@
       "user_wait_seconds": null,
       "verification_reads": 1,
       "verified_by_utc": "2026-09-27 16:54:01 UTC"
+    },
+    {
+      "accepted": 4,
+      "actionable_map": true,
+      "actions": [
+        "choose_event_option",
+        "choose_event_card",
+        "confirm_selection",
+        "leave_event"
+      ],
+      "after": {
+        "deck": 13,
+        "gold": 99,
+        "hp": 186,
+        "max_hp": 204,
+        "potion_capacity": 3,
+        "relic_count": 1
+      },
+      "attempted": 4,
+      "before": {
+        "deck": 13,
+        "gold": 99,
+        "hp": 186,
+        "max_hp": 204,
+        "potion_capacity": 3,
+        "relic_count": 1
+      },
+      "case": "wood_carvings_torus",
+      "controller_reads": 40,
+      "controller_seconds": null,
+      "decisions": 4,
+      "evidence": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#wood-carvings-torus-passed",
+      "installed_state_sha256": "ea2ad3d2f5a76e9da885f72a67fe9c4fade0052e296eb89da037bdfa6f4f22cb",
+      "limits": [
+        "Controlled event entry; natural entry, other callers and arbitrary deck sizes retain separate limits.",
+        "No save/reload persistence claim."
+      ],
+      "manual_gameplay_after_attachment": false,
+      "native_verification_counts": [
+        4,
+        4,
+        4
+      ],
+      "other_inventory_unchanged": true,
+      "outcome": {
+        "kind": "truncated",
+        "reason": "external_stop"
+      },
+      "pending": false,
+      "preparation_to_cleanup_seconds": 373,
+      "preparation_to_cleanup_window_utc": [
+        "2026-09-27 17:24:00 UTC",
+        "2026-09-27 17:30:13 UTC"
+      ],
+      "reconciled": 4,
+      "release_manifest_sha256": "69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639",
+      "replacement": {
+        "id": "toric_toughness",
+        "upgrade_level": 0
+      },
+      "selected_original": {
+        "id": "strike",
+        "upgrade_level": 0
+      },
+      "setup": {
+        "ascension": 0,
+        "character": "ironclad",
+        "combat_cards_or_potions_used_in_setup": false,
+        "console_setup_before_attachment": true,
+        "manual_launch": true,
+        "mode": "saved_native_seeded_custom_without_gameplay_modifiers",
+        "new_campaign": false,
+        "profile": 3,
+        "restored_checkpoint": "Corpse Slugs combat, before the previous console Trial setup.",
+        "seed": "TEST531"
+      },
+      "source_commit": "0fb2972acf5475de36908beac2b89c4d50a60a93",
+      "stale_rejections": 0,
+      "status": "passed",
+      "survivors_unchanged": true,
+      "user_wait_seconds": null,
+      "verification_reads": 1,
+      "verified_by_utc": "2026-09-27 17:28:54 UTC"
     }
   ],
   "next_live_test": {
-    "acceptance": "Choose Torus, select one exact eligible original Strike, verify its preview and confirm; verify only that original becomes Toric Toughness at upgrade 0, preserve other cards/inventory and settle map return.",
-    "baseline": "Continue the saved TEST531 campaign and inspect its restored checkpoint. Use a connected room entry if travel is enabled, then console-create Wood Carvings before attachment. Require Burning Blood alone and a legal upgrade-0 Strike.",
-    "decision_limit": 4,
-    "first_case": "Wood Carvings/Torus fixed-one basic-card transformation.",
+    "acceptance": "Skip the visible optional card offer and verify the exact deck is unchanged before the next relic claim. Leafy Poultice must transform the first original basic Strike and Defend, reduce HP/max HP from 80/80 to 68/68, preserve other originals/potions/gold, then settle the final curse and actionable map.",
+    "baseline": "Fresh Ironclad A0 Custom campaign, canonical seed TEST74, no gameplay modifiers or assistance; ten starter cards, Burning Blood, 80/80 HP, 99 gold and three empty potion slots. Console Neow/Bones before attachment. The seed prediction is checked against the actual offered relics before claims.",
+    "decision_limit": 8,
+    "first_case": "Neow's Bones: Lead Paperweight offer Skip, then Leafy Poultice automatic transformations.",
     "game_restart_required": true,
-    "helper_case": "wood-torus",
-    "installed_state_sha256": "ea2ad3d2f5a76e9da885f72a67fe9c4fade0052e296eb89da037bdfa6f4f22cb",
-    "new_campaign_required": false,
+    "helper_case": "neow-bones offer-skip-leafy",
+    "installed_state_sha256": "5dd2560fec972e14597693a012d0c450829f95aa043ffef44c9ad696a07b3a41",
+    "new_campaign_required": true,
     "prepared_helper": "/private/tmp/sts-broader-live-check.py",
-    "seconds": 60,
+    "seconds": 90,
     "status": "awaiting_manual_launch"
   },
   "package": {
@@ -1123,7 +1231,7 @@
   "release_manifest_sha256": "69bfd021968f2ea8e3879fe09901cdaf53f3cfa90fbae5f8bc69fe16f3f2e639",
   "remaining_limits": [
     "The fresh Shears/full-belt Phial correction passed at 7/7/7 through final curse and map return. The prior 6/5/4 action remains uncertain under its original release.",
-    "Other named variants including Wood Carvings/Torus remain in docs/STATUS.md; no exhaustive fidelity claim. New Leaf/empty-belt Holster, capacity-first Repy/Punch Off rewards and Trial/MerchantInnocent two upgrades passed.",
+    "Other named variants remain in docs/STATUS.md; no exhaustive fidelity claim. New Leaf/empty-belt Holster, capacity-first Repy/Punch Off rewards, Trial/MerchantInnocent two upgrades and Wood Carvings/Torus passed. Compound offer Skip and Leafy Poultice automatic transformations are prepared next.",
     "Earlier assisted shared-v2 campaign and Neow passes retain their original artifacts."
   ],
   "schema_version": 1,

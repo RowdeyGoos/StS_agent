@@ -28,8 +28,8 @@ another fresh campaign is not an acceptance requirement. See the
    gold/card/potions passed; earned relics retain a separate evidence limit.
    Yummy Cookie's true four-card upgrade
    selector, all five supported shop card-selector families and Cauldron/Orrery
-   rewards, plus Silver Crucible’s empty chest, now have representative live
-   acceptance; held-out callers such as Wood Carvings/Torus retain separate limits.
+   rewards, Silver Crucible’s empty chest and Wood Carvings/Torus now have
+   representative live acceptance; other held-out callers retain separate limits.
    Choose a concrete native caller and observable outcome before extending a mechanism.
    [Current status](docs/STATUS.md) owns exact evidence and practical limits.
 2. **Exercise remaining handoff variants in useful live runs.**

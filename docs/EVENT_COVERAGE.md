@@ -20,6 +20,7 @@ controlled Profile 3 case to its own release, setup, counters and cleanup.
 | [Neow/Small Capsule → Stone Cracker](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#shared-v2-neow-recovery-and-large-deck-cook-stop-2026-09-26) | Corrected reward and event/map return recovered; later route stopped at large-deck Cook at 51/51/50 | No separate Neow counter total, act transition or ending claimed. Upfront HP/cards and unchanged common policy, no gameplay intervention after attachment. Earlier [2/1/0 uncertainty](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#shared-v2-route-stopped-at-small-capsule-2026-09-26) remains bound to its original package and unreconciled |
 | [Trial: Nondescript → Innocent](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#trial-curse-and-two-transforms-passed-2026-09-26) | Doubt observed, two exact original transformations, retained other cards/inventory and map return passed at 5/5/5 | Native rest entry and console event setup preceded attachment; automatic grant provenance remains separate. Recreating Trial repeats the campaign's branch |
 | [Trial: Merchant → Innocent](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#trial-curse-and-two-upgrades-passed) | Shame observed before the fixed-two selector, two exact Strike 0→1 upgrades, retained other cards/inventory and map return passed at 5/5/5 | Saved TEST531 campaign; connected native room entry, console Trial and native Accept preceded attachment. The setup prediction was verified on the actual Merchant branch; natural event entry and grant provenance remain separate |
+| [Wood Carvings: Torus](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#wood-carvings-torus-passed) | One exact upgrade-0 Strike became Toric Toughness, with all other cards/inventory preserved and map return at 4/4/4 | Saved TEST531 campaign restored its combat checkpoint; console event setup preceded attachment. Fixed-one basic-card selection and preview; no natural-entry or save/reload persistence claim |
 | [Tezcatara/Yummy Cookie](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#yummy-cookie-four-card-upgrade-passed-2026-09-26) | Four exact original upgrades, retained unselected cards/inventory and map return passed at 7/7/7 | Console-forced option; fixed-four selection and confirmation, not natural Ancient entry or other upgrade counts |
 | [Neow/Neow’s Bones](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neows-bones-compound-rewards-passed) | Large Capsule’s Toxic Egg/Whetstone and Strike/Defend+ additions, Lost Coffer’s nested Sacrifice granting Regal Pillow, final Decay and map return passed at 7/7/7 | Full belt left the potion reward unclaimed. Other generated relics, selectors, offers and potion-procurement branches remain separate evidence limits; natural entry was not tested |
 | [Neow’s Bones / Hefty Tablet + Kaleidoscope](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#neow-compound-previews-offer-passed-removal-stopped-2026-09-27) | Offer, two nested card rewards, final curse and map return settled at 9/9/9 | Seeded Custom Mode with no modifiers and console-prepared Bones; helper expected the wrong branch. Separate prior Scroll Boxes → Precise Scissors failure remains 5/5/3 under its original package |
@@ -80,7 +81,7 @@ to its original release. These remain representative evidence for the named path
 | Potion Courier: Grab Potions | Three exact Foul Potion collections, map | Earlier singleton Ransack evidence also exists |
 | Brain Leech: Rip | One ordinary card reward chosen, map | Singleton Skip/dismiss remains offline evidence |
 | Colorful Philosophers: Necrobinder | Three menus choose/Skip/choose, final dismissal, map | Not every set size or outcome |
-| Wood Carvings: Bird | Original-card preview, journal-verified transform, map | Peck separately confirmed by user; Torus untested live |
+| Wood Carvings: Bird | Original-card preview, journal-verified transform, map | Peck separately confirmed by user; the later full-producer Torus case is separate above |
 | Neow/Lost Coffer | Potion→card choose and Skip/dismiss paths, map | Construction order is not authoritative screen order |
 | Orobas/Sea Glass | Zero, three and fifteen selected additions, map | One optional 15-card grid, not sequential children |
 | Tanx/Claws | Zero, three and six transforms, preview/Confirm, map | Zero is confirmation, not cancellation |
@@ -106,7 +107,7 @@ and [Potion Courier singleton](archive/phase-1/research/PHASE_1_GENERIC_EVENT_V6
 records retain their exact original scope.
 
 For untested caller candidates—including Endless Conveyor, Morphic Grove,
-Symbiote's transform branch, Whispering Hollow and Wood Carvings/Torus—use the
+Symbiote's transform branch and Whispering Hollow—use the
 [static research map](EVENT_INTERACTION_MAP.md). Its 68 types/105 branch groups
 are a source census, not a count of supported events, reachable events or remaining
 features. Keep future attempt chronology in the dated evidence ledger.
