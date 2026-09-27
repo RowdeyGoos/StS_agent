@@ -4,6 +4,7 @@
   <Compile Include="../native/FullNativeBackend.cs" />
   <Compile Include="../native/FullNativeEventParent.cs" />
   <Compile Include="../runtime/FullAgentContracts.cs" /><Compile Include="../runtime/FullPublicGraph.cs" />
+  <Compile Include="../runtime/FullAgentSession.cs" />
   <Compile Include="../runtime/CampaignContracts.cs" /><Compile Include="../runtime/CombatPotionContracts.cs" />
   <Compile Include="../../../components/cards/combat/CombatCardChoiceService.cs" />
   <Compile Include="../../../components/events/diagnostics/GenericEventDiagnosticCode.cs" />

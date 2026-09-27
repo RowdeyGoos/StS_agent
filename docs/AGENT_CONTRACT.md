@@ -511,6 +511,11 @@ Terminal event reads additionally preserve the existing bounded ownership or
 capture reason as `read_native_event_*`; unmapped event reasons become
 `read_native_event_diagnostic_unavailable`. This refines failure reporting without
 changing action semantics, response fields, counts, or the stopped state.
+Full-rest capacity failures use `read_native_rest_deck_capacity` or
+`read_native_rest_clone_capacity`. A completed rest/shop owner returns its
+verified receipts before reading the next surface, so a later unsupported screen
+does not strand already reconciled work. Failed native cleanup still prevents
+completion credit.
 
 The transport admits up to 2 MiB only on these two routes, at most 2,048 candidate
 slots, 8,192 action attempts and 131,072 reads. Existing controller limits also
@@ -536,13 +541,13 @@ private. Revealed Sphere cells retain their visible rarity/gold-size variant.
 | Combat card choices | `combat_card_choice_v4`: discard, exhaust, draw, hand selection, mandatory and optional offers; exact native selection task and parent ownership | At most 64 cards and 256 selection inputs; native selectors outside these families remain unsupported |
 | Potions | `potions_v2`: pinned native combat/AnyTime use, exact targets, potion-owned selectors, native generation/automatic-consumption effects, and general discard including automatic-only potions | Outside-combat actions require an actionable foreground map; eight slots and six living targets. Automatic-only potions never advertise manual use |
 | Rewards | `reward_v3`: existing 32-row terminal rewards plus visible native reroll/sacrifice controls, exact card/item/special-card claims, and certified automatic relic pickup effects | Arbitrary nested relic pickups and multiple independent selectors remain outside the certified effect families |
-| Rest | `rest_v4`: native options, Smith/Cook toggles/confirmation/cancel, Heal rewards with shared reward alternatives, and separately reconciled Leave; supported pickup choices use `relic_choice` | Existing reward/pickup bounds remain; no multiplayer Mend |
+| Rest | `rest_v4`: native options, Smith/Cook toggles/confirmation/cancel, Heal rewards with shared reward alternatives, and separately reconciled Leave; supported pickup choices use `relic_choice` | 128 starting-deck cards and selector originals; Clone's predicted result must fit 128 before any input. Legacy v2/v3 retain 64 starting cards. Other reward/pickup bounds remain; no multiplayer Mend |
 | Shop | `shop_v8`: Open/Close/Leave, stock/prices, purchases, removal confirmation/cancel, existing pickup selectors, certified automatic relic effects, and Cauldron/Orrery reward decisions | Eight purchases per visit; arbitrary pickup callbacks remain unsupported. Every nested reward receipt precedes the purchase receipt |
 | Events/Ancients | Existing children plus `full_rewards_v1` shared rewards and a Neow’s Bones `full_rewards_v2` compound child: nested reward sets, offers/bundles, deck choices, observed pickup effects, nested Sacrifice and the final curse; combat and owned item resumption | Eight rows per reward set, at most five compound sets and 40 child inputs within the 52-total-action event budget. Arbitrary nested pickup/selector callbacks remain unsupported. Controlled Large Capsule/Lost Coffer, nested Sacrifice and final curse passed through map return at 7/7/7; other compound branches remain fixture evidence |
 | Treasure/ending | `campaign_v3`: native chest Open, offered relic Claim or Skip, separate Proceed, and certified empty-chest completion; existing act/Architect continuation | Native Open/award/picking tasks must finish before handoff. Chest claiming and Silver Crucible’s empty-chest Open/Proceed are live demonstrated; broader pickup effects and the v2 ending need live validation |
 
 The shared deck-choice driver used by shop, rest and compound pickups retains
-its full eligible domain (at most 64 originals) independently of native grid
+its full eligible domain (128 originals for full rest, 64 for other callers) independently of native grid
 allocation. Only an explicit selection/deselection request can navigate toward an
 unallocated original. It pins display order and the holder/card-node/hitbox pool,
 permits recycling only under that pending navigation, validates the complete
@@ -550,8 +555,13 @@ native selected set, then stops motion and rechecks the exact card before input.
 A page allows 128 reads; a semantic request allows 64 pages within the existing
 256 native-input budget. Settled scrolling may finish native presentation
 allocation before rebinding. Hidden padding holders never become candidates.
-This released correction has fixture evidence; large-deck live recovery remains
-pending. It does not broaden the separate generic-event selector adapters.
+Native allocation can alternate adjacent windows at a settled page. A repeated
+validated window ends that page's allocation work and permits continued bounded
+navigation toward the same requested original; it is never a selection receipt.
+The released correction passed a 32-card Cook retest: public deck positions 0/31,
+deselection/reselection, exact removal and map return at 7/7/7. Exact live holder
+allocation and frame timing were not sampled; larger bounds retain fixture
+evidence. Separate generic-event selector adapters keep their existing scope.
 
 The Neow compound child retains exact native offer, collection, pickup and
 card-command tasks under one event owner. `full_rewards_v2` adds `card_offer`,

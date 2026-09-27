@@ -33,7 +33,9 @@ namespace Sts2AgentBridge.Unified {
   private JsonObject Combat(JsonElement wire){Command(_router.Potion?"potion":"combat",Text(wire,"decision_id")!,_router.Discard?"discard:0":"end_turn",_router.Discard?"discard_potion":"end_turn");return Node("combat");}
   private JsonObject Selection(JsonElement wire){Command("choice",Text(wire,"decision_id")!,"select:0","select_card");return Node("combat");}
   private JsonObject Rewards(JsonElement wire)=>throw new AgentUnsupported();private JsonObject Map(JsonElement wire)=>throw new AgentUnsupported();
-  private JsonObject Rest(JsonElement wire)=>throw new AgentUnsupported();private JsonObject Shop(JsonElement wire)=>throw new AgentUnsupported();private JsonObject Navigation(JsonElement wire)=>throw new AgentUnsupported();
+  private JsonObject Rest(JsonElement wire){Command("rest",Text(wire,"decision_id")!,"option:clone","use_rest_relic");return Node("rest");}
+  private JsonObject Shop(JsonElement wire){Command("shop",Text(wire,"decision_id")!,"close","close_shop");return Node("shop");}
+  private JsonObject Navigation(JsonElement wire)=>throw new AgentUnsupported();
  }
  internal sealed class DelayedChoice:ICombatCardChoiceAdapter {
   internal int Captures,Inputs;private readonly object _card=new(),_holder=new();internal bool Done;
@@ -44,9 +46,18 @@ namespace Sts2AgentBridge.Unified {
  internal sealed partial class BridgeRouter {
   internal readonly bool Potion,Discard;internal readonly CombatCardChoiceService Choice;internal readonly DelayedChoice Adapter=new();
   internal int ParentPosts,ParentReadsWhileChildOwned;private bool _started;
+  internal string? RoomFamily; internal bool FailRoomCompletion;
+  internal int NavigationReads; private bool _roomCompleted;
   internal BridgeRouter(bool potion,bool discard=false){Potion=potion;Discard=discard;Choice=new(()=>Adapter.Done?null:Adapter,"coordinator");}
   private static ModuleReply Json(object value)=>new(JsonSerializer.SerializeToUtf8Bytes(value));
   internal ModuleReply Dispatch(BridgeRequest r){
+   if(RoomFamily is not null){
+    if(r.Path==CampaignRoutes.FullDecision){NavigationReads++;return _roomCompleted?new("{}"u8.ToArray(),Terminal:true):Json(new{status="ready",surface=RoomFamily});}
+    string action=RoomFamily=="rest"?"option:clone":"close";
+    if(r.IsPost){ParentPosts++;_roomCompleted=true;return Json(new{status="accepted",decision_id=r.Decision,action_id=r.Action});}
+    if(_roomCompleted&&FailRoomCompletion)return new("{}"u8.ToArray(),Terminal:true);
+    return Json(new{status=_roomCompleted?"complete":"ready",decision_id="room",completed=_roomCompleted?new[]{new{decision_id="room",action_id=action,result="reconciled"}}:Array.Empty<object>()});
+   }
    if(EventWire is not null)return DispatchEvent(r);
    if(r.Path==CampaignRoutes.FullDecision)return Json(new{status="ready",surface="combat"});
    if(r.Path is CombatCardChoiceService.DecisionRouteV4 or CombatCardChoiceService.ActionRouteV4){var reply=r.IsPost?Choice.Apply(r.Decision!,r.Action!,4):Choice.Read(4);return new(reply.Body,reply.Terminal);}

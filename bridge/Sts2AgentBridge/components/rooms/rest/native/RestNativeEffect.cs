@@ -40,6 +40,7 @@ internal sealed class RestNativeEffect : IDisposable
     private readonly NOverlayStack _overlays;
     private readonly Func<bool> _context;
     private readonly bool _interactive;
+    private readonly int _maximumDeckCards;
     private readonly Func<PinnedPublicRewardParentTarget,NCardRewardSelectionScreen,IPinnedRewardAlternatives>? _alternatives;
     private readonly Func<Player,IPinnedRewardInventory>? _inventory;
     private CardModel[] _chosen = Array.Empty<CardModel>();
@@ -54,8 +55,10 @@ internal sealed class RestNativeEffect : IDisposable
     private readonly List<Task<CardPileAddResult>> _insertions = new();
 
     internal RestNativeEffect(RestSiteOption option, string action, RestNativeState before, NOverlayStack overlays, Func<bool> context, bool interactive = false,
-        Func<PinnedPublicRewardParentTarget,NCardRewardSelectionScreen,IPinnedRewardAlternatives>? alternatives=null,Func<Player,IPinnedRewardInventory>? inventory=null)
-    { _interactive = interactive; _option = option; _action = action; _before = before; _player = before.Player; _overlays = overlays; _context = context; _alternatives=alternatives;_inventory=inventory; }
+        Func<PinnedPublicRewardParentTarget,NCardRewardSelectionScreen,IPinnedRewardAlternatives>? alternatives=null,Func<Player,IPinnedRewardInventory>? inventory=null,
+        int maximumDeckCards = 64)
+    { Require(maximumDeckCards is 64 or 128 && (interactive || maximumDeckCards == 64)); _maximumDeckCards = maximumDeckCards;
+        _interactive = interactive; _option = option; _action = action; _before = before; _player = before.Player; _overlays = overlays; _context = context; _alternatives=alternatives;_inventory=inventory; }
     private void Require([System.Diagnostics.CodeAnalysis.DoesNotReturnIf(false)] bool value) { if (!value) { _failed = true; throw new InvalidOperationException("rest_effect_boundary"); } }
     private bool Context() => !_failed && !_disposed && System.Environment.CurrentManagedThreadId == _thread &&
         ReferenceEquals(Active, this) && ReferenceEquals(_player.RunState, _before.RunState) && _context();
@@ -170,7 +173,7 @@ internal sealed class RestNativeEffect : IDisposable
     private bool _cancelable;
     private void Screen(IReadOnlyList<CardModel> cards, CardSelectorPrefs prefs, EnchantmentModel? enchantment, int amount)
     {
-        Require(Context() && _entered && !_screenSeen && _choice is null && cards.Count is >= 1 and <= 64 &&
+        Require(Context() && _entered && !_screenSeen && _choice is null && cards.Count >= 1 && cards.Count <= _maximumDeckCards &&
             prefs.MinSelect >= 0 && prefs.MaxSelect is >= 1 and <= 3 && prefs.MinSelect <= prefs.MaxSelect && _overlays.ScreenCount == 0);
         _selectorBefore = new(_player);
         _domain = cards.ToArray();
@@ -205,7 +208,7 @@ internal sealed class RestNativeEffect : IDisposable
         s.Require(s._screenSeen && s._choice is null && __result is not null);
         Func<bool> context = () => s.Context() && (s._choice?.ConfirmationDispatched == true || s._selectorBefore!.Equals(new RestNativeState(s._player)));
         s._choice = s._interactive
-            ? new(__result, s._overlays, s._domain, context, s._enchantment, s._amount, s._minimum, s._maximum, s._cancelable, s._action == "smith")
+            ? new(__result, s._overlays, s._domain, context, s._enchantment, s._amount, s._minimum, s._maximum, s._cancelable, s._action == "smith", maximumDomain: s._maximumDeckCards)
             : new(__result, s._overlays, s._domain, s._chosen, context, s._enchantment, s._amount, s._maximum);
     }
     internal void Advance()

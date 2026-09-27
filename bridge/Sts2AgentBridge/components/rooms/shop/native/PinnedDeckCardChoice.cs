@@ -30,7 +30,7 @@ internal sealed class PinnedDeckCardChoice
     private readonly CardModel[] _domain;
     private readonly Func<bool> _context;
     private readonly EnchantmentModel? _enchantment;
-    private readonly int _amount, _minimum, _maximum;
+    private readonly int _amount, _minimum, _maximum, _maximumDomain;
     private readonly bool _interactive, _cancelable, _upgrade, _transform;
     private readonly Task<IEnumerable<CardModel>> _selection;
     private NCardGrid? _grid;
@@ -44,6 +44,7 @@ internal sealed class PinnedDeckCardChoice
     private float _scrollDestination;
     private int _scrollReads, _scrollPages;
     private bool _scrollAllocationDrained;
+    private readonly HashSet<CardModel> _scrollWindows = new(ReferenceEqualityComparer.Instance);
     private Control? _container, _preview;
     private NConfirmButton? _confirm, _openPreview;
     private NBackButton? _back, _previewBack;
@@ -73,21 +74,22 @@ internal sealed class PinnedDeckCardChoice
 
     internal PinnedDeckCardChoice(Control screen, NOverlayStack overlays, IReadOnlyList<CardModel> domain,
         Func<bool> context, EnchantmentModel? enchantment, int amount, int minimum, int maximum, bool cancelable, bool upgrade = false,
-        IReadOnlyList<Control>? ancestors = null, bool transform = false)
-        : this(screen, overlays, domain, context, enchantment, amount, minimum, maximum, cancelable, true, upgrade, ancestors, transform) { }
+        IReadOnlyList<Control>? ancestors = null, bool transform = false, int maximumDomain = 64)
+        : this(screen, overlays, domain, context, enchantment, amount, minimum, maximum, cancelable, true, upgrade, ancestors, transform, maximumDomain) { }
 
     private PinnedDeckCardChoice(Control screen, NOverlayStack overlays, IReadOnlyList<CardModel> domain,
         Func<bool> context, EnchantmentModel? enchantment, int amount, int minimum, int maximum, bool cancelable, bool interactive, bool upgrade = false,
-        IReadOnlyList<Control>? ancestors = null, bool transform = false)
+        IReadOnlyList<Control>? ancestors = null, bool transform = false, int maximumDomain = 64)
     {
         _screen = screen; _overlays = overlays; _domain = domain.ToArray(); _context = context;
         _ancestors = new(overlays, ancestors);
         _enchantment = enchantment; _amount = amount; _minimum = minimum; _maximum = maximum;
+        Require(maximumDomain is 64 or 128 && (interactive || maximumDomain == 64)); _maximumDomain = maximumDomain;
         _cancelable = cancelable; _interactive = interactive; _upgrade = upgrade; _transform = transform;
         Require(!transform || !upgrade && enchantment is null);
         Require(screen.GetType() == (transform ? typeof(NDeckTransformSelectScreen) : upgrade ? typeof(NDeckUpgradeSelectScreen) : enchantment is null ? typeof(NDeckCardSelectScreen) : typeof(NDeckEnchantSelectScreen)));
         _selection = (Task<IEnumerable<CardModel>>)screen.GetType().GetMethod("CardsSelected", Type.EmptyTypes)!.Invoke(screen, null)!;
-        Require(!_selection.IsCompleted && _domain.Length is >= 1 and <= 64 && _domain.Distinct(ReferenceEqualityComparer.Instance).Count() == _domain.Length &&
+        Require(!_selection.IsCompleted && _domain.Length >= 1 && _domain.Length <= _maximumDomain && _domain.Distinct(ReferenceEqualityComparer.Instance).Count() == _domain.Length &&
             minimum >= 0 && minimum <= maximum && maximum is >= 1 and <= 3 && (!upgrade || maximum == 1));
     }
 
@@ -249,6 +251,11 @@ internal sealed class PinnedDeckCardChoice
             Require(float.IsFinite(current) && Field(grid, "_targetDrag") is float target && target == _scrollDestination);
             bool allocated = holders.Any(h => h.Visible && ReferenceEquals(h.CardModel, _scrollTarget));
             if (!allocated && Math.Abs(current - _scrollDestination) > 0.1f) return false;
+            // Native top/bottom viewport predicates can alternate adjacent
+            // windows at a settled page. The ordered window was just validated;
+            // a repeated first original ends this page's presentation drain,
+            // allowing the same explicit request to continue its bounded pan.
+            if (!allocated && !_scrollWindows.Add(holders.First(h => h.Visible).CardModel!)) _scrollAllocationDrained = true;
             if (!allocated && !_scrollAllocationDrained)
             {
                 // UpdateScrollPosition allocates at the old position, then
@@ -288,8 +295,8 @@ internal sealed class PinnedDeckCardChoice
     private CardModel[] GridCards(NCardGrid grid)
     {
         Require(Field(grid, "_cards") is IEnumerable<CardModel>);
-        var cards = ((IEnumerable<CardModel>)Field(grid, "_cards")!).Take(65).ToArray();
-        Require(cards.Length is >= 1 and <= 64 && cards.Distinct(ReferenceEqualityComparer.Instance).Count() == cards.Length);
+        var cards = ((IEnumerable<CardModel>)Field(grid, "_cards")!).Take(_maximumDomain + 1).ToArray();
+        Require(cards.Length >= 1 && cards.Length <= _maximumDomain && cards.Distinct(ReferenceEqualityComparer.Instance).Count() == cards.Length);
         return cards;
     }
     private void CheckWindow(NGridCardHolder[] holders)
@@ -317,7 +324,7 @@ internal sealed class PinnedDeckCardChoice
         Require(float.IsFinite(current) && float.IsFinite(height) && height > 0 && float.IsFinite(top) && float.IsFinite(bottom));
         _scrollDestination = Math.Clamp(current + (index < allocated[0] ? height : -height), Math.Min(top, bottom), Math.Max(top, bottom));
         Require(Math.Abs(_scrollDestination - current) > 0.1f);
-        _scrollTarget = card; _scrollReads = 0; _scrollAllocationDrained = false;
+        _scrollTarget = card; _scrollReads = 0; _scrollAllocationDrained = false; _scrollWindows.Clear();
         // Pan input changes the native target; _Process performs allocation.
         // SetScrollPosition alone changes position without allocating any rows.
         using var gesture = new InputEventPanGesture { Delta = new Vector2(0, (current - _scrollDestination) / 50f) };

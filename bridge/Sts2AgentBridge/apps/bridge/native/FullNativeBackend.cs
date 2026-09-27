@@ -98,7 +98,10 @@ internal sealed partial class FullNativeBackend : IFullAgentBackend
                     Require(Text(row, "result") is "reconciled" or "cancelled");
                     Settle(Request(family, true, Text(row, "decision_id"), Text(row, "action_id")));
                 }
-                if (status == "complete") { _family = "navigation"; continue; }
+                // Deliver certified receipts before touching a successor
+                // surface that may be unsupported. Cleanup already succeeded
+                // in the room owner; a later read cannot revoke completion.
+                if (status == "complete") { _family = "navigation"; return Waiting(); }
                 Require(status is "ready" or "waiting");
                 return status == "waiting" ? Waiting() : Ready(family, wire);
             }

@@ -133,7 +133,7 @@ namespace Sts2AgentBridge.Successors.RoomFlowsV1.Shop.Native
         internal bool Completed => (ConfirmationDispatched || CancellationDispatched) && _screen.Selected.Task.IsCompletedSuccessfully && _screen.Selected.Task.Result.SequenceEqual(CancellationDispatched ? Array.Empty<CardModel>() : _chosen);
         internal PinnedDeckCardChoice(Control screen, NOverlayStack overlays, IReadOnlyList<CardModel> domain, CardModel[] chosen, Func<bool> context, EnchantmentModel? enchantment, int amount, int maximum)
         { _screen = (NDeckCardSelectScreen)screen; _overlays = overlays; _chosen = chosen; _domain = domain.ToArray(); _context = context; _maximum = maximum; }
-        internal PinnedDeckCardChoice(Control screen, NOverlayStack overlays, IReadOnlyList<CardModel> domain, Func<bool> context, EnchantmentModel? enchantment, int amount, int minimum, int maximum, bool cancelable, bool upgrade)
+        internal PinnedDeckCardChoice(Control screen, NOverlayStack overlays, IReadOnlyList<CardModel> domain, Func<bool> context, EnchantmentModel? enchantment, int amount, int minimum, int maximum, bool cancelable, bool upgrade, int maximumDomain = 64)
         { _screen = (NDeckCardSelectScreen)screen; _overlays = overlays; _domain = domain.ToArray(); _context = context; _minimum = minimum; _maximum = maximum; _cancelable = cancelable; _interactive = true; }
         internal void Advance()
         {

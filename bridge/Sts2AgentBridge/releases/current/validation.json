@@ -1,9 +1,70 @@
 {
-  "additional_live_tests": [],
+  "additional_live_tests": [
+    {
+      "accepted": 7,
+      "actionable_map": true,
+      "after": {
+        "deck_count": 30,
+        "gold": 726,
+        "hp": 2081,
+        "max_hp": 2081,
+        "potion_capacity": 5,
+        "potion_count": 5,
+        "relic_count": 35
+      },
+      "attempted": 7,
+      "before": {
+        "deck_count": 32,
+        "gold": 726,
+        "hp": 2072,
+        "max_hp": 2072
+      },
+      "case": "large_deck_cook",
+      "completed_by_utc": "2026-09-27 09:43:26 UTC",
+      "controller_reads": 48,
+      "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#large-deck-cook-retest-passed-2026-09-27",
+      "limit": "No exact live holder allocation count or scrolling sequence sampled; earlier failures remain unreconciled.",
+      "pending": false,
+      "preflight_public_reads": 1,
+      "reconciled": 7,
+      "recorded_live_corpus": false,
+      "release_manifest_sha256": "fed09e937f44d54c52064b0a9c0adc09a03bcfd7ca21bbd3a805277b4151da37",
+      "removed_cards": [
+        {
+          "id": "blood_wall",
+          "upgrade_level": 1
+        },
+        {
+          "id": "stomp",
+          "upgrade_level": 0
+        }
+      ],
+      "selected_public_deck_positions": [
+        0,
+        31
+      ],
+      "setup": "Manual Profile 3 Continue restored a 32-card deck, confirmed by HUD/public read. Exact helper premise adjusted before any action and eleven offline cases passed. No setup mutation or new campaign.",
+      "source_commit": "327e7dad258f30dc2a60bf65549cf38d157bfc07",
+      "stale_rejections": 0,
+      "status": "passed",
+      "target_game_executed": true,
+      "unchanged_other_inventory": true,
+      "verification_reads": 1
+    }
+  ],
   "change": "Preserve the full eligible deck-choice domain while native NCardGrid virtualizes holders. Navigate only toward an explicitly requested original, retain and validate the exact pool and native selected set, finish presentation allocation after snapping frames, stop scrolling before one-shot selection, and ignore hidden padding. Shared shop/rest/compound pickup callers use the correction; separate generic-event selectors retain their bounds.",
   "cleanup": {
-    "note": "Corrected package is installed awaiting a manual launch. Prior artifact cleanup is dated separately under previous_release.latest_live.cleanup.",
-    "status": "not_yet_run"
+    "base_file_count": 429,
+    "base_sha256": "d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0",
+    "completed_by_utc": "2026-09-27 09:49:02 UTC",
+    "game_process_running": false,
+    "installation_absent": true,
+    "listener_open": false,
+    "note": "Cleanup does not reconcile the pending live action.",
+    "overlay_files": 0,
+    "quarantine_state_sha256": "3444072dac814175cbeac7e6712ddf5153cb31bf5f2dad7c4accde9b44dd99a5",
+    "removed_generated_files": 4,
+    "status": "passed"
   },
   "elapsed_times": {
     "focused_seconds": 4.26,
@@ -490,15 +551,56 @@
     "verified_by_utc": "2026-09-26 18:11:04 UTC"
   },
   "live": {
-    "note": "Large-deck Cook recovery is not yet demonstrated on this corrected package.",
+    "accepted": 234,
+    "action_delta": [
+      229,
+      227,
+      226
+    ],
+    "architect_observed": false,
+    "attempted": 236,
+    "case": "full_shared_v2_assisted_continuation",
+    "code": "read_native_failed",
+    "completed_by_utc": "2026-09-27 09:47:15 UTC",
+    "controller_reads": 2685,
+    "decisions": 227,
+    "initial_counts": [
+      7,
+      7,
+      7
+    ],
+    "last_public": {
+      "act": 2,
+      "context": "rest",
+      "floor": 79,
+      "gold": 1142,
+      "hp": 2126,
+      "max_hp": 2126
+    },
+    "last_semantic_action_recorded": false,
+    "ledger": "docs/evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#shared-v2-act-2-rest-handoff-stop-2026-09-27",
+    "note": "Cook passed separately. Continued assisted saved campaign crossed Act1 to Act2 without manual gameplay intervention after attachment. Final rest action not retained; Clone is source-consistent, not directly observed. No uncertain action retried.",
+    "observed_act_sequence": [
+      1,
+      2
+    ],
+    "pending": true,
+    "policy": "unchanged_game.agent.full_policy.choose_action",
+    "preflight_public_reads": 1,
+    "reconciled": 233,
     "recorded_live_corpus": false,
     "release_manifest_sha256": "fed09e937f44d54c52064b0a9c0adc09a03bcfd7ca21bbd3a805277b4151da37",
-    "status": "not_run",
-    "target_game_executed": false
+    "route_acceptance_passed": false,
+    "source_commit": "327e7dad258f30dc2a60bf65549cf38d157bfc07",
+    "stale_rejections": 2,
+    "status": "failed",
+    "target_game_executed": true,
+    "uninterrupted_fresh_campaign": false,
+    "visual_deck_count": 86
   },
   "next_live_test": {
     "acceptance": "Continue the unchanged common policy from the settled map through Act 2, Act 3 and the Architect to a reconciled native victory. Record initial counts, action delta and resumed-run scope; do not label a continued campaign as fresh and uninterrupted.",
-    "blocking_case": "large_deck_cook",
+    "blocking_case": "large_deck_rest_handoff",
     "deferred_conditional_case": "Trial Merchant/Innocent requires a different campaign seed.",
     "first_acceptance": "Expose the complete eligible Cook domain, choose original cards at both ends of its order including one outside the initial allocation, deselect/reselect, confirm exact two-card removal/+9 HP and max HP, preserve other inventory and return to an actionable map with settled counts.",
     "helper": "Disposable rest-cook-large and continue-route modes use existing LiveAdapter/run_agent and public observations. Seven-action/60-second Cook test; unchanged common policy continuation uses existing 8192-decision/90-minute bounds. No live corpus or new transport.",
@@ -510,8 +612,8 @@
       "status": "passed"
     },
     "new_campaign_required": false,
-    "premise": "Continue the saved campaign in a fresh manual Profile 3 process. Inspect the restored rest room, 33-card deck and assistance before any policy action; no act reset planned.",
-    "status": "installed_awaiting_manual_profile3_launch",
+    "premise": "Saved campaign reached Act2 floor79, visible86-card deck, empty rest options and Proceed. Stopped and cleaned up; corrected package required before manual restart.",
+    "status": "blocked_on_rest_handoff_correction",
     "targets": [
       "large_deck_cook",
       "full_shared_v2_act_transitions_and_ending"
@@ -667,7 +769,7 @@
   },
   "release_manifest_sha256": "fed09e937f44d54c52064b0a9c0adc09a03bcfd7ca21bbd3a805277b4151da37",
   "remaining_limits": [
-    "Large-deck shared selectors have focused fixture/integration evidence; live Cook recovery remains pending.",
+    "Large-deck Cook passed7/7/7 on32 public cards. Exact native allocation/frame sequence not sampled. Later Act2 rest handoff failed with one pending action.",
     "The preceding 51/51/50 Cook stop and earlier 2/1/0 reward uncertainty remain unreconciled after cleanup. Neow reward recovery was observed within the later failed route, under its original package.",
     "Corrected non-compound Sacrifice, full shared-v2 act transitions/ending and named representative branches retain separate live limits. Generic-event unallocated-card input was not broadened."
   ],

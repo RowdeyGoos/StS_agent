@@ -106,6 +106,16 @@ internal static class FullAgentSessionTests
             session.Handle(new(Capability.Core, FullAgentRoutes.Action, true, 0, 0, new string('a', 64), "action:0"));
             check(backend.Reads == reads && backend.Posts == 0, "read failure remains stopped " + stage);
         }
+        foreach (string code in new[] { "rest_deck_capacity", "rest_clone_capacity", "private sentinel" })
+        {
+            var backend = new Backend(); using var session = new FullAgentSession(backend, "fixture");
+            var body = JsonSerializer.SerializeToUtf8Bytes(new { capability = "rest_v4", schema_version = 4, status = "unsupported", code });
+            backend.Change = _ => FullReadFailure.At(FullReadStage.Native, () => FullAgentWire.Read(new(body, Terminal: true)));
+            var stopped = Read(session);
+            check(stopped["code"]!.GetValue<string>() == (code == "private sentinel" ? "read_native_failed" : "read_native_" + code) &&
+                stopped["pending"]!.GetValue<int>() == 0 && backend.Posts == 0 && body.All(b => b == 0) &&
+                !stopped.ToJsonString().Contains("sentinel"), "closed rest capacity diagnostics stop before dispatch");
+        }
         foreach (var diagnostic in new[] { GenericEventDiagnosticCode.ParentTravel,
             GenericEventDiagnosticCode.CaptureException, (GenericEventDiagnosticCode)999 })
         {

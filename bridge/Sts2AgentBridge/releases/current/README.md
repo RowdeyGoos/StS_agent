@@ -43,9 +43,15 @@ The corrected package was installed and verified by **18:11:04 UTC** on
 2026-09-26, with two exact overlay files and all 429 base files unchanged.
 Installed state:
 `279151f568527c80cdd9f860dee982da7fa90000761f9858c34ce06c576602ca`.
-It awaits a manual Profile 3 launch to continue the saved campaign for a focused
-Cook selection/preview/removal retest, then the remaining shared-v2 act/ending
-route. No live recovery or completed campaign is claimed for this artifact.
+The saved Cook selection/preview/removal retest passed **7/7/7** on 2026-09-27,
+with exact Blood Wall+/Stomp removal from a publicly verified 32-card deck.
+The unchanged shared policy then crossed into Act 2 and stopped at an 86-card
+rest site: **236/234/233**, one pending action. The final action was not retained;
+source inspection found a 64/128-card rest boundary conflict and a successor
+read that could withhold an already verified receipt. No mutation was retried.
+Normal quit and exact cleanup passed by **09:49:02 UTC**, with four generated
+files purged, zero overlays and all 429 base files unchanged. No completed
+campaign is claimed, and cleanup does not reconcile the pending action.
 The disposable retest and continuation helpers passed eleven offline cases.
 
 The preceding release's exact record remains in Git `327e7da` and

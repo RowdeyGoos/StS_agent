@@ -1,9 +1,9 @@
 # Bridge support and status
 
-Updated 2026-09-26 for shared-producer shop, rest, treasure, Trial and Sphere
+Updated 2026-09-27 for shared-producer shop, rest, treasure, Trial and Sphere
 coverage; other capability review remains
 2026-09-19 against bridge source, pinned native game IL and retained evidence. Latest live
-session: **2026-09-26**. This is the authoritative summary of bridge support;
+session: **2026-09-27**. This is the authoritative summary of bridge support;
 [usage](../bridge/Sts2AgentBridge/README.md), [technical contracts](GENERIC_EVENTS.md),
 [caller evidence](EVENT_COVERAGE.md) and [priorities](../ROADMAP.md) have separate roles.
 
@@ -137,6 +137,14 @@ additional reward kinds remain outside this route. Representative cancellation a
 reward collection/Skip cases passed live; this is not the native `full_run_v2` producer.
 [Usage and contract](../bridge/Sts2AgentBridge/README.md#rest-options)
 
+Full-profile `rest_v4` now allows 128 starting-deck cards and selector originals,
+matching the shared run inventory. Clone's predictable result must fit that bound
+before any option is published or clicked; overflow stops explicitly without
+hiding native actions. Legacy v2/v3 keep their 64-card entry bound. Completed
+rest/shop receipts are returned before reading the successor surface. These
+corrections have focused regression evidence; the saved 86-card rest retest is
+still required.
+
 **Smith correction:** its constructor sets `SmithCount = 1`. An assembly-wide
 IL scan found no call to `set_SmithCount` and no other write to its backing field
 outside the constructor/property setter. The bridge’s `SmithCount != 1` guard
@@ -228,9 +236,23 @@ extend standalone rest/shop contracts.
   native holder to be allocated. The released correction preserves all public
   choices and performs bounded native scrolling/rebinding only for the requested
   original. Partial-grid and slow-frame regressions and all 85 release checks
-  pass; it is installed for the saved-run retest. Live recovery remains pending. Generic event selectors retain their allocated-holder boundary.
-  [Result and diagnosis](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#shared-v2-neow-recovery-and-large-deck-cook-stop-2026-09-26).
+  pass. The saved-run retest passed **7/7/7** on a publicly verified **32-card**
+  deck: public deck positions 0/31, deselection/reselection, exact Blood Wall+/Stomp
+  removal, +9 HP/max HP and map return. No exact live allocation count was sampled.
+  Generic event selectors retain their allocated-holder boundary.
+  [Retest](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#large-deck-cook-retest-passed-2026-09-27) and
+  [original failure](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#shared-v2-neow-recovery-and-large-deck-cook-stop-2026-09-26).
   Optional zero confirmation is contract-specific and is not native cancellation.
+- **Large-deck rest handoff:** after the successful Cook retest, the unchanged
+  shared policy reached Act 2 floor 79 and stopped with an 86-card deck and
+  **236/234/233**, one pending action. Only Proceed was visible. A regression
+  reproduced the conflicting 64-card entry/128-card effect limits; the
+  coordinator also withheld a verified receipt until the successor read.
+  Both corrections are implemented with pre-input capacity guards and focused
+  tests. The original final action was not logged, so Clone is a
+  source-consistent explanation, not an observed final action. Normal quit and
+  exact cleanup passed; the new recovery test remains open.
+  [Result and diagnosis](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#shared-v2-act-2-rest-handoff-stop-2026-09-27).
 - **Single-card shop enchant preview:** Punch Dagger stopped after purchase and
   selection at **2/2/0**, before confirmation. The pinned preview queues old scene
   children for deletion until frame end; a matching fixture reproduced the
@@ -311,7 +333,7 @@ These are **not an implementation queue or required live-test checklist**:
 - Variable-count upgrades, enchantment stacking/replacement, and generic-event
   unallocated-card input: retained contract limits, without a concrete necessary
   caller/setup. The shared Cook large-deck failure is a separate confirmed defect
-  with a released correction awaiting live acceptance.
+  with a released correction and a successful 32-card saved-run retest.
 - Resume-time card/selector reward screens and multi-item/relic reward screens:
   no concrete Resume caller identified. Dummy Setting1 offers one potion, Setting2
   upgrades automatically, and Setting3 obtains a relic directly. Resume-time
@@ -385,11 +407,12 @@ correction. The final gate passed **85 groups in 369.018 seconds**, including
 168 client tests, 1,639 router checks, 229 event wire cases, 16,972 native event
 checks and 656 rest checks. All 102 bound Python files match the preceding release.
 
-The package was installed and verified by **2026-09-26 18:11:04 UTC**, with two
-exact overlay files and all 429 base files unchanged. It awaits a manual Profile 3
-launch for the saved campaign's large Cook selector retest, then the remaining
-shared-v2 act/ending route. Eleven offline helper cases passed. No live recovery
-is yet claimed for this artifact; earlier evidence retains its original bindings.
+The package passed the saved Cook retest at **7/7/7** on 2026-09-27. The subsequent
+unchanged-policy route crossed into Act 2, then stopped at a large-deck rest site
+with **236/234/233** and one pending action. Normal quit and exact cleanup passed
+by **09:49:02 UTC**: zero overlays, all 429 base files unchanged. The rest-handoff
+correction is being prepared as a new release; earlier evidence keeps its original
+bindings, and cleanup does not reconcile the pending action.
 
 The [preceding route](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#shared-v2-neow-recovery-and-large-deck-cook-stop-2026-09-26)
 under manifest `e8cfb4c7` recovered Neow's reward and event/map return, then

@@ -30,6 +30,7 @@ FULL_FAILURE_CODES = frozenset({
     'agent_stopped', 'unsupported_public_surface', 'agent_boundary_failed', 'read_limit',
     'unowned_completion', 'incomplete_run', 'invalid_public_graph', 'candidate_binding',
     'invalid_action', 'action_limit', 'duplicate_native_action', 'uncertain_dispatch', 'public_capacity',
+    'read_native_rest_deck_capacity', 'read_native_rest_clone_capacity',
     *(f'read_{stage}_failed' for stage in ('native', 'run', 'deck', 'relics', 'potions', 'map', 'context', 'graph')),
     *(f'read_native_event_{reason}' for reason in (
         'none', 'parent_ready', 'parent_unavailable', 'parent_waiting', 'parent_map',

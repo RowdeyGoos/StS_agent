@@ -68,6 +68,8 @@ internal static partial class Program
     }
     private static void InteractiveWireCases()
     {
+        LargeRestHandoff();
+        FullRestCapacityCases();
         RestLeaveCases();
         using (var f = new Fixture("heal", interactive: true))
         {
@@ -159,6 +161,91 @@ internal static partial class Program
             session.Handle(true, id, "option:smith"); Check(f.Button.Clicks == (mode == "lost" ? 1 : 0), "no retry after failure");
             bool cleanupFailed = false; try { session.Dispose(); } catch (InvalidOperationException) { cleanupFailed = true; }
             Check(cleanupFailed == (mode == "lost"), "cleanup cannot hide uncertain dispatch");
+        }
+    }
+
+    private static void LargeRestHandoff()
+    {
+        using var f = new Fixture("clone", interactive: true);
+        var player = f.Room.Characters[0].Player;
+        player.Deck.Cards.Clear();
+        for (int i = 0; i < 54; i++) AddCard(player, clone: i < 32);
+        using (var option = new RestInteractiveSession(Nonce, leave: new RestLeaveFixture()))
+        {
+            InteractiveApply(option, InteractiveRead(option), "option:clone");
+            f.Room.Options.Clear(); f.Room.Buttons.Clear(); f.Room.Completion.SetResult();
+            var done = InteractiveRead(option);
+            Check(done["status"]!.GetValue<string>() == "complete" && done["completed"]!.AsArray().Count == 1 &&
+                player.Deck.Cards.Count == 86, "Clone completes exactly before regenerated large rest");
+        }
+        var leave = new RestLeaveFixture();
+        using var next = new RestInteractiveSession(Nonce, leave: leave);
+        var ready = InteractiveRead(next);
+        Check(ready["status"]!.GetValue<string>() == "ready" && ready["cards"]!.AsArray().Count == 86 &&
+            ready["legal_actions"]!.AsArray().Single()!.GetValue<string>() == "leave",
+            "regenerated 86-card rest exposes native Proceed");
+        InteractiveApply(next, ready, "leave"); leave.Complete = true;
+        Check(InteractiveRead(next)["status"]!.GetValue<string>() == "complete" && leave.Inputs == 1 && f.Button.Clicks == 1,
+            "large rest handoff leaves once without replaying Clone");
+    }
+
+    private static void FullRestCapacityCases()
+    {
+        foreach (var (full, count, supported) in new[] { (false, 64, true), (false, 65, false), (true, 128, true), (true, 129, false) })
+        {
+            using var f = new Fixture("lift", interactive: true);
+            var player = f.Room.Characters[0].Player;
+            for (int i = 0; i < count; i++) AddCard(player);
+            using var session = new RestInteractiveSession(Nonce, leave: full ? new RestLeaveFixture() : null);
+            var view = InteractiveRead(session);
+            Check(view["status"]!.GetValue<string>() == (supported ? "ready" : "unsupported") && f.Button.Clicks == 0,
+                "rest profile retains explicit starting-deck capacity");
+            if (full && !supported) Check(view["code"]!.GetValue<string>() == "rest_deck_capacity", "closed deck capacity diagnostic");
+        }
+        foreach (string mode in new[] { "boundary", "overflow", "changed" })
+        {
+            using var f = new Fixture("clone", interactive: true);
+            var player = f.Room.Characters[0].Player; player.Deck.Cards.Clear();
+            for (int i = 0; i < 86; i++) AddCard(player, clone: i < (mode == "overflow" ? 43 : 42));
+            using var session = new RestInteractiveSession(Nonce, leave: new RestLeaveFixture());
+            var ready = InteractiveRead(session);
+            if (mode == "overflow")
+            {
+                Check(ready["status"]!.GetValue<string>() == "unsupported" && ready["code"]!.GetValue<string>() == "rest_clone_capacity" &&
+                    f.Button.Clicks == 0 && player.Deck.Cards.Count == 86, "predictable 129-card Clone stops before any input");
+                continue;
+            }
+            if (mode == "changed")
+            {
+                AddCard(player, clone: true);
+                var reply = JsonNode.Parse(session.Handle(true, ready["decision_id"]!.GetValue<string>(), "option:clone"))!;
+                Check(reply["status"]!.GetValue<string>() == "rejected" && reply["code"]!.GetValue<string>() == "rest_clone_capacity" &&
+                    f.Button.Clicks == 0 && player.Deck.Cards.Count == 87, "fresh dispatch rechecks Clone capacity before input");
+                continue;
+            }
+            InteractiveApply(session, ready, "option:clone"); f.Room.Completion.SetResult();
+            Check(InteractiveRead(session)["status"]!.GetValue<string>() == "complete" && player.Deck.Cards.Count == 128 &&
+                f.Button.Clicks == 1, "Clone reaches exact supported inventory boundary");
+        }
+        foreach (string kind in new[] { "cook", "smith" })
+        {
+            using var f = new Fixture(kind, interactive: true);
+            var player = f.Room.Characters[0].Player; player.Deck.Cards.Clear();
+            for (int i = 0; i < 128; i++) AddCard(player);
+            var originals = player.Deck.Cards.ToArray(); int maxHp = player.Creature.MaxHp;
+            using var session = new RestInteractiveSession(Nonce, leave: new RestLeaveFixture());
+            InteractiveApply(session, InteractiveRead(session), "option:" + kind);
+            var choice = InteractiveRead(session);
+            Check(choice["cards"]!.AsArray().Count == 128 && choice["legal_actions"]!.AsArray().Any(a => a!.GetValue<string>() == "select:127"),
+                "full rest publishes complete large selector domain");
+            InteractiveApply(session, choice, "select:127"); choice = InteractiveRead(session);
+            if (kind == "cook") { InteractiveApply(session, choice, "select:0"); choice = InteractiveRead(session); }
+            InteractiveApply(session, choice, "confirm"); f.Room.Completion.SetResult();
+            Check(InteractiveRead(session)["status"]!.GetValue<string>() == "complete", "large rest selection and parent reconcile");
+            if (kind == "cook") Check(player.Deck.Cards.SequenceEqual(originals.Skip(1).Take(126)) && player.Creature.MaxHp == maxHp + 9,
+                "large Cook removes only endpoint originals");
+            else Check(player.Deck.Cards.SequenceEqual(originals) && originals[127].CurrentUpgradeLevel == 1 && originals.Take(127).All(c => c.CurrentUpgradeLevel == 0),
+                "large Smith upgrades only the selected original");
         }
     }
 }

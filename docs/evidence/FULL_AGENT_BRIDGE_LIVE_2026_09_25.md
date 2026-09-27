@@ -1648,3 +1648,107 @@ five offline cases verify count deltas, missing-act/defeat rejection and explici
 resumed-run scope. Those eleven cases are helper evidence, not native acceptance.
 Implementation and checks overlapped; exclusive implementation, release preparation
 and user-wait durations were not measured.
+
+## Large-deck Cook retest passed, 2026-09-27
+
+The user manually reopened Profile 3 on manifest
+`fed09e937f44d54c52064b0a9c0adc09a03bcfd7ca21bbd3a805277b4151da37`, source
+`327e7dad258f30dc2a60bf65549cf38d157bfc07`, installed state
+`279151f568527c80cdd9f860dee982da7fa90000761f9858c34ce06c576602ca`.
+Running-process verification passed by **09:40:01 UTC**; authenticated health,
+compatibility and installed/source identity checks passed before native Continue.
+The saved campaign restored the floor-57 rest site with HP **2072/2072**, gold
+**726**, four Break, two Flash of Steel and **32 cards**, confirmed independently
+by the HUD and one public read at **0/0/0**, with nothing pending. The previous
+session's Cook screenshot had shown 33; no persistence explanation is claimed.
+No setup mutation, act reset or new campaign was needed.
+
+Before any action, the disposable helper's exact deck-count premise was adjusted
+to the observed 32, and its six Cook/five continuation offline cases passed.
+The helper retained the existing closed POST-failure diagnostics and controllers.
+It then selected public deck positions **0 and 31**, deselected/reselected position 0,
+confirmed and left the rest site. By **09:43:26 UTC** it reported **7 attempted /
+7 accepted / 7 reconciled**, 48 controller reads, one preflight read, zero stale
+rejections and no pending action. The exact removed originals were **Blood Wall+**
+and **Stomp**. All other cards and inventory were preserved: HP/max HP became
+**2081/2081**, deck size **30**, gold **726**, 35 relics and five occupied potion
+slots. One independent public read verified the same counts/effects and actionable
+map. This is a controlled selector result, not a full campaign victory. No exact
+live allocation count or scroll-frame sequence was sampled.
+
+The unchanged common policy was then resumed from that settled map in the same
+process. Its route result and owned cleanup are recorded separately below; the
+Cook success does not reconcile either earlier failed attempt. No profile/save/
+history/Cloud filesystem access or retained live corpus occurred. The accepted
+85-group release gate was reused because the production inputs were unchanged.
+
+## Shared-v2 Act 2 rest handoff stop, 2026-09-27
+
+The same process and unchanged `game.agent.full_policy.choose_action` continued
+from the settled floor-57 map under manifest `fed09e937f44d54c52064b0a9c0adc09a03bcfd7ca21bbd3a805277b4151da37`,
+source `327e7dad258f30dc2a60bf65549cf38d157bfc07`. No setup mutation or manual
+gameplay intervention followed policy attachment. This continued an assisted
+saved campaign; it was not a fresh uninterrupted campaign.
+
+The policy cleared further fights, rewards, treasure and rests, crossed Act 1
+into Act 2, and passed natural Pael entry, Room Full of Cheese and Ranwid through
+event/map return. The Pael observation does not establish every Ancient branch.
+At Act 2 floor 79, `read_native_failed` stopped the controller by **09:47:15 UTC**:
+**236 attempted / 234 accepted / 233 reconciled**, including the seven earlier
+Cook actions, with one pending action and two known no-mutation stale rejections.
+The route delta was **229/227/226**, with 227 decisions, 2,685 controller reads
+and one preflight public read. No Architect or victory was observed.
+
+The final public view was rest, HP **2126/2126**, gold **1142**. A read-only game
+screenshot showed an **86-card** deck, no remaining rest options and Proceed.
+The helper did not retain the final semantic action, so Clone is a
+source-consistent explanation, not an observed final action. No uncertain action
+was retried or adopted. Normal quit and exact cleanup finished by **09:49:02 UTC**:
+process/listener stopped, four generated files purged, zero overlays and all
+429 base files unchanged (`d111d988aca63d8933b8b88968f4e3ecd8006e877eb2990e60b8a40511c50be0`).
+Quarantine state: `3444072dac814175cbeac7e6712ddf5153cb31bf5f2dad7c4accde9b44dd99a5`.
+Cleanup does not reconcile the pending action. No profile/save/history/Cloud
+filesystem access or retained live corpus occurred.
+
+Source inspection found two concrete defects consistent with this stop. Rest
+entry rejected decks over 64 even when only Proceed remained, whereas Clone
+effect verification and the full public run view allowed 128. The coordinator
+also read the next surface before returning an already verified room receipt;
+a failure there prevented the outer session from receiving completion credit.
+The native rest fixture reproduced Clone reaching 86 followed by rejection of
+the regenerated empty rest at `/private/tmp/sts-bridge-dovczm21/log-003.txt`.
+This diagnosis does not retrospectively alter the observed live counts.
+
+The correction explicitly enables 128-card rest capture and selector domains for
+the existing full profile; legacy defaults remain 64. Clone's predicted result
+must fit the 128-card public inventory before publication and fresh dispatch.
+Closed capacity diagnostics stop without hiding a native legal option. Completed
+rest/shop receipts now return before any successor read; native completion and
+cleanup remain prerequisites. A coordinator fixture executes the production
+backend and outer agent session, confirming that a failed next read retains
+verified completion while an unverified option remains pending.
+
+The 128-card grid regression exposed allocation cycling at a settled page:
+the pinned native top/bottom predicates can alternate adjacent holder windows.
+The driver now detects a repeated fully validated window under that pan, stops
+that page's motion and continues toward the same requested original. It retains
+all identity/highlight checks and input/read/page bounds. A fixture's initial
+bottom limit also made its last row unreachable; the positive case now derives
+the bottom from native container sizing, while the old unreachable boundary
+remains an explicit zero-card-input rejection case. No production zero-distance
+guard was relaxed.
+
+Focused results: **694 rest checks**, **1,642 router checks**, **168 client tests**
+and coordinator receipt/failure cases passed in `/private/tmp/sts-bridge-wruy3fyb`;
+that combined focused attempt then failed the initial large-grid case. After the
+cycle/fixture correction, **956 pickup checks** passed in **4.239 seconds** at
+`/private/tmp/sts-bridge-o0d4qbd1`. Production build passed in **1.885 seconds** at
+`/private/tmp/sts-bridge-tvetwvlz`. These are inert fixture/build results, not live
+86/128-card acceptance. The production shared chooser was unchanged.
+
+Independent source review ran **09:50:33–09:56:27 UTC** (diagnosis/design),
+**10:02:29–10:03:41 UTC** (implementation) and **10:05:00–10:06:27 UTC**
+(allocation cycle), **513 seconds total**. The reviewer identified the fixture
+bottom issue; its correction was author-verified by the passing focused check.
+Implementation, review and checks overlapped; exclusive implementation, live
+controller, release preparation and user-wait durations were not measured.

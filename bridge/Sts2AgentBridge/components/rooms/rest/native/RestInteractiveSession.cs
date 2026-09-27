@@ -42,7 +42,7 @@ internal sealed class RestInteractiveSession : IDisposable
     private int _revision, _reads, _actions;
     private bool _failed, _disposed, _inside, _dispatching;
     internal RestInteractiveSession(string nonce, PinnedRestV2NativeAdapter? native = null, IRestLeave? leave = null)
-    { _nonce = nonce; _native = native ?? new(interactive: true); _leave = leave; }
+    { _nonce = nonce; _native = native ?? new(interactive: true, full: leave is not null); _leave = leave; }
     internal bool Complete => _terminal?["status"]?.GetValue<string>() == "complete";
     internal (RestV2Surface Surface, DeckChoiceView? Choice, RestRewardContinuation? Rewards, string RewardDecision) Inspect(string decision)
     {
@@ -64,6 +64,13 @@ internal sealed class RestInteractiveSession : IDisposable
             Enter();
             _dispatching = false;
             var value = post ? Apply(decision, action) : Read();
+            return Encoding.UTF8.GetBytes(value.ToJsonString());
+        }
+        catch (RestCapacityException error)
+        {
+            _failed = true;
+            var value = Value(post ? _dispatching ? "uncertain" : "rejected" : "unsupported", "unknown");
+            if (_leave is not null) value["code"] = error.Code;
             return Encoding.UTF8.GetBytes(value.ToJsonString());
         }
         catch

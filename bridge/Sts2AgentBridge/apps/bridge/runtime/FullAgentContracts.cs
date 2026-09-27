@@ -31,6 +31,15 @@ internal static class FullAgentWire
             if (reply.Terminal)
             {
                 if (reply.EventDiagnostic) throw FullReadFailure.NativeEvent(reply.Diagnostic);
+                using var failure = JsonDocument.Parse(reply.Body);
+                var root = failure.RootElement;
+                if (root.ValueKind == JsonValueKind.Object &&
+                    root.TryGetProperty("capability", out var capability) && capability.ValueKind == JsonValueKind.String && capability.GetString() == "rest_v4" &&
+                    root.TryGetProperty("schema_version", out var version) && version.TryGetInt32(out int schema) && schema == 4 &&
+                    root.TryGetProperty("status", out var status) && status.ValueKind == JsonValueKind.String && status.GetString() == "unsupported" &&
+                    root.TryGetProperty("code", out var code) && code.ValueKind == JsonValueKind.String &&
+                    code.GetString() is "rest_deck_capacity" or "rest_clone_capacity")
+                    throw FullReadFailure.RestCapacity(code.GetString()!);
                 throw new AgentUnsupported();
             }
             // Parse(byte[]) retains that memory. Stream parsing gives the
@@ -49,6 +58,11 @@ internal sealed class FullReadFailure : Exception
 {
     internal string Code { get; }
     private FullReadFailure(string code) => Code = code;
+    internal static FullReadFailure RestCapacity(string code) => new(code switch {
+        "rest_deck_capacity" => "read_native_rest_deck_capacity",
+        "rest_clone_capacity" => "read_native_rest_clone_capacity",
+        _ => "read_native_failed"
+    });
     internal static FullReadFailure NativeEvent(GenericEventDiagnosticCode diagnostic)
     {
         // Only fixed failure/ownership categories cross the shared boundary.

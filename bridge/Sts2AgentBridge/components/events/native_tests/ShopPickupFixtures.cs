@@ -108,7 +108,7 @@ internal static partial class Program {
         internal int Inputs, Clears, Commits, Cancels;
         private readonly List<CardModel> _selected = new();
         private int _windowStart;
-        internal InteractiveChoiceFixture(bool smith = false, bool transform = false, bool nested = false, bool enchant = false, int count = 3, int window = 0)
+        internal InteractiveChoiceFixture(bool smith = false, bool transform = false, bool nested = false, bool enchant = false, int count = 3, int window = 0, int maximumDomain = 64)
         {
             Cards = Enumerable.Range(0, count).Select(i => { var c = new CardModel { Owner = Player }; c.Id.Entry = "CARD_" + i; return c; }).ToArray();
             Player.Deck.Cards.AddRange(Cards);
@@ -135,7 +135,9 @@ internal static partial class Program {
             Container.Bind(single ? "Cancel" : "%PreviewCancel", PreviewBack);
             Grid.FixtureCards.AddRange(Cards.Reverse());
             Grid.Size = new(1800, 920);
-            Grid.FixtureScrollBottom = -1680;
+            // Native container height: total rows * pitch - padding + 80 +
+            // 320 + YOffset. Scroll bottom is grid height minus that height.
+            Grid.FixtureScrollBottom = Math.Min(0, 920 - (((count + 4) / 5) * 320 - 40 + 80 + 320));
             Grid.FixtureAllocate = Allocate;
             foreach (var initialCard in Grid.FixtureCards.Take(window > 0 ? window : count))
             {
@@ -170,7 +172,7 @@ internal static partial class Program {
             Confirm.Clicked = () => { Commits++; Overlays.Screens.Clear(); Task.SetResult(_selected.ToArray()); };
             Control[] ancestors = nested ? new Control[] { new MegaCrit.Sts2.Core.Nodes.Screens.NRewardsScreen() } : Array.Empty<Control>();
             Overlays.Screens.AddRange(ancestors); Overlays.Screens.Add(Screen);
-            Choice = new(Screen, Overlays, Cards, () => Context, enchant ? Enchantment : null, enchant ? Enchantment.Amount : 0, single ? 1 : 2, single ? 1 : 2, true, smith, ancestors, transform);
+            Choice = new(Screen, Overlays, Cards, () => Context, enchant ? Enchantment : null, enchant ? Enchantment.Amount : 0, single ? 1 : 2, single ? 1 : 2, true, smith, ancestors, transform, maximumDomain);
         }
         private void Allocate()
         {
@@ -204,7 +206,7 @@ internal static partial class Program {
                 if (Choice.Read() is {} view) return view;
                 ScrollFrame(); Animate();
             }
-            throw new InvalidOperationException("paged choice did not become ready");
+            throw new InvalidOperationException($"paged choice did not become ready: cards={Cards.Length}, inputs={Inputs}, pans={Grid.FixturePanInputs}, start={_windowStart}, y={Grid.FixtureScroll.Position.Y}, target={Grid.FixtureScrollTarget}");
         }
         internal void FlushFreedPreviews()
         { BeforeEnchant.Children.RemoveAll(n => n.IsQueuedForDeletion()); AfterEnchant.Children.RemoveAll(n => n.IsQueuedForDeletion()); }
@@ -324,6 +326,31 @@ internal static partial class Program {
 
     private static void VirtualizedChoiceCases()
     {
+        foreach (bool smith in new[] { false, true })
+        {
+            var f = new InteractiveChoiceFixture(smith: smith, count: 128, window: 25, maximumDomain: 128);
+            f.Grid.FixtureSnapScroll = true;
+            Check(f.Ready().Domain.Length == 128 && f.Inputs == 0, "full rest exposes all 128 originals");
+            f.Choice.Apply("select", f.Cards[0]); f.PagedReady();
+            if (!smith) { f.Choice.Apply("select", f.Cards[127]); f.PagedReady(); }
+            f.Choice.Apply("confirm"); f.Complete();
+            Check(f.Commits == 1 && f.Task.Task.Result.SequenceEqual(smith ? new[] { f.Cards[0] } : new[] { f.Cards[0], f.Cards[127] }),
+                "full rest confirms exact endpoint originals across 128-card grid");
+        }
+        foreach (var (count, limit) in new[] { (65, 64), (129, 128), (3, 129) })
+        {
+            bool rejected = false;
+            try { _ = new InteractiveChoiceFixture(count: count, maximumDomain: limit); }
+            catch (InvalidOperationException) { rejected = true; }
+            Check(rejected, "selector retains explicit legacy/full bounds");
+        }
+        {
+            var f = new InteractiveChoiceFixture(count: 128, window: 25, maximumDomain: 128);
+            f.Grid.FixtureScrollBottom = -6720; f.Grid.FixtureSnapScroll = true;
+            f.Ready(); f.Choice.Apply("select", f.Cards[0]);
+            bool rejected = false; try { f.PagedReady(); } catch (InvalidOperationException) { rejected = true; }
+            Check(rejected && f.Inputs == 0 && f.Commits == 0, "unreachable allocation boundary fails without selecting another card");
+        }
         foreach (bool snap in new[] { true, false }) foreach (bool delayed in new[] { false, true })
         {
             var f = new InteractiveChoiceFixture(count: 33, window: 25) { DelayHighlights = delayed };

@@ -21,6 +21,12 @@ using MegaCrit.Sts2.Core.Nodes.Screens.CardSelection;
 
 namespace Sts2AgentBridge.Rooms.Rest;
 
+internal sealed class RestCapacityException : Exception
+{
+    internal string Code { get; }
+    internal RestCapacityException(bool clone) => Code = clone ? "rest_clone_capacity" : "rest_deck_capacity";
+}
+
 // Observe the task produced by the real button path; never invoke OnSelect or
 // alter relics directly. The hook is exclusive and owned until verified removal.
 public sealed class PinnedRestV2NativeAdapter : IRestV2NativeAdapter
@@ -41,10 +47,12 @@ public sealed class PinnedRestV2NativeAdapter : IRestV2NativeAdapter
     private object? _overlays, _character;
     private bool _failed, _disposed, _dispatched, _finished, _unresolvedDisposal;
     private readonly bool _interactive;
+    private readonly int _maximumDeckCards;
     private RestSiteOption[]? _options;
     private NRestSiteButton[]? _buttons;
     private bool[]? _enabled;
-    public PinnedRestV2NativeAdapter(bool interactive = false) => _interactive = interactive;
+    public PinnedRestV2NativeAdapter(bool interactive = false, bool full = false)
+    { Require(!full || interactive); _interactive = interactive; _maximumDeckCards = full ? 128 : 64; }
     internal DeckChoiceView? ReadChoice() => _effect?.ReadChoice();
     internal RestRewardContinuation? Rewards => _effect?.Rewards;
     internal void ApplyChoice(string action, CardModel? card = null)
@@ -75,7 +83,8 @@ public sealed class PinnedRestV2NativeAdapter : IRestV2NativeAdapter
         if (_selected is null)
         {
             Require(room.Options.Count <= 16);
-            var state = new RestNativeState(player!); Require(state.Deck.Length <= 64);
+            if (player!.Deck.Cards.Count > _maximumDeckCards) throw new RestCapacityException(clone: false);
+            var state = new RestNativeState(player);
             cards = state.PublicCards;
             foreach (var option in room.Options)
             {
@@ -97,6 +106,11 @@ public sealed class PinnedRestV2NativeAdapter : IRestV2NativeAdapter
                 Require(relic is not null);
                 var button = room.GetButtonForOption(option);
                 Require(Valid(button) && button!.GetType() == typeof(NRestSiteButton) && ReferenceEquals(button.Option, option));
+                // Native Clone copies every enchanted original, preserving its
+                // enchantment. Stop a predictable public-inventory overflow
+                // before publishing or dispatching any option; never hide it.
+                if (action == "clone" && option.IsEnabled && button!.IsEnabled && state.Deck.Length + state.Clonable.Length > 128)
+                    throw new RestCapacityException(clone: true);
                 options.Add(new(new(action, Counter(action, player!, relic!), foreground && option.IsEnabled && button!.IsEnabled && button.IsVisibleInTree(),
                     action == "clone" ? state.Clonable.Length : 0), option, relic!, button!, state));
             }
@@ -147,7 +161,8 @@ public sealed class PinnedRestV2NativeAdapter : IRestV2NativeAdapter
                     ReferenceEquals(_room.Characters[0].Player, _player) && ReferenceEquals(run.GlobalUi.MapScreen, surface.Map) &&
                     !run.GlobalUi.MapScreen.IsOpen && !run.GlobalUi.MapScreen.IsTraveling && ReferenceEquals(run.GlobalUi.Overlays, _overlays) &&
                     (!_interactive || ReferenceEquals(ActiveScreenContext.Instance.GetCurrentScreen(),
-                        run.GlobalUi.Overlays.ScreenCount == 0 ? (object)_room : run.GlobalUi.Overlays.Peek())), _interactive,RewardAlternatives,RewardInventory);
+                        run.GlobalUi.Overlays.ScreenCount == 0 ? (object)_room : run.GlobalUi.Overlays.Peek())), _interactive,RewardAlternatives,RewardInventory,
+                maximumDeckCards: _maximumDeckCards);
             _effect.Install();
         }
         _dispatched = true; // Reserve before native input; incomplete disposal is never a handoff.

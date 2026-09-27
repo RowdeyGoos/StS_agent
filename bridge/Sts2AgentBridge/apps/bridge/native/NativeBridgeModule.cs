@@ -68,7 +68,7 @@ internal sealed class NativeBridgeModule : IBridgeModule
             _restInteractive = true;
             _restPrefix = first.Path == RestInteractiveSession.DecisionRoute ? "/probe/rest-v3/" : "/probe/rest-v4/";
             bool full=first.Path==RestInteractiveSession.FullDecisionRoute;
-            var native=new PinnedRestV2NativeAdapter(interactive:true);
+            var native=new PinnedRestV2NativeAdapter(interactive:true,full:full);
             if(full) {
                 native.RewardAlternatives=(parent,screen)=>new Sts2AgentBridge.Items.Native.PinnedRewardAlternatives(parent,screen);
                 native.RewardInventory=player=>new Sts2AgentBridge.Items.Native.PinnedRewardInventory(player);
