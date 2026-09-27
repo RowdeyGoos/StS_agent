@@ -801,7 +801,9 @@ document still borrowed that memory. That correction gives the document
 its own storage before clearing the source. The diagnostic run ended with normal
 quit and complete owned cleanup: four files removed, all 429 base files unchanged,
 zero overlays by 10:09:24 UTC, recorded in Git `53e2255`.
-**Broader native v2 live coverage and campaign acceptance remain outstanding.** The
+At that diagnostic checkpoint, broader v2 acceptance was still outstanding;
+the later representative coverage and assisted shared-v2 ending are recorded
+[above](#release-and-latest-evidence). The
 [release record](../bridge/Sts2AgentBridge/releases/current/README.md) retains exact
 source/package, review, validation and installation identities.
 

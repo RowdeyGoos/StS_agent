@@ -1,6 +1,6 @@
 # Headless implementation backlog
 
-Updated 2026-09-26. This document owns remaining headless assignments;
+Updated 2026-09-27. This document owns remaining headless assignments;
 [the engine guide](HEADLESS_ENGINE.md) owns usage and supported gameplay.
 The [original assessment and completed-batch chronology](archive/HEADLESS_FULL_GAME_IMPLEMENTATION_2026_09_21.md)
 is historical. Its old “partial” and “remaining” labels are not current tasks.
@@ -25,7 +25,7 @@ serializable continuations. Gameplay does not depend on projections or encoders.
 | HF-52: playable characters | All five implemented; the four added characters have A0/A10 native victories | [Campaign evidence](evidence/native_character_campaigns_2026_09_21.md), [focused interaction audit](evidence/native_character_interactions_2026_09_21.md) |
 | HF-44–47: public observations, encoding, datasets and operational adapters | Full headless public profile, encoding, Gym, datasets, CLI and bounded workers implemented | Assignments below |
 | HF-48: fidelity acceptance | Retained full campaigns and focused comparisons pass; ongoing discrepancy-driven work | [Acceptance task](#hf-48--accept-complete-run-fidelity-and-close-coverage-gaps) |
-| HF-49–50: throughput and delivery | Test-overhead improvements, recorded rollout measurements and clean core/Gym consumer delivery implemented; workload-specific performance work and final current-package acceptance remain | Assignments below |
+| HF-49–50: throughput and delivery | Test-overhead improvements, recorded rollout measurements and clean core/Gym consumer delivery implemented; accepted package evidence retained; workload-specific performance work follows actual training/search needs | Assignments below |
 
 “Implemented” describes executable rules, not exhaustive native equivalence.
 Boosted native campaigns are accepted; a normal-HP test-policy victory is not a
@@ -70,10 +70,12 @@ The bounded v1 slice retains its controlled Ironclad live acceptance; the v2
 coverage census explicitly records native exclusions. Preserve the independent
 rules layer and distinguish interface coverage from exhaustive native fidelity.
 
-The current priority is [completion of the non-training system](../ROADMAP.md#immediate-priorities):
-close concrete fidelity discrepancies, validate remaining bridge paths, preserve
-the accepted assisted shared-v2 ending and verify the current deliverable. Training implementation,
-trained-policy strength and training-specific optimization follow that work.
+The requested [non-training completion pass](../ROADMAP.md#immediate-priorities)
+is complete, including representative bridge coverage, the assisted shared-v2
+ending and package/cleanup verification. Preserve accepted unchanged engine and
+consumer evidence. Further fidelity work starts from a concrete discrepancy;
+training implementation, policy strength and workload-specific optimization are
+subsequent scopes.
 
 The [shared agent interface and Gymnasium plan](AGENT_ENVIRONMENT.md) sequences
 HF-44–47 with the existing live bridge: the public-only combat/selection/reward/map
@@ -84,6 +86,10 @@ complete autonomous live runs.
 <a id="open-assignments"></a>
 
 ## Consumer assignments
+
+For completed assignments, the implementation and acceptance bullets below retain
+the delivered requirements. Explicit ongoing fidelity/performance work is separate;
+these requirements do not reopen completed HF-44–47 or package acceptance.
 
 ### HF-44 — Expose sufficient public run state and observable history
 

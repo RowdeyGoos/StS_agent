@@ -7,6 +7,12 @@ protocol and reconciliation; `combat_native/` binds the actual screen;
 from generic event card effects. See [bridge commands](../bridge/Sts2AgentBridge/README.md)
 for release and installation usage.
 
+This guide describes the standalone v1–v3 combat-choice routes. The shared
+full-run producer uses `combat_card_choice_v4`, adding hand selections, optional
+offers and potion-owned choices with rich public card observations. Its
+[current contract](AGENT_CONTRACT.md#native-full-run-v2-candidate) owns those
+extensions; the legacy exclusions below do not narrow the full-run profile.
+
 ## Native scope
 
 The representative caller is **Neow's Fury**. Metadata-only inspection of pinned

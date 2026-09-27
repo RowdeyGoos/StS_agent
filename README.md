@@ -155,12 +155,15 @@ Read [current status](docs/STATUS.md) and the
 or preparing a live test. The [unified bridge](bridge/Sts2AgentBridge/README.md)
 packages all supported capabilities in one mod, with one client and development
 checker. The status page separates implemented support, known live failures,
-missing features and remaining live tests. Use the [caller evidence index](docs/EVENT_COVERAGE.md)
+accepted representative coverage and remaining limits. Use the [caller evidence index](docs/EVENT_COVERAGE.md)
 to find exact tested branches and the [event contracts](docs/GENERIC_EVENTS.md)
 for protocol/effect details. Dated ledgers retain test history and setup assistance.
 Milestone 7's assisted campaign traversal is accepted: policy-controlled gameplay
 through the ending, with one recorded reload for a bridge correction. Normal-HP
-policy strength and broader native coverage remain separate targets.
+policy strength and exhaustive native coverage remain separate targets. The
+shared-v2 producer has also reached the ending in an assisted saved continuation,
+and the requested non-training coverage pass is complete. Agent-managed Steam
+launch/restart and normal shutdown follow the live guide.
 
 ## Package layout
 
@@ -183,8 +186,10 @@ agent command and bounded workers deliver HF-46/47.
 The [shared public contract, headless producer and bounded native adapter](docs/AGENT_CONTRACT.md)
 are implemented, with the controlled shared-policy slice and map dispatch accepted
 live. Full headless decision coverage and `FullRunEnv` are implemented in milestone 5;
-the live bridge retains its explicitly bounded v1 profile. Milestone 6 completes
-the initial interface delivery. Milestone 7's assisted live campaign is accepted
-under the recorded scope in the [delivery plan](docs/AGENT_ENVIRONMENT.md).
+the live bridge retains its bounded v1 profile and adds the
+[shared native v2 producer](docs/AGENT_CONTRACT.md#native-full-run-v2-candidate)
+over the existing owners. Milestone 6 completes the initial interface delivery.
+Milestone 7 and the representative shared-interface follow-through are complete
+under their separate scopes in the [delivery plan](docs/AGENT_ENVIRONMENT.md).
 
 [Documentation index](docs/README.md) · [Roadmap](ROADMAP.md) · [Decisions](DECISIONS.md)

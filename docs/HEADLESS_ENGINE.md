@@ -202,9 +202,10 @@ These records are not release-provenance certificates. Actor inputs must exclude
 private RNG, hidden draw order and privileged continuation data. The
 [full headless public producer](AGENT_CONTRACT.md#full-run-v2-profile) now covers
 the engine's current command and decision families, with fixed encoding and Gym
-execution. Broader live acceptance of the
-[native v2 producer](AGENT_CONTRACT.md#native-full-run-v2-candidate) remains open;
-the rules package does not depend on either adapter.
+execution. The [native v2 producer](AGENT_CONTRACT.md#native-full-run-v2-candidate)
+has representative live coverage and an assisted saved continuation through
+native Victory; [status](STATUS.md) retains the precise limits. The rules package
+does not depend on either adapter.
 
 ## Consolidated native verification
 

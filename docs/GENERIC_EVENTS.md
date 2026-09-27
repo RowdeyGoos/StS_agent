@@ -174,9 +174,10 @@ request is observed, a null-filter request also binds its complete removable
 domain at entry and requires that the result contains exactly that domain, with
 no meaningful choice to skip. Arbitrary filters are never invoked by the observer.
 The one-card Dark Door case passed live: two parent actions reconciled, no child
-selector was invented, and the actionable map was verified. Empty domains, retained
-Eternal cards and adversarial variants remain fixture evidence. See [current
-evidence](STATUS.md#release-and-latest-evidence) for exact release identities.
+selector was invented, and the actionable map was verified. An empty removable
+domain retaining the sole Eternal Curse of the Bell also passed at 2/2/2 without
+selector input. Other callers and adversarial variants retain fixture evidence.
+See [current evidence](STATUS.md#release-and-latest-evidence) for release identities.
 
 Removal uses native input on the exact allocated holder, so admission no longer
 requires computed whole-grid dimensions, full viewport containment or unchanged

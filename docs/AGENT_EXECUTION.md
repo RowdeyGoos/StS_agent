@@ -144,9 +144,10 @@ The headless execution command does not install/launch the game or collect a liv
 corpus. The v1 shared-policy slice retains its bounded live acceptance. Milestone 7's
 separate [native traversal policy](../bridge/Sts2AgentBridge/README.md#campaign-traversal)
 has accepted assisted-campaign evidence. The
-[native v2 producer](AGENT_CONTRACT.md#native-full-run-v2-candidate) is implemented
-with representative interaction results; complete shared-interface campaign and
-remaining path acceptance are still open. Optional live recording uses its own
+[native v2 producer](AGENT_CONTRACT.md#native-full-run-v2-candidate) has completed
+the requested representative coverage and an assisted saved continuation through
+native Victory. A fresh uninterrupted v2 campaign, exhaustive coverage and policy
+strength remain separate scopes. Optional live recording uses its own
 format and explicit retention authorization, separately from the headless artifacts
 described here. [Current status](STATUS.md) owns those evidence boundaries.
 

@@ -8,7 +8,9 @@ implement milestone 3 through new `agent_v1` routes; existing routes retain thei
 semantics. The controlled native slice is accepted. The milestone 4
 [encoding and Gymnasium consumer](AGENT_ENCODING.md) is implemented over this
 contract. Milestone 5 adds the opt-in [full-run v2 profile](#full-run-v2-profile)
-for the headless engine. The accepted native `agent_v1` profile is unchanged.
+for the headless engine. The [native v2 producer](#native-full-run-v2-candidate)
+now supplies that graph through the existing bridge owners and has representative
+live acceptance. The accepted native `agent_v1` profile is unchanged.
 
 ## Scope and wire boundary
 
@@ -115,9 +117,10 @@ directly; do not serialize a private snapshot and subtract a blacklist.
 
 ## Producer field mapping and explicit gaps
 
-This table records the milestone 1 audit of the original bridge DTOs. Their gaps
-are addressed for the bounded [native producer](#native-producer) below; it does
-not make every native card, power or room supported.
+This table records the historical milestone 1 audit of the original bridge DTOs.
+Use the bounded [native v1 producer](#native-producer) and
+[native v2 producer](#native-full-run-v2-candidate) below for current coverage;
+the baseline gaps here are not a present-day implementation queue.
 
 Native inspection uses the pinned `sts2.dll` SHA-256
 `e7ceb80669bfaf5c8fccabaa126ae2bb283aba514be5b5b55612579cfd285f18`.
@@ -125,7 +128,7 @@ Native class/member names below are source references from that assembly, not
 permission to read game profiles. Native member availability alone does not prove
 public visibility; the UI/public rule basis is listed separately.
 
-| Contract fields | Headless source | Native public source / visibility | Current bridge agreement or gap |
+| Contract fields | Headless source | Native public source / visibility | Milestone 1 bridge agreement or gap |
 | --- | --- | --- | --- |
 | `run.character`, `ascension`, `act`, `floor` | `RunState.config.character/ascension`, `act_index`, visited route in [run state](../game/headless/run/state.py) and [config](../game/headless/run/config.py) | `Player.Character`, run difficulty/act and displayed route/top-bar progress | No coherent combined decision projection; normalize act to one-based, floor to visited-room count |
 | HP/max HP, gold | `RunState`, active [Player](../game/headless/core/player.py) during combat | `Player.Creature.CurrentHp/MaxHp`, `Player.Gold`; displayed HUD | Core combat supplies HP; reward/room supplies gold; must join only within the same owned decision |
@@ -445,29 +448,31 @@ Every command class in `core.actions` and `run.actions` is bound by
 if either engine module adds a command without integration. Optional choices,
 deselection, skipping and abandonment receive distinct public action kinds.
 
-The native column distinguishes the accepted v1/feature controllers from the
-v2 candidate described below. Legacy live evidence does not establish v2
-projection, dispatch or shared-policy acceptance.
-All v2 rows have headless projection, exact dispatch and lossless encoding within
-the [finite profile](AGENT_ENCODING.md#full-run-profile-and-environment).
+The native column distinguishes the retained v1/feature controllers from the
+implemented v2 producer. Evidence applies only to its named producer and path;
+legacy results do not establish v2 projection or shared-policy acceptance.
+All rows have headless projection, exact dispatch and lossless encoding within
+the [finite profile](AGENT_ENCODING.md#full-run-profile-and-environment). Native
+bounds are specified [below](#native-full-run-v2-candidate); [status](STATUS.md)
+owns case-level acceptance and remaining evidence limits.
 
 | Headless commands / pending surface | Fixture evidence | Native observation/action coverage | Live evidence |
 | --- | --- | --- | --- |
-| `PlayCard`, `EndTurn`; combat, Stars/Forge, Osty, orbs | Five-character selectors/resources and ordinary-HP campaigns; 1,075 card-level previews | `agent_v1` bounded content only | Controlled Ironclad slice only |
-| `ChooseCombatCard`, `ConfirmCombatSelection`; manual/automatic selectors, toggles and zero confirmation | Exact-instance dispatch, draw-order invariance, source/operation/bounds and suspended potion choices | `agent_v1` discard/exhaust profile; broader selectors outside it | Neow's Fury zero/two choices |
-| `UsePotion`, `DiscardPotion`; combat/anytime/automatic items | All 63 potion definitions, targeted use and child selectors; automatic-only items expose discard | No potion-use candidate in `agent_v1`; older replacement controllers do not establish general use control | Foul Potion event entry and replacement cases only |
-| `ClaimGold`, `ChooseRewardCard`, `ClaimPotion`, `ClaimRelic`, `ChooseExtraReward`, `LeaveRewards`; main/extra/stolen/special rows | Modal visibility, exact upgrades, acquisition identity, skip/leave and nested pickups | `agent_v1` ordinary supported rewards; legacy extra/item controllers have separate bounds | Gold/leave in shared slice; legacy card/item/extra cases in [status](STATUS.md) |
-| `RerollCardReward`, `SacrificeCardReward` | Driftwood reroll and Pael's Wing sacrifice | Outside `agent_v1` | No shared-profile evidence |
-| `ChooseRelicCard`, `ConfirmRelicSelection`, `ChooseRelicReward`; select/card reward/card grid/potion/relic/bundle queues | Dolly's Mirror, Orrery repeated offers, Sea Glass, Scroll Boxes, Lost Coffer, scissors/Claws/Pael's Tooth/Toy Box | Legacy generic pickup surfaces partially supported; full v2 outside profile | Representative legacy selectors/grid/bundle paths only |
-| `OpenChest`, `ClaimTreasureRelic`, `LeaveTreasure`; closed/open/resolved chest | Hidden pre-open contents and exact pickup continuation | Outside `agent_v1` | No v2 live evidence |
-| `ChooseNode`; generated/authored maps, visible marks | Exact node dispatch, Fur Coat marks, both regions and multi-act transitions | `agent_v1` bounded map projection/action | Separate native map transition accepted |
-| `Rest`, `Smith`, `Hatch`, `Lift`, `Dig`, `UseRestRelic`, `ChooseUpgrade`, `ChooseCookCard`, `ConfirmCook`, `LeaveRest`; options/smith/cook/hatched/resolved | All commands, Smith/Cook cancel, Cook pair and nested follow-up | Interactive `rest_v3` includes Smith/Cook cancel and Heal rewards; v2 candidate delegates to the same owner | Immediate/preview cancel and card/potion collection/Skip passed; other effects retain their separate limits |
-| `BuyShopItem`, `BeginShopRemoval`, `ChooseShopRemoval`, `LeaveShop`; stock/removal | Prices, modifiers, exact purchase/removal/cancel; engine restocking | Legacy bounded shop controllers; outside `agent_v1` | Purchase/removal and selected restock cases only |
-| `ChooseAncientRelic`; Neow offers | Exact offered relic and pickup continuation | Outside `agent_v1`; legacy event/Ancient path is separate | Console-selected legacy Ancient routes only |
-| `ChooseEventOption`, `ChooseEventCard`, `LeaveEvent`; options/page/select_card/resolved/fight | All 65 events' initial branches plus bounded nested continuations, selected card operations and event combat resumption | Legacy generic event families; outside `agent_v1` | Representative pages/selectors/combat/resumption; no all-branch claim |
-| Same event commands; event_rewards/card_rewards/potion_rewards/relic_reward/gold_reward/special_card_reward | Mixed rewards, multi-pick identity, current offers, duplicate items and terminal effects | Legacy bounded child controllers; outside `agent_v1` | Representative mixed/item/card results only |
-| Same event commands; Crystal Sphere board and Trial confirmation | Uncovered fragments only, legal cell choices, explicit `abandon_run` outcome | Legacy specialized controllers; outside `agent_v1` | Representative Sphere and Trial cancel/confirm accepted |
-| `ContinueAct`, final Architect option; act_complete/epilogue/terminal | Controlled three-act A0/A10 routes, second Glory boss and Gym reward 1 only after Architect | Outside `agent_v1`; legacy ending code exists | Assisted milestone 7 campaign through Architect accepted; [shared-v2 assisted saved continuation](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md#symbiote-passed-and-settled-combat-stale-stop-2026-09-27) also reached `victory/none` and native Victory. No fresh uninterrupted v2 campaign claim |
+| `PlayCard`, `EndTurn`; combat, Stars/Forge, Osty, orbs | Five-character selectors/resources and ordinary-HP campaigns; 1,075 card-level previews | Bounded `agent_v1`; `agent_v2` rich public combat graph and exact legal dispatch | Controlled v1 Ironclad slice; assisted v2 saved continuation through the ending. No five-character live-policy claim |
+| `ChooseCombatCard`, `ConfirmCombatSelection`; manual/automatic selectors, toggles and zero confirmation | Exact-instance dispatch, draw-order invariance, source/operation/bounds and suspended potion choices | V1 discard/exhaust; full producer uses `combat_card_choice_v4` for draw, hand and mandatory/optional offers, including potion-owned choices | Legacy Fury/Draw/mandatory offers; v2 hand, optional-offer and potion-owned choices |
+| `UsePotion`, `DiscardPotion`; combat/anytime/automatic items | All 63 potion definitions, targeted use and child selectors; automatic-only items expose discard | No v1 use candidate; full producer uses `potions_v2` for supported combat/map use, discard and owned selectors | V2 potion use/discard and potion-owned choices; other types/outcomes retain separate limits |
+| `ClaimGold`, `ChooseRewardCard`, `ClaimPotion`, `ClaimRelic`, `ChooseExtraReward`, `LeaveRewards`; main/extra/stolen/special rows | Modal visibility, exact upgrades, acquisition identity, skip/leave and nested pickups | Bounded v1 rewards; full producer delegates to `reward_v3` with the existing 32-row terminal bound and certified pickup effects | Ordinary/extra rewards, automatic pickups and the ten-entry merchant screen; no ordinary 32-entry live claim |
+| `RerollCardReward`, `SacrificeCardReward` | Driftwood reroll and Pael's Wing sacrifice | Outside v1; full producer exposes visible native reroll/Sacrifice controls | V2 reroll, standalone first Sacrifice, nested Sacrifice and the corrected Whetstone-granting case |
+| `ChooseRelicCard`, `ConfirmRelicSelection`, `ChooseRelicReward`; select/card reward/card grid/potion/relic/bundle queues | Dolly's Mirror, Orrery repeated offers, Sea Glass, Scroll Boxes, Lost Coffer, scissors/Claws/Pael's Tooth/Toy Box | Full producer exposes certified shop/rest/event pickup children; arbitrary nested callbacks remain unsupported | Named shop selectors, Cauldron/Orrery rewards and Neow compound pickups; legacy grid/bundle results retain their own scope |
+| `OpenChest`, `ClaimTreasureRelic`, `LeaveTreasure`; closed/open/resolved chest | Hidden pre-open contents and exact pickup continuation | Outside v1; full producer uses `campaign_v3` chest Open/Claim/Skip/Proceed | V2 chest claiming and Silver Crucible empty-chest Open/Proceed |
+| `ChooseNode`; generated/authored maps, visible marks | Exact node dispatch, Fur Coat marks, both regions and multi-act transitions | Bounded v1 map; v2 visible graph/context and exact legal node dispatch | Separate v1 transition; v2 saved route and legal Ancient-node entry |
+| `Rest`, `Smith`, `Hatch`, `Lift`, `Dig`, `UseRestRelic`, `ChooseUpgrade`, `ChooseCookCard`, `ConfirmCook`, `LeaveRest`; options/smith/cook/hatched/resolved | All commands, Smith/Cook cancel, Cook pair and nested follow-up | Interactive legacy `rest_v3`; full producer uses `rest_v4` with separate choices, cancellation, rewards and Leave | Every supported solo option, selector toggles/cancellation and Heal rewards have representative evidence; exact path/controller limits remain |
+| `BuyShopItem`, `BeginShopRemoval`, `ChooseShopRemoval`, `LeaveShop`; stock/removal | Prices, modifiers, exact purchase/removal/cancel; engine restocking | Legacy bounded shop policies; full producer uses `shop_v8` with purchase/removal, owned children and separate Open/Close/Leave | V2 pickups, selectors, removal cancellation and Cauldron/Orrery; kind/reserve/cap variants were tested through the legacy controller |
+| `ChooseAncientRelic`; offered relics | Exact offered relic and pickup continuation | Outside v1; full producer exposes supported Ancient options and their owned children | Natural Neow, Pael, Nonupeipe and Orobas entry; controlled pickup cases. Other routes retain separate limits |
+| `ChooseEventOption`, `ChooseEventCard`, `LeaveEvent`; options/page/select_card/resolved/fight | All 65 events' initial branches plus bounded nested continuations, selected card operations and event combat resumption | Existing owned event children projected through v2; unsupported shapes stop | Representative shared pages/selectors/combat/resumption; no all-branch claim |
+| Same event commands; event_rewards/card_rewards/potion_rewards/relic_reward/gold_reward/special_card_reward | Mixed rewards, multi-pick identity, current offers, duplicate items and terminal effects | `full_rewards_v1` shared event rewards; `full_rewards_v2` compound owner only for Neow's Bones | Lost Coffer, named Neow pickup families and capacity/prevention cases; other generated outcomes remain separate |
+| Same event commands; Crystal Sphere board and Trial confirmation | Uncovered fragments only, legal cell choices, explicit `abandon_run` outcome | Existing specialized owners coordinated through v2 | Shared-v2 Sphere tools/rewards; legacy Trial Cancel/Confirm retains its separate acceptance |
+| `ContinueAct`, final Architect option; act_complete/epilogue/terminal | Controlled three-act A0/A10 routes, second Glory boss and Gym reward 1 only after Architect | Existing native act/Ancient/Architect owners through v2; native action sequences need not match headless `ContinueAct` | Assisted milestone 7 campaign and shared-v2 saved continuation reached native Victory. No fresh uninterrupted v2 campaign claim |
 
 [`test_full_profile.py`](../tests/agent/test_full_profile.py) checks the command
 census against real legal commands, differential dispatch, serialization/tensor
@@ -483,7 +488,9 @@ The opt-in `agent_v2` producer is implemented in the single production bridge an
 has passed a controlled shared-policy rest/card-reward/map test (4/4/4 actions,
 27 reads, no pending work) and an assisted saved continuation through final combat,
 rewards and Architect to native Victory (12/12/12 new actions, 262 reads, no pending
-work). These do **not** yet establish complete native command coverage or a fresh
+work). The requested representative follow-up coverage is also complete, as
+recorded in [status](STATUS.md#representative-coverage-complete-additional-evidence-limits).
+This does not establish every native command/content combination or a fresh
 uninterrupted campaign. `agent_v1` retains its original semantics and evidence.
 
 [`FullNativeBackend`](../bridge/Sts2AgentBridge/apps/bridge/native/FullNativeBackend.cs)
@@ -645,6 +652,7 @@ data split and setup label, and publishes only a settled, checksummed journal.
 Interrupted or uncertain runs retain an unpublished `.partial`; they are not
 headless training transitions. Recording is off by default, and using it on live
 user data requires explicit retention authorization under the live guide.
-The demonstrated rest/card-reward/map path is recorded in
-[current status](STATUS.md#release-and-latest-evidence). Synthetic protocol/native-owner
-checks do not establish full native projection equivalence or broader live acceptance.
+The representative interaction results and assisted shared-v2 ending are recorded
+in [current status](STATUS.md#release-and-latest-evidence). Synthetic
+protocol/native-owner checks and bounded live cases do not establish exhaustive
+native projection equivalence or every content combination.

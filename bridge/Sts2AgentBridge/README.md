@@ -240,10 +240,12 @@ After installation and the user's requested game setup, use one client:
 Use `--agent-stop-at-map` for a controlled interaction: it stops only after all
 accepted actions reconcile and an actionable map is visible. Without that flag,
 the host continues within 8,192 decisions/90 minutes and the stricter native
-controller budgets. This is an implemented candidate awaiting live acceptance;
-its [explicit coverage and gaps](../../docs/AGENT_CONTRACT.md#native-full-run-v2-candidate)
-are narrower than the full headless engine. It retains bounded summaries and
-actual outcomes, with no mutation retries.
+controller budgets. The requested representative coverage and an assisted saved
+continuation through native Victory passed. Its
+[explicit coverage and limits](../../docs/AGENT_CONTRACT.md#native-full-run-v2-candidate)
+remain narrower than the full headless engine; a fresh uninterrupted v2 campaign
+and exhaustive branch coverage are separate claims. It retains bounded summaries
+and actual outcomes, with no mutation retries.
 
 Full mode stops after four consecutive confirmed no-mutation stale rejections.
 Only a validated accepted dispatch resets that streak; waiting or changed
@@ -491,8 +493,11 @@ data are not retained. Diagnostics do not relax stop/cleanup behavior.
 
 Use `--capability rest --rest-option lift|kindle|dig|cook|clone|hatch` with the
 unified client's usual release/installation arguments. These additions are included
-in the current combined package. Their successful effects remain offline-tested;
-Cook cancellation has separate live evidence in [current status](../../docs/STATUS.md).
+in the current combined package. All six native effects have representative live
+evidence through the shared full producer. The standalone `rest_v2` controller
+below retains its own bounds and does not expose cancellation; interactive
+cancellation uses the separate v3/v4 paths. See [current status](../../docs/STATUS.md)
+for each path's evidence.
 
 Cook removes the first two removable originals by default. Add
 `--rest-cook-slots 0 3` to choose specific **zero-based original deck slots**, in

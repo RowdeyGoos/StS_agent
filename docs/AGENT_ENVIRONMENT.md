@@ -1,7 +1,8 @@
 # Shared agent interface and Gymnasium implementation plan
 
 Created 2026-09-22 against main at `14182eb`. Status: **milestones 1–6 complete;
-milestone 7 accepted 2026-09-24 under the assisted campaign scope below**.
+milestone 7 accepted 2026-09-24 under the assisted campaign scope below;
+representative shared-interface follow-through complete 2026-09-27**.
 This document owns the execution plan for the shared agent
 interface. [HF-44–47](HEADLESS_FULL_GAME_IMPLEMENTATION.md#open-assignments) own
 the full-game consumer assignments; [status](STATUS.md) owns bridge capability
@@ -240,7 +241,7 @@ this stable candidate, then run the
 same public-only chooser through one controlled native slice and finish cleanup.
 Record fixture and live results separately. Follow
 [live development](LIVE_DEVELOPMENT.md#prepare-and-run-within-the-users-scope) for
-current authorization and manual setup; this plan is not live-run authorization.
+current authorization and setup; this plan is not live-run authorization.
 
 ### 4. Add lossless encoding and the first Gymnasium environment
 
@@ -421,57 +422,45 @@ benchmarks under [TARGET](TARGET.md).
 
 ## Execution order and validation discipline
 
-### Full shared live interface follow-through — in progress
+<a id="full-shared-live-interface-follow-through--in-progress"></a>
 
-The user requested the remaining shared interface and bridge gaps on 2026-09-24,
-after milestone 7 acceptance. Baseline work is committed as `1093aca`, `222dcb8`
-and `dbd7861`. The full headless profile is complete; the native campaign controller
-still uses its own choices and is not yet a producer of `full_run_v2`.
+### Full shared live interface follow-through — complete for the declared scope
 
-The first bridge corrections, committed in `4a03c3c`, extend terminal rewards to
-32 entries under schema 9, add exact Fake Mango pickup under schema 10, and
-implement native selectorless removal continuation. Focused native/router
-and shared-client tests passed, including all 65 actions for 32 card rewards.
-The original ten-entry merchant rewards passed live after native Continue;
-automatic removal passed after the outer-request correction (`b7ee84b`): two
-parent actions reconciled, no child selection, and an actionable map. Owned cleanup
-passed with zero overlays and 429 unchanged base files. Representative live checks
-remain distinct from fixture evidence.
+The user requested the remaining shared interface and bridge gaps after
+milestone 7. That representative non-training pass is complete as of September 27.
+The native `agent_v2` producer supplies the `full_run_v2` public graph and semantic
+candidates through the existing bridge owners, with the same public-only chooser
+as headless. The older campaign controller remains a separate client with its own
+accepted evidence; it was not substituted for shared-policy validation.
 
-The remaining implementation must provide full public native observations and
-semantic candidates across combat, potions, rewards, maps, shops, rests, events,
-Ancients and the ending; expose nested selections to the same policy callback;
-and retain exact parent/child ownership, version negotiation, reconciliation and
-public-only recording. Native Smith/Cook cancellation and Dream Catcher/Tiny
-Mailbox reward continuation now have an interactive room-module implementation
-and offline checks. Each native child is separately exposed to its callback.
-Representative live checks passed on 2026-09-25: immediate/preview cancellation
-for both options, combined card/potion collection, and separate card Skip/parent
-dismissal, with 20/20/20 actions and complete owned cleanup. The controlled rest
-client retains that evidence separately from the new full shared producer. The Dig pool audit found no
-normal-game pickup-screen caller among its Common/Uncommon/Rare relics; broader
-injected pickup screens remain a contract limit.
-These changes belong in the existing native modules, router and client. Completion
-requires a shared-policy native run through the affected decisions, appropriate
-paired/privacy/adversarial fixtures, one stable combined release and owned cleanup.
+The implemented profile covers its declared combat/hand selectors, potion
+use/discard and owned choices, ordinary/extra rewards and reroll/Sacrifice,
+map/treasure, rest/shop choices and cancellation, event/Ancient children and the
+Architect ending. Nested decisions reach the shared callback; native ownership,
+exact effects, version negotiation, reconciliation and bounded cleanup remain
+mandatory. Public live recording is implemented and opt-in; no live corpus was
+collected. The [native contract](AGENT_CONTRACT.md#native-full-run-v2-candidate)
+owns precise bounds and exclusions.
 
-The next candidate now implements native `agent_v2` graph projection and private
-semantic dispatch through the existing owners, with one shared Python callback,
-2,048 candidates, route-scoped larger responses and exact nested receipts. Rest
-and shop choices are connected; event children, combat resumption, Sphere and
-ending routes use the same coordinator. The [current candidate boundary](AGENT_CONTRACT.md#native-full-run-v2-candidate)
-is authoritative. Native projection/live validation, general potion/hand-selector
-coverage, treasure claims, removal cancellation, reward rerolls and public live
-recording remain unfinished. A bounded shared-policy case can stop at a reconciled
-map before attempting a campaign.
+The shared chooser reached native Victory in an assisted saved continuation.
+The named reward, selector, shop-policy and room-handoff follow-up cases have
+representative live evidence, with controller-specific scope recorded separately.
+Corrections discovered during testing passed affected checks, semantic review and
+one stable combined release gate; installation and exact owned cleanup passed.
+Agent-managed Steam launches, restarts and normal shutdowns were demonstrated.
+[Current status](STATUS.md) owns the accepted coverage and evidence links.
 
-This follow-through remains open. The accepted assisted campaign and legacy rest
-checks do not establish full shared native coverage or v2 live acceptance.
+This closes the requested follow-through, not every seed, branch, caller or
+unsupported shape. The saved shared-v2 ending retains its reloads and corrections;
+a fresh uninterrupted v2 campaign and unassisted policy strength remain separate
+scopes. Shapes without a concrete native caller, including broader injected Dig
+pickup screens, retain explicit limits rather than becoming a speculative queue.
+Training remains subsequent work under the [roadmap](../ROADMAP.md).
 
 The integration slice, fixed-space Gym consumer, full headless profile and
-operational delivery span the completed milestones **1 → 2 → 3 → 4 → 5 → 6**.
-Milestone 7's assisted live campaign is accepted separately. Broader native
-coverage and policy evaluation retain their own explicit evidence and limits.
+operational delivery span completed milestones **1 → 2 → 3 → 4 → 5 → 6**.
+Milestone 7's assisted campaign and this shared-v2 follow-through retain their
+separate acceptance boundaries.
 
 During implementation, run focused `tests/agent/` and affected engine tests.
 Select bridge checks through `check.py --component core|cards|items|rooms|events`

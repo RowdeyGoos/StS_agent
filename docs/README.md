@@ -28,7 +28,7 @@ The top level contains current guidance. Completed Phase 0/1 work lives in the
 ## References and results
 
 - Retired simulator, actor and experiment guides: [archive](archive/README.md#retired-simulator-pipelines).
-- Latest live results: [September 25 full-agent coverage](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md).
+- Latest live results: [September 25–27 full-agent coverage](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md).
   Earlier results: [September 12–13 multi-case ledger](evidence/MULTICASE_BRIDGE_LIVE_2026_09_12.md)
   and [Crystal Sphere](evidence/CRYSTAL_SPHERE_LIVE_2026_09_12.md). Earlier supporting
   evidence: [September 9–10 combined batch](evidence/COMBINED_BRIDGE_LIVE_2026_09_09.md)
