@@ -219,6 +219,15 @@ Combat victory is an ordinary transition within a run, not a `RunOutcome` victor
 Use the engine's explicit [RunPhase](../game/headless/run/state.py) and native
 ending evidence; errors never become fabricated losses or victories.
 
+The headless v2 adapter also exposes an immutable controller-only
+`combat_summary` (`sts_combat_summary_v1`) with attachment-local fight reference,
+ongoing/victory/defeat, HP/max HP and turn. Completed summaries retain the old
+combat's authoritative result and the run HUD after synchronous cleanup/hooks.
+This is separate from the decision/outcome wire schemas. The
+[combat task consumer](AGENT_TRAINING.md#milestone-1-usage-and-implementation-choices)
+uses it to terminate a fight without declaring run victory; `run_outcome` remains
+the genuine run endpoint or `None`.
+
 `sts_execution_report_v1` separates lifecycle from outcome. `pending/queued`
 means accepted but unresolved; `reconciled/applied` means completion verified.
 `rejected/none` covers invalid or confirmed stale actions, and

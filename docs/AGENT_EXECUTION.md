@@ -4,6 +4,7 @@ The installed `sts-agent-play` command runs the full headless public-only choose
 and records its decisions. It uses the existing engine and `full_run_v2` adapter;
 it adds no game rules. The runner, recorder, public loader and worker supervisor
 use only the standard library. NumPy/Gymnasium remain optional consumers.
+Learned combat or full-run playback additionally requires the optional `train` extra.
 
 ## Commands and outcomes
 
@@ -24,12 +25,48 @@ only genuine full-run victory earns one. Decision/time budgets produce explicit
 truncations retaining the last ready public decision. Backend/observation/policy
 failures stop execution and do not become game outcomes or retries.
 
+Add `--act1` to stop at the public completion boundary after the Act 1 boss and
+its reward screen. `RunConfig(goal="act1")` provides the same programmatic mode.
+The command summary adds `goal` and `act1_clears`. The canonical trajectory ends
+with `truncated/external_stop`, preserving the ready act-transition decision and
+canonical reward zero; this successful task does not claim full-campaign victory.
+The [Act 1 evaluator](AGENT_TRAINING.md#act-1-training-and-configurable-act-rewards)
+reports clear rates and paired improvements separately from these canonical outcomes.
+
 The JSON command summary contains artifact paths, actual outcomes and per-episode
 reset, observation/candidate creation, policy, step, recording and total timings.
 Episode total measures engine construction through publication; batch elapsed
 also includes provenance/audit preparation and process startup. These timings are
 diagnostics and are not included in model inputs. Return codes are 0 for completed
 episodes (including defeat/cutoff), 1 for failure and 130 for cancellation.
+
+### Combat checkpoint playback
+
+After [imitation training](AGENT_TRAINING.md#milestone-3-usage-and-implementation-choices),
+pass `--combat-checkpoint runs/imitation/final.sts-model` to `sts-agent-play`.
+The supervisor validates the bundle and freezes its SHA-256 before spawning;
+each child rejects a changed file and loads its own CPU model. The trajectory's
+policy identity binds the checkpoint digest and unchanged noncombat heuristic.
+The controller routes every active-combat-owned decision, including nested
+selectors, to the learned policy. Completed fights hand control back to the
+heuristic. Both policies receive only the immutable public decision and select
+advertised candidates through the existing adapter.
+
+`sts-agent-evaluate --checkpoint ... --hybrid` pairs ordinary-HP Ironclad A0
+campaigns against that heuristic on development seeds. It records actual run
+outcomes, cutoffs/failures, potion-use commands and the last observed public
+act/floor/HP. That HUD snapshot is labelled explicitly: terminal run outcomes do
+not contain a final HP field. This evaluates a hybrid policy; it does not train
+noncombat choices or alter the canonical sparse full-run reward.
+
+Full-run checkpoint playback uses `sts-agent-play --checkpoint PATH --output-dir
+runs/run-playback`. This is mutually exclusive with `--combat-checkpoint`: the
+bundle's task identity must match the selected mode. Full-run models receive
+every ready decision through the same legal-candidate interface, without a
+heuristic fallback. Workers pin and recheck the bundle digest before play.
+The [full-run training guide](AGENT_TRAINING.md#milestone-6-usage-and-implementation-choices)
+describes the separate reward identity, actor transfer and genuine campaign
+comparison against the heuristic and combat hybrid.
 
 ## Public format and private replay separation
 
@@ -45,6 +82,11 @@ files ending in `.trajectory.jsonl`. Each artifact contains:
 3. A completion record with the actual final outcome/cutoff, step count and SHA-256
    of the exact preceding bytes. No records may follow completion.
 
+The loader additionally exposes `Trajectory.sha256`, a SHA-256 of the entire
+published file including its footer. This adds loader metadata without changing
+the v1 wire format or sparse-reward validator. Combat training uses that complete
+digest to join a [separate task sidecar](AGENT_TRAINING.md#milestone-2-usage-and-record-semantics).
+
 Build identity hashes the shipped `game/**/*.py` sources; rules identity hashes
 `game/headless/**/*.py`; the policy identity names and hashes the reference chooser.
 Paths are normalized relative to the package, so checkout and installed-wheel
@@ -59,7 +101,9 @@ identity. Scenario/split identifiers are public metadata and must not contain
 private replay information. Retained live corpora are outside this delivery.
 
 Private base seeds, per-episode seeds and replay configuration are written only
-to `sts_private_replay_v1` audit files. By default, `runs/train-private` is a sibling
+to `sts_private_replay_v1` audit files for ordinary campaigns; Act 1 runner mode
+uses `sts_private_replay_v2` with its explicit `goal` in the configuration.
+By default, `runs/train-private` is a sibling
 of `runs/train`; `--audit-dir` can select another disjoint directory. Parent/child
 overlap and aliases resolving to the same tree reject. Audit directories require
 mode 0700, and newly created audit files use 0600. Public artifacts contain no
@@ -133,6 +177,11 @@ audit inputs are excluded. Nonterminal cutoffs retain the successor mask for
 bootstrapping; capacity errors propagate without clipping or skipping samples.
 See [encoding and capacity limits](AGENT_ENCODING.md). This delivers data loading,
 not a training algorithm or training-library performance claim.
+
+These original loaders always return canonical run rewards and flags. For combat
+objectives, use `game.agent.training.dataset`: it validates an explicit trajectory/
+sidecar pair and returns task rewards and task flags, with objective identity on
+each encoded sample. See [combat loading and offline rescoring](AGENT_TRAINING.md#milestone-2-usage-and-record-semantics).
 
 ## Live boundary
 

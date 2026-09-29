@@ -908,3 +908,82 @@ This does not widen the live `agent_v1` profile or change its accepted package;
 [public trajectories, data loaders, the installed agent CLI and bounded workers](AGENT_EXECUTION.md)
 now deliver headless operational execution. Autonomous live campaigns remain
 outside that delivery.
+
+The [training guide](AGENT_TRAINING.md) adds isolated combat episodes, configurable
+public reward components, linked training records with offline rescoring, and
+bounded reference-policy baseline evaluation over the same headless public adapter.
+Milestone 3 adds a public graph actor-critic, bounded heuristic imitation, separate
+inference/private resume artifacts and hybrid campaign evaluation with learned
+combat choices. The [training results](AGENT_TRAINING.md#milestone-3-usage-and-implementation-choices)
+distinguish imitation agreement from gameplay performance. Milestone 4 adds bounded
+masked combat PPO, cutoff-aware advantages, complete-update resume and measured
+learning on repeated controlled cases; its [usage and evidence](AGENT_TRAINING.md#milestone-4-usage-and-implementation-choices)
+retain combat and hybrid development results. Milestone 5 adds a finite five-stage
+curriculum, three learner replicas, frozen paired development/held-out benchmarks
+and locked checkpoint selection. Its [measured results](AGENT_TRAINING.md#milestone-5-measured-results)
+are inconclusive: selected PPO won 234/256 held-out fights versus the heuristic's
+232/256, with five selector-loop cutoffs. Neither hybrid campaign won. This does
+not change the accepted live bridge package or establish a strong learned policy.
+Milestone 6 now adds canonical full-run demonstrations, combat actor transfer
+with train-only vocabulary expansion and a reset run critic, full-run PPO over
+both Ironclad A0 regions, and paired genuine-start heuristic/hybrid/learned
+evaluation. Its [usage and measured evidence](AGENT_TRAINING.md#milestone-6-usage-and-implementation-choices)
+separate assisted demonstrations from normal campaign results. Milestone 7's
+[delivery checks](AGENT_TRAINING.md#milestone-7-usable-commands-and-final-delivery-checks)
+are complete: fresh core/train wheel installations, installed combat/full-run
+training and evaluation, exact resume and parallel playback, plus broad Python
+integration. Missing checkpoint dependencies and malformed curriculum settings
+now fail clearly. The first
+full-run pilot did not improve playing strength: it earned no ordinary-run
+victory rewards and the fully learned checkpoint died on floor 1 in every
+held-out case. It is an integration result, not a replacement for the combat
+hybrid; later training needs a useful run-victory signal. The subsequent
+[staged diagnostic](AGENT_TRAINING.md#staged-learning-diagnostic-2026-09-29)
+completed 32 paired development episodes and a 320-state probe. It locates the
+largest sampled behavior regression during PPO: all 2,048 pilot training
+decisions had zero advantages and targets, leaving entropy regularization to
+drive updates. Fully learned transfer/imitation also looped in a card selector
+on three of four cases each. Subsequently requested
+[configurable full-run rewards](AGENT_TRAINING.md#configurable-full-run-rewards)
+now add versioned combat outcomes, post-win HP and action costs alongside run
+endings. Objective changes retain actor weights and explicitly reset the critic
+and optimizer. Canonical records and evaluation continue to measure actual run
+victory. The [shared policy-action layer](AGENT_TRAINING.md#shared-policy-actions-and-selection-order)
+now also blocks deselection in known deferred optional and multiple-card choices,
+using a new versioned mask in imitation, PPO and checkpoint playback. It covers
+combat, relic, Cook and Sea Glass selectors. Canonical legal actions remain complete,
+ordered picks are preserved, and confirmation stays separate. Existing checkpoints
+retain their old policy; the current Act 1 preset enables the broader rule through
+an explicit action-policy reset. The [PPO signal guard](AGENT_TRAINING.md#ppo-signal-guard-and-three-learner-pilot)
+now skips optimizer updates only when every advantage and current value error is
+exactly zero, preserving weights and optimizer state while advancing collection.
+Reports distinguish processed, trained and skipped decisions, and private resume
+state retains that accounting. Broader selector training remains follow-up work;
+the paired development pilot removed the sampled mandatory-single-card loops and
+showed useful shaped signal and modest progress gains, but no run-win improvement.
+Optional selection toggles and repeated reward opening/closing remain measured
+weaknesses of those historical checkpoints; the new filter targets the former.
+The current user-selected curriculum goal is now **Act 1 completion**, with a
+[configurable act-clear reward and paired Act 1 evaluation](AGENT_TRAINING.md#act-1-training-and-configurable-act-rewards).
+Episodes stop successfully at the public Act 1 completion boundary; reports
+measure Act 1 clear rate separately from canonical full-campaign victory. The
+goal and reward weights are bound to objective/checkpoint identity, and an
+objective transfer retains the actor while resetting critic and optimizer state.
+The first [Act 1 pilot](AGENT_TRAINING.md#act-1-pilot-2026-09-29) trained three
+learners for 10,240 decisions each. All three and the initializer cleared 0/16
+paired validation starts; the heuristic cleared 1/16. Two learners reached higher
+floors on average, while one regressed and retained an optional-selection loop.
+Only one of 303 training episodes cleared Act 1. No checkpoint was promoted;
+targeted late-act/boss practice and successful demonstrations are the next
+recommendation.
+The local [decision analysis tools](AGENT_TRAINING.md#decision-analysis-tools)
+now inspect the existing pilot's 383 public trajectories (44,027 decisions),
+including its 80 evaluation episodes and 303 training episodes. The viewer has
+split/evidence filters, floor timelines, exact decision links, PPO reward/learner
+diagnostics, and same-state comparison of explicitly loaded checkpoints. Its
+exploratory flags locate both known optional-selection loops. These are public
+recording/inference results; no additional playing-strength result is claimed.
+Combat and full-run PPO now support
+[persistent parallel collection](AGENT_TRAINING.md#parallel-ppo-collection-2026-09-29)
+with a fixed total rollout budget, deterministic worker allocation and exact
+resume at completed update boundaries. The default serial path remains available.

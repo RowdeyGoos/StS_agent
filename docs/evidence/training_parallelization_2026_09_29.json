@@ -1,0 +1,455 @@
+{
+  "artifact_audit": {
+    "actions": 12288,
+    "canonical_trajectories": 231,
+    "exact_resume_bundles": 48,
+    "implementation": {
+      "build": "c18ff9f859a51c4df1a97dde9a367665634ce77e12ff04992d7d0a857e939a1e",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "no_partial_benchmark_artifacts": true,
+    "permissions_valid": true,
+    "private_files_checked": 298,
+    "schema": "sts_parallel_ppo_artifact_audit_v1",
+    "seconds": 52.183559708995745,
+    "serial_rollout_and_weights_identical_to_previous_optimization": true,
+    "status": "complete",
+    "unique_training_reset_seeds_per_invocation": true
+  },
+  "artifacts": [
+    {
+      "bytes": 7363,
+      "path": "runs/training-parallel-20260929/benchmark.py",
+      "sha256": "4f3b94651c0cb6f2a6c59b241c3173c6a49c43c37ccfb4792d1cab37ac2b5574"
+    },
+    {
+      "bytes": 3834,
+      "path": "runs/training-parallel-20260929/matched_reference.py",
+      "sha256": "34a3d857f70e73a79074ae3228252a79426968954bb1ba453c31d8bf2200ae96"
+    },
+    {
+      "bytes": 4986,
+      "path": "runs/training-parallel-20260929/audit.py",
+      "sha256": "b0f0902b8ee09714a588c1629ac582f8618935c3896b2ec4ec68cc4336b0ff17"
+    },
+    {
+      "bytes": 5564,
+      "path": "runs/training-parallel-20260929/finalize.py",
+      "sha256": "c77fc9a181876afcfe5bd8842d163fc37df0b7166ce5cf90c14fde0d24e40514"
+    },
+    {
+      "bytes": 1694,
+      "path": "runs/training-parallel-20260929/benchmark/protocol.json",
+      "sha256": "a2f85bc9b9cffbb7755defd26bfbbadcfa717d048f72d9d72765b27ba71e5e50"
+    },
+    {
+      "bytes": 24637,
+      "path": "runs/training-parallel-20260929/benchmark/benchmark.json",
+      "sha256": "39ca94cf4a3ad38773120e8e600ab0517f95c78b26367b356d909e436c9ac608"
+    },
+    {
+      "bytes": 757,
+      "path": "runs/training-parallel-20260929/matched-reference-verified/result.json",
+      "sha256": "34ecdb3bb9da1ef059a772b264750412836468a520fd5c7194abd85595c99322"
+    },
+    {
+      "bytes": 840,
+      "path": "runs/training-parallel-20260929/validation.json",
+      "sha256": "2bd838510917c7cfc2ed2e983ee12d93e5ef2c3bdd9c21cf405bb82e6ec8d686"
+    },
+    {
+      "bytes": 0,
+      "path": "runs/training-parallel-20260929/compile.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 1581,
+      "path": "runs/training-parallel-20260929/agent-package.log",
+      "sha256": "98f10f64ff96522b53a8360a39d4c6f01a6b41ad957189b009b82eaea992095a"
+    },
+    {
+      "bytes": 756,
+      "path": "runs/training-parallel-20260929/audit.json",
+      "sha256": "bf6ddbc145b55bf8633e0a60d0e513226b8b1d75fd390cca177d032f8276e7f4"
+    },
+    {
+      "bytes": 24728,
+      "path": "runs/training-parallel-20260929/benchmark/workers-1-replica-1/ppo.json",
+      "sha256": "dcaa5010782c8c5ec3bf2139f850588e740e967b8f64d2757665d82360a68c58"
+    },
+    {
+      "bytes": 1354,
+      "path": "runs/training-parallel-20260929/benchmark/workers-1-replica-1/timings.json",
+      "sha256": "14e205a15c1d1047c6c0d267fcd8c14c1bd5de729e7e18ad54ac8eb925937025"
+    },
+    {
+      "bytes": 31158,
+      "path": "runs/training-parallel-20260929/benchmark/workers-2-replica-1/ppo.json",
+      "sha256": "7f504aa1a6da3e36105f3a1801a4ec29c3c9655afe4760a5f0e81241072ac388"
+    },
+    {
+      "bytes": 1353,
+      "path": "runs/training-parallel-20260929/benchmark/workers-2-replica-1/timings.json",
+      "sha256": "36d0a2cb041fbccb5920e3c62553ffdb821b7bfd78d98cd5caab41598bf661cc"
+    },
+    {
+      "bytes": 31343,
+      "path": "runs/training-parallel-20260929/benchmark/workers-4-replica-1/ppo.json",
+      "sha256": "5c20c8902d90af3bb68178b89915db60b2f5f0bee56be9044f67ad9ff9317ead"
+    },
+    {
+      "bytes": 1354,
+      "path": "runs/training-parallel-20260929/benchmark/workers-4-replica-1/timings.json",
+      "sha256": "9277c0d6df4bfefb86edff428337230010f6a43867c1a1488d847bb30d37d47c"
+    },
+    {
+      "bytes": 39727,
+      "path": "runs/training-parallel-20260929/benchmark/workers-8-replica-1/ppo.json",
+      "sha256": "72aecbbdabf28f60f1e53ac4916242b9eb2d84f5058e381395fd62364e719aa2"
+    },
+    {
+      "bytes": 1351,
+      "path": "runs/training-parallel-20260929/benchmark/workers-8-replica-1/timings.json",
+      "sha256": "2b83cd4bea937e13f690cffd4eb61252eedcf459534ab6bf6894742d963687a8"
+    },
+    {
+      "bytes": 24728,
+      "path": "runs/training-parallel-20260929/benchmark/workers-1-replica-2/ppo.json",
+      "sha256": "769f703261d647148cf97129a34143a056a6ec2bcecb7b9260f6ca4fad9fb99f"
+    },
+    {
+      "bytes": 1356,
+      "path": "runs/training-parallel-20260929/benchmark/workers-1-replica-2/timings.json",
+      "sha256": "bbc5d3208a446df5d73be2c0dc3773662cf33d32da8f6eb952cca35407ea0cf3"
+    },
+    {
+      "bytes": 31158,
+      "path": "runs/training-parallel-20260929/benchmark/workers-2-replica-2/ppo.json",
+      "sha256": "16deddf1700216052db0c39fa65322049afe46bd732d9942af89945af1f0068d"
+    },
+    {
+      "bytes": 1353,
+      "path": "runs/training-parallel-20260929/benchmark/workers-2-replica-2/timings.json",
+      "sha256": "42f0326a2e97b057f4c633aec536a87788ac5f4237394bd9a9778bafb2ca8d80"
+    },
+    {
+      "bytes": 31345,
+      "path": "runs/training-parallel-20260929/benchmark/workers-4-replica-2/ppo.json",
+      "sha256": "e60b89e79d4a5de33291a9aae8efdd0a4c37efa05d75fcacfad3fdf3e5a1551d"
+    },
+    {
+      "bytes": 1354,
+      "path": "runs/training-parallel-20260929/benchmark/workers-4-replica-2/timings.json",
+      "sha256": "9976d92b6853a6595ae6174d6fb7667e8fb4adccc8fff84588c80207742e890c"
+    },
+    {
+      "bytes": 39733,
+      "path": "runs/training-parallel-20260929/benchmark/workers-8-replica-2/ppo.json",
+      "sha256": "7a9af35e9e67e002ced63a7b91b35f787316f7642c01af3a7467a409d6177bc0"
+    },
+    {
+      "bytes": 1355,
+      "path": "runs/training-parallel-20260929/benchmark/workers-8-replica-2/timings.json",
+      "sha256": "1f22ec629682f1267509c0982b3182ec5db9b1873b954803ae05d405248ce4d3"
+    },
+    {
+      "bytes": 24727,
+      "path": "runs/training-parallel-20260929/benchmark/workers-1-replica-3/ppo.json",
+      "sha256": "be355cfb28d95ca0ca86ae75b76d733e31e9cfa8e2c40b2c4d52030674ba7614"
+    },
+    {
+      "bytes": 1352,
+      "path": "runs/training-parallel-20260929/benchmark/workers-1-replica-3/timings.json",
+      "sha256": "ef7270717d802953d5e063280d3055f5f8aa6b3defa562e1f6ddcb1bda363796"
+    },
+    {
+      "bytes": 31159,
+      "path": "runs/training-parallel-20260929/benchmark/workers-2-replica-3/ppo.json",
+      "sha256": "e19b8328a4813de085a389555767706e5b162c9cf075e6e9d77f02cb10e282d5"
+    },
+    {
+      "bytes": 1352,
+      "path": "runs/training-parallel-20260929/benchmark/workers-2-replica-3/timings.json",
+      "sha256": "ee13ef10ac6a129d80b734cd3ac744afd2d544d3ce16075293354990562148ec"
+    },
+    {
+      "bytes": 31344,
+      "path": "runs/training-parallel-20260929/benchmark/workers-4-replica-3/ppo.json",
+      "sha256": "9dac5c4eed977649a2faedf7734276691c831308cb9a8b516431857f3851e756"
+    },
+    {
+      "bytes": 1355,
+      "path": "runs/training-parallel-20260929/benchmark/workers-4-replica-3/timings.json",
+      "sha256": "ff5129ea2a1504f8cfed03a6368da3849019e98e839f10a9bfaf4d06d67448b2"
+    },
+    {
+      "bytes": 39734,
+      "path": "runs/training-parallel-20260929/benchmark/workers-8-replica-3/ppo.json",
+      "sha256": "60bc4e78cd671be0de1380306eafede056275b0afb5ebaad3e9e03a749ce3f9d"
+    },
+    {
+      "bytes": 1355,
+      "path": "runs/training-parallel-20260929/benchmark/workers-8-replica-3/timings.json",
+      "sha256": "10f49cc15b21793f462afe72e834470f55c643f2b0ac292ad512828f3756101b"
+    }
+  ],
+  "benchmark_seconds": 248.91151620820165,
+  "changes": [
+    {
+      "bytes": 11909,
+      "path": "game/agent/training/parallel.py",
+      "sha256": "698d5466816ee79884238b4e0848ddd6671aad1ac37083175e0193bcf6e0f959"
+    },
+    {
+      "bytes": 11301,
+      "path": "game/agent/training/ppo.py",
+      "sha256": "45d18de6c3bfd7979a2c7b30a4865c12789ed30e50bdc9516c13e1dc67ed3f2f"
+    },
+    {
+      "bytes": 15868,
+      "path": "game/agent/training/rollout.py",
+      "sha256": "481288be0ea82e1bfab3a8cb02eaa09ba6b48b80710e1f95be4b6888b8b5646f"
+    },
+    {
+      "bytes": 18562,
+      "path": "game/agent/training/checkpoint.py",
+      "sha256": "629051a7612a803c867b6840dfd682aeaf9a83b734f7f73b0b6be94504a76352"
+    },
+    {
+      "bytes": 8755,
+      "path": "game/agent/training/ppo_run.py",
+      "sha256": "bb78ed5cfdb62b105ba267c50e7814fcdabc54e7d5fc0ba7ba0643557563dc42"
+    },
+    {
+      "bytes": 13955,
+      "path": "game/cli/agent_train.py",
+      "sha256": "f146b3056021631db5a5906421d3e260a1440bd2cf2aa2807a3c361fa9acbf62"
+    },
+    {
+      "bytes": 16107,
+      "path": "tests/agent/test_ppo_parallel.py",
+      "sha256": "7bf193bbeb1f40fb92b2503c6b23e82845e25b8e1f75a96a2c63d0c51c204de5"
+    },
+    {
+      "bytes": 21508,
+      "path": "tests/agent/test_ppo.py",
+      "sha256": "b87580e3e61ea1ca1538c71b2ea6e0239c2093a8e5463fbf9b079723e2e03c93"
+    },
+    {
+      "bytes": 15203,
+      "path": "README.md",
+      "sha256": "a3a047553bb5e4af4d5137ae32fe34d7d3dae0b67ae40e1c93c47f11aa2455a0"
+    },
+    {
+      "bytes": 104235,
+      "path": "docs/AGENT_TRAINING.md",
+      "sha256": "5d6eebfc5c0fc3acd8ef2c860aea75f4d948f4fd7c7dba055487616f56ab7333"
+    },
+    {
+      "bytes": 79475,
+      "path": "docs/STATUS.md",
+      "sha256": "4ba726fe13afba2c212d80e9e1878f8ce5a878fac07b82fab43872a67a921d8d"
+    }
+  ],
+  "design": {
+    "budgets": "Total rollout quota divided across active workers; complete episode segments merged by index",
+    "compatibility": "Existing inference bundles and PPOConfig JSON remain unchanged",
+    "encounters": "Offset iteration*active_workers+worker_index, then stride active_workers",
+    "execution_option": "PPO --workers 1..8; new-run default1, resume restores count",
+    "lifecycle": "No live game or worker RNG survives a round; cancellation/failure closes pool without retry",
+    "ownership": "One synchronous parent optimizer; persistent spawn collectors, one Torch thread each",
+    "persistence": "Private PPO resume v2 binds worker count/schedule; same-source v1 remains serial",
+    "policy": "Copied frozen NumPy weights; worker fingerprint checked before and after collection",
+    "rng": "Private parent draws worker seeds; disjoint reserved episode ranges; unused indexes skipped"
+  },
+  "identical_workload_reference": {
+    "all_likelihoods_values_rewards_masks_and_gae_equal": true,
+    "all_public_states_actions_equal": true,
+    "decisions": 512,
+    "implementation": {
+      "build": "c18ff9f859a51c4df1a97dde9a367665634ce77e12ff04992d7d0a857e939a1e",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "job_count": 4,
+    "note": "One serial reference timing; compare to cold four-worker collection median, not entire invocation",
+    "schema": "sts_parallel_ppo_matched_reference_v1",
+    "sequential_collection_seconds": 17.126648207893595,
+    "status": "complete",
+    "total_trajectory_actions": 512
+  },
+  "implementation": {
+    "build": "c18ff9f859a51c4df1a97dde9a367665634ce77e12ff04992d7d0a857e939a1e",
+    "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+    "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+    "target": "sts2-v0.107.1-steam-23811903"
+  },
+  "inputs": {
+    "config": "configs/training/full_run_ppo.json",
+    "config_sha256": "7871f309b5b4e396d205553ec3527805b44c95ce9da116883b30a71cc514fdf8",
+    "host": {
+      "logical_cpus": 18,
+      "machine": "arm64",
+      "os_version": "26.6.2",
+      "system": "Darwin"
+    },
+    "implementation": {
+      "build": "c18ff9f859a51c4df1a97dde9a367665634ce77e12ff04992d7d0a857e939a1e",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "model": "runs/full-run-milestone6-20260929/ppo-mixed/final.sts-model",
+    "model_sha256": "afc6d63bd5a3be70c8d8243e689e3764db256f645a951f78e4de58aad1345248",
+    "plan": {
+      "cache_state": "OS caches and background load uncontrolled",
+      "child_timeout_seconds": 360,
+      "comparability": "Same total decisions and initial model; worker count changes sampled games and cutoffs",
+      "memory": "Parent RSS only; excludes collector processes and is not total pool memory",
+      "no_heldout_test_cases": true,
+      "replicas": 3,
+      "rounds_per_invocation": 2,
+      "scheduling": "Settings interleaved by replica; invocations run sequentially",
+      "startup": "Fresh parent process per replica; workers reused for second round",
+      "threads_per_process": 1,
+      "total_decisions_per_invocation": 1024,
+      "total_decisions_per_round": 512,
+      "workers": [
+        1,
+        2,
+        4,
+        8
+      ]
+    },
+    "purpose": "Throughput only; no policy selection or strength claim",
+    "schema": "sts_parallel_ppo_benchmark_v1",
+    "script_sha256": "4f3b94651c0cb6f2a6c59b241c3173c6a49c43c37ccfb4792d1cab37ac2b5574"
+  },
+  "limits": [
+    "Worker count changes sampled games and cutoffs; fixed-budget timings do not prove learning equivalence",
+    "All benchmark run-victory rewards were zero; no playing-strength claim or held-out selection",
+    "Parent RSS excludes collector processes; aggregate pool memory was not measured",
+    "Interrupted workers can leave recordings absent from stopped-report progress counts",
+    "Exact resume still requires unchanged source/runtime/settings and matching rollout boundaries",
+    "Python parallel callers must close learners and use a spawn-safe entry point",
+    "One early matched-reference verification script used the wrong Trajectory attribute; corrected helper reran into a fresh verified directory. Its earlier output is excluded from performance evidence."
+  ],
+  "observed_phase_timing": {
+    "implementation_and_focused_checks_done_utc": "2026-09-29 09:29:10 UTC",
+    "note": "Elapsed interval includes source inspection and implementation; review overlapped work. Artifact audit ran during regressions. No packaging/native release or user wait was required.",
+    "task_started_utc": "2026-09-29 09:14:56 UTC"
+  },
+  "schema": "sts_training_parallelization_evidence_v1",
+  "status": "accepted",
+  "timing_summary": [
+    {
+      "cold_collection_seconds_median": 16.694667000090703,
+      "process_seconds": [
+        36.09392629098147,
+        37.373388125095516,
+        37.67310658306815
+      ],
+      "process_seconds_median": 37.373388125095516,
+      "replica_rollouts_and_final_weights_identical": true,
+      "update_seconds_median": 1.1479972919914871,
+      "warm_collection_seconds_median": 17.153982459101826,
+      "workers": 1
+    },
+    {
+      "cold_collection_seconds_median": 9.02839474985376,
+      "process_seconds": [
+        21.416261666920036,
+        21.504905707901344,
+        21.44967629108578
+      ],
+      "process_seconds_median": 21.44967629108578,
+      "replica_rollouts_and_final_weights_identical": true,
+      "update_seconds_median": 1.131611458491534,
+      "warm_collection_seconds_median": 8.809688874986023,
+      "workers": 2
+    },
+    {
+      "cold_collection_seconds_median": 5.508370792027563,
+      "process_seconds": [
+        14.034823041176423,
+        14.143023874843493,
+        14.091407041996717
+      ],
+      "process_seconds_median": 14.091407041996717,
+      "replica_rollouts_and_final_weights_identical": true,
+      "update_seconds_median": 1.167314499965869,
+      "warm_collection_seconds_median": 4.8574477499350905,
+      "workers": 4
+    },
+    {
+      "cold_collection_seconds_median": 3.8582027920056134,
+      "process_seconds": [
+        10.28123650001362,
+        10.40135966683738,
+        10.398194750072435
+      ],
+      "process_seconds_median": 10.398194750072435,
+      "replica_rollouts_and_final_weights_identical": true,
+      "update_seconds_median": 1.1360051669180393,
+      "warm_collection_seconds_median": 2.7293489589355886,
+      "workers": 8
+    }
+  ],
+  "validation": {
+    "affected_tests_passed": 665,
+    "commands": [
+      {
+        "arguments": [
+          "-m",
+          "compileall",
+          "-q",
+          "game",
+          "tests"
+        ],
+        "check": "compile",
+        "exit_code": 0,
+        "seconds": 0.08356375014409423
+      },
+      {
+        "arguments": [
+          "-m",
+          "pytest",
+          "-q",
+          "tests/agent",
+          "tests/test_package_layout.py"
+        ],
+        "check": "agent-package",
+        "exit_code": 0,
+        "seconds": 323.0070540418383
+      }
+    ],
+    "diff_check_passed": true,
+    "early_focused_checks": [
+      {
+        "seconds": 28.34,
+        "tests": 46
+      },
+      {
+        "seconds": 27.13,
+        "tests": 14
+      }
+    ],
+    "independent_review": {
+      "elapsed_seconds": 272,
+      "mode": "read-only source inspection, no extra tests",
+      "scope": [
+        "frozen policy ownership",
+        "seed allocation and encounter rotation",
+        "merge and GAE boundaries",
+        "cancellation and process/thread cleanup",
+        "private checkpoint compatibility",
+        "CLI integration"
+      ],
+      "verdict": "accepted, no blocking semantic regression"
+    },
+    "installed_cli_workers_help_verified": true
+  }
+}

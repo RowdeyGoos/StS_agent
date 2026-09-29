@@ -1,0 +1,4314 @@
+{
+  "checkout_commit": "05445c65",
+  "checkpoint": {
+    "architecture": {
+      "hidden_size": 48,
+      "message_layers": 2,
+      "schema": "sts_graph_actor_critic_v1"
+    },
+    "feature_identity": "sts_learned_public_graph_v1:2c6bd7795771217e1554cdab43af74579524d508369289008dc8d03e4a6c724e",
+    "path": "runs/imitation-milestone3-model-20260928-verified/final.sts-model",
+    "reward_spec": {
+      "schema": "sts_training_reward_v1",
+      "weights": {
+        "combat_loss": 0.0,
+        "combat_win": 1.0,
+        "end_turn_action": 0.0,
+        "potion_use_action": 0.0,
+        "win_hp_fraction": 0.0
+      }
+    },
+    "sha256": "3c6da0a495945dd9ff61d5cbd27c47f52cadc4111a4c968fe45043c2175ebf94",
+    "weights_sha256": "db8bfe01b879033c15134b52f80e32eb8d0e93ab874fd2075bdc4531c722f20b"
+  },
+  "corpus_provenance": {
+    "note": "Demonstrations were recorded during development before final checkpoint/CLI corrections; original trajectory identities are preserved, and all trajectories/sidecars are revalidated on loading.",
+    "train": {
+      "original_builds": [
+        "9366b00f8a3912db8f1bfb4bbc9aa98229c7af5b5bb33d8e430b91b96dc8e68e"
+      ],
+      "original_policies": [
+        "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b"
+      ],
+      "original_rules": [
+        "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c"
+      ]
+    },
+    "validation": {
+      "original_builds": [
+        "d9bc0f83ae67d7a161016cf57136a8dbc5e5f41de341be3cb2b6e2f6be544cdd"
+      ],
+      "original_policies": [
+        "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b"
+      ],
+      "original_rules": [
+        "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c"
+      ]
+    }
+  },
+  "evidence_levels": {
+    "combat": "controlled_fixture",
+    "demonstrations": "controlled_fixture",
+    "hybrid": "headless_rollout",
+    "overfit": "synthetic_public_choices",
+    "worker_playback": "headless_rollout"
+  },
+  "first_fixed_encoding_batch": {
+    "encounter": "overgrowth_nibbit",
+    "evidence": "controlled_fixture",
+    "finite_backward": true,
+    "legal_candidates": 6,
+    "loss_approx": 1.7337327,
+    "note": "Development experiment before packing; not rebound to the final implementation identity.",
+    "padded_observation_bytes": 6789184,
+    "semantic_nodes": 86
+  },
+  "implementation": {
+    "build": "2837ea66e9ce82055d8850ecbae7d016a07bc20b7591ae1b68def75136dd9edb",
+    "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+    "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+    "target": "sts2-v0.107.1-steam-23811903"
+  },
+  "limits": [
+    "Small development corpora/cases; no held-out test seeds consumed and no strong-policy claim.",
+    "Every warm-up value target was a victory return; value calibration has not been demonstrated.",
+    "Hybrid HP is explicitly the last public HUD, not HP at the terminal outcome.",
+    "Worker smoke case 1 repeatedly selected/deselected in the unfamiliar regent_cosmic_indifference selector until its 16-decision budget; legal execution is not good play.",
+    "CPU resume is between completed offline updates on the same implementation/runtime/corpus; no mid-combat continuation.",
+    "Python 3.10 syntax and dependency compatibility checked; runtime validation used Python 3.11.15.",
+    "Local model binaries/trajectories remain under ignored runs/; this retained report records identities and measurements."
+  ],
+  "recorded_at": "2026-09-28T20:30:31.360676+00:00",
+  "reports": {
+    "combat": {
+      "by_encounter": {
+        "overgrowth_cubex": {
+          "heuristic": {
+            "attempted": 1,
+            "component_totals": {
+              "combat_loss": 0.0,
+              "combat_win": 1.0,
+              "end_turn_action": 4.0,
+              "potion_use_action": 0.0,
+              "win_hp_fraction": 0.7375
+            },
+            "cutoffs": 0,
+            "decisions_per_second": 18.14502519391754,
+            "failures": 0,
+            "losses": 0,
+            "mean_hp_on_win": 59.0,
+            "mean_task_return": 1.0,
+            "steps": 17,
+            "timings": {
+              "encoding_seconds": 0.2487612501718104,
+              "initialization_seconds": 0.0015107081271708012,
+              "policy_seconds": 0.11469271080568433,
+              "projection_seconds": 0.18614812404848635,
+              "recording_seconds": 0.3404199597425759,
+              "simulation_dispatch_seconds": 0.03801295789889991,
+              "total_seconds": 0.9368959160055965
+            },
+            "win_rate": 1.0,
+            "win_rate_wilson_95": [
+              0.20654931437723745,
+              1.0
+            ],
+            "wins": 1
+          },
+          "imitation": {
+            "attempted": 1,
+            "component_totals": {
+              "combat_loss": 0.0,
+              "combat_win": 1.0,
+              "end_turn_action": 4.0,
+              "potion_use_action": 0.0,
+              "win_hp_fraction": 0.7375
+            },
+            "cutoffs": 0,
+            "decisions_per_second": 13.865745329960713,
+            "failures": 0,
+            "losses": 0,
+            "mean_hp_on_win": 59.0,
+            "mean_task_return": 1.0,
+            "steps": 17,
+            "timings": {
+              "encoding_seconds": 0.24501499952748418,
+              "initialization_seconds": 0.0015653339214622974,
+              "policy_seconds": 0.43896829383447766,
+              "projection_seconds": 0.16214391635730863,
+              "recording_seconds": 0.3349981657229364,
+              "simulation_dispatch_seconds": 0.036328084068372846,
+              "total_seconds": 1.2260429998859763
+            },
+            "win_rate": 1.0,
+            "win_rate_wilson_95": [
+              0.20654931437723745,
+              1.0
+            ],
+            "wins": 1
+          },
+          "random_legal": {
+            "attempted": 1,
+            "component_totals": {
+              "combat_loss": 1.0,
+              "combat_win": 0.0,
+              "end_turn_action": 7.0,
+              "potion_use_action": 0.0,
+              "win_hp_fraction": 0.0
+            },
+            "cutoffs": 0,
+            "decisions_per_second": 19.414307460052026,
+            "failures": 0,
+            "losses": 1,
+            "mean_hp_on_win": null,
+            "mean_task_return": 0.0,
+            "steps": 17,
+            "timings": {
+              "encoding_seconds": 0.2596345420461148,
+              "initialization_seconds": 0.00147387501783669,
+              "policy_seconds": 3.9207981899380684e-05,
+              "projection_seconds": 0.1998935854062438,
+              "recording_seconds": 0.36988083366304636,
+              "simulation_dispatch_seconds": 0.03734324988909066,
+              "total_seconds": 0.8756428749766201
+            },
+            "win_rate": 0.0,
+            "win_rate_wilson_95": [
+              0.0,
+              0.7934506856227626
+            ],
+            "wins": 0
+          }
+        },
+        "overgrowth_fuzzy": {
+          "heuristic": {
+            "attempted": 1,
+            "component_totals": {
+              "combat_loss": 0.0,
+              "combat_win": 1.0,
+              "end_turn_action": 3.0,
+              "potion_use_action": 0.0,
+              "win_hp_fraction": 0.8875
+            },
+            "cutoffs": 0,
+            "decisions_per_second": 19.193891961532273,
+            "failures": 0,
+            "losses": 0,
+            "mean_hp_on_win": 71.0,
+            "mean_task_return": 1.0,
+            "steps": 14,
+            "timings": {
+              "encoding_seconds": 0.21126945735886693,
+              "initialization_seconds": 0.0015301660168915987,
+              "policy_seconds": 0.08949066745117307,
+              "projection_seconds": 0.12755087646655738,
+              "recording_seconds": 0.2674658754840493,
+              "simulation_dispatch_seconds": 0.02693383046425879,
+              "total_seconds": 0.7293987080920488
+            },
+            "win_rate": 1.0,
+            "win_rate_wilson_95": [
+              0.20654931437723745,
+              1.0
+            ],
+            "wins": 1
+          },
+          "imitation": {
+            "attempted": 1,
+            "component_totals": {
+              "combat_loss": 0.0,
+              "combat_win": 1.0,
+              "end_turn_action": 3.0,
+              "potion_use_action": 0.0,
+              "win_hp_fraction": 0.8875
+            },
+            "cutoffs": 0,
+            "decisions_per_second": 14.169794880041087,
+            "failures": 0,
+            "losses": 0,
+            "mean_hp_on_win": 71.0,
+            "mean_task_return": 1.0,
+            "steps": 14,
+            "timings": {
+              "encoding_seconds": 0.19534562388435006,
+              "initialization_seconds": 0.0014582921285182238,
+              "policy_seconds": 0.337386459344998,
+              "projection_seconds": 0.1285377072636038,
+              "recording_seconds": 0.29187962505966425,
+              "simulation_dispatch_seconds": 0.02814525179564953,
+              "total_seconds": 0.9880171250551939
+            },
+            "win_rate": 1.0,
+            "win_rate_wilson_95": [
+              0.20654931437723745,
+              1.0
+            ],
+            "wins": 1
+          },
+          "random_legal": {
+            "attempted": 1,
+            "component_totals": {
+              "combat_loss": 0.0,
+              "combat_win": 1.0,
+              "end_turn_action": 5.0,
+              "potion_use_action": 0.0,
+              "win_hp_fraction": 0.8125
+            },
+            "cutoffs": 0,
+            "decisions_per_second": 21.396031253275922,
+            "failures": 0,
+            "losses": 0,
+            "mean_hp_on_win": 65.0,
+            "mean_task_return": 1.0,
+            "steps": 17,
+            "timings": {
+              "encoding_seconds": 0.25628558662720025,
+              "initialization_seconds": 0.0015487088821828365,
+              "policy_seconds": 1.912470906972885e-05,
+              "projection_seconds": 0.15524979098699987,
+              "recording_seconds": 0.3431698731146753,
+              "simulation_dispatch_seconds": 0.03236837708391249,
+              "total_seconds": 0.7945398751180619
+            },
+            "win_rate": 1.0,
+            "win_rate_wilson_95": [
+              0.20654931437723745,
+              1.0
+            ],
+            "wins": 1
+          }
+        },
+        "overgrowth_mawler": {
+          "heuristic": {
+            "attempted": 1,
+            "component_totals": {
+              "combat_loss": 0.0,
+              "combat_win": 1.0,
+              "end_turn_action": 4.0,
+              "potion_use_action": 0.0,
+              "win_hp_fraction": 0.6875
+            },
+            "cutoffs": 0,
+            "decisions_per_second": 18.690151130068617,
+            "failures": 0,
+            "losses": 0,
+            "mean_hp_on_win": 55.0,
+            "mean_task_return": 1.0,
+            "steps": 17,
+            "timings": {
+              "encoding_seconds": 0.2566089993342757,
+              "initialization_seconds": 0.0014695420395582914,
+              "policy_seconds": 0.10994558525271714,
+              "projection_seconds": 0.15740662580356002,
+              "recording_seconds": 0.34517158498056233,
+              "simulation_dispatch_seconds": 0.03313504089601338,
+              "total_seconds": 0.9095699591562152
+            },
+            "win_rate": 1.0,
+            "win_rate_wilson_95": [
+              0.20654931437723745,
+              1.0
+            ],
+            "wins": 1
+          },
+          "imitation": {
+            "attempted": 1,
+            "component_totals": {
+              "combat_loss": 0.0,
+              "combat_win": 1.0,
+              "end_turn_action": 4.0,
+              "potion_use_action": 0.0,
+              "win_hp_fraction": 0.6875
+            },
+            "cutoffs": 0,
+            "decisions_per_second": 14.523989585861122,
+            "failures": 0,
+            "losses": 0,
+            "mean_hp_on_win": 55.0,
+            "mean_task_return": 1.0,
+            "steps": 17,
+            "timings": {
+              "encoding_seconds": 0.2594971233047545,
+              "initialization_seconds": 0.001456958008930087,
+              "policy_seconds": 0.38289304031059146,
+              "projection_seconds": 0.16187745542265475,
+              "recording_seconds": 0.325748955598101,
+              "simulation_dispatch_seconds": 0.033124917186796665,
+              "total_seconds": 1.170477292034775
+            },
+            "win_rate": 1.0,
+            "win_rate_wilson_95": [
+              0.20654931437723745,
+              1.0
+            ],
+            "wins": 1
+          },
+          "random_legal": {
+            "attempted": 1,
+            "component_totals": {
+              "combat_loss": 1.0,
+              "combat_win": 0.0,
+              "end_turn_action": 9.0,
+              "potion_use_action": 0.0,
+              "win_hp_fraction": 0.0
+            },
+            "cutoffs": 0,
+            "decisions_per_second": 20.865734538031994,
+            "failures": 0,
+            "losses": 1,
+            "mean_hp_on_win": null,
+            "mean_task_return": 0.0,
+            "steps": 24,
+            "timings": {
+              "encoding_seconds": 0.344272791640833,
+              "initialization_seconds": 0.0014887501019984484,
+              "policy_seconds": 4.145991988480091e-05,
+              "projection_seconds": 0.2451658344361931,
+              "recording_seconds": 0.5041807040106505,
+              "simulation_dispatch_seconds": 0.0471545432228595,
+              "total_seconds": 1.1502111251465976
+            },
+            "win_rate": 0.0,
+            "win_rate_wilson_95": [
+              0.0,
+              0.7934506856227626
+            ],
+            "wins": 0
+          }
+        },
+        "overgrowth_nibbit": {
+          "heuristic": {
+            "attempted": 1,
+            "component_totals": {
+              "combat_loss": 0.0,
+              "combat_win": 1.0,
+              "end_turn_action": 2.0,
+              "potion_use_action": 0.0,
+              "win_hp_fraction": 0.9125
+            },
+            "cutoffs": 0,
+            "decisions_per_second": 18.832665126578195,
+            "failures": 0,
+            "losses": 0,
+            "mean_hp_on_win": 73.0,
+            "mean_task_return": 1.0,
+            "steps": 10,
+            "timings": {
+              "encoding_seconds": 0.1383178331889212,
+              "initialization_seconds": 0.001507583074271679,
+              "policy_seconds": 0.06354766595177352,
+              "projection_seconds": 0.0925518327858299,
+              "recording_seconds": 0.1918132931459695,
+              "simulation_dispatch_seconds": 0.03753587487153709,
+              "total_seconds": 0.5309922909364104
+            },
+            "win_rate": 1.0,
+            "win_rate_wilson_95": [
+              0.20654931437723745,
+              1.0
+            ],
+            "wins": 1
+          },
+          "imitation": {
+            "attempted": 1,
+            "component_totals": {
+              "combat_loss": 0.0,
+              "combat_win": 1.0,
+              "end_turn_action": 2.0,
+              "potion_use_action": 0.0,
+              "win_hp_fraction": 0.9125
+            },
+            "cutoffs": 0,
+            "decisions_per_second": 14.054626116671413,
+            "failures": 0,
+            "losses": 0,
+            "mean_hp_on_win": 73.0,
+            "mean_task_return": 1.0,
+            "steps": 10,
+            "timings": {
+              "encoding_seconds": 0.14347524964250624,
+              "initialization_seconds": 0.0014899999368935823,
+              "policy_seconds": 0.24023266695439816,
+              "projection_seconds": 0.09712999896146357,
+              "recording_seconds": 0.20277633308432996,
+              "simulation_dispatch_seconds": 0.021549623226746917,
+              "total_seconds": 0.711509499931708
+            },
+            "win_rate": 1.0,
+            "win_rate_wilson_95": [
+              0.20654931437723745,
+              1.0
+            ],
+            "wins": 1
+          },
+          "random_legal": {
+            "attempted": 1,
+            "component_totals": {
+              "combat_loss": 0.0,
+              "combat_win": 1.0,
+              "end_turn_action": 5.0,
+              "potion_use_action": 0.0,
+              "win_hp_fraction": 0.7125
+            },
+            "cutoffs": 0,
+            "decisions_per_second": 20.201404054394537,
+            "failures": 0,
+            "losses": 0,
+            "mean_hp_on_win": 57.0,
+            "mean_task_return": 1.0,
+            "steps": 17,
+            "timings": {
+              "encoding_seconds": 0.261335248593241,
+              "initialization_seconds": 0.012122999876737595,
+              "policy_seconds": 3.9501115679740906e-05,
+              "projection_seconds": 0.17616453929804265,
+              "recording_seconds": 0.34823033353313804,
+              "simulation_dispatch_seconds": 0.03472771029919386,
+              "total_seconds": 0.8415256659500301
+            },
+            "win_rate": 1.0,
+            "win_rate_wilson_95": [
+              0.20654931437723745,
+              1.0
+            ],
+            "wins": 1
+          }
+        },
+        "overgrowth_nibbits": {
+          "heuristic": {
+            "attempted": 1,
+            "component_totals": {
+              "combat_loss": 0.0,
+              "combat_win": 1.0,
+              "end_turn_action": 7.0,
+              "potion_use_action": 0.0,
+              "win_hp_fraction": 0.525
+            },
+            "cutoffs": 0,
+            "decisions_per_second": 18.1823727377831,
+            "failures": 0,
+            "losses": 0,
+            "mean_hp_on_win": 42.0,
+            "mean_task_return": 1.0,
+            "steps": 27,
+            "timings": {
+              "encoding_seconds": 0.3940297120716423,
+              "initialization_seconds": 0.0014523749705404043,
+              "policy_seconds": 0.18287833454087377,
+              "projection_seconds": 0.27530183200724423,
+              "recording_seconds": 0.5525548290461302,
+              "simulation_dispatch_seconds": 0.07043932960368693,
+              "total_seconds": 1.4849547080229968
+            },
+            "win_rate": 1.0,
+            "win_rate_wilson_95": [
+              0.20654931437723745,
+              1.0
+            ],
+            "wins": 1
+          },
+          "imitation": {
+            "attempted": 1,
+            "component_totals": {
+              "combat_loss": 0.0,
+              "combat_win": 1.0,
+              "end_turn_action": 7.0,
+              "potion_use_action": 0.0,
+              "win_hp_fraction": 0.525
+            },
+            "cutoffs": 0,
+            "decisions_per_second": 13.571679394217767,
+            "failures": 0,
+            "losses": 0,
+            "mean_hp_on_win": 42.0,
+            "mean_task_return": 1.0,
+            "steps": 27,
+            "timings": {
+              "encoding_seconds": 0.4272112918552011,
+              "initialization_seconds": 0.0014717918820679188,
+              "policy_seconds": 0.6766084167174995,
+              "projection_seconds": 0.26628454006277025,
+              "recording_seconds": 0.5532533354125917,
+              "simulation_dispatch_seconds": 0.05575129156932235,
+              "total_seconds": 1.9894369160756469
+            },
+            "win_rate": 1.0,
+            "win_rate_wilson_95": [
+              0.20654931437723745,
+              1.0
+            ],
+            "wins": 1
+          },
+          "random_legal": {
+            "attempted": 1,
+            "component_totals": {
+              "combat_loss": 1.0,
+              "combat_win": 0.0,
+              "end_turn_action": 7.0,
+              "potion_use_action": 0.0,
+              "win_hp_fraction": 0.0
+            },
+            "cutoffs": 0,
+            "decisions_per_second": 20.58916922049993,
+            "failures": 0,
+            "losses": 1,
+            "mean_hp_on_win": null,
+            "mean_task_return": 0.0,
+            "steps": 22,
+            "timings": {
+              "encoding_seconds": 0.35470033530145884,
+              "initialization_seconds": 0.0014515828806906939,
+              "policy_seconds": 2.7498695999383926e-05,
+              "projection_seconds": 0.20793616608716547,
+              "recording_seconds": 0.45494078774936497,
+              "simulation_dispatch_seconds": 0.04232308082282543,
+              "total_seconds": 1.068522958084941
+            },
+            "win_rate": 0.0,
+            "win_rate_wilson_95": [
+              0.0,
+              0.7934506856227626
+            ],
+            "wins": 0
+          }
+        },
+        "overgrowth_slimes": {
+          "heuristic": {
+            "attempted": 1,
+            "component_totals": {
+              "combat_loss": 0.0,
+              "combat_win": 1.0,
+              "end_turn_action": 5.0,
+              "potion_use_action": 0.0,
+              "win_hp_fraction": 0.9625
+            },
+            "cutoffs": 0,
+            "decisions_per_second": 15.971985137463415,
+            "failures": 0,
+            "losses": 0,
+            "mean_hp_on_win": 77.0,
+            "mean_task_return": 1.0,
+            "steps": 20,
+            "timings": {
+              "encoding_seconds": 0.34549633297137916,
+              "initialization_seconds": 0.001548792002722621,
+              "policy_seconds": 0.17113433126360178,
+              "projection_seconds": 0.21683033369481564,
+              "recording_seconds": 0.4677664579357952,
+              "simulation_dispatch_seconds": 0.04247049777768552,
+              "total_seconds": 1.2521925000473857
+            },
+            "win_rate": 1.0,
+            "win_rate_wilson_95": [
+              0.20654931437723745,
+              1.0
+            ],
+            "wins": 1
+          },
+          "imitation": {
+            "attempted": 1,
+            "component_totals": {
+              "combat_loss": 0.0,
+              "combat_win": 1.0,
+              "end_turn_action": 4.0,
+              "potion_use_action": 0.0,
+              "win_hp_fraction": 0.9625
+            },
+            "cutoffs": 0,
+            "decisions_per_second": 13.028626959451806,
+            "failures": 0,
+            "losses": 0,
+            "mean_hp_on_win": 77.0,
+            "mean_task_return": 1.0,
+            "steps": 17,
+            "timings": {
+              "encoding_seconds": 0.30079379212111235,
+              "initialization_seconds": 0.001524625113233924,
+              "policy_seconds": 0.4242369986604899,
+              "projection_seconds": 0.1753013723064214,
+              "recording_seconds": 0.3617705386132002,
+              "simulation_dispatch_seconds": 0.0350955855101347,
+              "total_seconds": 1.304818999953568
+            },
+            "win_rate": 1.0,
+            "win_rate_wilson_95": [
+              0.20654931437723745,
+              1.0
+            ],
+            "wins": 1
+          },
+          "random_legal": {
+            "attempted": 1,
+            "component_totals": {
+              "combat_loss": 0.0,
+              "combat_win": 1.0,
+              "end_turn_action": 5.0,
+              "potion_use_action": 0.0,
+              "win_hp_fraction": 0.775
+            },
+            "cutoffs": 0,
+            "decisions_per_second": 19.36865187931086,
+            "failures": 0,
+            "losses": 0,
+            "mean_hp_on_win": 62.0,
+            "mean_task_return": 1.0,
+            "steps": 21,
+            "timings": {
+              "encoding_seconds": 0.36692333361133933,
+              "initialization_seconds": 0.0015251250006258488,
+              "policy_seconds": 3.2087089493870735e-05,
+              "projection_seconds": 0.2173926632385701,
+              "recording_seconds": 0.4487297066953033,
+              "simulation_dispatch_seconds": 0.04235957935452461,
+              "total_seconds": 1.0842262089718133
+            },
+            "win_rate": 1.0,
+            "win_rate_wilson_95": [
+              0.20654931437723745,
+              1.0
+            ],
+            "wins": 1
+          }
+        }
+      },
+      "cases_per_scenario": 1,
+      "created_at": "2026-09-28T20:17:24.878234+00:00",
+      "episodes": [
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 57,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 6
+          },
+          "components": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 5.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.7125
+          },
+          "encounter": "overgrowth_nibbit",
+          "end_turn_actions": 5,
+          "episode_id": "1fc34116ec5141958873be5cf44bfbb4",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "pair_id": "77c8617e021d4c3e8587c809ddcaa6f9",
+          "policy": "random_legal",
+          "potion_use_actions": 0,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "truncated",
+            "reason": "external_stop",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 80,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 17,
+          "task_return": 1.0,
+          "timings": {
+            "encoding_seconds": 0.261335248593241,
+            "initialization_seconds": 0.012122999876737595,
+            "policy_seconds": 3.9501115679740906e-05,
+            "projection_seconds": 0.17616453929804265,
+            "recording_seconds": 0.34823033353313804,
+            "simulation_dispatch_seconds": 0.03472771029919386,
+            "total_seconds": 0.8415256659500301
+          },
+          "training": "1fc34116ec5141958873be5cf44bfbb4.training.json",
+          "trajectory": "1fc34116ec5141958873be5cf44bfbb4.trajectory.jsonl"
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 73,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 3
+          },
+          "components": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 2.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.9125
+          },
+          "encounter": "overgrowth_nibbit",
+          "end_turn_actions": 2,
+          "episode_id": "e698497a5a40474596def80ef91b08c2",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "pair_id": "77c8617e021d4c3e8587c809ddcaa6f9",
+          "policy": "heuristic",
+          "potion_use_actions": 0,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "truncated",
+            "reason": "external_stop",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 80,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 10,
+          "task_return": 1.0,
+          "timings": {
+            "encoding_seconds": 0.1383178331889212,
+            "initialization_seconds": 0.001507583074271679,
+            "policy_seconds": 0.06354766595177352,
+            "projection_seconds": 0.0925518327858299,
+            "recording_seconds": 0.1918132931459695,
+            "simulation_dispatch_seconds": 0.03753587487153709,
+            "total_seconds": 0.5309922909364104
+          },
+          "training": "e698497a5a40474596def80ef91b08c2.training.json",
+          "trajectory": "e698497a5a40474596def80ef91b08c2.trajectory.jsonl"
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 73,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 3
+          },
+          "components": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 2.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.9125
+          },
+          "encounter": "overgrowth_nibbit",
+          "end_turn_actions": 2,
+          "episode_id": "5ddfb67dc5fe41e5901741b3acacaa6f",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "pair_id": "77c8617e021d4c3e8587c809ddcaa6f9",
+          "policy": "imitation",
+          "potion_use_actions": 0,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "truncated",
+            "reason": "external_stop",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 80,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 10,
+          "task_return": 1.0,
+          "timings": {
+            "encoding_seconds": 0.14347524964250624,
+            "initialization_seconds": 0.0014899999368935823,
+            "policy_seconds": 0.24023266695439816,
+            "projection_seconds": 0.09712999896146357,
+            "recording_seconds": 0.20277633308432996,
+            "simulation_dispatch_seconds": 0.021549623226746917,
+            "total_seconds": 0.711509499931708
+          },
+          "training": "5ddfb67dc5fe41e5901741b3acacaa6f.training.json",
+          "trajectory": "5ddfb67dc5fe41e5901741b3acacaa6f.trajectory.jsonl"
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 65,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 6
+          },
+          "components": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 5.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.8125
+          },
+          "encounter": "overgrowth_fuzzy",
+          "end_turn_actions": 5,
+          "episode_id": "e3b86d70dc2c47d0b00fb7ac458443cc",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "pair_id": "551b55cdd05347b196259c6c7a379e82",
+          "policy": "random_legal",
+          "potion_use_actions": 0,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "truncated",
+            "reason": "external_stop",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 80,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 17,
+          "task_return": 1.0,
+          "timings": {
+            "encoding_seconds": 0.25628558662720025,
+            "initialization_seconds": 0.0015487088821828365,
+            "policy_seconds": 1.912470906972885e-05,
+            "projection_seconds": 0.15524979098699987,
+            "recording_seconds": 0.3431698731146753,
+            "simulation_dispatch_seconds": 0.03236837708391249,
+            "total_seconds": 0.7945398751180619
+          },
+          "training": "e3b86d70dc2c47d0b00fb7ac458443cc.training.json",
+          "trajectory": "e3b86d70dc2c47d0b00fb7ac458443cc.trajectory.jsonl"
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 71,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 4
+          },
+          "components": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 3.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.8875
+          },
+          "encounter": "overgrowth_fuzzy",
+          "end_turn_actions": 3,
+          "episode_id": "7666cdc20a3d4ff1bd7b4fe9a64add82",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "pair_id": "551b55cdd05347b196259c6c7a379e82",
+          "policy": "heuristic",
+          "potion_use_actions": 0,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "truncated",
+            "reason": "external_stop",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 80,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 14,
+          "task_return": 1.0,
+          "timings": {
+            "encoding_seconds": 0.21126945735886693,
+            "initialization_seconds": 0.0015301660168915987,
+            "policy_seconds": 0.08949066745117307,
+            "projection_seconds": 0.12755087646655738,
+            "recording_seconds": 0.2674658754840493,
+            "simulation_dispatch_seconds": 0.02693383046425879,
+            "total_seconds": 0.7293987080920488
+          },
+          "training": "7666cdc20a3d4ff1bd7b4fe9a64add82.training.json",
+          "trajectory": "7666cdc20a3d4ff1bd7b4fe9a64add82.trajectory.jsonl"
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 71,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 4
+          },
+          "components": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 3.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.8875
+          },
+          "encounter": "overgrowth_fuzzy",
+          "end_turn_actions": 3,
+          "episode_id": "95b21f46349f4c228e2f53cd03adb627",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "pair_id": "551b55cdd05347b196259c6c7a379e82",
+          "policy": "imitation",
+          "potion_use_actions": 0,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "truncated",
+            "reason": "external_stop",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 80,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 14,
+          "task_return": 1.0,
+          "timings": {
+            "encoding_seconds": 0.19534562388435006,
+            "initialization_seconds": 0.0014582921285182238,
+            "policy_seconds": 0.337386459344998,
+            "projection_seconds": 0.1285377072636038,
+            "recording_seconds": 0.29187962505966425,
+            "simulation_dispatch_seconds": 0.02814525179564953,
+            "total_seconds": 0.9880171250551939
+          },
+          "training": "95b21f46349f4c228e2f53cd03adb627.training.json",
+          "trajectory": "95b21f46349f4c228e2f53cd03adb627.trajectory.jsonl"
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 62,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 6
+          },
+          "components": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 5.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.775
+          },
+          "encounter": "overgrowth_slimes",
+          "end_turn_actions": 5,
+          "episode_id": "5038b6368da2418898f54fb7c3579ddf",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "pair_id": "3a651330aaac4abf930da0f60c6a3fcf",
+          "policy": "random_legal",
+          "potion_use_actions": 0,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "truncated",
+            "reason": "external_stop",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 80,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 21,
+          "task_return": 1.0,
+          "timings": {
+            "encoding_seconds": 0.36692333361133933,
+            "initialization_seconds": 0.0015251250006258488,
+            "policy_seconds": 3.2087089493870735e-05,
+            "projection_seconds": 0.2173926632385701,
+            "recording_seconds": 0.4487297066953033,
+            "simulation_dispatch_seconds": 0.04235957935452461,
+            "total_seconds": 1.0842262089718133
+          },
+          "training": "5038b6368da2418898f54fb7c3579ddf.training.json",
+          "trajectory": "5038b6368da2418898f54fb7c3579ddf.trajectory.jsonl"
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 77,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 6
+          },
+          "components": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 5.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.9625
+          },
+          "encounter": "overgrowth_slimes",
+          "end_turn_actions": 5,
+          "episode_id": "bb9c9ffc417b4c1f91fba01fe1b64eb5",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "pair_id": "3a651330aaac4abf930da0f60c6a3fcf",
+          "policy": "heuristic",
+          "potion_use_actions": 0,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "truncated",
+            "reason": "external_stop",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 80,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 20,
+          "task_return": 1.0,
+          "timings": {
+            "encoding_seconds": 0.34549633297137916,
+            "initialization_seconds": 0.001548792002722621,
+            "policy_seconds": 0.17113433126360178,
+            "projection_seconds": 0.21683033369481564,
+            "recording_seconds": 0.4677664579357952,
+            "simulation_dispatch_seconds": 0.04247049777768552,
+            "total_seconds": 1.2521925000473857
+          },
+          "training": "bb9c9ffc417b4c1f91fba01fe1b64eb5.training.json",
+          "trajectory": "bb9c9ffc417b4c1f91fba01fe1b64eb5.trajectory.jsonl"
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 77,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 5
+          },
+          "components": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 4.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.9625
+          },
+          "encounter": "overgrowth_slimes",
+          "end_turn_actions": 4,
+          "episode_id": "04a786bf505244eda70726b595f86f1a",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "pair_id": "3a651330aaac4abf930da0f60c6a3fcf",
+          "policy": "imitation",
+          "potion_use_actions": 0,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "truncated",
+            "reason": "external_stop",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 80,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 17,
+          "task_return": 1.0,
+          "timings": {
+            "encoding_seconds": 0.30079379212111235,
+            "initialization_seconds": 0.001524625113233924,
+            "policy_seconds": 0.4242369986604899,
+            "projection_seconds": 0.1753013723064214,
+            "recording_seconds": 0.3617705386132002,
+            "simulation_dispatch_seconds": 0.0350955855101347,
+            "total_seconds": 1.304818999953568
+          },
+          "training": "04a786bf505244eda70726b595f86f1a.training.json",
+          "trajectory": "04a786bf505244eda70726b595f86f1a.trajectory.jsonl"
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 9
+          },
+          "components": {
+            "combat_loss": 1.0,
+            "combat_win": 0.0,
+            "end_turn_action": 9.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.0
+          },
+          "encounter": "overgrowth_mawler",
+          "end_turn_actions": 9,
+          "episode_id": "818134e03cd3487d842f18d799aba9d5",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "pair_id": "608b836ae7134681810ba4e93ef6277d",
+          "policy": "random_legal",
+          "potion_use_actions": 0,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 80,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 24,
+          "task_return": 0.0,
+          "timings": {
+            "encoding_seconds": 0.344272791640833,
+            "initialization_seconds": 0.0014887501019984484,
+            "policy_seconds": 4.145991988480091e-05,
+            "projection_seconds": 0.2451658344361931,
+            "recording_seconds": 0.5041807040106505,
+            "simulation_dispatch_seconds": 0.0471545432228595,
+            "total_seconds": 1.1502111251465976
+          },
+          "training": "818134e03cd3487d842f18d799aba9d5.training.json",
+          "trajectory": "818134e03cd3487d842f18d799aba9d5.trajectory.jsonl"
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 55,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 5
+          },
+          "components": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 4.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.6875
+          },
+          "encounter": "overgrowth_mawler",
+          "end_turn_actions": 4,
+          "episode_id": "7e2efb4d40cf4de4ad71f25bd8c1cc82",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "pair_id": "608b836ae7134681810ba4e93ef6277d",
+          "policy": "heuristic",
+          "potion_use_actions": 0,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "truncated",
+            "reason": "external_stop",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 80,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 17,
+          "task_return": 1.0,
+          "timings": {
+            "encoding_seconds": 0.2566089993342757,
+            "initialization_seconds": 0.0014695420395582914,
+            "policy_seconds": 0.10994558525271714,
+            "projection_seconds": 0.15740662580356002,
+            "recording_seconds": 0.34517158498056233,
+            "simulation_dispatch_seconds": 0.03313504089601338,
+            "total_seconds": 0.9095699591562152
+          },
+          "training": "7e2efb4d40cf4de4ad71f25bd8c1cc82.training.json",
+          "trajectory": "7e2efb4d40cf4de4ad71f25bd8c1cc82.trajectory.jsonl"
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 55,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 5
+          },
+          "components": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 4.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.6875
+          },
+          "encounter": "overgrowth_mawler",
+          "end_turn_actions": 4,
+          "episode_id": "0cd2a82f2e0d420c8227f7b771a31145",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "pair_id": "608b836ae7134681810ba4e93ef6277d",
+          "policy": "imitation",
+          "potion_use_actions": 0,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "truncated",
+            "reason": "external_stop",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 80,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 17,
+          "task_return": 1.0,
+          "timings": {
+            "encoding_seconds": 0.2594971233047545,
+            "initialization_seconds": 0.001456958008930087,
+            "policy_seconds": 0.38289304031059146,
+            "projection_seconds": 0.16187745542265475,
+            "recording_seconds": 0.325748955598101,
+            "simulation_dispatch_seconds": 0.033124917186796665,
+            "total_seconds": 1.170477292034775
+          },
+          "training": "0cd2a82f2e0d420c8227f7b771a31145.training.json",
+          "trajectory": "0cd2a82f2e0d420c8227f7b771a31145.trajectory.jsonl"
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 7
+          },
+          "components": {
+            "combat_loss": 1.0,
+            "combat_win": 0.0,
+            "end_turn_action": 7.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.0
+          },
+          "encounter": "overgrowth_nibbits",
+          "end_turn_actions": 7,
+          "episode_id": "83a5392a9ca74840962be94888f8fcd9",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "pair_id": "ced6bd3fcf904a4ab1885f76b7658fa9",
+          "policy": "random_legal",
+          "potion_use_actions": 0,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 80,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 22,
+          "task_return": 0.0,
+          "timings": {
+            "encoding_seconds": 0.35470033530145884,
+            "initialization_seconds": 0.0014515828806906939,
+            "policy_seconds": 2.7498695999383926e-05,
+            "projection_seconds": 0.20793616608716547,
+            "recording_seconds": 0.45494078774936497,
+            "simulation_dispatch_seconds": 0.04232308082282543,
+            "total_seconds": 1.068522958084941
+          },
+          "training": "83a5392a9ca74840962be94888f8fcd9.training.json",
+          "trajectory": "83a5392a9ca74840962be94888f8fcd9.trajectory.jsonl"
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 42,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 8
+          },
+          "components": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 7.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.525
+          },
+          "encounter": "overgrowth_nibbits",
+          "end_turn_actions": 7,
+          "episode_id": "47e964298489456db2b921666c8f764c",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "pair_id": "ced6bd3fcf904a4ab1885f76b7658fa9",
+          "policy": "heuristic",
+          "potion_use_actions": 0,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "truncated",
+            "reason": "external_stop",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 80,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 27,
+          "task_return": 1.0,
+          "timings": {
+            "encoding_seconds": 0.3940297120716423,
+            "initialization_seconds": 0.0014523749705404043,
+            "policy_seconds": 0.18287833454087377,
+            "projection_seconds": 0.27530183200724423,
+            "recording_seconds": 0.5525548290461302,
+            "simulation_dispatch_seconds": 0.07043932960368693,
+            "total_seconds": 1.4849547080229968
+          },
+          "training": "47e964298489456db2b921666c8f764c.training.json",
+          "trajectory": "47e964298489456db2b921666c8f764c.trajectory.jsonl"
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 42,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 8
+          },
+          "components": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 7.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.525
+          },
+          "encounter": "overgrowth_nibbits",
+          "end_turn_actions": 7,
+          "episode_id": "71629bc8f4874573ae39d3c8ebfd4c61",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "pair_id": "ced6bd3fcf904a4ab1885f76b7658fa9",
+          "policy": "imitation",
+          "potion_use_actions": 0,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "truncated",
+            "reason": "external_stop",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 80,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 27,
+          "task_return": 1.0,
+          "timings": {
+            "encoding_seconds": 0.4272112918552011,
+            "initialization_seconds": 0.0014717918820679188,
+            "policy_seconds": 0.6766084167174995,
+            "projection_seconds": 0.26628454006277025,
+            "recording_seconds": 0.5532533354125917,
+            "simulation_dispatch_seconds": 0.05575129156932235,
+            "total_seconds": 1.9894369160756469
+          },
+          "training": "71629bc8f4874573ae39d3c8ebfd4c61.training.json",
+          "trajectory": "71629bc8f4874573ae39d3c8ebfd4c61.trajectory.jsonl"
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 7
+          },
+          "components": {
+            "combat_loss": 1.0,
+            "combat_win": 0.0,
+            "end_turn_action": 7.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.0
+          },
+          "encounter": "overgrowth_cubex",
+          "end_turn_actions": 7,
+          "episode_id": "7546ae5c66a94e92be98306bd515042e",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "pair_id": "30a74eaf27d34d17a86307bbc4c23830",
+          "policy": "random_legal",
+          "potion_use_actions": 0,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 80,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 17,
+          "task_return": 0.0,
+          "timings": {
+            "encoding_seconds": 0.2596345420461148,
+            "initialization_seconds": 0.00147387501783669,
+            "policy_seconds": 3.9207981899380684e-05,
+            "projection_seconds": 0.1998935854062438,
+            "recording_seconds": 0.36988083366304636,
+            "simulation_dispatch_seconds": 0.03734324988909066,
+            "total_seconds": 0.8756428749766201
+          },
+          "training": "7546ae5c66a94e92be98306bd515042e.training.json",
+          "trajectory": "7546ae5c66a94e92be98306bd515042e.trajectory.jsonl"
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 59,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 5
+          },
+          "components": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 4.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.7375
+          },
+          "encounter": "overgrowth_cubex",
+          "end_turn_actions": 4,
+          "episode_id": "7de79f65192a4302b8a42cb287d1bb2f",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "pair_id": "30a74eaf27d34d17a86307bbc4c23830",
+          "policy": "heuristic",
+          "potion_use_actions": 0,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "truncated",
+            "reason": "external_stop",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 80,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 17,
+          "task_return": 1.0,
+          "timings": {
+            "encoding_seconds": 0.2487612501718104,
+            "initialization_seconds": 0.0015107081271708012,
+            "policy_seconds": 0.11469271080568433,
+            "projection_seconds": 0.18614812404848635,
+            "recording_seconds": 0.3404199597425759,
+            "simulation_dispatch_seconds": 0.03801295789889991,
+            "total_seconds": 0.9368959160055965
+          },
+          "training": "7de79f65192a4302b8a42cb287d1bb2f.training.json",
+          "trajectory": "7de79f65192a4302b8a42cb287d1bb2f.trajectory.jsonl"
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 59,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 5
+          },
+          "components": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 4.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.7375
+          },
+          "encounter": "overgrowth_cubex",
+          "end_turn_actions": 4,
+          "episode_id": "1945e326503849c49af686713bd77dd5",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "pair_id": "30a74eaf27d34d17a86307bbc4c23830",
+          "policy": "imitation",
+          "potion_use_actions": 0,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "truncated",
+            "reason": "external_stop",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 80,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 17,
+          "task_return": 1.0,
+          "timings": {
+            "encoding_seconds": 0.24501499952748418,
+            "initialization_seconds": 0.0015653339214622974,
+            "policy_seconds": 0.43896829383447766,
+            "projection_seconds": 0.16214391635730863,
+            "recording_seconds": 0.3349981657229364,
+            "simulation_dispatch_seconds": 0.036328084068372846,
+            "total_seconds": 1.2260429998859763
+          },
+          "training": "1945e326503849c49af686713bd77dd5.training.json",
+          "trajectory": "1945e326503849c49af686713bd77dd5.trajectory.jsonl"
+        }
+      ],
+      "evidence": "controlled_fixture",
+      "implementation": {
+        "build": "2837ea66e9ce82055d8850ecbae7d016a07bc20b7591ae1b68def75136dd9edb",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "limits": {
+        "max_decisions": 256,
+        "time_limit_seconds": 60.0
+      },
+      "policies": {
+        "heuristic": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "imitation": "imitation_v1:3c6da0a495945dd9ff61d5cbd27c47f52cadc4111a4c968fe45043c2175ebf94",
+        "random_legal": "random_legal_v1:2837ea66e9ce82055d8850ecbae7d016a07bc20b7591ae1b68def75136dd9edb"
+      },
+      "requested_episodes": 18,
+      "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+      "runtime": {
+        "gymnasium": "1.0.0",
+        "numpy": "2.4.6",
+        "platform": "macOS-26.6.2-arm64-arm-64bit",
+        "python": "3.11.15"
+      },
+      "scenario_set": "ironclad_a0_overgrowth_v1",
+      "scenarios": [
+        {
+          "difficulty": "weak",
+          "encounter": "overgrowth_nibbit"
+        },
+        {
+          "difficulty": "weak",
+          "encounter": "overgrowth_fuzzy"
+        },
+        {
+          "difficulty": "weak",
+          "encounter": "overgrowth_slimes"
+        },
+        {
+          "difficulty": "normal",
+          "encounter": "overgrowth_mawler"
+        },
+        {
+          "difficulty": "normal",
+          "encounter": "overgrowth_nibbits"
+        },
+        {
+          "difficulty": "normal",
+          "encounter": "overgrowth_cubex"
+        }
+      ],
+      "schema": "sts_combat_baseline_v2",
+      "split": "validation",
+      "status": "complete",
+      "summary": {
+        "heuristic": {
+          "attempted": 6,
+          "component_totals": {
+            "combat_loss": 0.0,
+            "combat_win": 6.0,
+            "end_turn_action": 25.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 4.7124999999999995
+          },
+          "cutoffs": 0,
+          "decisions_per_second": 17.96713323981501,
+          "failures": 0,
+          "losses": 0,
+          "mean_hp_on_win": 62.833333333333336,
+          "mean_task_return": 1.0,
+          "steps": 105,
+          "timings": {
+            "encoding_seconds": 1.5944835850968957,
+            "initialization_seconds": 0.009019166231155396,
+            "policy_seconds": 0.7316892952658236,
+            "projection_seconds": 1.0557896248064935,
+            "recording_seconds": 2.1651920003350824,
+            "simulation_dispatch_seconds": 0.24852753151208162,
+            "total_seconds": 5.844004082260653
+          },
+          "win_rate": 1.0,
+          "win_rate_wilson_95": [
+            0.6096657120978346,
+            1.0
+          ],
+          "wins": 6
+        },
+        "imitation": {
+          "attempted": 6,
+          "component_totals": {
+            "combat_loss": 0.0,
+            "combat_win": 6.0,
+            "end_turn_action": 24.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 4.7124999999999995
+          },
+          "cutoffs": 0,
+          "decisions_per_second": 13.801870140613133,
+          "failures": 0,
+          "losses": 0,
+          "mean_hp_on_win": 62.833333333333336,
+          "mean_task_return": 1.0,
+          "steps": 102,
+          "timings": {
+            "encoding_seconds": 1.5713380803354084,
+            "initialization_seconds": 0.008967000991106033,
+            "policy_seconds": 2.5003258758224547,
+            "projection_seconds": 0.9912749903742224,
+            "recording_seconds": 2.0704269534908235,
+            "simulation_dispatch_seconds": 0.209994753357023,
+            "total_seconds": 7.390302832936868
+          },
+          "win_rate": 1.0,
+          "win_rate_wilson_95": [
+            0.6096657120978346,
+            1.0
+          ],
+          "wins": 6
+        },
+        "random_legal": {
+          "attempted": 6,
+          "component_totals": {
+            "combat_loss": 3.0,
+            "combat_win": 3.0,
+            "end_turn_action": 38.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 2.3
+          },
+          "cutoffs": 0,
+          "decisions_per_second": 20.29350353746171,
+          "failures": 0,
+          "losses": 3,
+          "mean_hp_on_win": 61.333333333333336,
+          "mean_task_return": 0.5,
+          "steps": 118,
+          "timings": {
+            "encoding_seconds": 1.8431518378201872,
+            "initialization_seconds": 0.019611041760072112,
+            "policy_seconds": 0.000198879512026906,
+            "projection_seconds": 1.201802579453215,
+            "recording_seconds": 2.4691322387661785,
+            "simulation_dispatch_seconds": 0.23627654067240655,
+            "total_seconds": 5.814668708248064
+          },
+          "win_rate": 0.5,
+          "win_rate_wilson_95": [
+            0.1876163064826506,
+            0.8123836935173494
+          ],
+          "wins": 3
+        }
+      },
+      "timing_definitions": {
+        "encoding_seconds": "Fixed Gym encoding; excludes returned-array copies",
+        "initialization_seconds": "Scenario construction and initial combat setup",
+        "projection_seconds": "Public observation, including its ownership/state guard",
+        "recording_seconds": "Canonical trajectory and training sidecar validation, serialization and publication",
+        "simulation_dispatch_seconds": "Action dispatch, including guards, engine simulation and history",
+        "total_seconds": "Episode wall time, including replay audit and array copies"
+      },
+      "training_config": {
+        "mode": "combat",
+        "reward": {
+          "schema": "sts_training_reward_v1",
+          "weights": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 0.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.0
+          }
+        },
+        "scenario_set": "ironclad_a0_overgrowth_v1"
+      },
+      "unattempted_episodes": 0
+    },
+    "hybrid": {
+      "checkpoint": "imitation_v1:3c6da0a495945dd9ff61d5cbd27c47f52cadc4111a4c968fe45043c2175ebf94",
+      "episodes": [
+        {
+          "episode_id": "bfda48fa66f441baaf051b620264029a",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 14,
+            "hp": 3,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "pair_id": "bd2c9bbf6f7e4b40b51c693a36604e29",
+          "policy": "heuristic",
+          "potion_use_actions": 5,
+          "status": "complete",
+          "steps": 176,
+          "timings": {
+            "observations": 177,
+            "observe_seconds": 3.6406725328415632,
+            "policy_seconds": 2.6986909981351346,
+            "recording_seconds": 4.956449507270008,
+            "reset_seconds": 0.14570470806211233,
+            "step_seconds": 0.7249919483438134,
+            "steps": 176,
+            "total_seconds": 12.17182879219763
+          },
+          "trajectory": "bfda48fa66f441baaf051b620264029a.trajectory.jsonl"
+        },
+        {
+          "episode_id": "f28fc4c152984dc6bbaa104465683c23",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 16,
+            "hp": 4,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "pair_id": "bd2c9bbf6f7e4b40b51c693a36604e29",
+          "policy": "hybrid",
+          "potion_use_actions": 5,
+          "status": "complete",
+          "steps": 202,
+          "timings": {
+            "observations": 203,
+            "observe_seconds": 4.337629459798336,
+            "policy_seconds": 8.986503709107637,
+            "recording_seconds": 6.092385340714827,
+            "reset_seconds": 0.13477379106916487,
+            "step_seconds": 0.7955331257544458,
+            "steps": 202,
+            "total_seconds": 20.350404457887635
+          },
+          "trajectory": "f28fc4c152984dc6bbaa104465683c23.trajectory.jsonl"
+        },
+        {
+          "episode_id": "536c14030e994f03a0cc5b9a51d9deab",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 12,
+            "hp": 14,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "pair_id": "b92894ecb5bc4a74984a0c589c8ca9b4",
+          "policy": "heuristic",
+          "potion_use_actions": 1,
+          "status": "complete",
+          "steps": 101,
+          "timings": {
+            "observations": 102,
+            "observe_seconds": 2.0943559580482543,
+            "policy_seconds": 1.3577392464503646,
+            "recording_seconds": 2.687660416588187,
+            "reset_seconds": 0.19148762500844896,
+            "step_seconds": 0.40144857997074723,
+            "steps": 101,
+            "total_seconds": 6.735545459203422
+          },
+          "trajectory": "536c14030e994f03a0cc5b9a51d9deab.trajectory.jsonl"
+        },
+        {
+          "episode_id": "56f040be7b064b68939812a689b988c2",
+          "last_public_hud": {
+            "act": 2,
+            "floor": 21,
+            "hp": 4,
+            "max_hp": 87
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "pair_id": "b92894ecb5bc4a74984a0c589c8ca9b4",
+          "policy": "hybrid",
+          "potion_use_actions": 5,
+          "status": "complete",
+          "steps": 253,
+          "timings": {
+            "observations": 254,
+            "observe_seconds": 6.893154448829591,
+            "policy_seconds": 13.195336259668693,
+            "recording_seconds": 9.210045535583049,
+            "reset_seconds": 0.19999662484042346,
+            "step_seconds": 1.3984258784912527,
+            "steps": 253,
+            "total_seconds": 30.902109500020742
+          },
+          "trajectory": "56f040be7b064b68939812a689b988c2.trajectory.jsonl"
+        }
+      ],
+      "evidence": "headless_rollout",
+      "implementation": {
+        "build": "2837ea66e9ce82055d8850ecbae7d016a07bc20b7591ae1b68def75136dd9edb",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "limits": {
+        "max_decisions": 256,
+        "time_limit_seconds": 60.0
+      },
+      "requested_episodes": 4,
+      "reward_spec": {
+        "schema": "sts_training_reward_v1",
+        "weights": {
+          "combat_loss": 0.0,
+          "combat_win": 1.0,
+          "end_turn_action": 0.0,
+          "potion_use_action": 0.0,
+          "win_hp_fraction": 0.0
+        }
+      },
+      "schema": "sts_hybrid_campaign_v1",
+      "split": "validation",
+      "status": "complete",
+      "total_seconds": 81.86818804219365,
+      "unattempted_episodes": 0
+    },
+    "profile": {
+      "checkpoint": "imitation_v1:3c6da0a495945dd9ff61d5cbd27c47f52cadc4111a4c968fe45043c2175ebf94",
+      "corpus_identity": "sts_imitation_corpus_v1:b254f374e54edc11e14e076c580bfba97436b86554cf1cf086e5d477d1bfd755",
+      "encoding_seconds": {
+        "count": 32,
+        "max": 0.023116667056456208,
+        "mean": 0.02133520448114723,
+        "median": 0.021372291375882924,
+        "p95": 0.022720042150467634
+      },
+      "implementation": {
+        "build": "2837ea66e9ce82055d8850ecbae7d016a07bc20b7591ae1b68def75136dd9edb",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "policy_seconds_including_encoding": {
+        "count": 32,
+        "max": 0.063142916187644,
+        "mean": 0.02412771609670017,
+        "median": 0.02184729150030762,
+        "p95": 0.023699667071923614
+      },
+      "resume": {
+        "boundary": "complete_corpus_update",
+        "resumed_updates": 4,
+        "saved_after": 4,
+        "uninterrupted_updates": 8,
+        "weights_rng_cursor_exact": true
+      },
+      "samples": 32,
+      "schema": "sts_imitation_profile_v1",
+      "storage": {
+        "adam_tensor_bytes": 465176,
+        "batch_input_tensor_bytes": 229552,
+        "batch_size": 8,
+        "corpus_bytes": 35937648,
+        "gradient_bytes": 232520,
+        "packed_features_bytes": {
+          "count": 226,
+          "max": 202024,
+          "mean": 159016.14159292035,
+          "median": 160832.0,
+          "p95": 184167
+        },
+        "padded_observation_bytes": 6789184,
+        "parameter_bytes": 232520,
+        "process_peak_rss_bytes_macos": 381812736,
+        "saved_tensor_note": "Unique storages retained for this forward/backward, including shared inputs and parameters; not allocator peak memory.",
+        "saved_tensor_unique_storage_bytes": 4806874
+      }
+    },
+    "training": {
+      "after": {
+        "train": {
+          "accuracy": 0.9823008849557522,
+          "decisions": 226,
+          "entropy": 0.13822942266866062,
+          "imitation_loss": 0.1301578871106704,
+          "seconds": 0.050090250093489885,
+          "value_labels": 226,
+          "value_mse": 5.374515553508513e-05
+        },
+        "validation": {
+          "accuracy": 0.921875,
+          "decisions": 192,
+          "entropy": 0.1302936871846517,
+          "imitation_loss": 0.32440446759574115,
+          "seconds": 0.040723334066569805,
+          "value_labels": 192,
+          "value_mse": 5.4420871938631876e-05
+        }
+      },
+      "architecture": {
+        "hidden_size": 48,
+        "message_layers": 2,
+        "schema": "sts_graph_actor_critic_v1"
+      },
+      "before": {
+        "train": {
+          "accuracy": 0.25663716814159293,
+          "decisions": 226,
+          "entropy": 1.2436302383389093,
+          "imitation_loss": 1.283541322809405,
+          "seconds": 0.051318125100806355,
+          "value_labels": 226,
+          "value_mse": 0.9233590692665414
+        },
+        "validation": {
+          "accuracy": 0.265625,
+          "decisions": 192,
+          "entropy": 1.2496689558029175,
+          "imitation_loss": 1.300024390220642,
+          "seconds": 0.04103470896370709,
+          "value_labels": 192,
+          "value_mse": 0.926396533009408
+        }
+      },
+      "corpus_encoding_seconds": 4.9318394989240915,
+      "corpus_identity": "sts_imitation_corpus_v1:b254f374e54edc11e14e076c580bfba97436b86554cf1cf086e5d477d1bfd755",
+      "feature_identity": "sts_learned_public_graph_v1:2c6bd7795771217e1554cdab43af74579524d508369289008dc8d03e4a6c724e",
+      "final_sha256": "3c6da0a495945dd9ff61d5cbd27c47f52cadc4111a4c968fe45043c2175ebf94",
+      "initial_sha256": "0124e27d02d1291471b6b213c9fc5156e76e93a22a260cc46ae3bed0f984f5a1",
+      "learner_config": {
+        "batch_size": 8,
+        "gradient_clip": 1.0,
+        "learning_rate": 0.003,
+        "value_weight": 0.25
+      },
+      "packed_corpus_bytes": 35937648,
+      "reward_spec": {
+        "schema": "sts_training_reward_v1",
+        "weights": {
+          "combat_loss": 0.0,
+          "combat_win": 1.0,
+          "end_turn_action": 0.0,
+          "potion_use_action": 0.0,
+          "win_hp_fraction": 0.0
+        }
+      },
+      "runtime": {
+        "device": "cpu",
+        "python": "3.11.15",
+        "threads": 1,
+        "torch": "2.13.0"
+      },
+      "schema": "sts_imitation_report_v1",
+      "start_update": 0,
+      "status": "complete",
+      "total_seconds": 15.832333999918774,
+      "train_decisions": 226,
+      "updates": [
+        {
+          "batch_tensor_bytes": 227328,
+          "entropy": 1.2735611200332642,
+          "gradient_norm": 4.756807804107666,
+          "imitation_loss": 1.3548065423965454,
+          "loss": 1.5867338180541992,
+          "samples": 8,
+          "seconds": 0.018919292138889432,
+          "update": 1,
+          "value_loss": 0.9277089834213257
+        },
+        {
+          "batch_tensor_bytes": 231712,
+          "entropy": 1.0128570795059204,
+          "gradient_norm": 1.8959687948226929,
+          "imitation_loss": 0.727058470249176,
+          "loss": 0.738078773021698,
+          "samples": 8,
+          "seconds": 0.003996750107035041,
+          "update": 2,
+          "value_loss": 0.04408125579357147
+        },
+        {
+          "batch_tensor_bytes": 227488,
+          "entropy": 0.7800464630126953,
+          "gradient_norm": 0.7042570114135742,
+          "imitation_loss": 0.5736857652664185,
+          "loss": 0.574611246585846,
+          "samples": 8,
+          "seconds": 0.0037955830339342356,
+          "update": 3,
+          "value_loss": 0.003701964858919382
+        },
+        {
+          "batch_tensor_bytes": 220208,
+          "entropy": 0.7384114265441895,
+          "gradient_norm": 0.5479702353477478,
+          "imitation_loss": 0.5837472677230835,
+          "loss": 0.5890290141105652,
+          "samples": 8,
+          "seconds": 0.0035629170015454292,
+          "update": 4,
+          "value_loss": 0.021126912906765938
+        },
+        {
+          "batch_tensor_bytes": 220688,
+          "entropy": 1.0544332265853882,
+          "gradient_norm": 0.5472411513328552,
+          "imitation_loss": 0.9658668637275696,
+          "loss": 0.9660266637802124,
+          "samples": 8,
+          "seconds": 0.003534665796905756,
+          "update": 5,
+          "value_loss": 0.0006391277420334518
+        },
+        {
+          "batch_tensor_bytes": 211360,
+          "entropy": 0.6238012313842773,
+          "gradient_norm": 0.48241183161735535,
+          "imitation_loss": 0.5362221002578735,
+          "loss": 0.538436233997345,
+          "samples": 8,
+          "seconds": 0.003599167102947831,
+          "update": 6,
+          "value_loss": 0.008856616914272308
+        },
+        {
+          "batch_tensor_bytes": 224040,
+          "entropy": 0.5677359104156494,
+          "gradient_norm": 0.21649377048015594,
+          "imitation_loss": 0.5274899005889893,
+          "loss": 0.5285781621932983,
+          "samples": 8,
+          "seconds": 0.0035153329372406006,
+          "update": 7,
+          "value_loss": 0.004353079944849014
+        },
+        {
+          "batch_tensor_bytes": 215264,
+          "entropy": 0.7719254493713379,
+          "gradient_norm": 0.41549351811408997,
+          "imitation_loss": 0.6745163202285767,
+          "loss": 0.6747280955314636,
+          "samples": 8,
+          "seconds": 0.003598625073209405,
+          "update": 8,
+          "value_loss": 0.000847042363602668
+        },
+        {
+          "batch_tensor_bytes": 238664,
+          "entropy": 0.8848392367362976,
+          "gradient_norm": 0.691923975944519,
+          "imitation_loss": 0.8023931980133057,
+          "loss": 0.803941547870636,
+          "samples": 8,
+          "seconds": 0.003668875200673938,
+          "update": 9,
+          "value_loss": 0.006193511188030243
+        },
+        {
+          "batch_tensor_bytes": 236400,
+          "entropy": 0.6863941550254822,
+          "gradient_norm": 0.4491991698741913,
+          "imitation_loss": 0.6084524393081665,
+          "loss": 0.609015703201294,
+          "samples": 8,
+          "seconds": 0.00367479189299047,
+          "update": 10,
+          "value_loss": 0.0022530746646225452
+        },
+        {
+          "batch_tensor_bytes": 234024,
+          "entropy": 0.6559851765632629,
+          "gradient_norm": 0.5747480392456055,
+          "imitation_loss": 0.5421284437179565,
+          "loss": 0.5422163009643555,
+          "samples": 8,
+          "seconds": 0.00363387493416667,
+          "update": 11,
+          "value_loss": 0.0003514202544465661
+        },
+        {
+          "batch_tensor_bytes": 208912,
+          "entropy": 0.19296343624591827,
+          "gradient_norm": 0.40123289823532104,
+          "imitation_loss": 0.2190573811531067,
+          "loss": 0.21989361941814423,
+          "samples": 8,
+          "seconds": 0.0036046248860657215,
+          "update": 12,
+          "value_loss": 0.003344972152262926
+        },
+        {
+          "batch_tensor_bytes": 230320,
+          "entropy": 0.8794171810150146,
+          "gradient_norm": 1.343990445137024,
+          "imitation_loss": 0.6837895512580872,
+          "loss": 0.6843536496162415,
+          "samples": 8,
+          "seconds": 0.0035602080170065165,
+          "update": 13,
+          "value_loss": 0.0022564521059393883
+        },
+        {
+          "batch_tensor_bytes": 238928,
+          "entropy": 1.0940909385681152,
+          "gradient_norm": 0.73161381483078,
+          "imitation_loss": 0.9559353590011597,
+          "loss": 0.9559479355812073,
+          "samples": 8,
+          "seconds": 0.00364408316090703,
+          "update": 14,
+          "value_loss": 5.028511804994196e-05
+        },
+        {
+          "batch_tensor_bytes": 228648,
+          "entropy": 0.6518648266792297,
+          "gradient_norm": 0.8169187307357788,
+          "imitation_loss": 0.40012168884277344,
+          "loss": 0.4004116952419281,
+          "samples": 8,
+          "seconds": 0.0038700830191373825,
+          "update": 15,
+          "value_loss": 0.0011600591242313385
+        },
+        {
+          "batch_tensor_bytes": 235320,
+          "entropy": 0.3786602020263672,
+          "gradient_norm": 0.6952588558197021,
+          "imitation_loss": 0.21883949637413025,
+          "loss": 0.219294935464859,
+          "samples": 8,
+          "seconds": 0.00375533290207386,
+          "update": 16,
+          "value_loss": 0.0018217312172055244
+        },
+        {
+          "batch_tensor_bytes": 220468,
+          "entropy": 0.6445581912994385,
+          "gradient_norm": 0.7781182527542114,
+          "imitation_loss": 0.4260419011116028,
+          "loss": 0.4261120557785034,
+          "samples": 8,
+          "seconds": 0.003756667021661997,
+          "update": 17,
+          "value_loss": 0.0002806706470437348
+        },
+        {
+          "batch_tensor_bytes": 214864,
+          "entropy": 0.26813775300979614,
+          "gradient_norm": 0.38255131244659424,
+          "imitation_loss": 0.14270389080047607,
+          "loss": 0.14279992878437042,
+          "samples": 8,
+          "seconds": 0.0036417078226804733,
+          "update": 18,
+          "value_loss": 0.00038415368180722
+        },
+        {
+          "batch_tensor_bytes": 206876,
+          "entropy": 0.37628161907196045,
+          "gradient_norm": 1.7008615732192993,
+          "imitation_loss": 0.40449488162994385,
+          "loss": 0.4048505425453186,
+          "samples": 8,
+          "seconds": 0.003471958916634321,
+          "update": 19,
+          "value_loss": 0.0014226051280274987
+        },
+        {
+          "batch_tensor_bytes": 213724,
+          "entropy": 0.32035690546035767,
+          "gradient_norm": 3.0712690353393555,
+          "imitation_loss": 0.715417742729187,
+          "loss": 0.7157716751098633,
+          "samples": 8,
+          "seconds": 0.0034967921674251556,
+          "update": 20,
+          "value_loss": 0.0014156141551211476
+        },
+        {
+          "batch_tensor_bytes": 215712,
+          "entropy": 0.5177127718925476,
+          "gradient_norm": 0.6657637357711792,
+          "imitation_loss": 0.2647354304790497,
+          "loss": 0.26495397090911865,
+          "samples": 8,
+          "seconds": 0.0034784169401973486,
+          "update": 21,
+          "value_loss": 0.000874138087965548
+        },
+        {
+          "batch_tensor_bytes": 221544,
+          "entropy": 0.29591047763824463,
+          "gradient_norm": 0.43944522738456726,
+          "imitation_loss": 0.1730339676141739,
+          "loss": 0.1730346530675888,
+          "samples": 8,
+          "seconds": 0.0034944589715451,
+          "update": 22,
+          "value_loss": 2.7415458134782966e-06
+        },
+        {
+          "batch_tensor_bytes": 214280,
+          "entropy": 0.5679479837417603,
+          "gradient_norm": 0.752794086933136,
+          "imitation_loss": 0.3063432574272156,
+          "loss": 0.30655336380004883,
+          "samples": 8,
+          "seconds": 0.0033918749541044235,
+          "update": 23,
+          "value_loss": 0.0008403767715208232
+        },
+        {
+          "batch_tensor_bytes": 222280,
+          "entropy": 0.16041991114616394,
+          "gradient_norm": 0.3576371967792511,
+          "imitation_loss": 0.07699904590845108,
+          "loss": 0.07722894102334976,
+          "samples": 8,
+          "seconds": 0.0034789168275892735,
+          "update": 24,
+          "value_loss": 0.0009195780148729682
+        },
+        {
+          "batch_tensor_bytes": 214944,
+          "entropy": 0.5800185799598694,
+          "gradient_norm": 1.1649043560028076,
+          "imitation_loss": 0.27917590737342834,
+          "loss": 0.2791958749294281,
+          "samples": 8,
+          "seconds": 0.003409875091165304,
+          "update": 25,
+          "value_loss": 7.989232108229771e-05
+        },
+        {
+          "batch_tensor_bytes": 211872,
+          "entropy": 0.28399309515953064,
+          "gradient_norm": 0.5058608055114746,
+          "imitation_loss": 0.13044819235801697,
+          "loss": 0.13053451478481293,
+          "samples": 8,
+          "seconds": 0.003475666046142578,
+          "update": 26,
+          "value_loss": 0.0003452777164056897
+        },
+        {
+          "batch_tensor_bytes": 234088,
+          "entropy": 0.5001108050346375,
+          "gradient_norm": 0.5893256664276123,
+          "imitation_loss": 0.39214473962783813,
+          "loss": 0.3924361765384674,
+          "samples": 8,
+          "seconds": 0.003512708004564047,
+          "update": 27,
+          "value_loss": 0.0011658035218715668
+        },
+        {
+          "batch_tensor_bytes": 225112,
+          "entropy": 0.7207441926002502,
+          "gradient_norm": 1.0065442323684692,
+          "imitation_loss": 0.55438631772995,
+          "loss": 0.5544609427452087,
+          "samples": 8,
+          "seconds": 0.0035165001172572374,
+          "update": 28,
+          "value_loss": 0.0002984473539981991
+        },
+        {
+          "batch_tensor_bytes": 54868,
+          "entropy": 0.4926576614379883,
+          "gradient_norm": 1.2311114072799683,
+          "imitation_loss": 0.18849097192287445,
+          "loss": 0.18852323293685913,
+          "samples": 2,
+          "seconds": 0.0018009170889854431,
+          "update": 29,
+          "value_loss": 0.00012906439951620996
+        },
+        {
+          "batch_tensor_bytes": 234472,
+          "entropy": 0.6217350959777832,
+          "gradient_norm": 0.9675366878509521,
+          "imitation_loss": 0.3134292662143707,
+          "loss": 0.3136502504348755,
+          "samples": 8,
+          "seconds": 0.0035301661118865013,
+          "update": 30,
+          "value_loss": 0.0008839952060952783
+        },
+        {
+          "batch_tensor_bytes": 222568,
+          "entropy": 0.4044452905654907,
+          "gradient_norm": 0.612825870513916,
+          "imitation_loss": 0.17636895179748535,
+          "loss": 0.17658419907093048,
+          "samples": 8,
+          "seconds": 0.0034915830474346876,
+          "update": 31,
+          "value_loss": 0.0008609602227807045
+        },
+        {
+          "batch_tensor_bytes": 218544,
+          "entropy": 0.3832060396671295,
+          "gradient_norm": 3.308725118637085,
+          "imitation_loss": 0.3481477200984955,
+          "loss": 0.34815505146980286,
+          "samples": 8,
+          "seconds": 0.003504958003759384,
+          "update": 32,
+          "value_loss": 2.9301972972461954e-05
+        },
+        {
+          "batch_tensor_bytes": 230180,
+          "entropy": 0.36097580194473267,
+          "gradient_norm": 0.7740967869758606,
+          "imitation_loss": 0.2212114930152893,
+          "loss": 0.22131937742233276,
+          "samples": 8,
+          "seconds": 0.0035286250058561563,
+          "update": 33,
+          "value_loss": 0.00043152322177775204
+        },
+        {
+          "batch_tensor_bytes": 203992,
+          "entropy": 0.19878339767456055,
+          "gradient_norm": 0.2943267822265625,
+          "imitation_loss": 0.05992162972688675,
+          "loss": 0.06010279059410095,
+          "samples": 8,
+          "seconds": 0.0034054999705404043,
+          "update": 34,
+          "value_loss": 0.0007246363093145192
+        },
+        {
+          "batch_tensor_bytes": 223164,
+          "entropy": 0.38333064317703247,
+          "gradient_norm": 0.614621102809906,
+          "imitation_loss": 0.16256581246852875,
+          "loss": 0.16259701550006866,
+          "samples": 8,
+          "seconds": 0.0036730419378727674,
+          "update": 35,
+          "value_loss": 0.00012482257443480194
+        },
+        {
+          "batch_tensor_bytes": 230616,
+          "entropy": 0.4042530357837677,
+          "gradient_norm": 0.40097200870513916,
+          "imitation_loss": 0.26320183277130127,
+          "loss": 0.26324138045310974,
+          "samples": 8,
+          "seconds": 0.003756833029910922,
+          "update": 36,
+          "value_loss": 0.0001581531105330214
+        },
+        {
+          "batch_tensor_bytes": 201184,
+          "entropy": 0.2915446162223816,
+          "gradient_norm": 0.5387789607048035,
+          "imitation_loss": 0.13439038395881653,
+          "loss": 0.13452982902526855,
+          "samples": 8,
+          "seconds": 0.0033799579832702875,
+          "update": 37,
+          "value_loss": 0.0005578058771789074
+        },
+        {
+          "batch_tensor_bytes": 218824,
+          "entropy": 0.7266274690628052,
+          "gradient_norm": 0.8992124795913696,
+          "imitation_loss": 0.4591609239578247,
+          "loss": 0.4592079222202301,
+          "samples": 8,
+          "seconds": 0.0034698329400271177,
+          "update": 38,
+          "value_loss": 0.00018800476391334087
+        },
+        {
+          "batch_tensor_bytes": 226632,
+          "entropy": 0.36646243929862976,
+          "gradient_norm": 0.8460597395896912,
+          "imitation_loss": 0.15159307420253754,
+          "loss": 0.15160667896270752,
+          "samples": 8,
+          "seconds": 0.003562374971807003,
+          "update": 39,
+          "value_loss": 5.440031964099035e-05
+        },
+        {
+          "batch_tensor_bytes": 235224,
+          "entropy": 0.13789476454257965,
+          "gradient_norm": 0.31903207302093506,
+          "imitation_loss": 0.032669905573129654,
+          "loss": 0.032772041857242584,
+          "samples": 8,
+          "seconds": 0.003586666891351342,
+          "update": 40,
+          "value_loss": 0.00040854455437511206
+        },
+        {
+          "batch_tensor_bytes": 227848,
+          "entropy": 0.4397282898426056,
+          "gradient_norm": 1.5052707195281982,
+          "imitation_loss": 0.3849712908267975,
+          "loss": 0.3850375711917877,
+          "samples": 8,
+          "seconds": 0.003690958023071289,
+          "update": 41,
+          "value_loss": 0.00026510702446103096
+        },
+        {
+          "batch_tensor_bytes": 220760,
+          "entropy": 0.23115181922912598,
+          "gradient_norm": 1.2167373895645142,
+          "imitation_loss": 0.07442847639322281,
+          "loss": 0.07443948090076447,
+          "samples": 8,
+          "seconds": 0.003574125003069639,
+          "update": 42,
+          "value_loss": 4.400683246785775e-05
+        },
+        {
+          "batch_tensor_bytes": 213740,
+          "entropy": 0.34042778611183167,
+          "gradient_norm": 6.343536376953125,
+          "imitation_loss": 1.183796763420105,
+          "loss": 1.1838003396987915,
+          "samples": 8,
+          "seconds": 0.0036379999946802855,
+          "update": 43,
+          "value_loss": 1.4478134289674927e-05
+        },
+        {
+          "batch_tensor_bytes": 243616,
+          "entropy": 0.48814260959625244,
+          "gradient_norm": 1.0090481042861938,
+          "imitation_loss": 0.39975833892822266,
+          "loss": 0.39978453516960144,
+          "samples": 8,
+          "seconds": 0.0037107078824192286,
+          "update": 44,
+          "value_loss": 0.00010484417725820094
+        },
+        {
+          "batch_tensor_bytes": 213440,
+          "entropy": 0.2191833257675171,
+          "gradient_norm": 0.5959529876708984,
+          "imitation_loss": 0.06485185027122498,
+          "loss": 0.06486620754003525,
+          "samples": 8,
+          "seconds": 0.00346191693097353,
+          "update": 45,
+          "value_loss": 5.742381472373381e-05
+        },
+        {
+          "batch_tensor_bytes": 215576,
+          "entropy": 0.07365084439516068,
+          "gradient_norm": 0.22085508704185486,
+          "imitation_loss": 0.01933266781270504,
+          "loss": 0.019334789365530014,
+          "samples": 8,
+          "seconds": 0.003637749934569001,
+          "update": 46,
+          "value_loss": 8.488505045534112e-06
+        },
+        {
+          "batch_tensor_bytes": 215232,
+          "entropy": 0.20682750642299652,
+          "gradient_norm": 1.8195172548294067,
+          "imitation_loss": 0.46939897537231445,
+          "loss": 0.46940070390701294,
+          "samples": 8,
+          "seconds": 0.003479416947811842,
+          "update": 47,
+          "value_loss": 6.9723441811220255e-06
+        },
+        {
+          "batch_tensor_bytes": 227040,
+          "entropy": 0.3800394833087921,
+          "gradient_norm": 1.0293673276901245,
+          "imitation_loss": 0.18405912816524506,
+          "loss": 0.18406690657138824,
+          "samples": 8,
+          "seconds": 0.0036701669450849295,
+          "update": 48,
+          "value_loss": 3.1108222174225375e-05
+        },
+        {
+          "batch_tensor_bytes": 229212,
+          "entropy": 0.22143122553825378,
+          "gradient_norm": 0.49495741724967957,
+          "imitation_loss": 0.10650569945573807,
+          "loss": 0.10650783032178879,
+          "samples": 8,
+          "seconds": 0.0036202080082148314,
+          "update": 49,
+          "value_loss": 8.510805855621584e-06
+        },
+        {
+          "batch_tensor_bytes": 226376,
+          "entropy": 0.054351214319467545,
+          "gradient_norm": 0.21599507331848145,
+          "imitation_loss": 0.02076970972120762,
+          "loss": 0.020770981907844543,
+          "samples": 8,
+          "seconds": 0.0036295419558882713,
+          "update": 50,
+          "value_loss": 5.088080797577277e-06
+        },
+        {
+          "batch_tensor_bytes": 214728,
+          "entropy": 0.6498323678970337,
+          "gradient_norm": 0.954463541507721,
+          "imitation_loss": 0.4049884080886841,
+          "loss": 0.4049939811229706,
+          "samples": 8,
+          "seconds": 0.0034134171437472105,
+          "update": 51,
+          "value_loss": 2.230507743661292e-05
+        },
+        {
+          "batch_tensor_bytes": 237288,
+          "entropy": 0.2993661165237427,
+          "gradient_norm": 0.5871168971061707,
+          "imitation_loss": 0.11990433931350708,
+          "loss": 0.11990545690059662,
+          "samples": 8,
+          "seconds": 0.003688790835440159,
+          "update": 52,
+          "value_loss": 4.456758688320406e-06
+        },
+        {
+          "batch_tensor_bytes": 219348,
+          "entropy": 0.3971174955368042,
+          "gradient_norm": 0.7579271793365479,
+          "imitation_loss": 0.1765262335538864,
+          "loss": 0.17652879655361176,
+          "samples": 8,
+          "seconds": 0.003473541932180524,
+          "update": 53,
+          "value_loss": 1.0274973647028673e-05
+        },
+        {
+          "batch_tensor_bytes": 228088,
+          "entropy": 0.5642685294151306,
+          "gradient_norm": 1.2188817262649536,
+          "imitation_loss": 0.2783426344394684,
+          "loss": 0.2783498466014862,
+          "samples": 8,
+          "seconds": 0.003586124861612916,
+          "update": 54,
+          "value_loss": 2.8898932214360684e-05
+        },
+        {
+          "batch_tensor_bytes": 226064,
+          "entropy": 0.1536528468132019,
+          "gradient_norm": 0.37201473116874695,
+          "imitation_loss": 0.05390985310077667,
+          "loss": 0.053913332521915436,
+          "samples": 8,
+          "seconds": 0.0035819581244140863,
+          "update": 55,
+          "value_loss": 1.391291334584821e-05
+        },
+        {
+          "batch_tensor_bytes": 213488,
+          "entropy": 0.1465076506137848,
+          "gradient_norm": 0.28797778487205505,
+          "imitation_loss": 0.0582137331366539,
+          "loss": 0.05821407586336136,
+          "samples": 8,
+          "seconds": 0.0033965830225497484,
+          "update": 56,
+          "value_loss": 1.37196138894069e-06
+        },
+        {
+          "batch_tensor_bytes": 234016,
+          "entropy": 0.37402763962745667,
+          "gradient_norm": 1.4906865358352661,
+          "imitation_loss": 0.14688576757907867,
+          "loss": 0.14689086377620697,
+          "samples": 8,
+          "seconds": 0.0037780830170959234,
+          "update": 57,
+          "value_loss": 2.0368772311485372e-05
+        },
+        {
+          "batch_tensor_bytes": 47476,
+          "entropy": 0.1386876404285431,
+          "gradient_norm": 0.4193112850189209,
+          "imitation_loss": 0.039640944451093674,
+          "loss": 0.039642225950956345,
+          "samples": 2,
+          "seconds": 0.0017633750103414059,
+          "update": 58,
+          "value_loss": 5.127237272972707e-06
+        },
+        {
+          "batch_tensor_bytes": 229752,
+          "entropy": 0.18934786319732666,
+          "gradient_norm": 0.22003202140331268,
+          "imitation_loss": 0.052425894886255264,
+          "loss": 0.0524265430867672,
+          "samples": 8,
+          "seconds": 0.0034858749713748693,
+          "update": 59,
+          "value_loss": 2.592767486930825e-06
+        },
+        {
+          "batch_tensor_bytes": 218520,
+          "entropy": 0.01673545315861702,
+          "gradient_norm": 0.04242398589849472,
+          "imitation_loss": 0.002728575374931097,
+          "loss": 0.002733976114541292,
+          "samples": 8,
+          "seconds": 0.003608749946579337,
+          "update": 60,
+          "value_loss": 2.1603367713396437e-05
+        },
+        {
+          "batch_tensor_bytes": 226788,
+          "entropy": 0.37112265825271606,
+          "gradient_norm": 0.9307166934013367,
+          "imitation_loss": 0.1826956570148468,
+          "loss": 0.1826973408460617,
+          "samples": 8,
+          "seconds": 0.0035407498944550753,
+          "update": 61,
+          "value_loss": 6.728755124640884e-06
+        },
+        {
+          "batch_tensor_bytes": 208168,
+          "entropy": 0.15219534933567047,
+          "gradient_norm": 0.7485489845275879,
+          "imitation_loss": 0.053754232823848724,
+          "loss": 0.05376814305782318,
+          "samples": 8,
+          "seconds": 0.003537665819749236,
+          "update": 62,
+          "value_loss": 5.564648745348677e-05
+        },
+        {
+          "batch_tensor_bytes": 222120,
+          "entropy": 0.11612153053283691,
+          "gradient_norm": 0.37891796231269836,
+          "imitation_loss": 0.04261098802089691,
+          "loss": 0.04262322559952736,
+          "samples": 8,
+          "seconds": 0.0035353340208530426,
+          "update": 63,
+          "value_loss": 4.8950059863273054e-05
+        },
+        {
+          "batch_tensor_bytes": 207816,
+          "entropy": 0.19096721708774567,
+          "gradient_norm": 0.49200674891471863,
+          "imitation_loss": 0.06530063599348068,
+          "loss": 0.06530098617076874,
+          "samples": 8,
+          "seconds": 0.0033756669145077467,
+          "update": 64,
+          "value_loss": 1.3891376511310227e-06
+        },
+        {
+          "batch_tensor_bytes": 222568,
+          "entropy": 0.12300312519073486,
+          "gradient_norm": 0.291216105222702,
+          "imitation_loss": 0.03424657881259918,
+          "loss": 0.03425537049770355,
+          "samples": 8,
+          "seconds": 0.003488499904051423,
+          "update": 65,
+          "value_loss": 3.516145807225257e-05
+        },
+        {
+          "batch_tensor_bytes": 221160,
+          "entropy": 0.13900573551654816,
+          "gradient_norm": 0.24829061329364777,
+          "imitation_loss": 0.03638467192649841,
+          "loss": 0.036387328058481216,
+          "samples": 8,
+          "seconds": 0.0034700841642916203,
+          "update": 66,
+          "value_loss": 1.0620011380524375e-05
+        },
+        {
+          "batch_tensor_bytes": 229192,
+          "entropy": 0.27681708335876465,
+          "gradient_norm": 0.5315057635307312,
+          "imitation_loss": 0.11801375448703766,
+          "loss": 0.11801517009735107,
+          "samples": 8,
+          "seconds": 0.0035662921145558357,
+          "update": 67,
+          "value_loss": 5.672343831975013e-06
+        },
+        {
+          "batch_tensor_bytes": 206300,
+          "entropy": 0.27664393186569214,
+          "gradient_norm": 0.7400415539741516,
+          "imitation_loss": 0.08670485019683838,
+          "loss": 0.08671098202466965,
+          "samples": 8,
+          "seconds": 0.003352999920025468,
+          "update": 68,
+          "value_loss": 2.45358569372911e-05
+        },
+        {
+          "batch_tensor_bytes": 236068,
+          "entropy": 0.3137272000312805,
+          "gradient_norm": 0.5383520722389221,
+          "imitation_loss": 0.1745052933692932,
+          "loss": 0.17450617253780365,
+          "samples": 8,
+          "seconds": 0.0037364999298006296,
+          "update": 69,
+          "value_loss": 3.499486865621293e-06
+        },
+        {
+          "batch_tensor_bytes": 220680,
+          "entropy": 0.1709982305765152,
+          "gradient_norm": 0.5558142066001892,
+          "imitation_loss": 0.05994077026844025,
+          "loss": 0.05994352325797081,
+          "samples": 8,
+          "seconds": 0.0035594161599874496,
+          "update": 70,
+          "value_loss": 1.1019124940503389e-05
+        },
+        {
+          "batch_tensor_bytes": 239440,
+          "entropy": 0.1385144293308258,
+          "gradient_norm": 0.2246999740600586,
+          "imitation_loss": 0.03607506304979324,
+          "loss": 0.036079272627830505,
+          "samples": 8,
+          "seconds": 0.0038074159529060125,
+          "update": 71,
+          "value_loss": 1.6837160728755407e-05
+        },
+        {
+          "batch_tensor_bytes": 214416,
+          "entropy": 0.15693649649620056,
+          "gradient_norm": 0.5280897617340088,
+          "imitation_loss": 0.047086406499147415,
+          "loss": 0.04708646610379219,
+          "samples": 8,
+          "seconds": 0.003486041910946369,
+          "update": 72,
+          "value_loss": 2.4026346068239945e-07
+        },
+        {
+          "batch_tensor_bytes": 222704,
+          "entropy": 0.40275800228118896,
+          "gradient_norm": 1.806857943534851,
+          "imitation_loss": 0.2010623663663864,
+          "loss": 0.2010650783777237,
+          "samples": 8,
+          "seconds": 0.0034430830273777246,
+          "update": 73,
+          "value_loss": 1.0855270375031978e-05
+        },
+        {
+          "batch_tensor_bytes": 216176,
+          "entropy": 0.20783601701259613,
+          "gradient_norm": 0.31867367029190063,
+          "imitation_loss": 0.0945081114768982,
+          "loss": 0.09451328963041306,
+          "samples": 8,
+          "seconds": 0.003491166979074478,
+          "update": 74,
+          "value_loss": 2.0713840058306232e-05
+        },
+        {
+          "batch_tensor_bytes": 219816,
+          "entropy": 0.04067223146557808,
+          "gradient_norm": 5.133491039276123,
+          "imitation_loss": 1.0105037689208984,
+          "loss": 1.0105037689208984,
+          "samples": 8,
+          "seconds": 0.003453624900430441,
+          "update": 75,
+          "value_loss": 1.8224640996322705e-07
+        },
+        {
+          "batch_tensor_bytes": 239656,
+          "entropy": 0.5748753547668457,
+          "gradient_norm": 0.6633127927780151,
+          "imitation_loss": 0.3450218737125397,
+          "loss": 0.3450266420841217,
+          "samples": 8,
+          "seconds": 0.0036452088970690966,
+          "update": 76,
+          "value_loss": 1.902040639834013e-05
+        },
+        {
+          "batch_tensor_bytes": 232256,
+          "entropy": 0.11263194680213928,
+          "gradient_norm": 0.2985895276069641,
+          "imitation_loss": 0.04508771374821663,
+          "loss": 0.04508884251117706,
+          "samples": 8,
+          "seconds": 0.0036054998636245728,
+          "update": 77,
+          "value_loss": 4.5208407755126245e-06
+        },
+        {
+          "batch_tensor_bytes": 221516,
+          "entropy": 0.23130351305007935,
+          "gradient_norm": 0.5538983941078186,
+          "imitation_loss": 0.09874191880226135,
+          "loss": 0.09874309599399567,
+          "samples": 8,
+          "seconds": 0.003570874920114875,
+          "update": 78,
+          "value_loss": 4.706972504209261e-06
+        },
+        {
+          "batch_tensor_bytes": 244320,
+          "entropy": 0.26479044556617737,
+          "gradient_norm": 0.7323166131973267,
+          "imitation_loss": 0.13168829679489136,
+          "loss": 0.13169033825397491,
+          "samples": 8,
+          "seconds": 0.0037069171667099,
+          "update": 79,
+          "value_loss": 8.144867024384439e-06
+        },
+        {
+          "batch_tensor_bytes": 202680,
+          "entropy": 0.09069220721721649,
+          "gradient_norm": 0.1968563199043274,
+          "imitation_loss": 0.04967020824551582,
+          "loss": 0.0496702715754509,
+          "samples": 8,
+          "seconds": 0.003428792115300894,
+          "update": 80,
+          "value_loss": 2.502259803804918e-07
+        },
+        {
+          "batch_tensor_bytes": 236988,
+          "entropy": 0.2970969080924988,
+          "gradient_norm": 0.8002383708953857,
+          "imitation_loss": 0.10641942173242569,
+          "loss": 0.10642118752002716,
+          "samples": 8,
+          "seconds": 0.0037090841215103865,
+          "update": 81,
+          "value_loss": 7.070593710523099e-06
+        },
+        {
+          "batch_tensor_bytes": 246760,
+          "entropy": 0.2604910433292389,
+          "gradient_norm": 0.6160671710968018,
+          "imitation_loss": 0.09588013589382172,
+          "loss": 0.0958806499838829,
+          "samples": 8,
+          "seconds": 0.003992916084825993,
+          "update": 82,
+          "value_loss": 2.0504412532318383e-06
+        },
+        {
+          "batch_tensor_bytes": 209296,
+          "entropy": 0.18747849762439728,
+          "gradient_norm": 0.44990599155426025,
+          "imitation_loss": 0.05515406280755997,
+          "loss": 0.05515500158071518,
+          "samples": 8,
+          "seconds": 0.003648415906354785,
+          "update": 83,
+          "value_loss": 3.7554707432718715e-06
+        },
+        {
+          "batch_tensor_bytes": 214048,
+          "entropy": 0.059124600142240524,
+          "gradient_norm": 2.898653268814087,
+          "imitation_loss": 0.7898343205451965,
+          "loss": 0.7898350358009338,
+          "samples": 8,
+          "seconds": 0.0035138330422341824,
+          "update": 84,
+          "value_loss": 2.840899924194673e-06
+        },
+        {
+          "batch_tensor_bytes": 229568,
+          "entropy": 0.4487327039241791,
+          "gradient_norm": 0.7562021613121033,
+          "imitation_loss": 0.18593132495880127,
+          "loss": 0.18593142926692963,
+          "samples": 8,
+          "seconds": 0.003621417097747326,
+          "update": 85,
+          "value_loss": 3.99200985157222e-07
+        },
+        {
+          "batch_tensor_bytes": 210512,
+          "entropy": 0.2243737280368805,
+          "gradient_norm": 0.33224913477897644,
+          "imitation_loss": 0.0731322392821312,
+          "loss": 0.0731329619884491,
+          "samples": 8,
+          "seconds": 0.0034796670079231262,
+          "update": 86,
+          "value_loss": 2.8886186100862687e-06
+        },
+        {
+          "batch_tensor_bytes": 49552,
+          "entropy": 0.005535685457289219,
+          "gradient_norm": 0.02292141132056713,
+          "imitation_loss": 0.0007168873562477529,
+          "loss": 0.0007169376476667821,
+          "samples": 2,
+          "seconds": 0.0017712500412017107,
+          "update": 87,
+          "value_loss": 2.0108268472540658e-07
+        },
+        {
+          "batch_tensor_bytes": 219692,
+          "entropy": 0.14308741688728333,
+          "gradient_norm": 0.3411402702331543,
+          "imitation_loss": 0.04783608019351959,
+          "loss": 0.04783700779080391,
+          "samples": 8,
+          "seconds": 0.0036621668841689825,
+          "update": 88,
+          "value_loss": 3.71301757695619e-06
+        },
+        {
+          "batch_tensor_bytes": 233488,
+          "entropy": 0.12067079544067383,
+          "gradient_norm": 0.24098072946071625,
+          "imitation_loss": 0.03887331485748291,
+          "loss": 0.03887380659580231,
+          "samples": 8,
+          "seconds": 0.0035748330410569906,
+          "update": 89,
+          "value_loss": 1.969635377463419e-06
+        },
+        {
+          "batch_tensor_bytes": 219464,
+          "entropy": 0.2263871729373932,
+          "gradient_norm": 0.3509419560432434,
+          "imitation_loss": 0.10846899449825287,
+          "loss": 0.10846918821334839,
+          "samples": 8,
+          "seconds": 0.0035432090517133474,
+          "update": 90,
+          "value_loss": 7.879946792854753e-07
+        },
+        {
+          "batch_tensor_bytes": 214408,
+          "entropy": 0.10926254093647003,
+          "gradient_norm": 4.424826622009277,
+          "imitation_loss": 0.8202695846557617,
+          "loss": 0.8202704191207886,
+          "samples": 8,
+          "seconds": 0.003453457960858941,
+          "update": 91,
+          "value_loss": 3.373796516825678e-06
+        },
+        {
+          "batch_tensor_bytes": 213892,
+          "entropy": 0.4621690511703491,
+          "gradient_norm": 0.8641315698623657,
+          "imitation_loss": 0.185380220413208,
+          "loss": 0.18538157641887665,
+          "samples": 8,
+          "seconds": 0.0034565830137580633,
+          "update": 92,
+          "value_loss": 5.431895260699093e-06
+        },
+        {
+          "batch_tensor_bytes": 223224,
+          "entropy": 0.2807491421699524,
+          "gradient_norm": 0.9046467542648315,
+          "imitation_loss": 0.13048401474952698,
+          "loss": 0.13048523664474487,
+          "samples": 8,
+          "seconds": 0.003811874892562628,
+          "update": 93,
+          "value_loss": 4.85941700389958e-06
+        },
+        {
+          "batch_tensor_bytes": 241040,
+          "entropy": 0.12432008981704712,
+          "gradient_norm": 0.29508933424949646,
+          "imitation_loss": 0.03244318068027496,
+          "loss": 0.03244354575872421,
+          "samples": 8,
+          "seconds": 0.0036498329136520624,
+          "update": 94,
+          "value_loss": 1.4547808859788347e-06
+        },
+        {
+          "batch_tensor_bytes": 216016,
+          "entropy": 0.14761385321617126,
+          "gradient_norm": 0.39470621943473816,
+          "imitation_loss": 0.039022110402584076,
+          "loss": 0.039022866636514664,
+          "samples": 8,
+          "seconds": 0.0035000001080334187,
+          "update": 95,
+          "value_loss": 3.023298177140532e-06
+        },
+        {
+          "batch_tensor_bytes": 235144,
+          "entropy": 0.18499654531478882,
+          "gradient_norm": 1.5998414754867554,
+          "imitation_loss": 0.07543087005615234,
+          "loss": 0.07543226331472397,
+          "samples": 8,
+          "seconds": 0.0037235000636428595,
+          "update": 96,
+          "value_loss": 5.583239271800267e-06
+        },
+        {
+          "batch_tensor_bytes": 204120,
+          "entropy": 0.2891193628311157,
+          "gradient_norm": 5.304347991943359,
+          "imitation_loss": 1.061568260192871,
+          "loss": 1.061569094657898,
+          "samples": 8,
+          "seconds": 0.0033617080189287663,
+          "update": 97,
+          "value_loss": 3.151788405375555e-06
+        },
+        {
+          "batch_tensor_bytes": 221136,
+          "entropy": 0.08015450835227966,
+          "gradient_norm": 0.19292542338371277,
+          "imitation_loss": 0.015926307067275047,
+          "loss": 0.015927579253911972,
+          "samples": 8,
+          "seconds": 0.0034707500599324703,
+          "update": 98,
+          "value_loss": 5.092370429338189e-06
+        },
+        {
+          "batch_tensor_bytes": 225740,
+          "entropy": 0.2436949610710144,
+          "gradient_norm": 0.4853054881095886,
+          "imitation_loss": 0.08322126418352127,
+          "loss": 0.08323013037443161,
+          "samples": 8,
+          "seconds": 0.0034940410405397415,
+          "update": 99,
+          "value_loss": 3.5457618650980294e-05
+        },
+        {
+          "batch_tensor_bytes": 245288,
+          "entropy": 0.1916225254535675,
+          "gradient_norm": 0.4119436740875244,
+          "imitation_loss": 0.06758986413478851,
+          "loss": 0.06759463995695114,
+          "samples": 8,
+          "seconds": 0.0037594169843941927,
+          "update": 100,
+          "value_loss": 1.911593062686734e-05
+        },
+        {
+          "batch_tensor_bytes": 221320,
+          "entropy": 0.2782555818557739,
+          "gradient_norm": 0.4959603548049927,
+          "imitation_loss": 0.15877725183963776,
+          "loss": 0.15878939628601074,
+          "samples": 8,
+          "seconds": 0.0035752500407397747,
+          "update": 101,
+          "value_loss": 4.855775478063151e-05
+        },
+        {
+          "batch_tensor_bytes": 209472,
+          "entropy": 0.10579042136669159,
+          "gradient_norm": 0.2965185344219208,
+          "imitation_loss": 0.03153624385595322,
+          "loss": 0.03154441714286804,
+          "samples": 8,
+          "seconds": 0.0034499589819461107,
+          "update": 102,
+          "value_loss": 3.269910303060897e-05
+        },
+        {
+          "batch_tensor_bytes": 224208,
+          "entropy": 0.1917620152235031,
+          "gradient_norm": 0.6381853222846985,
+          "imitation_loss": 0.07864518463611603,
+          "loss": 0.07868772000074387,
+          "samples": 8,
+          "seconds": 0.003512375056743622,
+          "update": 103,
+          "value_loss": 0.00017012853641062975
+        },
+        {
+          "batch_tensor_bytes": 223104,
+          "entropy": 0.22026994824409485,
+          "gradient_norm": 0.4759034514427185,
+          "imitation_loss": 0.07996702939271927,
+          "loss": 0.07999078184366226,
+          "samples": 8,
+          "seconds": 0.0035540000535547733,
+          "update": 104,
+          "value_loss": 9.500989108346403e-05
+        },
+        {
+          "batch_tensor_bytes": 221784,
+          "entropy": 0.2230595052242279,
+          "gradient_norm": 0.6221137642860413,
+          "imitation_loss": 0.07326681166887283,
+          "loss": 0.07333548367023468,
+          "samples": 8,
+          "seconds": 0.003585499944165349,
+          "update": 105,
+          "value_loss": 0.0002746818936429918
+        },
+        {
+          "batch_tensor_bytes": 233240,
+          "entropy": 0.19033613801002502,
+          "gradient_norm": 0.44413095712661743,
+          "imitation_loss": 0.059835974127054214,
+          "loss": 0.05992472916841507,
+          "samples": 8,
+          "seconds": 0.0034949160180985928,
+          "update": 106,
+          "value_loss": 0.00035502048558555543
+        },
+        {
+          "batch_tensor_bytes": 237368,
+          "entropy": 0.0966385155916214,
+          "gradient_norm": 0.2711026668548584,
+          "imitation_loss": 0.02671598643064499,
+          "loss": 0.026722386479377747,
+          "samples": 8,
+          "seconds": 0.0037356670945882797,
+          "update": 107,
+          "value_loss": 2.5598308639018796e-05
+        },
+        {
+          "batch_tensor_bytes": 205280,
+          "entropy": 0.1544349491596222,
+          "gradient_norm": 0.5640753507614136,
+          "imitation_loss": 0.044252753257751465,
+          "loss": 0.04433787241578102,
+          "samples": 8,
+          "seconds": 0.0033539170399308205,
+          "update": 108,
+          "value_loss": 0.0003404837043490261
+        },
+        {
+          "batch_tensor_bytes": 239200,
+          "entropy": 0.1606510877609253,
+          "gradient_norm": 0.45789453387260437,
+          "imitation_loss": 0.05171484127640724,
+          "loss": 0.051719244569540024,
+          "samples": 8,
+          "seconds": 0.003685917006805539,
+          "update": 109,
+          "value_loss": 1.7611981093068607e-05
+        },
+        {
+          "batch_tensor_bytes": 239444,
+          "entropy": 0.4455741345882416,
+          "gradient_norm": 6.241745948791504,
+          "imitation_loss": 0.3788580596446991,
+          "loss": 0.37890613079071045,
+          "samples": 8,
+          "seconds": 0.003640458919107914,
+          "update": 110,
+          "value_loss": 0.00019229661847930402
+        },
+        {
+          "batch_tensor_bytes": 210552,
+          "entropy": 0.13104191422462463,
+          "gradient_norm": 0.7624515891075134,
+          "imitation_loss": 0.038754966109991074,
+          "loss": 0.038947220891714096,
+          "samples": 8,
+          "seconds": 0.0033962500747293234,
+          "update": 111,
+          "value_loss": 0.0007690119091421366
+        },
+        {
+          "batch_tensor_bytes": 227412,
+          "entropy": 0.09462262690067291,
+          "gradient_norm": 0.411418616771698,
+          "imitation_loss": 0.023094987496733665,
+          "loss": 0.023098571226000786,
+          "samples": 8,
+          "seconds": 0.0035632920917123556,
+          "update": 112,
+          "value_loss": 1.4336450476548634e-05
+        },
+        {
+          "batch_tensor_bytes": 216744,
+          "entropy": 0.045921243727207184,
+          "gradient_norm": 0.12662775814533234,
+          "imitation_loss": 0.009207451716065407,
+          "loss": 0.00935404747724533,
+          "samples": 8,
+          "seconds": 0.0033919999841600657,
+          "update": 113,
+          "value_loss": 0.0005863843252882361
+        },
+        {
+          "batch_tensor_bytes": 230008,
+          "entropy": 0.08480614423751831,
+          "gradient_norm": 0.22164084017276764,
+          "imitation_loss": 0.01671326905488968,
+          "loss": 0.016780126839876175,
+          "samples": 8,
+          "seconds": 0.003532292088493705,
+          "update": 114,
+          "value_loss": 0.00026743157650344074
+        },
+        {
+          "batch_tensor_bytes": 198864,
+          "entropy": 0.01561387162655592,
+          "gradient_norm": 0.06547783315181732,
+          "imitation_loss": 0.002652013674378395,
+          "loss": 0.0026971271727234125,
+          "samples": 8,
+          "seconds": 0.0032891668379306793,
+          "update": 115,
+          "value_loss": 0.00018045416800305247
+        },
+        {
+          "batch_tensor_bytes": 48384,
+          "entropy": 0.3602568805217743,
+          "gradient_norm": 6.434230804443359,
+          "imitation_loss": 0.30162277817726135,
+          "loss": 0.3017384707927704,
+          "samples": 2,
+          "seconds": 0.0017410831060260534,
+          "update": 116,
+          "value_loss": 0.0004627689195331186
+        },
+        {
+          "batch_tensor_bytes": 226976,
+          "entropy": 0.06342452019453049,
+          "gradient_norm": 0.20921684801578522,
+          "imitation_loss": 0.01713569462299347,
+          "loss": 0.017195701599121094,
+          "samples": 8,
+          "seconds": 0.003600124968215823,
+          "update": 117,
+          "value_loss": 0.00024002720601856709
+        },
+        {
+          "batch_tensor_bytes": 222968,
+          "entropy": 0.12970316410064697,
+          "gradient_norm": 0.3635686933994293,
+          "imitation_loss": 0.04684332758188248,
+          "loss": 0.046892233192920685,
+          "samples": 8,
+          "seconds": 0.0035143750719726086,
+          "update": 118,
+          "value_loss": 0.00019562138186302036
+        },
+        {
+          "batch_tensor_bytes": 216768,
+          "entropy": 0.1952587217092514,
+          "gradient_norm": 0.49758023023605347,
+          "imitation_loss": 0.07505311816930771,
+          "loss": 0.07517391443252563,
+          "samples": 8,
+          "seconds": 0.0036751250736415386,
+          "update": 119,
+          "value_loss": 0.0004831732658203691
+        },
+        {
+          "batch_tensor_bytes": 225576,
+          "entropy": 0.03164492920041084,
+          "gradient_norm": 0.10609377920627594,
+          "imitation_loss": 0.006730017252266407,
+          "loss": 0.006797518581151962,
+          "samples": 8,
+          "seconds": 0.003637832822278142,
+          "update": 120,
+          "value_loss": 0.00027000484988093376
+        },
+        {
+          "batch_tensor_bytes": 201040,
+          "entropy": 0.16336189210414886,
+          "gradient_norm": 0.48701849579811096,
+          "imitation_loss": 0.05535731837153435,
+          "loss": 0.0554182343184948,
+          "samples": 8,
+          "seconds": 0.003270291956141591,
+          "update": 121,
+          "value_loss": 0.0002436678041703999
+        },
+        {
+          "batch_tensor_bytes": 231796,
+          "entropy": 0.1786912977695465,
+          "gradient_norm": 0.3060149848461151,
+          "imitation_loss": 0.07906345278024673,
+          "loss": 0.07907254993915558,
+          "samples": 8,
+          "seconds": 0.0036654171999543905,
+          "update": 122,
+          "value_loss": 3.638975977082737e-05
+        },
+        {
+          "batch_tensor_bytes": 226188,
+          "entropy": 0.0849318876862526,
+          "gradient_norm": 0.3934437334537506,
+          "imitation_loss": 0.027189891785383224,
+          "loss": 0.027234937995672226,
+          "samples": 8,
+          "seconds": 0.003478541038930416,
+          "update": 123,
+          "value_loss": 0.00018018390983343124
+        },
+        {
+          "batch_tensor_bytes": 210920,
+          "entropy": 0.1214168593287468,
+          "gradient_norm": 0.28248322010040283,
+          "imitation_loss": 0.04107014834880829,
+          "loss": 0.04107220098376274,
+          "samples": 8,
+          "seconds": 0.0034300419501960278,
+          "update": 124,
+          "value_loss": 8.204639016184956e-06
+        },
+        {
+          "batch_tensor_bytes": 219032,
+          "entropy": 0.02539239637553692,
+          "gradient_norm": 0.10087789595127106,
+          "imitation_loss": 0.004652800038456917,
+          "loss": 0.004703029990196228,
+          "samples": 8,
+          "seconds": 0.003426542039960623,
+          "update": 125,
+          "value_loss": 0.00020091989426873624
+        },
+        {
+          "batch_tensor_bytes": 207776,
+          "entropy": 0.13722479343414307,
+          "gradient_norm": 1.9741874933242798,
+          "imitation_loss": 0.06875567138195038,
+          "loss": 0.0687570720911026,
+          "samples": 8,
+          "seconds": 0.0034697079099714756,
+          "update": 126,
+          "value_loss": 5.604959824268008e-06
+        },
+        {
+          "batch_tensor_bytes": 244152,
+          "entropy": 0.09645462036132812,
+          "gradient_norm": 0.30156049132347107,
+          "imitation_loss": 0.051830898970365524,
+          "loss": 0.051878850907087326,
+          "samples": 8,
+          "seconds": 0.003771417075768113,
+          "update": 127,
+          "value_loss": 0.00019181097741238773
+        },
+        {
+          "batch_tensor_bytes": 217400,
+          "entropy": 0.06652393192052841,
+          "gradient_norm": 0.3787638545036316,
+          "imitation_loss": 0.01781533658504486,
+          "loss": 0.01782715693116188,
+          "samples": 8,
+          "seconds": 0.0035345829091966152,
+          "update": 128,
+          "value_loss": 4.7281781007768586e-05
+        }
+      ],
+      "validation_decisions": 192,
+      "validation_identity": "sts_imitation_corpus_v1:05278be50c1f99469cd3dc55e6a5b6171f1235328b76089e7df1affc23805858"
+    },
+    "training_demonstrations": {
+      "episodes": [
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 73,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 4
+          },
+          "components": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 3.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.9125
+          },
+          "encounter": "overgrowth_nibbit",
+          "end_turn_actions": 3,
+          "episode_id": "31f03d0674874b51b991f777a605fc7d",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "policy": "heuristic",
+          "potion_use_actions": 0,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "truncated",
+            "reason": "external_stop",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 80,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 12,
+          "task_return": 1.0,
+          "timings": {
+            "encoding_seconds": 0.1880254556890577,
+            "initialization_seconds": 0.014317624969407916,
+            "policy_seconds": 0.08512454107403755,
+            "projection_seconds": 0.17950704181566834,
+            "recording_seconds": 0.2537182089872658,
+            "simulation_dispatch_seconds": 0.03168941428884864,
+            "total_seconds": 0.7624618750996888
+          },
+          "training": "31f03d0674874b51b991f777a605fc7d.training.json",
+          "trajectory": "31f03d0674874b51b991f777a605fc7d.trajectory.jsonl"
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 71,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 5
+          },
+          "components": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 4.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.8875
+          },
+          "encounter": "overgrowth_fuzzy",
+          "end_turn_actions": 4,
+          "episode_id": "b977128ad6a344949bd9f36844664f9b",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "policy": "heuristic",
+          "potion_use_actions": 0,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "truncated",
+            "reason": "external_stop",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 80,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 15,
+          "task_return": 1.0,
+          "timings": {
+            "encoding_seconds": 0.25191024993546307,
+            "initialization_seconds": 0.0016892091371119022,
+            "policy_seconds": 0.10451500001363456,
+            "projection_seconds": 0.15091766486875713,
+            "recording_seconds": 0.3107789591886103,
+            "simulation_dispatch_seconds": 0.057693916372954845,
+            "total_seconds": 0.8873948329128325
+          },
+          "training": "b977128ad6a344949bd9f36844664f9b.training.json",
+          "trajectory": "b977128ad6a344949bd9f36844664f9b.trajectory.jsonl"
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 63,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 6
+          },
+          "components": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 5.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.7875
+          },
+          "encounter": "overgrowth_slimes",
+          "end_turn_actions": 5,
+          "episode_id": "246dc001f02042949ea093c5ae3b5c29",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "policy": "heuristic",
+          "potion_use_actions": 0,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "truncated",
+            "reason": "external_stop",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 80,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 20,
+          "task_return": 1.0,
+          "timings": {
+            "encoding_seconds": 0.3719224175438285,
+            "initialization_seconds": 0.001618583220988512,
+            "policy_seconds": 0.16154432948678732,
+            "projection_seconds": 0.23023200198076665,
+            "recording_seconds": 0.518641792004928,
+            "simulation_dispatch_seconds": 0.04705850034952164,
+            "total_seconds": 1.3407196251209825
+          },
+          "training": "246dc001f02042949ea093c5ae3b5c29.training.json",
+          "trajectory": "246dc001f02042949ea093c5ae3b5c29.trajectory.jsonl"
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 55,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 6
+          },
+          "components": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 5.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.6875
+          },
+          "encounter": "overgrowth_mawler",
+          "end_turn_actions": 5,
+          "episode_id": "7a79fe832c474e11ae0ab195f295cb85",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "policy": "heuristic",
+          "potion_use_actions": 0,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "truncated",
+            "reason": "external_stop",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 80,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 21,
+          "task_return": 1.0,
+          "timings": {
+            "encoding_seconds": 0.3323086241725832,
+            "initialization_seconds": 0.0015630419366061687,
+            "policy_seconds": 0.14273895858787,
+            "projection_seconds": 0.20459929411299527,
+            "recording_seconds": 0.4447055826894939,
+            "simulation_dispatch_seconds": 0.04568262677639723,
+            "total_seconds": 1.1805265001021326
+          },
+          "training": "7a79fe832c474e11ae0ab195f295cb85.training.json",
+          "trajectory": "7a79fe832c474e11ae0ab195f295cb85.trajectory.jsonl"
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 33,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 11
+          },
+          "components": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 10.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.4125
+          },
+          "encounter": "overgrowth_nibbits",
+          "end_turn_actions": 10,
+          "episode_id": "60f0d96ea5cc404995ff4e3d9aa719e2",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "policy": "heuristic",
+          "potion_use_actions": 0,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "truncated",
+            "reason": "external_stop",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 80,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 39,
+          "task_return": 1.0,
+          "timings": {
+            "encoding_seconds": 0.6337862885557115,
+            "initialization_seconds": 0.0015083341859281063,
+            "policy_seconds": 0.3032322858925909,
+            "projection_seconds": 0.4226059578359127,
+            "recording_seconds": 0.8715176249388605,
+            "simulation_dispatch_seconds": 0.08499812753871083,
+            "total_seconds": 2.332622207934037
+          },
+          "training": "60f0d96ea5cc404995ff4e3d9aa719e2.training.json",
+          "trajectory": "60f0d96ea5cc404995ff4e3d9aa719e2.trajectory.jsonl"
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 47,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 7
+          },
+          "components": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 6.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.5875
+          },
+          "encounter": "overgrowth_cubex",
+          "end_turn_actions": 6,
+          "episode_id": "8e9f581742b14b6d8b249ce5502a4a8d",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "policy": "heuristic",
+          "potion_use_actions": 0,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "truncated",
+            "reason": "external_stop",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 80,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 24,
+          "task_return": 1.0,
+          "timings": {
+            "encoding_seconds": 0.3582985023967922,
+            "initialization_seconds": 0.0015922922175377607,
+            "policy_seconds": 0.20571175031363964,
+            "projection_seconds": 0.23654983309097588,
+            "recording_seconds": 0.5063413330353796,
+            "simulation_dispatch_seconds": 0.05202620290219784,
+            "total_seconds": 1.3702721251174808
+          },
+          "training": "8e9f581742b14b6d8b249ce5502a4a8d.training.json",
+          "trajectory": "8e9f581742b14b6d8b249ce5502a4a8d.trajectory.jsonl"
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 74,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 11
+          },
+          "components": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 10.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.925
+          },
+          "encounter": "selector",
+          "end_turn_actions": 10,
+          "episode_id": "d8c6ab75b2cb4244847773dcae6e97df",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "policy": "heuristic",
+          "potion_use_actions": 0,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "truncated",
+            "reason": "external_stop",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 80,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 46,
+          "task_return": 1.0,
+          "timings": {
+            "encoding_seconds": 0.6046055804472417,
+            "initialization_seconds": 0.0013607500586658716,
+            "policy_seconds": 0.25965358573012054,
+            "projection_seconds": 0.3752497078385204,
+            "recording_seconds": 0.781232925131917,
+            "simulation_dispatch_seconds": 0.11192304291762412,
+            "total_seconds": 2.1498839170672
+          },
+          "training": "d8c6ab75b2cb4244847773dcae6e97df.training.json",
+          "trajectory": "d8c6ab75b2cb4244847773dcae6e97df.trajectory.jsonl"
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 40,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 11
+          },
+          "components": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 10.0,
+            "potion_use_action": 2.0,
+            "win_hp_fraction": 0.5
+          },
+          "encounter": "potions",
+          "end_turn_actions": 10,
+          "episode_id": "e053532ecdcc4a5db8fbb36a1c1a0cab",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "policy": "heuristic",
+          "potion_use_actions": 2,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "truncated",
+            "reason": "external_stop",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 30,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 49,
+          "task_return": 1.0,
+          "timings": {
+            "encoding_seconds": 0.609438005136326,
+            "initialization_seconds": 0.0013145410921424627,
+            "policy_seconds": 0.2807031278498471,
+            "projection_seconds": 0.4268464141059667,
+            "recording_seconds": 0.8893460375256836,
+            "simulation_dispatch_seconds": 0.09838041733019054,
+            "total_seconds": 2.3227904168888927
+          },
+          "training": "e053532ecdcc4a5db8fbb36a1c1a0cab.training.json",
+          "trajectory": "e053532ecdcc4a5db8fbb36a1c1a0cab.trajectory.jsonl"
+        }
+      ],
+      "requested_episodes": 8,
+      "scenario_set": "ironclad_a0_imitation_v1",
+      "schema": "sts_imitation_demonstrations_v1",
+      "split": "train",
+      "status": "complete",
+      "teacher": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "training_config": {
+        "mode": "combat",
+        "reward": {
+          "schema": "sts_training_reward_v1",
+          "weights": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 0.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.0
+          }
+        },
+        "scenario_set": "ironclad_a0_overgrowth_v1"
+      },
+      "unattempted_episodes": 0
+    },
+    "validation_demonstrations": {
+      "episodes": [
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 73,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 3
+          },
+          "components": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 2.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.9125
+          },
+          "encounter": "overgrowth_nibbit",
+          "end_turn_actions": 2,
+          "episode_id": "ed782566c3164eb2b7427a150dcb3ada",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "policy": "heuristic",
+          "potion_use_actions": 0,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "truncated",
+            "reason": "external_stop",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 80,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 10,
+          "task_return": 1.0,
+          "timings": {
+            "encoding_seconds": 0.1557987912092358,
+            "initialization_seconds": 0.014226916013285518,
+            "policy_seconds": 0.07260633283294737,
+            "projection_seconds": 0.1526575437746942,
+            "recording_seconds": 0.2255719592794776,
+            "simulation_dispatch_seconds": 0.028022668324410915,
+            "total_seconds": 0.6584302501287311
+          },
+          "training": "ed782566c3164eb2b7427a150dcb3ada.training.json",
+          "trajectory": "ed782566c3164eb2b7427a150dcb3ada.trajectory.jsonl"
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 71,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 4
+          },
+          "components": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 3.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.8875
+          },
+          "encounter": "overgrowth_fuzzy",
+          "end_turn_actions": 3,
+          "episode_id": "a4afe62f83914426a8505d4ec76aa01f",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "policy": "heuristic",
+          "potion_use_actions": 0,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "truncated",
+            "reason": "external_stop",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 80,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 14,
+          "task_return": 1.0,
+          "timings": {
+            "encoding_seconds": 0.20944970892742276,
+            "initialization_seconds": 0.0016974168829619884,
+            "policy_seconds": 0.09675495978444815,
+            "projection_seconds": 0.13956454093568027,
+            "recording_seconds": 0.3022656664252281,
+            "simulation_dispatch_seconds": 0.056227874010801315,
+            "total_seconds": 0.8157939999364316
+          },
+          "training": "a4afe62f83914426a8505d4ec76aa01f.training.json",
+          "trajectory": "a4afe62f83914426a8505d4ec76aa01f.trajectory.jsonl"
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 77,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 6
+          },
+          "components": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 5.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.9625
+          },
+          "encounter": "overgrowth_slimes",
+          "end_turn_actions": 5,
+          "episode_id": "53151857483b4db2b52f116bc2d3a5a0",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "policy": "heuristic",
+          "potion_use_actions": 0,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "truncated",
+            "reason": "external_stop",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 80,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 20,
+          "task_return": 1.0,
+          "timings": {
+            "encoding_seconds": 0.33557528839446604,
+            "initialization_seconds": 0.0017388330306857824,
+            "policy_seconds": 0.17773491726256907,
+            "projection_seconds": 0.22220945986919105,
+            "recording_seconds": 0.47854712535627186,
+            "simulation_dispatch_seconds": 0.04585358244366944,
+            "total_seconds": 1.2707736669108272
+          },
+          "training": "53151857483b4db2b52f116bc2d3a5a0.training.json",
+          "trajectory": "53151857483b4db2b52f116bc2d3a5a0.trajectory.jsonl"
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 55,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 5
+          },
+          "components": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 4.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.6875
+          },
+          "encounter": "overgrowth_mawler",
+          "end_turn_actions": 4,
+          "episode_id": "0dfba76f56484376984e8737c43263a0",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "policy": "heuristic",
+          "potion_use_actions": 0,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "truncated",
+            "reason": "external_stop",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 80,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 17,
+          "task_return": 1.0,
+          "timings": {
+            "encoding_seconds": 0.2674537079874426,
+            "initialization_seconds": 0.001471665920689702,
+            "policy_seconds": 0.11353175109252334,
+            "projection_seconds": 0.16263579344376922,
+            "recording_seconds": 0.3598154578357935,
+            "simulation_dispatch_seconds": 0.0370024589356035,
+            "total_seconds": 0.9493445830885321
+          },
+          "training": "0dfba76f56484376984e8737c43263a0.training.json",
+          "trajectory": "0dfba76f56484376984e8737c43263a0.trajectory.jsonl"
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 42,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 8
+          },
+          "components": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 7.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.525
+          },
+          "encounter": "overgrowth_nibbits",
+          "end_turn_actions": 7,
+          "episode_id": "6f0120a819984c92a870c97550370780",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "policy": "heuristic",
+          "potion_use_actions": 0,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "truncated",
+            "reason": "external_stop",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 80,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 27,
+          "task_return": 1.0,
+          "timings": {
+            "encoding_seconds": 0.4495446679648012,
+            "initialization_seconds": 0.0014963748399168253,
+            "policy_seconds": 0.18700175010599196,
+            "projection_seconds": 0.2859071670100093,
+            "recording_seconds": 0.5500466239172965,
+            "simulation_dispatch_seconds": 0.057410251814872026,
+            "total_seconds": 1.5417068330571055
+          },
+          "training": "6f0120a819984c92a870c97550370780.training.json",
+          "trajectory": "6f0120a819984c92a870c97550370780.trajectory.jsonl"
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 59,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 5
+          },
+          "components": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 4.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.7375
+          },
+          "encounter": "overgrowth_cubex",
+          "end_turn_actions": 4,
+          "episode_id": "73b2980d72de45c9b8c1b3dda7fb286d",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "policy": "heuristic",
+          "potion_use_actions": 0,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "truncated",
+            "reason": "external_stop",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 80,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 17,
+          "task_return": 1.0,
+          "timings": {
+            "encoding_seconds": 0.2473668318707496,
+            "initialization_seconds": 0.0015003751032054424,
+            "policy_seconds": 0.1336215001065284,
+            "projection_seconds": 0.18416458182036877,
+            "recording_seconds": 0.33658579108305275,
+            "simulation_dispatch_seconds": 0.03641504188999534,
+            "total_seconds": 0.9469238340388983
+          },
+          "training": "73b2980d72de45c9b8c1b3dda7fb286d.training.json",
+          "trajectory": "73b2980d72de45c9b8c1b3dda7fb286d.trajectory.jsonl"
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 80,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 10
+          },
+          "components": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 9.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 1.0
+          },
+          "encounter": "selector",
+          "end_turn_actions": 9,
+          "episode_id": "72e6dd0739924a48877ae938f0023b99",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "policy": "heuristic",
+          "potion_use_actions": 0,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "truncated",
+            "reason": "external_stop",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 80,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 42,
+          "task_return": 1.0,
+          "timings": {
+            "encoding_seconds": 0.5144462897442281,
+            "initialization_seconds": 0.0013243330176919699,
+            "policy_seconds": 0.23755791853182018,
+            "projection_seconds": 0.41200183471664786,
+            "recording_seconds": 0.7175558779854327,
+            "simulation_dispatch_seconds": 0.08497341442853212,
+            "total_seconds": 1.982579750008881
+          },
+          "training": "72e6dd0739924a48877ae938f0023b99.training.json",
+          "trajectory": "72e6dd0739924a48877ae938f0023b99.trajectory.jsonl"
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 50,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 10
+          },
+          "components": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 9.0,
+            "potion_use_action": 2.0,
+            "win_hp_fraction": 0.625
+          },
+          "encounter": "potions",
+          "end_turn_actions": 9,
+          "episode_id": "a3b56088a11a41f3b1e3ebabae8ca51b",
+          "failure": null,
+          "observation_bytes": 6789184,
+          "policy": "heuristic",
+          "potion_use_actions": 2,
+          "reward_spec_id": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+          "run_outcome": {
+            "kind": "truncated",
+            "reason": "external_stop",
+            "schema": "sts_run_outcome_v1"
+          },
+          "start_hp": 30,
+          "start_max_hp": 80,
+          "status": "terminated",
+          "steps": 45,
+          "task_return": 1.0,
+          "timings": {
+            "encoding_seconds": 0.5933764183428138,
+            "initialization_seconds": 0.0013621249236166477,
+            "policy_seconds": 0.2551444999407977,
+            "projection_seconds": 0.36916683660820127,
+            "recording_seconds": 0.7819208330474794,
+            "simulation_dispatch_seconds": 0.09073208621703088,
+            "total_seconds": 2.107647500000894
+          },
+          "training": "a3b56088a11a41f3b1e3ebabae8ca51b.training.json",
+          "trajectory": "a3b56088a11a41f3b1e3ebabae8ca51b.trajectory.jsonl"
+        }
+      ],
+      "requested_episodes": 8,
+      "scenario_set": "ironclad_a0_imitation_v1",
+      "schema": "sts_imitation_demonstrations_v1",
+      "split": "validation",
+      "status": "complete",
+      "teacher": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "training_config": {
+        "mode": "combat",
+        "reward": {
+          "schema": "sts_training_reward_v1",
+          "weights": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 0.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.0
+          }
+        },
+        "scenario_set": "ironclad_a0_overgrowth_v1"
+      },
+      "unattempted_episodes": 0
+    },
+    "worker_playback": {
+      "elapsed_seconds": 2.0901936248410493,
+      "episodes": [
+        {
+          "episode_id": "49e7332c359747c1b3ef0510a7230ac7",
+          "outcome": {
+            "kind": "truncated",
+            "reason": "decision_budget",
+            "schema": "sts_run_outcome_v1"
+          },
+          "timings": {
+            "observations": 17,
+            "observe_seconds": 0.32561457995325327,
+            "policy_seconds": 0.5611827513203025,
+            "recording_seconds": 0.38227537320926785,
+            "reset_seconds": 0.10416608303785324,
+            "step_seconds": 0.06215987470932305,
+            "steps": 16,
+            "total_seconds": 1.4359910420607775
+          },
+          "trajectory": "49e7332c359747c1b3ef0510a7230ac7.trajectory.jsonl"
+        },
+        {
+          "episode_id": "68c5392584b4400ea1a015d2c513f2e6",
+          "outcome": {
+            "kind": "truncated",
+            "reason": "decision_budget",
+            "schema": "sts_run_outcome_v1"
+          },
+          "timings": {
+            "observations": 17,
+            "observe_seconds": 0.25848149973899126,
+            "policy_seconds": 0.44393645809032023,
+            "recording_seconds": 0.3427595407702029,
+            "reset_seconds": 0.1535973339341581,
+            "step_seconds": 0.0623985854908824,
+            "steps": 16,
+            "total_seconds": 1.2617297500837594
+          },
+          "trajectory": "68c5392584b4400ea1a015d2c513f2e6.trajectory.jsonl"
+        }
+      ],
+      "status": "complete"
+    }
+  },
+  "runtime": {
+    "device": "cpu",
+    "python": "3.11.15",
+    "threads": 1,
+    "torch": "2.13.0"
+  },
+  "schema": "sts_training_milestone3_evidence_v1",
+  "source_state": "uncommitted milestone implementation over the recorded checkout",
+  "sources": {
+    "combat": {
+      "path": "runs/imitation-milestone3-combat-20260928/baseline.json",
+      "sha256": "a132908357d928004405d648667f070bff9c6ac035e59e33ff68d7ebc670a70f"
+    },
+    "hybrid": {
+      "path": "runs/imitation-milestone3-hybrid-20260928/hybrid.json",
+      "sha256": "53693563c7aa4d10e5f23003b60f9c3d6c1ec79ee177110adb37691411829136"
+    },
+    "profile": {
+      "path": "runs/imitation-milestone3-profile-20260928/profile.json",
+      "sha256": "b9c951f540c6e047f75a2853f976a743854a6057733b01d95909bf9172ea2d2a"
+    },
+    "training": {
+      "path": "runs/imitation-milestone3-model-20260928-verified/imitation.json",
+      "sha256": "4dccb69d7479bdb16b7f1c8909c184f9d4d5556ebad55ec5b15e8cfb33ec3912"
+    },
+    "training_demonstrations": {
+      "path": "runs/imitation-milestone3-train-20260928/demonstrations.json",
+      "sha256": "3a54167fe5458bd04ed9035c0856844389a15a12a84ef3ad3026f607d9190960"
+    },
+    "validation_demonstrations": {
+      "path": "runs/imitation-milestone3-validation-20260928/demonstrations.json",
+      "sha256": "c662df0b0fa5c7ab0d01f4ce3bca63851213abce185498c44a83771e0e1191c2"
+    },
+    "worker_playback": {
+      "path": "runs/imitation-milestone3-playback-20260928.json",
+      "sha256": "d8d18082e93596511b7e4f916fe9892bd704f6dac2e9661c475d08b65f1e1579"
+    }
+  },
+  "update_latency_seconds": {
+    "count": 128,
+    "mean": 0.0036298072955105454,
+    "median": 0.0035419794730842113,
+    "p95": 0.0037780830170959234,
+    "total": 0.4646153338253498
+  },
+  "validation": {
+    "aggregate": {
+      "command": "PYTHONPATH=. .venv/bin/python -m pytest -q tests/agent tests/test_package_layout.py",
+      "log_sha256": "3821a563c0a263a1913f9a3141b26817b1e5928a91d7fca6bf0712a6dc10dc2c",
+      "passed": 540,
+      "seconds": 623.55,
+      "warning_reason": "Existing Gymnasium checker notices about fixed observation bounds",
+      "warnings": 3
+    },
+    "compileall": "passed",
+    "completed_utc": "2026-09-28T20:30:31.360676+00:00",
+    "documentation_links": {
+      "checked": 205,
+      "missing": 0
+    },
+    "editable_install_seconds": 0.563019583,
+    "implementation_started_utc": "2026-09-28T19:44:09Z",
+    "independent_review": {
+      "coverage": [
+        "public-only actor/critic",
+        "mask consistency",
+        "candidate/reference invariance",
+        "fixed/packed features",
+        "optimizer/source/config bindings",
+        "exact CPU continuation",
+        "combat handoff"
+      ],
+      "focused_tests_passed": 14,
+      "status": "no remaining blocking semantic findings"
+    },
+    "installed_commands": [
+      "sts-agent-train imitate",
+      "sts-agent-evaluate --checkpoint",
+      "sts-agent-evaluate --checkpoint --hybrid",
+      "sts-agent-play --combat-checkpoint (two spawned workers)"
+    ],
+    "last_production_edit_utc": "2026-09-28T20:13:32.648828+00:00",
+    "python_3_10_syntax": "passed",
+    "review_timing": "Overlapped implementation; separate elapsed duration not measured.",
+    "status": "passed",
+    "user_wait_seconds": 0
+  }
+}

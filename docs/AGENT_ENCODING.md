@@ -70,8 +70,8 @@ padding, types, versions and canonical re-encoding.
 `collate(observations)` validates and stacks a nonempty batch without changing any
 candidate or mask. Different capacity profiles cannot share a batch. Custom
 `EncodingProfile` capacities change the layout identity and spaces; record that
-identity alongside any future model. No training-library or checkpoint integration
-is claimed by this milestone.
+identity alongside a model. Learned feature extraction and checkpoints are now
+implemented for the full-run v2 profile in the [training guide](AGENT_TRAINING.md).
 
 ## Capacity evidence and limits
 
@@ -206,6 +206,16 @@ still raises `CapacityError`, with no clipping or fabricated game outcome.
 Larger `FullRunProfile` capacities can be supplied explicitly; changing them
 changes the layout identity and prevents mixed-profile collation.
 
+`FullRunEncoder.pack(public_decision)` uses the same traversal, exact typed
+values, reference normalization, candidate mapping and capacity checks, but
+allocates only populated table rows. The original `encode()` pads those shared
+tables to the unchanged Gym layout. This is an in-memory learner path, not a new
+recording format; it never clips oversized states. The
+[learned feature encoder](AGENT_TRAINING.md#milestone-3-usage-and-implementation-choices)
+keeps these exact packed tables alongside explicitly lossy neural scalar features
+and a frozen training vocabulary. Raw reference ordinals and per-frame string
+indexes are not model features.
+
 Use `full_policy.choose_action` with v2 and `policy.choose_action` with v1.
 `HeadlessAdapter(..., decision_profile="full_run_v2")` remains usable without
 NumPy/Gymnasium. `FullRunEnv(engine_factory=...)` accepts the same positional-seed
@@ -213,6 +223,13 @@ factory contract as `StsEnv`; callers retain responsibility for a fresh exclusiv
 owned engine. Reward, rejection, cutoff, error, independent RNG and close behavior
 are unchanged. Opening/closing a reward child is a counted presentation decision
 but does not advance engine state or RNG.
+
+The separate [CombatTrainingEnv consumer](AGENT_TRAINING.md#milestone-1-usage-and-implementation-choices)
+reuses this profile for one owned fight and supplies combat-task termination and
+a configurable [training reward](AGENT_TRAINING.md#milestone-2-usage-and-record-semantics),
+defaulting to +1 for combat victory. It keeps the canonical run outcome separate. All
+three environments expose `public_state`, the immutable structured decision
+behind their encoding; external cutoffs retain that final decision for bootstrapping.
 
 ## Validation
 

@@ -1,0 +1,3703 @@
+{
+  "artifact_audit": {
+    "canonical_decisions": 7737,
+    "canonical_episodes": 65,
+    "canonical_validation": "Demonstration/evaluation producers canonically reloaded their 43 completed episodes. The final audit separately reloaded all 22 PPO episodes, checking outcome, reward and step count, and matched all 65 trajectory digests.",
+    "explicit_final_canonical_loader_checks": 22,
+    "explicit_final_canonical_loader_seconds": 25.137714582961053,
+    "frozen_policy_replay": {
+      "all_greedy_actions_match_frozen_checkpoint": true,
+      "first_combat_examples": [
+        {
+          "action": "end_turn",
+          "combat_fields": {
+            "block": 0,
+            "energy": 3,
+            "hp": 80,
+            "max_hp": 80,
+            "round": 1,
+            "strength": 0
+          },
+          "subject": null
+        },
+        {
+          "action": "end_turn",
+          "combat_fields": {
+            "block": 0,
+            "energy": 3,
+            "hp": 80,
+            "max_hp": 80,
+            "round": 2,
+            "strength": 0
+          },
+          "subject": null
+        },
+        {
+          "action": "end_turn",
+          "combat_fields": {
+            "block": 0,
+            "energy": 3,
+            "hp": 73,
+            "max_hp": 80,
+            "round": 3,
+            "strength": 0
+          },
+          "subject": null
+        },
+        {
+          "action": "play_card",
+          "combat_fields": {
+            "block": 0,
+            "energy": 3,
+            "hp": 60,
+            "max_hp": 80,
+            "round": 4,
+            "strength": 0
+          },
+          "subject": "defend"
+        },
+        {
+          "action": "play_card",
+          "combat_fields": {
+            "block": 5,
+            "energy": 2,
+            "hp": 60,
+            "max_hp": 80,
+            "round": 4,
+            "strength": 0
+          },
+          "subject": "defend"
+        },
+        {
+          "action": "play_card",
+          "combat_fields": {
+            "block": 10,
+            "energy": 1,
+            "hp": 60,
+            "max_hp": 80,
+            "round": 4,
+            "strength": 0
+          },
+          "subject": "defend"
+        }
+      ],
+      "recorded_learned_decisions_replayed": 401,
+      "seconds": 20.258393874857575
+    },
+    "no_partial_artifacts": true,
+    "paired_private_replay_configs_verified": true,
+    "private_files_permission_checked": 78,
+    "seconds": 0.5410174999851733,
+    "trajectory_digest_checks": 65
+  },
+  "date": "2026-09-29",
+  "demonstrations": {
+    "train": {
+      "episodes": [
+        {
+          "actions": {
+            "buy_shop_item": 3,
+            "choose_ancient_relic": 1,
+            "choose_map_node": 7,
+            "choose_reward_card": 5,
+            "claim_gold": 5,
+            "claim_potion": 2,
+            "end_turn": 16,
+            "leave_rewards": 5,
+            "leave_shop": 1,
+            "open_reward": 5,
+            "play_card": 52,
+            "use_potion": 4
+          },
+          "contexts": {
+            "ancient": 1,
+            "combat": 72,
+            "map": 7,
+            "rewards": 22,
+            "shop": 4
+          },
+          "episode_id": "68dce9eddef7445e85d4274bedd46727",
+          "evidence": "headless_rollout",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 7,
+            "hp": 8,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "scenario": "overgrowth",
+          "status": "terminated",
+          "steps": 106,
+          "task_return": 0,
+          "timings": {
+            "observations": 107,
+            "observe_seconds": 2.04377733473666,
+            "policy_seconds": 1.3755249201785773,
+            "recording_seconds": 2.670175295090303,
+            "reset_seconds": 0.17974999989382923,
+            "step_seconds": 0.4125364953652024,
+            "steps": 106,
+            "total_seconds": 6.68437391682528
+          },
+          "trajectory": "68dce9eddef7445e85d4274bedd46727.trajectory.jsonl",
+          "trajectory_sha256": "c4abdee87e31a4cb93f0db46dad790f2a3ec53aacf47cc52a699e1f94a22c974"
+        },
+        {
+          "actions": {
+            "choose_ancient_relic": 1,
+            "choose_event_option": 3,
+            "choose_map_node": 7,
+            "choose_relic_card": 1,
+            "choose_reward_card": 4,
+            "choose_upgrade": 1,
+            "claim_gold": 4,
+            "claim_potion": 2,
+            "confirm_relic_selection": 1,
+            "confirm_selection": 1,
+            "end_turn": 15,
+            "leave_event": 1,
+            "leave_rest": 1,
+            "leave_rewards": 4,
+            "open_reward": 4,
+            "play_card": 47,
+            "select_card": 1,
+            "smith": 1,
+            "use_potion": 2
+          },
+          "contexts": {
+            "ancient": 1,
+            "combat": 66,
+            "event": 4,
+            "map": 7,
+            "relic_choice": 2,
+            "rest": 3,
+            "rewards": 18
+          },
+          "episode_id": "e107a1c806b34147a046b46355827be4",
+          "evidence": "headless_rollout",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 7,
+            "hp": 17,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "scenario": "overgrowth",
+          "status": "terminated",
+          "steps": 101,
+          "task_return": 0,
+          "timings": {
+            "observations": 102,
+            "observe_seconds": 1.8001470847520977,
+            "policy_seconds": 1.3199879112653434,
+            "recording_seconds": 2.500506164273247,
+            "reset_seconds": 0.03478404204361141,
+            "step_seconds": 0.3785933314356953,
+            "steps": 101,
+            "total_seconds": 6.036283042049035
+          },
+          "trajectory": "e107a1c806b34147a046b46355827be4.trajectory.jsonl",
+          "trajectory_sha256": "b9a2768fc3fb2756b88e6837ec6f52e48043cb205eaba7df63c11467d932f6b7"
+        },
+        {
+          "actions": {
+            "choose_ancient_relic": 1,
+            "choose_map_node": 5,
+            "choose_relic_reward": 1,
+            "choose_reward_card": 4,
+            "claim_gold": 4,
+            "claim_potion": 1,
+            "end_turn": 14,
+            "leave_rewards": 4,
+            "open_reward": 4,
+            "play_card": 36,
+            "use_potion": 1
+          },
+          "contexts": {
+            "ancient": 1,
+            "combat": 51,
+            "map": 5,
+            "relic_choice": 1,
+            "rewards": 17
+          },
+          "episode_id": "4a4f1843e62a44bb968ea7c5fd73381e",
+          "evidence": "headless_rollout",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 5,
+            "hp": 14,
+            "max_hp": 85
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "scenario": "underdocks",
+          "status": "terminated",
+          "steps": 75,
+          "task_return": 0,
+          "timings": {
+            "observations": 76,
+            "observe_seconds": 1.3545912571717054,
+            "policy_seconds": 0.9295272429008037,
+            "recording_seconds": 1.824200414819643,
+            "reset_seconds": 0.05635037482716143,
+            "step_seconds": 0.27856403565965593,
+            "steps": 75,
+            "total_seconds": 4.444932542042807
+          },
+          "trajectory": "4a4f1843e62a44bb968ea7c5fd73381e.trajectory.jsonl",
+          "trajectory_sha256": "731e54faff09f7585e410784565c520b2bd8656cc7d5bc64880de511af8954b5"
+        },
+        {
+          "actions": {
+            "buy_shop_item": 2,
+            "choose_ancient_relic": 1,
+            "choose_event_card": 1,
+            "choose_event_option": 8,
+            "choose_map_node": 16,
+            "choose_reward_card": 5,
+            "choose_upgrade": 1,
+            "claim_gold": 5,
+            "claim_potion": 3,
+            "claim_treasure_relic": 1,
+            "end_turn": 19,
+            "leave_event": 5,
+            "leave_rest": 3,
+            "leave_rewards": 5,
+            "leave_shop": 1,
+            "leave_treasure": 1,
+            "open_chest": 1,
+            "open_reward": 5,
+            "play_card": 65,
+            "rest": 2,
+            "smith": 1,
+            "use_potion": 4
+          },
+          "contexts": {
+            "ancient": 1,
+            "combat": 88,
+            "event": 14,
+            "map": 16,
+            "rest": 7,
+            "rewards": 23,
+            "shop": 3,
+            "treasure": 3
+          },
+          "episode_id": "b93d8d33e4ca46e59ae3e4d4c593ac07",
+          "evidence": "headless_rollout",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 16,
+            "hp": 5,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "scenario": "underdocks",
+          "status": "terminated",
+          "steps": 155,
+          "task_return": 0,
+          "timings": {
+            "observations": 156,
+            "observe_seconds": 3.444112076656893,
+            "policy_seconds": 2.4735617912374437,
+            "recording_seconds": 4.721595786744729,
+            "reset_seconds": 0.035269750049337745,
+            "step_seconds": 0.6688683344982564,
+            "steps": 155,
+            "total_seconds": 11.347839375026524
+          },
+          "trajectory": "b93d8d33e4ca46e59ae3e4d4c593ac07.trajectory.jsonl",
+          "trajectory_sha256": "b78e566d7a55f2aff61cdd28316290bbba9c9cab1c40d98f8def8ead9837c263"
+        },
+        {
+          "actions": {
+            "choose_extra_reward": 1,
+            "choose_map_node": 2,
+            "choose_reward_card": 2,
+            "claim_gold": 2,
+            "claim_potion": 2,
+            "claim_relic": 1,
+            "confirm_selection": 1,
+            "end_turn": 3,
+            "leave_rewards": 2,
+            "open_reward": 3,
+            "play_card": 11,
+            "use_potion": 2
+          },
+          "contexts": {
+            "combat": 17,
+            "map": 2,
+            "rewards": 13
+          },
+          "episode_id": "0cb33f5fb434465abb565a5e09a84dec",
+          "evidence": "controlled_fixture",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 2,
+            "hp": 51,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "truncated",
+            "reason": "decision_budget",
+            "schema": "sts_run_outcome_v1"
+          },
+          "scenario": "rewards",
+          "status": "truncated",
+          "steps": 32,
+          "task_return": 0,
+          "timings": {
+            "observations": 33,
+            "observe_seconds": 0.5345617935527116,
+            "policy_seconds": 0.33893874613568187,
+            "recording_seconds": 0.7079020822420716,
+            "reset_seconds": 0.0744191671255976,
+            "step_seconds": 0.10136749735102057,
+            "steps": 32,
+            "total_seconds": 1.757799917133525
+          },
+          "trajectory": "0cb33f5fb434465abb565a5e09a84dec.trajectory.jsonl",
+          "trajectory_sha256": "6d100cb354df35041733918f9cb794caa6e8a204297c474ea628341239bbb2b5"
+        },
+        {
+          "actions": {
+            "buy_shop_item": 11,
+            "choose_map_node": 2,
+            "choose_reward_card": 1,
+            "claim_gold": 1,
+            "end_turn": 3,
+            "leave_rewards": 1,
+            "leave_shop": 1,
+            "open_reward": 1,
+            "play_card": 11
+          },
+          "contexts": {
+            "combat": 14,
+            "map": 2,
+            "rewards": 4,
+            "shop": 12
+          },
+          "episode_id": "266ba40248f242a69c32929873cd69e8",
+          "evidence": "controlled_fixture",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 2,
+            "hp": 46,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "truncated",
+            "reason": "decision_budget",
+            "schema": "sts_run_outcome_v1"
+          },
+          "scenario": "shop",
+          "status": "truncated",
+          "steps": 32,
+          "task_return": 0,
+          "timings": {
+            "observations": 33,
+            "observe_seconds": 0.6221861271187663,
+            "policy_seconds": 0.4104840832296759,
+            "recording_seconds": 0.845607832306996,
+            "reset_seconds": 0.3129392920527607,
+            "step_seconds": 0.10977595648728311,
+            "steps": 32,
+            "total_seconds": 2.3016896250192076
+          },
+          "trajectory": "266ba40248f242a69c32929873cd69e8.trajectory.jsonl",
+          "trajectory_sha256": "bd46ed88bc00c474207d99d86c81dd38bd08d9b4d58cf67e8aa63c6944bc858d"
+        },
+        {
+          "actions": {
+            "choose_event_option": 2,
+            "choose_map_node": 3,
+            "choose_reward_card": 1,
+            "claim_gold": 1,
+            "claim_potion": 1,
+            "end_turn": 5,
+            "leave_event": 1,
+            "leave_rest": 1,
+            "leave_rewards": 1,
+            "open_reward": 1,
+            "play_card": 14,
+            "rest": 1
+          },
+          "contexts": {
+            "combat": 19,
+            "event": 3,
+            "map": 3,
+            "rest": 2,
+            "rewards": 5
+          },
+          "episode_id": "625e504b33014e158692b03b6e6eadc7",
+          "evidence": "controlled_fixture",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 3,
+            "hp": 51,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "truncated",
+            "reason": "decision_budget",
+            "schema": "sts_run_outcome_v1"
+          },
+          "scenario": "rest",
+          "status": "truncated",
+          "steps": 32,
+          "task_return": 0,
+          "timings": {
+            "observations": 33,
+            "observe_seconds": 0.517000331543386,
+            "policy_seconds": 0.32587500126101077,
+            "recording_seconds": 0.6652217507362366,
+            "reset_seconds": 0.11435070913285017,
+            "step_seconds": 0.12415262241847813,
+            "steps": 32,
+            "total_seconds": 1.747199916979298
+          },
+          "trajectory": "625e504b33014e158692b03b6e6eadc7.trajectory.jsonl",
+          "trajectory_sha256": "a8285cff7d0eecf46ffb7fdcebd4af31238e5c0aedae8bb580efc4a5a3b7b6cb"
+        },
+        {
+          "actions": {
+            "choose_event_card": 1,
+            "choose_event_option": 1,
+            "choose_map_node": 2,
+            "choose_reward_card": 1,
+            "claim_gold": 1,
+            "end_turn": 5,
+            "leave_event": 1,
+            "leave_rewards": 1,
+            "open_reward": 1,
+            "play_card": 18
+          },
+          "contexts": {
+            "combat": 23,
+            "event": 3,
+            "map": 2,
+            "rewards": 4
+          },
+          "episode_id": "ec82ac7c861d4f62a8536515620bba2b",
+          "evidence": "controlled_fixture",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 2,
+            "hp": 32,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "truncated",
+            "reason": "decision_budget",
+            "schema": "sts_run_outcome_v1"
+          },
+          "scenario": "event",
+          "status": "truncated",
+          "steps": 32,
+          "task_return": 0,
+          "timings": {
+            "observations": 33,
+            "observe_seconds": 0.49116241419687867,
+            "policy_seconds": 0.34149604314006865,
+            "recording_seconds": 0.6618301265407354,
+            "reset_seconds": 0.035830667009577155,
+            "step_seconds": 0.11840374930761755,
+            "steps": 32,
+            "total_seconds": 1.6493113341275603
+          },
+          "trajectory": "ec82ac7c861d4f62a8536515620bba2b.trajectory.jsonl",
+          "trajectory_sha256": "a950203ed75b937f2dd1bcf47759b8c8c571d21b1f28ae99dfe019a2de464074"
+        },
+        {
+          "actions": {
+            "buy_shop_item": 9,
+            "choose_map_node": 2,
+            "choose_reward_card": 1,
+            "claim_gold": 1,
+            "claim_potion": 1,
+            "claim_treasure_relic": 1,
+            "end_turn": 3,
+            "leave_rewards": 1,
+            "leave_treasure": 1,
+            "open_chest": 1,
+            "open_reward": 1,
+            "play_card": 10
+          },
+          "contexts": {
+            "combat": 13,
+            "map": 2,
+            "rewards": 5,
+            "shop": 9,
+            "treasure": 3
+          },
+          "episode_id": "74e6a009461c487da00ad6061e67d6ac",
+          "evidence": "controlled_fixture",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 2,
+            "hp": 41,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "truncated",
+            "reason": "decision_budget",
+            "schema": "sts_run_outcome_v1"
+          },
+          "scenario": "treasure",
+          "status": "truncated",
+          "steps": 32,
+          "task_return": 0,
+          "timings": {
+            "observations": 33,
+            "observe_seconds": 0.48301254073157907,
+            "policy_seconds": 0.30832217284478247,
+            "recording_seconds": 0.643952377140522,
+            "reset_seconds": 0.19219837500713766,
+            "step_seconds": 0.09827899700030684,
+            "steps": 32,
+            "total_seconds": 1.726343791000545
+          },
+          "trajectory": "74e6a009461c487da00ad6061e67d6ac.trajectory.jsonl",
+          "trajectory_sha256": "c09edfdd17c68878db0eb52c284d153fe4e7d97f24d3c40d928b15ee88e07925"
+        },
+        {
+          "actions": {
+            "choose_event_card": 1,
+            "choose_event_option": 1,
+            "choose_map_node": 3,
+            "choose_relic_card": 1,
+            "choose_reward_card": 2,
+            "claim_gold": 2,
+            "claim_potion": 1,
+            "confirm_relic_selection": 1,
+            "end_turn": 4,
+            "leave_rewards": 2,
+            "open_reward": 2,
+            "play_card": 12
+          },
+          "contexts": {
+            "combat": 16,
+            "event": 2,
+            "map": 3,
+            "relic_choice": 2,
+            "rewards": 9
+          },
+          "episode_id": "8fbb36d7e847482e932a17e4822c320e",
+          "evidence": "controlled_fixture",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 3,
+            "hp": 30,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "truncated",
+            "reason": "decision_budget",
+            "schema": "sts_run_outcome_v1"
+          },
+          "scenario": "relic",
+          "status": "truncated",
+          "steps": 32,
+          "task_return": 0,
+          "timings": {
+            "observations": 33,
+            "observe_seconds": 0.47694704052992165,
+            "policy_seconds": 0.3173232495319098,
+            "recording_seconds": 0.6499860847834498,
+            "reset_seconds": 0.15917766583152115,
+            "step_seconds": 0.10338683356530964,
+            "steps": 32,
+            "total_seconds": 1.7074061250314116
+          },
+          "trajectory": "8fbb36d7e847482e932a17e4822c320e.trajectory.jsonl",
+          "trajectory_sha256": "c7e90a0d297a01d6acd33fa2196891ac9ba05d7de911a88c957348464beb5fd7"
+        },
+        {
+          "actions": {
+            "buy_shop_item": 8,
+            "choose_ancient_relic": 1,
+            "choose_event_card": 2,
+            "choose_event_option": 18,
+            "choose_extra_reward": 1,
+            "choose_map_node": 47,
+            "choose_relic_card": 4,
+            "choose_reward_card": 22,
+            "choose_upgrade": 9,
+            "claim_gold": 22,
+            "claim_potion": 5,
+            "claim_relic": 4,
+            "claim_treasure_relic": 5,
+            "confirm_relic_selection": 1,
+            "confirm_selection": 65,
+            "continue_act": 3,
+            "end_turn": 104,
+            "leave_event": 9,
+            "leave_rest": 9,
+            "leave_rewards": 23,
+            "leave_shop": 1,
+            "leave_treasure": 5,
+            "open_chest": 5,
+            "open_reward": 25,
+            "play_card": 520,
+            "select_card": 109,
+            "smith": 9
+          },
+          "contexts": {
+            "act_transition": 3,
+            "ancient": 1,
+            "combat": 798,
+            "event": 32,
+            "map": 47,
+            "relic_choice": 5,
+            "rest": 27,
+            "rewards": 99,
+            "shop": 9,
+            "treasure": 15
+          },
+          "episode_id": "000ee050566d4e50afd080becdf255e2",
+          "evidence": "controlled_fixture",
+          "last_public_hud": {
+            "act": 3,
+            "floor": 47,
+            "hp": 8969,
+            "max_hp": 9997
+          },
+          "outcome": {
+            "kind": "victory",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "scenario": "assisted_campaign",
+          "status": "terminated",
+          "steps": 1036,
+          "task_return": 1,
+          "timings": {
+            "observations": 1037,
+            "observe_seconds": 56.57913690642454,
+            "policy_seconds": 42.434766207356006,
+            "recording_seconds": 80.16468699462712,
+            "reset_seconds": 0.015827457886189222,
+            "step_seconds": 8.406681909924373,
+            "steps": 1036,
+            "total_seconds": 187.6774003750179
+          },
+          "trajectory": "000ee050566d4e50afd080becdf255e2.trajectory.jsonl",
+          "trajectory_sha256": "9c90055fd64b6f6bbaeaea1201e6c8d3024797140d845605c6bf347a4a502c4a"
+        }
+      ],
+      "fixture_definition": "Authored rooms on a campaign map with 40 HP/1000 gold, capped at 32 decisions; assisted_campaign has 10000 HP and five upgraded Byrd Swoops; public teacher, no forced combat wins.",
+      "limits": {
+        "decisions": 1536,
+        "seconds": 300.0
+      },
+      "outcomes_by_evidence": {
+        "controlled_fixture": {
+          "truncated": 6,
+          "victory": 1
+        },
+        "headless_rollout": {
+          "defeat": 4
+        }
+      },
+      "schema": "sts_full_run_demonstrations_v1",
+      "split": "train",
+      "status": "complete",
+      "teacher": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "total_seconds": 276.3104435829446,
+      "training_config": {
+        "mode": "full_run",
+        "reward": {
+          "schema": "sts_full_run_reward_v1",
+          "weights": {
+            "combat_loss": 0.0,
+            "combat_win": 0.0,
+            "end_turn_action": 0.0,
+            "potion_use_action": 0.0,
+            "run_victory": 1.0,
+            "win_hp_fraction": 0.0
+          }
+        },
+        "scenario_set": "ironclad_a0_full_run_v1"
+      },
+      "unattempted_episodes": 0
+    },
+    "validation": {
+      "episodes": [
+        {
+          "actions": {
+            "choose_ancient_relic": 1,
+            "choose_event_option": 3,
+            "choose_map_node": 16,
+            "choose_reward_card": 9,
+            "claim_gold": 9,
+            "claim_potion": 4,
+            "claim_treasure_relic": 1,
+            "confirm_selection": 2,
+            "end_turn": 33,
+            "leave_event": 2,
+            "leave_rest": 3,
+            "leave_rewards": 9,
+            "leave_treasure": 1,
+            "open_chest": 1,
+            "open_reward": 9,
+            "play_card": 130,
+            "rest": 3,
+            "select_card": 1,
+            "use_potion": 4
+          },
+          "contexts": {
+            "ancient": 1,
+            "combat": 170,
+            "event": 5,
+            "map": 16,
+            "rest": 6,
+            "rewards": 40,
+            "treasure": 3
+          },
+          "episode_id": "40cc4a5baa5b44d19a04340f2d8fe3c6",
+          "evidence": "headless_rollout",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 16,
+            "hp": 3,
+            "max_hp": 77
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "scenario": "overgrowth",
+          "status": "terminated",
+          "steps": 241,
+          "task_return": 0,
+          "timings": {
+            "observations": 242,
+            "observe_seconds": 5.815266714198515,
+            "policy_seconds": 4.227712369291112,
+            "recording_seconds": 8.220163878053427,
+            "reset_seconds": 0.045933791901916265,
+            "step_seconds": 0.957519584801048,
+            "steps": 241,
+            "total_seconds": 19.27407837496139
+          },
+          "trajectory": "40cc4a5baa5b44d19a04340f2d8fe3c6.trajectory.jsonl",
+          "trajectory_sha256": "a74a897cf187d01a3296eea677c2f5e778e97198ab1af84c21286d8e22b0b464"
+        },
+        {
+          "actions": {
+            "buy_shop_item": 2,
+            "choose_ancient_relic": 1,
+            "choose_event_option": 2,
+            "choose_map_node": 16,
+            "choose_reward_card": 7,
+            "choose_upgrade": 2,
+            "claim_gold": 7,
+            "claim_potion": 3,
+            "claim_relic": 1,
+            "claim_treasure_relic": 2,
+            "confirm_selection": 6,
+            "end_turn": 23,
+            "leave_event": 1,
+            "leave_rest": 4,
+            "leave_rewards": 7,
+            "leave_shop": 1,
+            "leave_treasure": 2,
+            "open_chest": 2,
+            "open_reward": 7,
+            "play_card": 63,
+            "rest": 2,
+            "select_card": 4,
+            "smith": 2,
+            "use_potion": 3
+          },
+          "contexts": {
+            "ancient": 1,
+            "combat": 99,
+            "event": 3,
+            "map": 16,
+            "rest": 10,
+            "rewards": 32,
+            "shop": 3,
+            "treasure": 6
+          },
+          "episode_id": "a402e561776a4b5b91f8c379485014e9",
+          "evidence": "headless_rollout",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 16,
+            "hp": 15,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "scenario": "underdocks",
+          "status": "terminated",
+          "steps": 170,
+          "task_return": 0,
+          "timings": {
+            "observations": 171,
+            "observe_seconds": 4.138040161924437,
+            "policy_seconds": 3.0320628765039146,
+            "recording_seconds": 5.6571357497014105,
+            "reset_seconds": 0.019738250179216266,
+            "step_seconds": 0.726705665467307,
+            "steps": 170,
+            "total_seconds": 13.578875542152673
+          },
+          "trajectory": "a402e561776a4b5b91f8c379485014e9.trajectory.jsonl",
+          "trajectory_sha256": "a1f9412452330e41e6b7e1eca3cf84824fd90dae5f2c42e071fac4dd7f5ddf23"
+        }
+      ],
+      "fixture_definition": "Authored rooms on a campaign map with 40 HP/1000 gold, capped at 32 decisions; assisted_campaign has 10000 HP and five upgraded Byrd Swoops; public teacher, no forced combat wins.",
+      "limits": {
+        "decisions": 1024,
+        "seconds": 120.0
+      },
+      "outcomes_by_evidence": {
+        "controlled_fixture": {},
+        "headless_rollout": {
+          "defeat": 2
+        }
+      },
+      "schema": "sts_full_run_demonstrations_v1",
+      "split": "validation",
+      "status": "complete",
+      "teacher": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "total_seconds": 39.827088708058,
+      "training_config": {
+        "mode": "full_run",
+        "reward": {
+          "schema": "sts_full_run_reward_v1",
+          "weights": {
+            "combat_loss": 0.0,
+            "combat_win": 0.0,
+            "end_turn_action": 0.0,
+            "potion_use_action": 0.0,
+            "run_victory": 1.0,
+            "win_hp_fraction": 0.0
+          }
+        },
+        "scenario_set": "ironclad_a0_full_run_v1"
+      },
+      "unattempted_episodes": 0
+    }
+  },
+  "evaluation": {
+    "test": {
+      "episodes": [
+        {
+          "actions": {
+            "buy_shop_item": 3,
+            "choose_ancient_relic": 1,
+            "choose_event_card": 1,
+            "choose_event_option": 6,
+            "choose_map_node": 16,
+            "choose_reward_card": 6,
+            "choose_upgrade": 2,
+            "claim_gold": 6,
+            "claim_potion": 3,
+            "claim_treasure_relic": 1,
+            "confirm_selection": 1,
+            "end_turn": 24,
+            "leave_event": 4,
+            "leave_rest": 3,
+            "leave_rewards": 6,
+            "leave_shop": 1,
+            "leave_treasure": 1,
+            "open_chest": 1,
+            "open_reward": 6,
+            "play_card": 77,
+            "rest": 1,
+            "smith": 2,
+            "use_potion": 3
+          },
+          "case_id": "81d7cbf01e8c4475a4741da4f2f921df",
+          "contexts": {
+            "ancient": 1,
+            "combat": 105,
+            "event": 11,
+            "map": 16,
+            "rest": 8,
+            "rewards": 27,
+            "shop": 4,
+            "treasure": 3
+          },
+          "episode_id": "e9d7449c7de3423785a46cb8561a09e0",
+          "first_act": "overgrowth",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 16,
+            "hp": 11,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "policy": "heuristic",
+          "source_group": "81d7cbf01e8c4475a4741da4f2f921df",
+          "status": "terminated",
+          "steps": 175,
+          "task_return": 0,
+          "timings": {
+            "observations": 176,
+            "observe_seconds": 4.056148705538362,
+            "policy_seconds": 2.910808794433251,
+            "recording_seconds": 5.550516714574769,
+            "reset_seconds": 0.25664054206572473,
+            "step_seconds": 0.7123745901044458,
+            "steps": 175,
+            "total_seconds": 13.491550542181358
+          },
+          "trajectory": "e9d7449c7de3423785a46cb8561a09e0.trajectory.jsonl",
+          "trajectory_sha256": "1400a901bfb2f5e77b679b5c5e51cef965c7a5bb4c64736c1cfa41c3af2d8b44"
+        },
+        {
+          "actions": {
+            "buy_shop_item": 3,
+            "choose_ancient_relic": 1,
+            "choose_event_card": 1,
+            "choose_event_option": 6,
+            "choose_map_node": 16,
+            "choose_reward_card": 6,
+            "choose_upgrade": 2,
+            "claim_gold": 6,
+            "claim_potion": 3,
+            "claim_treasure_relic": 1,
+            "confirm_selection": 1,
+            "end_turn": 24,
+            "leave_event": 4,
+            "leave_rest": 3,
+            "leave_rewards": 6,
+            "leave_shop": 1,
+            "leave_treasure": 1,
+            "open_chest": 1,
+            "open_reward": 6,
+            "play_card": 74,
+            "rest": 1,
+            "smith": 2,
+            "use_potion": 3
+          },
+          "case_id": "81d7cbf01e8c4475a4741da4f2f921df",
+          "contexts": {
+            "ancient": 1,
+            "combat": 102,
+            "event": 11,
+            "map": 16,
+            "rest": 8,
+            "rewards": 27,
+            "shop": 4,
+            "treasure": 3
+          },
+          "episode_id": "bc72c38a04364fb0a65811d6eccda552",
+          "first_act": "overgrowth",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 16,
+            "hp": 14,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "policy": "hybrid",
+          "source_group": "81d7cbf01e8c4475a4741da4f2f921df",
+          "status": "terminated",
+          "steps": 172,
+          "task_return": 0,
+          "timings": {
+            "observations": 173,
+            "observe_seconds": 3.9186425467487425,
+            "policy_seconds": 7.528814923483878,
+            "recording_seconds": 5.348833421710879,
+            "reset_seconds": 0.25194770796224475,
+            "step_seconds": 0.6971190022304654,
+            "steps": 172,
+            "total_seconds": 17.74813212500885
+          },
+          "trajectory": "bc72c38a04364fb0a65811d6eccda552.trajectory.jsonl",
+          "trajectory_sha256": "9f7d0250980d9c607c1ba998bfb2dfc216f5e25021b2983d7788322e8e984cc8"
+        },
+        {
+          "actions": {
+            "choose_ancient_relic": 1,
+            "choose_map_node": 1,
+            "end_turn": 16,
+            "play_card": 19
+          },
+          "case_id": "81d7cbf01e8c4475a4741da4f2f921df",
+          "contexts": {
+            "ancient": 1,
+            "combat": 35,
+            "map": 1
+          },
+          "episode_id": "bf70d228f0ff44d9b1ff474ee6821b59",
+          "first_act": "overgrowth",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 1,
+            "hp": 3,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "policy": "learned",
+          "source_group": "81d7cbf01e8c4475a4741da4f2f921df",
+          "status": "terminated",
+          "steps": 37,
+          "task_return": 0,
+          "timings": {
+            "observations": 38,
+            "observe_seconds": 0.5717510834801942,
+            "policy_seconds": 1.3687127905432135,
+            "recording_seconds": 0.821006290614605,
+            "reset_seconds": 0.2537800420541316,
+            "step_seconds": 0.13634600583463907,
+            "steps": 37,
+            "total_seconds": 3.1521849590353668
+          },
+          "trajectory": "bf70d228f0ff44d9b1ff474ee6821b59.trajectory.jsonl",
+          "trajectory_sha256": "13773bc298e3751f3e6f63da631105149e535391bd078126c0a1fc39c131a091"
+        },
+        {
+          "actions": {
+            "choose_ancient_relic": 1,
+            "choose_event_option": 1,
+            "choose_map_node": 6,
+            "choose_reward_card": 4,
+            "claim_gold": 4,
+            "claim_potion": 2,
+            "end_turn": 15,
+            "leave_event": 1,
+            "leave_rewards": 4,
+            "open_reward": 4,
+            "play_card": 38,
+            "use_potion": 2
+          },
+          "case_id": "3369e995fed8488386bc28279f74e064",
+          "contexts": {
+            "ancient": 1,
+            "combat": 55,
+            "event": 2,
+            "map": 6,
+            "rewards": 18
+          },
+          "episode_id": "b395402370494779ad627523a3752a46",
+          "first_act": "underdocks",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 6,
+            "hp": 4,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "policy": "heuristic",
+          "source_group": "3369e995fed8488386bc28279f74e064",
+          "status": "terminated",
+          "steps": 82,
+          "task_return": 0,
+          "timings": {
+            "observations": 83,
+            "observe_seconds": 1.520034956978634,
+            "policy_seconds": 1.0357199187856168,
+            "recording_seconds": 2.032669455045834,
+            "reset_seconds": 0.11476420797407627,
+            "step_seconds": 0.3347769184038043,
+            "steps": 82,
+            "total_seconds": 5.040061041014269
+          },
+          "trajectory": "b395402370494779ad627523a3752a46.trajectory.jsonl",
+          "trajectory_sha256": "f8ce5e209bc3085b856b7d0d6d23578165ffae5c923210ff6385f2ebe7ac3e6e"
+        },
+        {
+          "actions": {
+            "choose_ancient_relic": 1,
+            "choose_event_option": 1,
+            "choose_map_node": 6,
+            "choose_reward_card": 4,
+            "claim_gold": 4,
+            "claim_potion": 2,
+            "end_turn": 16,
+            "leave_event": 1,
+            "leave_rewards": 4,
+            "open_reward": 4,
+            "play_card": 48,
+            "use_potion": 2
+          },
+          "case_id": "3369e995fed8488386bc28279f74e064",
+          "contexts": {
+            "ancient": 1,
+            "combat": 66,
+            "event": 2,
+            "map": 6,
+            "rewards": 18
+          },
+          "episode_id": "4c61506ccdb843a384370fd55f2a5610",
+          "first_act": "underdocks",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 6,
+            "hp": 5,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "policy": "hybrid",
+          "source_group": "3369e995fed8488386bc28279f74e064",
+          "status": "terminated",
+          "steps": 93,
+          "task_return": 0,
+          "timings": {
+            "observations": 94,
+            "observe_seconds": 1.9068712547887117,
+            "policy_seconds": 3.3797460368368775,
+            "recording_seconds": 2.3511615046299994,
+            "reset_seconds": 0.11510945786722004,
+            "step_seconds": 0.3812299098353833,
+            "steps": 93,
+            "total_seconds": 8.135903917020187
+          },
+          "trajectory": "4c61506ccdb843a384370fd55f2a5610.trajectory.jsonl",
+          "trajectory_sha256": "e9e5198b72688ebcd97c92813782e19183b9497a9c643fd4f4e7e163793fdf7b"
+        },
+        {
+          "actions": {
+            "choose_ancient_relic": 1,
+            "choose_map_node": 1,
+            "end_turn": 12,
+            "play_card": 11
+          },
+          "case_id": "3369e995fed8488386bc28279f74e064",
+          "contexts": {
+            "ancient": 1,
+            "combat": 23,
+            "map": 1
+          },
+          "episode_id": "c52702617b4249c489d01ecf8d431c8f",
+          "first_act": "underdocks",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 1,
+            "hp": 3,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "policy": "learned",
+          "source_group": "3369e995fed8488386bc28279f74e064",
+          "status": "terminated",
+          "steps": 25,
+          "task_return": 0,
+          "timings": {
+            "observations": 26,
+            "observe_seconds": 0.43432903988286853,
+            "policy_seconds": 0.9519286232534796,
+            "recording_seconds": 0.5338364189956337,
+            "reset_seconds": 0.1167393340729177,
+            "step_seconds": 0.09688874916173518,
+            "steps": 25,
+            "total_seconds": 2.1340665000025183
+          },
+          "trajectory": "c52702617b4249c489d01ecf8d431c8f.trajectory.jsonl",
+          "trajectory_sha256": "d726af93b946a1e26c8109144d8867db9430757eab2e27b169aec728aae1ba95"
+        },
+        {
+          "actions": {
+            "choose_ancient_relic": 1,
+            "choose_event_option": 2,
+            "choose_map_node": 7,
+            "choose_relic_reward": 1,
+            "choose_reward_card": 4,
+            "claim_gold": 4,
+            "claim_potion": 1,
+            "end_turn": 14,
+            "leave_event": 2,
+            "leave_rewards": 4,
+            "open_reward": 4,
+            "play_card": 49,
+            "use_potion": 1
+          },
+          "case_id": "8b7a42f5f539468c81a02ea6dcd75619",
+          "contexts": {
+            "ancient": 1,
+            "combat": 64,
+            "event": 4,
+            "map": 7,
+            "relic_choice": 1,
+            "rewards": 17
+          },
+          "episode_id": "2c3fee82416c4427952b7b110ff7e95c",
+          "first_act": "overgrowth",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 7,
+            "hp": 2,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "policy": "heuristic",
+          "source_group": "8b7a42f5f539468c81a02ea6dcd75619",
+          "status": "terminated",
+          "steps": 94,
+          "task_return": 0,
+          "timings": {
+            "observations": 95,
+            "observe_seconds": 1.9265095458831638,
+            "policy_seconds": 1.4388458270113915,
+            "recording_seconds": 2.711418664082885,
+            "reset_seconds": 0.13369975006207824,
+            "step_seconds": 0.37438103277236223,
+            "steps": 94,
+            "total_seconds": 6.587747000157833
+          },
+          "trajectory": "2c3fee82416c4427952b7b110ff7e95c.trajectory.jsonl",
+          "trajectory_sha256": "cc6370c37edd82d8d1b5776b7cc936e655ff7571ca423a69b6bc32f7a75c5711"
+        },
+        {
+          "actions": {
+            "choose_ancient_relic": 1,
+            "choose_event_option": 2,
+            "choose_map_node": 7,
+            "choose_relic_reward": 1,
+            "choose_reward_card": 4,
+            "claim_gold": 4,
+            "claim_potion": 1,
+            "end_turn": 17,
+            "leave_event": 2,
+            "leave_rewards": 4,
+            "open_reward": 4,
+            "play_card": 57,
+            "use_potion": 1
+          },
+          "case_id": "8b7a42f5f539468c81a02ea6dcd75619",
+          "contexts": {
+            "ancient": 1,
+            "combat": 75,
+            "event": 4,
+            "map": 7,
+            "relic_choice": 1,
+            "rewards": 17
+          },
+          "episode_id": "8388f84ed7eb428785b9f35522b03143",
+          "first_act": "overgrowth",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 7,
+            "hp": 4,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "policy": "hybrid",
+          "source_group": "8b7a42f5f539468c81a02ea6dcd75619",
+          "status": "terminated",
+          "steps": 105,
+          "task_return": 0,
+          "timings": {
+            "observations": 106,
+            "observe_seconds": 2.233693287940696,
+            "policy_seconds": 4.719703413313255,
+            "recording_seconds": 3.226038329768926,
+            "reset_seconds": 0.13387995795346797,
+            "step_seconds": 0.4243614219594747,
+            "steps": 105,
+            "total_seconds": 10.739538625115529
+          },
+          "trajectory": "8388f84ed7eb428785b9f35522b03143.trajectory.jsonl",
+          "trajectory_sha256": "26eaf69a773151f0fb20db58c1c2ba3c9e11c463c470246fe855477fe0120236"
+        },
+        {
+          "actions": {
+            "choose_ancient_relic": 1,
+            "choose_map_node": 1,
+            "choose_relic_reward": 1,
+            "end_turn": 25,
+            "play_card": 47
+          },
+          "case_id": "8b7a42f5f539468c81a02ea6dcd75619",
+          "contexts": {
+            "ancient": 1,
+            "combat": 72,
+            "map": 1,
+            "relic_choice": 1
+          },
+          "episode_id": "55b1911499094c31a4fdc2a34d67e361",
+          "first_act": "overgrowth",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 1,
+            "hp": 6,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "policy": "learned",
+          "source_group": "8b7a42f5f539468c81a02ea6dcd75619",
+          "status": "terminated",
+          "steps": 75,
+          "task_return": 0,
+          "timings": {
+            "observations": 76,
+            "observe_seconds": 1.4874227871187031,
+            "policy_seconds": 3.7191808386705816,
+            "recording_seconds": 2.057859085733071,
+            "reset_seconds": 0.13357437495142221,
+            "step_seconds": 0.29818707797676325,
+            "steps": 75,
+            "total_seconds": 7.697369041852653
+          },
+          "trajectory": "55b1911499094c31a4fdc2a34d67e361.trajectory.jsonl",
+          "trajectory_sha256": "84887043194932a76ebcaa945a225b1c9128fdcef8de2a47880377bfb2dab02b"
+        },
+        {
+          "actions": {
+            "buy_shop_item": 2,
+            "choose_ancient_relic": 1,
+            "choose_event_card": 1,
+            "choose_event_option": 2,
+            "choose_map_node": 6,
+            "choose_relic_reward": 2,
+            "choose_reward_card": 2,
+            "claim_gold": 2,
+            "confirm_selection": 4,
+            "end_turn": 10,
+            "leave_event": 2,
+            "leave_rewards": 2,
+            "leave_shop": 1,
+            "open_reward": 2,
+            "play_card": 29,
+            "select_card": 4
+          },
+          "case_id": "1f7aae0b4f5e4f7393a2b439530b6635",
+          "contexts": {
+            "ancient": 1,
+            "combat": 47,
+            "event": 5,
+            "map": 6,
+            "relic_choice": 2,
+            "rewards": 8,
+            "shop": 3
+          },
+          "episode_id": "91745b4878f54c8f8eb4442302ff0314",
+          "first_act": "underdocks",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 6,
+            "hp": 19,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "policy": "heuristic",
+          "source_group": "1f7aae0b4f5e4f7393a2b439530b6635",
+          "status": "terminated",
+          "steps": 72,
+          "task_return": 0,
+          "timings": {
+            "observations": 73,
+            "observe_seconds": 1.4449525813106447,
+            "policy_seconds": 0.9613512447103858,
+            "recording_seconds": 1.8561039548367262,
+            "reset_seconds": 0.18742345902137458,
+            "step_seconds": 0.2883472074754536,
+            "steps": 72,
+            "total_seconds": 4.740054333815351
+          },
+          "trajectory": "91745b4878f54c8f8eb4442302ff0314.trajectory.jsonl",
+          "trajectory_sha256": "6b9b06b29f38db856a6ed80c20958d75e09b75886c848a899359b939ed2c386a"
+        },
+        {
+          "actions": {
+            "buy_shop_item": 2,
+            "choose_ancient_relic": 1,
+            "choose_event_card": 1,
+            "choose_event_option": 2,
+            "choose_map_node": 6,
+            "choose_relic_reward": 2,
+            "choose_reward_card": 2,
+            "claim_gold": 2,
+            "confirm_selection": 1,
+            "end_turn": 13,
+            "leave_event": 2,
+            "leave_rewards": 2,
+            "leave_shop": 1,
+            "open_reward": 2,
+            "play_card": 35,
+            "select_card": 1
+          },
+          "case_id": "1f7aae0b4f5e4f7393a2b439530b6635",
+          "contexts": {
+            "ancient": 1,
+            "combat": 50,
+            "event": 5,
+            "map": 6,
+            "relic_choice": 2,
+            "rewards": 8,
+            "shop": 3
+          },
+          "episode_id": "47bc274584fb437d971d269e4c2debd1",
+          "first_act": "underdocks",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 6,
+            "hp": 16,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "policy": "hybrid",
+          "source_group": "1f7aae0b4f5e4f7393a2b439530b6635",
+          "status": "terminated",
+          "steps": 75,
+          "task_return": 0,
+          "timings": {
+            "observations": 76,
+            "observe_seconds": 1.457965494133532,
+            "policy_seconds": 2.834791536675766,
+            "recording_seconds": 1.8973569590598345,
+            "reset_seconds": 0.16892920900136232,
+            "step_seconds": 0.3308239148464054,
+            "steps": 75,
+            "total_seconds": 6.690865792101249
+          },
+          "trajectory": "47bc274584fb437d971d269e4c2debd1.trajectory.jsonl",
+          "trajectory_sha256": "bf5b6b8790dd885f0aa91b69d1f387d1987cf6fa1384d957e20b116ee3b8c728"
+        },
+        {
+          "actions": {
+            "choose_ancient_relic": 1,
+            "choose_map_node": 1,
+            "end_turn": 13,
+            "play_card": 13,
+            "skip_reward": 2
+          },
+          "case_id": "1f7aae0b4f5e4f7393a2b439530b6635",
+          "contexts": {
+            "ancient": 1,
+            "combat": 26,
+            "map": 1,
+            "relic_choice": 2
+          },
+          "episode_id": "b3d448c87a584d14a9af4c58de5a729c",
+          "first_act": "underdocks",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 1,
+            "hp": 6,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "policy": "learned",
+          "source_group": "1f7aae0b4f5e4f7393a2b439530b6635",
+          "status": "terminated",
+          "steps": 30,
+          "task_return": 0,
+          "timings": {
+            "observations": 31,
+            "observe_seconds": 0.45153054036200047,
+            "policy_seconds": 1.1352394162677228,
+            "recording_seconds": 0.6210895823314786,
+            "reset_seconds": 0.16772812511771917,
+            "step_seconds": 0.1289296664763242,
+            "steps": 30,
+            "total_seconds": 2.5048918339889497
+          },
+          "trajectory": "b3d448c87a584d14a9af4c58de5a729c.trajectory.jsonl",
+          "trajectory_sha256": "c497ad6c1fa9d96733cfa0871573248feb3815ec02914e96afe4a2b9bba21195"
+        },
+        {
+          "actions": {
+            "buy_shop_item": 2,
+            "choose_ancient_relic": 1,
+            "choose_event_option": 2,
+            "choose_map_node": 16,
+            "choose_reward_card": 8,
+            "claim_gold": 8,
+            "claim_potion": 4,
+            "claim_treasure_relic": 1,
+            "confirm_selection": 1,
+            "end_turn": 29,
+            "leave_event": 2,
+            "leave_rest": 3,
+            "leave_rewards": 8,
+            "leave_shop": 1,
+            "leave_treasure": 1,
+            "open_chest": 1,
+            "open_reward": 8,
+            "play_card": 104,
+            "rest": 3,
+            "select_card": 1,
+            "use_potion": 4
+          },
+          "case_id": "03d8812cb0444687b600ff8890cb4a95",
+          "contexts": {
+            "ancient": 1,
+            "combat": 139,
+            "event": 4,
+            "map": 16,
+            "rest": 6,
+            "rewards": 36,
+            "shop": 3,
+            "treasure": 3
+          },
+          "episode_id": "e8929f57e6764253923917149cf379aa",
+          "first_act": "overgrowth",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 16,
+            "hp": 1,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "policy": "heuristic",
+          "source_group": "03d8812cb0444687b600ff8890cb4a95",
+          "status": "terminated",
+          "steps": 208,
+          "task_return": 0,
+          "timings": {
+            "observations": 209,
+            "observe_seconds": 4.963599538430572,
+            "policy_seconds": 3.610579503234476,
+            "recording_seconds": 6.841049330076203,
+            "reset_seconds": 0.17863283399492502,
+            "step_seconds": 0.8514673239551485,
+            "steps": 208,
+            "total_seconds": 16.45161870890297
+          },
+          "trajectory": "e8929f57e6764253923917149cf379aa.trajectory.jsonl",
+          "trajectory_sha256": "144b259ce0380c13341de1eb97769214bfb8effa06b891b915d31fb9b17f9d76"
+        },
+        {
+          "actions": {
+            "buy_shop_item": 2,
+            "choose_ancient_relic": 1,
+            "choose_event_option": 2,
+            "choose_map_node": 10,
+            "choose_reward_card": 4,
+            "claim_gold": 4,
+            "claim_potion": 2,
+            "claim_treasure_relic": 1,
+            "deselect_card": 287,
+            "end_turn": 12,
+            "leave_event": 2,
+            "leave_rest": 1,
+            "leave_rewards": 4,
+            "leave_shop": 1,
+            "leave_treasure": 1,
+            "open_chest": 1,
+            "open_reward": 4,
+            "play_card": 40,
+            "rest": 1,
+            "select_card": 288,
+            "use_potion": 2
+          },
+          "case_id": "03d8812cb0444687b600ff8890cb4a95",
+          "contexts": {
+            "ancient": 1,
+            "combat": 629,
+            "event": 4,
+            "map": 10,
+            "rest": 2,
+            "rewards": 18,
+            "shop": 3,
+            "treasure": 3
+          },
+          "episode_id": "83d8cd8f062a4a89bcc6fc0305b32b16",
+          "first_act": "overgrowth",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 10,
+            "hp": 43,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "truncated",
+            "reason": "time_budget",
+            "schema": "sts_run_outcome_v1"
+          },
+          "policy": "hybrid",
+          "source_group": "03d8812cb0444687b600ff8890cb4a95",
+          "status": "truncated",
+          "steps": 670,
+          "task_return": 0,
+          "timings": {
+            "observations": 671,
+            "observe_seconds": 23.413785783573985,
+            "policy_seconds": 59.16555912583135,
+            "recording_seconds": 34.76671626861207,
+            "reset_seconds": 0.18244345812126994,
+            "step_seconds": 2.585590443108231,
+            "steps": 670,
+            "total_seconds": 120.12226166692562
+          },
+          "trajectory": "83d8cd8f062a4a89bcc6fc0305b32b16.trajectory.jsonl",
+          "trajectory_sha256": "fed899fa499642a637a26c9306a83177db185beda3d8bea843d62b332a43127d"
+        },
+        {
+          "actions": {
+            "choose_ancient_relic": 1,
+            "choose_map_node": 1,
+            "end_turn": 21,
+            "play_card": 26
+          },
+          "case_id": "03d8812cb0444687b600ff8890cb4a95",
+          "contexts": {
+            "ancient": 1,
+            "combat": 47,
+            "map": 1
+          },
+          "episode_id": "73a16909623c4aec88be338ef2cc1861",
+          "first_act": "overgrowth",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 1,
+            "hp": 3,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "policy": "learned",
+          "source_group": "03d8812cb0444687b600ff8890cb4a95",
+          "status": "terminated",
+          "steps": 49,
+          "task_return": 0,
+          "timings": {
+            "observations": 50,
+            "observe_seconds": 0.7765584585722536,
+            "policy_seconds": 1.8020838771481067,
+            "recording_seconds": 1.1111557930707932,
+            "reset_seconds": 0.17545637511648238,
+            "step_seconds": 0.17253570863977075,
+            "steps": 49,
+            "total_seconds": 4.038455625064671
+          },
+          "trajectory": "73a16909623c4aec88be338ef2cc1861.trajectory.jsonl",
+          "trajectory_sha256": "8823fdae18c8fa035de324fdca33046062779c6141df4436f668372179fd6f6a"
+        },
+        {
+          "actions": {
+            "choose_ancient_relic": 1,
+            "choose_event_option": 3,
+            "choose_map_node": 8,
+            "choose_relic_reward": 2,
+            "choose_reward_card": 5,
+            "claim_gold": 5,
+            "claim_potion": 1,
+            "claim_treasure_relic": 1,
+            "end_turn": 14,
+            "leave_event": 1,
+            "leave_rewards": 5,
+            "leave_treasure": 1,
+            "open_chest": 1,
+            "open_reward": 5,
+            "play_card": 52,
+            "use_potion": 2
+          },
+          "case_id": "80a1c15b42ff4617a95ab5cfe39dfed2",
+          "contexts": {
+            "ancient": 1,
+            "combat": 68,
+            "event": 4,
+            "map": 8,
+            "relic_choice": 2,
+            "rewards": 21,
+            "treasure": 3
+          },
+          "episode_id": "29af78d4a866429b83d2c00b4b192708",
+          "first_act": "underdocks",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 8,
+            "hp": 11,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "policy": "heuristic",
+          "source_group": "80a1c15b42ff4617a95ab5cfe39dfed2",
+          "status": "terminated",
+          "steps": 107,
+          "task_return": 0,
+          "timings": {
+            "observations": 108,
+            "observe_seconds": 2.074565417598933,
+            "policy_seconds": 1.5222620775457472,
+            "recording_seconds": 2.8590822510886937,
+            "reset_seconds": 0.14564241701737046,
+            "step_seconds": 0.412611911771819,
+            "steps": 107,
+            "total_seconds": 7.016954208025709
+          },
+          "trajectory": "29af78d4a866429b83d2c00b4b192708.trajectory.jsonl",
+          "trajectory_sha256": "76a55c6332787d9e5a547d065402270da346c4ba7448a77f2ead6b264c3c2c1a"
+        },
+        {
+          "actions": {
+            "choose_ancient_relic": 1,
+            "choose_map_node": 6,
+            "choose_relic_reward": 2,
+            "choose_reward_card": 4,
+            "claim_gold": 4,
+            "claim_potion": 1,
+            "claim_treasure_relic": 1,
+            "end_turn": 16,
+            "leave_rewards": 4,
+            "leave_treasure": 1,
+            "open_chest": 1,
+            "open_reward": 4,
+            "play_card": 51,
+            "use_potion": 2
+          },
+          "case_id": "80a1c15b42ff4617a95ab5cfe39dfed2",
+          "contexts": {
+            "ancient": 1,
+            "combat": 69,
+            "map": 6,
+            "relic_choice": 2,
+            "rewards": 17,
+            "treasure": 3
+          },
+          "episode_id": "eb80fcd1d88c4770a178e873e1336f8f",
+          "first_act": "underdocks",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 6,
+            "hp": 5,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "policy": "hybrid",
+          "source_group": "80a1c15b42ff4617a95ab5cfe39dfed2",
+          "status": "terminated",
+          "steps": 98,
+          "task_return": 0,
+          "timings": {
+            "observations": 99,
+            "observe_seconds": 1.9488299142103642,
+            "policy_seconds": 3.8337612035684288,
+            "recording_seconds": 2.5560748346615583,
+            "reset_seconds": 0.14446512493304908,
+            "step_seconds": 0.38601312693208456,
+            "steps": 98,
+            "total_seconds": 8.87064504204318
+          },
+          "trajectory": "eb80fcd1d88c4770a178e873e1336f8f.trajectory.jsonl",
+          "trajectory_sha256": "98a451ac63e6cf920a6f8dbfb1cdd46956a14bfbc775e1f3ddd770617f69b34e"
+        },
+        {
+          "actions": {
+            "choose_ancient_relic": 1,
+            "choose_map_node": 1,
+            "end_turn": 14,
+            "play_card": 17,
+            "skip_reward": 2
+          },
+          "case_id": "80a1c15b42ff4617a95ab5cfe39dfed2",
+          "contexts": {
+            "ancient": 1,
+            "combat": 31,
+            "map": 1,
+            "relic_choice": 2
+          },
+          "episode_id": "d4ee654ef075459b8def9a86442ae924",
+          "first_act": "underdocks",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 1,
+            "hp": 16,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "policy": "learned",
+          "source_group": "80a1c15b42ff4617a95ab5cfe39dfed2",
+          "status": "terminated",
+          "steps": 35,
+          "task_return": 0,
+          "timings": {
+            "observations": 36,
+            "observe_seconds": 0.6042443746700883,
+            "policy_seconds": 1.3175425820518285,
+            "recording_seconds": 0.7491281251423061,
+            "reset_seconds": 0.14453333406709135,
+            "step_seconds": 0.14794279146008193,
+            "steps": 35,
+            "total_seconds": 2.9638660841155797
+          },
+          "trajectory": "d4ee654ef075459b8def9a86442ae924.trajectory.jsonl",
+          "trajectory_sha256": "442edcc274f12ccdb543b4d4c8dc17ffa208ee35f5ed2513db22567e1ea43bd4"
+        },
+        {
+          "actions": {
+            "buy_shop_item": 1,
+            "choose_ancient_relic": 1,
+            "choose_event_option": 5,
+            "choose_map_node": 16,
+            "choose_relic_card": 1,
+            "choose_reward_card": 7,
+            "choose_upgrade": 2,
+            "claim_gold": 7,
+            "claim_potion": 3,
+            "claim_relic": 1,
+            "claim_treasure_relic": 1,
+            "confirm_relic_selection": 1,
+            "confirm_selection": 1,
+            "end_turn": 26,
+            "leave_event": 2,
+            "leave_rest": 4,
+            "leave_rewards": 7,
+            "leave_shop": 1,
+            "leave_treasure": 1,
+            "open_chest": 1,
+            "open_reward": 7,
+            "play_card": 75,
+            "rest": 2,
+            "select_card": 2,
+            "smith": 2,
+            "use_potion": 4
+          },
+          "case_id": "4a58dcec744b42628c1028bab33e5c1c",
+          "contexts": {
+            "ancient": 1,
+            "combat": 108,
+            "event": 7,
+            "map": 16,
+            "relic_choice": 2,
+            "rest": 10,
+            "rewards": 32,
+            "shop": 2,
+            "treasure": 3
+          },
+          "episode_id": "7488cfce62b54d719faa6ce61a42290c",
+          "first_act": "overgrowth",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 16,
+            "hp": 5,
+            "max_hp": 77
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "policy": "heuristic",
+          "source_group": "4a58dcec744b42628c1028bab33e5c1c",
+          "status": "terminated",
+          "steps": 181,
+          "task_return": 0,
+          "timings": {
+            "observations": 182,
+            "observe_seconds": 3.9275930421426892,
+            "policy_seconds": 2.9027269845828414,
+            "recording_seconds": 5.455116166500375,
+            "reset_seconds": 0.06474358378909528,
+            "step_seconds": 0.6968688250053674,
+            "steps": 181,
+            "total_seconds": 13.052152041811496
+          },
+          "trajectory": "7488cfce62b54d719faa6ce61a42290c.trajectory.jsonl",
+          "trajectory_sha256": "7e701582cba6c7f4bd76c9c6ea9e33ff6c58979b0543eec9b1991331ee54cbc5"
+        },
+        {
+          "actions": {
+            "buy_shop_item": 1,
+            "choose_ancient_relic": 1,
+            "choose_event_option": 5,
+            "choose_map_node": 16,
+            "choose_relic_card": 1,
+            "choose_reward_card": 7,
+            "choose_upgrade": 2,
+            "claim_gold": 7,
+            "claim_potion": 3,
+            "claim_relic": 1,
+            "claim_treasure_relic": 1,
+            "confirm_relic_selection": 1,
+            "confirm_selection": 1,
+            "end_turn": 28,
+            "leave_event": 2,
+            "leave_rest": 4,
+            "leave_rewards": 7,
+            "leave_shop": 1,
+            "leave_treasure": 1,
+            "open_chest": 1,
+            "open_reward": 7,
+            "play_card": 97,
+            "rest": 2,
+            "smith": 2,
+            "use_potion": 4
+          },
+          "case_id": "4a58dcec744b42628c1028bab33e5c1c",
+          "contexts": {
+            "ancient": 1,
+            "combat": 130,
+            "event": 7,
+            "map": 16,
+            "relic_choice": 2,
+            "rest": 10,
+            "rewards": 32,
+            "shop": 2,
+            "treasure": 3
+          },
+          "episode_id": "6a90be3e18c9451599806e0e27418bbc",
+          "first_act": "overgrowth",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 16,
+            "hp": 12,
+            "max_hp": 77
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "policy": "hybrid",
+          "source_group": "4a58dcec744b42628c1028bab33e5c1c",
+          "status": "terminated",
+          "steps": 203,
+          "task_return": 0,
+          "timings": {
+            "observations": 204,
+            "observe_seconds": 4.669785785954446,
+            "policy_seconds": 9.14375929068774,
+            "recording_seconds": 6.357042957097292,
+            "reset_seconds": 0.06448550010100007,
+            "step_seconds": 0.8512210752815008,
+            "steps": 203,
+            "total_seconds": 21.089514167048037
+          },
+          "trajectory": "6a90be3e18c9451599806e0e27418bbc.trajectory.jsonl",
+          "trajectory_sha256": "df61c80782237d5d585f7bfa34b20af34f5c96ee7988debab661c23287c9fcb3"
+        },
+        {
+          "actions": {
+            "choose_ancient_relic": 1,
+            "choose_map_node": 1,
+            "choose_relic_card": 1,
+            "confirm_relic_selection": 1,
+            "end_turn": 19,
+            "play_card": 24
+          },
+          "case_id": "4a58dcec744b42628c1028bab33e5c1c",
+          "contexts": {
+            "ancient": 1,
+            "combat": 43,
+            "map": 1,
+            "relic_choice": 2
+          },
+          "episode_id": "1b1995e59ed840b18cc59ff401dbcb96",
+          "first_act": "overgrowth",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 1,
+            "hp": 6,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "policy": "learned",
+          "source_group": "4a58dcec744b42628c1028bab33e5c1c",
+          "status": "terminated",
+          "steps": 47,
+          "task_return": 0,
+          "timings": {
+            "observations": 48,
+            "observe_seconds": 0.7899927920661867,
+            "policy_seconds": 1.8064203325193375,
+            "recording_seconds": 1.0515736248344183,
+            "reset_seconds": 0.06540887500159442,
+            "step_seconds": 0.16898128972388804,
+            "steps": 47,
+            "total_seconds": 3.882967167068273
+          },
+          "trajectory": "1b1995e59ed840b18cc59ff401dbcb96.trajectory.jsonl",
+          "trajectory_sha256": "2b94cc43bc54873d6c8106b9522ff718c8a853b8448f8f37334002c420d9c58a"
+        },
+        {
+          "actions": {
+            "choose_ancient_relic": 1,
+            "choose_event_option": 2,
+            "choose_map_node": 6,
+            "choose_relic_card": 1,
+            "choose_reward_card": 4,
+            "claim_gold": 4,
+            "claim_potion": 1,
+            "confirm_relic_selection": 1,
+            "confirm_selection": 1,
+            "end_turn": 14,
+            "leave_event": 1,
+            "leave_rewards": 4,
+            "open_reward": 4,
+            "play_card": 51,
+            "use_potion": 2
+          },
+          "case_id": "34d7582c56b44c998bad013393dfa0b6",
+          "contexts": {
+            "ancient": 1,
+            "combat": 68,
+            "event": 3,
+            "map": 6,
+            "relic_choice": 2,
+            "rewards": 17
+          },
+          "episode_id": "26b26a8cfbf54a4785c534c1bec6dbaa",
+          "first_act": "underdocks",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 6,
+            "hp": 1,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "policy": "heuristic",
+          "source_group": "34d7582c56b44c998bad013393dfa0b6",
+          "status": "terminated",
+          "steps": 97,
+          "task_return": 0,
+          "timings": {
+            "observations": 98,
+            "observe_seconds": 1.631421331781894,
+            "policy_seconds": 1.206559328828007,
+            "recording_seconds": 2.306885877624154,
+            "reset_seconds": 0.05006366688758135,
+            "step_seconds": 0.37527870875783265,
+            "steps": 97,
+            "total_seconds": 5.572419292060658
+          },
+          "trajectory": "26b26a8cfbf54a4785c534c1bec6dbaa.trajectory.jsonl",
+          "trajectory_sha256": "95feb8292c3e33c257f2f2c1dab869fb13cd6bd0e008b2ee3b15a7030b77d33a"
+        },
+        {
+          "actions": {
+            "choose_ancient_relic": 1,
+            "choose_event_option": 2,
+            "choose_map_node": 6,
+            "choose_relic_card": 1,
+            "choose_reward_card": 4,
+            "claim_gold": 4,
+            "claim_potion": 1,
+            "confirm_relic_selection": 1,
+            "confirm_selection": 1,
+            "end_turn": 15,
+            "leave_event": 1,
+            "leave_rewards": 4,
+            "open_reward": 4,
+            "play_card": 51,
+            "use_potion": 2
+          },
+          "case_id": "34d7582c56b44c998bad013393dfa0b6",
+          "contexts": {
+            "ancient": 1,
+            "combat": 69,
+            "event": 3,
+            "map": 6,
+            "relic_choice": 2,
+            "rewards": 17
+          },
+          "episode_id": "8ba69c29be8c4e87808131fea1ccbb69",
+          "first_act": "underdocks",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 6,
+            "hp": 3,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "policy": "hybrid",
+          "source_group": "34d7582c56b44c998bad013393dfa0b6",
+          "status": "terminated",
+          "steps": 98,
+          "task_return": 0,
+          "timings": {
+            "observations": 99,
+            "observe_seconds": 1.7041442112531513,
+            "policy_seconds": 3.3307687912601978,
+            "recording_seconds": 2.347915750462562,
+            "reset_seconds": 0.04949075006879866,
+            "step_seconds": 0.4044373733922839,
+            "steps": 98,
+            "total_seconds": 7.838214125018567
+          },
+          "trajectory": "8ba69c29be8c4e87808131fea1ccbb69.trajectory.jsonl",
+          "trajectory_sha256": "fa2594c459d0a9efd6ce411a958b004a87ebc998b682d380e78714f7999e1530"
+        },
+        {
+          "actions": {
+            "choose_ancient_relic": 1,
+            "choose_map_node": 1,
+            "choose_relic_card": 1,
+            "confirm_relic_selection": 1,
+            "end_turn": 17,
+            "play_card": 27
+          },
+          "case_id": "34d7582c56b44c998bad013393dfa0b6",
+          "contexts": {
+            "ancient": 1,
+            "combat": 44,
+            "map": 1,
+            "relic_choice": 2
+          },
+          "episode_id": "fe7e389eeecf4d9390fc028a0720a800",
+          "first_act": "underdocks",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 1,
+            "hp": 2,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "policy": "learned",
+          "source_group": "34d7582c56b44c998bad013393dfa0b6",
+          "status": "terminated",
+          "steps": 48,
+          "task_return": 0,
+          "timings": {
+            "observations": 49,
+            "observe_seconds": 0.7333955424837768,
+            "policy_seconds": 1.709975004196167,
+            "recording_seconds": 0.9982470404356718,
+            "reset_seconds": 0.04982966696843505,
+            "step_seconds": 0.172862502746284,
+            "steps": 48,
+            "total_seconds": 3.6648800000548363
+          },
+          "trajectory": "fe7e389eeecf4d9390fc028a0720a800.trajectory.jsonl",
+          "trajectory_sha256": "45b8446b9f124d36566b7bdc3bc1a3d02b3531f536984e658d3acc476c7d693b"
+        }
+      ],
+      "evidence": "headless_rollout",
+      "implementation": {
+        "build": "4a13646269563ca3625af45aa8ac7a5fa2e5d928347f552da60211e3bdbe67b4",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "limits": {
+        "max_decisions": 1024,
+        "time_limit_seconds": 120.0
+      },
+      "paired_vs_heuristic": {
+        "hybrid": {
+          "cases": 8,
+          "conclusion": "inconclusive",
+          "difference_group_hoeffding_95": [
+            -0.9603227913199207,
+            0.9603227913199207
+          ],
+          "win_rate_difference": 0.0,
+          "wins_only_candidate": 0,
+          "wins_only_heuristic": 0
+        },
+        "learned": {
+          "cases": 8,
+          "conclusion": "inconclusive",
+          "difference_group_hoeffding_95": [
+            -0.9603227913199207,
+            0.9603227913199207
+          ],
+          "win_rate_difference": 0.0,
+          "wins_only_candidate": 0,
+          "wins_only_heuristic": 0
+        }
+      },
+      "plan_sha256": "8a49b75331257f3c0b08b8c5c480f5e72e3b4cd1eed5c1c32cedaeaa4061c05d",
+      "policies": {
+        "heuristic": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "hybrid": "hybrid_v1:098b4d2c5d51da5f98af4c76179bb58cbfd93893f7be83d27d1931d8a6156691:full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "learned": "ppo_v1:afc6d63bd5a3be70c8d8243e689e3764db256f645a951f78e4de58aad1345248"
+      },
+      "reward_spec": {
+        "schema": "sts_full_run_reward_v1",
+        "weights": {
+          "combat_loss": 0.0,
+          "combat_win": 0.0,
+          "end_turn_action": 0.0,
+          "potion_use_action": 0.0,
+          "run_victory": 1.0,
+          "win_hp_fraction": 0.0
+        }
+      },
+      "runtime": {
+        "device": "cpu",
+        "python": "3.11.15",
+        "threads": 1,
+        "torch": "2.13.0"
+      },
+      "schema": "sts_full_run_evaluation_v1",
+      "split": "test",
+      "start": "Genuine Ironclad A0 campaign; identical Gym-derived engine seed per policy/case; all-seen/unlocked profile.",
+      "status": "complete",
+      "summary": {
+        "heuristic": {
+          "abandoned": 0,
+          "attempted": 8,
+          "cutoffs": 0,
+          "decisions_per_second": 14.120415451367473,
+          "defeats": 8,
+          "failures": 0,
+          "planned": 8,
+          "policy_seconds": 15.588853679131716,
+          "steps": 1016,
+          "total_seconds": 71.95255716796964,
+          "unattempted": 0,
+          "win_rate": 0.0,
+          "win_rate_group_hoeffding_95": [
+            0,
+            0.48016139565996035
+          ],
+          "wins": 0
+        },
+        "hybrid": {
+          "abandoned": 0,
+          "attempted": 8,
+          "cutoffs": 1,
+          "decisions_per_second": 7.52353930614261,
+          "defeats": 7,
+          "failures": 0,
+          "planned": 8,
+          "policy_seconds": 93.9369043216575,
+          "steps": 1514,
+          "total_seconds": 201.23507546028122,
+          "unattempted": 0,
+          "win_rate": 0.0,
+          "win_rate_group_hoeffding_95": [
+            0,
+            0.48016139565996035
+          ],
+          "wins": 0
+        },
+        "learned": {
+          "abandoned": 0,
+          "attempted": 8,
+          "cutoffs": 0,
+          "decisions_per_second": 11.518481705887627,
+          "defeats": 8,
+          "failures": 0,
+          "planned": 8,
+          "policy_seconds": 13.811083464650437,
+          "steps": 346,
+          "total_seconds": 30.038681211182848,
+          "unattempted": 0,
+          "win_rate": 0.0,
+          "win_rate_group_hoeffding_95": [
+            0,
+            0.48016139565996035
+          ],
+          "wins": 0
+        }
+      },
+      "total_seconds": 352.448206666857
+    },
+    "validation": {
+      "episodes": [
+        {
+          "actions": {
+            "buy_shop_item": 2,
+            "choose_ancient_relic": 1,
+            "choose_event_option": 3,
+            "choose_map_node": 14,
+            "choose_reward_card": 5,
+            "choose_upgrade": 1,
+            "claim_gold": 5,
+            "claim_potion": 2,
+            "claim_relic": 2,
+            "claim_treasure_relic": 2,
+            "end_turn": 21,
+            "leave_event": 3,
+            "leave_rest": 2,
+            "leave_rewards": 5,
+            "leave_shop": 1,
+            "leave_treasure": 2,
+            "open_chest": 2,
+            "open_reward": 5,
+            "play_card": 60,
+            "rest": 1,
+            "smith": 1,
+            "use_potion": 2
+          },
+          "case_id": "e868073e793847ccbb110f73e6a3e682",
+          "contexts": {
+            "ancient": 1,
+            "combat": 83,
+            "event": 6,
+            "map": 14,
+            "rest": 5,
+            "rewards": 24,
+            "shop": 3,
+            "treasure": 6
+          },
+          "episode_id": "45318f991aec4d6f99171f260be42dad",
+          "first_act": "overgrowth",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 14,
+            "hp": 2,
+            "max_hp": 87
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "policy": "heuristic",
+          "source_group": "e868073e793847ccbb110f73e6a3e682",
+          "status": "terminated",
+          "steps": 142,
+          "task_return": 0,
+          "timings": {
+            "observations": 143,
+            "observe_seconds": 3.129858000902459,
+            "policy_seconds": 2.306273246416822,
+            "recording_seconds": 4.2414238781202585,
+            "reset_seconds": 0.08610420790500939,
+            "step_seconds": 0.5643850781489164,
+            "steps": 142,
+            "total_seconds": 10.331897999858484
+          },
+          "trajectory": "45318f991aec4d6f99171f260be42dad.trajectory.jsonl",
+          "trajectory_sha256": "38806c697b4b5273341e896cf83528a7b475670b2e36555643e530e309b2ef0c"
+        },
+        {
+          "actions": {
+            "buy_shop_item": 2,
+            "choose_ancient_relic": 1,
+            "choose_event_option": 3,
+            "choose_map_node": 16,
+            "choose_reward_card": 6,
+            "choose_upgrade": 1,
+            "claim_gold": 6,
+            "claim_potion": 2,
+            "claim_relic": 2,
+            "claim_treasure_relic": 2,
+            "end_turn": 26,
+            "leave_event": 3,
+            "leave_rest": 3,
+            "leave_rewards": 6,
+            "leave_shop": 1,
+            "leave_treasure": 2,
+            "open_chest": 2,
+            "open_reward": 6,
+            "play_card": 75,
+            "rest": 2,
+            "select_card": 1,
+            "smith": 1,
+            "use_potion": 2
+          },
+          "case_id": "e868073e793847ccbb110f73e6a3e682",
+          "contexts": {
+            "ancient": 1,
+            "combat": 104,
+            "event": 6,
+            "map": 16,
+            "rest": 7,
+            "rewards": 28,
+            "shop": 3,
+            "treasure": 6
+          },
+          "episode_id": "66a58595860f46f1aba5bc52569a981d",
+          "first_act": "overgrowth",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 16,
+            "hp": 7,
+            "max_hp": 87
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "policy": "hybrid",
+          "source_group": "e868073e793847ccbb110f73e6a3e682",
+          "status": "terminated",
+          "steps": 171,
+          "task_return": 0,
+          "timings": {
+            "observations": 172,
+            "observe_seconds": 3.8994317387696356,
+            "policy_seconds": 7.917174329049885,
+            "recording_seconds": 5.453028043033555,
+            "reset_seconds": 0.0767817918676883,
+            "step_seconds": 0.7737787475343794,
+            "steps": 171,
+            "total_seconds": 18.1230659999419
+          },
+          "trajectory": "66a58595860f46f1aba5bc52569a981d.trajectory.jsonl",
+          "trajectory_sha256": "fd607e258a629abf3ce428fc3b21fcc0421eab07fa0e793fff13d4c3c1e60686"
+        },
+        {
+          "actions": {
+            "choose_ancient_relic": 1,
+            "choose_map_node": 1,
+            "end_turn": 18,
+            "play_card": 20
+          },
+          "case_id": "e868073e793847ccbb110f73e6a3e682",
+          "contexts": {
+            "ancient": 1,
+            "combat": 38,
+            "map": 1
+          },
+          "episode_id": "079bea8cb89d4648aa73b05e96a17c97",
+          "first_act": "overgrowth",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 1,
+            "hp": 2,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "policy": "learned",
+          "source_group": "e868073e793847ccbb110f73e6a3e682",
+          "status": "terminated",
+          "steps": 40,
+          "task_return": 0,
+          "timings": {
+            "observations": 41,
+            "observe_seconds": 0.6610087926965207,
+            "policy_seconds": 1.5508715431205928,
+            "recording_seconds": 0.9274404149036855,
+            "reset_seconds": 0.07785770809277892,
+            "step_seconds": 0.17388883279636502,
+            "steps": 40,
+            "total_seconds": 3.3916148331481963
+          },
+          "trajectory": "079bea8cb89d4648aa73b05e96a17c97.trajectory.jsonl",
+          "trajectory_sha256": "c478bd1aeff4ab8e1cac5a99256f84fb56abfb7d9fc69eb4a76cda7d4f953796"
+        },
+        {
+          "actions": {
+            "buy_shop_item": 7,
+            "choose_ancient_relic": 1,
+            "choose_event_option": 4,
+            "choose_map_node": 16,
+            "choose_reward_card": 8,
+            "choose_upgrade": 1,
+            "claim_gold": 8,
+            "claim_potion": 3,
+            "claim_relic": 1,
+            "claim_treasure_relic": 1,
+            "end_turn": 29,
+            "leave_event": 2,
+            "leave_rest": 3,
+            "leave_rewards": 8,
+            "leave_shop": 1,
+            "leave_treasure": 1,
+            "open_chest": 1,
+            "open_reward": 8,
+            "play_card": 98,
+            "rest": 2,
+            "select_card": 1,
+            "smith": 1,
+            "use_potion": 4
+          },
+          "case_id": "b074ab3cafb544119ae25522e1896182",
+          "contexts": {
+            "ancient": 1,
+            "combat": 132,
+            "event": 6,
+            "map": 16,
+            "rest": 7,
+            "rewards": 36,
+            "shop": 8,
+            "treasure": 3
+          },
+          "episode_id": "1f6266d73a5142edbf765b37abb67619",
+          "first_act": "underdocks",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 16,
+            "hp": 9,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "policy": "heuristic",
+          "source_group": "b074ab3cafb544119ae25522e1896182",
+          "status": "terminated",
+          "steps": 209,
+          "task_return": 0,
+          "timings": {
+            "observations": 210,
+            "observe_seconds": 5.1109162056818604,
+            "policy_seconds": 3.6613953793421388,
+            "recording_seconds": 7.04831712320447,
+            "reset_seconds": 0.14189208298921585,
+            "step_seconds": 0.8517517980653793,
+            "steps": 209,
+            "total_seconds": 16.82079020817764
+          },
+          "trajectory": "1f6266d73a5142edbf765b37abb67619.trajectory.jsonl",
+          "trajectory_sha256": "6dec864996d4233d35ab08e655ac77a2969bc096f5a9900f88d00a1a6d6bbdbf"
+        },
+        {
+          "actions": {
+            "choose_ancient_relic": 1,
+            "choose_event_option": 4,
+            "choose_map_node": 12,
+            "choose_reward_card": 6,
+            "claim_gold": 6,
+            "claim_potion": 3,
+            "claim_relic": 1,
+            "claim_treasure_relic": 1,
+            "end_turn": 24,
+            "leave_event": 2,
+            "leave_rest": 2,
+            "leave_rewards": 6,
+            "leave_treasure": 1,
+            "open_chest": 1,
+            "open_reward": 6,
+            "play_card": 79,
+            "rest": 2,
+            "use_potion": 3
+          },
+          "case_id": "b074ab3cafb544119ae25522e1896182",
+          "contexts": {
+            "ancient": 1,
+            "combat": 106,
+            "event": 6,
+            "map": 12,
+            "rest": 4,
+            "rewards": 28,
+            "treasure": 3
+          },
+          "episode_id": "6742a31d4d2f4b34873b509a67f6ef65",
+          "first_act": "underdocks",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 12,
+            "hp": 5,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "policy": "hybrid",
+          "source_group": "b074ab3cafb544119ae25522e1896182",
+          "status": "terminated",
+          "steps": 160,
+          "task_return": 0,
+          "timings": {
+            "observations": 161,
+            "observe_seconds": 3.318562456872314,
+            "policy_seconds": 6.551149004139006,
+            "recording_seconds": 4.5901571190916,
+            "reset_seconds": 0.14244912494905293,
+            "step_seconds": 0.6660636274609715,
+            "steps": 160,
+            "total_seconds": 15.270868541905656
+          },
+          "trajectory": "6742a31d4d2f4b34873b509a67f6ef65.trajectory.jsonl",
+          "trajectory_sha256": "c338a17e5378cbb7779cf26bcbadeaf9661bd1ff86f5a895c1fbebdb54b8120b"
+        },
+        {
+          "actions": {
+            "choose_ancient_relic": 1,
+            "choose_map_node": 1,
+            "end_turn": 9,
+            "play_card": 4
+          },
+          "case_id": "b074ab3cafb544119ae25522e1896182",
+          "contexts": {
+            "ancient": 1,
+            "combat": 13,
+            "map": 1
+          },
+          "episode_id": "99fc92203df34ea39acba16a26400b05",
+          "first_act": "underdocks",
+          "last_public_hud": {
+            "act": 1,
+            "floor": 1,
+            "hp": 5,
+            "max_hp": 80
+          },
+          "outcome": {
+            "kind": "defeat",
+            "reason": "none",
+            "schema": "sts_run_outcome_v1"
+          },
+          "policy": "learned",
+          "source_group": "b074ab3cafb544119ae25522e1896182",
+          "status": "terminated",
+          "steps": 15,
+          "task_return": 0,
+          "timings": {
+            "observations": 16,
+            "observe_seconds": 0.23395137442275882,
+            "policy_seconds": 0.5036977508570999,
+            "recording_seconds": 0.2928218755405396,
+            "reset_seconds": 0.141289624851197,
+            "step_seconds": 0.05537791643291712,
+            "steps": 15,
+            "total_seconds": 1.2273517919238657
+          },
+          "trajectory": "99fc92203df34ea39acba16a26400b05.trajectory.jsonl",
+          "trajectory_sha256": "d7afeb2dde3e52574e235533213a511b0d2ed0ff118098ec84200352935bd42f"
+        }
+      ],
+      "evidence": "headless_rollout",
+      "implementation": {
+        "build": "4a13646269563ca3625af45aa8ac7a5fa2e5d928347f552da60211e3bdbe67b4",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "limits": {
+        "max_decisions": 1024,
+        "time_limit_seconds": 120.0
+      },
+      "paired_vs_heuristic": {
+        "hybrid": {
+          "cases": 2,
+          "conclusion": "inconclusive",
+          "difference_group_hoeffding_95": [
+            -1,
+            1
+          ],
+          "win_rate_difference": 0.0,
+          "wins_only_candidate": 0,
+          "wins_only_heuristic": 0
+        },
+        "learned": {
+          "cases": 2,
+          "conclusion": "inconclusive",
+          "difference_group_hoeffding_95": [
+            -1,
+            1
+          ],
+          "win_rate_difference": 0.0,
+          "wins_only_candidate": 0,
+          "wins_only_heuristic": 0
+        }
+      },
+      "plan_sha256": "efd2952176c8afaaaec4dabb4b2f45847e23902a39be77680feb8e0d5f5e3058",
+      "policies": {
+        "heuristic": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "hybrid": "hybrid_v1:098b4d2c5d51da5f98af4c76179bb58cbfd93893f7be83d27d1931d8a6156691:full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "learned": "ppo_v1:afc6d63bd5a3be70c8d8243e689e3764db256f645a951f78e4de58aad1345248"
+      },
+      "reward_spec": {
+        "schema": "sts_full_run_reward_v1",
+        "weights": {
+          "combat_loss": 0.0,
+          "combat_win": 0.0,
+          "end_turn_action": 0.0,
+          "potion_use_action": 0.0,
+          "run_victory": 1.0,
+          "win_hp_fraction": 0.0
+        }
+      },
+      "runtime": {
+        "device": "cpu",
+        "python": "3.11.15",
+        "threads": 1,
+        "torch": "2.13.0"
+      },
+      "schema": "sts_full_run_evaluation_v1",
+      "split": "validation",
+      "start": "Genuine Ironclad A0 campaign; identical Gym-derived engine seed per policy/case; all-seen/unlocked profile.",
+      "status": "complete",
+      "summary": {
+        "heuristic": {
+          "abandoned": 0,
+          "attempted": 2,
+          "cutoffs": 0,
+          "decisions_per_second": 12.926896862319431,
+          "defeats": 2,
+          "failures": 0,
+          "planned": 2,
+          "policy_seconds": 5.967668625758961,
+          "steps": 351,
+          "total_seconds": 27.152688208036125,
+          "unattempted": 0,
+          "win_rate": 0.0,
+          "win_rate_group_hoeffding_95": [
+            0,
+            0.9603227913199207
+          ],
+          "wins": 0
+        },
+        "hybrid": {
+          "abandoned": 0,
+          "attempted": 2,
+          "cutoffs": 0,
+          "decisions_per_second": 9.911979661612136,
+          "defeats": 2,
+          "failures": 0,
+          "planned": 2,
+          "policy_seconds": 14.468323333188891,
+          "steps": 331,
+          "total_seconds": 33.39393454184756,
+          "unattempted": 0,
+          "win_rate": 0.0,
+          "win_rate_group_hoeffding_95": [
+            0,
+            0.9603227913199207
+          ],
+          "wins": 0
+        },
+        "learned": {
+          "abandoned": 0,
+          "attempted": 2,
+          "cutoffs": 0,
+          "decisions_per_second": 11.907425288906895,
+          "defeats": 2,
+          "failures": 0,
+          "planned": 2,
+          "policy_seconds": 2.0545692939776927,
+          "steps": 55,
+          "total_seconds": 4.618966625072062,
+          "unattempted": 0,
+          "win_rate": 0.0,
+          "win_rate_group_hoeffding_95": [
+            0,
+            0.9603227913199207
+          ],
+          "wins": 0
+        }
+      },
+      "total_seconds": 76.67722958303057
+    }
+  },
+  "imitation": {
+    "after": {
+      "train": {
+        "accuracy": 0.7777777777777778,
+        "decisions": 1665,
+        "entropy": 0.727809012398423,
+        "imitation_loss": 0.7117753330288431,
+        "seconds": 1.7325784999411553,
+        "value_labels": 437,
+        "value_mse": 0.0
+      },
+      "validation": {
+        "accuracy": 0.7785888077858881,
+        "decisions": 411,
+        "entropy": 0.6347144642015443,
+        "imitation_loss": 0.7215044585457684,
+        "seconds": 0.24970525014214218,
+        "value_labels": 411,
+        "value_mse": 0.0
+      }
+    },
+    "architecture": {
+      "hidden_size": 48,
+      "message_layers": 2,
+      "schema": "sts_graph_actor_critic_v1"
+    },
+    "before": {
+      "train": {
+        "accuracy": 0.2894894894894895,
+        "decisions": 1665,
+        "entropy": 0.8944522375996048,
+        "imitation_loss": 12.722657646842904,
+        "seconds": 1.8272923750337213,
+        "value_labels": 437,
+        "value_mse": 0.0
+      },
+      "validation": {
+        "accuracy": 0.48661800486618007,
+        "decisions": 411,
+        "entropy": 0.38124575195811383,
+        "imitation_loss": 6.379048461751636,
+        "seconds": 0.25567887513898313,
+        "value_labels": 411,
+        "value_mse": 0.0
+      }
+    },
+    "corpus_encoding_seconds": 172.21690200199373,
+    "corpus_identity": "sts_full_run_corpus_v1:83fb9d4cf1da475d5891b976659313e5dd5a9e18de8275ba4a2162aea8664ecb",
+    "feature_identity": "sts_learned_public_graph_v1:d5e8fb739d4b0466314b2ffb2d98e56101bf6859f660d36f0fefa9d8e6ef7ce9",
+    "final_sha256": "56d7baa71e136628d4ec2fe48e2bcdbf765953f4767797c97d3f81a61111f724",
+    "initial_sha256": "8606566dd33cc4d81a411afa652dd504be21e538a74fc35ce5bfc7445059ddba",
+    "learner_config": {
+      "batch_size": 8,
+      "gradient_clip": 1.0,
+      "learning_rate": 0.0003,
+      "value_weight": 0.25
+    },
+    "packed_corpus_bytes": 1081776955,
+    "reward_spec": {
+      "schema": "sts_full_run_reward_v1",
+      "weights": {
+        "combat_loss": 0.0,
+        "combat_win": 0.0,
+        "end_turn_action": 0.0,
+        "potion_use_action": 0.0,
+        "run_victory": 1.0,
+        "win_hp_fraction": 0.0
+      }
+    },
+    "runtime": {
+      "device": "cpu",
+      "python": "3.11.15",
+      "threads": 1,
+      "torch": "2.13.0"
+    },
+    "schema": "sts_imitation_report_v1",
+    "start_update": 0,
+    "status": "complete",
+    "task": "full_run",
+    "total_seconds": 419.573650208069,
+    "train_decisions": 1665,
+    "transfer": {
+      "kind": "combat_actor_transfer_v1",
+      "new_train_names": 818,
+      "optimizer_rng_cursor": "fresh",
+      "retained_names": 156,
+      "source_checkpoint": "ppo_v1:098b4d2c5d51da5f98af4c76179bb58cbfd93893f7be83d27d1931d8a6156691",
+      "source_objective": "sts_training_reward_v1:7344466e719934da2fdb214862c0e6f9446d59b318f84f068eb107fa06d8e3f1",
+      "source_vocabulary": "sts_learned_public_graph_v1:2c6bd7795771217e1554cdab43af74579524d508369289008dc8d03e4a6c724e",
+      "target_vocabulary": "sts_learned_public_graph_v1:d5e8fb739d4b0466314b2ffb2d98e56101bf6859f660d36f0fefa9d8e6ef7ce9",
+      "value_head": "fresh_hidden_zero_output"
+    },
+    "validation_decisions": 411,
+    "validation_identity": "sts_full_run_corpus_v1:f0568d9f4d1833b3d6f7f328e4c1eaab9ddc48268f010ef0761576ab6e32b473"
+  },
+  "imitation_optimizer": {
+    "first": {
+      "batch_tensor_bytes": 812872,
+      "entropy": 0.9420465230941772,
+      "gradient_norm": 13.89250373840332,
+      "imitation_loss": 15.23239517211914,
+      "loss": 15.23239517211914,
+      "samples": 8,
+      "seconds": 0.03216962516307831,
+      "update": 1,
+      "value_loss": 0.0
+    },
+    "last": {
+      "batch_tensor_bytes": 810252,
+      "entropy": 0.7875550985336304,
+      "gradient_norm": 1.0143448114395142,
+      "imitation_loss": 0.5062706470489502,
+      "loss": 0.5062706470489502,
+      "samples": 8,
+      "seconds": 0.01106374990195036,
+      "update": 256,
+      "value_loss": 0.0
+    },
+    "seconds": 3.5260020359419286,
+    "updates": 256
+  },
+  "implementation": {
+    "build": "4a13646269563ca3625af45aa8ac7a5fa2e5d928347f552da60211e3bdbe67b4",
+    "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+    "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+    "target": "sts2-v0.107.1-steam-23811903"
+  },
+  "limits": [
+    "Headless evidence only; no live deployment or bridge build.",
+    "Assisted demonstration victories are not ordinary-start wins and have no Monte Carlo value labels.",
+    "One fixed-budget full-run learner; a small held-out pilot, not a replicated strategic-strength study.",
+    "Milestone 7 broad integration and clean optional-extra package validation remains planned."
+  ],
+  "models": [
+    {
+      "feature_identity": "sts_learned_public_graph_v1:d5e8fb739d4b0466314b2ffb2d98e56101bf6859f660d36f0fefa9d8e6ef7ce9",
+      "identity": "imitation_v1:56d7baa71e136628d4ec2fe48e2bcdbf765953f4767797c97d3f81a61111f724",
+      "path": "runs/full-run-milestone6-20260929/imitation/final.sts-model",
+      "sha256": "56d7baa71e136628d4ec2fe48e2bcdbf765953f4767797c97d3f81a61111f724"
+    },
+    {
+      "feature_identity": "sts_learned_public_graph_v1:d5e8fb739d4b0466314b2ffb2d98e56101bf6859f660d36f0fefa9d8e6ef7ce9",
+      "identity": "imitation_v1:8606566dd33cc4d81a411afa652dd504be21e538a74fc35ce5bfc7445059ddba",
+      "path": "runs/full-run-milestone6-20260929/imitation/initial.sts-model",
+      "sha256": "8606566dd33cc4d81a411afa652dd504be21e538a74fc35ce5bfc7445059ddba"
+    },
+    {
+      "feature_identity": "sts_learned_public_graph_v1:d5e8fb739d4b0466314b2ffb2d98e56101bf6859f660d36f0fefa9d8e6ef7ce9",
+      "identity": "ppo_v1:afc6d63bd5a3be70c8d8243e689e3764db256f645a951f78e4de58aad1345248",
+      "path": "runs/full-run-milestone6-20260929/ppo-mixed/final.sts-model",
+      "sha256": "afc6d63bd5a3be70c8d8243e689e3764db256f645a951f78e4de58aad1345248"
+    },
+    {
+      "feature_identity": "sts_learned_public_graph_v1:d5e8fb739d4b0466314b2ffb2d98e56101bf6859f660d36f0fefa9d8e6ef7ce9",
+      "identity": "ppo_v1:47f6efcca2ac72bf65fcc72180c5a9094924e9b501455256a83b7065332deb48",
+      "path": "runs/full-run-milestone6-20260929/ppo-mixed/initial.sts-model",
+      "sha256": "47f6efcca2ac72bf65fcc72180c5a9094924e9b501455256a83b7065332deb48"
+    },
+    {
+      "feature_identity": "sts_learned_public_graph_v1:d5e8fb739d4b0466314b2ffb2d98e56101bf6859f660d36f0fefa9d8e6ef7ce9",
+      "identity": "ppo_v1:3d5260ee8916e73bac7681fe8116965affae34cceaaaf3524998307e6a506f4c",
+      "path": "runs/full-run-milestone6-20260929/ppo-mixed/update-00001.sts-model",
+      "sha256": "3d5260ee8916e73bac7681fe8116965affae34cceaaaf3524998307e6a506f4c"
+    },
+    {
+      "feature_identity": "sts_learned_public_graph_v1:d5e8fb739d4b0466314b2ffb2d98e56101bf6859f660d36f0fefa9d8e6ef7ce9",
+      "identity": "ppo_v1:afc6d63bd5a3be70c8d8243e689e3764db256f645a951f78e4de58aad1345248",
+      "path": "runs/full-run-milestone6-20260929/ppo-mixed/update-00002.sts-model",
+      "sha256": "afc6d63bd5a3be70c8d8243e689e3764db256f645a951f78e4de58aad1345248"
+    },
+    {
+      "feature_identity": "sts_learned_public_graph_v1:d5e8fb739d4b0466314b2ffb2d98e56101bf6859f660d36f0fefa9d8e6ef7ce9",
+      "identity": "ppo_v1:472056eaab5542745d61df669ca1d5a737b4a985f6fa5c72c133ae59d2e2fb8d",
+      "path": "runs/full-run-milestone6-20260929/ppo-overgrowth/final.sts-model",
+      "sha256": "472056eaab5542745d61df669ca1d5a737b4a985f6fa5c72c133ae59d2e2fb8d"
+    },
+    {
+      "feature_identity": "sts_learned_public_graph_v1:d5e8fb739d4b0466314b2ffb2d98e56101bf6859f660d36f0fefa9d8e6ef7ce9",
+      "identity": "ppo_v1:2b4160b7c8c6056ebe3d9b5bd36e4405cc61a5c97d58eb629648ca51e79fb64f",
+      "path": "runs/full-run-milestone6-20260929/ppo-overgrowth/initial.sts-model",
+      "sha256": "2b4160b7c8c6056ebe3d9b5bd36e4405cc61a5c97d58eb629648ca51e79fb64f"
+    },
+    {
+      "feature_identity": "sts_learned_public_graph_v1:d5e8fb739d4b0466314b2ffb2d98e56101bf6859f660d36f0fefa9d8e6ef7ce9",
+      "identity": "ppo_v1:0d407888d227284dd16b3b0ddfa8bd09638b9bee53332b271dd564b2277e9a62",
+      "path": "runs/full-run-milestone6-20260929/ppo-overgrowth/update-00001.sts-model",
+      "sha256": "0d407888d227284dd16b3b0ddfa8bd09638b9bee53332b271dd564b2277e9a62"
+    },
+    {
+      "feature_identity": "sts_learned_public_graph_v1:d5e8fb739d4b0466314b2ffb2d98e56101bf6859f660d36f0fefa9d8e6ef7ce9",
+      "identity": "ppo_v1:472056eaab5542745d61df669ca1d5a737b4a985f6fa5c72c133ae59d2e2fb8d",
+      "path": "runs/full-run-milestone6-20260929/ppo-overgrowth/update-00002.sts-model",
+      "sha256": "472056eaab5542745d61df669ca1d5a737b4a985f6fa5c72c133ae59d2e2fb8d"
+    }
+  ],
+  "observed_progression": {
+    "test": {
+      "heuristic": {
+        "floors": [
+          16,
+          6,
+          7,
+          6,
+          16,
+          8,
+          16,
+          6
+        ],
+        "mean_floor": 10.125
+      },
+      "hybrid": {
+        "floors": [
+          16,
+          6,
+          7,
+          6,
+          10,
+          6,
+          16,
+          6
+        ],
+        "mean_floor": 9.125
+      },
+      "learned": {
+        "floors": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "mean_floor": 1
+      }
+    },
+    "validation": {
+      "heuristic": {
+        "floors": [
+          14,
+          16
+        ],
+        "mean_floor": 15
+      },
+      "hybrid": {
+        "floors": [
+          16,
+          12
+        ],
+        "mean_floor": 14
+      },
+      "learned": {
+        "floors": [
+          1,
+          1
+        ],
+        "mean_floor": 1
+      }
+    }
+  },
+  "ppo": {
+    "mixed": {
+      "experiment": {
+        "encounters": [
+          "overgrowth",
+          "underdocks"
+        ],
+        "ppo": {
+          "batch_size": 16,
+          "clip_ratio": 0.2,
+          "entropy_weight": 0.01,
+          "episode_decisions": 1024,
+          "episode_seconds": 120.0,
+          "epochs": 2,
+          "gae_lambda": 0.95,
+          "gamma": 1.0,
+          "gradient_clip": 0.5,
+          "learning_rate": 0.0003,
+          "normalize_advantages": true,
+          "rollout_steps": 512,
+          "target_kl": 0.03,
+          "value_weight": 0.5
+        },
+        "schema": "sts_ppo_experiment_v1",
+        "source": "ironclad_a0_full_run_v1",
+        "training": {
+          "mode": "full_run",
+          "reward": {
+            "schema": "sts_full_run_reward_v1",
+            "weights": {
+              "combat_loss": 0.0,
+              "combat_win": 0.0,
+              "end_turn_action": 0.0,
+              "potion_use_action": 0.0,
+              "run_victory": 1.0,
+              "win_hp_fraction": 0.0
+            }
+          },
+          "scenario_set": "ironclad_a0_full_run_v1"
+        }
+      },
+      "experiment_identity": "sts_ppo_experiment_v1:7c88abe3f8d5389c49db5c49b1f2839ea17d66f76a15fd95d4c3faaf257cec1d",
+      "final_sha256": "afc6d63bd5a3be70c8d8243e689e3764db256f645a951f78e4de58aad1345248",
+      "implementation": {
+        "build": "4a13646269563ca3625af45aa8ac7a5fa2e5d928347f552da60211e3bdbe67b4",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "initial_sha256": "47f6efcca2ac72bf65fcc72180c5a9094924e9b501455256a83b7065332deb48",
+      "initialization": {
+        "checkpoint": "ppo_v1:472056eaab5542745d61df669ca1d5a737b4a985f6fa5c72c133ae59d2e2fb8d",
+        "resumed": false
+      },
+      "last_complete_checkpoint": "final.sts-model",
+      "limits": {
+        "additional_decisions": 1024,
+        "wall_seconds": 600.0
+      },
+      "peak_process_rss_bytes": 761872384,
+      "runtime": {
+        "device": "cpu",
+        "python": "3.11.15",
+        "threads": 1,
+        "torch": "2.13.0"
+      },
+      "schema": "sts_ppo_report_v1",
+      "start_decisions": 0,
+      "start_iteration": 0,
+      "status": "complete",
+      "summary": {
+        "abandoned": 0,
+        "accepted_decisions": 1024,
+        "components": {
+          "run_victory": 0.0
+        },
+        "controlled_attempts": 0,
+        "cutoffs": 2,
+        "decisions_per_second": 8.05390771177263,
+        "episode_attempts": 11,
+        "failed_episodes": 0,
+        "genuine_start_attempts": 11,
+        "losses": 9,
+        "mean_hp_on_win": null,
+        "potion_use_actions": 6,
+        "task": "full_run",
+        "task_return": 0.0,
+        "trained_decisions": 1024,
+        "wins": 0
+      },
+      "total_seconds": 127.14324979204684
+    },
+    "overgrowth": {
+      "experiment": {
+        "encounters": [
+          "overgrowth"
+        ],
+        "ppo": {
+          "batch_size": 16,
+          "clip_ratio": 0.2,
+          "entropy_weight": 0.01,
+          "episode_decisions": 1024,
+          "episode_seconds": 120.0,
+          "epochs": 2,
+          "gae_lambda": 0.95,
+          "gamma": 1.0,
+          "gradient_clip": 0.5,
+          "learning_rate": 0.0003,
+          "normalize_advantages": true,
+          "rollout_steps": 512,
+          "target_kl": 0.03,
+          "value_weight": 0.5
+        },
+        "schema": "sts_ppo_experiment_v1",
+        "source": "ironclad_a0_full_run_v1",
+        "training": {
+          "mode": "full_run",
+          "reward": {
+            "schema": "sts_full_run_reward_v1",
+            "weights": {
+              "combat_loss": 0.0,
+              "combat_win": 0.0,
+              "end_turn_action": 0.0,
+              "potion_use_action": 0.0,
+              "run_victory": 1.0,
+              "win_hp_fraction": 0.0
+            }
+          },
+          "scenario_set": "ironclad_a0_full_run_v1"
+        }
+      },
+      "experiment_identity": "sts_ppo_experiment_v1:30c6183713bfac50637292c7f6954b390c4e54bb508b02d2d840fdb184ab1798",
+      "final_sha256": "472056eaab5542745d61df669ca1d5a737b4a985f6fa5c72c133ae59d2e2fb8d",
+      "implementation": {
+        "build": "4a13646269563ca3625af45aa8ac7a5fa2e5d928347f552da60211e3bdbe67b4",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "initial_sha256": "2b4160b7c8c6056ebe3d9b5bd36e4405cc61a5c97d58eb629648ca51e79fb64f",
+      "initialization": {
+        "checkpoint": "imitation_v1:56d7baa71e136628d4ec2fe48e2bcdbf765953f4767797c97d3f81a61111f724",
+        "resumed": false
+      },
+      "last_complete_checkpoint": "final.sts-model",
+      "limits": {
+        "additional_decisions": 1024,
+        "wall_seconds": 600.0
+      },
+      "peak_process_rss_bytes": 782565376,
+      "runtime": {
+        "device": "cpu",
+        "python": "3.11.15",
+        "threads": 1,
+        "torch": "2.13.0"
+      },
+      "schema": "sts_ppo_report_v1",
+      "start_decisions": 0,
+      "start_iteration": 0,
+      "status": "complete",
+      "summary": {
+        "abandoned": 0,
+        "accepted_decisions": 1024,
+        "components": {
+          "run_victory": 0.0
+        },
+        "controlled_attempts": 0,
+        "cutoffs": 2,
+        "decisions_per_second": 7.4973028013939516,
+        "episode_attempts": 11,
+        "failed_episodes": 0,
+        "genuine_start_attempts": 11,
+        "losses": 9,
+        "mean_hp_on_win": null,
+        "potion_use_actions": 3,
+        "task": "full_run",
+        "task_return": 0.0,
+        "trained_decisions": 1024,
+        "wins": 0
+      },
+      "total_seconds": 136.58245199988596
+    }
+  },
+  "ppo_batches": {
+    "mixed": [
+      {
+        "collection_seconds": 65.16335445805453,
+        "update": {
+          "after": {
+            "approx_kl": 0.19049186664051376,
+            "clip_fraction": 0.123046875,
+            "entropy": 1.1594738736748695,
+            "loss": -0.011594738491112366,
+            "policy_loss": 0.0,
+            "value_mse": 0.0
+          },
+          "batch_input_tensor_bytes": 930552,
+          "decisions": 512,
+          "epochs": 1,
+          "iteration": 1,
+          "kl_early_stop": true,
+          "max_gradient_norm": 0.010951617732644081,
+          "mean_update": {
+            "approx_kl": 0.03255738221923821,
+            "clip_fraction": 0.06640625,
+            "entropy": 1.1140780467540026,
+            "loss": -0.0111407801596215,
+            "policy_loss": 0.0,
+            "value_mse": 0.0
+          },
+          "optimizer_steps": 32,
+          "optimizer_steps_total": 32,
+          "packed_rollout_bytes": 150828371,
+          "seconds": 0.6477629581931978
+        }
+      },
+      {
+        "collection_seconds": 60.07729470799677,
+        "update": {
+          "after": {
+            "approx_kl": 0.0366601002169773,
+            "clip_fraction": 0.146484375,
+            "entropy": 1.2420999761670828,
+            "loss": -0.012420999526511878,
+            "policy_loss": 0.0,
+            "value_mse": 0.0
+          },
+          "batch_input_tensor_bytes": 876828,
+          "decisions": 512,
+          "epochs": 2,
+          "iteration": 2,
+          "kl_early_stop": true,
+          "max_gradient_norm": 0.003766181180253625,
+          "mean_update": {
+            "approx_kl": 0.01899589801178081,
+            "clip_fraction": 0.080078125,
+            "entropy": 1.2208917271345854,
+            "loss": -0.012208917003590614,
+            "policy_loss": 0.0,
+            "value_mse": 0.0
+          },
+          "optimizer_steps": 64,
+          "optimizer_steps_total": 96,
+          "packed_rollout_bytes": 138767399,
+          "seconds": 1.1285702921450138
+        }
+      }
+    ],
+    "overgrowth": [
+      {
+        "collection_seconds": 68.15189241617918,
+        "update": {
+          "after": {
+            "approx_kl": 0.3142476514913142,
+            "clip_fraction": 0.58203125,
+            "entropy": 1.036731069907546,
+            "loss": -0.010367310489527881,
+            "policy_loss": 0.0,
+            "value_mse": 0.0
+          },
+          "batch_input_tensor_bytes": 1092332,
+          "decisions": 512,
+          "epochs": 1,
+          "iteration": 1,
+          "kl_early_stop": true,
+          "max_gradient_norm": 0.013143920339643955,
+          "mean_update": {
+            "approx_kl": 0.11569537682953523,
+            "clip_fraction": 0.357421875,
+            "entropy": 0.8595429249107838,
+            "loss": -0.008595429113483988,
+            "policy_loss": 0.0,
+            "value_mse": 0.0
+          },
+          "optimizer_steps": 32,
+          "optimizer_steps_total": 32,
+          "packed_rollout_bytes": 159350391,
+          "seconds": 0.6594543331302702
+        }
+      },
+      {
+        "collection_seconds": 67.01825341698714,
+        "update": {
+          "after": {
+            "approx_kl": 0.06392799451714382,
+            "clip_fraction": 0.3828125,
+            "entropy": 1.0725894644856453,
+            "loss": -0.010725894360803068,
+            "policy_loss": 0.0,
+            "value_mse": 0.0
+          },
+          "batch_input_tensor_bytes": 999132,
+          "decisions": 512,
+          "epochs": 1,
+          "iteration": 2,
+          "kl_early_stop": true,
+          "max_gradient_norm": 0.007932332344353199,
+          "mean_update": {
+            "approx_kl": 0.02213529247819679,
+            "clip_fraction": 0.212890625,
+            "entropy": 1.039835223928094,
+            "loss": -0.010398351936601102,
+            "policy_loss": 0.0,
+            "value_mse": 0.0
+          },
+          "optimizer_steps": 32,
+          "optimizer_steps_total": 64,
+          "packed_rollout_bytes": 155348965,
+          "seconds": 0.6251995000056922
+        }
+      }
+    ]
+  },
+  "protocol": {
+    "combat_checkpoint": "ppo_v1:098b4d2c5d51da5f98af4c76179bb58cbfd93893f7be83d27d1931d8a6156691",
+    "demonstrations": {
+      "room_decision_limit": 32,
+      "train_assisted_campaign": 1,
+      "train_assisted_rooms": 6,
+      "train_decision_limit": 1536,
+      "train_genuine": 4,
+      "train_seconds_per_episode": 300,
+      "validation_decision_limit": 1024,
+      "validation_genuine": 2,
+      "validation_seconds_per_episode": 120
+    },
+    "evaluation": {
+      "decisions_per_episode": 1024,
+      "policies": [
+        "heuristic",
+        "hybrid",
+        "learned"
+      ],
+      "regions": [
+        "overgrowth",
+        "underdocks"
+      ],
+      "seconds_per_episode": 120,
+      "selection": "Fixed final mixed-region PPO checkpoint after declared budget; development and test do not tune or choose it.",
+      "test_cases": 8,
+      "validation_cases": 2
+    },
+    "evidence": "Headless only; ordinary campaigns and assisted demonstrations reported separately.",
+    "imitation": {
+      "batch_size": 8,
+      "learning_rate": 0.0003,
+      "transfer": "Combat shared/actor weights; train-only expanded vocabulary; fresh zero-output run critic, fresh Adam and learner RNG",
+      "updates": 256
+    },
+    "implementation": {
+      "build": "4a13646269563ca3625af45aa8ac7a5fa2e5d928347f552da60211e3bdbe67b4",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "ppo": [
+      {
+        "config": {
+          "encounters": [
+            "overgrowth"
+          ],
+          "ppo": {
+            "batch_size": 16,
+            "clip_ratio": 0.2,
+            "entropy_weight": 0.01,
+            "episode_decisions": 1024,
+            "episode_seconds": 120.0,
+            "epochs": 2,
+            "gae_lambda": 0.95,
+            "gamma": 1.0,
+            "gradient_clip": 0.5,
+            "learning_rate": 0.0003,
+            "normalize_advantages": true,
+            "rollout_steps": 512,
+            "target_kl": 0.03,
+            "value_weight": 0.5
+          },
+          "schema": "sts_ppo_experiment_v1",
+          "source": "ironclad_a0_full_run_v1",
+          "training": {
+            "mode": "full_run",
+            "reward": {
+              "schema": "sts_full_run_reward_v1",
+              "weights": {
+                "combat_loss": 0.0,
+                "combat_win": 0.0,
+                "end_turn_action": 0.0,
+                "potion_use_action": 0.0,
+                "run_victory": 1.0,
+                "win_hp_fraction": 0.0
+              }
+            },
+            "scenario_set": "ironclad_a0_full_run_v1"
+          }
+        },
+        "decisions": 1024,
+        "name": "overgrowth",
+        "wall_seconds": 600
+      },
+      {
+        "config": {
+          "encounters": [
+            "overgrowth",
+            "underdocks"
+          ],
+          "ppo": {
+            "batch_size": 16,
+            "clip_ratio": 0.2,
+            "entropy_weight": 0.01,
+            "episode_decisions": 1024,
+            "episode_seconds": 120.0,
+            "epochs": 2,
+            "gae_lambda": 0.95,
+            "gamma": 1.0,
+            "gradient_clip": 0.5,
+            "learning_rate": 0.0003,
+            "normalize_advantages": true,
+            "rollout_steps": 512,
+            "target_kl": 0.03,
+            "value_weight": 0.5
+          },
+          "schema": "sts_ppo_experiment_v1",
+          "source": "ironclad_a0_full_run_v1",
+          "training": {
+            "mode": "full_run",
+            "reward": {
+              "schema": "sts_full_run_reward_v1",
+              "weights": {
+                "combat_loss": 0.0,
+                "combat_win": 0.0,
+                "end_turn_action": 0.0,
+                "potion_use_action": 0.0,
+                "run_victory": 1.0,
+                "win_hp_fraction": 0.0
+              }
+            },
+            "scenario_set": "ironclad_a0_full_run_v1"
+          }
+        },
+        "decisions": 1024,
+        "name": "mixed",
+        "wall_seconds": 600
+      }
+    ],
+    "reward": {
+      "schema": "sts_full_run_reward_v1",
+      "weights": {
+        "combat_loss": 0.0,
+        "combat_win": 0.0,
+        "end_turn_action": 0.0,
+        "potion_use_action": 0.0,
+        "run_victory": 1.0,
+        "win_hp_fraction": 0.0
+      }
+    },
+    "runtime": {
+      "device": "cpu",
+      "python": "3.11.15",
+      "threads": 1,
+      "torch": "2.13.0"
+    },
+    "schema": "sts_full_run_acceptance_protocol_v1",
+    "stage_transition": "Carry all full-run inference weights and frozen vocabulary, continue training episode cursor, fresh optimizer/RNG for the explicitly changed region population."
+  },
+  "reports": [
+    {
+      "path": "runs/full-run-milestone6-20260929/protocol.json",
+      "sha256": "01f0b5fee6948e76f94dfe219ad73f212ea8b8f314bb91ab4a9b939ce66082b2"
+    },
+    {
+      "path": "runs/full-run-milestone6-20260929/acceptance.json",
+      "sha256": "f19ed254255935f11209978f2f6f8af6dde11a9691715c11db51a55cb3ec4d49"
+    },
+    {
+      "path": "runs/full-run-milestone6-20260929/train/run-demonstrations.json",
+      "sha256": "77248e4fa29da2823f8c1254245e86ad93a21842ab9bc4cb1e6a0988e710f77d"
+    },
+    {
+      "path": "runs/full-run-milestone6-20260929/validation/run-demonstrations.json",
+      "sha256": "53dbda49be6fbeb1742de176196516aa873d4b77df61d8b32e5c7d6484611470"
+    },
+    {
+      "path": "runs/full-run-milestone6-20260929/imitation/imitation.json",
+      "sha256": "ba6cd5a0361410a5a0b8cb38db5076d607bb2738bb0d74fa15f5bcdd71d66c1f"
+    },
+    {
+      "path": "runs/full-run-milestone6-20260929/ppo-overgrowth/ppo.json",
+      "sha256": "288b5651184fd436bf77ff7460c3d95c27cd18142e7a339bdd1f96c775879b18"
+    },
+    {
+      "path": "runs/full-run-milestone6-20260929/ppo-mixed/ppo.json",
+      "sha256": "2a0adf8fc99f2619460723db121edee2517e5296c4519cab59e6c2829c56d2da"
+    },
+    {
+      "path": "runs/full-run-milestone6-20260929/evaluate-validation/full-run.json",
+      "sha256": "48529ad391745d70c51a28d346529af1bc18868091d7a1311a9776dab0d94e77"
+    },
+    {
+      "path": "runs/full-run-milestone6-20260929/evaluate-test/full-run.json",
+      "sha256": "0180e0564fd12778c081fde3d0f498fc5ff5f57c740eae1156cc35d90c2f4141"
+    }
+  ],
+  "runtime": {
+    "device": "cpu",
+    "python": "3.11.15",
+    "threads": 1,
+    "torch": "2.13.0"
+  },
+  "schema": "sts_full_run_milestone6_evidence_v1",
+  "status": "complete",
+  "timings": {
+    "elapsed_from_task_start_to_protocol_seconds": 1816.833993434906,
+    "phases": [
+      {
+        "exit_code": 0,
+        "phase": "collect-train",
+        "seconds": 276.913474209141
+      },
+      {
+        "exit_code": 0,
+        "phase": "collect-validation",
+        "seconds": 40.41118516586721
+      },
+      {
+        "exit_code": 0,
+        "phase": "imitation",
+        "seconds": 420.40275987493806
+      },
+      {
+        "exit_code": 0,
+        "phase": "ppo-overgrowth",
+        "seconds": 137.66001987503842
+      },
+      {
+        "exit_code": 0,
+        "phase": "ppo-mixed",
+        "seconds": 128.2277395420242
+      },
+      {
+        "exit_code": 0,
+        "phase": "evaluate-validation",
+        "seconds": 77.29299537511542
+      },
+      {
+        "exit_code": 0,
+        "phase": "evaluate-test",
+        "seconds": 353.0489060841501
+      }
+    ],
+    "pilot_seconds": 1433.9627920421772
+  },
+  "validation": {
+    "affected_suite": {
+      "note": "Before room-fixture correction; affected room/full-run paths rerun below.",
+      "passed": 210,
+      "seconds": 87.65
+    },
+    "all_family_check": "All ten current headless public decision contexts and every native command class reached learned legal-candidate scoring, including nested presentations and Architect ending.",
+    "compileall": ".venv/bin/python -m compileall -q game tests passed; initial system Python 3.9 cache-location failure corrected by using the existing project environment.",
+    "distinct_focused_tests_passed": 223,
+    "final_fixture_manifest_and_corrected_abandonment_checks": {
+      "passed": 9,
+      "seconds": 8.54
+    },
+    "independent_review": {
+      "artifacts": "Disposable probes removed; no learning-strength evidence.",
+      "fixed_finding": "Bare authored room fixtures failed after Leave/Proceed; fixed with valid campaign-map continuations.",
+      "focused_checks": 8,
+      "focused_seconds": 16.86,
+      "installed_cli_checks": 6,
+      "installed_cli_seconds": 10.076,
+      "result": "No remaining concrete blockers"
+    },
+    "model_and_package_layout_checks": {
+      "passed": 11,
+      "seconds": 1.41
+    },
+    "post_fixture_full_run_reward_record_checks": {
+      "passed": 99,
+      "seconds": 34.15,
+      "test_setup_failure": 1
+    },
+    "unchanged_long_runner_test_deselected": 1
+  }
+}

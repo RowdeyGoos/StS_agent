@@ -1,0 +1,2243 @@
+{
+  "by_encounter": {
+    "overgrowth_cubex": {
+      "heuristic": {
+        "attempted": 4,
+        "cutoffs": 0,
+        "decisions_per_second": 20.852659959846765,
+        "failures": 0,
+        "losses": 0,
+        "mean_hp_on_win": 58.5,
+        "steps": 72,
+        "timings": {
+          "encoding_seconds": 1.0827344609424472,
+          "initialization_seconds": 0.005894459318369627,
+          "policy_seconds": 0.4884938776958734,
+          "projection_seconds": 0.7023755435366184,
+          "recording_seconds": 1.0041799552273005,
+          "simulation_dispatch_seconds": 0.1442434606142342,
+          "total_seconds": 3.452796916011721
+        },
+        "win_rate": 1.0,
+        "win_rate_wilson_95": [
+          0.5101091635454027,
+          1.0
+        ],
+        "wins": 4
+      },
+      "random_legal": {
+        "attempted": 4,
+        "cutoffs": 0,
+        "decisions_per_second": 24.08199865910805,
+        "failures": 0,
+        "losses": 4,
+        "mean_hp_on_win": null,
+        "steps": 87,
+        "timings": {
+          "encoding_seconds": 1.299546500435099,
+          "initialization_seconds": 0.0059077509213238955,
+          "policy_seconds": 0.00014767074026167393,
+          "projection_seconds": 0.8662374617997557,
+          "recording_seconds": 1.2389390906319022,
+          "simulation_dispatch_seconds": 0.17299299128353596,
+          "total_seconds": 3.61265695723705
+        },
+        "win_rate": 0.0,
+        "win_rate_wilson_95": [
+          0.0,
+          0.4898908364545973
+        ],
+        "wins": 0
+      }
+    },
+    "overgrowth_fuzzy": {
+      "heuristic": {
+        "attempted": 4,
+        "cutoffs": 0,
+        "decisions_per_second": 20.741301254118348,
+        "failures": 0,
+        "losses": 0,
+        "mean_hp_on_win": 74.25,
+        "steps": 58,
+        "timings": {
+          "encoding_seconds": 0.86288903770037,
+          "initialization_seconds": 0.005913458066061139,
+          "policy_seconds": 0.4027967487927526,
+          "projection_seconds": 0.5823610434308648,
+          "recording_seconds": 0.8008967523928732,
+          "simulation_dispatch_seconds": 0.11873028869740665,
+          "total_seconds": 2.7963530006818473
+        },
+        "win_rate": 1.0,
+        "win_rate_wilson_95": [
+          0.5101091635454027,
+          1.0
+        ],
+        "wins": 4
+      },
+      "random_legal": {
+        "attempted": 4,
+        "cutoffs": 0,
+        "decisions_per_second": 23.733048111680983,
+        "failures": 0,
+        "losses": 0,
+        "mean_hp_on_win": 65.0,
+        "steps": 74,
+        "timings": {
+          "encoding_seconds": 1.158576417248696,
+          "initialization_seconds": 0.005881124176084995,
+          "policy_seconds": 0.0001489140558987856,
+          "projection_seconds": 0.7286778760608286,
+          "recording_seconds": 1.0391714163124561,
+          "simulation_dispatch_seconds": 0.15731870522722602,
+          "total_seconds": 3.11801499966532
+        },
+        "win_rate": 1.0,
+        "win_rate_wilson_95": [
+          0.5101091635454027,
+          1.0
+        ],
+        "wins": 4
+      }
+    },
+    "overgrowth_mawler": {
+      "heuristic": {
+        "attempted": 4,
+        "cutoffs": 0,
+        "decisions_per_second": 20.75432208125552,
+        "failures": 0,
+        "losses": 0,
+        "mean_hp_on_win": 60.0,
+        "steps": 72,
+        "timings": {
+          "encoding_seconds": 1.101623373804614,
+          "initialization_seconds": 0.005872374167665839,
+          "policy_seconds": 0.49777350132353604,
+          "projection_seconds": 0.7118777071591467,
+          "recording_seconds": 0.979901330312714,
+          "simulation_dispatch_seconds": 0.14652316994033754,
+          "total_seconds": 3.46915691671893
+        },
+        "win_rate": 1.0,
+        "win_rate_wilson_95": [
+          0.5101091635454027,
+          1.0
+        ],
+        "wins": 4
+      },
+      "random_legal": {
+        "attempted": 4,
+        "cutoffs": 0,
+        "decisions_per_second": 23.983144837148103,
+        "failures": 0,
+        "losses": 2,
+        "mean_hp_on_win": 19.0,
+        "steps": 96,
+        "timings": {
+          "encoding_seconds": 1.4655862480867654,
+          "initialization_seconds": 0.00600862386636436,
+          "policy_seconds": 0.00016516540199518204,
+          "projection_seconds": 0.9733012071810663,
+          "recording_seconds": 1.3256616627331823,
+          "simulation_dispatch_seconds": 0.20057028927840292,
+          "total_seconds": 4.002811168087646
+        },
+        "win_rate": 0.5,
+        "win_rate_wilson_95": [
+          0.15003898915214947,
+          0.8499610108478506
+        ],
+        "wins": 2
+      }
+    },
+    "overgrowth_nibbit": {
+      "heuristic": {
+        "attempted": 4,
+        "cutoffs": 0,
+        "decisions_per_second": 20.65313347802539,
+        "failures": 0,
+        "losses": 0,
+        "mean_hp_on_win": 69.75,
+        "steps": 48,
+        "timings": {
+          "encoding_seconds": 0.7084135822951794,
+          "initialization_seconds": 0.006459625670686364,
+          "policy_seconds": 0.33471391652710736,
+          "projection_seconds": 0.48332508699968457,
+          "recording_seconds": 0.6699092527851462,
+          "simulation_dispatch_seconds": 0.10029170964844525,
+          "total_seconds": 2.324102541198954
+        },
+        "win_rate": 1.0,
+        "win_rate_wilson_95": [
+          0.5101091635454027,
+          1.0
+        ],
+        "wins": 4
+      },
+      "random_legal": {
+        "attempted": 4,
+        "cutoffs": 0,
+        "decisions_per_second": 23.50311463716172,
+        "failures": 0,
+        "losses": 0,
+        "mean_hp_on_win": 58.5,
+        "steps": 82,
+        "timings": {
+          "encoding_seconds": 1.2505467070732266,
+          "initialization_seconds": 0.017518666107207537,
+          "policy_seconds": 0.00015174387954175472,
+          "projection_seconds": 0.8690229575149715,
+          "recording_seconds": 1.1418307130225003,
+          "simulation_dispatch_seconds": 0.17649803892709315,
+          "total_seconds": 3.488899291260168
+        },
+        "win_rate": 1.0,
+        "win_rate_wilson_95": [
+          0.5101091635454027,
+          1.0
+        ],
+        "wins": 4
+      }
+    },
+    "overgrowth_nibbits": {
+      "heuristic": {
+        "attempted": 4,
+        "cutoffs": 0,
+        "decisions_per_second": 19.858680666960545,
+        "failures": 0,
+        "losses": 2,
+        "mean_hp_on_win": 40.5,
+        "steps": 114,
+        "timings": {
+          "encoding_seconds": 1.8174750909674913,
+          "initialization_seconds": 0.006672208895906806,
+          "policy_seconds": 0.819344122428447,
+          "projection_seconds": 1.1764555827248842,
+          "recording_seconds": 1.6312083401717246,
+          "simulation_dispatch_seconds": 0.251540215453133,
+          "total_seconds": 5.7405626240652055
+        },
+        "win_rate": 0.5,
+        "win_rate_wilson_95": [
+          0.15003898915214947,
+          0.8499610108478506
+        ],
+        "wins": 2
+      },
+      "random_legal": {
+        "attempted": 4,
+        "cutoffs": 0,
+        "decisions_per_second": 23.068053333518268,
+        "failures": 0,
+        "losses": 4,
+        "mean_hp_on_win": null,
+        "steps": 103,
+        "timings": {
+          "encoding_seconds": 1.641288341023028,
+          "initialization_seconds": 0.00657245796173811,
+          "policy_seconds": 0.0002010050229728222,
+          "projection_seconds": 1.063279913039878,
+          "recording_seconds": 1.4973885035142303,
+          "simulation_dispatch_seconds": 0.21944783767685294,
+          "total_seconds": 4.46504949987866
+        },
+        "win_rate": 0.0,
+        "win_rate_wilson_95": [
+          0.0,
+          0.4898908364545973
+        ],
+        "wins": 0
+      }
+    },
+    "overgrowth_slimes": {
+      "heuristic": {
+        "attempted": 4,
+        "cutoffs": 0,
+        "decisions_per_second": 18.379996571214306,
+        "failures": 0,
+        "losses": 0,
+        "mean_hp_on_win": 74.25,
+        "steps": 76,
+        "timings": {
+          "encoding_seconds": 1.2954498392064124,
+          "initialization_seconds": 0.005938417045399547,
+          "policy_seconds": 0.6038973308168352,
+          "projection_seconds": 0.8541073787491769,
+          "recording_seconds": 1.180686580017209,
+          "simulation_dispatch_seconds": 0.16758258547633886,
+          "total_seconds": 4.134930042317137
+        },
+        "win_rate": 1.0,
+        "win_rate_wilson_95": [
+          0.5101091635454027,
+          1.0
+        ],
+        "wins": 4
+      },
+      "random_legal": {
+        "attempted": 4,
+        "cutoffs": 0,
+        "decisions_per_second": 18.381495456383302,
+        "failures": 0,
+        "losses": 0,
+        "mean_hp_on_win": 50.75,
+        "steps": 127,
+        "timings": {
+          "encoding_seconds": 2.612946628127247,
+          "initialization_seconds": 0.00596849899739027,
+          "policy_seconds": 0.00021133851259946823,
+          "projection_seconds": 1.6458358794916421,
+          "recording_seconds": 2.317516584182158,
+          "simulation_dispatch_seconds": 0.2876010416075587,
+          "total_seconds": 6.909122291021049
+        },
+        "win_rate": 1.0,
+        "win_rate_wilson_95": [
+          0.5101091635454027,
+          1.0
+        ],
+        "wins": 4
+      }
+    }
+  },
+  "cases_per_scenario": 4,
+  "created_at": "2026-09-28T19:00:46.825598+00:00",
+  "episodes": [
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 57,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 6
+      },
+      "encounter": "overgrowth_nibbit",
+      "end_turn_actions": 5,
+      "episode_id": "adc3ac6b26f74a34b0770c36a49e33c0",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "ca687c13dd93435e9f0726a9124e5bb2",
+      "policy": "random_legal",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 17,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.25470566703006625,
+        "initialization_seconds": 0.012818332994356751,
+        "policy_seconds": 4.637381061911583e-05,
+        "projection_seconds": 0.20241250027902424,
+        "recording_seconds": 0.23446074803359807,
+        "simulation_dispatch_seconds": 0.03812275012023747,
+        "total_seconds": 0.7536395001225173
+      },
+      "trajectory": "adc3ac6b26f74a34b0770c36a49e33c0.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 73,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 3
+      },
+      "encounter": "overgrowth_nibbit",
+      "end_turn_actions": 2,
+      "episode_id": "bd22e806de0a49bd9cc379111d9eb212",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "ca687c13dd93435e9f0726a9124e5bb2",
+      "policy": "heuristic",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 10,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.1457017487846315,
+        "initialization_seconds": 0.0015816669911146164,
+        "policy_seconds": 0.07269595912657678,
+        "projection_seconds": 0.09780054306611419,
+        "recording_seconds": 0.14349904260598123,
+        "simulation_dispatch_seconds": 0.02144749998115003,
+        "total_seconds": 0.48765487503260374
+      },
+      "trajectory": "bd22e806de0a49bd9cc379111d9eb212.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 52,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 7
+      },
+      "encounter": "overgrowth_nibbit",
+      "end_turn_actions": 6,
+      "episode_id": "74eaea8f2473410584736a31714a2316",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "2132c49b49b34d74a8d74bb4fe72d73a",
+      "policy": "random_legal",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 19,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.2833649180829525,
+        "initialization_seconds": 0.001513125142082572,
+        "policy_seconds": 2.9789982363581657e-05,
+        "projection_seconds": 0.19105512369424105,
+        "recording_seconds": 0.2636463351082057,
+        "simulation_dispatch_seconds": 0.043785001849755645,
+        "total_seconds": 0.7901618329342455
+      },
+      "trajectory": "74eaea8f2473410584736a31714a2316.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 65,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 5
+      },
+      "encounter": "overgrowth_nibbit",
+      "end_turn_actions": 4,
+      "episode_id": "5e9e236bb8ba4aa2b002efb0789158f7",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "2132c49b49b34d74a8d74bb4fe72d73a",
+      "policy": "heuristic",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 18,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.2713157522957772,
+        "initialization_seconds": 0.0015606668312102556,
+        "policy_seconds": 0.1280286235269159,
+        "projection_seconds": 0.18058116710744798,
+        "recording_seconds": 0.24574054195545614,
+        "simulation_dispatch_seconds": 0.03621170925907791,
+        "total_seconds": 0.8699088750872761
+      },
+      "trajectory": "5e9e236bb8ba4aa2b002efb0789158f7.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 55,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 10
+      },
+      "encounter": "overgrowth_nibbit",
+      "end_turn_actions": 9,
+      "episode_id": "efa03b1d38454ab7a53c031f3ebbe290",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "63a5182065c94c62be2c3874af3095bd",
+      "policy": "random_legal",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 30,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.47223295900039375,
+        "initialization_seconds": 0.0015243329107761383,
+        "policy_seconds": 4.112347960472107e-05,
+        "projection_seconds": 0.3062807493843138,
+        "recording_seconds": 0.4218430465552956,
+        "simulation_dispatch_seconds": 0.05962749547325075,
+        "total_seconds": 1.270515208132565
+      },
+      "trajectory": "efa03b1d38454ab7a53c031f3ebbe290.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 73,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 3
+      },
+      "encounter": "overgrowth_nibbit",
+      "end_turn_actions": 2,
+      "episode_id": "6b655a8aec4c4965814bab453b679563",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "63a5182065c94c62be2c3874af3095bd",
+      "policy": "heuristic",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 9,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.13030153978616,
+        "initialization_seconds": 0.0015368338208645582,
+        "policy_seconds": 0.060160750057548285,
+        "projection_seconds": 0.0924716682638973,
+        "recording_seconds": 0.1237193332053721,
+        "simulation_dispatch_seconds": 0.018805541330948472,
+        "total_seconds": 0.43153345794416964
+      },
+      "trajectory": "6b655a8aec4c4965814bab453b679563.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 70,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 5
+      },
+      "encounter": "overgrowth_nibbit",
+      "end_turn_actions": 4,
+      "episode_id": "292ac0fca8f840fdabb8f8a8f87d64a9",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "977f312e0e7741c09f5872af92ecc512",
+      "policy": "random_legal",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 16,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.24024316295981407,
+        "initialization_seconds": 0.001662875059992075,
+        "policy_seconds": 3.4456606954336166e-05,
+        "projection_seconds": 0.16927458415739238,
+        "recording_seconds": 0.22188058332540095,
+        "simulation_dispatch_seconds": 0.03496279148384929,
+        "total_seconds": 0.6745827500708401
+      },
+      "trajectory": "292ac0fca8f840fdabb8f8a8f87d64a9.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 68,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 4
+      },
+      "encounter": "overgrowth_nibbit",
+      "end_turn_actions": 3,
+      "episode_id": "aed12deb06a643018c5a859950a5068b",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "977f312e0e7741c09f5872af92ecc512",
+      "policy": "heuristic",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 11,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.16109454142861068,
+        "initialization_seconds": 0.001780458027496934,
+        "policy_seconds": 0.07382858381606638,
+        "projection_seconds": 0.1124717085622251,
+        "recording_seconds": 0.15695033501833677,
+        "simulation_dispatch_seconds": 0.02382695907726884,
+        "total_seconds": 0.5350053331349045
+      },
+      "trajectory": "aed12deb06a643018c5a859950a5068b.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 65,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 6
+      },
+      "encounter": "overgrowth_fuzzy",
+      "end_turn_actions": 5,
+      "episode_id": "724d573640df4833a81722858f1c1815",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "03268d819bfe486b847f1f5654b4e901",
+      "policy": "random_legal",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 17,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.2560934596695006,
+        "initialization_seconds": 0.0014606250915676355,
+        "policy_seconds": 4.020892083644867e-05,
+        "projection_seconds": 0.16789424931630492,
+        "recording_seconds": 0.2478602915070951,
+        "simulation_dispatch_seconds": 0.037512331968173385,
+        "total_seconds": 0.717855541035533
+      },
+      "trajectory": "724d573640df4833a81722858f1c1815.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 71,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 4
+      },
+      "encounter": "overgrowth_fuzzy",
+      "end_turn_actions": 3,
+      "episode_id": "ef8eee93bb5840f5a9c4c5c8ce4a4e7c",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "03268d819bfe486b847f1f5654b4e901",
+      "policy": "heuristic",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 14,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.2124442479107529,
+        "initialization_seconds": 0.0014856669586151838,
+        "policy_seconds": 0.09371491451747715,
+        "projection_seconds": 0.1381894568912685,
+        "recording_seconds": 0.18814575159922242,
+        "simulation_dispatch_seconds": 0.027913413709029555,
+        "total_seconds": 0.6673305837903172
+      },
+      "trajectory": "ef8eee93bb5840f5a9c4c5c8ce4a4e7c.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 52,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 7
+      },
+      "encounter": "overgrowth_fuzzy",
+      "end_turn_actions": 6,
+      "episode_id": "818648d883144303a8deec61a9c78f7c",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "fee317d7e5c147b19d29100eec74677d",
+      "policy": "random_legal",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 20,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.30369953997433186,
+        "initialization_seconds": 0.0014306670054793358,
+        "policy_seconds": 2.7499161660671234e-05,
+        "projection_seconds": 0.19158887839876115,
+        "recording_seconds": 0.2706854136195034,
+        "simulation_dispatch_seconds": 0.03933508321642876,
+        "total_seconds": 0.813386166933924
+      },
+      "trajectory": "818648d883144303a8deec61a9c78f7c.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 75,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 6
+      },
+      "encounter": "overgrowth_fuzzy",
+      "end_turn_actions": 5,
+      "episode_id": "655cd5378e504cea96135dbb1179c92f",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "fee317d7e5c147b19d29100eec74677d",
+      "policy": "heuristic",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 21,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.30870162486098707,
+        "initialization_seconds": 0.0014443330001085997,
+        "policy_seconds": 0.15287241712212563,
+        "projection_seconds": 0.2083216670434922,
+        "recording_seconds": 0.29117570980452,
+        "simulation_dispatch_seconds": 0.041883123805746436,
+        "total_seconds": 1.0115347909741104
+      },
+      "trajectory": "655cd5378e504cea96135dbb1179c92f.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 74,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 6
+      },
+      "encounter": "overgrowth_fuzzy",
+      "end_turn_actions": 5,
+      "episode_id": "309ff13f6fcf48eaad284c96e327a259",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "15f8a96011ee40a5b41d42bcc1534c38",
+      "policy": "random_legal",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 20,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.3108860841020942,
+        "initialization_seconds": 0.001432666089385748,
+        "policy_seconds": 3.837328404188156e-05,
+        "projection_seconds": 0.1930068745277822,
+        "recording_seconds": 0.27207941957749426,
+        "simulation_dispatch_seconds": 0.04072049958631396,
+        "total_seconds": 0.8252877078484744
+      },
+      "trajectory": "309ff13f6fcf48eaad284c96e327a259.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 75,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 4
+      },
+      "encounter": "overgrowth_fuzzy",
+      "end_turn_actions": 3,
+      "episode_id": "28044b253cee40f4b30d25891287f661",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "15f8a96011ee40a5b41d42bcc1534c38",
+      "policy": "heuristic",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 11,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.16198920737951994,
+        "initialization_seconds": 0.001447583083063364,
+        "policy_seconds": 0.07413733354769647,
+        "projection_seconds": 0.11400354281067848,
+        "recording_seconds": 0.15208720765076578,
+        "simulation_dispatch_seconds": 0.023647917434573174,
+        "total_seconds": 0.5323490418959409
+      },
+      "trajectory": "28044b253cee40f4b30d25891287f661.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 69,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 6
+      },
+      "encounter": "overgrowth_fuzzy",
+      "end_turn_actions": 5,
+      "episode_id": "31c4ac8361eb41c294cf56fc069c2a9b",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "066ce810696b46aeaae686f4aa448e3a",
+      "policy": "random_legal",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 17,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.28789733350276947,
+        "initialization_seconds": 0.001557165989652276,
+        "policy_seconds": 4.2832689359784126e-05,
+        "projection_seconds": 0.1761878738179803,
+        "recording_seconds": 0.2485462916083634,
+        "simulation_dispatch_seconds": 0.039750790456309915,
+        "total_seconds": 0.7614855838473886
+      },
+      "trajectory": "31c4ac8361eb41c294cf56fc069c2a9b.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 76,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 4
+      },
+      "encounter": "overgrowth_fuzzy",
+      "end_turn_actions": 3,
+      "episode_id": "0406121f0aee4f80b7086544a3f23e0b",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "066ce810696b46aeaae686f4aa448e3a",
+      "policy": "heuristic",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 12,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.17975395754911005,
+        "initialization_seconds": 0.0015358750242739916,
+        "policy_seconds": 0.08207208360545337,
+        "projection_seconds": 0.12184637668542564,
+        "recording_seconds": 0.16948808333836496,
+        "simulation_dispatch_seconds": 0.025285833748057485,
+        "total_seconds": 0.5851385840214789
+      },
+      "trajectory": "0406121f0aee4f80b7086544a3f23e0b.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 62,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 6
+      },
+      "encounter": "overgrowth_slimes",
+      "end_turn_actions": 5,
+      "episode_id": "1a9d2424dbaa42118a5c27e90eb1f8e5",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "bbfc9f5b791c4d7d97c9ed2a0f9255eb",
+      "policy": "random_legal",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 21,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.35352754406630993,
+        "initialization_seconds": 0.0014606250915676355,
+        "policy_seconds": 3.145867958664894e-05,
+        "projection_seconds": 0.22522000153549016,
+        "recording_seconds": 0.32038724957965314,
+        "simulation_dispatch_seconds": 0.0431795387994498,
+        "total_seconds": 0.950900207972154
+      },
+      "trajectory": "1a9d2424dbaa42118a5c27e90eb1f8e5.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 77,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 6
+      },
+      "encounter": "overgrowth_slimes",
+      "end_turn_actions": 5,
+      "episode_id": "ec6180092da640a880cb5baea243a3c4",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "bbfc9f5b791c4d7d97c9ed2a0f9255eb",
+      "policy": "heuristic",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 20,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.3460726693738252,
+        "initialization_seconds": 0.0014789169654250145,
+        "policy_seconds": 0.1616826239041984,
+        "projection_seconds": 0.2210479148197919,
+        "recording_seconds": 0.31309195701032877,
+        "simulation_dispatch_seconds": 0.042820416390895844,
+        "total_seconds": 1.0933952920604497
+      },
+      "trajectory": "ec6180092da640a880cb5baea243a3c4.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 74,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 6
+      },
+      "encounter": "overgrowth_slimes",
+      "end_turn_actions": 5,
+      "episode_id": "d755014b50b54561849be485365e90c4",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "404aab0cbd8c4f01bed86a136a6bc4e2",
+      "policy": "random_legal",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 22,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.37123329215683043,
+        "initialization_seconds": 0.0015730408485978842,
+        "policy_seconds": 4.054349847137928e-05,
+        "projection_seconds": 0.24439774942584336,
+        "recording_seconds": 0.33694845833815634,
+        "simulation_dispatch_seconds": 0.05199900036677718,
+        "total_seconds": 1.0139185830485076
+      },
+      "trajectory": "d755014b50b54561849be485365e90c4.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 80,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 5
+      },
+      "encounter": "overgrowth_slimes",
+      "end_turn_actions": 4,
+      "episode_id": "eb4c31e31b214f54aeded939c57233c4",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "404aab0cbd8c4f01bed86a136a6bc4e2",
+      "policy": "heuristic",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 18,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.29702866612933576,
+        "initialization_seconds": 0.001509541878476739,
+        "policy_seconds": 0.13927649892866611,
+        "projection_seconds": 0.19322633417323232,
+        "recording_seconds": 0.27644237177446485,
+        "simulation_dispatch_seconds": 0.03823608299717307,
+        "total_seconds": 0.9524468751624227
+      },
+      "trajectory": "eb4c31e31b214f54aeded939c57233c4.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 40,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 9
+      },
+      "encounter": "overgrowth_slimes",
+      "end_turn_actions": 8,
+      "episode_id": "47a9f2fb40ae42489bf4425004ead12d",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "c04990077826418b8affb8236c7674ac",
+      "policy": "random_legal",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 25,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.45279387454502285,
+        "initialization_seconds": 0.001490208087489009,
+        "policy_seconds": 4.416517913341522e-05,
+        "projection_seconds": 0.2937101658899337,
+        "recording_seconds": 0.40465167025104165,
+        "simulation_dispatch_seconds": 0.05274070892482996,
+        "total_seconds": 1.2134347080718726
+      },
+      "trajectory": "47a9f2fb40ae42489bf4425004ead12d.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 69,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 5
+      },
+      "encounter": "overgrowth_slimes",
+      "end_turn_actions": 4,
+      "episode_id": "cb51f7d0e693419d96ede649f55d5c04",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "c04990077826418b8affb8236c7674ac",
+      "policy": "heuristic",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 18,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.3046126668341458,
+        "initialization_seconds": 0.0014953750651329756,
+        "policy_seconds": 0.13650479284115136,
+        "projection_seconds": 0.1983137100469321,
+        "recording_seconds": 0.2714463332667947,
+        "simulation_dispatch_seconds": 0.03781971009448171,
+        "total_seconds": 0.9565049579832703
+      },
+      "trajectory": "cb51f7d0e693419d96ede649f55d5c04.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 27,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 22
+      },
+      "encounter": "overgrowth_slimes",
+      "end_turn_actions": 21,
+      "episode_id": "6285cb6b9d194c23b7c3cceeb2547e33",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "38e4b43f08c442c28b0eae9916433a9a",
+      "policy": "random_legal",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 59,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 1.435391917359084,
+        "initialization_seconds": 0.0014446249697357416,
+        "policy_seconds": 9.517115540802479e-05,
+        "projection_seconds": 0.8825079626403749,
+        "recording_seconds": 1.255529206013307,
+        "simulation_dispatch_seconds": 0.13968179351650178,
+        "total_seconds": 3.730868791928515
+      },
+      "trajectory": "6285cb6b9d194c23b7c3cceeb2547e33.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 71,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 6
+      },
+      "encounter": "overgrowth_slimes",
+      "end_turn_actions": 5,
+      "episode_id": "cc0fa66ef3204184adf1482e395b81fd",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "38e4b43f08c442c28b0eae9916433a9a",
+      "policy": "heuristic",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 20,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.3477358368691057,
+        "initialization_seconds": 0.0014545831363648176,
+        "policy_seconds": 0.16643341514281929,
+        "projection_seconds": 0.24151941970922053,
+        "recording_seconds": 0.31970591796562076,
+        "simulation_dispatch_seconds": 0.04870637599378824,
+        "total_seconds": 1.1325829171109945
+      },
+      "trajectory": "cc0fa66ef3204184adf1482e395b81fd.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 0,
+        "max_hp": 80,
+        "outcome": "defeat",
+        "schema": "sts_combat_summary_v1",
+        "turn": 9
+      },
+      "encounter": "overgrowth_mawler",
+      "end_turn_actions": 9,
+      "episode_id": "d4d895fce9dd425d855994414e0ae05e",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "8df5379a3f404331be13d78d2b148cf1",
+      "policy": "random_legal",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "defeat",
+        "reason": "none",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 24,
+      "task_return": 0.0,
+      "timings": {
+        "encoding_seconds": 0.3727309142705053,
+        "initialization_seconds": 0.0015878328122198582,
+        "policy_seconds": 4.199845716357231e-05,
+        "projection_seconds": 0.24023691681213677,
+        "recording_seconds": 0.328064959961921,
+        "simulation_dispatch_seconds": 0.04820770653896034,
+        "total_seconds": 0.9988700419198722
+      },
+      "trajectory": "d4d895fce9dd425d855994414e0ae05e.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 55,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 5
+      },
+      "encounter": "overgrowth_mawler",
+      "end_turn_actions": 4,
+      "episode_id": "2961f3fb56c047afa794c2c02d8014b1",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "8df5379a3f404331be13d78d2b148cf1",
+      "policy": "heuristic",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 17,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.24852991430088878,
+        "initialization_seconds": 0.0014669580850750208,
+        "policy_seconds": 0.12355850101448596,
+        "projection_seconds": 0.17086108238436282,
+        "recording_seconds": 0.23009258275851607,
+        "simulation_dispatch_seconds": 0.03522987454198301,
+        "total_seconds": 0.8158225419465452
+      },
+      "trajectory": "2961f3fb56c047afa794c2c02d8014b1.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 19,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 10
+      },
+      "encounter": "overgrowth_mawler",
+      "end_turn_actions": 9,
+      "episode_id": "379a32170eb24f5c9000405db78a6edb",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "55df383a47c8445f9652538111ca9e0b",
+      "policy": "random_legal",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 29,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.44492620741948485,
+        "initialization_seconds": 0.0014372910372912884,
+        "policy_seconds": 4.816730506718159e-05,
+        "projection_seconds": 0.2958325028885156,
+        "recording_seconds": 0.4016631618142128,
+        "simulation_dispatch_seconds": 0.05863379221409559,
+        "total_seconds": 1.2115232080686837
+      },
+      "trajectory": "379a32170eb24f5c9000405db78a6edb.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 62,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 7
+      },
+      "encounter": "overgrowth_mawler",
+      "end_turn_actions": 6,
+      "episode_id": "7ea35f6247d14ea89a4040a76f109a05",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "55df383a47c8445f9652538111ca9e0b",
+      "policy": "heuristic",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 26,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.4065688743721694,
+        "initialization_seconds": 0.0014155830722302198,
+        "policy_seconds": 0.1778939589858055,
+        "projection_seconds": 0.2531951682176441,
+        "recording_seconds": 0.3523382912389934,
+        "simulation_dispatch_seconds": 0.051248337142169476,
+        "total_seconds": 1.2506454999092966
+      },
+      "trajectory": "7ea35f6247d14ea89a4040a76f109a05.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 0,
+        "max_hp": 80,
+        "outcome": "defeat",
+        "schema": "sts_combat_summary_v1",
+        "turn": 10
+      },
+      "encounter": "overgrowth_mawler",
+      "end_turn_actions": 10,
+      "episode_id": "3701b6adfc8a4420993df1b320e0a545",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "53b20df6a58a49c6807fc5ffc2b38172",
+      "policy": "random_legal",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "defeat",
+        "reason": "none",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 25,
+      "task_return": 0.0,
+      "timings": {
+        "encoding_seconds": 0.3745770826935768,
+        "initialization_seconds": 0.0014214999973773956,
+        "policy_seconds": 3.437628038227558e-05,
+        "projection_seconds": 0.244868247769773,
+        "recording_seconds": 0.33936029160395265,
+        "simulation_dispatch_seconds": 0.05303800152614713,
+        "total_seconds": 1.0209042089991271
+      },
+      "trajectory": "3701b6adfc8a4420993df1b320e0a545.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 52,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 5
+      },
+      "encounter": "overgrowth_mawler",
+      "end_turn_actions": 4,
+      "episode_id": "b804fbffa3b243b2b716b4649cf66db7",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "53b20df6a58a49c6807fc5ffc2b38172",
+      "policy": "heuristic",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 16,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.24678221042267978,
+        "initialization_seconds": 0.0014573750086128712,
+        "policy_seconds": 0.10869387537240982,
+        "projection_seconds": 0.16214937530457973,
+        "recording_seconds": 0.2195831649005413,
+        "simulation_dispatch_seconds": 0.03327999962493777,
+        "total_seconds": 0.7781956668477505
+      },
+      "trajectory": "b804fbffa3b243b2b716b4649cf66db7.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 19,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 7
+      },
+      "encounter": "overgrowth_mawler",
+      "end_turn_actions": 6,
+      "episode_id": "295108e4d20a401694cd45f3efc297a4",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "923cc020692c4719bdf98a095473d53e",
+      "policy": "random_legal",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 18,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.27335204370319843,
+        "initialization_seconds": 0.0015620000194758177,
+        "policy_seconds": 4.062335938215256e-05,
+        "projection_seconds": 0.1923635397106409,
+        "recording_seconds": 0.2565732493530959,
+        "simulation_dispatch_seconds": 0.04069078899919987,
+        "total_seconds": 0.7715137090999633
+      },
+      "trajectory": "295108e4d20a401694cd45f3efc297a4.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 71,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 4
+      },
+      "encounter": "overgrowth_mawler",
+      "end_turn_actions": 3,
+      "episode_id": "904b955bc7ce4b0ba35f50d394bbcf67",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "923cc020692c4719bdf98a095473d53e",
+      "policy": "heuristic",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 13,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.199742374708876,
+        "initialization_seconds": 0.0015324580017477274,
+        "policy_seconds": 0.08762716595083475,
+        "projection_seconds": 0.12567208125256002,
+        "recording_seconds": 0.1778872914146632,
+        "simulation_dispatch_seconds": 0.026764958631247282,
+        "total_seconds": 0.6244932080153376
+      },
+      "trajectory": "904b955bc7ce4b0ba35f50d394bbcf67.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 0,
+        "max_hp": 80,
+        "outcome": "defeat",
+        "schema": "sts_combat_summary_v1",
+        "turn": 7
+      },
+      "encounter": "overgrowth_nibbits",
+      "end_turn_actions": 7,
+      "episode_id": "ca080b8067ad45ad94a5ca924167dd3b",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "565b4d1bd60443a0b2b4d484056adff6",
+      "policy": "random_legal",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "defeat",
+        "reason": "none",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 22,
+      "task_return": 0.0,
+      "timings": {
+        "encoding_seconds": 0.34847045806236565,
+        "initialization_seconds": 0.0015505829360336065,
+        "policy_seconds": 4.746043123304844e-05,
+        "projection_seconds": 0.23196866386570036,
+        "recording_seconds": 0.32125316886231303,
+        "simulation_dispatch_seconds": 0.0470820008777082,
+        "total_seconds": 0.9586165419314057
+      },
+      "trajectory": "ca080b8067ad45ad94a5ca924167dd3b.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 42,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 8
+      },
+      "encounter": "overgrowth_nibbits",
+      "end_turn_actions": 7,
+      "episode_id": "cab9917c2bbc4cddb4b4aa68404c7460",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "565b4d1bd60443a0b2b4d484056adff6",
+      "policy": "heuristic",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 27,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.42665987997315824,
+        "initialization_seconds": 0.002330249873921275,
+        "policy_seconds": 0.19290220830589533,
+        "projection_seconds": 0.2835102519020438,
+        "recording_seconds": 0.3808175837621093,
+        "simulation_dispatch_seconds": 0.0562197957187891,
+        "total_seconds": 1.351529249921441
+      },
+      "trajectory": "cab9917c2bbc4cddb4b4aa68404c7460.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 0,
+        "max_hp": 80,
+        "outcome": "defeat",
+        "schema": "sts_combat_summary_v1",
+        "turn": 7
+      },
+      "encounter": "overgrowth_nibbits",
+      "end_turn_actions": 7,
+      "episode_id": "3c24be5253b44513bd6cfdf0ca90fc2b",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "6a4936521132408ea023e3fd60bf9c6d",
+      "policy": "random_legal",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "defeat",
+        "reason": "none",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 20,
+      "task_return": 0.0,
+      "timings": {
+        "encoding_seconds": 0.3030445424374193,
+        "initialization_seconds": 0.0015608330722898245,
+        "policy_seconds": 3.854231908917427e-05,
+        "projection_seconds": 0.20095008262433112,
+        "recording_seconds": 0.297196748200804,
+        "simulation_dispatch_seconds": 0.04083671094849706,
+        "total_seconds": 0.8507284999359399
+      },
+      "trajectory": "3c24be5253b44513bd6cfdf0ca90fc2b.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 0,
+        "max_hp": 80,
+        "outcome": "defeat",
+        "schema": "sts_combat_summary_v1",
+        "turn": 9
+      },
+      "encounter": "overgrowth_nibbits",
+      "end_turn_actions": 9,
+      "episode_id": "65479278ab2344e98f7a1ca67e14b980",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "6a4936521132408ea023e3fd60bf9c6d",
+      "policy": "heuristic",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "defeat",
+        "reason": "none",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 34,
+      "task_return": 0.0,
+      "timings": {
+        "encoding_seconds": 0.5507349187973887,
+        "initialization_seconds": 0.0014437087811529636,
+        "policy_seconds": 0.24532016436569393,
+        "projection_seconds": 0.35107362223789096,
+        "recording_seconds": 0.4822033755481243,
+        "simulation_dispatch_seconds": 0.07455471018329263,
+        "total_seconds": 1.7160199170466512
+      },
+      "trajectory": "65479278ab2344e98f7a1ca67e14b980.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 0,
+        "max_hp": 80,
+        "outcome": "defeat",
+        "schema": "sts_combat_summary_v1",
+        "turn": 12
+      },
+      "encounter": "overgrowth_nibbits",
+      "end_turn_actions": 12,
+      "episode_id": "b32e765d01464dd0850b2d816e1eb72b",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "4a2fd26e8daf451e80f6efcf6ec1a3ef",
+      "policy": "random_legal",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "defeat",
+        "reason": "none",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 35,
+      "task_return": 0.0,
+      "timings": {
+        "encoding_seconds": 0.5714117984753102,
+        "initialization_seconds": 0.0015763749834150076,
+        "policy_seconds": 6.525078788399696e-05,
+        "projection_seconds": 0.35731420828960836,
+        "recording_seconds": 0.4992800420150161,
+        "simulation_dispatch_seconds": 0.07757575088180602,
+        "total_seconds": 1.5183773750904948
+      },
+      "trajectory": "b32e765d01464dd0850b2d816e1eb72b.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 39,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 9
+      },
+      "encounter": "overgrowth_nibbits",
+      "end_turn_actions": 8,
+      "episode_id": "22d647dab0854d35991d8df68047f3c7",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "4a2fd26e8daf451e80f6efcf6ec1a3ef",
+      "policy": "heuristic",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 31,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.5054484163410962,
+        "initialization_seconds": 0.0014393331948667765,
+        "policy_seconds": 0.22716554161161184,
+        "projection_seconds": 0.323518042685464,
+        "recording_seconds": 0.449943128740415,
+        "simulation_dispatch_seconds": 0.0707110830117017,
+        "total_seconds": 1.5889960411004722
+      },
+      "trajectory": "22d647dab0854d35991d8df68047f3c7.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 0,
+        "max_hp": 80,
+        "outcome": "defeat",
+        "schema": "sts_combat_summary_v1",
+        "turn": 8
+      },
+      "encounter": "overgrowth_nibbits",
+      "end_turn_actions": 8,
+      "episode_id": "42b60913b3dd4a1b99a323abf8e789dd",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "bbac64ad9dbe40c88fd020817f556ecd",
+      "policy": "random_legal",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "defeat",
+        "reason": "none",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 26,
+      "task_return": 0.0,
+      "timings": {
+        "encoding_seconds": 0.41836154204793274,
+        "initialization_seconds": 0.001884666969999671,
+        "policy_seconds": 4.9751484766602516e-05,
+        "projection_seconds": 0.27304695826023817,
+        "recording_seconds": 0.37965854443609715,
+        "simulation_dispatch_seconds": 0.05395337496884167,
+        "total_seconds": 1.1373270829208195
+      },
+      "trajectory": "42b60913b3dd4a1b99a323abf8e789dd.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 0,
+        "max_hp": 80,
+        "outcome": "defeat",
+        "schema": "sts_combat_summary_v1",
+        "turn": 6
+      },
+      "encounter": "overgrowth_nibbits",
+      "end_turn_actions": 6,
+      "episode_id": "954ba69112fc49008c5e20a8dd5c0057",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "bbac64ad9dbe40c88fd020817f556ecd",
+      "policy": "heuristic",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "defeat",
+        "reason": "none",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 22,
+      "task_return": 0.0,
+      "timings": {
+        "encoding_seconds": 0.3346318758558482,
+        "initialization_seconds": 0.0014589170459657907,
+        "policy_seconds": 0.1539562081452459,
+        "projection_seconds": 0.21835366589948535,
+        "recording_seconds": 0.318244252121076,
+        "simulation_dispatch_seconds": 0.050054626539349556,
+        "total_seconds": 1.084017415996641
+      },
+      "trajectory": "954ba69112fc49008c5e20a8dd5c0057.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 0,
+        "max_hp": 80,
+        "outcome": "defeat",
+        "schema": "sts_combat_summary_v1",
+        "turn": 7
+      },
+      "encounter": "overgrowth_cubex",
+      "end_turn_actions": 7,
+      "episode_id": "0c75200fda0f4f2bb84bcf32cfedb783",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "e28ff2d4306d4f4c9a6b0a1e24ea200c",
+      "policy": "random_legal",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "defeat",
+        "reason": "none",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 17,
+      "task_return": 0.0,
+      "timings": {
+        "encoding_seconds": 0.25364224915392697,
+        "initialization_seconds": 0.0015451249200850725,
+        "policy_seconds": 3.9458973333239555e-05,
+        "projection_seconds": 0.16805374948307872,
+        "recording_seconds": 0.2510532923042774,
+        "simulation_dispatch_seconds": 0.0360199143178761,
+        "total_seconds": 0.717065041186288
+      },
+      "trajectory": "0c75200fda0f4f2bb84bcf32cfedb783.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 59,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 5
+      },
+      "encounter": "overgrowth_cubex",
+      "end_turn_actions": 4,
+      "episode_id": "4e4d2997fc3f457a8b697432816b6079",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "e28ff2d4306d4f4c9a6b0a1e24ea200c",
+      "policy": "heuristic",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 17,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.2542399575468153,
+        "initialization_seconds": 0.0015638340264558792,
+        "policy_seconds": 0.11555283656343818,
+        "projection_seconds": 0.16485695773735642,
+        "recording_seconds": 0.23595654126256704,
+        "simulation_dispatch_seconds": 0.034901665756478906,
+        "total_seconds": 0.8132776250131428
+      },
+      "trajectory": "4e4d2997fc3f457a8b697432816b6079.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 0,
+        "max_hp": 80,
+        "outcome": "defeat",
+        "schema": "sts_combat_summary_v1",
+        "turn": 9
+      },
+      "encounter": "overgrowth_cubex",
+      "end_turn_actions": 9,
+      "episode_id": "e683d7592ab54cc492730b0e436ab13c",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "dd280af87577499288a81fda97ead229",
+      "policy": "random_legal",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "defeat",
+        "reason": "none",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 26,
+      "task_return": 0.0,
+      "timings": {
+        "encoding_seconds": 0.3941078344359994,
+        "initialization_seconds": 0.0014320840127766132,
+        "policy_seconds": 3.7416815757751465e-05,
+        "projection_seconds": 0.2536219160538167,
+        "recording_seconds": 0.3726924634538591,
+        "simulation_dispatch_seconds": 0.05054366588592529,
+        "total_seconds": 1.0804421659559011
+      },
+      "trajectory": "e683d7592ab54cc492730b0e436ab13c.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 55,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 7
+      },
+      "encounter": "overgrowth_cubex",
+      "end_turn_actions": 6,
+      "episode_id": "eb39a7901fdd40849af622ed283d03c3",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "dd280af87577499288a81fda97ead229",
+      "policy": "heuristic",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 26,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.3975166277959943,
+        "initialization_seconds": 0.0014731672126799822,
+        "policy_seconds": 0.1788889968302101,
+        "projection_seconds": 0.25917071220465004,
+        "recording_seconds": 0.3596065847668797,
+        "simulation_dispatch_seconds": 0.051222750917077065,
+        "total_seconds": 1.2558729159645736
+      },
+      "trajectory": "eb39a7901fdd40849af622ed283d03c3.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 0,
+        "max_hp": 80,
+        "outcome": "defeat",
+        "schema": "sts_combat_summary_v1",
+        "turn": 8
+      },
+      "encounter": "overgrowth_cubex",
+      "end_turn_actions": 8,
+      "episode_id": "a54a2888f32147df8087c8e33df8af5b",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "2421a7414ab14a618f7a8984b76d3cfc",
+      "policy": "random_legal",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "defeat",
+        "reason": "none",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 25,
+      "task_return": 0.0,
+      "timings": {
+        "encoding_seconds": 0.3734367098659277,
+        "initialization_seconds": 0.0014716670848429203,
+        "policy_seconds": 4.71663661301136e-05,
+        "projection_seconds": 0.25917692040093243,
+        "recording_seconds": 0.34801991772837937,
+        "simulation_dispatch_seconds": 0.04991278727538884,
+        "total_seconds": 1.0399943329393864
+      },
+      "trajectory": "a54a2888f32147df8087c8e33df8af5b.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 49,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 5
+      },
+      "encounter": "overgrowth_cubex",
+      "end_turn_actions": 4,
+      "episode_id": "bbd63f8eea714358a31dab42abdefad1",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "2421a7414ab14a618f7a8984b76d3cfc",
+      "policy": "heuristic",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 16,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.2381800019647926,
+        "initialization_seconds": 0.0014506250154227018,
+        "policy_seconds": 0.10781654203310609,
+        "projection_seconds": 0.15453291591256857,
+        "recording_seconds": 0.22743241512216628,
+        "simulation_dispatch_seconds": 0.03247404401190579,
+        "total_seconds": 0.7676508750300854
+      },
+      "trajectory": "bbd63f8eea714358a31dab42abdefad1.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 0,
+        "max_hp": 80,
+        "outcome": "defeat",
+        "schema": "sts_combat_summary_v1",
+        "turn": 7
+      },
+      "encounter": "overgrowth_cubex",
+      "end_turn_actions": 7,
+      "episode_id": "03c4531781cc4b939bc6f2dfde3c859a",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "13df78b91161484c95127da549a89c99",
+      "policy": "random_legal",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "defeat",
+        "reason": "none",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 19,
+      "task_return": 0.0,
+      "timings": {
+        "encoding_seconds": 0.27835970697924495,
+        "initialization_seconds": 0.0014588749036192894,
+        "policy_seconds": 2.3628585040569305e-05,
+        "projection_seconds": 0.18538487586192787,
+        "recording_seconds": 0.26717341714538634,
+        "simulation_dispatch_seconds": 0.03651662380434573,
+        "total_seconds": 0.7751554171554744
+      },
+      "trajectory": "03c4531781cc4b939bc6f2dfde3c859a.trajectory.jsonl"
+    },
+    {
+      "combat": {
+        "combat_ref": "combat:0",
+        "hp": 71,
+        "max_hp": 80,
+        "outcome": "victory",
+        "schema": "sts_combat_summary_v1",
+        "turn": 4
+      },
+      "encounter": "overgrowth_cubex",
+      "end_turn_actions": 3,
+      "episode_id": "cc8c7df1f51b469987f70a62182e052d",
+      "failure": null,
+      "observation_bytes": 6789184,
+      "pair_id": "13df78b91161484c95127da549a89c99",
+      "policy": "heuristic",
+      "potion_use_actions": 0,
+      "run_outcome": {
+        "kind": "truncated",
+        "reason": "external_stop",
+        "schema": "sts_run_outcome_v1"
+      },
+      "start_hp": 80,
+      "start_max_hp": 80,
+      "status": "terminated",
+      "steps": 13,
+      "task_return": 1.0,
+      "timings": {
+        "encoding_seconds": 0.19279787363484502,
+        "initialization_seconds": 0.0014068330638110638,
+        "policy_seconds": 0.08623550226911902,
+        "projection_seconds": 0.12381495768204331,
+        "recording_seconds": 0.18118441407568753,
+        "simulation_dispatch_seconds": 0.02564499992877245,
+        "total_seconds": 0.615995500003919
+      },
+      "trajectory": "cc8c7df1f51b469987f70a62182e052d.trajectory.jsonl"
+    }
+  ],
+  "evidence": "controlled_fixture",
+  "implementation": {
+    "build": "8b212e0a39504984e2541b629f363d187f8029cab81ee370e4cbde47ac72a6e6",
+    "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+    "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+    "target": "sts2-v0.107.1-steam-23811903"
+  },
+  "limits": {
+    "max_decisions": 256,
+    "time_limit_seconds": 30.0
+  },
+  "policies": {
+    "heuristic": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+    "random_legal": "random_legal_v1:8b212e0a39504984e2541b629f363d187f8029cab81ee370e4cbde47ac72a6e6"
+  },
+  "requested_episodes": 48,
+  "runtime": {
+    "gymnasium": "1.0.0",
+    "numpy": "2.4.6",
+    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "python": "3.11.15"
+  },
+  "scenario_set": "ironclad_a0_overgrowth_v1",
+  "scenarios": [
+    {
+      "difficulty": "weak",
+      "encounter": "overgrowth_nibbit"
+    },
+    {
+      "difficulty": "weak",
+      "encounter": "overgrowth_fuzzy"
+    },
+    {
+      "difficulty": "weak",
+      "encounter": "overgrowth_slimes"
+    },
+    {
+      "difficulty": "normal",
+      "encounter": "overgrowth_mawler"
+    },
+    {
+      "difficulty": "normal",
+      "encounter": "overgrowth_nibbits"
+    },
+    {
+      "difficulty": "normal",
+      "encounter": "overgrowth_cubex"
+    }
+  ],
+  "schema": "sts_combat_baseline_v1",
+  "split": "validation",
+  "status": "complete",
+  "summary": {
+    "heuristic": {
+      "attempted": 24,
+      "cutoffs": 0,
+      "decisions_per_second": 20.074914066914484,
+      "failures": 0,
+      "losses": 2,
+      "mean_hp_on_win": 64.9090909090909,
+      "steps": 440,
+      "timings": {
+        "encoding_seconds": 6.868585384916514,
+        "initialization_seconds": 0.03675054316408932,
+        "policy_seconds": 3.1470194975845516,
+        "projection_seconds": 4.510502342600375,
+        "recording_seconds": 6.2667822109069675,
+        "simulation_dispatch_seconds": 0.9289114298298955,
+        "total_seconds": 21.917902040993795
+      },
+      "win_rate": 0.9166666666666666,
+      "win_rate_wilson_95": [
+        0.741511978067893,
+        0.9768411847029567
+      ],
+      "wins": 22
+    },
+    "random_legal": {
+      "attempted": 24,
+      "cutoffs": 0,
+      "decisions_per_second": 22.229554626577865,
+      "failures": 0,
+      "losses": 10,
+      "mean_hp_on_win": 52.5,
+      "steps": 569,
+      "timings": {
+        "encoding_seconds": 9.428490841994062,
+        "initialization_seconds": 0.04785712203010917,
+        "policy_seconds": 0.0010258376132696867,
+        "projection_seconds": 6.146355295088142,
+        "recording_seconds": 8.56050797039643,
+        "simulation_dispatch_seconds": 1.2144289040006697,
+        "total_seconds": 25.596554207149893
+      },
+      "win_rate": 0.5833333333333334,
+      "win_rate_wilson_95": [
+        0.3883466586522876,
+        0.7553239739018824
+      ],
+      "wins": 14
+    }
+  },
+  "timing_definitions": {
+    "encoding_seconds": "Fixed Gym encoding; excludes returned-array copies",
+    "initialization_seconds": "Scenario construction and initial combat setup",
+    "projection_seconds": "Public observation, including its ownership/state guard",
+    "recording_seconds": "Canonical trajectory validation, serialization and publication",
+    "simulation_dispatch_seconds": "Action dispatch, including guards, engine simulation and history",
+    "total_seconds": "Episode wall time, including replay audit and array copies"
+  },
+  "unattempted_episodes": 0
+}

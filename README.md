@@ -12,6 +12,10 @@ this is not a claim of exhaustive equivalence or a complete autonomous agent.
 [Current status](docs/STATUS.md) distinguishes implemented, fixture-tested and
 live-demonstrated bridge behavior, known failures and implementation gaps.
 
+The current training goal is **clearing Act 1 with Ironclad at A0**, measured by
+Act 1 clear rate across both regions. Use the [Act 1 preset and paired evaluation](docs/AGENT_TRAINING.md#act-1-training-and-configurable-act-rewards)
+for the configurable act-clear reward and stopping boundary.
+
 Requires Python 3.10+. New coding sessions follow [AGENTS.md](AGENTS.md).
 
 ## Setup
@@ -134,6 +138,141 @@ preserves each episode's seed. The command reports actual outcomes and timings;
 the demonstration policy can lose. See [execution, data loading and cancellation](docs/AGENT_EXECUTION.md).
 `sts-headless-play` remains the direct gameplay command.
 
+## Combat episodes and baseline evaluation
+
+With the optional `gym` extra, `game.agent.training.env.CombatTrainingEnv` runs
+one fight through the existing full public adapter. It includes nested card and
+potion choices, ends after automatic combat cleanup, and reports final HP and
+the confirmed fight outcome. Its default task reward is +1 for a combat win and
+0 otherwise. A validated JSON configuration can weight victory, defeat, final HP
+on victory, end-turn commands and potion-use commands. Canonical full-run
+recordings retain their original sparse reward.
+
+```bash
+sts-agent-evaluate --output-dir runs/combat-baseline --cases-per-scenario 4 \
+  --split validation --max-decisions 256 --time-limit 30 \
+  --config configs/training/combat_victory.json
+```
+
+This measures random-legal and current-heuristic performance on the same 24
+ordinary-HP Ironclad A0 development cases across six controlled Overgrowth
+encounters. It saves `baseline.json`, public trajectories, compact training
+sidecars and separate private replay audits; use a new output directory per
+experiment. Reports retain the resolved objective, component totals, training
+return and actual game results. See the
+[training guide](docs/AGENT_TRAINING.md#milestone-2-usage-and-record-semantics)
+for configuration, offline rescoring and remaining milestones.
+
+## Learning a combat policy
+
+Install `python -m pip install -e '.[train]'` for the optional CPU PyTorch learner.
+Collect separate heuristic demonstrations, then run a bounded imitation warm-up:
+
+```bash
+sts-agent-train collect --output-dir runs/demos-train --split train
+sts-agent-train collect --output-dir runs/demos-validation --split validation
+sts-agent-train imitate --train-dir runs/demos-train \
+  --validation-dir runs/demos-validation --output-dir runs/imitation --updates 128
+sts-agent-evaluate --checkpoint runs/imitation/final.sts-model \
+  --output-dir runs/imitation-combat --cases-per-scenario 1
+sts-agent-evaluate --checkpoint runs/imitation/final.sts-model --hybrid \
+  --output-dir runs/imitation-campaigns --campaign-cases 2
+```
+
+The small actor-critic scores the current legal candidates from public graph
+features. Vocabulary fitting uses only training data. Demonstrations include
+potion use and combat selectors. Inference bundles and reports are public;
+optimizer/RNG resume state lives in a separate owner-only sibling directory.
+The initial untrained bundle is retained for comparison.
+
+Hybrid evaluation runs ordinary-HP Ironclad A0 campaigns with learned combat
+choices and the heuristic elsewhere. Existing playback also accepts
+`sts-agent-play --combat-checkpoint runs/imitation/final.sts-model --output-dir runs/playback`.
+See [checkpoint, resume and measured results](docs/AGENT_TRAINING.md#milestone-3-usage-and-implementation-choices).
+
+Continue the checkpoint with bounded, masked combat PPO:
+
+```bash
+sts-agent-train ppo --checkpoint runs/imitation/final.sts-model \
+  --config configs/training/combat_ppo.json --output-dir runs/ppo \
+  --decisions 256 --time-limit 120 --seed 17
+```
+
+This freezes the policy during each collected batch, then updates the same
+candidate model. It records actual fight outcomes, cutoff-aware returns and
+learning metrics, with a resumable checkpoint after each complete update.
+Use the same evaluation/playback commands with the PPO bundle. See
+[PPO configuration, resume and results](docs/AGENT_TRAINING.md#milestone-4-usage-and-implementation-choices).
+
+PPO skips a whole rollout update when every advantage and replayed value error
+is exactly zero. Reports distinguish processed, trained and skipped decisions;
+collection still advances to fresh episodes. See the
+[signal guard and pilot](docs/AGENT_TRAINING.md#ppo-signal-guard-and-three-learner-pilot).
+
+Add `--workers 2` or `--workers 4` to `sts-agent-train ppo` for persistent parallel
+collection in combat or full-run training. Rollout decisions remain a total
+budget across workers; exact resume restores the saved worker count. See
+[parallel collection and horizon choices](docs/AGENT_TRAINING.md#parallel-ppo-collection-2026-09-29).
+
+For broader combat training, freeze the paired evaluation population before
+training three learners through five cumulative stages:
+
+```bash
+sts-agent-evaluate --freeze-suite configs/training/combat_benchmark.json \
+  --output-dir runs/combat-suite
+sts-agent-train curriculum --checkpoint runs/imitation/final.sts-model \
+  --config configs/training/combat_curriculum.json --output-dir runs/curriculum
+```
+
+The curriculum adds varied decks, HP, upgrades, relics, potions, pending selectors,
+elite/boss fights and early campaign-derived combats. See the
+[paired evaluation and checkpoint-selection commands](docs/AGENT_TRAINING.md#milestone-5-protocol-and-usage)
+for the 64-case development and 256-case held-out comparison. Reports include
+all planned cases and uncertainty grouped by source campaign.
+
+For full-run learning, `sts-agent-train collect-run` records canonical campaign
+demonstrations. `imitate --full-run --initialize-combat PATH` transfers the combat
+actor, expands the vocabulary from training records only, and resets the critic.
+Run PPO with `configs/training/full_run_ppo_overgrowth.json`, then
+`configs/training/full_run_ppo.json` to include Underdocks. Those configurations
+retain +1 for actual Architect victory and zero otherwise. For configurable
+combat and run rewards, use `configs/training/full_run_shaped_ppo.json`; add
+`--reset-objective --reset-action-policy` when adopting that objective and its
+card-selection commitment policy from an older full-run checkpoint. This keeps the
+actor and starts a fresh critic and optimizer. The shared policy layer blocks
+deselection in known deferred card selectors, including optional and multiple-card
+choices. Picks retain their native order; confirmation remains a separate action
+and is available whenever the minimum is met, including zero.
+Checkpoint metadata preserves the policy used during training. See the
+[policy rules and selector inventory](docs/AGENT_TRAINING.md#shared-policy-actions-and-selection-order).
+Assisted demonstrations are labelled separately and provide no normal-run value
+targets. See the [reward configuration](docs/AGENT_TRAINING.md#configurable-full-run-rewards)
+and the
+[full-run commands and results](docs/AGENT_TRAINING.md#milestone-6-usage-and-implementation-choices).
+
+For the current Act 1 goal, train with `configs/training/act1_ppo.json` and
+`--reset-objective` when transferring an existing campaign actor. Add
+`--reset-action-policy` when adopting its `commit_card_selection_v1` policy from
+an older checkpoint; omit each reset flag when that setting already matches.
+The preset rewards each act clear at +1 alongside the existing combat shaping and ends the
+episode after Act 1. `sts-agent-evaluate --act1 --checkpoint PATH
+--reference-checkpoint INITIALIZER --output-dir runs/act1-eval` compares Act 1
+clear rates against a frozen reference and the heuristic on identical starts.
+Goal and reward weights are configurable and bound to checkpoint identity.
+
+Use `sts-agent-analyze build --input runs/act1-pilot-20260929
+--output-dir runs/act1-analysis-20260929 --goal act1`, then
+`sts-agent-analyze serve runs/act1-analysis-20260929` for a local experiment
+overview, run timeline, decision inspector and PPO reward diagnostics. Add
+`--checkpoint LABEL=PATH` to compare checkpoint preferences on the same recorded
+state. See the [analysis guide](docs/AGENT_TRAINING.md#decision-analysis-tools).
+
+`sts-agent-play --checkpoint PATH --output-dir runs/run-playback` uses a full-run
+checkpoint for every decision. `sts-agent-evaluate --full-run --checkpoint PATH
+--combat-checkpoint COMBAT_PATH --output-dir runs/run-evaluation --split test
+--campaign-cases 8 --max-decisions 1024 --time-limit 120` compares it with the
+heuristic and combat-only hybrid on identical genuine campaign starts.
+
 ## Validation
 
 ```bash
@@ -143,8 +282,10 @@ PYTHONPATH=. python -m pytest -q
 
 Use focused files under `tests/headless/` during gameplay development. The full
 suite also checks the retained bridge wire codec and offline operational fixtures.
-Install `'.[dev,gym]'` to include the optional encoding/Gym tests; those tests skip
-when their optional dependencies are absent.
+Install `'.[dev,train]'` to include encoding, Gym and training tests. The smaller
+`'.[dev,gym]'` extra omits PyTorch; tests skip when their optional dependencies
+are absent. See the [training delivery checks](docs/AGENT_TRAINING.md#milestone-7-usable-commands-and-final-delivery-checks)
+for the clean wheel installation and command workflow.
 Native reference harnesses live under `tools/`; their guides explain build inputs
 and evidence boundaries.
 
@@ -171,7 +312,7 @@ launch/restart and normal shutdown follow the live guide.
 | --- | --- |
 | `game/headless/` | Canonical game rules, content, combat, persistent state and private continuation |
 | `game/agent/` | Public contract/adapter, choosers, trajectories, workers, optional encoding and Gymnasium environment |
-| `game/cli/` | Direct gameplay (`sts-headless-play`) and public agent execution (`sts-agent-play`) |
+| `game/cli/` | Direct gameplay (`sts-headless-play`), public agent execution (`sts-agent-play`) and combat baselines (`sts-agent-evaluate`) |
 | `game/backends/live/r0i_wire.py` | Retained bridge wire fixture codec and identity checks |
 | `bridge/Sts2AgentBridge/` | Production bridge, shared capabilities, client and focused checks |
 | `tools/`, `tests/`, `manifests/game-builds/` | Native reference harnesses, regression coverage and pinned build identities |

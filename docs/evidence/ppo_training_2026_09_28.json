@@ -1,0 +1,1434 @@
+{
+  "checkout_commit": "05445c65",
+  "checkpoint": {
+    "architecture": {
+      "hidden_size": 48,
+      "message_layers": 2,
+      "schema": "sts_graph_actor_critic_v1"
+    },
+    "feature_identity": "sts_learned_public_graph_v1:2c6bd7795771217e1554cdab43af74579524d508369289008dc8d03e4a6c724e",
+    "path": "runs/ppo-milestone4-pilot-20260928/final.sts-model",
+    "resume_state_sha256": "d8b720d6422760c5a3023e6a6e078cff81fd9fe31c00a4e49ae28d27c1bb0d06",
+    "reward_spec": {
+      "schema": "sts_training_reward_v1",
+      "weights": {
+        "combat_loss": 0.0,
+        "combat_win": 1.0,
+        "end_turn_action": 0.0,
+        "potion_use_action": 0.0,
+        "win_hp_fraction": 0.0
+      }
+    },
+    "schema": "sts_inference_bundle_v2",
+    "sha256": "ae8bd6d9748aaeba37950812108bb9d10ddd4594003dfab1cc35dc10a082d7c3",
+    "weights_sha256": "5a02f6b46f58b9b7212873490e694753745afe7362b3cb9e95c4af21d6b87e19"
+  },
+  "combat_evaluation": {
+    "case_results": [
+      {
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 57,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 6
+        },
+        "encounter": "overgrowth_nibbit",
+        "failure": null,
+        "policy": "random_legal",
+        "potion_use_actions": 0,
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "external_stop",
+          "schema": "sts_run_outcome_v1"
+        },
+        "status": "terminated",
+        "steps": 17,
+        "task_return": 1.0
+      },
+      {
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 73,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 3
+        },
+        "encounter": "overgrowth_nibbit",
+        "failure": null,
+        "policy": "heuristic",
+        "potion_use_actions": 0,
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "external_stop",
+          "schema": "sts_run_outcome_v1"
+        },
+        "status": "terminated",
+        "steps": 10,
+        "task_return": 1.0
+      },
+      {
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 73,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 4
+        },
+        "encounter": "overgrowth_nibbit",
+        "failure": null,
+        "policy": "ppo",
+        "potion_use_actions": 0,
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "external_stop",
+          "schema": "sts_run_outcome_v1"
+        },
+        "status": "terminated",
+        "steps": 14,
+        "task_return": 1.0
+      },
+      {
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 65,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 6
+        },
+        "encounter": "overgrowth_fuzzy",
+        "failure": null,
+        "policy": "random_legal",
+        "potion_use_actions": 0,
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "external_stop",
+          "schema": "sts_run_outcome_v1"
+        },
+        "status": "terminated",
+        "steps": 17,
+        "task_return": 1.0
+      },
+      {
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 71,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 4
+        },
+        "encounter": "overgrowth_fuzzy",
+        "failure": null,
+        "policy": "heuristic",
+        "potion_use_actions": 0,
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "external_stop",
+          "schema": "sts_run_outcome_v1"
+        },
+        "status": "terminated",
+        "steps": 14,
+        "task_return": 1.0
+      },
+      {
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 71,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 4
+        },
+        "encounter": "overgrowth_fuzzy",
+        "failure": null,
+        "policy": "ppo",
+        "potion_use_actions": 0,
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "external_stop",
+          "schema": "sts_run_outcome_v1"
+        },
+        "status": "terminated",
+        "steps": 14,
+        "task_return": 1.0
+      },
+      {
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 62,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 6
+        },
+        "encounter": "overgrowth_slimes",
+        "failure": null,
+        "policy": "random_legal",
+        "potion_use_actions": 0,
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "external_stop",
+          "schema": "sts_run_outcome_v1"
+        },
+        "status": "terminated",
+        "steps": 21,
+        "task_return": 1.0
+      },
+      {
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 77,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 6
+        },
+        "encounter": "overgrowth_slimes",
+        "failure": null,
+        "policy": "heuristic",
+        "potion_use_actions": 0,
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "external_stop",
+          "schema": "sts_run_outcome_v1"
+        },
+        "status": "terminated",
+        "steps": 20,
+        "task_return": 1.0
+      },
+      {
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 80,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 6
+        },
+        "encounter": "overgrowth_slimes",
+        "failure": null,
+        "policy": "ppo",
+        "potion_use_actions": 0,
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "external_stop",
+          "schema": "sts_run_outcome_v1"
+        },
+        "status": "terminated",
+        "steps": 21,
+        "task_return": 1.0
+      },
+      {
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 0,
+          "max_hp": 80,
+          "outcome": "defeat",
+          "schema": "sts_combat_summary_v1",
+          "turn": 9
+        },
+        "encounter": "overgrowth_mawler",
+        "failure": null,
+        "policy": "random_legal",
+        "potion_use_actions": 0,
+        "run_outcome": {
+          "kind": "defeat",
+          "reason": "none",
+          "schema": "sts_run_outcome_v1"
+        },
+        "status": "terminated",
+        "steps": 24,
+        "task_return": 0.0
+      },
+      {
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 55,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 5
+        },
+        "encounter": "overgrowth_mawler",
+        "failure": null,
+        "policy": "heuristic",
+        "potion_use_actions": 0,
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "external_stop",
+          "schema": "sts_run_outcome_v1"
+        },
+        "status": "terminated",
+        "steps": 17,
+        "task_return": 1.0
+      },
+      {
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 55,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 5
+        },
+        "encounter": "overgrowth_mawler",
+        "failure": null,
+        "policy": "ppo",
+        "potion_use_actions": 0,
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "external_stop",
+          "schema": "sts_run_outcome_v1"
+        },
+        "status": "terminated",
+        "steps": 17,
+        "task_return": 1.0
+      },
+      {
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 0,
+          "max_hp": 80,
+          "outcome": "defeat",
+          "schema": "sts_combat_summary_v1",
+          "turn": 7
+        },
+        "encounter": "overgrowth_nibbits",
+        "failure": null,
+        "policy": "random_legal",
+        "potion_use_actions": 0,
+        "run_outcome": {
+          "kind": "defeat",
+          "reason": "none",
+          "schema": "sts_run_outcome_v1"
+        },
+        "status": "terminated",
+        "steps": 22,
+        "task_return": 0.0
+      },
+      {
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 42,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 8
+        },
+        "encounter": "overgrowth_nibbits",
+        "failure": null,
+        "policy": "heuristic",
+        "potion_use_actions": 0,
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "external_stop",
+          "schema": "sts_run_outcome_v1"
+        },
+        "status": "terminated",
+        "steps": 27,
+        "task_return": 1.0
+      },
+      {
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 42,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 8
+        },
+        "encounter": "overgrowth_nibbits",
+        "failure": null,
+        "policy": "ppo",
+        "potion_use_actions": 0,
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "external_stop",
+          "schema": "sts_run_outcome_v1"
+        },
+        "status": "terminated",
+        "steps": 27,
+        "task_return": 1.0
+      },
+      {
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 0,
+          "max_hp": 80,
+          "outcome": "defeat",
+          "schema": "sts_combat_summary_v1",
+          "turn": 7
+        },
+        "encounter": "overgrowth_cubex",
+        "failure": null,
+        "policy": "random_legal",
+        "potion_use_actions": 0,
+        "run_outcome": {
+          "kind": "defeat",
+          "reason": "none",
+          "schema": "sts_run_outcome_v1"
+        },
+        "status": "terminated",
+        "steps": 17,
+        "task_return": 0.0
+      },
+      {
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 59,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 5
+        },
+        "encounter": "overgrowth_cubex",
+        "failure": null,
+        "policy": "heuristic",
+        "potion_use_actions": 0,
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "external_stop",
+          "schema": "sts_run_outcome_v1"
+        },
+        "status": "terminated",
+        "steps": 17,
+        "task_return": 1.0
+      },
+      {
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 59,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 5
+        },
+        "encounter": "overgrowth_cubex",
+        "failure": null,
+        "policy": "ppo",
+        "potion_use_actions": 0,
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "external_stop",
+          "schema": "sts_run_outcome_v1"
+        },
+        "status": "terminated",
+        "steps": 17,
+        "task_return": 1.0
+      }
+    ],
+    "report": {
+      "path": "runs/ppo-milestone4-combat-20260928/baseline.json",
+      "sha256": "3235e30801efc96896551b58f0a416f473d4e9da87daafe0379916a8704475b0"
+    },
+    "status": "complete",
+    "summary": {
+      "heuristic": {
+        "attempted": 6,
+        "component_totals": {
+          "combat_loss": 0.0,
+          "combat_win": 6.0,
+          "end_turn_action": 25.0,
+          "potion_use_action": 0.0,
+          "win_hp_fraction": 4.7124999999999995
+        },
+        "cutoffs": 0,
+        "decisions_per_second": 16.265777014020756,
+        "failures": 0,
+        "losses": 0,
+        "mean_hp_on_win": 62.833333333333336,
+        "mean_task_return": 1.0,
+        "steps": 105,
+        "timings": {
+          "encoding_seconds": 1.7672702122945338,
+          "initialization_seconds": 0.010165374726057053,
+          "policy_seconds": 0.7811168399639428,
+          "projection_seconds": 1.1590666661504656,
+          "recording_seconds": 2.3951251204125583,
+          "simulation_dispatch_seconds": 0.29744399758055806,
+          "total_seconds": 6.455271082930267
+        },
+        "win_rate": 1.0,
+        "win_rate_wilson_95": [
+          0.6096657120978346,
+          1.0
+        ],
+        "wins": 6
+      },
+      "ppo": {
+        "attempted": 6,
+        "component_totals": {
+          "combat_loss": 0.0,
+          "combat_win": 6.0,
+          "end_turn_action": 26.0,
+          "potion_use_action": 0.0,
+          "win_hp_fraction": 4.75
+        },
+        "cutoffs": 0,
+        "decisions_per_second": 12.358882973151363,
+        "failures": 0,
+        "losses": 0,
+        "mean_hp_on_win": 63.333333333333336,
+        "mean_task_return": 1.0,
+        "steps": 110,
+        "timings": {
+          "encoding_seconds": 1.8872904148884118,
+          "initialization_seconds": 0.01002079201862216,
+          "policy_seconds": 2.855515166418627,
+          "projection_seconds": 1.2974038729444146,
+          "recording_seconds": 2.548599751200527,
+          "simulation_dispatch_seconds": 0.2552286279387772,
+          "total_seconds": 8.90048075048253
+        },
+        "win_rate": 1.0,
+        "win_rate_wilson_95": [
+          0.6096657120978346,
+          1.0
+        ],
+        "wins": 6
+      },
+      "random_legal": {
+        "attempted": 6,
+        "component_totals": {
+          "combat_loss": 3.0,
+          "combat_win": 3.0,
+          "end_turn_action": 38.0,
+          "potion_use_action": 0.0,
+          "win_hp_fraction": 2.3
+        },
+        "cutoffs": 0,
+        "decisions_per_second": 18.34928937813358,
+        "failures": 0,
+        "losses": 3,
+        "mean_hp_on_win": 61.333333333333336,
+        "mean_task_return": 0.5,
+        "steps": 118,
+        "timings": {
+          "encoding_seconds": 2.0274737114086747,
+          "initialization_seconds": 0.021545292111113667,
+          "policy_seconds": 0.0002965813037008047,
+          "projection_seconds": 1.3578807008452713,
+          "recording_seconds": 2.7071201684884727,
+          "simulation_dispatch_seconds": 0.26604829356074333,
+          "total_seconds": 6.430766748962924
+        },
+        "win_rate": 0.5,
+        "win_rate_wilson_95": [
+          0.1876163064826506,
+          0.8123836935173494
+        ],
+        "wins": 3
+      }
+    }
+  },
+  "configuration": {
+    "path": "configs/training/combat_ppo.json",
+    "sha256": "bba8c98cce9a7cc69cfd12df599ad07785f86d27736c1db2dfd199d8defeefb1"
+  },
+  "controlled_learning": {
+    "accepted": true,
+    "description": "Real-engine one-action fight: Strike wins; ending the turn loses.",
+    "evidence": "controlled_fixture",
+    "limits": "Three predeclared learner seeds, 512 training decisions each, 32 paired stochastic development trials of the same authored fight. No held-out test data.",
+    "original_fixture_sha256": {
+      "tests/agent/test_combat_training.py": "4ec3c55370a964a0ce4879bdaa85a5e4d576f06a2cf5b07f928896105b2c882b",
+      "tests/agent/test_ppo.py": "9cc7aabfa03f66dd8dcf853a9aa3a81064673309aa711f49a117d15d1f112dbb"
+    },
+    "probe_sha256": "c56b97a93ec2227ab4439bfc60c68be1bb3bf5ea08dd0e5d47216297114a7d47",
+    "replicates": [
+      {
+        "after": {
+          "cases": 32,
+          "exact_one_action_win_probability": 0.9951270818710327,
+          "win_rate": 1.0,
+          "wins": 32
+        },
+        "before": {
+          "cases": 32,
+          "exact_one_action_win_probability": 0.5868062973022461,
+          "win_rate": 0.65625,
+          "wins": 21
+        },
+        "checkpoint": "ppo_v1:ce2fedefa52e61246847ac3c86c48be9203e037dc37645eb7be45bdc3b9729e6",
+        "experiment": {
+          "encounters": [
+            "strike_or_die"
+          ],
+          "ppo": {
+            "batch_size": 16,
+            "clip_ratio": 0.2,
+            "entropy_weight": 0.01,
+            "episode_decisions": 96,
+            "episode_seconds": 30.0,
+            "epochs": 4,
+            "gae_lambda": 1.0,
+            "gamma": 1.0,
+            "gradient_clip": 0.5,
+            "learning_rate": 0.003,
+            "normalize_advantages": true,
+            "rollout_steps": 64,
+            "target_kl": 0.05,
+            "value_weight": 0.5
+          },
+          "schema": "sts_ppo_experiment_v1",
+          "source": "controlled_strike_or_die_v1",
+          "training": {
+            "mode": "combat",
+            "reward": {
+              "schema": "sts_training_reward_v1",
+              "weights": {
+                "combat_loss": 0.0,
+                "combat_win": 1.0,
+                "end_turn_action": 0.0,
+                "potion_use_action": 0.0,
+                "win_hp_fraction": 0.0
+              }
+            },
+            "scenario_set": "ironclad_a0_overgrowth_v1"
+          }
+        },
+        "improved": true,
+        "initial_sha256": "03d7a2dd1adb5b3bd5b06b9343e62e08464277dc11aef7cc03ae5638c48242dc",
+        "last_update": {
+          "after": {
+            "approx_kl": 6.05359673500061e-09,
+            "clip_fraction": 0.0,
+            "entropy": 0.030804423615336418,
+            "loss": -0.0004685244639404118,
+            "policy_loss": -0.00016048156248871237,
+            "value_mse": 2.6214799220269924e-09
+          },
+          "batch_input_tensor_bytes": 86176,
+          "decisions": 64,
+          "epochs": 4,
+          "iteration": 8,
+          "kl_early_stop": false,
+          "max_gradient_norm": 0.007027110084891319,
+          "mean_update": {
+            "approx_kl": 1.5657860785722733e-08,
+            "clip_fraction": 0.0,
+            "entropy": 0.03018312866333872,
+            "loss": -0.00046099492828943767,
+            "policy_loss": -0.0001605003581062192,
+            "value_mse": 2.6734163214303663e-06
+          },
+          "optimizer_steps": 16,
+          "optimizer_steps_total": 104,
+          "packed_rollout_bytes": 3185728,
+          "seconds": 0.04049583291634917
+        },
+        "peak_process_rss_bytes": 2112569344,
+        "replicate": 1,
+        "report": {
+          "path": "runs/ppo-milestone4-learning-20260928-replicate-1/ppo.json",
+          "sha256": "93219ba29bb24c773104ff12ae5cdab2eeeda63fefa73962ece9f6cda4b8c618"
+        },
+        "seconds": 14.374957000138238,
+        "summary": {
+          "accepted_decisions": 512,
+          "components": {
+            "combat_loss": 39.0,
+            "combat_win": 473.0,
+            "end_turn_action": 39.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 5.912499999999994
+          },
+          "cutoffs": 0,
+          "decisions_per_second": 35.617497846781475,
+          "episode_attempts": 512,
+          "failed_episodes": 0,
+          "losses": 39,
+          "mean_hp_on_win": 1.0,
+          "potion_use_actions": 0,
+          "task_return": 473.0,
+          "trained_decisions": 512,
+          "wins": 473
+        }
+      },
+      {
+        "after": {
+          "cases": 32,
+          "exact_one_action_win_probability": 0.9989544153213501,
+          "win_rate": 1.0,
+          "wins": 32
+        },
+        "before": {
+          "cases": 32,
+          "exact_one_action_win_probability": 0.3480812907218933,
+          "win_rate": 0.3125,
+          "wins": 10
+        },
+        "checkpoint": "ppo_v1:95b6ff9ce8a45841ec173825cccc50a20743b37fc3430310e687033fc97b62d3",
+        "experiment": {
+          "encounters": [
+            "strike_or_die"
+          ],
+          "ppo": {
+            "batch_size": 16,
+            "clip_ratio": 0.2,
+            "entropy_weight": 0.01,
+            "episode_decisions": 96,
+            "episode_seconds": 30.0,
+            "epochs": 4,
+            "gae_lambda": 1.0,
+            "gamma": 1.0,
+            "gradient_clip": 0.5,
+            "learning_rate": 0.003,
+            "normalize_advantages": true,
+            "rollout_steps": 64,
+            "target_kl": 0.05,
+            "value_weight": 0.5
+          },
+          "schema": "sts_ppo_experiment_v1",
+          "source": "controlled_strike_or_die_v1",
+          "training": {
+            "mode": "combat",
+            "reward": {
+              "schema": "sts_training_reward_v1",
+              "weights": {
+                "combat_loss": 0.0,
+                "combat_win": 1.0,
+                "end_turn_action": 0.0,
+                "potion_use_action": 0.0,
+                "win_hp_fraction": 0.0
+              }
+            },
+            "scenario_set": "ironclad_a0_overgrowth_v1"
+          }
+        },
+        "improved": true,
+        "initial_sha256": "5c01cde854dc7b0afcb7d6b99f0bd36a26bd5e85628847f8edbf816be9e91dcc",
+        "last_update": {
+          "after": {
+            "approx_kl": -1.1757947504520416e-08,
+            "clip_fraction": 0.0,
+            "entropy": 0.00822091568261385,
+            "loss": -0.047599587589502335,
+            "policy_loss": -0.04758929833769798,
+            "value_mse": 0.00014383898815140128
+          },
+          "batch_input_tensor_bytes": 86176,
+          "decisions": 64,
+          "epochs": 4,
+          "iteration": 8,
+          "kl_early_stop": false,
+          "max_gradient_norm": 0.12951235473155975,
+          "mean_update": {
+            "approx_kl": 7.137714419513941e-09,
+            "clip_fraction": 0.0,
+            "entropy": 0.008745419851038605,
+            "loss": -0.0472941636107862,
+            "policy_loss": -0.047585630090907216,
+            "value_mse": 0.0007578420131437724
+          },
+          "optimizer_steps": 16,
+          "optimizer_steps_total": 88,
+          "packed_rollout_bytes": 3185728,
+          "seconds": 0.044288208009675145
+        },
+        "peak_process_rss_bytes": 2799026176,
+        "replicate": 2,
+        "report": {
+          "path": "runs/ppo-milestone4-learning-20260928-replicate-2/ppo.json",
+          "sha256": "d86695f2abdc941e567d12ef76a11ffab57b6d2bc2e0eec968307c78e4e2cf52"
+        },
+        "seconds": 14.214940416859463,
+        "summary": {
+          "accepted_decisions": 512,
+          "components": {
+            "combat_loss": 92.0,
+            "combat_win": 420.0,
+            "end_turn_action": 92.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 5.2499999999999964
+          },
+          "cutoffs": 0,
+          "decisions_per_second": 36.018441511914354,
+          "episode_attempts": 512,
+          "failed_episodes": 0,
+          "losses": 92,
+          "mean_hp_on_win": 1.0,
+          "potion_use_actions": 0,
+          "task_return": 420.0,
+          "trained_decisions": 512,
+          "wins": 420
+        }
+      },
+      {
+        "after": {
+          "cases": 32,
+          "exact_one_action_win_probability": 0.9975280165672302,
+          "win_rate": 1.0,
+          "wins": 32
+        },
+        "before": {
+          "cases": 32,
+          "exact_one_action_win_probability": 0.3739458918571472,
+          "win_rate": 0.34375,
+          "wins": 11
+        },
+        "checkpoint": "ppo_v1:39656bb343e3983126f30ffc937c8a2cb3b872f634303146cc250a8cd1b785d6",
+        "experiment": {
+          "encounters": [
+            "strike_or_die"
+          ],
+          "ppo": {
+            "batch_size": 16,
+            "clip_ratio": 0.2,
+            "entropy_weight": 0.01,
+            "episode_decisions": 96,
+            "episode_seconds": 30.0,
+            "epochs": 4,
+            "gae_lambda": 1.0,
+            "gamma": 1.0,
+            "gradient_clip": 0.5,
+            "learning_rate": 0.003,
+            "normalize_advantages": true,
+            "rollout_steps": 64,
+            "target_kl": 0.05,
+            "value_weight": 0.5
+          },
+          "schema": "sts_ppo_experiment_v1",
+          "source": "controlled_strike_or_die_v1",
+          "training": {
+            "mode": "combat",
+            "reward": {
+              "schema": "sts_training_reward_v1",
+              "weights": {
+                "combat_loss": 0.0,
+                "combat_win": 1.0,
+                "end_turn_action": 0.0,
+                "potion_use_action": 0.0,
+                "win_hp_fraction": 0.0
+              }
+            },
+            "scenario_set": "ironclad_a0_overgrowth_v1"
+          }
+        },
+        "improved": true,
+        "initial_sha256": "6f95f74f2b580bfdbf45b9fe37d6db8dd6d66b36a62c887dab1720e865430752",
+        "last_update": {
+          "after": {
+            "approx_kl": 1.1175870895385742e-08,
+            "clip_fraction": 0.0,
+            "entropy": 0.017307844012975693,
+            "loss": -0.005624945275485516,
+            "policy_loss": -0.00545425433665514,
+            "value_mse": 4.774689386977116e-06
+          },
+          "batch_input_tensor_bytes": 86176,
+          "decisions": 64,
+          "epochs": 4,
+          "iteration": 8,
+          "kl_early_stop": false,
+          "max_gradient_norm": 0.015424198471009731,
+          "mean_update": {
+            "approx_kl": -2.168235369026661e-09,
+            "clip_fraction": 0.0,
+            "entropy": 0.01722256187349558,
+            "loss": -0.005622015392873436,
+            "policy_loss": -0.005454331898363307,
+            "value_mse": 9.084257780678229e-06
+          },
+          "optimizer_steps": 16,
+          "optimizer_steps_total": 96,
+          "packed_rollout_bytes": 3185728,
+          "seconds": 0.04376508295536041
+        },
+        "peak_process_rss_bytes": 2809675776,
+        "replicate": 3,
+        "report": {
+          "path": "runs/ppo-milestone4-learning-20260928-replicate-3/ppo.json",
+          "sha256": "a19ee0b959942f9e01499d959ade6e392b84022f7b3d064b933c5825cc3e4265"
+        },
+        "seconds": 14.32607708289288,
+        "summary": {
+          "accepted_decisions": 512,
+          "components": {
+            "combat_loss": 63.0,
+            "combat_win": 449.0,
+            "end_turn_action": 63.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 5.6124999999999945
+          },
+          "cutoffs": 0,
+          "decisions_per_second": 35.739023114107894,
+          "episode_attempts": 512,
+          "failed_episodes": 0,
+          "losses": 63,
+          "mean_hp_on_win": 1.0,
+          "potion_use_actions": 0,
+          "task_return": 449.0,
+          "trained_decisions": 512,
+          "wins": 449
+        }
+      }
+    ],
+    "report": {
+      "path": "runs/ppo-milestone4-learning-20260928/learning.json",
+      "sha256": "3f0e386d289f1aafe9fb0551245f489870c1fc05d9257e1ffec8d2cfa7550bc3"
+    },
+    "reproduction": "Probe and private seeds retained in the corresponding -private directory. Probe imports test helper functions; later test additions changed the test file digest without changing those helpers.",
+    "seconds": 47.00309579190798
+  },
+  "date": "2026-09-28",
+  "development_smoke": {
+    "implementation": {
+      "build": "6b87cc44975cb766297ecdc2ecba64a1f1ce03af686924d9266d2ef3976ac215",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "note": "Original development source, before the final-measurement deadline correction. Not repinned; final pilot repeats the first 256-decision batch on accepted source.",
+    "report": {
+      "path": "runs/ppo-milestone4-smoke-20260928/ppo.json",
+      "sha256": "1b745b72a2dce29bc691f7129eeead053af34f2563b68d2f4fa80ba3ea46cef8"
+    },
+    "seconds": 21.0385524998419,
+    "summary": {
+      "accepted_decisions": 256,
+      "components": {
+        "combat_loss": 0.0,
+        "combat_win": 28.0,
+        "end_turn_action": 56.0,
+        "potion_use_action": 0.0,
+        "win_hp_fraction": 25.000000000000014
+      },
+      "cutoffs": 1,
+      "decisions_per_second": 12.168137518107475,
+      "episode_attempts": 29,
+      "failed_episodes": 0,
+      "losses": 0,
+      "mean_hp_on_win": 71.42857142857143,
+      "potion_use_actions": 0,
+      "task_return": 28.0,
+      "trained_decisions": 256,
+      "wins": 28
+    }
+  },
+  "hybrid_evaluation": {
+    "cutoff_analysis": {
+      "confirm_selection_available": true,
+      "deselect_card": 28,
+      "first_loop_transition_zero_based": 199,
+      "interpretation": "Repeated legal selection/deselection stopped by the decision budget; policy failure to progress. Narrow training does not establish campaign improvement.",
+      "pair": 2,
+      "policy": "hybrid",
+      "preceding_action": "use_potion:colorless_potion",
+      "select_card": 29,
+      "selected_card": "the_gambit"
+    },
+    "episodes": [
+      {
+        "episode_id": "46be263df1ea4f4c812e8caaa174598b",
+        "last_public_hud": {
+          "act": 1,
+          "floor": 14,
+          "hp": 3,
+          "max_hp": 80
+        },
+        "outcome": {
+          "kind": "defeat",
+          "reason": "none",
+          "schema": "sts_run_outcome_v1"
+        },
+        "pair_id": "3e793e3d51f74f79b61816b98ca33b76",
+        "policy": "heuristic",
+        "potion_use_actions": 5,
+        "status": "complete",
+        "steps": 176,
+        "timings": {
+          "observations": 177,
+          "observe_seconds": 4.00357900117524,
+          "policy_seconds": 2.765910662477836,
+          "recording_seconds": 5.40899612638168,
+          "reset_seconds": 0.15412212489172816,
+          "step_seconds": 0.7626996759790927,
+          "steps": 176,
+          "total_seconds": 13.101704249856994
+        },
+        "trajectory": "46be263df1ea4f4c812e8caaa174598b.trajectory.jsonl"
+      },
+      {
+        "episode_id": "da163c2924cf4705ba9ccfe6031dfe23",
+        "last_public_hud": {
+          "act": 1,
+          "floor": 16,
+          "hp": 3,
+          "max_hp": 80
+        },
+        "outcome": {
+          "kind": "defeat",
+          "reason": "none",
+          "schema": "sts_run_outcome_v1"
+        },
+        "pair_id": "3e793e3d51f74f79b61816b98ca33b76",
+        "policy": "hybrid",
+        "potion_use_actions": 5,
+        "status": "complete",
+        "steps": 204,
+        "timings": {
+          "observations": 205,
+          "observe_seconds": 4.835891374386847,
+          "policy_seconds": 9.431191751733422,
+          "recording_seconds": 6.640948633896187,
+          "reset_seconds": 0.1441066658589989,
+          "step_seconds": 0.9344152063131332,
+          "steps": 204,
+          "total_seconds": 21.990671415813267
+        },
+        "trajectory": "da163c2924cf4705ba9ccfe6031dfe23.trajectory.jsonl"
+      },
+      {
+        "episode_id": "8822235e789c45e79775e7898914a3f4",
+        "last_public_hud": {
+          "act": 1,
+          "floor": 12,
+          "hp": 14,
+          "max_hp": 80
+        },
+        "outcome": {
+          "kind": "defeat",
+          "reason": "none",
+          "schema": "sts_run_outcome_v1"
+        },
+        "pair_id": "a236a676da344ce49a4dabadb0d71fd0",
+        "policy": "heuristic",
+        "potion_use_actions": 1,
+        "status": "complete",
+        "steps": 101,
+        "timings": {
+          "observations": 102,
+          "observe_seconds": 2.23760153260082,
+          "policy_seconds": 1.4517438202165067,
+          "recording_seconds": 2.809817787259817,
+          "reset_seconds": 0.20367520907893777,
+          "step_seconds": 0.508879708359018,
+          "steps": 101,
+          "total_seconds": 7.215173250064254
+        },
+        "trajectory": "8822235e789c45e79775e7898914a3f4.trajectory.jsonl"
+      },
+      {
+        "episode_id": "4272a60ef442469a90102d310a7343d7",
+        "last_public_hud": {
+          "act": 2,
+          "floor": 19,
+          "hp": 71,
+          "max_hp": 87
+        },
+        "outcome": {
+          "kind": "truncated",
+          "reason": "decision_budget",
+          "schema": "sts_run_outcome_v1"
+        },
+        "pair_id": "a236a676da344ce49a4dabadb0d71fd0",
+        "policy": "hybrid",
+        "potion_use_actions": 4,
+        "status": "complete",
+        "steps": 256,
+        "timings": {
+          "observations": 257,
+          "observe_seconds": 7.776882633566856,
+          "policy_seconds": 15.597380615537986,
+          "recording_seconds": 10.068940532393754,
+          "reset_seconds": 0.2057100001256913,
+          "step_seconds": 1.4830433358438313,
+          "steps": 256,
+          "total_seconds": 35.13723350013606
+        },
+        "trajectory": "4272a60ef442469a90102d310a7343d7.trajectory.jsonl"
+      }
+    ],
+    "report": {
+      "path": "runs/ppo-milestone4-hybrid-20260928/hybrid.json",
+      "sha256": "d3a96cff3c68f118c9b9d9c687f4d3fc38a312aace2c898c0ed1cbd138efdca3"
+    },
+    "seconds": 90.22701033391058,
+    "status": "complete"
+  },
+  "implementation": {
+    "build": "e4042ee2ce8b81d463ded74577f56724029d1d6c7904e625bcf28c03ae607219",
+    "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+    "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+    "target": "sts2-v0.107.1-steam-23811903"
+  },
+  "independent_review": {
+    "cli_artifacts": "Disposable TemporaryDirectory; no retained paths or per-command durations. Not used for artifact digest claims.",
+    "final_focused_checks": 16,
+    "finding": "Deadline crossing during final PPO measurement could commit a clean checkpoint boundary.",
+    "installed_cli": "Fresh one-decision training and matching one-decision resume passed, with source consistency, private permissions and no-clobber checks.",
+    "recorded_test_seconds": 6.08,
+    "resolution": "Check budget inside each measurement chunk and immediately before clean boundary commit; regression passed.",
+    "review_elapsed_seconds": null,
+    "reviewer": "read-only combat_review sub-agent, reused with existing user authorization",
+    "status": "No open semantic blockers.",
+    "test_note": "13 passed in 4.53 seconds with one test-only serializer failure; corrected test and two legacy checks then passed in 1.55 seconds."
+  },
+  "limitations": [
+    "Controlled learning demonstrates the authored one-action decision, not general strategy.",
+    "Small combat and hybrid development samples do not establish superiority; no held-out certification.",
+    "Colorless Potion selector loop remains visible in the hybrid result; broader curriculum belongs to milestone 5.",
+    "PPO is CPU-only, synchronous and resumable only after complete rollout/update boundaries.",
+    "The final pilot has mostly victory targets and does not establish critic calibration elsewhere."
+  ],
+  "pilot": {
+    "artifact_verification": {
+      "accepted_transitions": 1024,
+      "checks": [
+        "source and trajectory digests",
+        "task flags, canonical sparse reward and component sums",
+        "original candidate order and legal mask",
+        "saved old log probability and value from frozen weights",
+        "zero terminal bootstrap and final public successor bootstrap",
+        "reconciled dispatch",
+        "private file and directory permissions"
+      ],
+      "implementation": {
+        "build": "e4042ee2ce8b81d463ded74577f56724029d1d6c7904e625bcf28c03ae607219",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "public_episodes": 116,
+      "public_rollouts": 4,
+      "report": {
+        "path": "runs/ppo-milestone4-pilot-20260928/artifact-verification.json",
+        "sha256": "c2c76f949886fbacf7f3983116164cbeffbf78368c0c27905e4842a6ccbd40bf"
+      },
+      "schema": "sts_ppo_artifact_verification_v1",
+      "script_sha256": "a92eda422b963d4a02c8ebed6a07e4eb622b637d02a9f30e421b97b056e50710",
+      "seconds": 54.44509208295494,
+      "status": "passed"
+    },
+    "experiment": {
+      "encounters": [
+        "overgrowth_nibbit"
+      ],
+      "ppo": {
+        "batch_size": 32,
+        "clip_ratio": 0.2,
+        "entropy_weight": 0.01,
+        "episode_decisions": 96,
+        "episode_seconds": 30.0,
+        "epochs": 4,
+        "gae_lambda": 0.95,
+        "gamma": 1.0,
+        "gradient_clip": 0.5,
+        "learning_rate": 0.0003,
+        "normalize_advantages": true,
+        "rollout_steps": 256,
+        "target_kl": 0.03,
+        "value_weight": 0.5
+      },
+      "schema": "sts_ppo_experiment_v1",
+      "source": "ironclad_a0_overgrowth_v1",
+      "training": {
+        "mode": "combat",
+        "reward": {
+          "schema": "sts_training_reward_v1",
+          "weights": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 0.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.0
+          }
+        },
+        "scenario_set": "ironclad_a0_overgrowth_v1"
+      }
+    },
+    "experiment_identity": "sts_ppo_experiment_v1:55cf547cb56b3ef53738f271ec75170428b6371bb9b2b0c6c3495be74eba8b09",
+    "initialization": {
+      "checkpoint": "imitation_v1:3c6da0a495945dd9ff61d5cbd27c47f52cadc4111a4c968fe45043c2175ebf94",
+      "resumed": false
+    },
+    "iterations": [
+      {
+        "checkpoint_sha256": "636a134cfb6ff3dbee7a253c5f413b6c024bd5da573d5a16ce0d5d99cfc932cc",
+        "collection_seconds": 19.968375833006576,
+        "iteration": 1,
+        "rollout": {
+          "path": "runs/ppo-milestone4-pilot-20260928/rollout-00001.json",
+          "sha256": "5fcfeae12a06835e45725a677a426052af04e342ab604e62dd8cc477c82fd2e9"
+        },
+        "update": {
+          "after": {
+            "approx_kl": 0.0650816151755862,
+            "clip_fraction": 0.07421875,
+            "entropy": 0.14684228226542473,
+            "loss": -0.01116151933092624,
+            "policy_loss": -0.009700293187052011,
+            "value_mse": 1.4413164763027453e-05
+          },
+          "batch_input_tensor_bytes": 923120,
+          "decisions": 256,
+          "epochs": 4,
+          "iteration": 1,
+          "kl_early_stop": true,
+          "max_gradient_norm": 0.611061155796051,
+          "mean_update": {
+            "approx_kl": 0.021452635363175432,
+            "clip_fraction": 0.037109375,
+            "entropy": 0.152277973247692,
+            "loss": -0.005534606170840561,
+            "policy_loss": -0.004091000300832093,
+            "value_mse": 0.00015835166988864557
+          },
+          "optimizer_steps": 32,
+          "optimizer_steps_total": 32,
+          "packed_rollout_bytes": 41032149,
+          "seconds": 0.6032627089880407
+        }
+      },
+      {
+        "checkpoint_sha256": "fc1eee48dfc83c5c3e39753013cbd974646b3c86975aa656e142954225f46dae",
+        "collection_seconds": 19.8114711670205,
+        "iteration": 2,
+        "rollout": {
+          "path": "runs/ppo-milestone4-pilot-20260928/rollout-00002.json",
+          "sha256": "8f66dc5ab11fa2387ae1a034ae39f6b8217c3774a347a69e0c84882385fae422"
+        },
+        "update": {
+          "after": {
+            "approx_kl": 0.04126160926534794,
+            "clip_fraction": 0.05078125,
+            "entropy": 0.09668963123112917,
+            "loss": -0.008827817160636187,
+            "policy_loss": -0.007863174192607403,
+            "value_mse": 4.5110306814422074e-06
+          },
+          "batch_input_tensor_bytes": 923704,
+          "decisions": 256,
+          "epochs": 3,
+          "iteration": 2,
+          "kl_early_stop": true,
+          "max_gradient_norm": 1.4416170120239258,
+          "mean_update": {
+            "approx_kl": 0.011970292553390513,
+            "clip_fraction": 0.0390625,
+            "entropy": 0.11308785000195105,
+            "loss": -0.004760092279563348,
+            "policy_loss": -0.0036320400734742484,
+            "value_mse": 5.652338595988719e-06
+          },
+          "optimizer_steps": 24,
+          "optimizer_steps_total": 56,
+          "packed_rollout_bytes": 40983426,
+          "seconds": 0.4418348749168217
+        }
+      },
+      {
+        "checkpoint_sha256": "83a865aeadf821b0ddffdf952760a9c8e9c03b2b32b5fd595f1aa4d9115aa7cb",
+        "collection_seconds": 19.804990041069686,
+        "iteration": 3,
+        "rollout": {
+          "path": "runs/ppo-milestone4-pilot-20260928/rollout-00003.json",
+          "sha256": "42a6afd36f355fced46bf0f6026731b756b38f48109b1322249f8cb179c7bdb6"
+        },
+        "update": {
+          "after": {
+            "approx_kl": 0.04421492593246512,
+            "clip_fraction": 0.1015625,
+            "entropy": 0.11269415076822042,
+            "loss": -0.0059217419475317,
+            "policy_loss": -0.004795224871486425,
+            "value_mse": 8.508186013500563e-07
+          },
+          "batch_input_tensor_bytes": 924200,
+          "decisions": 256,
+          "epochs": 4,
+          "iteration": 3,
+          "kl_early_stop": true,
+          "max_gradient_norm": 2.759322166442871,
+          "mean_update": {
+            "approx_kl": 0.017528607337908397,
+            "clip_fraction": 0.056640625,
+            "entropy": 0.10630912170745432,
+            "loss": -0.006006410549161956,
+            "policy_loss": -0.00494387507205829,
+            "value_mse": 1.111729606151357e-06
+          },
+          "optimizer_steps": 32,
+          "optimizer_steps_total": 88,
+          "packed_rollout_bytes": 41011803,
+          "seconds": 0.5872396249324083
+        }
+      },
+      {
+        "checkpoint_sha256": "ae8bd6d9748aaeba37950812108bb9d10ddd4594003dfab1cc35dc10a082d7c3",
+        "collection_seconds": 19.859210584079847,
+        "iteration": 4,
+        "rollout": {
+          "path": "runs/ppo-milestone4-pilot-20260928/rollout-00004.json",
+          "sha256": "f9ad663a20389a4894e55701f15089808f9119d7a9288b6cc5640ce00f3cf3ba"
+        },
+        "update": {
+          "after": {
+            "approx_kl": 0.005417652697360609,
+            "clip_fraction": 0.0234375,
+            "entropy": 0.11728208605200052,
+            "loss": -0.0015248812269419432,
+            "policy_loss": -0.0003552387934178114,
+            "value_mse": 6.359066958339099e-06
+          },
+          "batch_input_tensor_bytes": 923512,
+          "decisions": 256,
+          "epochs": 4,
+          "iteration": 4,
+          "kl_early_stop": false,
+          "max_gradient_norm": 1.8280261754989624,
+          "mean_update": {
+            "approx_kl": 0.00262956214822907,
+            "clip_fraction": 0.029296875,
+            "entropy": 0.09556545782834291,
+            "loss": -0.0013055021117907017,
+            "policy_loss": -0.0003506573266349733,
+            "value_mse": 1.619524852003451e-06
+          },
+          "optimizer_steps": 32,
+          "optimizer_steps_total": 120,
+          "packed_rollout_bytes": 41002867,
+          "seconds": 0.6581224999390543
+        }
+      }
+    ],
+    "limits": {
+      "additional_decisions": 1024,
+      "wall_seconds": 180.0
+    },
+    "peak_process_rss_bytes": 525484032,
+    "report": {
+      "path": "runs/ppo-milestone4-pilot-20260928/ppo.json",
+      "sha256": "01f5c2c92784428b7932f9a57b6083e3c4751413d370a431313848fdee92bf4f"
+    },
+    "seconds": 81.94107279204763,
+    "summary": {
+      "accepted_decisions": 1024,
+      "components": {
+        "combat_loss": 0.0,
+        "combat_win": 113.0,
+        "end_turn_action": 227.0,
+        "potion_use_action": 0.0,
+        "win_hp_fraction": 100.12500000000006
+      },
+      "cutoffs": 3,
+      "decisions_per_second": 12.496785374030141,
+      "episode_attempts": 116,
+      "failed_episodes": 0,
+      "losses": 0,
+      "mean_hp_on_win": 70.88495575221239,
+      "potion_use_actions": 0,
+      "task_return": 113.0,
+      "trained_decisions": 1024,
+      "wins": 113
+    }
+  },
+  "runtime": {
+    "device": "cpu",
+    "gymnasium": "1.0.0",
+    "numpy": "2.4.6",
+    "python": "3.11.15",
+    "threads": 1,
+    "torch": "2.13.0"
+  },
+  "schema": "sts_training_milestone4_evidence_v1",
+  "scope": "Bounded synchronous masked combat PPO; milestone 5 curriculum and full-run learning remain unimplemented.",
+  "spawned_inference": {
+    "elapsed_seconds": 2.27048979094252,
+    "episodes": [
+      {
+        "metadata": {
+          "build": "e4042ee2ce8b81d463ded74577f56724029d1d6c7904e625bcf28c03ae607219",
+          "encoding": "sts_public_json_v2",
+          "episode_id": "3cc7a32ba3b94e6a9f95c9043b338fbe",
+          "evidence": "headless_rollout",
+          "policy": "hybrid_v1:ae8bd6d9748aaeba37950812108bb9d10ddd4594003dfab1cc35dc10a082d7c3:full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+          "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+          "scenario": "generated_campaign_all_unlocked_v1",
+          "split": "validation",
+          "target": "sts2-v0.107.1-steam-23811903"
+        },
+        "outcome": {
+          "kind": "truncated",
+          "reason": "decision_budget",
+          "schema": "sts_run_outcome_v1"
+        },
+        "steps": 16,
+        "trajectory": {
+          "path": "runs/ppo-milestone4-workers-20260928/3cc7a32ba3b94e6a9f95c9043b338fbe.trajectory.jsonl",
+          "sha256": "b8ecea1265b3e4d6397afb8c15f1a75e0a4ec3bc9dc0c2b35893c918f0c68551"
+        }
+      },
+      {
+        "metadata": {
+          "build": "e4042ee2ce8b81d463ded74577f56724029d1d6c7904e625bcf28c03ae607219",
+          "encoding": "sts_public_json_v2",
+          "episode_id": "b5d9578de806414796c724cedf5681bb",
+          "evidence": "headless_rollout",
+          "policy": "hybrid_v1:ae8bd6d9748aaeba37950812108bb9d10ddd4594003dfab1cc35dc10a082d7c3:full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+          "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+          "scenario": "generated_campaign_all_unlocked_v1",
+          "split": "validation",
+          "target": "sts2-v0.107.1-steam-23811903"
+        },
+        "outcome": {
+          "kind": "truncated",
+          "reason": "decision_budget",
+          "schema": "sts_run_outcome_v1"
+        },
+        "steps": 16,
+        "trajectory": {
+          "path": "runs/ppo-milestone4-workers-20260928/b5d9578de806414796c724cedf5681bb.trajectory.jsonl",
+          "sha256": "9253dfcf9d883cf177de518de4a53bf3778dc1360a06010a678db2f511f32f8c"
+        }
+      }
+    ],
+    "note": "Two existing playback workers, 16 decisions each. PPO collection remains synchronous."
+  },
+  "timing": {
+    "elapsed_through_evidence_seconds": 2585.652783,
+    "evidence_written_utc": "2026-09-28T21:40:05.652783+00:00",
+    "note": "Elapsed owner time includes implementation, overlapping review, experiments, validation and reporting; those phases were not separately timed. No release or user-readiness wait was needed.",
+    "started_utc": "2026-09-28T20:57:00+00:00"
+  },
+  "validation": {
+    "command": ".venv/bin/python -m pytest -q tests/agent/test_ppo.py tests/agent/test_training_checkpoint.py tests/agent/test_training_model.py tests/agent/test_training_records.py tests/agent/test_training_rewards.py tests/agent/test_combat_training.py tests/agent/test_recording.py tests/agent/test_runner.py tests/test_package_layout.py -k 'not controlled_multi_act_trajectory_round_trips_with_victory_and_training'",
+    "compileall": "Passed game and tests.",
+    "coverage": [
+      "manual PPO clipping/GAE",
+      "zero terminal bootstrap and final-state cutoff bootstrap",
+      "frozen masks and candidate mappings",
+      "independent engine reset stream",
+      "bit-identical CPU collection/update resume at complete batch boundaries",
+      "source/config/RNG/counter binding",
+      "zero-action timeout without reset loop",
+      "deadline crossed during final measurement",
+      "collection and partial-update cancellation",
+      "SIGTERM installed module path",
+      "legacy imitation checkpoint compatibility",
+      "public records and private permissions",
+      "existing runner lifecycle and dependency-free CLI help"
+    ],
+    "deselected": 1,
+    "passed": 199,
+    "prior_evidence": {
+      "note": "Wider engine/profile suite and unchanged long multi-act runner check were accepted in milestone 3 and not repeated. No game rules, public encoder or actor-model changes in milestone 4.",
+      "path": "docs/evidence/imitation_training_2026_09_28.json"
+    },
+    "python_310_syntax": {
+      "files": 432,
+      "passed": true
+    },
+    "runtime_limit": "Actual execution used Python 3.11.15, CPU and one PyTorch thread; no Python 3.10 runtime execution or cross-machine identity claim.",
+    "seconds": 31.01,
+    "warnings": [
+      "Existing Gymnasium fixed-bound Box observation warning."
+    ]
+  }
+}

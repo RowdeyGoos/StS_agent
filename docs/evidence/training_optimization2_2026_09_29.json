@@ -1,0 +1,967 @@
+{
+  "artifacts": [
+    {
+      "bytes": 4362,
+      "path": "runs/training-optimization2-20260929/candidate_codec.py",
+      "sha256": "240b97d34d76388bbada9cfa9e9780b853d6fa37c2422b719c529164a0fdaf3c"
+    },
+    {
+      "bytes": 819,
+      "path": "runs/training-optimization2-20260929/validation.json",
+      "sha256": "dc0899a74af1cd21305a9b36beea36a6d318d209dc29a7af56019e447baf4bee"
+    },
+    {
+      "bytes": 4665,
+      "path": "game/agent/contracts/codec.py",
+      "sha256": "75789dba1bb906d4e11a7a26c3280b4bd755554ae5d52e74887483dfd73499b5"
+    },
+    {
+      "bytes": 14136,
+      "path": "tests/agent/test_contracts.py",
+      "sha256": "9561f0256747534bcaff4deed7a03b1895770d1d37fd2b298c297e6b7b852388"
+    },
+    {
+      "bytes": 504,
+      "path": "runs/training-optimization2-20260929/probe.json",
+      "sha256": "82fe2c730bf451d2352d2f9e059d37d11bb71f7b5f1c5e288e3e1d13b415f854"
+    },
+    {
+      "bytes": 3370,
+      "path": "runs/training-optimization2-20260929/equivalence.json",
+      "sha256": "da2c78b10483a565d48fd0758fe4b43e2416c3b5934d6c1914a28f9ca59b6dfb"
+    },
+    {
+      "bytes": 5200,
+      "path": "runs/training-optimization2-20260929/check_equivalence.py",
+      "sha256": "209407f1b725ef9a8d10f5b21d0341393882843c15e685db73130e67c3b7d561"
+    },
+    {
+      "bytes": 11531,
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/training-optimization2-20260929/compare.py",
+      "sha256": "98c67b9190670270dcc68fb9205301be50e8a47ba47892e3705536e9d3be65ab"
+    },
+    {
+      "bytes": 1939,
+      "path": "runs/training-optimization2-20260929/benchmark/protocol.json",
+      "sha256": "2fcb83b475e5b2dde5a57d775c74637aeb900845d24dfe954f4e0a401800bdc2"
+    },
+    {
+      "bytes": 13823,
+      "path": "runs/training-optimization2-20260929/benchmark/benchmark.json",
+      "sha256": "8e63c25bd84e6b37e671f240704d096a408bd9719bef133f8c508489da7fd920"
+    },
+    {
+      "bytes": 17896,
+      "path": "runs/training-optimization2-20260929/benchmark/profile/profile.json",
+      "sha256": "f2a9f50be8e8ad4356349d7e69a9f456079cf53ce801cf0c9ec664061dddd32e"
+    },
+    {
+      "bytes": 284466,
+      "path": "runs/training-optimization2-20260929/benchmark/profile/collection.prof",
+      "sha256": "8c6bd593e102e0fa3d3810c9df015bfe4a2c221fcb850aa527fac7cbea9bfe09"
+    },
+    {
+      "bytes": 4102,
+      "path": "runs/training-optimization2-20260929/before/game/agent/contracts/codec.py",
+      "sha256": "5ed3ba799d4010ccc2404e0ce118eed78b7d0267f8023eae3ad36db4b1262624"
+    },
+    {
+      "bytes": 14662,
+      "path": "runs/training-optimization2-20260929/before/game/agent/encoding/codec.py",
+      "sha256": "889d501f2c7cf30bea62ecf0b587b87f68ed5f9805e5f650b084330969799e3e"
+    },
+    {
+      "bytes": 1633,
+      "path": "runs/training-optimization2-20260929/before/game/agent/encoding/full.py",
+      "sha256": "91eba6489c3a3d9aec595b223b1b517631f059e022441f4e8621671530f1e29f"
+    },
+    {
+      "bytes": 6527,
+      "path": "runs/training-optimization2-20260929/before/game/agent/training/features.py",
+      "sha256": "d72bcedfd1857f914702e48f38143336dd98b24c68090508a362157db7846c72"
+    },
+    {
+      "bytes": 2623,
+      "path": "runs/training-optimization2-20260929/benchmark/imitation/timings.json",
+      "sha256": "32c3879b9441a00d617b867155208c2de1b397e0753ad0e608beba4b9498aef6"
+    },
+    {
+      "bytes": 1735,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-1/timings.json",
+      "sha256": "f55657babc30cdd9ed2292111fa3f25b40090825a26d58066c9cc7119aa2ce62"
+    },
+    {
+      "bytes": 1734,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-2/timings.json",
+      "sha256": "4eb758c7734a135c260ac7a40f2db24127a8acb827de40bcba17e6777ddfb32b"
+    },
+    {
+      "bytes": 1732,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-3/timings.json",
+      "sha256": "ff4046d56dc6d77c3e308f454eab075a528974efc243a7d9ac2e4b5423fbfdd5"
+    },
+    {
+      "bytes": 1163,
+      "path": "runs/training-optimization2-20260929/benchmark/profile/timings.json",
+      "sha256": "a0e3f5bcd4265d7a453efe3a70844ea3f450673438ac8c3e84ad2f27f01c19f2"
+    },
+    {
+      "bytes": 14220,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-1/ppo.json",
+      "sha256": "98c4ff20232d68307276795f5d09fd80659b7e409cf1e4f2366159cb4000fa65"
+    },
+    {
+      "bytes": 14223,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-2/ppo.json",
+      "sha256": "0d749501499aacd343e5ef6bdc69bc42dbaf4c93c3d365dfa5fe7d51abba91c9"
+    },
+    {
+      "bytes": 14221,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-3/ppo.json",
+      "sha256": "8c230303e59adbb29c04fc543bdeb1b4f7a29e7554927533fc5f25fe81308dda"
+    },
+    {
+      "bytes": 7639,
+      "path": "runs/training-optimization2-20260929/benchmark/profile/ppo.json",
+      "sha256": "990083e6bd37a94fae6ca886ce7821e8ff623b9b0a0552f151ddee3284cef6df"
+    },
+    {
+      "bytes": 82506,
+      "path": "runs/training-optimization2-20260929/benchmark/imitation/imitation.json",
+      "sha256": "75d31bacef83a771bb782d4f5b92c05e272effe4a1fb96433fc076ab08301f89"
+    },
+    {
+      "bytes": 413877,
+      "path": "runs/training-optimization2-20260929/benchmark/imitation/final.sts-model",
+      "sha256": "19286414c79215a05a0e47d1f326bb359ca10ce15961cc9f0aa5ac6b43e13608"
+    },
+    {
+      "bytes": 413875,
+      "path": "runs/training-optimization2-20260929/benchmark/imitation/initial.sts-model",
+      "sha256": "598787fe07e3b664e501f9a12b7166231b5330513967995fa1cc4ff07a8873ba"
+    },
+    {
+      "bytes": 414597,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-1/final.sts-model",
+      "sha256": "a3fa8695f533e162f5fd0725c8d48ad1fa5c6da7af16210768bcbe7a8d528ecb"
+    },
+    {
+      "bytes": 414596,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-1/initial.sts-model",
+      "sha256": "7ab34d7cb3f501f2d7abce7b60e51d9e2fcb3ada747b55a1d50f842e493c7096"
+    },
+    {
+      "bytes": 414597,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-1/update-00001.sts-model",
+      "sha256": "741929360eb03366ed27f5258fa73f7371a033e7a32fc6ced86b691be3531e4f"
+    },
+    {
+      "bytes": 414597,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-2/final.sts-model",
+      "sha256": "52016f4792beadbb92463b247e7bcd7cec03f7aeb216217f0aeb3361254932e4"
+    },
+    {
+      "bytes": 414596,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-2/initial.sts-model",
+      "sha256": "d4942c696d754424582386bf2f3c1aca6be1f279b56f18aa71c1486e6caa19a4"
+    },
+    {
+      "bytes": 414597,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-2/update-00001.sts-model",
+      "sha256": "52016f4792beadbb92463b247e7bcd7cec03f7aeb216217f0aeb3361254932e4"
+    },
+    {
+      "bytes": 414597,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-3/final.sts-model",
+      "sha256": "395d101f224b5993f3811187275b58208f2005f4836f5d3ff505962a0196c0b1"
+    },
+    {
+      "bytes": 414596,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-3/initial.sts-model",
+      "sha256": "b62f354f7989e881f1987a0a5286ad956b92071732a3e744c4bc3fc6ecfcef41"
+    },
+    {
+      "bytes": 414597,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-3/update-00001.sts-model",
+      "sha256": "395d101f224b5993f3811187275b58208f2005f4836f5d3ff505962a0196c0b1"
+    },
+    {
+      "bytes": 414597,
+      "path": "runs/training-optimization2-20260929/benchmark/profile/final.sts-model",
+      "sha256": "edde5d2a0d82dc2b0dbf88733b0b24ebaa8137b6c53df60bfd73569591fdab23"
+    },
+    {
+      "bytes": 414596,
+      "path": "runs/training-optimization2-20260929/benchmark/profile/initial.sts-model",
+      "sha256": "dea162c070a1580f0a98fd22c3a391f2ceebe8ca7111b240dfcb6978e8b4ddbb"
+    },
+    {
+      "bytes": 414597,
+      "path": "runs/training-optimization2-20260929/benchmark/profile/update-00001.sts-model",
+      "sha256": "edde5d2a0d82dc2b0dbf88733b0b24ebaa8137b6c53df60bfd73569591fdab23"
+    }
+  ],
+  "baseline_evidence": {
+    "path": "docs/evidence/training_optimization_2026_09_29.json",
+    "sha256": "61a927baebf8b49bb30ee86a42c3db150e5de632ea120e6a708e150d69ce0549"
+  },
+  "baseline_source": {
+    "build": "0f54620d7f2b5837c6d8114821c4ba4ecaf8b8cce8ea68d9b39cfcd2a3a1148c",
+    "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+    "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+    "target": "sts2-v0.107.1-steam-23811903"
+  },
+  "comparison": {
+    "cumulative_imitation_speedup_from_original": 3.385576792748134,
+    "cumulative_ppo_speedup_from_original": 2.7536202536524828,
+    "imitation_after_seconds": 124.35103100002743,
+    "imitation_before_seconds": 156.82833891687915,
+    "imitation_preparation_after_seconds": 115.8303766248282,
+    "imitation_speedup": 1.2611744161320588,
+    "linear_same_workload_projection_hours": {
+      "100000": 1.2694955444329834,
+      "1000000": 12.694955444329834
+    },
+    "ppo_decisions_per_second_after": 21.880957282275965,
+    "ppo_decisions_per_second_before": 18.00218997372049,
+    "ppo_median_after_seconds": 23.39934187498875,
+    "ppo_median_before_seconds": 28.44098416622728,
+    "ppo_median_collection_seconds": 21.057585834059864,
+    "ppo_median_update_seconds": 1.1609145828988403,
+    "ppo_speedup": 1.2154608586076294,
+    "ppo_time_reduction_fraction": 0.1772668013797256,
+    "profile": [
+      {
+        "calls": 1971210,
+        "cumulative_seconds": 0.650366232,
+        "file": "/opt/homebrew/Cellar/python@3.11/3.11.15_3/Frameworks/Python.framework/Versions/3.11/lib/python3.11/typing.py",
+        "function": "get_origin",
+        "line": 2443,
+        "self_seconds": 0.441961439
+      },
+      {
+        "calls": 1971210,
+        "cumulative_seconds": 0.645221412,
+        "file": "/opt/homebrew/Cellar/python@3.11/3.11.15_3/Frameworks/Python.framework/Versions/3.11/lib/python3.11/typing.py",
+        "function": "get_args",
+        "line": 2473,
+        "self_seconds": 0.43237285400000003
+      },
+      {
+        "calls": 2965238,
+        "cumulative_seconds": 4.674017816,
+        "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/agent/contracts/codec.py",
+        "function": "_read",
+        "line": 33,
+        "self_seconds": 2.074400651
+      },
+      {
+        "calls": 7,
+        "cumulative_seconds": 0.000207457,
+        "file": "/opt/homebrew/Cellar/python@3.11/3.11.15_3/Frameworks/Python.framework/Versions/3.11/lib/python3.11/typing.py",
+        "function": "get_type_hints",
+        "line": 2319,
+        "self_seconds": 5.1790000000000004e-05
+      },
+      {
+        "calls": 2652640,
+        "cumulative_seconds": 2.122597126,
+        "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/agent/contracts/codec.py",
+        "function": "_wire",
+        "line": 81,
+        "self_seconds": 0.690609714
+      },
+      {
+        "calls": 653,
+        "cumulative_seconds": 5.075533405000001,
+        "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/agent/contracts/full.py",
+        "function": "from_dict",
+        "line": 127,
+        "self_seconds": 0.001030315
+      }
+    ]
+  },
+  "compatibility": "Inference bundles remain loadable. Exact training resumes retain the existing source-build match requirement; old artifacts are not rewritten.",
+  "date": "2026-09-29",
+  "limits": [
+    "Three identical-workload PPO timing replicas and one imitation pass; not policy-strength evidence.",
+    "All new PPO victory rewards are zero. Projections assume similarly sized observations.",
+    "CPU, one PyTorch thread and synchronous collector. Profile includes instrumentation overhead.",
+    "OS file caches and unrelated background load are uncontrolled."
+  ],
+  "optimized_benchmark": {
+    "children": [
+      {
+        "name": "ppo-1",
+        "process_seconds": 23.586171000031754,
+        "timings": {
+          "implementation": {
+            "build": "e43230df12df418109054ba0e25cc04376a4ae6c9500763a87fb32a0943d63bc",
+            "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+            "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+            "target": "sts2-v0.107.1-steam-23811903"
+          },
+          "mode": "ppo",
+          "model_fingerprint": "sts_policy_state_v1:4faa1a369e6c3abdd49896718a2557f19a4f4eb20c189dd64ede09b72c5513c0",
+          "peak_process_rss_bytes": 565133312,
+          "phases": {
+            "checkpoint_load": {
+              "calls": 1,
+              "exclusive_seconds": 0.00466641690582037,
+              "inclusive_seconds": 0.00466641690582037
+            },
+            "checkpoint_publication": {
+              "calls": 3,
+              "exclusive_seconds": 0.052257708040997386,
+              "inclusive_seconds": 0.052257708040997386
+            },
+            "collection": {
+              "calls": 1,
+              "exclusive_seconds": 21.272987083066255,
+              "inclusive_seconds": 21.272987083066255
+            },
+            "ppo_update": {
+              "calls": 1,
+              "exclusive_seconds": 1.1649619999807328,
+              "inclusive_seconds": 1.1649619999807328
+            }
+          },
+          "report": "ppo.json",
+          "runtime": {
+            "device": "cpu",
+            "python": "3.11.15",
+            "threads": 1,
+            "torch": "2.13.0"
+          },
+          "summary": {
+            "abandoned": 0,
+            "accepted_decisions": 512,
+            "components": {
+              "run_victory": 0.0
+            },
+            "controlled_attempts": 0,
+            "cutoffs": 1,
+            "decisions_per_second": 22.74599229837102,
+            "episode_attempts": 8,
+            "failed_episodes": 0,
+            "genuine_start_attempts": 8,
+            "losses": 7,
+            "mean_hp_on_win": null,
+            "potion_use_actions": 0,
+            "task": "full_run",
+            "task_return": 0.0,
+            "trained_decisions": 512,
+            "wins": 0
+          },
+          "worker_seconds": 22.86408808408305
+        }
+      },
+      {
+        "name": "ppo-2",
+        "process_seconds": 23.31502129114233,
+        "timings": {
+          "implementation": {
+            "build": "e43230df12df418109054ba0e25cc04376a4ae6c9500763a87fb32a0943d63bc",
+            "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+            "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+            "target": "sts2-v0.107.1-steam-23811903"
+          },
+          "mode": "ppo",
+          "model_fingerprint": "sts_policy_state_v1:4faa1a369e6c3abdd49896718a2557f19a4f4eb20c189dd64ede09b72c5513c0",
+          "peak_process_rss_bytes": 565592064,
+          "phases": {
+            "checkpoint_load": {
+              "calls": 1,
+              "exclusive_seconds": 0.00452587497420609,
+              "inclusive_seconds": 0.00452587497420609
+            },
+            "checkpoint_publication": {
+              "calls": 3,
+              "exclusive_seconds": 0.05437383404932916,
+              "inclusive_seconds": 0.05437383404932916
+            },
+            "collection": {
+              "calls": 1,
+              "exclusive_seconds": 21.008966833120212,
+              "inclusive_seconds": 21.008966833120212
+            },
+            "ppo_update": {
+              "calls": 1,
+              "exclusive_seconds": 1.1576472918968648,
+              "inclusive_seconds": 1.1576472918968648
+            }
+          },
+          "report": "ppo.json",
+          "runtime": {
+            "device": "cpu",
+            "python": "3.11.15",
+            "threads": 1,
+            "torch": "2.13.0"
+          },
+          "summary": {
+            "abandoned": 0,
+            "accepted_decisions": 512,
+            "components": {
+              "run_victory": 0.0
+            },
+            "controlled_attempts": 0,
+            "cutoffs": 1,
+            "decisions_per_second": 23.021966562881612,
+            "episode_attempts": 8,
+            "failed_episodes": 0,
+            "genuine_start_attempts": 8,
+            "losses": 7,
+            "mean_hp_on_win": null,
+            "potion_use_actions": 0,
+            "task": "full_run",
+            "task_return": 0.0,
+            "trained_decisions": 512,
+            "wins": 0
+          },
+          "worker_seconds": 22.59711162489839
+        }
+      },
+      {
+        "name": "ppo-3",
+        "process_seconds": 23.39934187498875,
+        "timings": {
+          "implementation": {
+            "build": "e43230df12df418109054ba0e25cc04376a4ae6c9500763a87fb32a0943d63bc",
+            "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+            "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+            "target": "sts2-v0.107.1-steam-23811903"
+          },
+          "mode": "ppo",
+          "model_fingerprint": "sts_policy_state_v1:4faa1a369e6c3abdd49896718a2557f19a4f4eb20c189dd64ede09b72c5513c0",
+          "peak_process_rss_bytes": 565641216,
+          "phases": {
+            "checkpoint_load": {
+              "calls": 1,
+              "exclusive_seconds": 0.00463229208253324,
+              "inclusive_seconds": 0.00463229208253324
+            },
+            "checkpoint_publication": {
+              "calls": 3,
+              "exclusive_seconds": 0.05357979191467166,
+              "inclusive_seconds": 0.05357979191467166
+            },
+            "collection": {
+              "calls": 1,
+              "exclusive_seconds": 21.057585834059864,
+              "inclusive_seconds": 21.057585834059864
+            },
+            "ppo_update": {
+              "calls": 1,
+              "exclusive_seconds": 1.1609145828988403,
+              "inclusive_seconds": 1.1609145828988403
+            }
+          },
+          "report": "ppo.json",
+          "runtime": {
+            "device": "cpu",
+            "python": "3.11.15",
+            "threads": 1,
+            "torch": "2.13.0"
+          },
+          "summary": {
+            "abandoned": 0,
+            "accepted_decisions": 512,
+            "components": {
+              "run_victory": 0.0
+            },
+            "controlled_attempts": 0,
+            "cutoffs": 1,
+            "decisions_per_second": 22.96837224160836,
+            "episode_attempts": 8,
+            "failed_episodes": 0,
+            "genuine_start_attempts": 8,
+            "losses": 7,
+            "mean_hp_on_win": null,
+            "potion_use_actions": 0,
+            "task": "full_run",
+            "task_return": 0.0,
+            "trained_decisions": 512,
+            "wins": 0
+          },
+          "worker_seconds": 22.6500097499229
+        }
+      },
+      {
+        "name": "imitation",
+        "process_seconds": 124.35103100002743,
+        "timings": {
+          "corpus_identity": "sts_full_run_corpus_v1:83fb9d4cf1da475d5891b976659313e5dd5a9e18de8275ba4a2162aea8664ecb",
+          "feature_identity": "sts_learned_public_graph_v1:d5e8fb739d4b0466314b2ffb2d98e56101bf6859f660d36f0fefa9d8e6ef7ce9",
+          "implementation": {
+            "build": "e43230df12df418109054ba0e25cc04376a4ae6c9500763a87fb32a0943d63bc",
+            "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+            "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+            "target": "sts2-v0.107.1-steam-23811903"
+          },
+          "mode": "imitation",
+          "optimizer_samples": 2041,
+          "packed_corpus_bytes": 1081776955,
+          "peak_process_rss_bytes": 3001548800,
+          "phases": {
+            "canonical_load:train": {
+              "calls": 33,
+              "exclusive_seconds": 50.74871804215945,
+              "inclusive_seconds": 50.74871804215945
+            },
+            "canonical_load:validation": {
+              "calls": 4,
+              "exclusive_seconds": 4.744869416113943,
+              "inclusive_seconds": 4.744869416113943
+            },
+            "checkpoint_publication": {
+              "calls": 2,
+              "exclusive_seconds": 0.03582879086025059,
+              "inclusive_seconds": 0.03582879086025059
+            },
+            "corpus_preparation:train": {
+              "calls": 1,
+              "exclusive_seconds": 0.13142342679202557,
+              "inclusive_seconds": 88.6109075001441
+            },
+            "corpus_preparation:validation": {
+              "calls": 1,
+              "exclusive_seconds": 0.021153763169422746,
+              "inclusive_seconds": 7.907777082873508
+            },
+            "feature_encoding": {
+              "calls": 2076,
+              "exclusive_seconds": 41.969476976199076,
+              "inclusive_seconds": 41.969476976199076
+            },
+            "imitation_evaluation": {
+              "calls": 4,
+              "exclusive_seconds": 3.908693041652441,
+              "inclusive_seconds": 3.908693041652441
+            },
+            "manifest_validation:train": {
+              "calls": 1,
+              "exclusive_seconds": 0.12288462673313916,
+              "inclusive_seconds": 16.973318541888148
+            },
+            "manifest_validation:validation": {
+              "calls": 1,
+              "exclusive_seconds": 0.018486041808500886,
+              "inclusive_seconds": 2.3383734999224544
+            },
+            "optimizer_update": {
+              "calls": 256,
+              "exclusive_seconds": 3.4073505392298102,
+              "inclusive_seconds": 3.4073505392298102
+            },
+            "vocabulary_fit:train": {
+              "calls": 1,
+              "exclusive_seconds": 18.073364331852645,
+              "inclusive_seconds": 35.11832645814866
+            }
+          },
+          "report": "imitation.json",
+          "runtime": {
+            "device": "cpu",
+            "python": "3.11.15",
+            "threads": 1,
+            "torch": "2.13.0"
+          },
+          "train_decisions": 1665,
+          "updates": 256,
+          "validation_decisions": 411,
+          "worker_seconds": 123.5649343340192
+        }
+      },
+      {
+        "name": "profile",
+        "process_seconds": 14.448533250018954,
+        "timings": {
+          "implementation": {
+            "build": "e43230df12df418109054ba0e25cc04376a4ae6c9500763a87fb32a0943d63bc",
+            "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+            "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+            "target": "sts2-v0.107.1-steam-23811903"
+          },
+          "mode": "profile",
+          "model_fingerprint": "sts_policy_state_v1:2e3983710cfe7057a0fe9aef85ea765be22b95baec5f454f2d19a2d7bee70730",
+          "peak_process_rss_bytes": 435519488,
+          "phases": {},
+          "report": "ppo.json",
+          "runtime": {
+            "device": "cpu",
+            "python": "3.11.15",
+            "threads": 1,
+            "torch": "2.13.0"
+          },
+          "summary": {
+            "abandoned": 0,
+            "accepted_decisions": 128,
+            "components": {
+              "run_victory": 0.0
+            },
+            "controlled_attempts": 0,
+            "cutoffs": 1,
+            "decisions_per_second": 9.588897465005369,
+            "episode_attempts": 3,
+            "failed_episodes": 0,
+            "genuine_start_attempts": 3,
+            "losses": 2,
+            "mean_hp_on_win": null,
+            "potion_use_actions": 0,
+            "task": "full_run",
+            "task_return": 0.0,
+            "trained_decisions": 128,
+            "wins": 0
+          },
+          "worker_seconds": 13.704876666888595
+        }
+      }
+    ],
+    "ppo_decisions_per_second_at_median": 21.880957282275965,
+    "ppo_process_seconds": {
+      "max": 23.586171000031754,
+      "median": 23.39934187498875,
+      "min": 23.31502129114233
+    },
+    "protocol": {
+      "combat_initialization": "runs/combat-milestone5-curriculum-20260929/learner-1/stage-4/final.sts-model",
+      "combat_sha256": "098b4d2c5d51da5f98af4c76179bb58cbfd93893f7be83d27d1931d8a6156691",
+      "config": "configs/training/full_run_ppo.json",
+      "config_sha256": "7871f309b5b4e396d205553ec3527805b44c95ce9da116883b30a71cc514fdf8",
+      "host": {
+        "hardware_model": "unavailable under sandbox",
+        "logical_cpus": 18,
+        "machine": "arm64",
+        "os_version": "26.6.2",
+        "system": "Darwin"
+      },
+      "implementation": {
+        "build": "e43230df12df418109054ba0e25cc04376a4ae6c9500763a87fb32a0943d63bc",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "model": "runs/full-run-milestone6-20260929/ppo-mixed/final.sts-model",
+      "model_sha256": "afc6d63bd5a3be70c8d8243e689e3764db256f645a951f78e4de58aad1345248",
+      "plan": {
+        "cache_state": "OS file caches uncontrolled; no cold-cache claim",
+        "child_timeout_seconds": 1000,
+        "decisions_each": 512,
+        "device": "cpu",
+        "imitation_batch_size": 8,
+        "imitation_runs": 1,
+        "imitation_updates": 256,
+        "no_test_cases_used": true,
+        "ppo_replicas": 3,
+        "ppo_warmup": "none; each fresh worker includes initialization",
+        "profile_decisions": 128,
+        "profile_excluded_from_throughput": true,
+        "same_model_rng_and_train_roots": true,
+        "sequential_workers": true,
+        "threads": 1
+      },
+      "purpose": "Timing only; no policy selection or strength claim",
+      "schema": "sts_training_time_benchmark_v1",
+      "script_sha256": "a23023633f57193a86401bea6c62f2bd3f1308f3d94ffcdeeb7239c875e86a32",
+      "train_manifest_sha256": "77248e4fa29da2823f8c1254245e86ad93a21842ab9bc4cb1e6a0988e710f77d",
+      "validation_manifest_sha256": "53dbda49be6fbeb1742de176196516aa873d4b77df61d8b32e5c7d6484611470"
+    },
+    "schema": "sts_training_time_benchmark_result_v1",
+    "status": "complete",
+    "total_seconds": 209.10572233307175,
+    "verification": {
+      "profile_actions_likelihoods_and_values_match_prefix": true,
+      "replica_final_weights_equal": true,
+      "replica_rollouts_equal_ignoring_uuid": true
+    }
+  },
+  "original_baseline_evidence": {
+    "path": "docs/evidence/training_time_benchmark_2026_09_29.json",
+    "sha256": "fb948c3e8c9b48345f79ab1cbc0f56f8efc8e8e02ab1e555b5b7f45204b003d3"
+  },
+  "schema": "sts_training_optimization_evidence_v1",
+  "scope": "Only exact primitive fast paths in strict parsing and serialization, ordered scalar union checks without mismatch exceptions, and reuse of unmodified substitutions for non-generic dataclasses. No new cache or changes to public schemas, objectives, models, game rules or collectors.",
+  "status": "complete",
+  "trajectories": [
+    {
+      "actions": 62,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-1/e416007196bb45bb95f4d6de727c6b83.trajectory.jsonl",
+      "sha256": "e9c52026278eee081b3eaff50a9ff1b0c2cd9a7824ced44d84997c59dc53546b"
+    },
+    {
+      "actions": 62,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-1/55d7e181ea274179b05549a8dd9d3954.trajectory.jsonl",
+      "sha256": "3c1c5c54b19dba6925b872db2d671e238899b334a9e6f533c15123b4901af334"
+    },
+    {
+      "actions": 43,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-1/fe27a42b7ba5443cba859ea4cac65616.trajectory.jsonl",
+      "sha256": "3f72aa0fc14ddd333f8df66e37d3af5a486e92f2294eaa88855c70d24b05649b"
+    },
+    {
+      "actions": 76,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-1/0779072b36f742f48c5de04e46cf9889.trajectory.jsonl",
+      "sha256": "08fe6db76b2cade7c5e0ac670a5c331fc39b953b6e66a7321ef997f2567f3ec6"
+    },
+    {
+      "actions": 65,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-1/93c8592a3cb4483aa76e2db5c4f15c53.trajectory.jsonl",
+      "sha256": "9ef43e747a2d392af5b975ff61174387c623276662e4d0fc85312072faffc588"
+    },
+    {
+      "actions": 102,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-1/5e169cb0a90f4863accdc03668cbccbb.trajectory.jsonl",
+      "sha256": "b4e5cddf8705a3b158dad1c45236a15c924a78f3f18476685d33ceeac4b6fcb0"
+    },
+    {
+      "actions": 82,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-1/2500cf6b9795425aae1a410c17aabd9a.trajectory.jsonl",
+      "sha256": "3499a6e4d253c1e8555553fe93bdea9a4b008c735b29b5e2fff1ef3d0e6f3d7d"
+    },
+    {
+      "actions": 20,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-1/23ab2d2d961f4a1496ec62d20373bc0d.trajectory.jsonl",
+      "sha256": "9f17563af6f9d2681c48f3cb7347302efc2b6be38d097bfb5b8f84aa3222c22f"
+    },
+    {
+      "actions": 62,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-2/8df7a671af2c4a5b8023bf7c41f4e8d0.trajectory.jsonl",
+      "sha256": "21821157980052337a454e904b9cb84c507716e52144ea0eb71a469f4d605cae"
+    },
+    {
+      "actions": 62,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-2/296db592ac6f4810905fe411ee7d6a96.trajectory.jsonl",
+      "sha256": "27da8f929bb6622a4675f4f202c72874586f3f95f0986b60f15da212b7808066"
+    },
+    {
+      "actions": 43,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-2/b914bf0ff2e8489cb37b97f750d6a208.trajectory.jsonl",
+      "sha256": "35e3f9d5e4b345f960c08cb1f7d6b6689a00bd0221555c87a621acc842a9425a"
+    },
+    {
+      "actions": 76,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-2/ebbf4de8284147bf85daf403842dfcf6.trajectory.jsonl",
+      "sha256": "1304ad5df3b846770cc08439ac4fc1c3c419758e152c7567e4b51d11c88fd1ff"
+    },
+    {
+      "actions": 65,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-2/c5f5ad3dc17a46cdb95515426febffee.trajectory.jsonl",
+      "sha256": "4036240465da10e4ef0e80ca9ccec0c24882c79cdfb969532bd692266ffce7f9"
+    },
+    {
+      "actions": 102,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-2/f4227ed36af34c15bc9d42cff1d738e9.trajectory.jsonl",
+      "sha256": "f8b104d3bf08375bb89e48b27f69ddb89b9a76a4e2039713f6a4b02c5bd6c446"
+    },
+    {
+      "actions": 82,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-2/b84cb45366624c39b1bff7d78950ab2a.trajectory.jsonl",
+      "sha256": "21c71a4b5980b66687e0fcd83337922a59bfd506c83f2fb293e0b90b0abd6a97"
+    },
+    {
+      "actions": 20,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-2/2d1e5d18709241ebadf84bc0a64da20b.trajectory.jsonl",
+      "sha256": "86f9dcd535a4a88085c9bb49dd53dc97449813428b39cb19af42083de25cb5a6"
+    },
+    {
+      "actions": 62,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-3/68dc383fda874b328f3213e6ebc6958c.trajectory.jsonl",
+      "sha256": "1463ebc9349a473aabbf4e898be84d7684fcb2eb39eb4dfbbdce12e655e02263"
+    },
+    {
+      "actions": 62,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-3/1ed3975670624a9fbf81b52cb253e41f.trajectory.jsonl",
+      "sha256": "8dfe609e9745348e05bb685b1715f277c1371c389442c4d883d149c078e59142"
+    },
+    {
+      "actions": 43,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-3/5cb8c1c5e44d4809b4c10039913d662d.trajectory.jsonl",
+      "sha256": "7757c3271cc1575e0cb7171e86f82a448193e71cfeb579625e6809da0205cb31"
+    },
+    {
+      "actions": 76,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-3/7004fc1bbe5e4d3c8879eed174662173.trajectory.jsonl",
+      "sha256": "37f8ecf8ef157b25ff37e76350377cbcebca05fc1b5208a771f33ecf509162a2"
+    },
+    {
+      "actions": 65,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-3/f4e8546e93e54036a7cf6708813777a7.trajectory.jsonl",
+      "sha256": "724c83c8077b0ba5d20b20bd789721a3ca44a4c626fd4f3f9dae131283a61a80"
+    },
+    {
+      "actions": 102,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-3/8fecc99801164b6ebdb7463ae44c4f4b.trajectory.jsonl",
+      "sha256": "70069db01181eb5091c10137e3ca9db63dbc24431e73c491c0fdbdbff54b7bb6"
+    },
+    {
+      "actions": 82,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-3/2ade9481b0c64b8fbb6eb98694d48180.trajectory.jsonl",
+      "sha256": "aa20a6f2c55826bb5dcc051cd6777a6d65cdc8334bc76a84d153868277bdebfd"
+    },
+    {
+      "actions": 20,
+      "path": "runs/training-optimization2-20260929/benchmark/ppo-3/849142f9c2bb4d23b8a174f9123b29fd.trajectory.jsonl",
+      "sha256": "9c93593263c96fe176e59eb8b4f5a6e8fc78b70f04fab30f15325d4ed46e9115"
+    },
+    {
+      "actions": 62,
+      "path": "runs/training-optimization2-20260929/benchmark/profile/a3b4fcf04735467487663e949e9044a0.trajectory.jsonl",
+      "sha256": "7009d675975c3f2baf71a09cfb79b0059bdfc9d2cf79c161404073fd81ffeca3"
+    },
+    {
+      "actions": 62,
+      "path": "runs/training-optimization2-20260929/benchmark/profile/4d2ee0dbb6f240428793c9742246f74a.trajectory.jsonl",
+      "sha256": "19a6c33443d74f794e859d8795e13e3e8c9c261f5833d6d49609f9586a8b2a43"
+    },
+    {
+      "actions": 4,
+      "path": "runs/training-optimization2-20260929/benchmark/profile/e4b037784e2a4d22a8f47d6d1cd49473.trajectory.jsonl",
+      "sha256": "a55650089e2f36e13c40241a6aafa08e1e340d7614f4c55e3a896ac6f666928a"
+    }
+  ],
+  "validation": {
+    "affected_suite": {
+      "command": "PYTHONPATH=. .venv/bin/python -m pytest -q tests/agent tests/test_package_layout.py",
+      "passed": 636,
+      "seconds": 292.75,
+      "warnings": 3
+    },
+    "all_256_imitation_update_metrics_and_before_after_evaluations_match_baseline": true,
+    "all_public_trajectory_content_matches_baseline": true,
+    "all_rollout_training_rows_match_baseline": true,
+    "audit_seconds": 8.58338141697459,
+    "canonical_actions_reloaded": 1664,
+    "canonical_trajectories_reloaded": 27,
+    "compileall": {
+      "command": ".venv/bin/python -m compileall -q game tests",
+      "status": "passed"
+    },
+    "equivalence_probe": {
+      "array_comparisons": 561,
+      "full_run_decisions": [
+        {
+          "candidates": 3,
+          "context": "ancient",
+          "nodes": 102
+        },
+        {
+          "candidates": 5,
+          "context": "map",
+          "nodes": 104
+        },
+        {
+          "candidates": 10,
+          "context": "combat",
+          "nodes": 149
+        },
+        {
+          "candidates": 5,
+          "context": "rewards",
+          "nodes": 117
+        },
+        {
+          "candidates": 13,
+          "context": "shop",
+          "nodes": 254
+        },
+        {
+          "candidates": 10,
+          "context": "relic_choice",
+          "nodes": 102
+        },
+        {
+          "candidates": 4,
+          "context": "event",
+          "nodes": 145
+        },
+        {
+          "candidates": 4,
+          "context": "rest",
+          "nodes": 200
+        },
+        {
+          "candidates": 4,
+          "context": "treasure",
+          "nodes": 189
+        },
+        {
+          "candidates": 1,
+          "context": "act_transition",
+          "nodes": 293
+        },
+        {
+          "candidates": 6,
+          "context": "late_campaign",
+          "nodes": 1241
+        }
+      ],
+      "legacy_decisions": 10,
+      "seconds": 3.8741292499471456,
+      "sources": [
+        {
+          "path": "runs/full-run-milestone6-20260929/train/68dce9eddef7445e85d4274bedd46727.trajectory.jsonl",
+          "sha256": "c4abdee87e31a4cb93f0db46dad790f2a3ec53aacf47cc52a699e1f94a22c974"
+        },
+        {
+          "path": "runs/full-run-milestone6-20260929/train/e107a1c806b34147a046b46355827be4.trajectory.jsonl",
+          "sha256": "b9a2768fc3fb2756b88e6837ec6f52e48043cb205eaba7df63c11467d932f6b7"
+        },
+        {
+          "path": "runs/full-run-milestone6-20260929/train/4a4f1843e62a44bb968ea7c5fd73381e.trajectory.jsonl",
+          "sha256": "731e54faff09f7585e410784565c520b2bd8656cc7d5bc64880de511af8954b5"
+        },
+        {
+          "path": "runs/full-run-milestone6-20260929/train/b93d8d33e4ca46e59ae3e4d4c593ac07.trajectory.jsonl",
+          "sha256": "b78e566d7a55f2aff61cdd28316290bbba9c9cab1c40d98f8def8ead9837c263"
+        },
+        {
+          "path": "runs/full-run-milestone6-20260929/train/0cb33f5fb434465abb565a5e09a84dec.trajectory.jsonl",
+          "sha256": "6d100cb354df35041733918f9cb794caa6e8a204297c474ea628341239bbb2b5"
+        },
+        {
+          "path": "runs/full-run-milestone6-20260929/train/266ba40248f242a69c32929873cd69e8.trajectory.jsonl",
+          "sha256": "bd46ed88bc00c474207d99d86c81dd38bd08d9b4d58cf67e8aa63c6944bc858d"
+        },
+        {
+          "path": "runs/full-run-milestone6-20260929/train/625e504b33014e158692b03b6e6eadc7.trajectory.jsonl",
+          "sha256": "a8285cff7d0eecf46ffb7fdcebd4af31238e5c0aedae8bb580efc4a5a3b7b6cb"
+        },
+        {
+          "path": "runs/full-run-milestone6-20260929/train/ec82ac7c861d4f62a8536515620bba2b.trajectory.jsonl",
+          "sha256": "a950203ed75b937f2dd1bcf47759b8c8c571d21b1f28ae99dfe019a2de464074"
+        },
+        {
+          "path": "runs/full-run-milestone6-20260929/train/74e6a009461c487da00ad6061e67d6ac.trajectory.jsonl",
+          "sha256": "c09edfdd17c68878db0eb52c284d153fe4e7d97f24d3c40d928b15ee88e07925"
+        },
+        {
+          "path": "runs/full-run-milestone6-20260929/train/8fbb36d7e847482e932a17e4822c320e.trajectory.jsonl",
+          "sha256": "c7e90a0d297a01d6acd33fa2196891ac9ba05d7de911a88c957348464beb5fd7"
+        },
+        {
+          "path": "runs/full-run-milestone6-20260929/train/000ee050566d4e50afd080becdf255e2.trajectory.jsonl",
+          "sha256": "9c90055fd64b6f6bbaeaea1201e6c8d3024797140d845605c6bf347a4a502c4a"
+        }
+      ],
+      "status": "complete",
+      "wire_bytes_and_reference_mappings_equal": true
+    },
+    "focused_pytest": {
+      "command": "PYTHONPATH=. .venv/bin/python -m pytest -q tests/agent/test_contracts.py tests/agent/test_encoding.py tests/agent/test_training_model.py",
+      "passed": 110,
+      "seconds": 2.33
+    },
+    "fourteen_initial_update_final_model_states_match_baseline": true,
+    "independent_review": {
+      "comparisons": 1183,
+      "probe_seconds": 0.033,
+      "production_codec_sha256": "75789dba1bb906d4e11a7a26c3280b4bd755554ae5d52e74887483dfd73499b5",
+      "production_matches_reviewed_candidate_ast": true,
+      "result": "accepted, no concrete semantic regressions"
+    },
+    "no_partial_artifacts": true,
+    "original_source_digest_verified_from_saved_bytes": true,
+    "private_files_checked": 42,
+    "private_permissions_valid": true
+  }
+}

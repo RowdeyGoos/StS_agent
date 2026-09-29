@@ -1,0 +1,366 @@
+{
+  "artifact_audit": {
+    "counts": {
+      "actions": 539,
+      "inference_bundles": 77,
+      "private_files": 332,
+      "resume_pairs": 77,
+      "training_sidecars": 190,
+      "trajectories": 222
+    },
+    "exact_resume": {
+      "combat-imitation": {
+        "bundle_bytes_equal": false,
+        "continuous_bundle_sha256": "245f26a4198240ea68fb6e0378db3abeda31193627b6350e8a15a90db0d0f260",
+        "optimizer_rng_cursors_equal": true,
+        "resumed_bundle_sha256": "feca77530af2c274fab34658f125551f7176339e016febbe5c67aa0aa947dd8d",
+        "weights_equal": true
+      },
+      "combat-ppo": {
+        "bundle_bytes_equal": false,
+        "continuous_bundle_sha256": "3bc3efc2e4924cf06c11791a0540234b0631ef73189ce739d702c5e5fcec73e0",
+        "optimizer_rng_cursors_equal": true,
+        "resumed_bundle_sha256": "e6f093c11ea25ee6a201be86fbc88fb3d262a553ba5dcfc53bf1460f7587d6df",
+        "weights_equal": true
+      },
+      "full_run-ppo": {
+        "bundle_bytes_equal": false,
+        "continuous_bundle_sha256": "8d3491b0e9bf5e4ecfab5b1d19e90b013cd3bbea8821a362d0914fa5aee94835",
+        "optimizer_rng_cursors_equal": true,
+        "resumed_bundle_sha256": "038c93fe29fe02b80b3c408b59f6cce2abfd2aec63468437071bcd798ea6e8cc",
+        "weights_equal": true
+      },
+      "run-imitation": {
+        "bundle_bytes_equal": false,
+        "continuous_bundle_sha256": "6a7144d604f7f81498a3fc1503ed3660990fcc0661c44cfdcefff119dca113a2",
+        "optimizer_rng_cursors_equal": true,
+        "resumed_bundle_sha256": "ed6e65da3c6e7ac52a15c5875fbdebbe99ce22f499161413637cf72572a4556e",
+        "weights_equal": true
+      }
+    },
+    "implementation": {
+      "build": "ffb3aab53dca6ea974cd2907ac28b1e5818b0af1ebc49fa9bdfec63915db669b",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "no_partial_artifacts": true,
+    "owner_only_private_permissions": true,
+    "public_trajectory_and_task_loaders_passed": true,
+    "seconds": 6.022747749928385,
+    "status": "passed",
+    "wheel_game_sources_equal_checkout": true,
+    "wheel_sha256": "fc44a883be1ebb81af69d7d9f4d18146820acc0890f67fdb98c5614c855e3478"
+  },
+  "artifact_manifest": {
+    "files": 1051,
+    "path": "runs/training-milestone7-20260929/artifact-manifest.json",
+    "sha256": "c47d14ee46e36b3e993e1dd817f83d57cdfc41685484dc5e4dbec03b24220f05"
+  },
+  "checkout": {
+    "commit": "05445c6545f96efb643869d6e6fc6dd09f0a042b",
+    "includes_uncommitted_training_work": true
+  },
+  "clean_installed_workflows": {
+    "commands": 48,
+    "core_and_optional_extra_separate": true,
+    "covered": [
+      "core help and heuristic playback",
+      "clear missing optional dependencies",
+      "combat and full-run demonstration collection",
+      "combat and full-run imitation and exact resume",
+      "combat transfer with fresh run critic",
+      "two-worker combat and full-run PPO and exact resume",
+      "combat, hybrid and full-run paired evaluation",
+      "two-worker checkpoint playback",
+      "finite three-learner five-stage curriculum",
+      "freeze, develop, select and locked held-out benchmark",
+      "malformed settings, decision/worker bounds, task mismatch, changed resume worker count and no-clobber"
+    ],
+    "independent_cwd": true,
+    "pip_check_passed": true,
+    "pythonpath_removed": true,
+    "seconds": 69.02991533302702,
+    "source_imports_from_installed_wheel": true
+  },
+  "date": "2026-09-29",
+  "dependencies": {
+    "missing": [],
+    "requirements": {
+      "cloudpickle": "3.1.2",
+      "farama-notifications": "0.0.6",
+      "filelock": "3.32.4",
+      "fsspec": "2026.7.0",
+      "gymnasium": "1.0.0",
+      "jinja2": "3.1.6",
+      "markupsafe": "3.0.3",
+      "mpmath": "1.3.0",
+      "networkx": "3.6.1",
+      "numpy": "2.4.6",
+      "setuptools": "82.0.1",
+      "sympy": "1.14.0",
+      "torch": "2.13.0",
+      "typing-extensions": "4.16.0"
+    },
+    "seconds": 0.298129792092368,
+    "wheels": {
+      "cloudpickle": {
+        "sha256": "9acb47f6afd73f60dc1df93bb801b472f05ff42fa6c84167d25cb206be1fbf4a",
+        "version": "3.1.2",
+        "wheel": "cloudpickle-3.1.2-py3-none-any.whl"
+      },
+      "farama-notifications": {
+        "sha256": "f84839188efa1ce5bb361c2a84881b2dc2c0d0d7fb661ff00421820170930935",
+        "version": "0.0.6",
+        "wheel": "farama_notifications-0.0.6-py3-none-any.whl"
+      },
+      "filelock": {
+        "sha256": "22e58ca3b1ae3b98993b762d7338367ae64fe50252bf78d59da3bfebcdf1cedd",
+        "version": "3.32.4",
+        "wheel": "filelock-3.32.4-py3-none-any.whl"
+      },
+      "fsspec": {
+        "sha256": "b57ddbafedfaef7018c1ecab32aa200a9d7ca26b77965f64e48b70061249d279",
+        "version": "2026.7.0",
+        "wheel": "fsspec-2026.7.0-py3-none-any.whl"
+      },
+      "gymnasium": {
+        "sha256": "b6f40e1e24c5bd419361e1a5b86a9117d2499baecc3a660d44dfff4c465393ad",
+        "version": "1.0.0",
+        "wheel": "gymnasium-1.0.0-py3-none-any.whl"
+      },
+      "jinja2": {
+        "sha256": "85ece4451f492d0c13c5dd7c13a64681a86afae63a5f347908daf103ce6d2f67",
+        "version": "3.1.6",
+        "wheel": "jinja2-3.1.6-py3-none-any.whl"
+      },
+      "markupsafe": {
+        "sha256": "4bd4cd07944443f5a265608cc6aab442e4f74dff8088b0dfc8238647b8f6ae9a",
+        "version": "3.0.3",
+        "wheel": "markupsafe-3.0.3-cp311-cp311-macosx_11_0_arm64.whl"
+      },
+      "mpmath": {
+        "sha256": "a0b2b9fe80bbcd81a6647ff13108738cfb482d481d826cc0e02f5b35e5c88d2c",
+        "version": "1.3.0",
+        "wheel": "mpmath-1.3.0-py3-none-any.whl"
+      },
+      "networkx": {
+        "sha256": "d47fbf302e7d9cbbb9e2555a0d267983d2aa476bac30e90dfbe5669bd57f3762",
+        "version": "3.6.1",
+        "wheel": "networkx-3.6.1-py3-none-any.whl"
+      },
+      "numpy": {
+        "sha256": "4cfe66903cc32a9921a6733d96b19bb6abf310397581bbad89c228f5abaf0ee8",
+        "version": "2.4.6",
+        "wheel": "numpy-2.4.6-cp311-cp311-macosx_14_0_arm64.whl"
+      },
+      "setuptools": {
+        "sha256": "a59e362652f08dcd477c78bb6e7bd9d80a7995bc73ce773050228a348ce2e5bb",
+        "version": "82.0.1",
+        "wheel": "setuptools-82.0.1-py3-none-any.whl"
+      },
+      "sympy": {
+        "sha256": "e091cc3e99d2141a0ba2847328f5479b05d94a6635cb96148ccb3f34671bd8f5",
+        "version": "1.14.0",
+        "wheel": "sympy-1.14.0-py3-none-any.whl"
+      },
+      "torch": {
+        "sha256": "e76f9bcecc52b8ff711239a2f7547d5353df95878ab232f0773c1d95928b92f8",
+        "version": "2.13.0",
+        "wheel": "torch-2.13.0-cp311-cp311-macosx_14_0_arm64.whl"
+      },
+      "typing-extensions": {
+        "sha256": "481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8",
+        "version": "4.16.0",
+        "wheel": "typing_extensions-4.16.0-py3-none-any.whl"
+      }
+    }
+  },
+  "fixes": [
+    "Checkpoint playback identifies missing optional train dependencies without a traceback.",
+    "Curriculum JSON validates object/list shapes and unknown PPO fields while preserving nested defaults."
+  ],
+  "implementation": {
+    "build": "ffb3aab53dca6ea974cd2907ac28b1e5818b0af1ebc49fa9bdfec63915db669b",
+    "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+    "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+    "target": "sts2-v0.107.1-steam-23811903"
+  },
+  "installation": {
+    "environments": [
+      {
+        "environment": "core-final",
+        "extra": "",
+        "seconds": 1.6080930409952998
+      },
+      {
+        "environment": "train",
+        "extra": "[train]",
+        "seconds": 9.380444042151794
+      }
+    ],
+    "offline": true,
+    "system_site_packages": false,
+    "wheel": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/training-milestone7-20260929/release/sts_agent-0.1.0-py3-none-any.whl"
+  },
+  "installed_cancellation": {
+    "argv": [
+      "/private/tmp/sts-training-m7-v7kjp9bd/train/bin/sts-agent-train",
+      "ppo",
+      "--checkpoint",
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/training-milestone7-20260929/combat-imitation-resume/final.sts-model",
+      "--config",
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/training-milestone7-20260929/combat-ppo.json",
+      "--output-dir",
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/training-milestone7-20260929-cancel",
+      "--workers",
+      "2",
+      "--decisions",
+      "20000",
+      "--time-limit",
+      "60"
+    ],
+    "cancellation_seconds": 1.314457583008334,
+    "exit": 130,
+    "last_complete_checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/training-milestone7-20260929-cancel/initial.sts-model",
+    "last_complete_checkpoint_restored": true,
+    "process_group_gone": true,
+    "report": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/training-milestone7-20260929-cancel/ppo.json",
+    "report_status": "cancelled",
+    "retained_partial_artifacts": [],
+    "status": "passed",
+    "total_seconds": 2.9352531670592725
+  },
+  "limits": [
+    "CPU/macOS arm64/Python 3.11.15 tested; no executed cross-platform matrix.",
+    "Tiny bounded jobs verify integration, not improved gameplay or sample efficiency.",
+    "Exact resume remains bound to unchanged source/runtime/corpus/objective/worker allocation.",
+    "No native build, live game launch or profile/save/Cloud access."
+  ],
+  "milestone": 7,
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "python": "3.11.15 (main, Mar  3 2026, 00:52:57) [Clang 21.0.0 (clang-2100.0.123.102)]",
+  "schema": "sts_training_delivery_evidence_v1",
+  "scope": "Installed headless training delivery; no playing-strength claim.",
+  "status": "complete",
+  "temporary_environment_cleanup": {
+    "removed": true,
+    "retained": "Built wheel, dependency wheelhouse, scripts, logs, reports, public trajectories and private training artifacts under runs/.",
+    "seconds": 1.3114481659140438,
+    "temporary_workspace": "/private/tmp/sts-training-m7-v7kjp9bd"
+  },
+  "timing": {
+    "elapsed_before_final_gates_seconds": 475,
+    "evidence_written_utc": "2026-09-29T10:24:41.959901+00:00",
+    "final_gates_started_utc": "2026-09-29 09:56:53 UTC",
+    "phase_note": "Investigation, implementation, review and packaging overlapped; separate implementation time was not measured.",
+    "task_started_utc": "2026-09-29 09:48:58 UTC",
+    "user_wait_seconds": 0
+  },
+  "validation": {
+    "compile_and_broad_run": {
+      "broad_first_attempt": {
+        "argv": [
+          "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/.venv/bin/python",
+          "-m",
+          "pytest",
+          "-q"
+        ],
+        "failure_resolution": "socket-fixture-resolution.json",
+        "log": "full-pytest.log",
+        "no_final_summary_available": true,
+        "reported_case_manifest": "completed-prefix.json",
+        "reported_failed": 1,
+        "reported_passed": 5063,
+        "status": "command_timeout",
+        "timeout_seconds": 1200
+      },
+      "compile": {
+        "argv": [
+          "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/.venv/bin/python",
+          "-m",
+          "compileall",
+          "-q",
+          "game",
+          "tests"
+        ],
+        "exit": 0,
+        "log": "compile.log",
+        "seconds": 0.077182042
+      },
+      "continuation": {
+        "argv": [
+          "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/.venv/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "--tb=short",
+          "--durations=10",
+          "@/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/training-milestone7-20260929/remaining-tests.txt"
+        ],
+        "exit": 0,
+        "log": "remaining-pytest.log",
+        "seconds": 362.94036670797504,
+        "selected_tests": 3383,
+        "starts_at": "tests/headless/test_native_event_branches.py::test_native_solo_event_branch_matrix[FakeMerchant]"
+      },
+      "implementation": {
+        "build": "ffb3aab53dca6ea974cd2907ac28b1e5818b0af1ebc49fa9bdfec63915db669b",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "purpose": "Finish the first unreported case and remaining collection; retain the completed prefix without repeating it.",
+      "sources_unchanged": true
+    },
+    "continuation_passed": 3383,
+    "continuation_pytest_seconds": 361.98,
+    "continuation_warnings": 0,
+    "environment_only_failure": {
+      "permitted_result": {
+        "exit": 0,
+        "log": "socket-fixture-permitted.log",
+        "passed": 1,
+        "pytest_seconds": 0.01
+      },
+      "sandbox_result": {
+        "exit": 1,
+        "failure": "PermissionError at bind((127.0.0.1, 0)) before transport execution",
+        "log": "socket-fixture.log",
+        "pytest_seconds": 0.03
+      },
+      "scope": "Synthetic temporary loopback socket fixture; no live bridge or native game launch; no source changes.",
+      "test": "bridge/Sts2AgentBridge/components/item_transport/transport_tests/test_item_transport.py::EphemeralSocketTests::test_real_stdlib_sockets_use_only_test_redirect_and_client_half_close"
+    },
+    "first_attempt_time_limit_seconds": 1200,
+    "focused_fix_regression": {
+      "passed": 33,
+      "paths": [
+        "tests/test_package_layout.py",
+        "tests/agent/test_curriculum.py"
+      ],
+      "seconds": 22.38
+    },
+    "independent_semantic_review": {
+      "accepted": true,
+      "seconds": 188,
+      "test_seconds": 3.45,
+      "verified_new_cli_cases": 7
+    },
+    "prefix_passed": 5063,
+    "supplemental_environment_review_seconds": 32,
+    "total_tests_accounted_for": 8447,
+    "unnecessary_reward_identity_investigation": {
+      "reason": "Initial progress mapping omitted bridge tests; corrected before any source change.",
+      "review_seconds": 139,
+      "source_changes": false,
+      "twenty_repetitions_seconds": 6.5034
+    }
+  },
+  "wheel": {
+    "all_packaged_game_sources_match_checkout": true,
+    "bytes": 612779,
+    "path": "runs/training-milestone7-20260929/release/sts_agent-0.1.0-py3-none-any.whl",
+    "sha256": "fc44a883be1ebb81af69d7d9f4d18146820acc0890f67fdb98c5614c855e3478"
+  }
+}

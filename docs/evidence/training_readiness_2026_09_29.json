@@ -1,0 +1,588 @@
+{
+  "artifacts": {
+    "analysis": "runs/training-readiness-20260929/analysis.json",
+    "analysis_sha256": "07ab08fc50d7ac59effbe4ce3916da7897a4c6ab804e2da8a8c24ea9767f4a38",
+    "count": 669,
+    "manifest": "runs/training-readiness-20260929/artifact-manifest.json",
+    "manifest_sha256": "d5341d35d2f2504c96cdf59d740ac5f20fa0d13d803036e94f9eb2f6757b253c"
+  },
+  "campaigns": {
+    "baseline": {
+      "filtered": {
+        "combat_losses": 16,
+        "combat_wins": 74,
+        "completed": 16,
+        "cutoff_reasons": {},
+        "floors": [
+          5,
+          16,
+          11,
+          14,
+          13,
+          12,
+          7,
+          6,
+          6,
+          13,
+          10,
+          16,
+          8,
+          16,
+          13,
+          11
+        ],
+        "mean_combat_wins": 4.625,
+        "mean_last_observed_floor": 11.0625,
+        "outcomes": {
+          "defeat": 16
+        },
+        "planned": 16,
+        "policy_episode_seconds": 65.60270687704906,
+        "replay_and_analysis_seconds": 38.39042275142856,
+        "selector_toggle_cutoffs": 0,
+        "steps": 1943,
+        "win_rate": 0.0,
+        "win_rate_group_hoeffding_95": [
+          0,
+          0.3395253789351549
+        ],
+        "wins": 0
+      },
+      "original": {
+        "combat_losses": 11,
+        "combat_wins": 49,
+        "completed": 16,
+        "cutoff_reasons": {
+          "time_budget": 5
+        },
+        "floors": [
+          5,
+          16,
+          0,
+          14,
+          0,
+          0,
+          7,
+          6,
+          6,
+          13,
+          0,
+          16,
+          0,
+          16,
+          13,
+          11
+        ],
+        "mean_combat_wins": 3.0625,
+        "mean_last_observed_floor": 7.6875,
+        "outcomes": {
+          "defeat": 11,
+          "truncated": 5
+        },
+        "planned": 16,
+        "policy_episode_seconds": 494.2838189548347,
+        "replay_and_analysis_seconds": 253.19941449910402,
+        "selector_toggle_cutoffs": 5,
+        "steps": 8079,
+        "win_rate": 0.0,
+        "win_rate_group_hoeffding_95": [
+          0,
+          0.3395253789351549
+        ],
+        "wins": 0
+      }
+    },
+    "evaluation": {
+      "initializer": {
+        "combat_losses": 14,
+        "combat_wins": 70,
+        "completed": 16,
+        "cutoff_reasons": {
+          "time_budget": 1
+        },
+        "floors": [
+          11,
+          14,
+          4,
+          7,
+          12,
+          5,
+          8,
+          11,
+          10,
+          6,
+          7,
+          11,
+          16,
+          16,
+          14,
+          2
+        ],
+        "mean_combat_wins": 4.375,
+        "mean_last_observed_floor": 9.625,
+        "outcomes": {
+          "defeat": 15,
+          "truncated": 1
+        },
+        "planned": 16,
+        "policy_episode_seconds": 150.42705479240976,
+        "replay_and_analysis_seconds": 80.3522892058827,
+        "selector_toggle_cutoffs": 1,
+        "steps": 3015,
+        "win_rate": 0.0,
+        "win_rate_group_hoeffding_95": [
+          0,
+          0.3395253789351549
+        ],
+        "wins": 0
+      },
+      "learner-1": {
+        "combat_losses": 16,
+        "combat_wins": 93,
+        "completed": 16,
+        "cutoff_reasons": {},
+        "floors": [
+          10,
+          16,
+          6,
+          7,
+          13,
+          6,
+          13,
+          11,
+          8,
+          6,
+          6,
+          16,
+          8,
+          16,
+          16,
+          7
+        ],
+        "mean_combat_wins": 5.8125,
+        "mean_last_observed_floor": 10.3125,
+        "outcomes": {
+          "defeat": 16
+        },
+        "planned": 16,
+        "policy_episode_seconds": 81.7108277103398,
+        "replay_and_analysis_seconds": 46.498143788659945,
+        "selector_toggle_cutoffs": 0,
+        "steps": 2281,
+        "win_rate": 0.0,
+        "win_rate_group_hoeffding_95": [
+          0,
+          0.3395253789351549
+        ],
+        "wins": 0
+      },
+      "learner-2": {
+        "combat_losses": 13,
+        "combat_wins": 77,
+        "completed": 16,
+        "cutoff_reasons": {
+          "time_budget": 2
+        },
+        "floors": [
+          12,
+          16,
+          7,
+          7,
+          13,
+          5,
+          11,
+          11,
+          6,
+          6,
+          6,
+          7,
+          16,
+          16,
+          14,
+          6
+        ],
+        "mean_combat_wins": 4.8125,
+        "mean_last_observed_floor": 9.9375,
+        "outcomes": {
+          "defeat": 14,
+          "truncated": 2
+        },
+        "planned": 16,
+        "policy_episode_seconds": 238.90739191602916,
+        "replay_and_analysis_seconds": 124.19107166584581,
+        "selector_toggle_cutoffs": 0,
+        "steps": 4393,
+        "win_rate": 0.0,
+        "win_rate_group_hoeffding_95": [
+          0,
+          0.3395253789351549
+        ],
+        "wins": 0
+      },
+      "learner-3": {
+        "combat_losses": 16,
+        "combat_wins": 86,
+        "completed": 16,
+        "cutoff_reasons": {},
+        "floors": [
+          10,
+          16,
+          7,
+          7,
+          10,
+          6,
+          8,
+          11,
+          8,
+          6,
+          6,
+          14,
+          16,
+          16,
+          16,
+          14
+        ],
+        "mean_combat_wins": 5.375,
+        "mean_last_observed_floor": 10.6875,
+        "outcomes": {
+          "defeat": 16
+        },
+        "planned": 16,
+        "policy_episode_seconds": 77.22706916974857,
+        "replay_and_analysis_seconds": 44.10580666712485,
+        "selector_toggle_cutoffs": 0,
+        "steps": 2182,
+        "win_rate": 0.0,
+        "win_rate_group_hoeffding_95": [
+          0,
+          0.3395253789351549
+        ],
+        "wins": 0
+      }
+    }
+  },
+  "date": "2026-09-29",
+  "guard": {
+    "advanced_on_skip": [
+      "processed decisions",
+      "completed rollout count",
+      "episode cursor",
+      "skipped rollout count"
+    ],
+    "criterion": "Every raw float32 GAE advantage and replayed current value residual is exactly zero.",
+    "policy": "skip_zero_signal_v1",
+    "preserved_on_skip": [
+      "model tensors",
+      "Adam state",
+      "update RNG"
+    ],
+    "private_resume_schema": "sts_ppo_resume_v3"
+  },
+  "implementation": {
+    "build": "bcbd2e3721b59836e77fea7ca9adb6c5d7972e0c2e8010854b3098cc624d19bd",
+    "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+    "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+    "target": "sts2-v0.107.1-steam-23811903"
+  },
+  "independent_review": {
+    "agent": "/root/combat_review",
+    "analysis_script_seconds": 128,
+    "analysis_scripts": "Accepted; independently matched case/arm plans, bundle hashes and final-checkpoint joins.",
+    "final_interpretation": "Accepted; checked all campaign summaries, loop distinctions, all 30 signal-bearing batches and the no-promotion conclusion.",
+    "final_interpretation_seconds": 124,
+    "guard": "Accepted including a positive-reward perfectly predicted terminal-win probe.",
+    "guard_probe_seconds": 0.4034,
+    "guard_seconds": 73,
+    "protocol": "Accepted after cancellation/deadline checks were extended through replay and training.",
+    "protocol_seconds": 135,
+    "read_only": true
+  },
+  "limitations": "Small development pilot in one imitation lineage; no held-out claim or native-game validation. Floor is last observed public HUD, not terminal health or victory probability. Timing overlapped regression checks and is not a throughput benchmark.",
+  "paired": {
+    "baseline": {
+      "filtered": {
+        "cases": 16,
+        "conclusion": "inconclusive",
+        "difference_group_hoeffding_95": [
+          -0.6790507578703098,
+          0.6790507578703098
+        ],
+        "mean_combat_win_difference": 1.5625,
+        "mean_floor_difference": 3.375,
+        "win_rate_difference": 0.0,
+        "wins_only_candidate": 0,
+        "wins_only_initializer": 0
+      }
+    },
+    "evaluation": {
+      "learner-1": {
+        "cases": 16,
+        "conclusion": "inconclusive",
+        "difference_group_hoeffding_95": [
+          -0.6790507578703098,
+          0.6790507578703098
+        ],
+        "mean_combat_win_difference": 1.4375,
+        "mean_floor_difference": 0.6875,
+        "win_rate_difference": 0.0,
+        "wins_only_candidate": 0,
+        "wins_only_initializer": 0
+      },
+      "learner-2": {
+        "cases": 16,
+        "conclusion": "inconclusive",
+        "difference_group_hoeffding_95": [
+          -0.6790507578703098,
+          0.6790507578703098
+        ],
+        "mean_combat_win_difference": 0.4375,
+        "mean_floor_difference": 0.3125,
+        "win_rate_difference": 0.0,
+        "wins_only_candidate": 0,
+        "wins_only_initializer": 0
+      },
+      "learner-3": {
+        "cases": 16,
+        "conclusion": "inconclusive",
+        "difference_group_hoeffding_95": [
+          -0.6790507578703098,
+          0.6790507578703098
+        ],
+        "mean_combat_win_difference": 1.0,
+        "mean_floor_difference": 1.0625,
+        "win_rate_difference": 0.0,
+        "wins_only_candidate": 0,
+        "wins_only_initializer": 0
+      }
+    }
+  },
+  "posthoc_diagnostics": {
+    "reward_navigation_criterion": "Cutoff whose last 32 action kinds are exactly open_reward and close_reward; identified after observing evaluation behavior, separate from the planned selector-toggle measure.",
+    "reward_navigation_cutoffs": [
+      {
+        "case_id": "5622744638cd49ddacd8b3e96d594ec7",
+        "last32_actions": {
+          "close_reward": 16,
+          "open_reward": 16
+        },
+        "last_observed_floor": 6,
+        "outcome": {
+          "kind": "truncated",
+          "reason": "time_budget",
+          "schema": "sts_run_outcome_v1"
+        },
+        "phase": "evaluation",
+        "policy": "learner-2"
+      },
+      {
+        "case_id": "9636e0efa51640b8b8fd2deec6543144",
+        "last32_actions": {
+          "close_reward": 16,
+          "open_reward": 16
+        },
+        "last_observed_floor": 6,
+        "outcome": {
+          "kind": "truncated",
+          "reason": "time_budget",
+          "schema": "sts_run_outcome_v1"
+        },
+        "phase": "evaluation",
+        "policy": "learner-2"
+      }
+    ]
+  },
+  "protocol": {
+    "freshness": {
+      "evaluation_and_training_seeds_unused_in_those_audits": true,
+      "evaluation_disjoint_from_training": true,
+      "prior_full_run_ppo_audits_checked": 391,
+      "prior_runner_audits_checked": 132,
+      "training_ranges_disjoint": true
+    },
+    "limits": {
+      "decisions_per_campaign": 4096,
+      "decisions_per_learner": 5120,
+      "seconds_per_campaign": 90,
+      "seconds_per_evaluation_phase": 1800,
+      "seconds_per_learner": 1800,
+      "workers": 2
+    },
+    "path": "runs/training-readiness-20260929/protocol.json",
+    "selection": "Use the final checkpoint after exactly the declared training budget for every learner; no best-checkpoint selection or tuning.",
+    "sha256": "ccc9c16163359ddcbe1866c7ca74be6e7b273e0a75589a7f5cbcd8bbc9f71f13"
+  },
+  "runtime": {
+    "device": "cpu",
+    "python": "3.11.15",
+    "threads": 1,
+    "torch": "2.13.0"
+  },
+  "schema": "sts_training_readiness_evidence_v1",
+  "timings": {
+    "analysis_seconds": 67.31940562510863,
+    "campaign_phases": {
+      "baseline": 852.5035547500011,
+      "evaluation": 844.8668852909468
+    },
+    "evidence_recorded_utc": "2026-09-29T13:52:00.416059+00:00",
+    "note": "Task wall time includes implementation, overlapping reviews/checks, experiments and reporting; separate implementation time was not recorded.",
+    "separate_implementation_seconds": null,
+    "task_started_utc": "2026-09-29T12:59:12+00:00",
+    "task_wall_seconds_through_evidence": 3168.416059,
+    "training_seconds": 318.56703237397596
+  },
+  "training": {
+    "learner-1": {
+      "actor_transfer_exact": true,
+      "filtered_steps": 4,
+      "final": "ppo_v1:5613425a5f78686342c548570b6011452a654135c969a69489109b4e88c40030",
+      "initial": "ppo_v1:1598afc8c24af1f6a02db6af9b452e796c5b51f3eaddfe6010fe86515b406ec7",
+      "iterations": 10,
+      "optimizer_steps": 640,
+      "resume_verified": true,
+      "seconds": 107.58450258290395,
+      "signals": {
+        "nonzero_advantages": 5114,
+        "nonzero_returns": 5114,
+        "nonzero_rewards": 996
+      },
+      "summary": {
+        "abandoned": 0,
+        "accepted_decisions": 5120,
+        "components": {
+          "combat_loss": 41.0,
+          "combat_win": 210.0,
+          "end_turn_action": 785.0,
+          "potion_use_action": 23.0,
+          "run_abandoned": 0.0,
+          "run_defeat": 42.0,
+          "run_victory": 0.0,
+          "win_hp_fraction": 141.81836967221656
+        },
+        "controlled_attempts": 0,
+        "cutoffs": 19,
+        "decisions_per_second": 47.590497488748994,
+        "episode_attempts": 61,
+        "failed_episodes": 0,
+        "genuine_start_attempts": 61,
+        "losses": 42,
+        "mean_hp_on_win": null,
+        "potion_use_actions": 23,
+        "processed_decisions": 5120,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task": "full_run",
+        "task_return": -18.239540758194586,
+        "trained_decisions": 5120,
+        "wins": 0
+      }
+    },
+    "learner-2": {
+      "actor_transfer_exact": true,
+      "filtered_steps": 7,
+      "final": "ppo_v1:9c8970735b9c46f480ed863070995e48cae340358681711cbfca2d4f95a7100a",
+      "initial": "ppo_v1:8094c11930203fde0d5c36d5664d23ace5fa8914c89dbb780f0013ceb15abf05",
+      "iterations": 10,
+      "optimizer_steps": 608,
+      "resume_verified": true,
+      "seconds": 105.00360070820898,
+      "signals": {
+        "nonzero_advantages": 5109,
+        "nonzero_returns": 5109,
+        "nonzero_rewards": 941
+      },
+      "summary": {
+        "abandoned": 0,
+        "accepted_decisions": 5120,
+        "components": {
+          "combat_loss": 37.0,
+          "combat_win": 204.0,
+          "end_turn_action": 737.0,
+          "potion_use_action": 44.0,
+          "run_abandoned": 0.0,
+          "run_defeat": 38.0,
+          "run_victory": 0.0,
+          "win_hp_fraction": 139.49536810002357
+        },
+        "controlled_attempts": 0,
+        "cutoffs": 20,
+        "decisions_per_second": 48.76023265361916,
+        "episode_attempts": 58,
+        "failed_episodes": 0,
+        "genuine_start_attempts": 58,
+        "losses": 38,
+        "mean_hp_on_win": null,
+        "potion_use_actions": 44,
+        "processed_decisions": 5120,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task": "full_run",
+        "task_return": -14.849615797499405,
+        "trained_decisions": 5120,
+        "wins": 0
+      }
+    },
+    "learner-3": {
+      "actor_transfer_exact": true,
+      "filtered_steps": 8,
+      "final": "ppo_v1:e62461653d314c27159e0797db37444c4f9e3431e115171999cce15a8cada299",
+      "initial": "ppo_v1:154aa8198ac2433106bf013d06e9c58612c3ab38ce8bb6516c4a7bb6496da6c6",
+      "iterations": 10,
+      "optimizer_steps": 640,
+      "resume_verified": true,
+      "seconds": 105.97892908286303,
+      "signals": {
+        "nonzero_advantages": 5114,
+        "nonzero_returns": 5114,
+        "nonzero_rewards": 961
+      },
+      "summary": {
+        "abandoned": 0,
+        "accepted_decisions": 5120,
+        "components": {
+          "combat_loss": 35.0,
+          "combat_win": 213.0,
+          "end_turn_action": 744.0,
+          "potion_use_action": 25.0,
+          "run_abandoned": 0.0,
+          "run_defeat": 38.0,
+          "run_victory": 0.0,
+          "win_hp_fraction": 142.80636157561315
+        },
+        "controlled_attempts": 0,
+        "cutoffs": 20,
+        "decisions_per_second": 48.31149025856605,
+        "episode_attempts": 58,
+        "failed_episodes": 0,
+        "genuine_start_attempts": 58,
+        "losses": 38,
+        "mean_hp_on_win": null,
+        "potion_use_actions": 25,
+        "processed_decisions": 5120,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task": "full_run",
+        "task_return": -13.873840960609664,
+        "trained_decisions": 5120,
+        "wins": 0
+      }
+    }
+  },
+  "validation": {
+    "campaign_rows": 96,
+    "canonical_campaign_replays_verified": 96,
+    "command": "PYTHONPATH=. .venv/bin/python -m pytest -q tests/agent tests/test_package_layout.py",
+    "final_resume_verified": 3,
+    "focused_passed": 118,
+    "focused_seconds": 48.37,
+    "log_sha256": "7ef31e723df1a8db688e012551b77c9cec4febe9384605003a32226da06d498b",
+    "no_partial_artifacts": true,
+    "passed": 742,
+    "private_files_owner_only": 310,
+    "python_compileall": "passed",
+    "same_actor_filter_control": true,
+    "seconds": 352.95,
+    "training_decisions_audited": 15360,
+    "training_episode_reset_seeds_unique": 177
+  }
+}

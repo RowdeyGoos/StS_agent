@@ -1,6 +1,6 @@
 # Roadmap
 
-Priorities updated 2026-09-27. This file owns priorities;
+Priorities updated 2026-09-29. This file owns priorities;
 [current status](docs/STATUS.md) owns capability and evidence. Follow [AGENTS.md](AGENTS.md) for the development
 process. Completed packets and old campaign instructions are historical references.
 
@@ -41,10 +41,36 @@ Further work should start from a new concrete requirement:
    observable outcome first, then add the smallest implementation and validation
    needed. Unsupported shapes with no identified gameplay caller retain explicit
    limits; they are not an unbounded implementation queue.
-3. **Begin training or broader evaluation when requested.** Training integration,
+3. **Improve Act 1 completion.** The current training goal is Ironclad A0 Act 1
+   clear rate across Overgrowth and Underdocks, using configurable act-clear and
+   combat rewards. Full-campaign training is deferred until repeatable Act 1
+   progress. Use the [Act 1 workflow](docs/AGENT_TRAINING.md#act-1-training-and-configurable-act-rewards)
+   for the finite task horizon and paired initializer comparison. Stronger full-run learning,
    throughput targets, stronger policies, exhaustive branch/seed coverage and a
    fresh uninterrupted shared-v2 campaign are subsequent scopes. Representative
    bridge coverage does not establish strategic quality.
+   The user-requested [training plan](docs/AGENT_TRAINING.md) starts with combat
+   objectives and then full-run learning. Milestones 1–5 deliver combat episodes,
+   measured baselines, configurable objectives, faithful training records, a
+   public graph actor-critic, imitation warm-up, bounded masked PPO and resumable
+   CPU checkpoints, a finite curriculum and frozen paired combat benchmarks.
+   The first broader held-out comparison is inconclusive; selector completion
+   remains a measured weakness. Hybrid campaign evaluation continues alongside
+   combat training. Milestone 6 adds full-run demonstrations, explicit actor
+   transfer with a fresh run critic, canonical victory PPO and paired genuine
+   campaign evaluation. Milestone 7 completes the installed-command delivery,
+   clean-package checks and broad Python integration. The completed
+   [staged diagnostic](docs/AGENT_TRAINING.md#staged-learning-diagnostic-2026-09-29)
+   finds entropy-only PPO drift and pre-existing non-combat selection loops in
+   one checkpoint lineage. Requested configurable full-run rewards now provide
+   combat and run components with explicit objective transfer and canonical
+   win-rate evaluation. A shared, versioned policy layer now completes explicit
+   mandatory single-card selections across training and playback; optional and
+   multiple-card selections preserve native actions because order can matter.
+   PPO now skips updates with no advantage or value-learning signal and records
+   skipped work separately. Next, improve the remaining selector and reward-screen
+   completion behavior and establish useful Act 1 completion targets before
+   increasing training budgets.
 
 [Current status](docs/STATUS.md#implementation-gaps-versus-remaining-live-tests)
 owns remaining evidence limits, and the
@@ -84,8 +110,9 @@ per-upgrade profile is retired. Headless and bridge work can proceed in parallel
 with disjoint source ownership and shared pinned-game rule evidence.
 
 Public datasets and operational agent execution now consume the full-run
-observations/encoding in HF-46/47. Stronger policies, training-library integration
-and search remain subsequent work over that interface.
+observations/encoding in HF-46/47. CPU imitation, bounded PPO and checkpoint
+playback now use that interface. Stronger policies and search remain
+subsequent work.
 The [agent environment plan](docs/AGENT_ENVIRONMENT.md) defines the shared-contract,
 bridge-adapter and Gymnasium milestones and their observable acceptance cases.
 Its [shared contract and both bounded producers](docs/AGENT_CONTRACT.md) are

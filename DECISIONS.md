@@ -179,6 +179,28 @@ raw responses, identifiers or secrets. They do not convert an accepted receipt,
 partial progress or an unknown native cause into completed-run evidence. Preserve
 the selected controller's validation, mutation budget and exceptional-exit cleanup.
 
+## PPO updates require a task-learning signal
+
+Current headless PPO skips an entire rollout update when every raw advantage
+and replayed value error is exactly zero. Entropy alone must not change an
+initializer on such a batch. The check is exact and preserves nonzero bootstrap
+or critic signals. Skips leave model, optimizer and update RNG unchanged while
+advancing collection progress; reports and resume state distinguish those counts.
+The [training guide](docs/AGENT_TRAINING.md#ppo-signal-guard-and-three-learner-pilot)
+owns the implementation details and measured results.
+
+## Act 1 is the current campaign-policy curriculum goal
+
+Train and evaluate Ironclad A0 Act 1 completion before pursuing three-act campaign
+strength. Task success is the existing public act-transition boundary after boss
+rewards, with zero task bootstrap and a configurable once-per-act bonus. Canonical
+campaign victory retains its Architect meaning; an Act 1 endpoint is recorded as
+an external stop of that unfinished campaign. Bind the task horizon and reward
+weights together in the objective identity so transfer resets incompatible value
+predictions and optimizer state. Use paired Act 1 clear rates against a frozen
+initializer to measure progress. The [training guide](docs/AGENT_TRAINING.md#act-1-training-and-configurable-act-rewards)
+owns usage and results.
+
 ## Maintaining this record
 
 Add a short decision when architecture, training defaults or workflow materially

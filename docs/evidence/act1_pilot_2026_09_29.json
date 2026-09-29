@@ -1,0 +1,629 @@
+{
+  "artifacts": {
+    "analysis_sha256": "ac96d4a1957f5b092bb9ec0973164e75cce6c3b2c8b8a1eef30434de2c980d25",
+    "manifest_sha256": "a7f918c5e7ec8fbb4ca7b078107c26bb1355f34ebbb68a477ce9f38a954281f5",
+    "private_file_count": 420,
+    "private_root": "runs/act1-pilot-20260929-private",
+    "public_file_count": 464,
+    "public_root": "runs/act1-pilot-20260929"
+  },
+  "checks": {
+    "canonical_evaluation_replays_verified": 80,
+    "existing_758_test_source_and_runtime_match": true,
+    "final_resume_verified": 3,
+    "no_partial_artifacts": true,
+    "paired_starts_verified": 16,
+    "ppo_decisions_audited": 30720,
+    "private_files_owner_only": 420,
+    "unique_training_episode_reset_seeds": 303,
+    "validation_log_sha256": "6f9ff3881a2ddbff7b4dcdd470338dbfa715cc170466584dda23379fe4d36d06"
+  },
+  "conclusion": "No observed Act 1 clear-rate improvement. Every learned policy and the initializer cleared 0/16 paired starts; the heuristic cleared 1/16. Learners 1 and 3 advanced farther on average; learner 2 regressed and retained the initializer optional-selection loop. No checkpoint was promoted.",
+  "date": "2026-09-29",
+  "implementation": {
+    "build": "9c3814b500b4ca80276df023abdc3f1ede7ce8e9b3bca8c770b141973bd11dbc",
+    "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+    "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+    "target": "sts2-v0.107.1-steam-23811903"
+  },
+  "limitations": "Small development pilot in one imitation lineage. Not a held-out test, native-game validation or throughput benchmark. Results are per learner; the shared evaluation cases are not independent across learners. Floors are last observed public HUD values.",
+  "next_recommendation": "Use fresh training cases for targeted Act 1 late-act/boss practice and successful demonstrations, including optional-card selection completion; retain separate genuine-start paired evaluation.",
+  "packaged_utc": "2026-09-29 15:06:27 UTC",
+  "paired_vs_initializer": {
+    "learner-1": {
+      "act1_clear_rate_difference": 0.0,
+      "act1_clears_only_candidate": 0,
+      "act1_clears_only_initializer": 0,
+      "cases": 16,
+      "conclusion": "inconclusive",
+      "difference_group_hoeffding_95": [
+        -0.6790507578703098,
+        0.6790507578703098
+      ],
+      "mean_combat_win_difference": 2.0,
+      "mean_floor_difference": 1.5
+    },
+    "learner-2": {
+      "act1_clear_rate_difference": 0.0,
+      "act1_clears_only_candidate": 0,
+      "act1_clears_only_initializer": 0,
+      "cases": 16,
+      "conclusion": "inconclusive",
+      "difference_group_hoeffding_95": [
+        -0.6790507578703098,
+        0.6790507578703098
+      ],
+      "mean_combat_win_difference": 0.6875,
+      "mean_floor_difference": -1.1875
+    },
+    "learner-3": {
+      "act1_clear_rate_difference": 0.0,
+      "act1_clears_only_candidate": 0,
+      "act1_clears_only_initializer": 0,
+      "cases": 16,
+      "conclusion": "inconclusive",
+      "difference_group_hoeffding_95": [
+        -0.6790507578703098,
+        0.6790507578703098
+      ],
+      "mean_combat_win_difference": 1.75,
+      "mean_floor_difference": 1.75
+    }
+  },
+  "protocol": {
+    "baseline_arms": [
+      "heuristic",
+      "initializer"
+    ],
+    "cases": [
+      {
+        "case_id": "5623efa988ac4d96b316769a41f20d32",
+        "first_act": "overgrowth",
+        "source_group": "5623efa988ac4d96b316769a41f20d32"
+      },
+      {
+        "case_id": "6cb16691faeb4b0187ab7c8e74e47c27",
+        "first_act": "underdocks",
+        "source_group": "6cb16691faeb4b0187ab7c8e74e47c27"
+      },
+      {
+        "case_id": "c0e9833a4fa44d2b98fd176a5acf1713",
+        "first_act": "overgrowth",
+        "source_group": "c0e9833a4fa44d2b98fd176a5acf1713"
+      },
+      {
+        "case_id": "5b82725bf779400497513ea100b40f1f",
+        "first_act": "underdocks",
+        "source_group": "5b82725bf779400497513ea100b40f1f"
+      },
+      {
+        "case_id": "00789bc043ea493a8905daf46d0ba2f1",
+        "first_act": "overgrowth",
+        "source_group": "00789bc043ea493a8905daf46d0ba2f1"
+      },
+      {
+        "case_id": "7e7bcbbc7b1746118f3191f92211a815",
+        "first_act": "underdocks",
+        "source_group": "7e7bcbbc7b1746118f3191f92211a815"
+      },
+      {
+        "case_id": "362668d3ed4f46fd941fb08394dc109f",
+        "first_act": "overgrowth",
+        "source_group": "362668d3ed4f46fd941fb08394dc109f"
+      },
+      {
+        "case_id": "1408a2641c1d48e0acd0d7a5a793a70d",
+        "first_act": "underdocks",
+        "source_group": "1408a2641c1d48e0acd0d7a5a793a70d"
+      },
+      {
+        "case_id": "01f3c4c1c7a748aea4b2f4b4b64c6796",
+        "first_act": "overgrowth",
+        "source_group": "01f3c4c1c7a748aea4b2f4b4b64c6796"
+      },
+      {
+        "case_id": "6af0da0a6a574a848a94fc707eda0cd4",
+        "first_act": "underdocks",
+        "source_group": "6af0da0a6a574a848a94fc707eda0cd4"
+      },
+      {
+        "case_id": "5714a07625f74eccae67d96aa07c3a1f",
+        "first_act": "overgrowth",
+        "source_group": "5714a07625f74eccae67d96aa07c3a1f"
+      },
+      {
+        "case_id": "973b8779701249c3a19f82fbd44adcd8",
+        "first_act": "underdocks",
+        "source_group": "973b8779701249c3a19f82fbd44adcd8"
+      },
+      {
+        "case_id": "5ca4491268064dcd8f12cfa8555b6c72",
+        "first_act": "overgrowth",
+        "source_group": "5ca4491268064dcd8f12cfa8555b6c72"
+      },
+      {
+        "case_id": "292013435b5f493a9e66f7f93755826a",
+        "first_act": "underdocks",
+        "source_group": "292013435b5f493a9e66f7f93755826a"
+      },
+      {
+        "case_id": "3a7d3efddee64aa0bb510ce630f13df2",
+        "first_act": "overgrowth",
+        "source_group": "3a7d3efddee64aa0bb510ce630f13df2"
+      },
+      {
+        "case_id": "3f8c49c4012b4b16a956d904a15da2bb",
+        "first_act": "underdocks",
+        "source_group": "3f8c49c4012b4b16a956d904a15da2bb"
+      }
+    ],
+    "comparison": "Same 16 genuine Ironclad A0 starts for heuristic, initializer and every final learner. Greedy evaluation. Baselines executed once and reused only within this frozen protocol.",
+    "config_sha256": "0393330491e0859f5328e2d7489d4a0282a87fca66257e4bff93bc1164ada01b",
+    "evaluation_arms": [
+      "learner-1",
+      "learner-2",
+      "learner-3"
+    ],
+    "evidence": "headless_rollout",
+    "experiment": {
+      "encounters": [
+        "overgrowth",
+        "underdocks"
+      ],
+      "ppo": {
+        "batch_size": 16,
+        "clip_ratio": 0.2,
+        "entropy_weight": 0.01,
+        "episode_decisions": 512,
+        "episode_seconds": 120.0,
+        "epochs": 2,
+        "gae_lambda": 0.95,
+        "gamma": 1.0,
+        "gradient_clip": 0.5,
+        "learning_rate": 0.0003,
+        "normalize_advantages": true,
+        "rollout_steps": 1024,
+        "target_kl": 0.03,
+        "value_weight": 0.5
+      },
+      "schema": "sts_ppo_experiment_v2",
+      "source": "ironclad_a0_full_run_v1",
+      "training": {
+        "action_policy": "commit_single_card_v1",
+        "mode": "full_run",
+        "reward": {
+          "goal": "act1",
+          "schema": "sts_full_run_reward_v3",
+          "weights": {
+            "act_cleared": 1.0,
+            "combat_loss": 0.0,
+            "combat_win": 0.1,
+            "end_turn_action": -0.001,
+            "potion_use_action": 0.0,
+            "run_abandoned": -1.0,
+            "run_defeat": -1.0,
+            "run_victory": 0.0,
+            "win_hp_fraction": 0.025
+          }
+        },
+        "scenario_set": "ironclad_a0_full_run_v1"
+      }
+    },
+    "freshness": {
+      "all_chosen_seeds_disjoint": true,
+      "new_validation_starts": 16,
+      "prior_generated_headless_audits_checked": 809,
+      "reserved_training_seeds": 30720
+    },
+    "goal": "act1",
+    "implementation": {
+      "build": "9c3814b500b4ca80276df023abdc3f1ede7ce8e9b3bca8c770b141973bd11dbc",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "learners": [
+      "learner-1",
+      "learner-2",
+      "learner-3"
+    ],
+    "limitations": "Small development pilot in one imitation lineage. Not a held-out test, native-game validation or throughput benchmark.",
+    "limits": {
+      "decisions_per_episode": 1024,
+      "decisions_per_learner": 10240,
+      "seconds_per_episode": 90,
+      "seconds_per_learner": 600,
+      "seconds_per_panel": 1800,
+      "workers": 2
+    },
+    "loop_definitions": {
+      "reward_navigation": "Cutoff with a last-32-action tail containing exactly open_reward and close_reward.",
+      "selector": "Cutoff with a last-32-action tail consisting only of select/deselect in one selector family, including a deselect."
+    },
+    "primary": "Act 1 clear rate at the public completion boundary; every planned case stays in the denominator.",
+    "private_registry_sha256": "4dd1155334761e65a08cefed75c7e0b7c8ba7067f3ca31df9450a7f9d249a33b",
+    "replay_helper_sha256": "52e81bcd3d80f4bd4a53b5c1d50a653a3fc4607705283f8652f7f79b5a39d8d7",
+    "runtime": {
+      "device": "cpu",
+      "python": "3.11.15",
+      "threads": 1,
+      "torch": "2.13.0"
+    },
+    "schema": "sts_act1_pilot_protocol_v1",
+    "script_sha256": "a2821068f65fa4cca8b243caaa5da3e4b4d45f2f9fa64d805ea7e9855528e5f0",
+    "secondary": [
+      "defeats",
+      "decision/time cutoffs",
+      "failed and unattempted episodes",
+      "last observed floor",
+      "confirmed combat outcomes",
+      "selector toggle loops",
+      "reward navigation loops",
+      "training reward components"
+    ],
+    "selection": "Report every final checkpoint after the fixed budget; no hyperparameter tuning, best-checkpoint selection or promotion.",
+    "source": {
+      "identity": "imitation_v1:5532c80ab5ebdaa2e05d31221ec0bfefb73fa210338d2bf136cd1f343bcc235e",
+      "path": "runs/training-readiness-20260929/filtered-initializer.sts-model",
+      "sha256": "5532c80ab5ebdaa2e05d31221ec0bfefb73fa210338d2bf136cd1f343bcc235e"
+    },
+    "split": "validation",
+    "training_horizon": "1024 decisions per rollout shared by two workers, at most 512 decisions per episode; remaining quota may shorten an episode.",
+    "update_policy": "skip_zero_signal_v1"
+  },
+  "protocol_sha256": "f3ae986adbe6cbc0a99109c573192c5728a1bc9be1286626df609a55b5286646",
+  "runtime": {
+    "device": "cpu",
+    "python": "3.11.15",
+    "threads": 1,
+    "torch": "2.13.0"
+  },
+  "schema": "sts_act1_pilot_evidence_v1",
+  "session_first_observed_utc": "2026-09-29 14:30:42 UTC",
+  "status": "complete",
+  "summary": {
+    "heuristic": {
+      "abandoned": 0,
+      "act1_clear_rate": 0.0625,
+      "act1_clear_rate_group_hoeffding_95": [
+        0,
+        0.4020253789351549
+      ],
+      "act1_clears": 1,
+      "attempted": 16,
+      "combat_losses": 15,
+      "combat_wins": 109,
+      "cutoff_reasons": {},
+      "cutoffs": 0,
+      "decisions_per_second": 32.12274339541968,
+      "defeats": 15,
+      "failures": 0,
+      "mean_combat_wins": 6.8125,
+      "mean_last_observed_floor": 14.6875,
+      "planned": 16,
+      "policy_seconds": 15.200082991970703,
+      "regions": {
+        "overgrowth": {
+          "act1_clears": 1,
+          "planned": 8
+        },
+        "underdocks": {
+          "act1_clears": 0,
+          "planned": 8
+        }
+      },
+      "reward_navigation_cutoffs": 0,
+      "run_wins": 0,
+      "selector_toggle_cutoffs": 0,
+      "steps": 2869,
+      "total_seconds": 89.31366679002531,
+      "unattempted": 0
+    },
+    "initializer": {
+      "abandoned": 0,
+      "act1_clear_rate": 0.0,
+      "act1_clear_rate_group_hoeffding_95": [
+        0,
+        0.3395253789351549
+      ],
+      "act1_clears": 0,
+      "attempted": 16,
+      "combat_losses": 14,
+      "combat_wins": 69,
+      "cutoff_reasons": {
+        "decision_budget": 1
+      },
+      "cutoffs": 1,
+      "decisions_per_second": 21.065239179947948,
+      "defeats": 15,
+      "failures": 0,
+      "mean_combat_wins": 4.3125,
+      "mean_last_observed_floor": 9.875,
+      "planned": 16,
+      "policy_seconds": 43.00587204704061,
+      "regions": {
+        "overgrowth": {
+          "act1_clears": 0,
+          "planned": 8
+        },
+        "underdocks": {
+          "act1_clears": 0,
+          "planned": 8
+        }
+      },
+      "reward_navigation_cutoffs": 0,
+      "run_wins": 0,
+      "selector_toggle_cutoffs": 1,
+      "steps": 2792,
+      "total_seconds": 132.54062658152543,
+      "unattempted": 0
+    },
+    "learner-1": {
+      "abandoned": 0,
+      "act1_clear_rate": 0.0,
+      "act1_clear_rate_group_hoeffding_95": [
+        0,
+        0.3395253789351549
+      ],
+      "act1_clears": 0,
+      "attempted": 16,
+      "combat_losses": 15,
+      "combat_wins": 101,
+      "cutoff_reasons": {},
+      "cutoffs": 0,
+      "decisions_per_second": 25.979495479597762,
+      "defeats": 16,
+      "failures": 0,
+      "mean_combat_wins": 6.3125,
+      "mean_last_observed_floor": 11.375,
+      "planned": 16,
+      "policy_seconds": 28.04264790704474,
+      "regions": {
+        "overgrowth": {
+          "act1_clears": 0,
+          "planned": 8
+        },
+        "underdocks": {
+          "act1_clears": 0,
+          "planned": 8
+        }
+      },
+      "reward_navigation_cutoffs": 0,
+      "run_wins": 0,
+      "selector_toggle_cutoffs": 0,
+      "steps": 2449,
+      "total_seconds": 94.26664970931597,
+      "unattempted": 0
+    },
+    "learner-2": {
+      "abandoned": 0,
+      "act1_clear_rate": 0.0,
+      "act1_clear_rate_group_hoeffding_95": [
+        0,
+        0.3395253789351549
+      ],
+      "act1_clears": 0,
+      "attempted": 16,
+      "combat_losses": 14,
+      "combat_wins": 80,
+      "cutoff_reasons": {
+        "decision_budget": 1
+      },
+      "cutoffs": 1,
+      "decisions_per_second": 21.47300220739031,
+      "defeats": 15,
+      "failures": 0,
+      "mean_combat_wins": 5.0,
+      "mean_last_observed_floor": 8.6875,
+      "planned": 16,
+      "policy_seconds": 43.329809626797214,
+      "regions": {
+        "overgrowth": {
+          "act1_clears": 0,
+          "planned": 8
+        },
+        "underdocks": {
+          "act1_clears": 0,
+          "planned": 8
+        }
+      },
+      "reward_navigation_cutoffs": 0,
+      "run_wins": 0,
+      "selector_toggle_cutoffs": 1,
+      "steps": 2847,
+      "total_seconds": 132.58509324886836,
+      "unattempted": 0
+    },
+    "learner-3": {
+      "abandoned": 0,
+      "act1_clear_rate": 0.0,
+      "act1_clear_rate_group_hoeffding_95": [
+        0,
+        0.3395253789351549
+      ],
+      "act1_clears": 0,
+      "attempted": 16,
+      "combat_losses": 15,
+      "combat_wins": 97,
+      "cutoff_reasons": {},
+      "cutoffs": 0,
+      "decisions_per_second": 26.70531086774925,
+      "defeats": 16,
+      "failures": 0,
+      "mean_combat_wins": 6.0625,
+      "mean_last_observed_floor": 11.625,
+      "planned": 16,
+      "policy_seconds": 25.68812988209538,
+      "regions": {
+        "overgrowth": {
+          "act1_clears": 0,
+          "planned": 8
+        },
+        "underdocks": {
+          "act1_clears": 0,
+          "planned": 8
+        }
+      },
+      "reward_navigation_cutoffs": 0,
+      "run_wins": 0,
+      "selector_toggle_cutoffs": 0,
+      "steps": 2350,
+      "total_seconds": 87.99747779150493,
+      "unattempted": 0
+    }
+  },
+  "task": "Bounded three-learner Act 1 PPO pilot and paired genuine-start validation.",
+  "timings": {
+    "artifact_packaging_seconds": 1.15736462501809,
+    "audit_seconds": 217.78663558303379,
+    "panels": {
+      "baseline": 388.1079478750471,
+      "evaluation": 530.5130615830421
+    },
+    "training_seconds": 652.3232037080452
+  },
+  "training": {
+    "learner-1": {
+      "actor_transfer_exact": true,
+      "filtered_steps": 13,
+      "final": "ppo_v1:582e274391210037d1adc9631f1f40a8547a46e32ecccd7acd0e3ed557645fb2",
+      "iterations": 10,
+      "resume_verified": true,
+      "seconds": 218.3834543330595,
+      "signals": {
+        "nonzero_advantages": 10237,
+        "nonzero_returns": 10237,
+        "nonzero_rewards": 1904
+      },
+      "summary": {
+        "abandoned": 0,
+        "accepted_decisions": 10240,
+        "act1_clear_rate": 0.010101010101010102,
+        "act1_clears": 1,
+        "components": {
+          "act_cleared": 1.0,
+          "combat_loss": 77.0,
+          "combat_win": 405.0,
+          "end_turn_action": 1497.0,
+          "potion_use_action": 55.0,
+          "run_abandoned": 0.0,
+          "run_defeat": 78.0,
+          "run_victory": 0.0,
+          "win_hp_fraction": 274.9505503708428
+        },
+        "controlled_attempts": 0,
+        "cutoffs": 20,
+        "decisions_per_second": 46.88999920471466,
+        "episode_attempts": 99,
+        "failed_episodes": 0,
+        "genuine_start_attempts": 99,
+        "goal": "act1",
+        "losses": 78,
+        "mean_hp_on_win": null,
+        "potion_use_actions": 55,
+        "processed_decisions": 10240,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task": "full_run",
+        "task_return": -31.123236240728925,
+        "trained_decisions": 10240,
+        "wins": 0
+      }
+    },
+    "learner-2": {
+      "actor_transfer_exact": true,
+      "filtered_steps": 15,
+      "final": "ppo_v1:762304ce9d7243386415fdabc276239bf619cd01485958d524daac1443a9f899",
+      "iterations": 10,
+      "resume_verified": true,
+      "seconds": 215.3802310419269,
+      "signals": {
+        "nonzero_advantages": 10238,
+        "nonzero_returns": 10238,
+        "nonzero_rewards": 1962
+      },
+      "summary": {
+        "abandoned": 0,
+        "accepted_decisions": 10240,
+        "act1_clear_rate": 0.0,
+        "act1_clears": 0,
+        "components": {
+          "act_cleared": 0.0,
+          "combat_loss": 80.0,
+          "combat_win": 406.0,
+          "end_turn_action": 1553.0,
+          "potion_use_action": 52.0,
+          "run_abandoned": 0.0,
+          "run_defeat": 85.0,
+          "run_victory": 0.0,
+          "win_hp_fraction": 278.74396972409346
+        },
+        "controlled_attempts": 0,
+        "cutoffs": 20,
+        "decisions_per_second": 47.543824939098684,
+        "episode_attempts": 105,
+        "failed_episodes": 0,
+        "genuine_start_attempts": 105,
+        "goal": "act1",
+        "losses": 85,
+        "mean_hp_on_win": null,
+        "potion_use_actions": 52,
+        "processed_decisions": 10240,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task": "full_run",
+        "task_return": -38.984400756897635,
+        "trained_decisions": 10240,
+        "wins": 0
+      }
+    },
+    "learner-3": {
+      "actor_transfer_exact": true,
+      "filtered_steps": 25,
+      "final": "ppo_v1:6973e6fa06934da500f69e1f69c65ee1f3d2bef017536f06297a567fcf47a6d6",
+      "iterations": 10,
+      "resume_verified": true,
+      "seconds": 218.5595183330588,
+      "signals": {
+        "nonzero_advantages": 10228,
+        "nonzero_returns": 10228,
+        "nonzero_rewards": 1919
+      },
+      "summary": {
+        "abandoned": 0,
+        "accepted_decisions": 10240,
+        "act1_clear_rate": 0.0,
+        "act1_clears": 0,
+        "components": {
+          "act_cleared": 0.0,
+          "combat_loss": 75.0,
+          "combat_win": 404.0,
+          "end_turn_action": 1513.0,
+          "potion_use_action": 121.0,
+          "run_abandoned": 0.0,
+          "run_defeat": 79.0,
+          "run_victory": 0.0,
+          "win_hp_fraction": 279.1469249266641
+        },
+        "controlled_attempts": 0,
+        "cutoffs": 20,
+        "decisions_per_second": 46.85222624070508,
+        "episode_attempts": 99,
+        "failed_episodes": 0,
+        "genuine_start_attempts": 99,
+        "goal": "act1",
+        "losses": 79,
+        "mean_hp_on_win": null,
+        "potion_use_actions": 121,
+        "processed_decisions": 10240,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task": "full_run",
+        "task_return": -33.13432687683338,
+        "trained_decisions": 10240,
+        "wins": 0
+      }
+    }
+  },
+  "validation": "No production sources, tests or dependencies changed. Reused the preceding 758-test pass after verifying its implementation and runtime match; all new experiment artifacts were audited."
+}
