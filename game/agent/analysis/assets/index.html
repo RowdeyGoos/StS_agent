@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Decision lab · StS agent</title><link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <aside class="rail"><div class="mark" aria-label="StS agent">S<span>2</span></div><div class="rail-text">DECISION LAB</div><span class="rail-foot">LOCAL</span></aside>
+  <div class="shell">
+    <header><div><div class="eyebrow">STS AGENT / RESEARCH</div><h1 id="title">Decision lab</h1></div><div class="local"><span class="status-dot"></span>Offline analysis <span class="version">v1</span></div></header>
+    <nav aria-label="Analysis views"><button data-view="overview" class="active">Overview</button><button data-view="inspector">Run inspector</button><button data-view="training">Training</button><span id="dataset-label"></span></nav>
+    <div id="error" class="error" role="alert" hidden></div><div id="loading" class="empty">Loading verified recordings…</div>
+    <main id="main" hidden>
+      <section id="overview-view">
+        <div class="section-heading"><div><div class="eyebrow">EXPERIMENT OVERVIEW</div><h2>Find the decisions worth a closer look.</h2><p>Results, behavior, and the public state behind each choice.</p></div><button id="review-flags" class="primary">Review flagged run <span>↗</span></button></div>
+        <div class="filters"><label>Dataset <select id="split"><option value="validation">Validation</option><option value="test">Test</option><option value="train">Training</option><option value="all">All splits</option></select></label><label>Evidence <select id="evidence"><option value="headless_rollout">Headless rollouts</option><option value="controlled_fixture">Controlled fixtures</option><option value="all">All evidence</option></select></label><label>Policy <select id="policy"><option value="all">All policies</option></select></label><label class="search">Search runs <input id="search" placeholder="Policy, episode, case or outcome…" type="search"></label></div>
+        <div id="metrics" class="metrics"></div>
+        <div class="overview-grid"><section class="panel"><div class="panel-heading"><h3>Policy comparison</h3><span class="muted">Descriptive results · no promotion claim</span></div><div class="table-wrap"><table><thead><tr><th>Policy / goal</th><th>Clears / recorded</th><th>Last floor</th><th>Cutoffs</th><th>Loop flags</th></tr></thead><tbody id="policy-rows"></tbody></table></div></section><section class="panel"><div class="panel-heading"><h3>Where decisions happen</h3><span class="muted">Recorded actions</span></div><div id="category-bars" class="bars"></div></section></div>
+        <section class="panel"><div class="panel-heading"><div><h3>Recorded runs <span id="run-count" class="count"></span></h3><p class="muted">Select a run to inspect its route and decisions.</p></div><button id="clear-filters" class="quiet">Reset filters</button></div><div class="table-wrap"><table class="run-table"><thead><tr><th>Run / case</th><th>Policy</th><th>Outcome</th><th>Last floor</th><th>Decisions</th><th>Review signals</th></tr></thead><tbody id="run-rows"></tbody></table></div></section>
+        <p id="pending" class="note"></p>
+      </section>
+      <section id="inspector-view" hidden>
+        <div class="section-heading compact"><div><div class="eyebrow">RUN INSPECTOR</div><h2 id="run-title">Select a recorded run</h2><p id="run-subtitle"></p></div><label class="run-switch">Run <select id="run-select" aria-label="Select recorded run"></select></label></div>
+        <div id="run-summary" class="run-summary"></div>
+        <section class="panel route-panel"><div class="panel-heading"><h3>Run timeline</h3><span class="muted">Click a floor to jump to its first action</span></div><div id="rooms" class="rooms"></div></section>
+        <div class="inspector-grid">
+          <aside class="panel decision-list"><div class="panel-heading"><h3>Decisions</h3><select id="category" aria-label="Filter decision category"><option value="all">All categories</option></select></div><div id="flags" class="flags"></div><div id="decision-list"></div></aside>
+          <div class="decision-main">
+            <section class="panel"><div class="decision-header"><div><div id="decision-category" class="eyebrow"></div><h3 id="decision-title">Choose a decision</h3></div><div class="step-controls"><button id="previous" class="icon-button" aria-label="Previous decision">←</button><label>Step <input id="step-number" type="number" min="1" aria-label="Decision number"></label><button id="next" class="icon-button" aria-label="Next decision">→</button></div></div><input id="step-slider" class="step-slider" aria-label="Decision timeline" type="range" min="0" value="0"><div id="state-stats" class="state-stats"></div><div id="state-content" class="state-content"></div><div id="transition" class="transition"></div></section>
+            <section class="panel"><div class="panel-heading"><div><h3>Legal actions & checkpoint preferences</h3><p class="muted">The marked action is what happened. Probabilities are recomputed on this exact state.</p></div><button id="compare" class="primary">Compare checkpoints</button></div><div id="model-notes" class="model-notes"></div><div class="table-wrap"><table id="actions-table"><thead id="actions-head"></thead><tbody id="actions-body"></tbody></table></div><p id="comparison-note" class="note"></p></section>
+            <section id="learner-panel" class="panel" hidden><div class="panel-heading"><h3>Recorded learner diagnostics</h3><span class="muted">From the behavior policy at collection time</span></div><div id="learner-data"></div></section>
+            <details class="panel raw"><summary>Public state & provenance</summary><p id="provenance" class="mono muted"></p><p class="note">This is structured public information. Draw-pile canonical ordering is not future draw order.</p><pre id="raw-state"></pre></details>
+          </div>
+        </div>
+      </section>
+      <section id="training-view" hidden><div class="section-heading"><div><div class="eyebrow">LEARNING DIAGNOSTICS</div><h2>Track the signal behind the updates.</h2><p>Collection returns and Act 1 completions, separated by experiment and reward specification.</p></div></div><div id="training-content"></div></section>
+      <footer><strong>Read the evidence, then the preference.</strong> A flag is a review candidate. Model probabilities are preferences; critic values estimate shaped return, not Act 1 clear probability.<details><summary>Dataset provenance & limits</summary><div id="limitations"></div></details></footer>
+    </main>
+  </div>
+</body>
+</html>

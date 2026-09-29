@@ -29,6 +29,10 @@ sts-headless-play = "game.cli.headless_play:main"
 sts-agent-play = "game.cli.agent_play:main"
 sts-agent-evaluate = "game.cli.agent_evaluate:main"
 sts-agent-train = "game.cli.agent_train:main"
+sts-agent-analyze = "game.cli.agent_analyze:main"
+
+[tool.setuptools.package-data]
+"game.agent.analysis" = ["assets/*.html", "assets/*.js", "assets/*.css"]
 
 [tool.setuptools.packages.find]
 include = ["game*"]
