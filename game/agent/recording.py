@@ -3,7 +3,7 @@
 This module never opens audit files, snapshots, or paths supplied by file content.
 Private replay information belongs outside the public dataset directory.
 """
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 import hashlib
 import json
 import os
@@ -59,6 +59,9 @@ class Trajectory:
     initial: f.PublicDecision | c.RunOutcome
     transitions: tuple[Transition, ...]
     outcome: c.RunOutcome
+    # Exact published file, INCLUDING the footer. Additive loader metadata;
+    # neither the wire format nor semantic episode equality changes.
+    sha256: str = field(default='', compare=False)
 
 
 def _require(condition, reason):
@@ -218,7 +221,7 @@ def load_trajectory(path, *, split=None, expected=None):
     """
     path = Path(path)
     _require(path.name.endswith(SUFFIX), 'Only published public trajectories can be loaded')
-    digest, transitions, outcome = hashlib.sha256(), [], None
+    digest, file_digest, transitions, outcome = hashlib.sha256(), hashlib.sha256(), [], None
     with path.open('rb') as source:
         line = source.readline()
         header = _parse(line)
@@ -232,7 +235,9 @@ def load_trajectory(path, *, split=None, expected=None):
             _require(all(getattr(metadata, key) == value for key, value in expected.items()), 'Artifact identity mismatch')
         initial = current = _public(header['initial'])
         digest.update(line)
+        file_digest.update(line)
         for line in source:
+            file_digest.update(line)
             value = _parse(line)
             _require(type(value) is dict, 'Invalid trajectory record')
             if value.get('record') == 'complete':
@@ -244,4 +249,4 @@ def load_trajectory(path, *, split=None, expected=None):
             current = transition.successor
             digest.update(line)
     _require(outcome is not None, 'Incomplete trajectory')
-    return Trajectory(metadata, initial, tuple(transitions), outcome)
+    return Trajectory(metadata, initial, tuple(transitions), outcome, file_digest.hexdigest())

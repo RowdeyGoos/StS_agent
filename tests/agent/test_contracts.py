@@ -1,9 +1,10 @@
 """Executable v1 consumer boundary, including malformed and unavailable data."""
 import ast
 from copy import deepcopy
-from dataclasses import FrozenInstanceError, replace
+from dataclasses import FrozenInstanceError, dataclass, replace
 import json
 from pathlib import Path
+from typing import Literal, Union
 
 import pytest
 
@@ -40,6 +41,107 @@ def test_shared_wire_example_and_invalid_replacements():
         parent[case['path'][-1]] = case['value']
         with pytest.raises(ContractError):
             from_dict(mutated)
+
+
+def test_cached_generic_schema_preserves_per_parse_substitutions():
+    from game.agent.contracts.codec import _read
+    from game.agent.contracts.models import Observed
+    cases = (
+        (int, 7, 7, (True, '7', 7.0)),
+        (str, 'visible', 'visible', (7, False, [])),
+        (bool, True, True, (1, 'true', [])),
+        (tuple[Counter, ...], [{'key': 'strength', 'amount': 2}],
+         (Counter('strength', 2),), ([{'key': 'strength', 'amount': True}], {})),
+    )
+    # Every instantiation uses the same Observed class cache entry. Revisit it
+    # in the opposite order to catch cached substitutions and accepted values.
+    for annotation, value, expected, invalid in (*cases, *reversed(cases)):
+        assert _read({'status': 'known', 'value': value}, Observed[annotation], '$') == known(expected)
+        for bad in invalid:
+            with pytest.raises(ContractError):
+                _read({'status': 'known', 'value': bad}, Observed[annotation], '$')
+        for bad in ({'status': 'known'}, {'status': 'known', 'value': value, 'hidden': 1}):
+            with pytest.raises(ContractError):
+                _read(bad, Observed[annotation], '$')
+
+
+def test_cached_schema_does_not_reuse_a_previous_wire_validation():
+    wire = to_dict(combat_decision())
+    assert from_dict(wire) == combat_decision()
+    wire['run']['hp'] = True  # bool must not become an integer after warming.
+    with pytest.raises(ContractError):
+        from_dict(wire)
+    wire['run']['hp'] = 80
+    wire['run']['private_rng'] = 1
+    with pytest.raises(ContractError):
+        from_dict(wire)
+    del wire['run']['private_rng']
+    del wire['run']['history']
+    with pytest.raises(ContractError):
+        from_dict(wire)
+
+
+@pytest.mark.parametrize('annotation,accepted,rejected', [
+    (int, (0, 1, -3), (True, False, 1.0, '1', None)),
+    (bool, (True, False), (0, 1, 'true', None)),
+    (str | int | bool | None, ('', 1, True, None), (1.0, [], {})),
+    (Union[int, str], (1, 'one'), (True, None, 1.0)),
+    (Literal[1] | bool, (1, True, False), (0, 2, 1.0, None)),
+    (Literal[False] | int, (False, 0, 1), (True, 0.0, None)),
+    (tuple[int, ...] | None, ([], [1, 2], None), ([True], (), '')),
+])
+def test_primitive_fast_paths_preserve_exact_types_and_literals(annotation, accepted, rejected):
+    from game.agent.contracts.codec import _read
+    for value in accepted:
+        result = _read(value, annotation, '$')
+        expected = tuple(value) if type(value) is list else value
+        assert type(result) is type(expected) and result == expected
+    for value in rejected:
+        with pytest.raises(ContractError):
+            _read(value, annotation, '$')
+
+
+def test_union_member_order_and_generic_substitutions_stay_local():
+    from game.agent.contracts.codec import _read
+    from game.agent.contracts.models import Observed, T
+
+    @dataclass(frozen=True)
+    class First:
+        value: int
+
+    @dataclass(frozen=True)
+    class Second:
+        value: int
+
+    for annotation, expected in ((First | Second, First), (Second | First, Second)):
+        assert type(_read({'value': 2}, annotation, '$')) is expected
+    mapping = {T: str}
+    assert _read({'value': 2}, First, '$', mapping) == First(2)
+    assert _read({'status': 'known', 'value': 3}, Observed[int], '$', mapping) == known(3)
+    assert _read('still a string', T, '$', mapping) == 'still a string'
+    assert mapping == {T: str}
+
+
+def test_serialization_fast_path_keeps_subclass_and_mutability_rejections():
+    from game.agent.contracts.codec import _wire
+
+    class Text(str):
+        pass
+
+    @dataclass(frozen=True)
+    class TextRecord(str):
+        value: str
+
+    @dataclass(frozen=True)
+    class Wrapper:
+        value: tuple[int, ...]
+
+    assert _wire(('visible', 1, False, None, (2,))) == ['visible', 1, False, None, [2]]
+    assert _wire(TextRecord('visible')) == {'value': 'visible'}
+    assert _wire(Wrapper((1, 2))) == {'value': [1, 2]}
+    for value in (Text('visible'), ['mutable'], {'mutable': 1}, Wrapper, 1.5):
+        with pytest.raises(ContractError):
+            _wire(value)
 
 
 def test_known_empty_zero_not_applicable_and_unavailable_are_distinct():

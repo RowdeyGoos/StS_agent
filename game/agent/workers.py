@@ -44,12 +44,23 @@ def _defer_start_signals():
                 raise KeyboardInterrupt
 
 
-def _worker(config, output, audit, episode_id, stopped, sender):
+def _worker(config, output, audit, episode_id, stopped, sender, checkpoint=None):
     # Ctrl-C is handled once by the parent, which requests an orderly stop.
     signal.signal(signal.SIGINT, signal.SIG_IGN)
     try:
+        kwargs = {}
+        if checkpoint is not None:
+            import torch
+            from game.agent.training.checkpoint import load_policy
+            from game.agent.provenance import implementation
+            torch.set_num_threads(1)
+            task = checkpoint[2]
+            learned = load_policy(checkpoint[0], expected_sha256=checkpoint[1], task=task)
+            kwargs = ({'policy':learned, 'policy_identity':learned.identity} if task == 'full_run' else
+                      {'combat_policy': learned,
+                       'policy_identity': 'hybrid_v1:' + checkpoint[1] + ':' + implementation().policy})
         result = run_episode(config, output_dir=output, audit_dir=audit,
-                             episode_id=episode_id, cancel=stopped)
+                             episode_id=episode_id, cancel=stopped, **kwargs)
         sender.send(('complete', result))
     except RunCancelled:
         sender.send(('cancelled', None))
@@ -85,7 +96,7 @@ def _cleanup(active, stopped):
         process.close()
 
 
-def run_batch(config, *, output_dir, audit_dir, episodes=1, workers=1, cancel=None):
+def run_batch(config, *, output_dir, audit_dir, episodes=1, workers=1, cancel=None, combat_checkpoint=None, run_checkpoint=None):
     """Run seeds base+i in fresh processes; result order is independent of scheduling.
 
     Each job has its own engine, policy state, RNG, files, and opaque episode ID.
@@ -98,6 +109,16 @@ def run_batch(config, *, output_dir, audit_dir, episodes=1, workers=1, cancel=No
         raise ValueError('episodes must be between 1 and 10000')
     if type(workers) is not int or not 1 <= workers <= 32:
         raise ValueError('workers must be between 1 and 32')
+    checkpoint = None
+    if combat_checkpoint is not None and run_checkpoint is not None:
+        raise ValueError('Choose either a full-run policy or a combat hybrid')
+    if combat_checkpoint is not None or run_checkpoint is not None:
+        from pathlib import Path
+        from game.agent.training.checkpoint import load_policy
+        task = 'full_run' if run_checkpoint is not None else 'combat'
+        path = str(Path(run_checkpoint if run_checkpoint is not None else combat_checkpoint).resolve())
+        frozen = load_policy(path, task=task)
+        checkpoint = (path, frozen.identity.split(':')[-1], task)
     output, audit = prepare_directories(output_dir, audit_dir)
     context = multiprocessing.get_context('spawn')
     stopped = context.Event()
@@ -112,9 +133,12 @@ def run_batch(config, *, output_dir, audit_dir, episodes=1, workers=1, cancel=No
                 if cancel is not None and cancel.is_set():
                     raise RunCancelled('Batch cancelled before starting its next worker')
                 receiver, sender = context.Pipe(duplex=False)
-                process = context.Process(target=_worker, args=(
+                args = (
                     replace(config, seed=config.seed + scheduled), str(output), str(audit),
-                    uuid.uuid4().hex, stopped, sender), name='sts-agent-worker')
+                    uuid.uuid4().hex, stopped, sender)
+                if checkpoint is not None:
+                    args += (checkpoint,)
+                process = context.Process(target=_worker, args=args, name='sts-agent-worker')
                 # Register before start so interruption cannot orphan a child
                 # between successful spawn and registration in the parent.
                 active[scheduled] = (process, receiver, time.monotonic())

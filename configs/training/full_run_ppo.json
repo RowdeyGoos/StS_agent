@@ -1,0 +1,39 @@
+{
+  "encounters": [
+    "overgrowth",
+    "underdocks"
+  ],
+  "ppo": {
+    "batch_size": 16,
+    "clip_ratio": 0.2,
+    "entropy_weight": 0.01,
+    "episode_decisions": 1024,
+    "episode_seconds": 120.0,
+    "epochs": 2,
+    "gae_lambda": 0.95,
+    "gamma": 1.0,
+    "gradient_clip": 0.5,
+    "learning_rate": 0.0003,
+    "normalize_advantages": true,
+    "rollout_steps": 512,
+    "target_kl": 0.03,
+    "value_weight": 0.5
+  },
+  "schema": "sts_ppo_experiment_v1",
+  "source": "ironclad_a0_full_run_v1",
+  "training": {
+    "mode": "full_run",
+    "reward": {
+      "schema": "sts_full_run_reward_v1",
+      "weights": {
+        "combat_loss": 0.0,
+        "combat_win": 0.0,
+        "end_turn_action": 0.0,
+        "potion_use_action": 0.0,
+        "run_victory": 1.0,
+        "win_hp_fraction": 0.0
+      }
+    },
+    "scenario_set": "ironclad_a0_full_run_v1"
+  }
+}

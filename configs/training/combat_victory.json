@@ -1,0 +1,14 @@
+{
+  "mode": "combat",
+  "scenario_set": "ironclad_a0_overgrowth_v1",
+  "reward": {
+    "schema": "sts_training_reward_v1",
+    "weights": {
+      "combat_win": 1.0,
+      "combat_loss": 0.0,
+      "win_hp_fraction": 0.0,
+      "end_turn_action": 0.0,
+      "potion_use_action": 0.0
+    }
+  }
+}

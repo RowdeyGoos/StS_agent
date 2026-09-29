@@ -43,3 +43,8 @@ class FullRunEncoder(PublicEncoder):
         if not isinstance(profile, FullRunProfile):
             raise TypeError('FullRunEncoder requires a version 2 profile')
         super().__init__(profile)
+
+    def _ready_wire(self, decision):
+        # V2 to_dict already checks every readiness invariant, including legal
+        # candidates. V1 separately checks availability and keeps its own path.
+        return self.contract.to_dict(decision)

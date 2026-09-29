@@ -11,6 +11,7 @@ from game.agent import contracts as c
 from game.agent.full_policy import choose_action
 from game.agent.headless import HeadlessAdapter
 from game.agent.provenance import implementation
+from game.agent.progress import completed_act
 from game.agent.recording import EVIDENCE, SPLITS, Metadata, SUFFIX, TrajectoryWriter
 
 
@@ -20,6 +21,11 @@ class RunCancelled(Exception):
 
 class RunFailure(RuntimeError):
     """Execution failed; do not retry a possibly applied action."""
+
+
+def _chooser(adapter, policy, combat_policy):
+    summary = adapter.combat_summary if combat_policy is not None else None
+    return combat_policy if summary is not None and not summary.completed else policy
 
 
 @dataclass(frozen=True, slots=True)
@@ -33,6 +39,7 @@ class RunConfig:
     scenario: str = 'generated_campaign_all_unlocked_v1'
     split: str = 'train'
     evidence: str = 'headless_rollout'
+    goal: str = 'full_run'
 
     def validate(self):
         from game.headless.characters import CHARACTERS
@@ -51,6 +58,8 @@ class RunConfig:
             raise ValueError('scenario must be a nonempty public identifier')
         if self.split not in SPLITS or self.evidence not in EVIDENCE:
             raise ValueError('Invalid split or evidence label')
+        if self.goal not in ('full_run', 'act1'):
+            raise ValueError('Unsupported campaign goal')
 
 
 @dataclass(frozen=True, slots=True)
@@ -88,8 +97,11 @@ def prepare_directories(output_dir, audit_dir):
 def _audit(path, *, episode_id, config, identity):
     # A private seed and exact configuration are enough to recreate this fresh
     # headless run. No engine snapshots or private state enter the public writer.
-    value = {'schema': 'sts_private_replay_v1', 'episode_id': episode_id,
-             'config': asdict(config), 'implementation': asdict(identity)}
+    settings = asdict(config)
+    if config.goal == 'full_run':
+        settings.pop('goal')
+    value = {'schema': 'sts_private_replay_v2' if config.goal == 'act1' else 'sts_private_replay_v1',
+             'episode_id': episode_id, 'config': settings, 'implementation': asdict(identity)}
     fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
     with os.fdopen(fd, 'w', encoding='utf-8') as target:
         json.dump(value, target, sort_keys=True, allow_nan=False)
@@ -99,7 +111,7 @@ def _audit(path, *, episode_id, config, identity):
 
 
 def run_episode(config, *, output_dir, audit_dir, episode_id=None, cancel=None,
-                engine_factory=None, policy=choose_action, policy_identity=None):
+                engine_factory=None, policy=choose_action, policy_identity=None, combat_policy=None):
     """Record one exclusively owned run, passing only public decisions to policy.
 
     Custom factories must be labelled controlled_fixture. Custom policies need
@@ -109,7 +121,7 @@ def run_episode(config, *, output_dir, audit_dir, episode_id=None, cancel=None,
     config.validate()
     if engine_factory is not None and config.evidence != 'controlled_fixture':
         raise ValueError('Custom engine factories require controlled_fixture evidence')
-    if policy is not choose_action and not policy_identity:
+    if (policy is not choose_action or combat_policy is not None) and not policy_identity:
         raise ValueError('Custom policies require an explicit policy identity')
     episode_id = episode_id or uuid.uuid4().hex
     identity = implementation()
@@ -151,6 +163,9 @@ def run_episode(config, *, output_dir, audit_dir, episode_id=None, cancel=None,
 
     frame = observe()
     initial = frame if isinstance(frame, c.RunOutcome) else frame.decision
+    if config.goal == 'act1' and (not hasattr(initial, 'run') or completed_act(initial) is not None
+                                 or initial.run.get('act') != 1):
+        raise RunFailure('Act 1 requires an unfinished Act 1 start')
     before = time.perf_counter()
     writer = TrajectoryWriter(path, metadata, initial)
     recording_seconds += time.perf_counter() - before
@@ -160,6 +175,11 @@ def run_episode(config, *, output_dir, audit_dir, episode_id=None, cancel=None,
             if isinstance(frame, c.RunOutcome):
                 outcome = frame
                 break
+            if config.goal == 'act1' and completed_act(frame.decision) == 1:
+                # A successful task boundary is still an unfinished campaign.
+                # This takes precedence over a coincident decision/time budget.
+                outcome = c.RunOutcome('sts_run_outcome_v1', 'truncated', 'external_stop')
+                break
             if steps >= config.max_decisions:
                 outcome = c.RunOutcome('sts_run_outcome_v1', 'truncated', 'decision_budget')
                 break
@@ -167,7 +187,10 @@ def run_episode(config, *, output_dir, audit_dir, episode_id=None, cancel=None,
                 outcome = c.RunOutcome('sts_run_outcome_v1', 'truncated', 'time_budget')
                 break
             before = time.perf_counter()
-            candidate = policy(frame.decision)
+            # Routing is a controller decision based on authoritative ownership.
+            # Nested relic/selection contexts can still belong to a live fight;
+            # a completed fight's reward/pickup choices belong to the heuristic.
+            candidate = _chooser(adapter, policy, combat_policy)(frame.decision)
             policy_seconds += time.perf_counter() - before
             if candidate not in frame.decision.candidates:
                 raise RunFailure('Policy returned an unadvertised action')

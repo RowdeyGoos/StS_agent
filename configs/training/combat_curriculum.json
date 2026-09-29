@@ -1,0 +1,26 @@
+{
+  "decisions": [
+    256,
+    256,
+    512,
+    256,
+    256
+  ],
+  "ppo": {
+    "batch_size": 32,
+    "clip_ratio": 0.2,
+    "entropy_weight": 0.01,
+    "episode_decisions": 96,
+    "episode_seconds": 30.0,
+    "epochs": 4,
+    "gae_lambda": 0.95,
+    "gamma": 1.0,
+    "gradient_clip": 0.5,
+    "learning_rate": 0.0003,
+    "normalize_advantages": true,
+    "rollout_steps": 256,
+    "target_kl": 0.03,
+    "value_weight": 0.5
+  },
+  "stage_seconds": 180.0
+}

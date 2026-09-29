@@ -1,0 +1,6 @@
+{
+  "development_cases": 64,
+  "max_decisions": 96,
+  "test_cases": 256,
+  "time_limit_seconds": 30.0
+}

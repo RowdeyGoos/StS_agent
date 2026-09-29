@@ -45,17 +45,21 @@ class PublicEncoder:
 
     def empty(self):
         p = self.profile
+        return self._tables(p.nodes, p.references, p.strings, p.candidates)
+
+    def _tables(self, nodes, references, strings, candidates):
+        p = self.profile
         return {
             'layout': np.array(p.layout, dtype=np.int64),
-            'nodes': np.zeros((p.nodes, 5), dtype=np.int64),
-            'node_mask': np.zeros(p.nodes, dtype=np.int8),
-            'references': np.zeros((p.references, 2), dtype=np.int64),
-            'reference_mask': np.zeros(p.references, dtype=np.int8),
-            'strings': np.zeros((p.strings, p.string_bytes), dtype=np.uint8),
-            'string_lengths': np.zeros(p.strings, dtype=np.int64),
-            'string_mask': np.zeros(p.strings, dtype=np.int8),
-            'candidates': np.zeros((p.candidates, 3), dtype=np.int64),
-            'action_mask': np.zeros(p.candidates, dtype=np.int8),
+            'nodes': np.zeros((nodes, 5), dtype=np.int64),
+            'node_mask': np.zeros(nodes, dtype=np.int8),
+            'references': np.zeros((references, 2), dtype=np.int64),
+            'reference_mask': np.zeros(references, dtype=np.int8),
+            'strings': np.zeros((strings, p.string_bytes), dtype=np.uint8),
+            'string_lengths': np.zeros(strings, dtype=np.int64),
+            'string_mask': np.zeros(strings, dtype=np.int8),
+            'candidates': np.zeros((candidates, 3), dtype=np.int64),
+            'action_mask': np.zeros(candidates, dtype=np.int8),
             'outcome': np.zeros(2, dtype=np.int64),
         }
 
@@ -85,12 +89,33 @@ class PublicEncoder:
         return {key: np.stack([item[key] for item in observations]) for key in observations[0]}
 
     def encode(self, decision: c.PublicDecision | c.RunOutcome) -> EncodedDecision:
+        return self._pad(self.pack(decision))
+
+    def _pad(self, packed):
+        """Pad a graph produced by this encoder's validated pack() call."""
+        obs = self.empty()
+        for key, value in packed.observation.items():
+            obs[key][:len(value)] = value
+        return EncodedDecision(obs, packed.candidate_refs, packed.reference_refs)
+
+    def _ready_wire(self, decision):
         wire = self.contract.to_dict(decision)
-        obs, p = self.empty(), self.profile
+        if not isinstance(decision, c.RunOutcome):
+            self.contract.require_ready(decision)
+        return wire
+
+    def pack(self, decision: c.PublicDecision | c.RunOutcome) -> EncodedDecision:
+        """The same validated traversal/canonicalization, allocating populated rows only.
+
+        Capacity checks and exact integer/text/reference values are unchanged.
+        Use encode() for fixed Gym shapes; pack() is for compact consumer storage.
+        """
+        wire = self._ready_wire(decision)
+        p = self.profile
         if isinstance(decision, c.RunOutcome):
+            obs = self._tables(0, 0, 0, 0)
             obs['outcome'][:] = (OUTCOMES.index(decision.kind) + 1, REASONS.index(decision.reason) + 1)
             return EncodedDecision(obs, (), ())
-        self.contract.require_ready(decision)
         nodes, strings, references, definitions = [], {}, {}, {}
 
         def check(dimension, required, capacity):
@@ -108,10 +133,7 @@ class PublicEncoder:
                 data = value.encode('utf-8')
                 check('string_bytes', len(data), p.string_bytes)
                 check('strings', len(strings) + 1, p.strings)
-                i = len(strings)
-                strings[value] = i + 1
-                obs['strings'][i, :len(data)] = np.frombuffer(data, dtype=np.uint8)
-                obs['string_lengths'][i] = len(data)
+                strings[value] = len(strings) + 1
             return strings[value]
 
         def visit(value, parent=0, field=0, position=0):
@@ -157,6 +179,11 @@ class PublicEncoder:
             except KeyError as error:
                 raise EncodingError('Candidate argument absent from public graph') from error
         rows.sort(key=lambda item: item[0])
+        obs = self._tables(len(nodes), len(references), len(strings), len(rows))
+        for value, index in strings.items():
+            data = value.encode('utf-8')
+            obs['strings'][index - 1, :len(data)] = np.frombuffer(data, dtype=np.uint8)
+            obs['string_lengths'][index - 1] = len(data)
         obs['nodes'][:len(nodes)] = nodes
         obs['node_mask'][:len(nodes)] = 1
         obs['reference_mask'][:len(references)] = 1

@@ -18,10 +18,17 @@ gym = [
 dev = [
     "pytest>=8.0,<9.0",
 ]
+train = [
+    "gymnasium>=1.0,<2.0",
+    "numpy>=1.24,<3.0",
+    "torch>=2.13,<2.14",
+]
 
 [project.scripts]
 sts-headless-play = "game.cli.headless_play:main"
 sts-agent-play = "game.cli.agent_play:main"
+sts-agent-evaluate = "game.cli.agent_evaluate:main"
+sts-agent-train = "game.cli.agent_train:main"
 
 [tool.setuptools.packages.find]
 include = ["game*"]

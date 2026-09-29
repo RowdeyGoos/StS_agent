@@ -9,6 +9,7 @@ from game.headless.run.state import RunPhase
 from .errors import AdapterFault
 from .identity import Identities
 from .projection import Projection
+from .combat_summary import summarize
 
 
 @dataclass(frozen=True, slots=True)
@@ -51,6 +52,29 @@ class HeadlessAdapter:
         self._stamp = None
         self._faulted = False
         self._roots = self._owned_roots()
+        self._combat_summary = (summarize(engine.combat, self._epoch)
+                                if engine.combat and self.decision_profile == 'full_run_v2' else None)
+
+    @property
+    def combat_summary(self):
+        """Public facts from attachment or the latest reconciled v2 transition.
+
+        Completed facts survive disposal of the combat owner. Rejected actions
+        do not refresh them. No snapshot, private identity or resolution details
+        are exposed. This controller API does not change either wire schema.
+        """
+        if self.decision_profile != 'full_run_v2':
+            raise ValueError('Combat summaries require full_run_v2')
+        if self._faulted:
+            raise AdapterFault('Adapter stopped after an execution failure.')
+        return self._combat_summary
+
+    @property
+    def run_outcome(self):
+        """Actual run endpoint, independent of any consumer's task boundary."""
+        if self._faulted:
+            raise AdapterFault('Adapter stopped after an execution failure.')
+        return self._outcome()
 
     def _owned_roots(self):
         combat = self._engine.combat
@@ -221,7 +245,9 @@ class HeadlessAdapter:
 
     def _step_full(self, action, command):
         from game.agent.contracts.full import walk
+        from game.headless.core.combat import CombatEngine
         combat_before = self._engine.combat
+        combat_epoch = self._epoch
         entities = {n.ref: n for root in (self._frame.decision.run, self._frame.decision.context)
                     for n in walk(root) if n.ref is not None}
         played = entities.get(action.subject) if action.kind == 'play_card' else None
@@ -241,6 +267,20 @@ class HeadlessAdapter:
                 result = self._engine.apply(command)
                 if action.kind != 'reroll_card_reward':
                     self._opened = False
+            # apply() has completed all synchronous cleanup/hooks. Retain the
+            # old owner to read its authoritative result, but take final HUD
+            # values from the run (e.g. Burning Blood heals after disposal).
+            completed = (summarize(combat_before, combat_epoch, completed_state=self._engine.state)
+                         if combat_before is not None and self._engine.combat is not combat_before
+                         else None)
+            # Room/event entry may create and dispose a fight synchronously.
+            # Both entry paths return that owner; its post-hook public result
+            # must survive even though no ongoing fight was ever projected.
+            instant = (combat_before is None and self._engine.combat is None and
+                       isinstance(result, CombatEngine) and result.done)
+            if instant:
+                self._epoch += 1
+                completed = summarize(result, self._epoch, completed_state=self._engine.state)
             if (played is not None and self._engine.combat is combat_before and
                     any(card.instance_id == command.instance_id for card in combat_before.player.deck.powers)):
                 self._power_cards[self._epoch, command.instance_id] = played
@@ -269,6 +309,8 @@ class HeadlessAdapter:
                 self._ids.draw_groups = ()
                 self._power_cards = {}
             self._roots = self._owned_roots()
+            self._combat_summary = completed or (
+                summarize(self._engine.combat, self._epoch) if self._engine.combat else None)
         except BaseException as error:
             self._faulted = True
             if not isinstance(error, Exception):

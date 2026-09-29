@@ -72,7 +72,7 @@ class StsEnv(gym.Env):
         self._defaults = self._options({'max_decisions': max_decisions,
                                        'time_limit_seconds': time_limit_seconds,
                                        'stop_at_map': stop_at_map})
-        self._adapter = self._frame = self._encoded = self._outcome = None
+        self._adapter = self._frame = self._encoded = self._outcome = self._public_state = None
         self._done = self._failed = False
 
     @staticmethod
@@ -123,6 +123,26 @@ class StsEnv(gym.Env):
         # Neither callers nor wrappers can corrupt our mask or dispatch table.
         return {key: value.copy() for key, value in self._encoded.observation.items()}
 
+    @property
+    def public_state(self):
+        """Immutable structured state from the same owner as the fixed encoding.
+
+        A cutoff retains the final decision. Bindings and engine state remain
+        private; callers dispatch a candidate's index through step().
+        """
+        if self._failed:
+            raise EnvironmentFailure('reset_required_after_failure')
+        return self._public_state
+
+    def _observe(self):
+        return self._adapter.observe()
+
+    def _encode(self, public):
+        return self.encoder.encode(public)
+
+    def _dispatch(self, candidate_ref):
+        return self._adapter.step(self._frame.binding, candidate_ref)
+
     def _info(self, report=None):
         return {'encoding': self.encoder.profile.identity,
                 'execution': None if report is None else c.to_dict(report),
@@ -131,7 +151,8 @@ class StsEnv(gym.Env):
     def _finish(self, outcome, *, preserve_decision=False):
         self._outcome = outcome
         if not preserve_decision:
-            self._encoded = self.encoder.encode(outcome)
+            self._public_state = outcome
+            self._encoded = self._encode(outcome)
         self._frame = None
         self._done = True
 
@@ -140,7 +161,7 @@ class StsEnv(gym.Env):
         return limit is not None and time.monotonic() - self._started >= limit
 
     def _refresh(self, *, initial=False):
-        frame = self._adapter.observe()
+        frame = self._observe()
         if isinstance(frame, c.RunOutcome):
             self._finish(frame)
             return
@@ -154,8 +175,9 @@ class StsEnv(gym.Env):
                 reason = 'slice_complete'
         # Even at a cutoff, an unsupported/capacity observation is a typed
         # failure. It must not be hidden behind successful slice completion.
-        encoded = self.encoder.encode(frame.decision)
+        encoded = self._encode(frame.decision)
         self._frame, self._encoded = frame, encoded
+        self._public_state = frame.decision
         if reason:
             # Nonterminal cutoffs retain the successor state and its legal mask
             # for value bootstrapping. Only flags/info carry the cutoff outcome.
@@ -176,7 +198,7 @@ class StsEnv(gym.Env):
             report = c.ExecutionReport('sts_execution_report_v1', 'rejected', 'none', 'invalid_action')
             return self._observation(), 0.0, False, False, self._info(report)
         try:
-            report = self._adapter.step(self._frame.binding, self._encoded.candidate_refs[int(action)])
+            report = self._dispatch(self._encoded.candidate_refs[int(action)])
             c.to_dict(report)
             if report.status == 'rejected':
                 # Preserve the exact cached public decision, including on stale
@@ -186,15 +208,18 @@ class StsEnv(gym.Env):
                 raise EnvironmentFailure('dispatch_' + report.status)
             self._steps += 1
             self._refresh()
-            outcome = self._outcome
-            terminated = outcome is not None and outcome.kind != 'truncated'
-            truncated = outcome is not None and outcome.kind == 'truncated'
-            reward = 1.0 if outcome is not None and outcome.kind == 'victory' else 0.0
+            reward, terminated, truncated = self._task_result()
             return self._observation(), reward, terminated, truncated, self._info(report)
         except BaseException as error:
             self._failed = True
             self._frame = None
             self._raise_failure(error, 'backend_step_failure')
+
+    def _task_result(self):
+        outcome = self._outcome
+        return (float(outcome is not None and outcome.kind == 'victory'),
+                outcome is not None and outcome.kind != 'truncated',
+                outcome is not None and outcome.kind == 'truncated')
 
     def render(self):
         if self.render_mode != 'ansi' or self._encoded is None:
@@ -206,7 +231,7 @@ class StsEnv(gym.Env):
         return self.encoder.contract.dumps(self._frame.decision)
 
     def close(self):
-        self._adapter = self._frame = self._encoded = self._outcome = None
+        self._adapter = self._frame = self._encoded = self._outcome = self._public_state = None
         self._done = True
 
 

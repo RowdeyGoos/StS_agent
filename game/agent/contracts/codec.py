@@ -1,5 +1,6 @@
 """Strict JSON boundary. The schema is an allowlist, never an engine snapshot."""
 from dataclasses import fields, is_dataclass
+from functools import lru_cache
 import json
 from types import UnionType
 from typing import Literal, TypeVar, Union, get_args, get_origin, get_type_hints
@@ -18,16 +19,37 @@ MESSAGES = {
 }
 
 
+@lru_cache(maxsize=128)
+def _dataclass_schema(cls):
+    """Cache only static class metadata, never input values or validation results.
+
+    Resolve lazily so recursive forward references are available. TypeVars stay
+    unresolved here: their substitutions belong to each individual parse.
+    """
+    return (frozenset(f.name for f in fields(cls)), tuple(get_type_hints(cls).items()),
+            tuple(getattr(cls, '__parameters__', ())))
+
+
 def _read(value, annotation, path, substitutions=None):
     substitutions = substitutions or {}
     if isinstance(annotation, TypeVar):
         annotation = substitutions[annotation]
+    # Most leaves are exact primitives; bool must never count as an integer.
+    if annotation in (str, int, bool, type(None)):
+        if type(value) is annotation:
+            return value
+        raise ContractError(f'{path}: invalid value or type')
     origin, args = get_origin(annotation), get_args(annotation)
     if origin is Literal:
         if any(type(value) is type(v) and value == v for v in args):
             return value
     elif origin in (Union, UnionType):
         for member in args:
+            # Preserve member order without raising for each scalar mismatch.
+            if member in (str, int, bool, type(None)):
+                if type(value) is member:
+                    return value
+                continue
             try:
                 return _read(value, member, path, substitutions)
             except ContractError:
@@ -37,13 +59,12 @@ def _read(value, annotation, path, substitutions=None):
             return tuple(_read(v, args[0], f'{path}[{i}]', substitutions) for i, v in enumerate(value))
     elif is_dataclass(origin or annotation):
         cls = origin or annotation
-        if type(value) is not dict or set(value) != {f.name for f in fields(cls)}:
+        names, hints, parameters = _dataclass_schema(cls)
+        if type(value) is not dict or value.keys() != names:
             raise ContractError(f'{path}: missing or extra {cls.__name__} fields')
-        mapping = {**substitutions, **dict(zip(getattr(cls, '__parameters__', ()), args))}
+        mapping = {**substitutions, **dict(zip(parameters, args))} if parameters else substitutions
         return cls(**{key: _read(value[key], kind, f'{path}.{key}', mapping)
-                      for key, kind in get_type_hints(cls).items()})
-    elif annotation in (str, int, bool, type(None)) and type(value) is annotation:
-        return value
+                      for key, kind in hints})
     raise ContractError(f'{path}: invalid value or type')
 
 
@@ -58,12 +79,14 @@ def from_dict(value):
 
 
 def _wire(value):
-    if is_dataclass(value) and not isinstance(value, type):
-        return {f.name: _wire(getattr(value, f.name)) for f in fields(value)}
-    if type(value) is tuple:
-        return [_wire(v) for v in value]
+    # Exact builtin values cannot be dataclass instances. Subclasses still take
+    # the structural path below, as they did before this fast path.
     if type(value) in (str, int, bool, type(None)):
         return value
+    if type(value) is tuple:
+        return [_wire(v) for v in value]
+    if is_dataclass(value) and not isinstance(value, type):
+        return {f.name: _wire(getattr(value, f.name)) for f in fields(value)}
     raise ContractError('Expected immutable public values')
 
 
