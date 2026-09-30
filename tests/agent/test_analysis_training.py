@@ -37,9 +37,10 @@ def collected(tmp_path):
     return output,report
 
 
-def test_real_ppo_diagnostics_and_checkpoint_preferences_share_exact_recorded_state(collected,tmp_path):
+@pytest.mark.parametrize('workers', [1, 2])
+def test_real_ppo_diagnostics_and_checkpoint_preferences_share_exact_recorded_state(collected,tmp_path,workers):
     output,training=collected
-    report=build_report([output],tmp_path/'report',goal='act1')
+    report=build_report([output],tmp_path/'report',goal='act1',workers=workers)
     assert sum(r['steps'] for r in report['runs'])==4
     assert sum(r['training']['return'] for r in report['runs'])==pytest.approx(training['summary']['task_return'])
     assert report['training'][0]['iterations'][0]['decisions']==4

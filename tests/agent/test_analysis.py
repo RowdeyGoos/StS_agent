@@ -187,7 +187,7 @@ def test_read_only_http_api_restricts_routes_host_origin_and_checks_indices(tmp_
 def test_analysis_cli_and_core_export_do_not_require_training_dependencies(tmp_path):
     source=record(tmp_path/'input');root=Path(__file__).resolve().parents[2]
     result=subprocess.run([sys.executable,'-S','-m','game.cli.agent_analyze','build','--input',str(source),
-                           '--output-dir',str(tmp_path/'report')],cwd=root,capture_output=True,text=True,timeout=30)
+                           '--output-dir',str(tmp_path/'report'),'--workers','2'],cwd=root,capture_output=True,text=True,timeout=30)
     assert result.returncode==0,result.stderr
     result=subprocess.run([sys.executable,'-S','-m','game.cli.agent_analyze','inspect',str(tmp_path/'report'),
                            '--episode','1'*32,'--step','0','--checkpoint','test=unused.sts-model'],
