@@ -21,12 +21,15 @@ def main(argv=None):
     parser.add_argument('--combat-checkpoint', help='Frozen combat comparison bundle for --full-run')
     parser.add_argument('--reference-checkpoint', help='Frozen campaign initializer to compare with --checkpoint')
     parser.add_argument('--campaign-cases', type=int, default=2)
+    parser.add_argument('--workers', type=int, default=1, help='1–8 game workers for --act1/--full-run (default: 1)')
     parser.add_argument('--freeze-suite', metavar='CONFIG', help='Freeze benchmark settings, cases and private snapshots before tuning')
     parser.add_argument('--suite', help='Frozen suite.json for paired evaluation or checkpoint selection')
     parser.add_argument('--candidate', action='append', default=[], help='Named inference bundle: imitation=PATH or ppo_NAME=PATH')
     parser.add_argument('--select-development', help='Complete benchmark.json from development; write selection.json')
     parser.add_argument('--selection', help='Locked selection.json required for --suite with --split test')
     args = parser.parse_args(argv)
+    if not 1 <= args.workers <= 8 or args.workers != 1 and not (args.act1 or args.full_run):
+        parser.error('--workers accepts 1–8 and parallel workers require --act1 or --full-run')
     try:
         from game.agent.training.evaluation import evaluate_baselines
     except ModuleNotFoundError as error:
@@ -60,10 +63,12 @@ def main(argv=None):
                 path, report = evaluate_full_run(checkpoint=args.checkpoint, combat_checkpoint=args.combat_checkpoint,
                     reference_checkpoint=args.reference_checkpoint, goal='act1' if args.act1 else 'full_run',
                     output_dir=args.output_dir, cases=args.campaign_cases, split=args.split, start_index=args.start_index,
-                    max_decisions=args.max_decisions, time_limit_seconds=args.time_limit, cancel=stopped)
+                    max_decisions=args.max_decisions, time_limit_seconds=args.time_limit, cancel=stopped,
+                    workers=args.workers)
             finally:
                 for sig, handler in previous.items(): signal.signal(sig,handler)
             print(json.dumps({'report':str(path), 'status':report['status'], 'summary':report['summary'],
+                'total_seconds':report['total_seconds'], 'execution':report['execution'],
                 'paired_vs_heuristic':report['paired_vs_heuristic'],
                 **({'paired_vs_reference':report['paired_vs_reference']} if 'paired_vs_reference' in report else {})},indent=2))
             return 130 if report['status']=='interrupted' else 0 if report['status']=='complete' else 1

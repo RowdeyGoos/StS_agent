@@ -76,7 +76,9 @@ def summarize(rows, *, goal='full_run'):
 
 def evaluate_full_run(*, checkpoint, combat_checkpoint=None, reference_checkpoint=None, output_dir,
                       cases=8, split='test', start_index=0, max_decisions=1024,
-                      time_limit_seconds=120., cancel=None, goal='full_run'):
+                      time_limit_seconds=120., cancel=None, goal='full_run', workers=1):
+    from .evaluation_workers import settings
+    execution = settings(workers)
     if split not in ('validation','test') or type(cases) is not int or not 1 <= cases <= 100:
         raise ValueError('Choose 1–100 held-out development/test campaigns')
     if goal not in ('act1','full_run') or (combat_checkpoint is None) == (reference_checkpoint is None):
@@ -105,7 +107,8 @@ def evaluate_full_run(*, checkpoint, combat_checkpoint=None, reference_checkpoin
             rows.append({'case_id':case, 'source_group':case, 'episode_id':uuid.uuid4().hex,
                 'first_act':('overgrowth','underdocks')[index%2], 'policy':name, 'status':'unattempted'})
     report = {'schema':'sts_act1_evaluation_v1' if goal=='act1' else 'sts_full_run_evaluation_v1',
-        'status':'running', 'split':split,
+        'status':'running', 'split':split, 'execution':{**execution,
+            'worker_threads':1 if workers > 1 else runtime()['threads']},
         'implementation':asdict(identity), 'runtime':runtime(), 'evidence':'headless_rollout',
         'start':'Genuine Ironclad A0 campaign; identical Gym-derived engine seed per policy/case; all-seen/unlocked profile.',
         'policies':{'heuristic':identity.policy, other:other_identity, 'learned':learned.identity},
@@ -119,22 +122,32 @@ def evaluate_full_run(*, checkpoint, combat_checkpoint=None, reference_checkpoin
     report['plan_sha256'] = publish(output/(prefix+'-plan.json'), json.dumps(report,sort_keys=True).encode())
     before = time.perf_counter()
     report['status'] = 'complete'
-    for row in rows:
-        try:
-            config = RunConfig(seed=seeds[row['case_id']], first_act=row['first_act'], split=split,
-                scenario=RUN_SCENARIO_SET+':'+row['first_act'], max_decisions=max_decisions,
-                time_limit_seconds=time_limit_seconds, goal=goal)
-            kwargs = ({'policy':learned, 'policy_identity':learned.identity} if row['policy']=='learned' else
-                      {'combat_policy':combat, 'policy_identity':other_identity} if row['policy']=='hybrid' else
-                      {'policy':reference, 'policy_identity':reference.identity} if row['policy']=='reference' else {})
-            result = run_episode(config, output_dir=output, audit_dir=private,
-                episode_id=row['episode_id'], cancel=cancel, **kwargs)
-            row.update(describe(result, split=split, goal=goal))
-        except (Exception, KeyboardInterrupt) as error:
-            row.update(status='interrupted' if isinstance(error,(RunCancelled,KeyboardInterrupt)) else 'failed',
-                       failure=getattr(error,'reason',type(error).__name__))
-            report['status'] = 'interrupted' if row['status']=='interrupted' else 'failed'
-            break
+    configs = [RunConfig(seed=seeds[row['case_id']], first_act=row['first_act'], split=split,
+        scenario=RUN_SCENARIO_SET+':'+row['first_act'], max_decisions=max_decisions,
+        time_limit_seconds=time_limit_seconds, goal=goal) for row in rows]
+    if workers > 1:
+        from .evaluation_workers import evaluate_parallel
+        paths = {'learned':checkpoint, other:combat_checkpoint if combat is not None else reference_checkpoint}
+        models = {'learned':learned, other:combat if combat is not None else reference}
+        checkpoints = {name:(str(Path(paths[name]).resolve()), model.identity.split(':')[-1],
+                            'combat' if name == 'hybrid' else 'full_run') for name,model in models.items()}
+        report.update(evaluate_parallel(rows, configs, checkpoints=checkpoints,
+            policies=report['policies'], source=report['implementation'], output=output,
+            private=private, workers=workers, cancel=cancel))
+    else:
+        for row, config in zip(rows, configs):
+            try:
+                kwargs = ({'policy':learned, 'policy_identity':learned.identity} if row['policy']=='learned' else
+                          {'combat_policy':combat, 'policy_identity':other_identity} if row['policy']=='hybrid' else
+                          {'policy':reference, 'policy_identity':reference.identity} if row['policy']=='reference' else {})
+                result = run_episode(config, output_dir=output, audit_dir=private,
+                    episode_id=row['episode_id'], cancel=cancel, **kwargs)
+                row.update(describe(result, split=split, goal=goal))
+            except (Exception, KeyboardInterrupt) as error:
+                row.update(status='interrupted' if isinstance(error,(RunCancelled,KeyboardInterrupt)) else 'failed',
+                           failure=getattr(error,'reason',type(error).__name__))
+                report['status'] = 'interrupted' if row['status']=='interrupted' else 'failed'
+                break
     report['total_seconds'] = time.perf_counter()-before
     report['summary'], report['paired_vs_heuristic'] = summarize(rows, goal=goal)
     if reference is not None:
