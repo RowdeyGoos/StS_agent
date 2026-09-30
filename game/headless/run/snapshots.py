@@ -2,7 +2,7 @@
 
 import json
 from copy import deepcopy
-from dataclasses import asdict
+from game.headless.core.state_records import state_record
 
 from game.headless.cards.catalog import DEFAULT_CARDS
 from game.headless.core.combat import CombatEngine
@@ -85,29 +85,29 @@ def capture_run(engine) -> dict:
         "state": {"seed": state.seed, "max_hp": state.max_hp, "hp": state.hp,
                   "gold": state.gold, "deck": [card_record(c) for c in state.deck],
                   "stolen_cards": [card_record(c) for c in state.stolen_cards],
-                  "completed_acts": [asdict(a) for a in state.completed_acts],
+                  "completed_acts": [state_record(a) for a in state.completed_acts],
                   "spoils_map": deepcopy(state.spoils_map), "epilogue_event_id": state.epilogue_event_id,
                   "rng": state.rng.snapshot(), "phase": state.phase.value,
                   "next_card_id": state.next_card_id, "combats_completed": state.combats_completed,
                   "current_node_id": state.current_node_id,
-                  "act_completion": None if state.act_completion is None else asdict(state.act_completion),
-                  "event_combats": [asdict(record) for record in state.event_combats],
+                  "act_completion": None if state.act_completion is None else state_record(state.act_completion),
+                  "event_combats": [state_record(record) for record in state.event_combats],
                   "active_encounter_id": state.active_encounter_id, "visited_nodes": list(state.visited_nodes),
                   "pending": deepcopy(state.pending),
-                  "config": None if state.config is None else asdict(state.config),
-                  "encounter_progression": None if state.encounter_progression is None else asdict(state.encounter_progression),
-                  "ancient_start": None if state.ancient_start is None else asdict(state.ancient_start),
-                  "event_progression": None if state.event_progression is None else asdict(state.event_progression),
-                  "unknown_rooms": None if state.unknown_rooms is None else asdict(state.unknown_rooms),
-                  "relics": [asdict(r) for r in state.relics],
+                  "config": None if state.config is None else state_record(state.config),
+                  "encounter_progression": None if state.encounter_progression is None else state_record(state.encounter_progression),
+                  "ancient_start": None if state.ancient_start is None else state_record(state.ancient_start),
+                  "event_progression": None if state.event_progression is None else state_record(state.event_progression),
+                  "unknown_rooms": None if state.unknown_rooms is None else state_record(state.unknown_rooms),
+                  "relics": [state_record(r) for r in state.relics],
                   "relic_work": deepcopy(state.relic_work),
                   "free_travels": deepcopy(state.free_travels),
                   "potion_capacity": state.potion_capacity,
-                  "potions": [None if p is None else asdict(p) for p in state.potions],
+                  "potions": [None if p is None else state_record(p) for p in state.potions],
                   "next_item_id": state.next_item_id, "potion_drop_chance": state.potion_drop_chance, "generation_odds": deepcopy(state.generation_odds), "initialization": deepcopy(state.initialization), "relic_bags": deepcopy(state.relic_bags),
                   "next_shop_id": state.next_shop_id, "shop_removals_used": state.shop_removals_used,
                   "act_index": state.act_index, "wongo_points": state.wongo_points, "freed_repy": state.freed_repy, "next_event_id": state.next_event_id, "next_treasure_id": state.next_treasure_id, "treasure_relics_drawn": list(state.treasure_relics_drawn)},
-        "graph": None if engine.graph is None else asdict(engine.graph),
+        "graph": None if engine.graph is None else state_record(engine.graph),
         "combat": None if engine.combat is None else engine.combat.snapshot(cards=engine.cards),
     }
 
@@ -230,11 +230,11 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
             if rules.scythe_gains:
                 raise ValueError('Combat Scythe gains were not synchronized with the owning run.')
             expected_pool = list(state.config.reward_potions) if state.config is not None else ["fire_potion", "block_potion"]
-            if rules.relics != [asdict(r) for r in state.relics]:
+            if rules.relics != [state_record(r) for r in state.relics]:
                 raise ValueError("Combat relic inventory differs from run ownership.")
             if (rules.potion_capacity != len(state.potions) or rules.potion_slots != state.potions.count(None) or rules.potion_pool != expected_pool
                     or rules.potions_generated or rules.gold_gained or rules.gold_lost or rules.gold_available != state.gold
-                    or rules.potions != [None if p is None else asdict(p) for p in state.potions]):
+                    or rules.potions != [None if p is None else state_record(p) for p in state.potions]):
                 raise ValueError("Combat loot differs from its owning run inventory.")
             for identity in rules.potion_uses:
                 suffix = identity.removeprefix('run.item.')

@@ -5,7 +5,7 @@ monsters sharing the deck RNG still share it after restoration. Decoding does
 not import arbitrary modules or deserialize callables.
 """
 
-from dataclasses import asdict
+from game.headless.core.state_records import state_record
 from random import Random
 
 from game.headless.cards.catalog import DEFAULT_CARDS
@@ -31,7 +31,7 @@ def card_record(card) -> dict:
     from copy import deepcopy
     return {**({"event_data": deepcopy(card.event_data)} if card.definition.definition_id == "mad_science" else {}), "definition_id": card.definition.definition_id,
             "instance_id": card.instance_id, "upgrade_level": card.upgrade_level, "combats_seen": card.combats_seen,
-            "permanent_damage": card.permanent_damage, "permanent_block": card.permanent_block, "enchantment": enchantments.record(card), "combat_state": asdict(card.combat_state)}
+            "permanent_damage": card.permanent_damage, "permanent_block": card.permanent_block, "enchantment": enchantments.record(card), "combat_state": state_record(card.combat_state)}
 
 
 def restore_card(record, cards=DEFAULT_CARDS):
@@ -60,7 +60,7 @@ def restore_card(record, cards=DEFAULT_CARDS):
         raise ValueError('Invalid permanent card block.')
     card.permanent_block = growth
     values = record["combat_state"]
-    if not isinstance(values, dict) or set(values) != set(asdict(CardState())) or type(values['extra_damage']) is not int or values['extra_damage'] < 0 or type(values['cost_change']) is not int or type(values['turn_cost_change']) is not int or type(values['combat_cost_change']) is not int or any(type(values[k]) is not bool for k in ('galvanized', 'hexed', 'bound', 'tainted', 'smog', 'is_dupe', 'free_this_turn', 'star_free_this_turn', 'free_this_combat', 'free_until_played', 'return_next_turn', 'sly_this_turn', 'sly_this_combat', 'retain_this_turn', 'retain_this_combat', 'all_enemies', 'ethereal_this_combat', 'turn_cost_until_played')) or type(values['replay_count']) is not int or values['replay_count'] < 0:
+    if not isinstance(values, dict) or set(values) != set(state_record(CardState())) or type(values['extra_damage']) is not int or values['extra_damage'] < 0 or type(values['cost_change']) is not int or type(values['turn_cost_change']) is not int or type(values['combat_cost_change']) is not int or any(type(values[k]) is not bool for k in ('galvanized', 'hexed', 'bound', 'tainted', 'smog', 'is_dupe', 'free_this_turn', 'star_free_this_turn', 'free_this_combat', 'free_until_played', 'return_next_turn', 'sly_this_turn', 'sly_this_combat', 'retain_this_turn', 'retain_this_combat', 'all_enemies', 'ethereal_this_combat', 'turn_cost_until_played')) or type(values['replay_count']) is not int or values['replay_count'] < 0:
         raise ValueError('Invalid transient card state.')
     if type(values['until_played_discount']) is not int or values['until_played_discount'] < 0:
         raise ValueError('Invalid until-played discount.')
@@ -86,7 +86,7 @@ def _tuple_tree(value):
 
 def _json_value(value):
     if isinstance(value, Intent):
-        return {"intent": asdict(value)}
+        return {"intent": state_record(value)}
     if value is None or type(value) in (bool, int, str):
         return value
     raise ValueError(f"Unsupported monster state value: {type(value).__name__}.")
@@ -121,12 +121,12 @@ def capture_combat(engine, *, cards=None, monsters=None) -> dict:
                 raise ValueError("Card definition does not match the supplied catalog.")
     return {
         "schema": SCHEMA, "cards": cards.snapshot_fingerprint(), "rngs": rngs, "combat_rng": rng_ref(engine.rng),
-        "pending_play": None if engine.player.pending_play is None else asdict(engine.player.pending_play),
+        "pending_play": None if engine.player.pending_play is None else state_record(engine.player.pending_play),
         "turn": engine.turn, "done": engine.done, "winner": engine.winner,
         "config": {"ascension": engine.ascension, "player_max_hp": engine.player_max_hp, "energy_per_turn": engine.energy_per_turn, "cards_per_turn": engine.cards_per_turn},
         "player": {**{name: getattr(engine.player, name) for name in PLAYER_FIELDS}, "statuses": dict(engine.player.statuses._counts),
                    "skip_status_tick": sorted(engine.player.statuses._skip_next_tick),
-                   "rules": asdict(engine.player.rules), "cards_played_this_turn": engine.player.cards_played_this_turn, "power_sources": dict(engine.player.power_sources)},
+                   "rules": state_record(engine.player.rules), "cards_played_this_turn": engine.player.cards_played_this_turn, "power_sources": dict(engine.player.power_sources)},
         "deck": {"rng": rng_ref(deck.rng), "niche_rng": rng_ref(deck.niche_rng), "selection_rng": rng_ref(deck.selection_rng), "target_rng": rng_ref(deck.target_rng), "generation_rng": rng_ref(deck.generation_rng), "potion_rng": rng_ref(deck.potion_rng), "energy_rng": rng_ref(deck.energy_rng), "orb_rng": rng_ref(deck.orb_rng), "original_ids": sorted(deck.original_ids), "next_instance_id": deck._next_instance_id,
                  "allocated_ids": sorted(deck._allocated_ids), "piles": pile_rows},
         "enemies": enemy_rows,
