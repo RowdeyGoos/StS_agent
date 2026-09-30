@@ -976,6 +976,14 @@ floors on average, while one regressed and retained an optional-selection loop.
 Only one of 303 training episodes cleared Act 1. No checkpoint was promoted;
 targeted late-act/boss practice and successful demonstrations are the next
 recommendation.
+The subsequent [single-learner 50k experiment](AGENT_TRAINING.md#single-learner-50k-experiment-2026-09-29)
+used eight collectors and the broader selection filter. All 50,000 decisions
+trained in 428.54 seconds without failed episodes or skipped updates. The final
+policy and its initializer with the same filter both cleared 0/16 fresh paired
+validation starts; mean last observed floors were 10.875 and 11.00. This run
+also shows no observed playing-strength improvement. Its larger rollout batch
+and changed selection mask make the timing comparison a different-workload
+measurement, rather than an isolated worker-count benchmark.
 The local [decision analysis tools](AGENT_TRAINING.md#decision-analysis-tools)
 now inspect the existing pilot's 383 public trajectories (44,027 decisions),
 including its 80 evaluation episodes and 303 training episodes. The viewer has
@@ -983,7 +991,28 @@ split/evidence filters, floor timelines, exact decision links, PPO reward/learne
 diagnostics, and same-state comparison of explicitly loaded checkpoints. Its
 exploratory flags locate both known optional-selection loops. These are public
 recording/inference results; no additional playing-strength result is claimed.
+Analysis now separates quick reported metrics (`sts-agent-analyze summary`)
+from full recording validation and viewer export (`build --workers 8`). On the
+50k experiment's 541 episodes / 56,844 decisions, quick summary took 0.128 seconds
+and the eight-worker export took 62.98 seconds, versus the previous 472.88-second
+serial export. Every compressed decision chunk matched the original; see the
+[analysis guide and benchmark evidence](AGENT_TRAINING.md#decision-analysis-tools).
+Actual Act 1/full-run evaluation games now also support 1–8 persistent workers.
+A matched 48-game / 7,066-decision benchmark took 288.55 seconds serially and
+65.86 seconds with eight workers (4.38× faster), including canonical outcome
+validation. Every recorded decision and outcome matched; planned failure and
+interruption accounting is preserved. See the
+[evaluation usage and evidence](AGENT_TRAINING.md#act-1-training-and-configurable-act-rewards).
 Combat and full-run PPO now support
 [persistent parallel collection](AGENT_TRAINING.md#parallel-ppo-collection-2026-09-29)
 with a fixed total rollout budget, deterministic worker allocation and exact
 resume at completed update boundaries. The default serial path remains available.
+A [matched Act 1 training benchmark](AGENT_TRAINING.md#direct-prepared-observation-encoding-2026-09-30)
+now measures 48.97 seconds per 8,192 decisions with eight workers, versus a fresh
+51.35-second baseline that includes the earlier optimizations. Packing validated
+public records directly and precomputing field indexes reduced collection time by
+6.9% and total time by 4.6%. All 617 final regression tests passed;
+every recorded decision and final model weight matched. External inputs and saved
+recordings retain independent validation, and stale-state guards remain intact.
+The 50k estimate of 4m 59s excludes evaluation/export and is an extrapolation,
+not a new learning result.

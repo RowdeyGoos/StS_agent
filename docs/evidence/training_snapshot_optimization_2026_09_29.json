@@ -1,0 +1,1341 @@
+{
+  "artifacts": [
+    {
+      "bytes": 54604,
+      "path": "docs/evidence/training_throughput_2026_09_29.json",
+      "sha256": "e111530cde0b529d2ba923a4cafaa3059c192924dd0717731e6e19d7314a3fe5"
+    },
+    {
+      "bytes": 19373,
+      "path": "game/headless/core/snapshots.py",
+      "sha256": "de8b39ceca4f1fba48790a37a48dc453b488adacb131110ed9c8f9fe1880eda5"
+    },
+    {
+      "bytes": 1767,
+      "path": "game/headless/core/state_records.py",
+      "sha256": "08bccd4250835aa09da1e0af286411e00464ec807c1367316995e8d7095dc1d7"
+    },
+    {
+      "bytes": 34089,
+      "path": "game/headless/run/snapshots.py",
+      "sha256": "2241c849b178daf18f28a541debcd1f26ace4b015afb62326d55ba95bb6d5d07"
+    },
+    {
+      "bytes": 903,
+      "path": "pyproject.toml",
+      "sha256": "6fb19066a0c29445de141c19e490638aff80f6159f9d79e0a0fd1ab58d7527f0"
+    },
+    {
+      "bytes": 10,
+      "path": "requirements-dev.txt",
+      "sha256": "9d6d2c2e18451cd8eb86a739cbcb1664e4342ef4ae478266a3c333dd4f73674a"
+    },
+    {
+      "bytes": 414854,
+      "path": "runs/act1-50k-8workers-20260929/chunk-01/initial.sts-model",
+      "sha256": "ccd33403e9d061f4866d4e68b7fe864605b598b24d4dbd5c695ef14c6e913642"
+    },
+    {
+      "bytes": 1034,
+      "path": "runs/act1-50k-8workers-20260929/config.json",
+      "sha256": "c697c47a83a22b2a6f2507a83590657e13faee9236b450aae9ec02f788d7d8ca"
+    },
+    {
+      "bytes": 2255,
+      "path": "runs/training-snapshot-optimization-20260929/audit.py",
+      "sha256": "4677d4e1944c8f196a040eddda760b65f778b23dfbeec9ed415dfbbf841b8c4f"
+    },
+    {
+      "bytes": 1612,
+      "path": "runs/training-snapshot-optimization-20260929/baseline-binding.json",
+      "sha256": "dd483ee7b942b1d76bdd25324bc8c40a2ad848fe36f1bafe09d677fb680ad934"
+    },
+    {
+      "bytes": 6232,
+      "path": "runs/training-snapshot-optimization-20260929/benchmark.py",
+      "sha256": "300bd510e03623b094a77334a75431b432ae38b004791f8ca25c68f49f9744e7"
+    },
+    {
+      "bytes": 251,
+      "path": "runs/training-snapshot-optimization-20260929/canonical-audit.json",
+      "sha256": "ff1cad42ebdd504d11fa51375c72b44229dcb354509fefda3185181cbacdfd98"
+    },
+    {
+      "bytes": 3460,
+      "path": "runs/training-snapshot-optimization-20260929/compare.py",
+      "sha256": "4ded4ae9fb33a006c826906d9215d20c9965de8ba900a9e21cc1787e0718a780"
+    },
+    {
+      "bytes": 414857,
+      "path": "runs/training-snapshot-optimization-20260929/optimized-1/final.sts-model",
+      "sha256": "34f17718ce8721417184bc2da7365de932321726c64ee57a649cdc9f03da3b1f"
+    },
+    {
+      "bytes": 414854,
+      "path": "runs/training-snapshot-optimization-20260929/optimized-1/initial.sts-model",
+      "sha256": "30cfaf975c7ccb51a09bd38ddd22a6f53f4a9ffed3f70286959945525cd8be1e"
+    },
+    {
+      "bytes": 146519,
+      "path": "runs/training-snapshot-optimization-20260929/optimized-1/ppo.json",
+      "sha256": "32d26b2e842cd2b2161711e91e758ac8fa84a9fc1d28ba04a5164d2bf7966e92"
+    },
+    {
+      "bytes": 5765242,
+      "path": "runs/training-snapshot-optimization-20260929/optimized-1/rollout-00001.json",
+      "sha256": "8de414765a7801948a9982e51b716143389aa74799e2ede4661f1687d1eadbb9"
+    },
+    {
+      "bytes": 5835421,
+      "path": "runs/training-snapshot-optimization-20260929/optimized-1/rollout-00002.json",
+      "sha256": "da4f7aae60069c9cde0cbc18cbb4bb4706b50983ffd658b8d9892cf965c98d67"
+    },
+    {
+      "bytes": 1783,
+      "path": "runs/training-snapshot-optimization-20260929/optimized-1/timings.json",
+      "sha256": "405580572d38bc6561f219ef652e68ef275764afc724de524ec480f7b4bbcfbb"
+    },
+    {
+      "bytes": 414856,
+      "path": "runs/training-snapshot-optimization-20260929/optimized-1/update-00001.sts-model",
+      "sha256": "41299967f4bddf01403bd879f1118c5eb76735a17dfa70132cfebc64d809da89"
+    },
+    {
+      "bytes": 414857,
+      "path": "runs/training-snapshot-optimization-20260929/optimized-1/update-00002.sts-model",
+      "sha256": "34f17718ce8721417184bc2da7365de932321726c64ee57a649cdc9f03da3b1f"
+    },
+    {
+      "bytes": 414857,
+      "path": "runs/training-snapshot-optimization-20260929/optimized-2/final.sts-model",
+      "sha256": "b6e22bb2ed606297f0f74e6f1e3834ebdfc1e6a5ca5e84db8786e40803265a12"
+    },
+    {
+      "bytes": 414854,
+      "path": "runs/training-snapshot-optimization-20260929/optimized-2/initial.sts-model",
+      "sha256": "e96b301e6519650bad40c85f14d9159d070b3ced95adffdddc7552c915103435"
+    },
+    {
+      "bytes": 146516,
+      "path": "runs/training-snapshot-optimization-20260929/optimized-2/ppo.json",
+      "sha256": "f0e1406af04d2000a50801d7998991f7e99b3656a057e70051b09975cdc87a59"
+    },
+    {
+      "bytes": 5765242,
+      "path": "runs/training-snapshot-optimization-20260929/optimized-2/rollout-00001.json",
+      "sha256": "b12c27922328806398d8b07d4f883f771ecc499e3d6e99781551a7e55716acb5"
+    },
+    {
+      "bytes": 5835421,
+      "path": "runs/training-snapshot-optimization-20260929/optimized-2/rollout-00002.json",
+      "sha256": "1bb148361655b07d6bc4ebe27d1c5007b3b7cbe483c799daa71aa95f38860b1b"
+    },
+    {
+      "bytes": 1782,
+      "path": "runs/training-snapshot-optimization-20260929/optimized-2/timings.json",
+      "sha256": "e947d4c55253871e707712fc7fceebdaf389afea7d6faed4602b283049bdaf1b"
+    },
+    {
+      "bytes": 414856,
+      "path": "runs/training-snapshot-optimization-20260929/optimized-2/update-00001.sts-model",
+      "sha256": "28c9b4c3f3d79fc7aa2a6f2d75e2b1715a34e445cc4d131494550451dd2786af"
+    },
+    {
+      "bytes": 414857,
+      "path": "runs/training-snapshot-optimization-20260929/optimized-2/update-00002.sts-model",
+      "sha256": "b6e22bb2ed606297f0f74e6f1e3834ebdfc1e6a5ca5e84db8786e40803265a12"
+    },
+    {
+      "bytes": 414857,
+      "path": "runs/training-snapshot-optimization-20260929/optimized-3/final.sts-model",
+      "sha256": "021df6402bc2d684acc74d494f992dd6995970f18966ce0cd81a563961758951"
+    },
+    {
+      "bytes": 414854,
+      "path": "runs/training-snapshot-optimization-20260929/optimized-3/initial.sts-model",
+      "sha256": "4786f134690df37c13ba5d507a48ca16ad71eec2a023e2b2c213271090dd8830"
+    },
+    {
+      "bytes": 146515,
+      "path": "runs/training-snapshot-optimization-20260929/optimized-3/ppo.json",
+      "sha256": "54fae235774d49b0f24ac7c68b8cad6b04571a914ee1df2781628263a02d916f"
+    },
+    {
+      "bytes": 5765242,
+      "path": "runs/training-snapshot-optimization-20260929/optimized-3/rollout-00001.json",
+      "sha256": "71ac1500ba1330d4d4496ac3967fe711084623d43ae59826677825a5f471337e"
+    },
+    {
+      "bytes": 5835421,
+      "path": "runs/training-snapshot-optimization-20260929/optimized-3/rollout-00002.json",
+      "sha256": "29b444a5feb43cb1a48b42b049da9718d855785e2543c35fda8b80deeb4a570c"
+    },
+    {
+      "bytes": 1781,
+      "path": "runs/training-snapshot-optimization-20260929/optimized-3/timings.json",
+      "sha256": "8d5bc5e394d9dbf727bbb7bfde73d98bead4adc9cc2bb07385753a37d797017d"
+    },
+    {
+      "bytes": 414856,
+      "path": "runs/training-snapshot-optimization-20260929/optimized-3/update-00001.sts-model",
+      "sha256": "804e7b50346490326fe5aebcbae492eca742f82ce653d002f10184754e48b56c"
+    },
+    {
+      "bytes": 414857,
+      "path": "runs/training-snapshot-optimization-20260929/optimized-3/update-00002.sts-model",
+      "sha256": "021df6402bc2d684acc74d494f992dd6995970f18966ce0cd81a563961758951"
+    },
+    {
+      "bytes": 2596,
+      "path": "runs/training-snapshot-optimization-20260929/optimized-protocol.json",
+      "sha256": "c5b1ac98de7bb56e11567cf433bfdd0d367384296bae1aec9f1b469e7da07266"
+    },
+    {
+      "bytes": 6410,
+      "path": "runs/training-snapshot-optimization-20260929/optimized-results.json",
+      "sha256": "bce74e7e9a8928cf65dff613bd1dec5d436714c96f56ae1c021652b44688ec15"
+    },
+    {
+      "bytes": 34603,
+      "path": "runs/training-snapshot-optimization-20260929/optimized-source-sha256.json",
+      "sha256": "d573a3c61e76ba9f8de94f98f5aa5b3f177199b8fbec48605f56011b7288b15b"
+    },
+    {
+      "bytes": 625960,
+      "path": "runs/training-snapshot-optimization-20260929/optimized-source.zip",
+      "sha256": "789c9d767fde4140ed2265b3851cb0a79ab49012e131480a17f788e97f086bdb"
+    },
+    {
+      "bytes": 652,
+      "path": "runs/training-snapshot-optimization-20260929/parity.json",
+      "sha256": "f302cd5084e47e096b67bd999e0a6f22920e8f711c02eebb9d5c06dfdae6bf2c"
+    },
+    {
+      "bytes": 3147,
+      "path": "runs/training-snapshot-optimization-20260929/probe.py",
+      "sha256": "09869430e71384ca223e165de1b75fb20704a1dc45ec425d0b49c8250646e29e"
+    },
+    {
+      "bytes": 414856,
+      "path": "runs/training-snapshot-optimization-20260929/profile-after-1/final.sts-model",
+      "sha256": "72267aaa740c60d0d72247972fd082e382cce4923e7c1a5f0d489e5b44fab98f"
+    },
+    {
+      "bytes": 414854,
+      "path": "runs/training-snapshot-optimization-20260929/profile-after-1/initial.sts-model",
+      "sha256": "4f129e5f1810bcb0cef1aceb513a88bd72c687552ce2a88bdb6e059d6649bda8"
+    },
+    {
+      "bytes": 73165,
+      "path": "runs/training-snapshot-optimization-20260929/profile-after-1/ppo.json",
+      "sha256": "31885736a8990466fcadc8818c0a3dc8efea55deab2a1f2a0d03f446ca3384ca"
+    },
+    {
+      "bytes": 5765242,
+      "path": "runs/training-snapshot-optimization-20260929/profile-after-1/rollout-00001.json",
+      "sha256": "7e710ed2fded90c2d006e1b6a937d520fd2e6c88a77e404d1f265add50f57f81"
+    },
+    {
+      "bytes": 1717,
+      "path": "runs/training-snapshot-optimization-20260929/profile-after-1/timings.json",
+      "sha256": "f4c93aec005c7825fb5fa25c708a9dd64f076dbbba89cd581716cb5e81835fc8"
+    },
+    {
+      "bytes": 414856,
+      "path": "runs/training-snapshot-optimization-20260929/profile-after-1/update-00001.sts-model",
+      "sha256": "72267aaa740c60d0d72247972fd082e382cce4923e7c1a5f0d489e5b44fab98f"
+    },
+    {
+      "bytes": 327769,
+      "path": "runs/training-snapshot-optimization-20260929/profile-after-1-profiles/collect-5792-1894156267519500.prof",
+      "sha256": "1cf1820c10742eda8c46ce4b9debe925b3c08fe8b98187f0876cfffc2b1d6913"
+    },
+    {
+      "bytes": 332893,
+      "path": "runs/training-snapshot-optimization-20260929/profile-after-1-profiles/collect-5793-1894158128710583.prof",
+      "sha256": "761732ed359b41c650af989818a1af15f11fb3c6eba52e987e8eb6d208edbf9f"
+    },
+    {
+      "bytes": 331505,
+      "path": "runs/training-snapshot-optimization-20260929/profile-after-1-profiles/collect-5794-1894156233503500.prof",
+      "sha256": "927006d4e1156066158e18feb762e3dcff7e7d6c76adb9d411f785f58a747821"
+    },
+    {
+      "bytes": 330970,
+      "path": "runs/training-snapshot-optimization-20260929/profile-after-1-profiles/collect-5795-1894156296847958.prof",
+      "sha256": "b981a17767c7439747c24cfffc6727dee8ab166dc0c837a019e38431fd6a4866"
+    },
+    {
+      "bytes": 332539,
+      "path": "runs/training-snapshot-optimization-20260929/profile-after-1-profiles/collect-5796-1894157984600916.prof",
+      "sha256": "ed78b790636612603e173d5bdcb8ea28ae75edb2ef71a9dbddeb2257b25494cb"
+    },
+    {
+      "bytes": 333374,
+      "path": "runs/training-snapshot-optimization-20260929/profile-after-1-profiles/collect-5797-1894160231227375.prof",
+      "sha256": "519c5965fc246b1aed2aed1d0a1c9d542582b9bd5eb8050ea9249fa6f74f8bcb"
+    },
+    {
+      "bytes": 330117,
+      "path": "runs/training-snapshot-optimization-20260929/profile-after-1-profiles/collect-5798-1894156079319083.prof",
+      "sha256": "28b5d18a31da96b1266d74edbe644849204920a495cbc9ae7daa2ef6779e4715"
+    },
+    {
+      "bytes": 336802,
+      "path": "runs/training-snapshot-optimization-20260929/profile-after-1-profiles/collect-5799-1894159238138666.prof",
+      "sha256": "b5d5fdd359f7545556a8f243108fa0e5197d0d2bf28882a5ddbb5aaf52649f62"
+    },
+    {
+      "bytes": 59424,
+      "path": "runs/training-snapshot-optimization-20260929/profile-after-1-profiles/update-5789-1894170196888583.prof",
+      "sha256": "fffb76a648f911d98b337fc2bf63aeb3728147c08bc79940b9a75e3130d6d4d6"
+    },
+    {
+      "bytes": 2595,
+      "path": "runs/training-snapshot-optimization-20260929/profile-after-protocol.json",
+      "sha256": "f12f9c82f7e8e888a9085e962c6ae9cb2ad2b6d0e465d752ebf013e16425f1ee"
+    },
+    {
+      "bytes": 2110,
+      "path": "runs/training-snapshot-optimization-20260929/profile-after-results.json",
+      "sha256": "6a4e43a5b32fd3b79e862eb4416a8d7ed48eac8d19bde9e43506146fc80cb57d"
+    },
+    {
+      "bytes": 34603,
+      "path": "runs/training-snapshot-optimization-20260929/profile-after-source-sha256.json",
+      "sha256": "d573a3c61e76ba9f8de94f98f5aa5b3f177199b8fbec48605f56011b7288b15b"
+    },
+    {
+      "bytes": 625960,
+      "path": "runs/training-snapshot-optimization-20260929/profile-after-source.zip",
+      "sha256": "789c9d767fde4140ed2265b3851cb0a79ab49012e131480a17f788e97f086bdb"
+    },
+    {
+      "bytes": 54772,
+      "path": "runs/training-snapshot-optimization-20260929/profile-summary.json",
+      "sha256": "9681bf553abbb9475a8e638aa807369e00c5428d21dfa32e8c99cabfebbedbc3"
+    },
+    {
+      "bytes": 1703,
+      "path": "runs/training-snapshot-optimization-20260929/profile_summary.py",
+      "sha256": "cbf16f2474fc76d67a1681e761a1438e8c766a1044bd0c278c307e2b7df77021"
+    },
+    {
+      "bytes": 1157,
+      "path": "runs/training-snapshot-optimization-20260929/snapshot-probe.json",
+      "sha256": "b65ca3e0d913d58468df72e502feeebde9e15d7ab467a688ac40e9699e62f8f1"
+    },
+    {
+      "bytes": 1093,
+      "path": "runs/training-snapshot-optimization-20260929/timing-summary.json",
+      "sha256": "3261e0dd4a931d9fdd74dc100fb9afc903839af93fe48d8b20542a55a7937100"
+    },
+    {
+      "bytes": 513,
+      "path": "runs/training-snapshot-optimization-20260929/update-thread-probe.json",
+      "sha256": "4b85c8ff3f7bd4d73f9dac738016ebe8a18f971739521fbaa20cfa08493bb5b0"
+    },
+    {
+      "bytes": 2190,
+      "path": "runs/training-snapshot-optimization-20260929/update_probe.py",
+      "sha256": "350126694add025728a2be46d91f68211cdba2188937ae2cd1da492d5aa81221"
+    },
+    {
+      "bytes": 1563,
+      "path": "runs/training-snapshot-optimization-20260929/validation.json",
+      "sha256": "053eca2ad02f59291e348d74d5039e7485210f07dae3a85503afb02d8db2c83b"
+    },
+    {
+      "bytes": 6232,
+      "path": "runs/training-throughput-20260929/benchmark.py",
+      "sha256": "300bd510e03623b094a77334a75431b432ae38b004791f8ca25c68f49f9744e7"
+    },
+    {
+      "bytes": 2596,
+      "path": "runs/training-throughput-20260929/optimized-protocol.json",
+      "sha256": "66b5375c72514bc40735f264f40525088016813bc47ed6e895d3c46c93d8a81a"
+    },
+    {
+      "bytes": 6411,
+      "path": "runs/training-throughput-20260929/optimized-results.json",
+      "sha256": "95ae86d5332b3d26d44d43892c92250ed2dcf63634de32facddbc76f3b5bede0"
+    },
+    {
+      "bytes": 34494,
+      "path": "runs/training-throughput-20260929/optimized-source-sha256.json",
+      "sha256": "27800e7c66fe48ed7eedef094fc2e6dca2cd77e0051bb295b4f8dfb28bd289fa"
+    },
+    {
+      "bytes": 625127,
+      "path": "runs/training-throughput-20260929/optimized-source.zip",
+      "sha256": "3062260ee4eae1e8cddb2cdef1e601117e267b0936c99362639a0f35cadbad81"
+    },
+    {
+      "bytes": 326196,
+      "path": "runs/training-throughput-20260929/profile-after-1-profiles/collect-3472-1892766736085250.prof",
+      "sha256": "b33a21954347866f657e1b7a935e5588f0482647ab311be979ca2400c92482fd"
+    },
+    {
+      "bytes": 331320,
+      "path": "runs/training-throughput-20260929/profile-after-1-profiles/collect-3473-1892768100411208.prof",
+      "sha256": "0eaa5361f4387e0a16e485bce91601050d5a4f1a3e91252ed06af0109fd2ae5d"
+    },
+    {
+      "bytes": 329920,
+      "path": "runs/training-throughput-20260929/profile-after-1-profiles/collect-3474-1892766784492083.prof",
+      "sha256": "54c46f4a5abb161a975251a04f9367a103b3ef4456432a276314139787e488d5"
+    },
+    {
+      "bytes": 329397,
+      "path": "runs/training-throughput-20260929/profile-after-1-profiles/collect-3475-1892766377943666.prof",
+      "sha256": "f944aeb747416592abfc65929c0c1dc3bc869f6b11edc5d89b75e3a7ccbe0ae7"
+    },
+    {
+      "bytes": 331013,
+      "path": "runs/training-throughput-20260929/profile-after-1-profiles/collect-3476-1892768276356125.prof",
+      "sha256": "877af4ae53ca0fae0941ad487dcb9a8a8124acdaff8ba7797563cd8bc8206a2d"
+    },
+    {
+      "bytes": 331801,
+      "path": "runs/training-throughput-20260929/profile-after-1-profiles/collect-3477-1892770596957375.prof",
+      "sha256": "a7265d69b93a087d632812a34b29371b075e47af40b2c410efe5f96b9d2377b4"
+    },
+    {
+      "bytes": 328556,
+      "path": "runs/training-throughput-20260929/profile-after-1-profiles/collect-3478-1892765981986416.prof",
+      "sha256": "d6215010fe31f8ad8c1c59389d05228bfe2457e66b0c06f6caef381957b8cb48"
+    },
+    {
+      "bytes": 335287,
+      "path": "runs/training-throughput-20260929/profile-after-1-profiles/collect-3479-1892769714823666.prof",
+      "sha256": "85ee6e35b02eb6d38292965bea6df49da790c1dae223c5e5cfbb361b3d3bbc9a"
+    },
+    {
+      "bytes": 59424,
+      "path": "runs/training-throughput-20260929/profile-after-1-profiles/update-3469-1892780553317958.prof",
+      "sha256": "feaebbaaf5a64b2d5ad228de063fb29b376b495cb8bc9ac0badc64c163f08efc"
+    },
+    {
+      "bytes": 2595,
+      "path": "runs/training-throughput-20260929/profile-after-protocol.json",
+      "sha256": "d360844f9f53e1f0da3b939a86934e2e2a157e430bc160485194016c3cd7c005"
+    },
+    {
+      "bytes": 2112,
+      "path": "runs/training-throughput-20260929/profile-after-results.json",
+      "sha256": "a510140bc18072b642af2d39073d94df2acf2234ee7b663327a837afac1f3627"
+    },
+    {
+      "bytes": 34494,
+      "path": "runs/training-throughput-20260929/profile-after-source-sha256.json",
+      "sha256": "27800e7c66fe48ed7eedef094fc2e6dca2cd77e0051bb295b4f8dfb28bd289fa"
+    },
+    {
+      "bytes": 625127,
+      "path": "runs/training-throughput-20260929/profile-after-source.zip",
+      "sha256": "3062260ee4eae1e8cddb2cdef1e601117e267b0936c99362639a0f35cadbad81"
+    },
+    {
+      "bytes": 14539,
+      "path": "tests/agent/test_act_training.py",
+      "sha256": "cc85d59b9953bbd204934fd8415dc0e221aa86898f60638653833fcf3e4f9dec"
+    },
+    {
+      "bytes": 36159,
+      "path": "tests/agent/test_full_profile.py",
+      "sha256": "4cf6adadf3a48ae9866b29011323847e067ac2bf488c3f49acf783f1a5394ef4"
+    },
+    {
+      "bytes": 20088,
+      "path": "tests/agent/test_full_run_training.py",
+      "sha256": "5934cd0d5cbeb2709a622eb08ec3c247ba3844f5241866600362bf63c891e3c5"
+    },
+    {
+      "bytes": 24045,
+      "path": "tests/agent/test_headless_adapter.py",
+      "sha256": "f56c9c2e4f5104d6663e8d6e8c07ea25c66c4c18b0b15a94fc56ebb6fa081bbb"
+    },
+    {
+      "bytes": 21536,
+      "path": "tests/agent/test_ppo.py",
+      "sha256": "4d32a5458591f5abc665d6422d680ceae003a05a46a9bb0a7f75e05431cf77db"
+    },
+    {
+      "bytes": 16299,
+      "path": "tests/agent/test_ppo_parallel.py",
+      "sha256": "058bb87816f30c14d5789c499cb838092f878dcd255aa6c31a87c8e23ce0315a"
+    },
+    {
+      "bytes": 7823,
+      "path": "tests/agent/test_recording.py",
+      "sha256": "37a5a7d310d7725395fad1a69c32a87c2181b8782bed74f527de0b909668ffef"
+    },
+    {
+      "bytes": 1068,
+      "path": "tests/headless/conftest.py",
+      "sha256": "693c34890ac4f1123d90935393bab45818f01e69b7948fc4499f997157486fdc"
+    },
+    {
+      "bytes": 16643,
+      "path": "tests/headless/test_act2_run.py",
+      "sha256": "f8fdb665a68019e587967191764d9bbb1124a1228db6ec496032c5c71464010b"
+    },
+    {
+      "bytes": 14787,
+      "path": "tests/headless/test_act3_run.py",
+      "sha256": "781f1aead107e180e2fef4ddf8f319ebd710bf80cf02dbeffcd94613ab5f64b5"
+    },
+    {
+      "bytes": 9407,
+      "path": "tests/headless/test_combat_choices.py",
+      "sha256": "3890c9790d0e6f089da1dc2d953e172d238206aa2bc195b7365079c9b41cc0fc"
+    },
+    {
+      "bytes": 4459,
+      "path": "tests/headless/test_content_snapshot_cache.py",
+      "sha256": "14f39092b3e4be454fe3b1901b5ac82ecf3f652d8baaa8aa3285a8a1d32455e5"
+    },
+    {
+      "bytes": 13528,
+      "path": "tests/headless/test_game_engine.py",
+      "sha256": "61b31ac73753d541832d8cc64ac85a75595955a53792d489cbaaaec75b4c7235"
+    },
+    {
+      "bytes": 10386,
+      "path": "tests/headless/test_generated_act1.py",
+      "sha256": "c39d16dd82a28dce465d8bb489de0dc308af85be054d8b4d4d2b9e6dd60ee103"
+    },
+    {
+      "bytes": 13293,
+      "path": "tests/headless/test_playable_characters.py",
+      "sha256": "45142665e1831c8322389c81956cae98f514bf30e9488e947cf0b479c274da5e"
+    },
+    {
+      "bytes": 5250,
+      "path": "tests/headless/test_state_records.py",
+      "sha256": "1cb648f1e445ce7e6c0fa845e88ddca559a46f89e30a2916d890e7d4028cac5a"
+    },
+    {
+      "bytes": 13490,
+      "path": "tests/headless/test_vertical_slice.py",
+      "sha256": "4a0e74ef25eba361c2f76772acaac8db329a7359cd7932337403be160af46cb0"
+    },
+    {
+      "bytes": 4961,
+      "path": "tests/test_package_layout.py",
+      "sha256": "5a71069b84d88c23ef8481018152d0c5b7ba02078637bd7026b68ba82734bbf7"
+    }
+  ],
+  "baseline_binding": {
+    "baseline_evidence": "docs/evidence/training_throughput_2026_09_29.json",
+    "baseline_evidence_sha256": "e111530cde0b529d2ba923a4cafaa3059c192924dd0717731e6e19d7314a3fe5",
+    "baseline_implementation": {
+      "build": "1d59e25cc1a60b4bba8a26aafb1f77069add4ef1f748579e8a13906dfdea90be",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "changed_sources": [
+      "game/headless/core/snapshots.py",
+      "game/headless/core/state_records.py",
+      "game/headless/run/snapshots.py"
+    ],
+    "matched_protocol_fields": [
+      "runtime",
+      "script_sha256",
+      "model_sha256",
+      "config_sha256",
+      "experiment",
+      "private_plan_sha256",
+      "host",
+      "workers",
+      "threads_per_process",
+      "decisions",
+      "replicas",
+      "profile",
+      "recording",
+      "checkpoint_every_round"
+    ],
+    "note": "Baseline is the previous accepted optimized build. Its recorded source manifest differs only in this snapshot-copy change. Original source identities and artifacts are retained; source digests are not repinned.",
+    "optimized_implementation": {
+      "build": "d5970e4b4e502b46aa11c564a706df6af711e847682823b3f2ecc47337af64f3",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "3bb46e266528055ab1804b95e5d790b0b5a125e092571fe16c018657173bd649",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "reused_baseline": "runs/training-throughput-20260929/optimized-1..3"
+  },
+  "baseline_repetitions": [
+    {
+      "collection_seconds": [
+        20.041899624979123,
+        19.126092541962862
+      ],
+      "final_fingerprint": "sts_policy_state_v2:03f3236c25f69c0f63e9d6349619ce0703e26a2f68789ae1a674b5fb7094e99c",
+      "invocation_seconds": 58.40578241716139,
+      "label": "optimized-1",
+      "packed_rollout_bytes": [
+        1264370604,
+        1238192578
+      ],
+      "parent_peak_rss_bytes": 4245422080,
+      "process_seconds": 59.16138449986465,
+      "report_seconds": 58.00545204197988,
+      "update_seconds": [
+        9.22801825008355,
+        8.963724416913465
+      ]
+    },
+    {
+      "collection_seconds": [
+        20.552590791136026,
+        19.486955208936706
+      ],
+      "final_fingerprint": "sts_policy_state_v2:03f3236c25f69c0f63e9d6349619ce0703e26a2f68789ae1a674b5fb7094e99c",
+      "invocation_seconds": 59.356651165988296,
+      "label": "optimized-2",
+      "packed_rollout_bytes": [
+        1264370604,
+        1238192578
+      ],
+      "parent_peak_rss_bytes": 4151279616,
+      "process_seconds": 60.28488966706209,
+      "report_seconds": 58.86653458396904,
+      "update_seconds": [
+        9.260830458020791,
+        8.934202249860391
+      ]
+    },
+    {
+      "collection_seconds": [
+        20.856293209129944,
+        19.224935916950926
+      ],
+      "final_fingerprint": "sts_policy_state_v2:03f3236c25f69c0f63e9d6349619ce0703e26a2f68789ae1a674b5fb7094e99c",
+      "invocation_seconds": 59.5412037090864,
+      "label": "optimized-3",
+      "packed_rollout_bytes": [
+        1264370604,
+        1238192578
+      ],
+      "parent_peak_rss_bytes": 4066721792,
+      "process_seconds": 60.50670416583307,
+      "report_seconds": 59.06021050014533,
+      "update_seconds": [
+        9.220116624841467,
+        9.128912749933079
+      ]
+    }
+  ],
+  "canonical_audit": {
+    "canonical_decisions": 16384,
+    "canonical_trajectories": 176,
+    "labels": [
+      "../training-throughput-20260929/optimized-1",
+      "optimized-1"
+    ],
+    "private_partials": 0,
+    "private_permissions_checked": 327,
+    "seconds": 5.970277916872874
+  },
+  "diagnostic_profiles": {
+    "baseline": {
+      "collect": {
+        "profiled_seconds": 314.090075099,
+        "snapshot_detail": [
+          {
+            "cumulative_seconds": 36.402584509,
+            "file": "/opt/homebrew/Cellar/python@3.11/3.11.15_3/Frameworks/Python.framework/Versions/3.11/lib/python3.11/dataclasses.py",
+            "function": "asdict"
+          },
+          {
+            "cumulative_seconds": 3.3579788560000003,
+            "file": "/opt/homebrew/Cellar/python@3.11/3.11.15_3/Frameworks/Python.framework/Versions/3.11/lib/python3.11/dataclasses.py",
+            "function": "fields"
+          },
+          {
+            "cumulative_seconds": 82.564212398,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/agent/headless/adapter.py",
+            "function": "_guard"
+          },
+          {
+            "cumulative_seconds": 9.224015378,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/headless/core/combat.py",
+            "function": "snapshot"
+          },
+          {
+            "cumulative_seconds": 72.85115613400001,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/headless/run/engine.py",
+            "function": "snapshot"
+          },
+          {
+            "cumulative_seconds": 15.758008397000001,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/headless/core/snapshots.py",
+            "function": "card_record"
+          },
+          {
+            "cumulative_seconds": 9.20504751,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/headless/core/snapshots.py",
+            "function": "capture_combat"
+          },
+          {
+            "cumulative_seconds": 72.808494902,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/headless/run/snapshots.py",
+            "function": "capture_run"
+          },
+          {
+            "cumulative_seconds": 20.433941882000003,
+            "file": "/opt/homebrew/Cellar/python@3.11/3.11.15_3/Frameworks/Python.framework/Versions/3.11/lib/python3.11/copy.py",
+            "function": "deepcopy"
+          },
+          {
+            "cumulative_seconds": 36.01745599,
+            "file": "/opt/homebrew/Cellar/python@3.11/3.11.15_3/Frameworks/Python.framework/Versions/3.11/lib/python3.11/dataclasses.py",
+            "function": "_asdict_inner"
+          },
+          {
+            "cumulative_seconds": 15.357990944,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/headless/run/snapshots.py",
+            "function": "_validate_progression"
+          }
+        ],
+        "top_cumulative": [
+          {
+            "cumulative_seconds": 322.1649919160001,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/agent/training/rollout.py",
+            "function": "collect"
+          },
+          {
+            "cumulative_seconds": 226.09893675100002,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/agent/training/run_task.py",
+            "function": "step"
+          },
+          {
+            "cumulative_seconds": 226.08593357300003,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/agent/gym_env.py",
+            "function": "step"
+          },
+          {
+            "cumulative_seconds": 176.43653623400002,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/agent/training/run_task.py",
+            "function": "_refresh"
+          },
+          {
+            "cumulative_seconds": 176.40356142500002,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/agent/gym_env.py",
+            "function": "_refresh"
+          },
+          {
+            "cumulative_seconds": 103.952856318,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/agent/gym_env.py",
+            "function": "_observe"
+          },
+          {
+            "cumulative_seconds": 103.943645954,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/agent/headless/adapter.py",
+            "function": "observe"
+          },
+          {
+            "cumulative_seconds": 103.529487424,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/agent/contracts/full.py",
+            "function": "to_dict"
+          },
+          {
+            "cumulative_seconds": 82.564212398,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/agent/headless/adapter.py",
+            "function": "_guard"
+          },
+          {
+            "cumulative_seconds": 79.65846103800001,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/agent/contracts/full.py",
+            "function": "from_dict"
+          }
+        ]
+      },
+      "update": {
+        "profiled_seconds": 9.627887176999998,
+        "snapshot_detail": [],
+        "top_cumulative": [
+          {
+            "cumulative_seconds": 9.629412666,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/agent/training/ppo.py",
+            "function": "update"
+          },
+          {
+            "cumulative_seconds": 6.723090549,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py",
+            "function": "_wrapped_call_impl"
+          },
+          {
+            "cumulative_seconds": 6.722353412,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py",
+            "function": "_call_impl"
+          },
+          {
+            "cumulative_seconds": 6.719039375,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/agent/training/model.py",
+            "function": "forward"
+          },
+          {
+            "cumulative_seconds": 3.5969750840000003,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/agent/training/ppo.py",
+            "function": "_measure"
+          },
+          {
+            "cumulative_seconds": 3.059426899,
+            "file": "~",
+            "function": "<built-in method torch.tanh>"
+          },
+          {
+            "cumulative_seconds": 3.0537849,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/.venv/lib/python3.11/site-packages/torch/nn/modules/container.py",
+            "function": "forward"
+          },
+          {
+            "cumulative_seconds": 2.508823069,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/.venv/lib/python3.11/site-packages/torch/nn/modules/activation.py",
+            "function": "forward"
+          },
+          {
+            "cumulative_seconds": 1.692911456,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/.venv/lib/python3.11/site-packages/torch/_tensor.py",
+            "function": "backward"
+          },
+          {
+            "cumulative_seconds": 1.6921287520000001,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/.venv/lib/python3.11/site-packages/torch/autograd/__init__.py",
+            "function": "backward"
+          }
+        ]
+      }
+    },
+    "interpretation": "Diagnostic cProfile data only; collection sums eight worker profiles. Cumulative times overlap. Excluded from throughput medians.",
+    "optimized": {
+      "collect": {
+        "profiled_seconds": 284.093390082,
+        "snapshot_detail": [
+          {
+            "cumulative_seconds": 2.5874259989999997,
+            "file": "/opt/homebrew/Cellar/python@3.11/3.11.15_3/Frameworks/Python.framework/Versions/3.11/lib/python3.11/dataclasses.py",
+            "function": "asdict"
+          },
+          {
+            "cumulative_seconds": 1.4921608229999999,
+            "file": "/opt/homebrew/Cellar/python@3.11/3.11.15_3/Frameworks/Python.framework/Versions/3.11/lib/python3.11/dataclasses.py",
+            "function": "fields"
+          },
+          {
+            "cumulative_seconds": 56.16167183,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/agent/headless/adapter.py",
+            "function": "_guard"
+          },
+          {
+            "cumulative_seconds": 2.8558407380000004,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/headless/core/combat.py",
+            "function": "snapshot"
+          },
+          {
+            "cumulative_seconds": 46.63986217800001,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/headless/run/engine.py",
+            "function": "snapshot"
+          },
+          {
+            "cumulative_seconds": 7.475655186000001,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/headless/core/state_records.py",
+            "function": "state_record"
+          },
+          {
+            "cumulative_seconds": 3.532106456,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/headless/core/snapshots.py",
+            "function": "card_record"
+          },
+          {
+            "cumulative_seconds": 2.8408153460000003,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/headless/core/snapshots.py",
+            "function": "capture_combat"
+          },
+          {
+            "cumulative_seconds": 7.2272831570000005,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/headless/core/state_records.py",
+            "function": "_copy_value"
+          },
+          {
+            "cumulative_seconds": 46.597895857999994,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/headless/run/snapshots.py",
+            "function": "capture_run"
+          },
+          {
+            "cumulative_seconds": 11.679697495000003,
+            "file": "/opt/homebrew/Cellar/python@3.11/3.11.15_3/Frameworks/Python.framework/Versions/3.11/lib/python3.11/copy.py",
+            "function": "deepcopy"
+          },
+          {
+            "cumulative_seconds": 2.388584849,
+            "file": "/opt/homebrew/Cellar/python@3.11/3.11.15_3/Frameworks/Python.framework/Versions/3.11/lib/python3.11/dataclasses.py",
+            "function": "_asdict_inner"
+          },
+          {
+            "cumulative_seconds": 15.169527814000002,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/headless/run/snapshots.py",
+            "function": "_validate_progression"
+          }
+        ],
+        "top_cumulative": [
+          {
+            "cumulative_seconds": 292.183670624,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/agent/training/rollout.py",
+            "function": "collect"
+          },
+          {
+            "cumulative_seconds": 198.98631107300002,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/agent/training/run_task.py",
+            "function": "step"
+          },
+          {
+            "cumulative_seconds": 198.973270484,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/agent/gym_env.py",
+            "function": "step"
+          },
+          {
+            "cumulative_seconds": 163.08969491000002,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/agent/training/run_task.py",
+            "function": "_refresh"
+          },
+          {
+            "cumulative_seconds": 163.058378138,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/agent/gym_env.py",
+            "function": "_refresh"
+          },
+          {
+            "cumulative_seconds": 101.60250343,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/agent/contracts/full.py",
+            "function": "to_dict"
+          },
+          {
+            "cumulative_seconds": 90.619670279,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/agent/gym_env.py",
+            "function": "_observe"
+          },
+          {
+            "cumulative_seconds": 90.610424222,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/agent/headless/adapter.py",
+            "function": "observe"
+          },
+          {
+            "cumulative_seconds": 77.710879323,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/agent/contracts/full.py",
+            "function": "from_dict"
+          },
+          {
+            "cumulative_seconds": 72.38795303100001,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/agent/gym_env.py",
+            "function": "_encode"
+          }
+        ]
+      },
+      "update": {
+        "profiled_seconds": 9.632038420000006,
+        "snapshot_detail": [],
+        "top_cumulative": [
+          {
+            "cumulative_seconds": 9.633566542,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/agent/training/ppo.py",
+            "function": "update"
+          },
+          {
+            "cumulative_seconds": 6.716811939,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py",
+            "function": "_wrapped_call_impl"
+          },
+          {
+            "cumulative_seconds": 6.7161236980000005,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py",
+            "function": "_call_impl"
+          },
+          {
+            "cumulative_seconds": 6.712828012,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/agent/training/model.py",
+            "function": "forward"
+          },
+          {
+            "cumulative_seconds": 3.605225625,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/game/agent/training/ppo.py",
+            "function": "_measure"
+          },
+          {
+            "cumulative_seconds": 3.05864823,
+            "file": "~",
+            "function": "<built-in method torch.tanh>"
+          },
+          {
+            "cumulative_seconds": 3.0548076760000002,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/.venv/lib/python3.11/site-packages/torch/nn/modules/container.py",
+            "function": "forward"
+          },
+          {
+            "cumulative_seconds": 2.5083414210000003,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/.venv/lib/python3.11/site-packages/torch/nn/modules/activation.py",
+            "function": "forward"
+          },
+          {
+            "cumulative_seconds": 1.7016285820000001,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/.venv/lib/python3.11/site-packages/torch/_tensor.py",
+            "function": "backward"
+          },
+          {
+            "cumulative_seconds": 1.700898969,
+            "file": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/.venv/lib/python3.11/site-packages/torch/autograd/__init__.py",
+            "function": "backward"
+          }
+        ]
+      }
+    },
+    "remaining_bottleneck": "Public-observation conversion/validation and serialization dominate collection. Collection remains about two-thirds of process time, and packed rollout payloads are unchanged."
+  },
+  "exploratory_probes": {
+    "snapshot_copy": {
+      "implementation": {
+        "build": "1d59e25cc1a60b4bba8a26aafb1f77069add4ef1f748579e8a13906dfdea90be",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "results": [
+        {
+          "character": "ironclad",
+          "exact_snapshot_equal": true,
+          "repetitions": 100,
+          "seconds": {
+            "baseline": 0.20629362505860627,
+            "candidate": 0.1660024591255933
+          },
+          "speedup": 1.2427142714947956
+        },
+        {
+          "character": "silent",
+          "exact_snapshot_equal": true,
+          "repetitions": 100,
+          "seconds": {
+            "baseline": 0.21469724993221462,
+            "candidate": 0.1641754168085754
+          },
+          "speedup": 1.3077308046828136
+        },
+        {
+          "character": "regent",
+          "exact_snapshot_equal": true,
+          "repetitions": 100,
+          "seconds": {
+            "baseline": 0.19715550006367266,
+            "candidate": 0.15407774993218482
+          },
+          "speedup": 1.2795844964665433
+        },
+        {
+          "character": "necrobinder",
+          "exact_snapshot_equal": true,
+          "repetitions": 100,
+          "seconds": {
+            "baseline": 0.19653591699898243,
+            "candidate": 0.15577316703274846
+          },
+          "speedup": 1.2616801772905109
+        },
+        {
+          "character": "defect",
+          "exact_snapshot_equal": true,
+          "repetitions": 100,
+          "seconds": {
+            "baseline": 0.19786595785990357,
+            "candidate": 0.1549160829745233
+          },
+          "speedup": 1.2772460680692759
+        }
+      ],
+      "scope": "Pre-implementation prototype: three timings of 100 full snapshots per arm for each of five characters; median shown. Exact dictionaries and canonical JSON matched. Frozen probe.py patches the original asdict call sites and requires the retained baseline sources, not the new call sites."
+    },
+    "update_threads": {
+      "results": [
+        {
+          "exact_weights": true,
+          "max_absolute_weight_difference": 0.0,
+          "optimizer_steps": 512,
+          "seconds": 9.069752667099237,
+          "threads": 1
+        },
+        {
+          "exact_weights": false,
+          "max_absolute_weight_difference": 0.006463909521698952,
+          "optimizer_steps": 512,
+          "seconds": 8.085712041938677,
+          "threads": 2
+        },
+        {
+          "exact_weights": false,
+          "max_absolute_weight_difference": 0.001848459243774414,
+          "optimizer_steps": 512,
+          "seconds": 7.234214958036318,
+          "threads": 4
+        }
+      ],
+      "scope": "One update-only pass per thread count on the same validated 4,096-decision batch and fresh model/optimizer owners. Different weights do not demonstrate worse or better learning. Not an end-to-end speed claim; no default changed."
+    }
+  },
+  "implementation_choices": [
+    "Reuse bounded dataclass field-name metadata only; no captured game state or snapshot result is cached.",
+    "Exact immutable scalars bypass deepcopy; mutable data is independently copied for each capture. Container subclasses, namedtuples and unknown custom leaves retain existing traversal/copy behavior.",
+    "Both combat and run snapshots share the internal copier. Snapshot schema versions, validation, RNG capture/restore and adapter stale-action checks remain unchanged.",
+    "Engine source changes legitimately change both build and rules digests. Original source bindings remain in all reports; parity excludes these metadata fields only and canonical reload validates each original binding.",
+    "Architecture, policy actions/masks, rewards, sampling, GAE, optimizer mathematics, worker scheduling, recording and checkpoints are unchanged. One Torch thread per process remains the default."
+  ],
+  "limitations": [
+    "Baseline reuses the previous accepted three timings, with matching script/inputs/runtime/host and only this source delta. It was not rerun in this pass.",
+    "Single host and seed schedule; three repetitions per build. OS caches and background load uncontrolled; timing ranges slightly overlap, so the 2.2% median reduction is modest.",
+    "Profiler timings include instrumentation and overlapping cumulative work across eight workers; excluded from throughput medians.",
+    "50k estimate is linear extrapolation excluding evaluation and export, not another 50k learning experiment.",
+    "Parent peak RSS excludes worker processes; no claim of total-pool memory reduction.",
+    "Inference bundle format is unchanged. Exact optimizer/RNG resume still requires the matching source build and runtime."
+  ],
+  "optimized_repetitions": [
+    {
+      "collection_seconds": [
+        19.375002291053534,
+        18.363392875064164
+      ],
+      "final_fingerprint": "sts_policy_state_v2:03f3236c25f69c0f63e9d6349619ce0703e26a2f68789ae1a674b5fb7094e99c",
+      "invocation_seconds": 57.09362170891836,
+      "label": "optimized-1",
+      "packed_rollout_bytes": [
+        1264370604,
+        1238192578
+      ],
+      "parent_peak_rss_bytes": 4027809792,
+      "process_seconds": 57.84965879190713,
+      "report_seconds": 56.68831145809963,
+      "update_seconds": [
+        9.198149000061676,
+        9.131493374938145
+      ]
+    },
+    {
+      "collection_seconds": [
+        20.095044083194807,
+        18.8411697500851
+      ],
+      "final_fingerprint": "sts_policy_state_v2:03f3236c25f69c0f63e9d6349619ce0703e26a2f68789ae1a674b5fb7094e99c",
+      "invocation_seconds": 58.19431750010699,
+      "label": "optimized-2",
+      "packed_rollout_bytes": [
+        1264370604,
+        1238192578
+      ],
+      "parent_peak_rss_bytes": 4291477504,
+      "process_seconds": 58.98488050000742,
+      "report_seconds": 57.830683666979894,
+      "update_seconds": [
+        9.233141666976735,
+        9.039679083041847
+      ]
+    },
+    {
+      "collection_seconds": [
+        20.307978166965768,
+        18.89318354194984
+      ],
+      "final_fingerprint": "sts_policy_state_v2:03f3236c25f69c0f63e9d6349619ce0703e26a2f68789ae1a674b5fb7094e99c",
+      "invocation_seconds": 58.42527712485753,
+      "label": "optimized-3",
+      "packed_rollout_bytes": [
+        1264370604,
+        1238192578
+      ],
+      "parent_peak_rss_bytes": 3639197696,
+      "process_seconds": 59.224499749951065,
+      "report_seconds": 58.05898154200986,
+      "update_seconds": [
+        9.258959791855887,
+        8.996215291088447
+      ]
+    }
+  ],
+  "parity": {
+    "decisions": 8192,
+    "episodes": 88,
+    "equal": [
+      "every_public_state_action_execution_and_outcome",
+      "masks_log_probabilities_values_rewards_advantages_returns",
+      "all_non_timing_update_metrics",
+      "final_model_weights",
+      "all_non_timing_summary_metrics"
+    ],
+    "final_fingerprint": "sts_policy_state_v2:03f3236c25f69c0f63e9d6349619ce0703e26a2f68789ae1a674b5fb7094e99c",
+    "labels": [
+      "../training-throughput-20260929/optimized-1",
+      "../training-throughput-20260929/optimized-2",
+      "../training-throughput-20260929/optimized-3",
+      "optimized-1",
+      "optimized-2",
+      "optimized-3"
+    ],
+    "seconds": 42.15334374993108
+  },
+  "phase_timings": {
+    "benchmark_process_seconds": 176.05903904186562,
+    "canonical_audit_seconds": 5.970277916872874,
+    "diagnostic_profile_process_seconds": 51.46494470909238,
+    "engine_regression_seconds": 100.74,
+    "implementation_seconds": null,
+    "independent_review_seconds_reported": 121,
+    "note": "Implementation time was not separately measured. Concurrent validation/review intervals must not be summed as task elapsed time.",
+    "parity_seconds": 42.15334374993108,
+    "public_training_consumer_seconds": 88.9,
+    "release_preparation": "Not applicable; local source optimization.",
+    "user_wait": "No user input required."
+  },
+  "protocol": {
+    "checkpoint_every_round": true,
+    "config_sha256": "c697c47a83a22b2a6f2507a83590657e13faee9236b450aae9ec02f788d7d8ca",
+    "decisions": 8192,
+    "experiment": {
+      "encounters": [
+        "overgrowth",
+        "underdocks"
+      ],
+      "ppo": {
+        "batch_size": 16,
+        "clip_ratio": 0.2,
+        "entropy_weight": 0.01,
+        "episode_decisions": 512,
+        "episode_seconds": 120.0,
+        "epochs": 2,
+        "gae_lambda": 0.95,
+        "gamma": 1.0,
+        "gradient_clip": 0.5,
+        "learning_rate": 0.0003,
+        "normalize_advantages": true,
+        "rollout_steps": 4096,
+        "target_kl": 0.03,
+        "value_weight": 0.5
+      },
+      "schema": "sts_ppo_experiment_v2",
+      "source": "ironclad_a0_full_run_v1",
+      "training": {
+        "action_policy": "commit_card_selection_v1",
+        "mode": "full_run",
+        "reward": {
+          "goal": "act1",
+          "schema": "sts_full_run_reward_v3",
+          "weights": {
+            "act_cleared": 1.0,
+            "combat_loss": 0.0,
+            "combat_win": 0.1,
+            "end_turn_action": -0.001,
+            "potion_use_action": 0.0,
+            "run_abandoned": -1.0,
+            "run_defeat": -1.0,
+            "run_victory": 0.0,
+            "win_hp_fraction": 0.025
+          }
+        },
+        "scenario_set": "ironclad_a0_full_run_v1"
+      }
+    },
+    "host": {
+      "logical_cpus": 18,
+      "machine": "arm64",
+      "os": "macOS-26.6.2-arm64-arm-64bit"
+    },
+    "implementation": {
+      "build": "d5970e4b4e502b46aa11c564a706df6af711e847682823b3f2ecc47337af64f3",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "3bb46e266528055ab1804b95e5d790b0b5a125e092571fe16c018657173bd649",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "limitations": [
+      "Fresh parent per replica; persistent workers within invocation.",
+      "OS caches and background load uncontrolled.",
+      "Parent RSS excludes worker memory."
+    ],
+    "model": "runs/act1-50k-8workers-20260929/chunk-01/initial.sts-model",
+    "model_sha256": "ccd33403e9d061f4866d4e68b7fe864605b598b24d4dbd5c695ef14c6e913642",
+    "private_plan_sha256": "be8a0734af2b83e9520ad94a5d8a14ebf8433ec37a9ea1912db8ff95d55cd7c9",
+    "profile": false,
+    "purpose": "Throughput only. Same frozen initializer/config/seeds; no strength selection.",
+    "recording": true,
+    "replicas": 3,
+    "runtime": {
+      "device": "cpu",
+      "python": "3.11.15",
+      "threads": 1,
+      "torch": "2.13.0"
+    },
+    "schema": "sts_act1_training_throughput_v1",
+    "script_sha256": "300bd510e03623b094a77334a75431b432ae38b004791f8ca25c68f49f9744e7",
+    "threads_per_process": 1,
+    "workers": 8
+  },
+  "recorded_utc": "2026-09-29T21:49:32.136650+00:00",
+  "schema": "sts_training_snapshot_optimization_evidence_v1",
+  "scope": "Headless CPU throughput only. Same one-learner workload, no playing-strength selection or checkpoint promotion.",
+  "source_commit": "5ad1d9daf6eff51222bbcf6371fb819f2937e0e8",
+  "timings": {
+    "baseline": {
+      "cold_collection_seconds": 20.552590791136026,
+      "collection_seconds": 40.03954600007273,
+      "decisions_per_second": 135.88811467089522,
+      "parent_peak_rss_median": 4151279616,
+      "process_seconds": 60.28488966706209,
+      "process_seconds_range": [
+        59.16138449986465,
+        60.50670416583307
+      ],
+      "projected_50k_seconds": 367.9497660343145,
+      "update_seconds": 18.195032707881182,
+      "warm_collection_seconds": 19.224935916950926
+    },
+    "collection_time_reduction_percent": 2.7556060870191246,
+    "optimized": {
+      "cold_collection_seconds": 20.095044083194807,
+      "collection_seconds": 38.93621383327991,
+      "decisions_per_second": 138.88304817365815,
+      "parent_peak_rss_median": 4027809792,
+      "process_seconds": 58.98488050000742,
+      "process_seconds_range": [
+        57.84965879190713,
+        59.224499749951065
+      ],
+      "projected_50k_seconds": 360.0151397705531,
+      "update_seconds": 18.27282075001858,
+      "warm_collection_seconds": 18.8411697500851
+    },
+    "speedup": 1.022039701632599,
+    "time_reduction_percent": 2.1564428072014086
+  },
+  "validation": {
+    "compileall": {
+      "command": ".venv/bin/python -m compileall -q game/headless game/agent tests/headless/test_state_records.py",
+      "status": "passed"
+    },
+    "diff_check": "passed",
+    "engine_regression": {
+      "command": ".venv/bin/python -m pytest -q tests/headless/test_state_records.py tests/headless/test_content_snapshot_cache.py tests/headless/test_game_engine.py tests/headless/test_vertical_slice.py tests/headless/test_combat_choices.py tests/headless/test_generated_act1.py tests/headless/test_playable_characters.py tests/headless/test_act3_run.py::test_three_acts_and_architect_with_restored_decisions tests/headless/test_act2_run.py::test_corrupted_cross_act_history_is_rejected_atomically",
+      "passed": 201,
+      "seconds": 100.74
+    },
+    "independent_semantic_review": {
+      "differential_checks_reported": 315,
+      "focused_tests_reported": 11,
+      "result": "No blocking findings",
+      "scope": "Mutation isolation, asdict traversal and deepcopy compatibility, bounded schema-only cache, snapshot schemas/validation, RNG capture/restore, adapter stale-state guard and dependency layering.",
+      "seconds_reported": 121,
+      "source_edits": false
+    },
+    "note": "The two final regression gates ran concurrently and finished before timed benchmarks. Reviewer checks overlap the author gate; do not add them to the 541 final regression count.",
+    "public_training_consumers": {
+      "command": ".venv/bin/python -m pytest -q tests/agent/test_headless_adapter.py tests/agent/test_full_profile.py tests/agent/test_ppo.py tests/agent/test_ppo_parallel.py tests/agent/test_act_training.py tests/agent/test_full_run_training.py tests/agent/test_recording.py tests/test_package_layout.py",
+      "passed": 340,
+      "seconds": 88.9
+    }
+  },
+  "working_tree": "Preserves the previous analysis/evaluation/schema/vocabulary optimizations; frozen source snapshots bind the exact benchmark builds."
+}

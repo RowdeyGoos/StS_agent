@@ -1,0 +1,1528 @@
+{
+  "artifacts": [
+    {
+      "bytes": 6232,
+      "path": "runs/training-throughput-20260929/benchmark.py",
+      "sha256": "300bd510e03623b094a77334a75431b432ae38b004791f8ca25c68f49f9744e7"
+    },
+    {
+      "bytes": 3092,
+      "path": "runs/training-throughput-20260929/compare.py",
+      "sha256": "b0a31610562f36be1dbacd27753770f10c950e3e3da08c458e88e8b6446029e5"
+    },
+    {
+      "bytes": 2255,
+      "path": "runs/training-throughput-20260929/audit.py",
+      "sha256": "4677d4e1944c8f196a040eddda760b65f778b23dfbeec9ed415dfbbf841b8c4f"
+    },
+    {
+      "bytes": 1549,
+      "path": "runs/training-throughput-20260929/profile_summary.py",
+      "sha256": "66bf7dad805dabf755139fea9acc2e01062be40e86d1b3b3a4bb6931a3235e85"
+    },
+    {
+      "bytes": 2596,
+      "path": "runs/training-throughput-20260929/baseline-protocol.json",
+      "sha256": "6d30be9118ee436026b5fd74babe8562d8672fefb702bf47c27a310c68032f99"
+    },
+    {
+      "bytes": 2596,
+      "path": "runs/training-throughput-20260929/optimized-protocol.json",
+      "sha256": "66b5375c72514bc40735f264f40525088016813bc47ed6e895d3c46c93d8a81a"
+    },
+    {
+      "bytes": 34494,
+      "path": "runs/training-throughput-20260929/baseline-source-sha256.json",
+      "sha256": "4b237268f9baad02936c42a35f37a5517fd7cfdc41a9e95e61d7a3c14c636072"
+    },
+    {
+      "bytes": 34494,
+      "path": "runs/training-throughput-20260929/optimized-source-sha256.json",
+      "sha256": "27800e7c66fe48ed7eedef094fc2e6dca2cd77e0051bb295b4f8dfb28bd289fa"
+    },
+    {
+      "bytes": 624685,
+      "path": "runs/training-throughput-20260929/baseline-source.zip",
+      "sha256": "52aa7d29717a5b6f70176fbe38e716b68dff84c5f829e8d11ad07b52730d70f1"
+    },
+    {
+      "bytes": 625127,
+      "path": "runs/training-throughput-20260929/optimized-source.zip",
+      "sha256": "3062260ee4eae1e8cddb2cdef1e601117e267b0936c99362639a0f35cadbad81"
+    },
+    {
+      "bytes": 6406,
+      "path": "runs/training-throughput-20260929/baseline-results.json",
+      "sha256": "8c5e54e129f3c536e64c26f82b3d6f198698743f1f56a4b512176c3e2f59145e"
+    },
+    {
+      "bytes": 6411,
+      "path": "runs/training-throughput-20260929/optimized-results.json",
+      "sha256": "95ae86d5332b3d26d44d43892c92250ed2dcf63634de32facddbc76f3b5bede0"
+    },
+    {
+      "bytes": 497,
+      "path": "runs/training-throughput-20260929/baseline-parity.json",
+      "sha256": "2047331308656968b6e03485fcf5002d03423269da34b173fefe026e76939129"
+    },
+    {
+      "bytes": 554,
+      "path": "runs/training-throughput-20260929/parity.json",
+      "sha256": "44b32467d92ca8edd4a300ce1a10fb82de926c200ba06dda245f171a2712976d"
+    },
+    {
+      "bytes": 218,
+      "path": "runs/training-throughput-20260929/canonical-audit.json",
+      "sha256": "3777725205239f339a8c2e5eb72378f686ea8998640ca14edc441b4e8dc44dae"
+    },
+    {
+      "bytes": 863,
+      "path": "runs/training-throughput-20260929/timing-summary.json",
+      "sha256": "b5800282e416d03179e986bfe9d1c43cb5b8c945d2be6b7b6f56e2ae5f74f2f3"
+    },
+    {
+      "bytes": 45577,
+      "path": "runs/training-throughput-20260929/profile-summary.json",
+      "sha256": "f065957aaedbf564c9ed1816a4aa5f1fc14da44939d8f0d27a92cca2ffc8cf3f"
+    },
+    {
+      "bytes": 2595,
+      "path": "runs/training-throughput-20260929/profile-before-protocol.json",
+      "sha256": "07eb1a5cb5dc33515176b9ad0c13c3968f775f440d82084a47040bbae3c4b69d"
+    },
+    {
+      "bytes": 2595,
+      "path": "runs/training-throughput-20260929/profile-after-protocol.json",
+      "sha256": "d360844f9f53e1f0da3b939a86934e2e2a157e430bc160485194016c3cd7c005"
+    },
+    {
+      "bytes": 2110,
+      "path": "runs/training-throughput-20260929/profile-before-results.json",
+      "sha256": "c7daa980420e86090c4a4f05b2bbba03d754b7f738550cff865f5a8c50268df4"
+    },
+    {
+      "bytes": 2112,
+      "path": "runs/training-throughput-20260929/profile-after-results.json",
+      "sha256": "a510140bc18072b642af2d39073d94df2acf2234ee7b663327a837afac1f3627"
+    },
+    {
+      "bytes": 146514,
+      "path": "runs/training-throughput-20260929/baseline-1/ppo.json",
+      "sha256": "4f1eb1c20e29c2ff4ad644dd38b108c6afa29bd630e2edc729be114fb656d3a2"
+    },
+    {
+      "bytes": 1780,
+      "path": "runs/training-throughput-20260929/baseline-1/timings.json",
+      "sha256": "1ee77a98a32a15300e10a64d909b7b1536a6c53255915d9c6fb334760fa3ccfa"
+    },
+    {
+      "bytes": 414854,
+      "path": "runs/training-throughput-20260929/baseline-1/initial.sts-model",
+      "sha256": "811f00eb607f76b50448a05109a609905fa7e9236459db7280c9968b5690123e"
+    },
+    {
+      "bytes": 414857,
+      "path": "runs/training-throughput-20260929/baseline-1/final.sts-model",
+      "sha256": "8b955e9409af30d640d87fdc7f118ec29968d038d244d6a70d124fbcae1f7eb9"
+    },
+    {
+      "bytes": 5765242,
+      "path": "runs/training-throughput-20260929/baseline-1/rollout-00001.json",
+      "sha256": "4f5978f3bd4a91d58547fb6f13b42821b2a9b04d65f9bf0636fec250f1d71698"
+    },
+    {
+      "bytes": 414856,
+      "path": "runs/training-throughput-20260929/baseline-1/update-00001.sts-model",
+      "sha256": "96cddf9cf4d5866c895753ffce37427c1b8f2aa4eb39dad4de10295511bee2ad"
+    },
+    {
+      "bytes": 5835421,
+      "path": "runs/training-throughput-20260929/baseline-1/rollout-00002.json",
+      "sha256": "b350311fb2d838187d2d07df6ee57770f2dadaf2aac4babe861ccd3d9703c8d8"
+    },
+    {
+      "bytes": 414857,
+      "path": "runs/training-throughput-20260929/baseline-1/update-00002.sts-model",
+      "sha256": "8b955e9409af30d640d87fdc7f118ec29968d038d244d6a70d124fbcae1f7eb9"
+    },
+    {
+      "bytes": 146514,
+      "path": "runs/training-throughput-20260929/baseline-2/ppo.json",
+      "sha256": "07bae9d737eae921a25a8a801b363a3c01f187f2143d6e3999e580bd7a4bc750"
+    },
+    {
+      "bytes": 1784,
+      "path": "runs/training-throughput-20260929/baseline-2/timings.json",
+      "sha256": "3290a04c2f986b3e9c925728c81458f42140ae9beac63d9a0448558fac676cb5"
+    },
+    {
+      "bytes": 414854,
+      "path": "runs/training-throughput-20260929/baseline-2/initial.sts-model",
+      "sha256": "4d07b87edc64547803337754cd9c6c21d752d0d47e01cc30f7c569628746f4cb"
+    },
+    {
+      "bytes": 414857,
+      "path": "runs/training-throughput-20260929/baseline-2/final.sts-model",
+      "sha256": "2d9b12a46efcaf3171201aefa5d905b23ab5f0354d4f020d3f00dd898cc12b1e"
+    },
+    {
+      "bytes": 5765242,
+      "path": "runs/training-throughput-20260929/baseline-2/rollout-00001.json",
+      "sha256": "5a1f71e41a061662664abafb940ed025ffc7a9629c3573566650118ac5e9e076"
+    },
+    {
+      "bytes": 414856,
+      "path": "runs/training-throughput-20260929/baseline-2/update-00001.sts-model",
+      "sha256": "6879284a48925961a0ca7d08d293a5c7936b16973e9a83c8327de5a224f480c5"
+    },
+    {
+      "bytes": 5835421,
+      "path": "runs/training-throughput-20260929/baseline-2/rollout-00002.json",
+      "sha256": "c17471b9f1a7dbbb828f7dc46811481df2d0ac3570cef807973ed66963d9373c"
+    },
+    {
+      "bytes": 414857,
+      "path": "runs/training-throughput-20260929/baseline-2/update-00002.sts-model",
+      "sha256": "2d9b12a46efcaf3171201aefa5d905b23ab5f0354d4f020d3f00dd898cc12b1e"
+    },
+    {
+      "bytes": 146516,
+      "path": "runs/training-throughput-20260929/baseline-3/ppo.json",
+      "sha256": "fe213c874ad3adca340d2aef2966c29d952d15d03710b020cabc98567114d464"
+    },
+    {
+      "bytes": 1784,
+      "path": "runs/training-throughput-20260929/baseline-3/timings.json",
+      "sha256": "84a15bc988cd43cea04297e42af0c07774a1363ace2a7d34b0de51e152825ce4"
+    },
+    {
+      "bytes": 414854,
+      "path": "runs/training-throughput-20260929/baseline-3/initial.sts-model",
+      "sha256": "d56ca9bf4f862f13961fecd580e00e5a32f838096d1395483fdae8230dc3730c"
+    },
+    {
+      "bytes": 414857,
+      "path": "runs/training-throughput-20260929/baseline-3/final.sts-model",
+      "sha256": "07f28c9950f35b37a607c07c57a9caa879521b2baaffc8aa1ba71f007ca8fa7f"
+    },
+    {
+      "bytes": 5765242,
+      "path": "runs/training-throughput-20260929/baseline-3/rollout-00001.json",
+      "sha256": "d2190288f194a6adffd38bc1c81b8551e73f40c97c7aa366c9c76a8e51592e11"
+    },
+    {
+      "bytes": 414856,
+      "path": "runs/training-throughput-20260929/baseline-3/update-00001.sts-model",
+      "sha256": "1e26ba6b738c443d1c011d40c7a4c506b2ccf2cd54c6e358c69dfb020cdfe1e5"
+    },
+    {
+      "bytes": 5835421,
+      "path": "runs/training-throughput-20260929/baseline-3/rollout-00002.json",
+      "sha256": "af5e5a43cd740a2ca66b42315c20dd67fd053ad247d7637967cd4712b902d1ad"
+    },
+    {
+      "bytes": 414857,
+      "path": "runs/training-throughput-20260929/baseline-3/update-00002.sts-model",
+      "sha256": "07f28c9950f35b37a607c07c57a9caa879521b2baaffc8aa1ba71f007ca8fa7f"
+    },
+    {
+      "bytes": 146512,
+      "path": "runs/training-throughput-20260929/optimized-1/ppo.json",
+      "sha256": "663635e6f36cb1b48a33ff5c1ed42144603fdb4b823b20a6dd14dab6945a3dd4"
+    },
+    {
+      "bytes": 1782,
+      "path": "runs/training-throughput-20260929/optimized-1/timings.json",
+      "sha256": "a1f3a1b00e27e09381d372747a547f3530bf691e7a7c52e47fda5f1f53cba974"
+    },
+    {
+      "bytes": 414854,
+      "path": "runs/training-throughput-20260929/optimized-1/initial.sts-model",
+      "sha256": "ff85e595c08f71442e96139381738858b92c45fdefc0157fbc933b25b5742828"
+    },
+    {
+      "bytes": 414857,
+      "path": "runs/training-throughput-20260929/optimized-1/final.sts-model",
+      "sha256": "29cda6d38434130962772ca3b7ff11b7fbcbee1c5a5bddc9cd47b110f026f650"
+    },
+    {
+      "bytes": 5765242,
+      "path": "runs/training-throughput-20260929/optimized-1/rollout-00001.json",
+      "sha256": "2e78642984f73b80b90dda81d7aeffe56acfc0ae81316a987410730ceaec03e7"
+    },
+    {
+      "bytes": 414856,
+      "path": "runs/training-throughput-20260929/optimized-1/update-00001.sts-model",
+      "sha256": "38c38ece8b1d31c5ad9d561222b2c7c853751f69f1c64b761f1a293e8cafa20c"
+    },
+    {
+      "bytes": 5835421,
+      "path": "runs/training-throughput-20260929/optimized-1/rollout-00002.json",
+      "sha256": "8046da1ed60e64e494d5fbf6218c8a5515e8d9f89bb0f65b6512043d899257a3"
+    },
+    {
+      "bytes": 414857,
+      "path": "runs/training-throughput-20260929/optimized-1/update-00002.sts-model",
+      "sha256": "29cda6d38434130962772ca3b7ff11b7fbcbee1c5a5bddc9cd47b110f026f650"
+    },
+    {
+      "bytes": 146513,
+      "path": "runs/training-throughput-20260929/optimized-2/ppo.json",
+      "sha256": "2efaa3970ed098ccf3c730194524ebced14785378fa84b0293cc9480bf763479"
+    },
+    {
+      "bytes": 1784,
+      "path": "runs/training-throughput-20260929/optimized-2/timings.json",
+      "sha256": "3688e4925f754d0c0e82af8c086605a889bef684833ed9e0b1e70235a8e0fc0e"
+    },
+    {
+      "bytes": 414854,
+      "path": "runs/training-throughput-20260929/optimized-2/initial.sts-model",
+      "sha256": "4321a0a0944aceb32c85b13e47da44e4b5b1a9e4415f7c10cf951e0863370848"
+    },
+    {
+      "bytes": 414857,
+      "path": "runs/training-throughput-20260929/optimized-2/final.sts-model",
+      "sha256": "ffd853b3ef04e4039c7d43db5f931903d42610b635ab2d1e02b9f8ad0b430e0c"
+    },
+    {
+      "bytes": 5765242,
+      "path": "runs/training-throughput-20260929/optimized-2/rollout-00001.json",
+      "sha256": "12944d6e9582c68f2082588b8a501619a259a8d1205cbd591930777ce1dba887"
+    },
+    {
+      "bytes": 414856,
+      "path": "runs/training-throughput-20260929/optimized-2/update-00001.sts-model",
+      "sha256": "178f4d1b6b0f32513484310d5e3460e54c50ecf3331c567a4682f06767a358cf"
+    },
+    {
+      "bytes": 5835421,
+      "path": "runs/training-throughput-20260929/optimized-2/rollout-00002.json",
+      "sha256": "d4ac3306c461eb54ff54127945f2b53c8de05f078fbc3b2763449eabf1a3d080"
+    },
+    {
+      "bytes": 414857,
+      "path": "runs/training-throughput-20260929/optimized-2/update-00002.sts-model",
+      "sha256": "ffd853b3ef04e4039c7d43db5f931903d42610b635ab2d1e02b9f8ad0b430e0c"
+    },
+    {
+      "bytes": 146519,
+      "path": "runs/training-throughput-20260929/optimized-3/ppo.json",
+      "sha256": "59c4ff563eff152041e92c8ced8515d66f3024a569e73d60ff41a9e1e5a98d53"
+    },
+    {
+      "bytes": 1782,
+      "path": "runs/training-throughput-20260929/optimized-3/timings.json",
+      "sha256": "305cb702ea6c0fd19220c6d1729f396ecafe762fc2489a2cc19a7130458a30ff"
+    },
+    {
+      "bytes": 414854,
+      "path": "runs/training-throughput-20260929/optimized-3/initial.sts-model",
+      "sha256": "0ddc4d7cff52fcfbe272638425792b8174b709d8e24396279826d14053a7b966"
+    },
+    {
+      "bytes": 414857,
+      "path": "runs/training-throughput-20260929/optimized-3/final.sts-model",
+      "sha256": "59a966971215430590ff49ac16b33d16873907ff5b50412965bfe9f44f1cdcd0"
+    },
+    {
+      "bytes": 5765242,
+      "path": "runs/training-throughput-20260929/optimized-3/rollout-00001.json",
+      "sha256": "124cecb4193035604f863970d8c77c53d07d04047b0a12b11aa5447312626904"
+    },
+    {
+      "bytes": 414856,
+      "path": "runs/training-throughput-20260929/optimized-3/update-00001.sts-model",
+      "sha256": "00bfec83bdd45c6d80e68173fb1aac57d2932e83d74e816eebad8b508bca6493"
+    },
+    {
+      "bytes": 5835421,
+      "path": "runs/training-throughput-20260929/optimized-3/rollout-00002.json",
+      "sha256": "bc62356ee80b2f8e4398606b6d17fb09a8af5cf3107cb3a0b55d6d537e68bf2d"
+    },
+    {
+      "bytes": 414857,
+      "path": "runs/training-throughput-20260929/optimized-3/update-00002.sts-model",
+      "sha256": "59a966971215430590ff49ac16b33d16873907ff5b50412965bfe9f44f1cdcd0"
+    },
+    {
+      "bytes": 73165,
+      "path": "runs/training-throughput-20260929/profile-before-1/ppo.json",
+      "sha256": "79993fc8056996d150eac43c8b9ef0c31bf6fc22ed27cbe3271b457de185bd4f"
+    },
+    {
+      "bytes": 1716,
+      "path": "runs/training-throughput-20260929/profile-before-1/timings.json",
+      "sha256": "4f3c2e7fd0709393755427f6121fc8b2385f98719e3678dd3c7dd9e0455eb01c"
+    },
+    {
+      "bytes": 414854,
+      "path": "runs/training-throughput-20260929/profile-before-1/initial.sts-model",
+      "sha256": "02195554c2646db3f0d8ae853221b7eacef8fb734edd25a6734f39eca341a30b"
+    },
+    {
+      "bytes": 414856,
+      "path": "runs/training-throughput-20260929/profile-before-1/final.sts-model",
+      "sha256": "88eee07b07052252fd4b99a65335a17e2a82b3df5249617e0f4b7ae050ad9fb4"
+    },
+    {
+      "bytes": 5765242,
+      "path": "runs/training-throughput-20260929/profile-before-1/rollout-00001.json",
+      "sha256": "d76fa04b0723894e637fab730b0e37622fb88a70feec83c4e4af7552c0a416b6"
+    },
+    {
+      "bytes": 414856,
+      "path": "runs/training-throughput-20260929/profile-before-1/update-00001.sts-model",
+      "sha256": "88eee07b07052252fd4b99a65335a17e2a82b3df5249617e0f4b7ae050ad9fb4"
+    },
+    {
+      "bytes": 73167,
+      "path": "runs/training-throughput-20260929/profile-after-1/ppo.json",
+      "sha256": "7157f97a22e6172ef59da23a38e03c32b3628a559a563a1df020915fe821b474"
+    },
+    {
+      "bytes": 1719,
+      "path": "runs/training-throughput-20260929/profile-after-1/timings.json",
+      "sha256": "95966fe5c1fd9be1a05392c9c901ca59f4476511938cbad69d75ee02d45357c0"
+    },
+    {
+      "bytes": 414854,
+      "path": "runs/training-throughput-20260929/profile-after-1/initial.sts-model",
+      "sha256": "3beccf12f825ef71bcb4ff08a1444ed9b427358c0a76812846ec4a13a4d20c97"
+    },
+    {
+      "bytes": 414856,
+      "path": "runs/training-throughput-20260929/profile-after-1/final.sts-model",
+      "sha256": "3decd539b8ca01600e8a674d43d358f6569a04f7d4bc6aeb6609b1ae8b1f54bc"
+    },
+    {
+      "bytes": 5765242,
+      "path": "runs/training-throughput-20260929/profile-after-1/rollout-00001.json",
+      "sha256": "3850ec9caee4f964135f48ae4e6ded02513621722db926701cf04a85782da542"
+    },
+    {
+      "bytes": 414856,
+      "path": "runs/training-throughput-20260929/profile-after-1/update-00001.sts-model",
+      "sha256": "3decd539b8ca01600e8a674d43d358f6569a04f7d4bc6aeb6609b1ae8b1f54bc"
+    },
+    {
+      "bytes": 326196,
+      "path": "runs/training-throughput-20260929/profile-after-1-profiles/collect-3472-1892766736085250.prof",
+      "sha256": "b33a21954347866f657e1b7a935e5588f0482647ab311be979ca2400c92482fd"
+    },
+    {
+      "bytes": 331320,
+      "path": "runs/training-throughput-20260929/profile-after-1-profiles/collect-3473-1892768100411208.prof",
+      "sha256": "0eaa5361f4387e0a16e485bce91601050d5a4f1a3e91252ed06af0109fd2ae5d"
+    },
+    {
+      "bytes": 329920,
+      "path": "runs/training-throughput-20260929/profile-after-1-profiles/collect-3474-1892766784492083.prof",
+      "sha256": "54c46f4a5abb161a975251a04f9367a103b3ef4456432a276314139787e488d5"
+    },
+    {
+      "bytes": 329397,
+      "path": "runs/training-throughput-20260929/profile-after-1-profiles/collect-3475-1892766377943666.prof",
+      "sha256": "f944aeb747416592abfc65929c0c1dc3bc869f6b11edc5d89b75e3a7ccbe0ae7"
+    },
+    {
+      "bytes": 331013,
+      "path": "runs/training-throughput-20260929/profile-after-1-profiles/collect-3476-1892768276356125.prof",
+      "sha256": "877af4ae53ca0fae0941ad487dcb9a8a8124acdaff8ba7797563cd8bc8206a2d"
+    },
+    {
+      "bytes": 331801,
+      "path": "runs/training-throughput-20260929/profile-after-1-profiles/collect-3477-1892770596957375.prof",
+      "sha256": "a7265d69b93a087d632812a34b29371b075e47af40b2c410efe5f96b9d2377b4"
+    },
+    {
+      "bytes": 328556,
+      "path": "runs/training-throughput-20260929/profile-after-1-profiles/collect-3478-1892765981986416.prof",
+      "sha256": "d6215010fe31f8ad8c1c59389d05228bfe2457e66b0c06f6caef381957b8cb48"
+    },
+    {
+      "bytes": 335287,
+      "path": "runs/training-throughput-20260929/profile-after-1-profiles/collect-3479-1892769714823666.prof",
+      "sha256": "85ee6e35b02eb6d38292965bea6df49da790c1dae223c5e5cfbb361b3d3bbc9a"
+    },
+    {
+      "bytes": 59424,
+      "path": "runs/training-throughput-20260929/profile-after-1-profiles/update-3469-1892780553317958.prof",
+      "sha256": "feaebbaaf5a64b2d5ad228de063fb29b376b495cb8bc9ac0badc64c163f08efc"
+    },
+    {
+      "bytes": 324774,
+      "path": "runs/training-throughput-20260929/profile-before-1-profiles/collect-2091-1892050607870375.prof",
+      "sha256": "9ecad21d407bfc50984de584d40ecaa200e70497cf8fc685dc5b4aea3f762419"
+    },
+    {
+      "bytes": 329898,
+      "path": "runs/training-throughput-20260929/profile-before-1-profiles/collect-2092-1892053153779958.prof",
+      "sha256": "177148ad4a84ff9164418a429af9e49939b46853d4c9db7589aed9eadb12f700"
+    },
+    {
+      "bytes": 328545,
+      "path": "runs/training-throughput-20260929/profile-before-1-profiles/collect-2093-1892050892878375.prof",
+      "sha256": "a665683425b3bf1fd50ac99b41ba612d657e966de530c04bcbdae57577b7580c"
+    },
+    {
+      "bytes": 328033,
+      "path": "runs/training-throughput-20260929/profile-before-1-profiles/collect-2094-1892050074292541.prof",
+      "sha256": "3d73c6af2614ff499c268a59a31c8bbdcc9435c66ce5c0cb9efd47cff6bf4ca9"
+    },
+    {
+      "bytes": 329556,
+      "path": "runs/training-throughput-20260929/profile-before-1-profiles/collect-2095-1892053358129041.prof",
+      "sha256": "9c0c45af20d2c1c4f8c009012493fc316996624ebf3ed77a5ebd7605bbe69a47"
+    },
+    {
+      "bytes": 330391,
+      "path": "runs/training-throughput-20260929/profile-before-1-profiles/collect-2096-1892056848982541.prof",
+      "sha256": "2269c30311ef810320577570a043f2db4961017f0886783efba1fae04ed687d0"
+    },
+    {
+      "bytes": 327099,
+      "path": "runs/training-throughput-20260929/profile-before-1-profiles/collect-2097-1892050978219000.prof",
+      "sha256": "1c86fdee743841bec55820c2756b5817bb8f3e621567b9b646bac94269c0a00b"
+    },
+    {
+      "bytes": 333853,
+      "path": "runs/training-throughput-20260929/profile-before-1-profiles/collect-2098-1892054529366583.prof",
+      "sha256": "f0a12d5e3ed30f88a1c832040de48457e3a20baeab1431172414956f5671c7b0"
+    },
+    {
+      "bytes": 59660,
+      "path": "runs/training-throughput-20260929/profile-before-1-profiles/update-2089-1892067825044833.prof",
+      "sha256": "e61e22517841ab2a2185a5fa62b97da068dd5222bf65a8a471e4db016807e395"
+    },
+    {
+      "bytes": 6342,
+      "path": "game/agent/contracts/codec.py",
+      "sha256": "38069557463dffdf89cf0f708d5c9c0040b680436a5c6bacb2c280ffd33da0d6"
+    },
+    {
+      "bytes": 8163,
+      "path": "game/agent/training/features.py",
+      "sha256": "4bed3fb4c20712533e165db5af29db3ac17adca393db07fcdec1fa0f394571ce"
+    },
+    {
+      "bytes": 15348,
+      "path": "tests/agent/test_contracts.py",
+      "sha256": "dd2838ae877092678bbf167c85537668f7baed0e4d02c59d4de4ce413cd7df40"
+    },
+    {
+      "bytes": 14709,
+      "path": "tests/agent/test_training_model.py",
+      "sha256": "972bc8746dd70c29789257340f395b0bed2a3106e3540af9762f4d99184d6d18"
+    }
+  ],
+  "baseline_implementation": {
+    "build": "418f35f52d885922fc61b73a2bbaf80ef9913658a74777cbfc1d4592b500c3f6",
+    "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+    "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+    "target": "sts2-v0.107.1-steam-23811903"
+  },
+  "baseline_repetitions": [
+    {
+      "collection_seconds": [
+        24.40103295794688,
+        23.5947002498433
+      ],
+      "final_fingerprint": "sts_policy_state_v2:03f3236c25f69c0f63e9d6349619ce0703e26a2f68789ae1a674b5fb7094e99c",
+      "implementation": {
+        "build": "418f35f52d885922fc61b73a2bbaf80ef9913658a74777cbfc1d4592b500c3f6",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "invocation_seconds": 69.36330249998719,
+      "label": "baseline-1",
+      "packed_rollout_bytes": [
+        1264370604,
+        1238192578
+      ],
+      "parent_peak_rss_bytes": 4109664256,
+      "process_seconds": 70.2388278329745,
+      "report_seconds": 68.9232812919654,
+      "runtime": {
+        "device": "cpu",
+        "python": "3.11.15",
+        "threads": 1,
+        "torch": "2.13.0"
+      },
+      "summary": {
+        "abandoned": 0,
+        "accepted_decisions": 8192,
+        "act1_clear_rate": 0.0,
+        "act1_clears": 0,
+        "components": {
+          "act_cleared": 0.0,
+          "combat_loss": 66.0,
+          "combat_win": 332.0,
+          "end_turn_action": 1229.0,
+          "potion_use_action": 45.0,
+          "run_abandoned": 0.0,
+          "run_defeat": 72.0,
+          "run_victory": 0.0,
+          "win_hp_fraction": 227.84506887291639
+        },
+        "controlled_attempts": 0,
+        "cutoffs": 16,
+        "decisions_per_second": 118.8567904261251,
+        "episode_attempts": 88,
+        "failed_episodes": 0,
+        "genuine_start_attempts": 88,
+        "goal": "act1",
+        "losses": 72,
+        "mean_hp_on_win": null,
+        "potion_use_actions": 45,
+        "processed_decisions": 8192,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task": "full_run",
+        "task_return": -34.33287327817707,
+        "trained_decisions": 8192,
+        "wins": 0
+      },
+      "update_seconds": [
+        10.208837915910408,
+        10.011822457890958
+      ]
+    },
+    {
+      "collection_seconds": [
+        25.369834249839187,
+        23.970985708059743
+      ],
+      "final_fingerprint": "sts_policy_state_v2:03f3236c25f69c0f63e9d6349619ce0703e26a2f68789ae1a674b5fb7094e99c",
+      "implementation": {
+        "build": "418f35f52d885922fc61b73a2bbaf80ef9913658a74777cbfc1d4592b500c3f6",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "invocation_seconds": 70.69201970798895,
+      "label": "baseline-2",
+      "packed_rollout_bytes": [
+        1264370604,
+        1238192578
+      ],
+      "parent_peak_rss_bytes": 4110925824,
+      "process_seconds": 71.70346512505785,
+      "report_seconds": 70.20020799990743,
+      "runtime": {
+        "device": "cpu",
+        "python": "3.11.15",
+        "threads": 1,
+        "torch": "2.13.0"
+      },
+      "summary": {
+        "abandoned": 0,
+        "accepted_decisions": 8192,
+        "act1_clear_rate": 0.0,
+        "act1_clears": 0,
+        "components": {
+          "act_cleared": 0.0,
+          "combat_loss": 66.0,
+          "combat_win": 332.0,
+          "end_turn_action": 1229.0,
+          "potion_use_action": 45.0,
+          "run_abandoned": 0.0,
+          "run_defeat": 72.0,
+          "run_victory": 0.0,
+          "win_hp_fraction": 227.84506887291639
+        },
+        "controlled_attempts": 0,
+        "cutoffs": 16,
+        "decisions_per_second": 116.6948109329078,
+        "episode_attempts": 88,
+        "failed_episodes": 0,
+        "genuine_start_attempts": 88,
+        "goal": "act1",
+        "losses": 72,
+        "mean_hp_on_win": null,
+        "potion_use_actions": 45,
+        "processed_decisions": 8192,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task": "full_run",
+        "task_return": -34.33287327817707,
+        "trained_decisions": 8192,
+        "wins": 0
+      },
+      "update_seconds": [
+        10.229452749947086,
+        10.003043124917895
+      ]
+    },
+    {
+      "collection_seconds": [
+        25.850124415941536,
+        24.422004540916532
+      ],
+      "final_fingerprint": "sts_policy_state_v2:03f3236c25f69c0f63e9d6349619ce0703e26a2f68789ae1a674b5fb7094e99c",
+      "implementation": {
+        "build": "418f35f52d885922fc61b73a2bbaf80ef9913658a74777cbfc1d4592b500c3f6",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "invocation_seconds": 71.88182508316822,
+      "label": "baseline-3",
+      "packed_rollout_bytes": [
+        1264370604,
+        1238192578
+      ],
+      "parent_peak_rss_bytes": 4125999104,
+      "process_seconds": 72.7495925410185,
+      "report_seconds": 71.40220716712065,
+      "runtime": {
+        "device": "cpu",
+        "python": "3.11.15",
+        "threads": 1,
+        "torch": "2.13.0"
+      },
+      "summary": {
+        "abandoned": 0,
+        "accepted_decisions": 8192,
+        "act1_clear_rate": 0.0,
+        "act1_clears": 0,
+        "components": {
+          "act_cleared": 0.0,
+          "combat_loss": 66.0,
+          "combat_win": 332.0,
+          "end_turn_action": 1229.0,
+          "potion_use_action": 45.0,
+          "run_abandoned": 0.0,
+          "run_defeat": 72.0,
+          "run_victory": 0.0,
+          "win_hp_fraction": 227.84506887291639
+        },
+        "controlled_attempts": 0,
+        "cutoffs": 16,
+        "decisions_per_second": 114.73034693207998,
+        "episode_attempts": 88,
+        "failed_episodes": 0,
+        "genuine_start_attempts": 88,
+        "goal": "act1",
+        "losses": 72,
+        "mean_hp_on_win": null,
+        "potion_use_actions": 45,
+        "processed_decisions": 8192,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task": "full_run",
+        "task_return": -34.33287327817707,
+        "trained_decisions": 8192,
+        "wins": 0
+      },
+      "update_seconds": [
+        10.423576875124127,
+        10.06924937502481
+      ]
+    }
+  ],
+  "canonical_audit": {
+    "canonical_decisions": 16384,
+    "canonical_trajectories": 176,
+    "labels": [
+      "baseline-1",
+      "optimized-1"
+    ],
+    "private_partials": 0,
+    "private_permissions_checked": 652,
+    "seconds": 5.963811167050153
+  },
+  "changed_production_sources": [
+    "game/agent/contracts/codec.py",
+    "game/agent/training/features.py"
+  ],
+  "diagnostic_profiles": {
+    "comparison": {
+      "profile-after": {
+        "collect": {
+          "function_calls": 1286169203,
+          "schema_and_identity": [
+            {
+              "calls": 200,
+              "cumulative_seconds": 0.000145797,
+              "function": "get_args"
+            },
+            {
+              "calls": 200,
+              "cumulative_seconds": 0.000135129,
+              "function": "get_origin"
+            },
+            {
+              "calls": 1555125,
+              "cumulative_seconds": 3.3579788560000003,
+              "function": "fields"
+            },
+            {
+              "calls": 8224,
+              "cumulative_seconds": 0.002118426,
+              "function": "identity"
+            }
+          ],
+          "top_cumulative": [
+            {
+              "cumulative_seconds": 322.1649919160001,
+              "file": "rollout.py",
+              "function": "collect"
+            },
+            {
+              "cumulative_seconds": 226.09893675100002,
+              "file": "run_task.py",
+              "function": "step"
+            },
+            {
+              "cumulative_seconds": 226.08593357300003,
+              "file": "gym_env.py",
+              "function": "step"
+            },
+            {
+              "cumulative_seconds": 176.43653623400002,
+              "file": "run_task.py",
+              "function": "_refresh"
+            },
+            {
+              "cumulative_seconds": 176.40356142500002,
+              "file": "gym_env.py",
+              "function": "_refresh"
+            },
+            {
+              "cumulative_seconds": 103.952856318,
+              "file": "gym_env.py",
+              "function": "_observe"
+            },
+            {
+              "cumulative_seconds": 103.943645954,
+              "file": "adapter.py",
+              "function": "observe"
+            },
+            {
+              "cumulative_seconds": 103.529487424,
+              "file": "full.py",
+              "function": "to_dict"
+            },
+            {
+              "cumulative_seconds": 82.564212398,
+              "file": "adapter.py",
+              "function": "_guard"
+            },
+            {
+              "cumulative_seconds": 79.65846103800001,
+              "file": "full.py",
+              "function": "from_dict"
+            },
+            {
+              "cumulative_seconds": 72.85115613400001,
+              "file": "engine.py",
+              "function": "snapshot"
+            },
+            {
+              "cumulative_seconds": 72.808494902,
+              "file": "snapshots.py",
+              "function": "capture_run"
+            },
+            {
+              "cumulative_seconds": 72.400556408,
+              "file": "gym_env.py",
+              "function": "_encode"
+            },
+            {
+              "cumulative_seconds": 72.393565143,
+              "file": "features.py",
+              "function": "encode"
+            },
+            {
+              "cumulative_seconds": 71.768824653,
+              "file": "codec.py",
+              "function": "pack"
+            }
+          ],
+          "total_profiled_seconds": 314.090075099
+        },
+        "update": {
+          "function_calls": 3251852,
+          "schema_and_identity": [
+            {
+              "calls": 1,
+              "cumulative_seconds": 7.542000000000001e-06,
+              "function": "fields"
+            },
+            {
+              "calls": 1,
+              "cumulative_seconds": 7.5e-07,
+              "function": "get_origin"
+            },
+            {
+              "calls": 16385,
+              "cumulative_seconds": 0.000778529,
+              "function": "identity"
+            }
+          ],
+          "top_cumulative": [
+            {
+              "cumulative_seconds": 9.629412666,
+              "file": "ppo.py",
+              "function": "update"
+            },
+            {
+              "cumulative_seconds": 6.723090549,
+              "file": "module.py",
+              "function": "_wrapped_call_impl"
+            },
+            {
+              "cumulative_seconds": 6.722353412,
+              "file": "module.py",
+              "function": "_call_impl"
+            },
+            {
+              "cumulative_seconds": 6.719039375,
+              "file": "model.py",
+              "function": "forward"
+            },
+            {
+              "cumulative_seconds": 3.5969750840000003,
+              "file": "ppo.py",
+              "function": "_measure"
+            },
+            {
+              "cumulative_seconds": 3.059426899,
+              "file": "~",
+              "function": "<built-in method torch.tanh>"
+            },
+            {
+              "cumulative_seconds": 3.0537849,
+              "file": "container.py",
+              "function": "forward"
+            },
+            {
+              "cumulative_seconds": 2.508823069,
+              "file": "activation.py",
+              "function": "forward"
+            },
+            {
+              "cumulative_seconds": 1.692911456,
+              "file": "_tensor.py",
+              "function": "backward"
+            },
+            {
+              "cumulative_seconds": 1.6921287520000001,
+              "file": "__init__.py",
+              "function": "backward"
+            },
+            {
+              "cumulative_seconds": 1.683830995,
+              "file": "graph.py",
+              "function": "_engine_run_backward"
+            },
+            {
+              "cumulative_seconds": 1.679517661,
+              "file": "~",
+              "function": "<method 'run_backward' of 'torch._C._EngineBase' objects>"
+            },
+            {
+              "cumulative_seconds": 1.595942808,
+              "file": "model.py",
+              "function": "_pool"
+            },
+            {
+              "cumulative_seconds": 1.4661419420000001,
+              "file": "~",
+              "function": "<method 'index_add' of 'torch._C.TensorBase' objects>"
+            },
+            {
+              "cumulative_seconds": 0.543252976,
+              "file": "linear.py",
+              "function": "forward"
+            }
+          ],
+          "total_profiled_seconds": 9.627887176999998
+        }
+      },
+      "profile-before": {
+        "collect": {
+          "function_calls": 2026843270,
+          "schema_and_identity": [
+            {
+              "calls": 56396535,
+              "cumulative_seconds": 22.375115411,
+              "function": "get_args"
+            },
+            {
+              "calls": 56396535,
+              "cumulative_seconds": 22.377356972,
+              "function": "get_origin"
+            },
+            {
+              "calls": 22038232,
+              "cumulative_seconds": 24.797460585000003,
+              "function": "fields"
+            },
+            {
+              "calls": 8224,
+              "cumulative_seconds": 0.706796148,
+              "function": "identity"
+            }
+          ],
+          "top_cumulative": [
+            {
+              "cumulative_seconds": 445.952285252,
+              "file": "rollout.py",
+              "function": "collect"
+            },
+            {
+              "cumulative_seconds": 291.973545414,
+              "file": "run_task.py",
+              "function": "step"
+            },
+            {
+              "cumulative_seconds": 291.958802591,
+              "file": "gym_env.py",
+              "function": "step"
+            },
+            {
+              "cumulative_seconds": 242.611887948,
+              "file": "run_task.py",
+              "function": "_refresh"
+            },
+            {
+              "cumulative_seconds": 242.576965314,
+              "file": "gym_env.py",
+              "function": "_refresh"
+            },
+            {
+              "cumulative_seconds": 196.095739355,
+              "file": "full.py",
+              "function": "to_dict"
+            },
+            {
+              "cumulative_seconds": 180.081109654,
+              "file": "full.py",
+              "function": "from_dict"
+            },
+            {
+              "cumulative_seconds": 165.866036735,
+              "file": "codec.py",
+              "function": "_read"
+            },
+            {
+              "cumulative_seconds": 165.501945258,
+              "file": "codec.py",
+              "function": "<dictcomp>"
+            },
+            {
+              "cumulative_seconds": 164.14733291599998,
+              "file": "codec.py",
+              "function": "<genexpr>"
+            },
+            {
+              "cumulative_seconds": 138.157485143,
+              "file": "gym_env.py",
+              "function": "_observe"
+            },
+            {
+              "cumulative_seconds": 138.146910117,
+              "file": "adapter.py",
+              "function": "observe"
+            },
+            {
+              "cumulative_seconds": 115.032303625,
+              "file": "recording.py",
+              "function": "append"
+            },
+            {
+              "cumulative_seconds": 104.36446604200002,
+              "file": "gym_env.py",
+              "function": "_encode"
+            },
+            {
+              "cumulative_seconds": 104.35693467000002,
+              "file": "features.py",
+              "function": "encode"
+            }
+          ],
+          "total_profiled_seconds": 437.42006113099984
+        },
+        "update": {
+          "function_calls": 3432087,
+          "schema_and_identity": [
+            {
+              "calls": 1,
+              "cumulative_seconds": 5.541e-06,
+              "function": "fields"
+            },
+            {
+              "calls": 1,
+              "cumulative_seconds": 7.91e-07,
+              "function": "get_origin"
+            },
+            {
+              "calls": 16385,
+              "cumulative_seconds": 0.785071975,
+              "function": "identity"
+            }
+          ],
+          "top_cumulative": [
+            {
+              "cumulative_seconds": 10.668746083,
+              "file": "ppo.py",
+              "function": "update"
+            },
+            {
+              "cumulative_seconds": 6.819014746000001,
+              "file": "module.py",
+              "function": "_wrapped_call_impl"
+            },
+            {
+              "cumulative_seconds": 6.818165918,
+              "file": "module.py",
+              "function": "_call_impl"
+            },
+            {
+              "cumulative_seconds": 6.814236309,
+              "file": "model.py",
+              "function": "forward"
+            },
+            {
+              "cumulative_seconds": 4.030927375,
+              "file": "ppo.py",
+              "function": "_measure"
+            },
+            {
+              "cumulative_seconds": 3.088654162,
+              "file": "container.py",
+              "function": "forward"
+            },
+            {
+              "cumulative_seconds": 3.073339115,
+              "file": "~",
+              "function": "<built-in method torch.tanh>"
+            },
+            {
+              "cumulative_seconds": 2.5232692450000003,
+              "file": "activation.py",
+              "function": "forward"
+            },
+            {
+              "cumulative_seconds": 1.764627372,
+              "file": "_tensor.py",
+              "function": "backward"
+            },
+            {
+              "cumulative_seconds": 1.763671199,
+              "file": "__init__.py",
+              "function": "backward"
+            },
+            {
+              "cumulative_seconds": 1.7536559600000001,
+              "file": "graph.py",
+              "function": "_engine_run_backward"
+            },
+            {
+              "cumulative_seconds": 1.748163517,
+              "file": "~",
+              "function": "<method 'run_backward' of 'torch._C._EngineBase' objects>"
+            },
+            {
+              "cumulative_seconds": 1.611674209,
+              "file": "model.py",
+              "function": "_pool"
+            },
+            {
+              "cumulative_seconds": 1.4740728650000001,
+              "file": "~",
+              "function": "<method 'index_add' of 'torch._C.TensorBase' objects>"
+            },
+            {
+              "cumulative_seconds": 1.280241033,
+              "file": "ppo.py",
+              "function": "replay_batch"
+            }
+          ],
+          "total_profiled_seconds": 10.667235906000002
+        }
+      }
+    },
+    "interpretation": "Diagnostic cProfile data only; collection sums eight worker profiles. Cumulative times overlap. Excluded from throughput medians.",
+    "remaining_bottleneck": "Collection remains about two-thirds of process time. Public-state conversion/validation and protected engine snapshot work dominate worker profiles; tensor math dominates PPO updates."
+  },
+  "implementation_choices": [
+    "Bounded cached readers retain only schema metadata; all input and semantic validation still runs.",
+    "Annotation identity preserves order-sensitive union parsing; recursive field readers resolve lazily.",
+    "Generic substitutions remain per parse, and serialization field-name lists are cached separately.",
+    "Frozen vocabulary identity is calculated once at construction with identical canonical wire/hash.",
+    "No architecture, masks, seeds, reward, GAE, optimizer, recording, checkpoint or worker-scheduling changes."
+  ],
+  "optimized_implementation": {
+    "build": "1d59e25cc1a60b4bba8a26aafb1f77069add4ef1f748579e8a13906dfdea90be",
+    "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+    "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+    "target": "sts2-v0.107.1-steam-23811903"
+  },
+  "optimized_repetitions": [
+    {
+      "collection_seconds": [
+        20.041899624979123,
+        19.126092541962862
+      ],
+      "final_fingerprint": "sts_policy_state_v2:03f3236c25f69c0f63e9d6349619ce0703e26a2f68789ae1a674b5fb7094e99c",
+      "implementation": {
+        "build": "1d59e25cc1a60b4bba8a26aafb1f77069add4ef1f748579e8a13906dfdea90be",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "invocation_seconds": 58.40578241716139,
+      "label": "optimized-1",
+      "packed_rollout_bytes": [
+        1264370604,
+        1238192578
+      ],
+      "parent_peak_rss_bytes": 4245422080,
+      "process_seconds": 59.16138449986465,
+      "report_seconds": 58.00545204197988,
+      "runtime": {
+        "device": "cpu",
+        "python": "3.11.15",
+        "threads": 1,
+        "torch": "2.13.0"
+      },
+      "summary": {
+        "abandoned": 0,
+        "accepted_decisions": 8192,
+        "act1_clear_rate": 0.0,
+        "act1_clears": 0,
+        "components": {
+          "act_cleared": 0.0,
+          "combat_loss": 66.0,
+          "combat_win": 332.0,
+          "end_turn_action": 1229.0,
+          "potion_use_action": 45.0,
+          "run_abandoned": 0.0,
+          "run_defeat": 72.0,
+          "run_victory": 0.0,
+          "win_hp_fraction": 227.84506887291639
+        },
+        "controlled_attempts": 0,
+        "cutoffs": 16,
+        "decisions_per_second": 141.22810376637116,
+        "episode_attempts": 88,
+        "failed_episodes": 0,
+        "genuine_start_attempts": 88,
+        "goal": "act1",
+        "losses": 72,
+        "mean_hp_on_win": null,
+        "potion_use_actions": 45,
+        "processed_decisions": 8192,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task": "full_run",
+        "task_return": -34.33287327817707,
+        "trained_decisions": 8192,
+        "wins": 0
+      },
+      "update_seconds": [
+        9.22801825008355,
+        8.963724416913465
+      ]
+    },
+    {
+      "collection_seconds": [
+        20.552590791136026,
+        19.486955208936706
+      ],
+      "final_fingerprint": "sts_policy_state_v2:03f3236c25f69c0f63e9d6349619ce0703e26a2f68789ae1a674b5fb7094e99c",
+      "implementation": {
+        "build": "1d59e25cc1a60b4bba8a26aafb1f77069add4ef1f748579e8a13906dfdea90be",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "invocation_seconds": 59.356651165988296,
+      "label": "optimized-2",
+      "packed_rollout_bytes": [
+        1264370604,
+        1238192578
+      ],
+      "parent_peak_rss_bytes": 4151279616,
+      "process_seconds": 60.28488966706209,
+      "report_seconds": 58.86653458396904,
+      "runtime": {
+        "device": "cpu",
+        "python": "3.11.15",
+        "threads": 1,
+        "torch": "2.13.0"
+      },
+      "summary": {
+        "abandoned": 0,
+        "accepted_decisions": 8192,
+        "act1_clear_rate": 0.0,
+        "act1_clears": 0,
+        "components": {
+          "act_cleared": 0.0,
+          "combat_loss": 66.0,
+          "combat_win": 332.0,
+          "end_turn_action": 1229.0,
+          "potion_use_action": 45.0,
+          "run_abandoned": 0.0,
+          "run_defeat": 72.0,
+          "run_victory": 0.0,
+          "win_hp_fraction": 227.84506887291639
+        },
+        "controlled_attempts": 0,
+        "cutoffs": 16,
+        "decisions_per_second": 139.16226015164318,
+        "episode_attempts": 88,
+        "failed_episodes": 0,
+        "genuine_start_attempts": 88,
+        "goal": "act1",
+        "losses": 72,
+        "mean_hp_on_win": null,
+        "potion_use_actions": 45,
+        "processed_decisions": 8192,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task": "full_run",
+        "task_return": -34.33287327817707,
+        "trained_decisions": 8192,
+        "wins": 0
+      },
+      "update_seconds": [
+        9.260830458020791,
+        8.934202249860391
+      ]
+    },
+    {
+      "collection_seconds": [
+        20.856293209129944,
+        19.224935916950926
+      ],
+      "final_fingerprint": "sts_policy_state_v2:03f3236c25f69c0f63e9d6349619ce0703e26a2f68789ae1a674b5fb7094e99c",
+      "implementation": {
+        "build": "1d59e25cc1a60b4bba8a26aafb1f77069add4ef1f748579e8a13906dfdea90be",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "invocation_seconds": 59.5412037090864,
+      "label": "optimized-3",
+      "packed_rollout_bytes": [
+        1264370604,
+        1238192578
+      ],
+      "parent_peak_rss_bytes": 4066721792,
+      "process_seconds": 60.50670416583307,
+      "report_seconds": 59.06021050014533,
+      "runtime": {
+        "device": "cpu",
+        "python": "3.11.15",
+        "threads": 1,
+        "torch": "2.13.0"
+      },
+      "summary": {
+        "abandoned": 0,
+        "accepted_decisions": 8192,
+        "act1_clear_rate": 0.0,
+        "act1_clears": 0,
+        "components": {
+          "act_cleared": 0.0,
+          "combat_loss": 66.0,
+          "combat_win": 332.0,
+          "end_turn_action": 1229.0,
+          "potion_use_action": 45.0,
+          "run_abandoned": 0.0,
+          "run_defeat": 72.0,
+          "run_victory": 0.0,
+          "win_hp_fraction": 227.84506887291639
+        },
+        "controlled_attempts": 0,
+        "cutoffs": 16,
+        "decisions_per_second": 138.70590589885964,
+        "episode_attempts": 88,
+        "failed_episodes": 0,
+        "genuine_start_attempts": 88,
+        "goal": "act1",
+        "losses": 72,
+        "mean_hp_on_win": null,
+        "potion_use_actions": 45,
+        "processed_decisions": 8192,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task": "full_run",
+        "task_return": -34.33287327817707,
+        "trained_decisions": 8192,
+        "wins": 0
+      },
+      "update_seconds": [
+        9.220116624841467,
+        9.128912749933079
+      ]
+    }
+  ],
+  "parity": {
+    "decisions": 8192,
+    "episodes": 88,
+    "equal": [
+      "every_public_state_action_execution_and_outcome",
+      "masks_log_probabilities_values_rewards_advantages_returns",
+      "all_non_timing_update_metrics",
+      "final_model_weights",
+      "all_non_timing_summary_metrics"
+    ],
+    "final_fingerprint": "sts_policy_state_v2:03f3236c25f69c0f63e9d6349619ce0703e26a2f68789ae1a674b5fb7094e99c",
+    "labels": [
+      "baseline-1",
+      "baseline-2",
+      "baseline-3",
+      "optimized-1",
+      "optimized-2",
+      "optimized-3"
+    ],
+    "seconds": 42.632050207816064
+  },
+  "phase_timings": {
+    "benchmark_process_seconds": 394.64486383181065,
+    "diagnostic_profile_process_seconds": 128.881872958038,
+    "implementation_elapsed_seconds": null,
+    "note": "Implementation elapsed was not separately measured. Validation, review and artifact-check timings can overlap; do not sum them as task wall time."
+  },
+  "protocol": {
+    "config_sha256": "c697c47a83a22b2a6f2507a83590657e13faee9236b450aae9ec02f788d7d8ca",
+    "decisions_per_replica": 8192,
+    "experiment": {
+      "encounters": [
+        "overgrowth",
+        "underdocks"
+      ],
+      "ppo": {
+        "batch_size": 16,
+        "clip_ratio": 0.2,
+        "entropy_weight": 0.01,
+        "episode_decisions": 512,
+        "episode_seconds": 120.0,
+        "epochs": 2,
+        "gae_lambda": 0.95,
+        "gamma": 1.0,
+        "gradient_clip": 0.5,
+        "learning_rate": 0.0003,
+        "normalize_advantages": true,
+        "rollout_steps": 4096,
+        "target_kl": 0.03,
+        "value_weight": 0.5
+      },
+      "schema": "sts_ppo_experiment_v2",
+      "source": "ironclad_a0_full_run_v1",
+      "training": {
+        "action_policy": "commit_card_selection_v1",
+        "mode": "full_run",
+        "reward": {
+          "goal": "act1",
+          "schema": "sts_full_run_reward_v3",
+          "weights": {
+            "act_cleared": 1.0,
+            "combat_loss": 0.0,
+            "combat_win": 0.1,
+            "end_turn_action": -0.001,
+            "potion_use_action": 0.0,
+            "run_abandoned": -1.0,
+            "run_defeat": -1.0,
+            "run_victory": 0.0,
+            "win_hp_fraction": 0.025
+          }
+        },
+        "scenario_set": "ironclad_a0_full_run_v1"
+      }
+    },
+    "host": {
+      "logical_cpus": 18,
+      "machine": "arm64",
+      "os": "macOS-26.6.2-arm64-arm-64bit"
+    },
+    "learners_per_replica": 1,
+    "limitations": [
+      "One machine and seed schedule, three repetitions per version.",
+      "OS caches and background load uncontrolled.",
+      "Profile wall times include instrumentation and are excluded from throughput medians.",
+      "50k estimate is linear extrapolation; later model behavior and game lengths can change throughput.",
+      "Parent peak RSS excludes worker processes."
+    ],
+    "model": "runs/act1-50k-8workers-20260929/chunk-01/initial.sts-model",
+    "model_hidden_size": 48,
+    "model_message_layers": 2,
+    "model_parameters": 97394,
+    "model_sha256": "ccd33403e9d061f4866d4e68b7fe864605b598b24d4dbd5c695ef14c6e913642",
+    "private_seed_plan_sha256": "be8a0734af2b83e9520ad94a5d8a14ebf8433ec37a9ea1912db8ff95d55cd7c9",
+    "quota_per_worker_per_round": 512,
+    "recording_and_checkpoints": true,
+    "replicas_per_version": 3,
+    "rollout_steps": 4096,
+    "rounds": 2,
+    "runtime": {
+      "device": "cpu",
+      "python": "3.11.15",
+      "threads": 1,
+      "torch": "2.13.0"
+    },
+    "schedule": "Three baseline invocations, separate diagnostic profile, implementation/checks, three optimized invocations, separate diagnostic profile; fresh parent per invocation and workers retained within it.",
+    "threads_per_process": 1,
+    "workers": 8
+  },
+  "recorded_utc": "2026-09-29T21:24:53.000761+00:00",
+  "rules_unchanged": true,
+  "schema": "sts_act1_training_throughput_evidence_v1",
+  "scope": "Headless CPU throughput only; one learner repeated on identical workload; no strength evaluation or checkpoint promotion.",
+  "source_commit": "5ad1d9daf6eff51222bbcf6371fb819f2937e0e8",
+  "timings": {
+    "baseline": {
+      "cold_collection_seconds": 25.369834249839187,
+      "collection_seconds": 49.34081995789893,
+      "decisions_per_second": 114.24831402098005,
+      "parent_peak_rss_median": 4110925824,
+      "process_seconds": 71.70346512505785,
+      "projected_50k_seconds": 437.64321975743314,
+      "update_seconds": 20.23249587486498,
+      "warm_collection_seconds": 23.970985708059743
+    },
+    "optimized": {
+      "cold_collection_seconds": 20.552590791136026,
+      "collection_seconds": 40.03954600007273,
+      "decisions_per_second": 135.88811467089522,
+      "parent_peak_rss_median": 4151279616,
+      "process_seconds": 60.28488966706209,
+      "projected_50k_seconds": 367.9497660343145,
+      "update_seconds": 18.195032707881182,
+      "warm_collection_seconds": 19.224935916950926
+    },
+    "speedup": 1.1894102406267575,
+    "time_reduction_percent": 15.924719172330992
+  },
+  "validation": {
+    "compileall": {
+      "command": ".venv/bin/python -m compileall -q game/agent tests/agent",
+      "status": "passed"
+    },
+    "consumers": {
+      "command": ".venv/bin/python -m pytest -q tests/agent/test_recording.py tests/agent/test_training_records.py tests/agent/test_full_gym.py tests/agent/test_gym_env.py tests/agent/test_encoding.py tests/agent/test_headless_adapter.py tests/test_package_layout.py",
+      "passed": 225,
+      "seconds": 143.36,
+      "warnings": "Two Gymnasium warnings for constant bounds in a Box observation space."
+    },
+    "core": {
+      "command": ".venv/bin/python -m pytest -q tests/agent/test_contracts.py tests/agent/test_full_profile.py tests/agent/test_training_model.py tests/agent/test_ppo.py tests/agent/test_ppo_parallel.py tests/agent/test_commit_selection_training.py tests/agent/test_training_checkpoint.py tests/agent/test_act_training.py tests/agent/test_full_run_training.py tests/agent/test_full_run_rewards.py tests/agent/test_ppo_no_signal.py",
+      "passed": 410,
+      "seconds": 94.87
+    },
+    "diff_check": "passed",
+    "independent_review": {
+      "checks": "58 contract tests; vocabulary reconstruction/pickle/replace/immutability; schema-only caching, strict types, ordered unions, generics, recursion and unchanged checkpoint wire.",
+      "comparison": "Original vs prepared decoder acceptance, decoded values and error details.",
+      "differential_cases_reported": 1438,
+      "elapsed_seconds_reported": 129,
+      "result": "No blocking findings"
+    }
+  },
+  "working_tree": "Includes the previously accepted analysis/evaluation changes; snapshots bind the exact benchmark sources."
+}

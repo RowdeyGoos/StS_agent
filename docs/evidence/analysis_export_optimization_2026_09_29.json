@@ -1,0 +1,146 @@
+{
+  "artifacts": [
+    {
+      "bytes": 19982,
+      "path": "runs/analysis-export-optimization-20260929/quick-results.json",
+      "sha256": "1d6e2428693b1267e988c7048c280d49ae80cabacc43ffc7c1344559931c3c29"
+    },
+    {
+      "bytes": 568,
+      "path": "runs/analysis-export-optimization-20260929/export-result.json",
+      "sha256": "d22d9c9769d630d1e7e9de388c036b060628d4a35cf3e63dec24221bc455276f"
+    },
+    {
+      "bytes": 42631,
+      "path": "runs/analysis-export-optimization-20260929/export-progress.jsonl",
+      "sha256": "e9b74e962ce1e0c9446c1c2f1cf8a70f666d8000f6823103f639b180c6533984"
+    },
+    {
+      "bytes": 15767275,
+      "path": "runs/analysis-export-optimization-20260929/parallel/report.json",
+      "sha256": "0c6d7ea5051dcdd70ac0988a6b46324c6833838b519864649b7547c054ceaa33"
+    },
+    {
+      "bytes": 472,
+      "path": "runs/analysis-export-optimization-20260929/parity.json",
+      "sha256": "fedbdf8c19d24f8a30086242ed9cfb52e1cea0f3e906854e73a96ca6a42ec434"
+    },
+    {
+      "bytes": 1250,
+      "path": "runs/analysis-export-optimization-20260929/candidate-sources.json",
+      "sha256": "64a448769c642c6ec4673ff5068d07699fb7051f75475f8ebbfb0477d51c6670"
+    },
+    {
+      "bytes": 15766918,
+      "path": "runs/act1-50k-8workers-20260929-analysis/report.json",
+      "sha256": "9481b64bd575e57d6870715d105156959bc36c6e010e15bab2cb2305133a799e"
+    }
+  ],
+  "compatibility": {
+    "all_canonical_validation_retained": true,
+    "default_workers": 1,
+    "maximum_workers": 8,
+    "new_dependencies": [],
+    "quick_summary_scope": "report_metadata_only",
+    "schema": "sts_analysis_report_v1",
+    "viewer_assets_unchanged": true
+  },
+  "date": "2026-09-29",
+  "historical_serial_comparison": {
+    "limitation": "Same recorded workload, compared with the previously measured serial export. Serial timing was not repeated; cache and host load were not controlled.",
+    "observed_speedup": 7.508731372635448,
+    "seconds": 472.8752381668892
+  },
+  "inputs": "runs/act1-50k-8workers-20260929",
+  "parallel_export": {
+    "decisions": 56844,
+    "export": {
+      "episode_phase_seconds_sum": {
+        "encode_compress_write": 202.69317766465247,
+        "load_validate": 277.17038270574994,
+        "summarize": 2.6422381300944835,
+        "validate_overlay": 1.8859494116622955
+      },
+      "episodes_wall_seconds": 62.3763457078021,
+      "metadata_seconds": 0.4859675841871649,
+      "timing_scope": "Episode phases sum worker wall time and may exceed elapsed wall time.",
+      "workers_requested": 8,
+      "workers_used": 8
+    },
+    "report_dir": "runs/analysis-export-optimization-20260929/parallel",
+    "runs": 541,
+    "seconds": 62.97671533306129,
+    "status": "complete"
+  },
+  "parity": {
+    "analysis_store_read_passed": true,
+    "compressed_chunk_bytes": 340140044,
+    "compressed_chunks_byte_identical": 3801,
+    "decisions_equal": 56844,
+    "max_mean_return_roundoff_from_sorted_reduction": 1.6653345369377348e-16,
+    "new_export_build_seconds": 62.86480979202315,
+    "old_export_seconds": 472.8752381668892,
+    "paired_cases_verified": 16,
+    "partial_files": 0,
+    "runs_equal": 541,
+    "seconds": 0.7844102911185473,
+    "source_and_outcome_rows_identical": true
+  },
+  "quick_summary": {
+    "summary_seconds": 0.014223875012248755,
+    "wall_seconds": 0.12767937500029802
+  },
+  "runtime": {
+    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "python": "3.11.15"
+  },
+  "schema": "sts_analysis_export_benchmark_v1",
+  "scope": "Offline public-artifact summary and full validation/export; no training or evaluation rerun.",
+  "source_head": "5ad1d9daf6eff51222bbcf6371fb819f2937e0e8",
+  "source_sha256": {
+    "game/agent/analysis/decisions.py": "6be1cd3c2910a099b09de5c3b495c77dd744e90deb0a25bb8eda4057cacf5d1c",
+    "game/agent/analysis/parallel.py": "f7915e79005c3faef013b7e971e505ec9baf897902aa689bf1a46596d14cb6ae",
+    "game/agent/analysis/report.py": "262f8db1ee29a77e2d9e28508388566b29ad25222f56daa39cd48d7f986520cb",
+    "game/agent/analysis/sources.py": "0860c500b68889694bea3a6a5c65abbc5bf50fc113e3c1a9af60d0927f158862",
+    "game/agent/analysis/summary.py": "b14bba9f239019a5da5ea668569dd7054bccf3c97fec0a1693cea7b716f9ab7e",
+    "game/agent/recording.py": "6a1f96379a98a5b9fbdc250e8926bab908f2c9528794e6f92abce85fd47402fa",
+    "game/agent/workers.py": "002a8be4774435c2e166a025a254315860e40046244ecc264be9049c5afefcd3",
+    "game/cli/agent_analyze.py": "bcbed8dc4f1f97984f5203b30219ff12aa879d3755141780291367c64def71d8",
+    "tests/agent/test_analysis.py": "cfa143024d618eb522ce1e965dd929137626c1931162a74e80c788c48ddbf53a",
+    "tests/agent/test_analysis_parallel.py": "a6a3822f793681de8ab8b503d2bf2dc3589104666f29853502d4c9373d3bf286",
+    "tests/agent/test_analysis_summary.py": "39b6d2d058b5e3ab82d9afca23f3e7257df0114403705179893eb7b3697ebc44",
+    "tests/agent/test_analysis_training.py": "638732022b860b0347c663f1c0350909e797eb13e5d6129422ed3837d1983604"
+  },
+  "source_state": "Uncommitted implementation; exact relevant source/test bytes below.",
+  "validation": {
+    "compileall": "Passed for changed analysis/CLI modules and tests.",
+    "focused_analysis_tests": {
+      "includes_loopback_http": true,
+      "passed": 39,
+      "seconds": 11.21
+    },
+    "implementation_seconds": null,
+    "independent_semantic_review": {
+      "abrupt_exit_cleanup_seconds": 3.19,
+      "probes": [
+        "Serial/parallel row and compressed-byte parity",
+        "16 MiB job and result transfers",
+        "Abrupt worker exit with no remaining children/transfer threads",
+        "SIGINT during large transfers with no remaining children/transfer threads"
+      ],
+      "result": "No blockers",
+      "seconds": 166,
+      "sigint_cleanup_seconds": 3.5
+    },
+    "package_layout_tests": {
+      "passed": 7,
+      "seconds": 5.63
+    }
+  },
+  "worker_phase_share": {
+    "encode_compress_write": 0.41844886610539317,
+    "load_validate": 0.5722029409056174,
+    "summarize": 0.0054547546309018325,
+    "validate_overlay": 0.003893438358087591
+  }
+}

@@ -1,0 +1,361 @@
+{
+  "artifacts": [
+    {
+      "bytes": 1045,
+      "path": "runs/evaluation-parallel-20260929/protocol.json",
+      "sha256": "5afbe388aa7807919a78faf11bfee6d4377105c05cf831cc0ca15c80c1e6f77e"
+    },
+    {
+      "bytes": 3142,
+      "path": "runs/evaluation-parallel-20260929/benchmark.py",
+      "sha256": "5653fe44221e8966883ed1b51b51a35a597ebe666fc56b11a26560ab82ab0699"
+    },
+    {
+      "bytes": 5743,
+      "path": "runs/evaluation-parallel-20260929/compare.py",
+      "sha256": "05e84ec7a7b18027337513b6316bd0835b449855e3a4c0d41b7adc1bb3a880de"
+    },
+    {
+      "bytes": 853,
+      "path": "runs/evaluation-parallel-20260929/source-sha256.json",
+      "sha256": "3ca9293b488125672a048d75abf6310cc657c874a0291e2395a60ccba6542d68"
+    },
+    {
+      "bytes": 4132,
+      "path": "runs/evaluation-parallel-20260929/timings.json",
+      "sha256": "41e97eb3f028718c3f3f3b506d63a447d09dd83f54959dc960ccb53215bb0223"
+    },
+    {
+      "bytes": 348,
+      "path": "runs/evaluation-parallel-20260929/parity.json",
+      "sha256": "6a77089012cad8fa3f05179f86973b88c9918225fb33bbfe45394b56d6cb8f6f"
+    },
+    {
+      "bytes": 175,
+      "path": "runs/evaluation-parallel-20260929/viewer-check.json",
+      "sha256": "903a40e4f907e0e6e2133c5532db7db5b1680d8ec5e786faa0261bd5b1ea8bb8"
+    },
+    {
+      "bytes": 563,
+      "path": "runs/evaluation-parallel-20260929/analysis-result.json",
+      "sha256": "bdc85364152b13ee626c82fbff11f8e689314bb4c538397fd30c0143f451c1db"
+    },
+    {
+      "bytes": 1740980,
+      "path": "runs/evaluation-parallel-20260929/analysis/report.json",
+      "sha256": "eacc7748d26babcb291890930ad26cc8570a32fd1fe76de5d408c0629d4d9e57"
+    },
+    {
+      "bytes": 12502,
+      "path": "runs/evaluation-parallel-20260929/serial/act1-plan.json",
+      "sha256": "24419c186a45d4a2b954d97a2c7f65f98853ae11788ed7681f2838eea1836def"
+    },
+    {
+      "bytes": 92834,
+      "path": "runs/evaluation-parallel-20260929/serial/act1.json",
+      "sha256": "a3fbf9e5e765f9af5366be04dea25f0ebc2b8795f781ae23702e464e701e9598"
+    },
+    {
+      "bytes": 2863,
+      "path": "runs/evaluation-parallel-20260929/serial-cli.json",
+      "sha256": "c87e05a839b0debb714874058603f497ec21ec52801c83d8444378f4b59ade2c"
+    },
+    {
+      "bytes": 1902,
+      "path": "runs/evaluation-parallel-20260929/serial-timing.json",
+      "sha256": "8aa55f259cba6031afece8ef3400c930c024e80dbca0325ab6d1859af091d3e4"
+    },
+    {
+      "bytes": 12513,
+      "path": "runs/evaluation-parallel-20260929/parallel/act1-plan.json",
+      "sha256": "2d2c57a5fd137d185a62d34be996575c067c53a4fc59de479fc81ded53938441"
+    },
+    {
+      "bytes": 92784,
+      "path": "runs/evaluation-parallel-20260929/parallel/act1.json",
+      "sha256": "af4aac54360f88b2763f1081601a0e066f1c61a1dc249dfbbc78abacf60ad270"
+    },
+    {
+      "bytes": 2874,
+      "path": "runs/evaluation-parallel-20260929/parallel-cli.json",
+      "sha256": "f85a746acf8eef6de38fc7a2475531b5385f7896e9e191a42b111bbeed6f9bb0"
+    },
+    {
+      "bytes": 1913,
+      "path": "runs/evaluation-parallel-20260929/parallel-timing.json",
+      "sha256": "87621acaf217f1ffc22f04b3fdb09c7e488466ad494aba75290d5b3e2fa2e2b0"
+    }
+  ],
+  "compatibility": {
+    "checkpoint_files_unchanged": true,
+    "default_workers": 1,
+    "maximum_workers": 8,
+    "previous_experiment_and_viewer_unchanged": true,
+    "private_seeds_not_in_public_reports": true,
+    "public_trajectory_and_evaluation_schemas_unchanged": true,
+    "supported_modes": [
+      "act1",
+      "full_run"
+    ]
+  },
+  "date": "2026-09-29",
+  "implementation": {
+    "build": "418f35f52d885922fc61b73a2bbaf80ef9913658a74777cbfc1d4592b500c3f6",
+    "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+    "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+    "target": "sts2-v0.107.1-steam-23811903"
+  },
+  "parity": {
+    "identical_case_seeds": true,
+    "identical_initial_states_transitions_and_outcomes": true,
+    "identical_nontiming_metrics": true,
+    "matched_decisions": 7066,
+    "matched_games": 48,
+    "paired_starts_per_batch": 16,
+    "partial_files": 0,
+    "private_files_owner_only": 98,
+    "seconds": 1.2491778749972582,
+    "source_and_models_unchanged": true
+  },
+  "protocol": {
+    "case_policy_order": "fixed",
+    "cases": 16,
+    "episode_seconds": 90,
+    "goal": "act1",
+    "implementation": {
+      "build": "418f35f52d885922fc61b73a2bbaf80ef9913658a74777cbfc1d4592b500c3f6",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "2eecfffc8f57e27cc25a0092e254c6abea94d9acc08565ded8108077d263e60c",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "max_decisions": 1024,
+    "models": {
+      "learned": {
+        "path": "runs/act1-50k-8workers-20260929/chunk-03/final.sts-model",
+        "sha256": "6436e41426b704f32ddf3a43b78fab6c6c6e104265f42c0e413ecbf3f3cf2dda"
+      },
+      "reference": {
+        "path": "runs/act1-50k-8workers-20260929/chunk-01/initial.sts-model",
+        "sha256": "ccd33403e9d061f4866d4e68b7fe864605b598b24d4dbd5c695ef14c6e913642"
+      }
+    },
+    "outer_limit_seconds_per_batch": 900,
+    "policies_per_case": 3,
+    "purpose": "Matched serial/parallel performance, not playing-strength estimation.",
+    "split": "validation",
+    "workers": [
+      1,
+      8
+    ]
+  },
+  "runtime": {
+    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "python": "3.11.15"
+  },
+  "schema": "sts_parallel_evaluation_benchmark_v1",
+  "scope": "Matched local Act 1 evaluation throughput. No training, checkpoint selection or playing-strength conclusion.",
+  "source_head": "5ad1d9daf6eff51222bbcf6371fb819f2937e0e8",
+  "source_sha256": {
+    "game/agent/runner.py": "7688c7a6bb4427c2e40b93bb97b1cf0420da00706c3d9b9e876edcce68e0e316",
+    "game/agent/training/checkpoint.py": "2c62443f7244a87a99e18353e29e8d323664c2f31dce7ca0e203081cc2cffc3e",
+    "game/agent/training/evaluation_workers.py": "33d9e6403723c8d4e4407f42042a446d74c525e5a7ceda6b29acee8264350e70",
+    "game/agent/training/run_demonstrations.py": "468e83f2bb3f66f0addf05bdabc8a88f4c831de2ff58c8fba3319d919e06fdac",
+    "game/agent/training/run_evaluation.py": "582a0247ab5ec527a5953e74bc804c90b316b923fb3ee07bf8e59cb207cd0f54",
+    "game/agent/workers.py": "002a8be4774435c2e166a025a254315860e40046244ecc264be9049c5afefcd3",
+    "game/cli/agent_evaluate.py": "edad31b312f28f831914d5a522d050b9782ddf0e6511c07d64d3bb77f9d20780",
+    "tests/agent/test_evaluation_parallel.py": "4bf3aba62b141b3c07de1f6902e0c01aa9f6c6b74061d695279cff0e18e357b6"
+  },
+  "source_state": "Uncommitted evaluation optimization over the existing checkout; exact source/test hashes below.",
+  "speedup": {
+    "evaluation_including_canonical_validation": 4.381265540413103,
+    "limitation": "One matched workload, serial then parallel. Cache state and host load were not controlled.",
+    "whole_command": 4.3452335100289945
+  },
+  "timings": [
+    {
+      "decisions": 7066,
+      "episodes": 48,
+      "evaluation_seconds": 288.5513551670592,
+      "execution": {
+        "schedule": "serial_v1",
+        "worker_threads": 1,
+        "workers": 1
+      },
+      "phase": "serial",
+      "summary": {
+        "heuristic": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.0,
+          "act1_clear_rate_group_hoeffding_95": [
+            0,
+            0.3395253789351549
+          ],
+          "act1_clears": 0,
+          "attempted": 16,
+          "cutoffs": 0,
+          "decisions_per_second": 32.30650026774008,
+          "defeats": 16,
+          "failures": 0,
+          "mean_last_observed_floor": 12.625,
+          "planned": 16,
+          "policy_seconds": 13.935590386856347,
+          "run_wins": 0,
+          "steps": 2667,
+          "total_seconds": 82.55304591637105,
+          "unattempted": 0
+        },
+        "learned": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.0625,
+          "act1_clear_rate_group_hoeffding_95": [
+            0,
+            0.4020253789351549
+          ],
+          "act1_clears": 1,
+          "attempted": 16,
+          "cutoffs": 0,
+          "decisions_per_second": 24.6098238537835,
+          "defeats": 15,
+          "failures": 0,
+          "mean_last_observed_floor": 11.4375,
+          "planned": 16,
+          "policy_seconds": 31.814940561307594,
+          "run_wins": 0,
+          "steps": 2662,
+          "total_seconds": 108.16818583570421,
+          "unattempted": 0
+        },
+        "reference": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.0,
+          "act1_clear_rate_group_hoeffding_95": [
+            0,
+            0.3395253789351549
+          ],
+          "act1_clears": 0,
+          "attempted": 16,
+          "cutoffs": 0,
+          "decisions_per_second": 28.716439347767647,
+          "defeats": 16,
+          "failures": 0,
+          "mean_last_observed_floor": 9.125,
+          "planned": 16,
+          "policy_seconds": 17.316798170097172,
+          "run_wins": 0,
+          "steps": 1737,
+          "total_seconds": 60.48800058267079,
+          "unattempted": 0
+        }
+      },
+      "wall_seconds": 289.5229268751573,
+      "workers": 1
+    },
+    {
+      "decisions": 7066,
+      "episodes": 48,
+      "evaluation_seconds": 65.86027541710064,
+      "execution": {
+        "schedule": "parallel_episodes_v1",
+        "worker_threads": 1,
+        "workers": 8
+      },
+      "phase": "parallel",
+      "summary": {
+        "heuristic": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.0,
+          "act1_clear_rate_group_hoeffding_95": [
+            0,
+            0.3395253789351549
+          ],
+          "act1_clears": 0,
+          "attempted": 16,
+          "cutoffs": 0,
+          "decisions_per_second": 19.929575304902436,
+          "defeats": 16,
+          "failures": 0,
+          "mean_last_observed_floor": 12.625,
+          "planned": 16,
+          "policy_seconds": 22.826027654809877,
+          "run_wins": 0,
+          "steps": 2667,
+          "total_seconds": 133.821215916425,
+          "unattempted": 0
+        },
+        "learned": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.0625,
+          "act1_clear_rate_group_hoeffding_95": [
+            0,
+            0.4020253789351549
+          ],
+          "act1_clears": 1,
+          "attempted": 16,
+          "cutoffs": 0,
+          "decisions_per_second": 15.330828954996454,
+          "defeats": 15,
+          "failures": 0,
+          "mean_last_observed_floor": 11.4375,
+          "planned": 16,
+          "policy_seconds": 52.83863533241674,
+          "run_wins": 0,
+          "steps": 2662,
+          "total_seconds": 173.63705562264659,
+          "unattempted": 0
+        },
+        "reference": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.0,
+          "act1_clear_rate_group_hoeffding_95": [
+            0,
+            0.3395253789351549
+          ],
+          "act1_clears": 0,
+          "attempted": 16,
+          "cutoffs": 0,
+          "decisions_per_second": 17.6161057166122,
+          "defeats": 16,
+          "failures": 0,
+          "mean_last_observed_floor": 9.125,
+          "planned": 16,
+          "policy_seconds": 28.48415939603001,
+          "run_wins": 0,
+          "steps": 1737,
+          "total_seconds": 98.60295050125569,
+          "unattempted": 0
+        }
+      },
+      "wall_seconds": 66.63000416592695,
+      "workers": 8
+    }
+  ],
+  "validation": {
+    "affected_tests": {
+      "passed": 105,
+      "seconds": 80.13
+    },
+    "compileall": "Passed for changed evaluation/CLI modules and tests.",
+    "implementation_seconds": null,
+    "independent_semantic_review": {
+      "approximately_seconds": 270,
+      "checks": [
+        "Fixed paired seeds and frozen checkpoint digests",
+        "Worker-local canonical validation",
+        "Abrupt worker exit without retries",
+        "Completed sibling acknowledgement retained after failure",
+        "Cooperative and forced cancellation preserve planned denominators",
+        "No surviving worker processes"
+      ],
+      "independent_uncooperative_cancellation_cleanup_seconds": 5.02,
+      "result": "No blockers"
+    }
+  },
+  "viewer_compatibility": {
+    "act1_clears": 1,
+    "decisions": 7066,
+    "export_seconds": 11.87356137484312,
+    "paired_cases_verified": 16,
+    "runs": 48,
+    "successful_final_decision_inspected": true
+  }
+}

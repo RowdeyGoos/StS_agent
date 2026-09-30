@@ -256,12 +256,17 @@ For the current Act 1 goal, train with `configs/training/act1_ppo.json` and
 an older checkpoint; omit each reset flag when that setting already matches.
 The preset rewards each act clear at +1 alongside the existing combat shaping and ends the
 episode after Act 1. `sts-agent-evaluate --act1 --checkpoint PATH
---reference-checkpoint INITIALIZER --output-dir runs/act1-eval` compares Act 1
+--reference-checkpoint INITIALIZER --output-dir runs/act1-eval --workers 8` compares Act 1
 clear rates against a frozen reference and the heuristic on identical starts.
+`--workers` supports 1–8 parallel evaluation games for `--act1` and `--full-run`
+(default 1). Workers retain frozen policies and validate their own recordings;
+the report keeps every planned case, including failures and interruptions.
 Goal and reward weights are configurable and bound to checkpoint identity.
 
-Use `sts-agent-analyze build --input runs/act1-pilot-20260929
---output-dir runs/act1-analysis-20260929 --goal act1`, then
+Use `sts-agent-analyze summary --input runs/act1-pilot-20260929` for quick reported
+metrics without replay validation. For validated viewer data, use
+`sts-agent-analyze build --input runs/act1-pilot-20260929
+--output-dir runs/act1-analysis-20260929 --goal act1 --workers 8`, then
 `sts-agent-analyze serve runs/act1-analysis-20260929` for a local experiment
 overview, run timeline, decision inspector and PPO reward diagnostics. Add
 `--checkpoint LABEL=PATH` to compare checkpoint preferences on the same recorded

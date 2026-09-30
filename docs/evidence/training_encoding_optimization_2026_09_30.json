@@ -1,0 +1,1257 @@
+{
+  "artifacts": [
+    {
+      "bytes": 16222,
+      "path": "game/agent/encoding/codec.py",
+      "sha256": "07d9795d16d12f576e6bc7bfbafbf4fec487d06a84208f8e319068b007b47612"
+    },
+    {
+      "bytes": 2761,
+      "path": "game/agent/encoding/full.py",
+      "sha256": "b0bb6cdd3c3f0e3f033a1d2fc9bac0f4485a103cf2dda544e9478430f2fe0581"
+    },
+    {
+      "bytes": 903,
+      "path": "pyproject.toml",
+      "sha256": "6fb19066a0c29445de141c19e490638aff80f6159f9d79e0a0fd1ab58d7527f0"
+    },
+    {
+      "bytes": 10,
+      "path": "requirements-dev.txt",
+      "sha256": "9d6d2c2e18451cd8eb86a739cbcb1664e4342ef4ae478266a3c333dd4f73674a"
+    },
+    {
+      "bytes": 414854,
+      "path": "runs/act1-50k-8workers-20260929/chunk-01/initial.sts-model",
+      "sha256": "ccd33403e9d061f4866d4e68b7fe864605b598b24d4dbd5c695ef14c6e913642"
+    },
+    {
+      "bytes": 1034,
+      "path": "runs/act1-50k-8workers-20260929/config.json",
+      "sha256": "c697c47a83a22b2a6f2507a83590657e13faee9236b450aae9ec02f788d7d8ca"
+    },
+    {
+      "bytes": 414857,
+      "path": "runs/training-encoding-optimization-20260930/after-1/final.sts-model",
+      "sha256": "35d56c805d063bbb088489bf1a743d1c40e96cc5df3e05a73b0be7327facc410"
+    },
+    {
+      "bytes": 414854,
+      "path": "runs/training-encoding-optimization-20260930/after-1/initial.sts-model",
+      "sha256": "d006da41e8a5d348a7cd35e5c6d459ada9ca21bc8b4361b5acddc199a9d3c97d"
+    },
+    {
+      "bytes": 146515,
+      "path": "runs/training-encoding-optimization-20260930/after-1/ppo.json",
+      "sha256": "614dfcd9bfa58ca4b3a7f0f4dc6d8fffb2d3039d409f744a22cac9a9ea550624"
+    },
+    {
+      "bytes": 5765242,
+      "path": "runs/training-encoding-optimization-20260930/after-1/rollout-00001.json",
+      "sha256": "da3a3d5d15ef70740699394c59d6f29c282c7ef87e46802a540681c4452b72ee"
+    },
+    {
+      "bytes": 5835421,
+      "path": "runs/training-encoding-optimization-20260930/after-1/rollout-00002.json",
+      "sha256": "f20aeec5328ecd47eb69203b45534c260b4a4a775dcf18794931d4c6ae638c9b"
+    },
+    {
+      "bytes": 1784,
+      "path": "runs/training-encoding-optimization-20260930/after-1/timings.json",
+      "sha256": "000c7c3c1b63848971bb427ce81958c8464b40fd604fce44a579039904f7b908"
+    },
+    {
+      "bytes": 414856,
+      "path": "runs/training-encoding-optimization-20260930/after-1/update-00001.sts-model",
+      "sha256": "22797a96cde7483c7eda75e733eaf75d63266bf994c516e3d5cdc8bf91cf7b59"
+    },
+    {
+      "bytes": 414857,
+      "path": "runs/training-encoding-optimization-20260930/after-1/update-00002.sts-model",
+      "sha256": "35d56c805d063bbb088489bf1a743d1c40e96cc5df3e05a73b0be7327facc410"
+    },
+    {
+      "bytes": 414857,
+      "path": "runs/training-encoding-optimization-20260930/after-2/final.sts-model",
+      "sha256": "ea74e9c829acbc995345f0ae8707a7d68481e87dd30c3a9138e5ad67c5a99140"
+    },
+    {
+      "bytes": 414854,
+      "path": "runs/training-encoding-optimization-20260930/after-2/initial.sts-model",
+      "sha256": "f3ac8f5687f8d5b15dafafd6e07abf362a294d0e22b58f6c5f6d5cff85c7b63a"
+    },
+    {
+      "bytes": 146518,
+      "path": "runs/training-encoding-optimization-20260930/after-2/ppo.json",
+      "sha256": "340c804b81071e208e2321451ad9f1241913b73e22b592a8e8731a15430fc575"
+    },
+    {
+      "bytes": 5765242,
+      "path": "runs/training-encoding-optimization-20260930/after-2/rollout-00001.json",
+      "sha256": "714093b16c686b57bccc1dd4f358a7e529dd58fb4b28d46bbdb8c6a65b8b0d78"
+    },
+    {
+      "bytes": 5835421,
+      "path": "runs/training-encoding-optimization-20260930/after-2/rollout-00002.json",
+      "sha256": "b22eeae7853b53c2605ccc95bf6f7ac1fd981a137b4584d5f34174e138c40bce"
+    },
+    {
+      "bytes": 1781,
+      "path": "runs/training-encoding-optimization-20260930/after-2/timings.json",
+      "sha256": "fbfd5545725b0fbf6df0f249860c2de179adc6bedacfa6895cd6d978ed661ae1"
+    },
+    {
+      "bytes": 414856,
+      "path": "runs/training-encoding-optimization-20260930/after-2/update-00001.sts-model",
+      "sha256": "6c1439ab4f98299dcf99060bde031e66f311d69a7d0420ef92b3eeeea7ab57e2"
+    },
+    {
+      "bytes": 414857,
+      "path": "runs/training-encoding-optimization-20260930/after-2/update-00002.sts-model",
+      "sha256": "ea74e9c829acbc995345f0ae8707a7d68481e87dd30c3a9138e5ad67c5a99140"
+    },
+    {
+      "bytes": 414857,
+      "path": "runs/training-encoding-optimization-20260930/after-3/final.sts-model",
+      "sha256": "e58d55e5f4316e952236e832e44716eaf3d6831ebe7e011d2b73f261118334d5"
+    },
+    {
+      "bytes": 414854,
+      "path": "runs/training-encoding-optimization-20260930/after-3/initial.sts-model",
+      "sha256": "1effaa7b887490a91aa25ab9a5c9da9bbf4586381e340b39fa75c510e74baf44"
+    },
+    {
+      "bytes": 146517,
+      "path": "runs/training-encoding-optimization-20260930/after-3/ppo.json",
+      "sha256": "b1498dcdc07de5222e17c389126b7acb27beb2baf88c7f17b1c10983f01081cd"
+    },
+    {
+      "bytes": 5765242,
+      "path": "runs/training-encoding-optimization-20260930/after-3/rollout-00001.json",
+      "sha256": "89a27602ca00e94470c68d963806ecc097879bda99312e5647618260a5ef4881"
+    },
+    {
+      "bytes": 5835421,
+      "path": "runs/training-encoding-optimization-20260930/after-3/rollout-00002.json",
+      "sha256": "9388ba40504b001be8080d607ad7be9d08a1bc98cd2958d94de0be580398c322"
+    },
+    {
+      "bytes": 1783,
+      "path": "runs/training-encoding-optimization-20260930/after-3/timings.json",
+      "sha256": "2c9f522c86012ff44242aba6bb26b12c45c968cf42a0d26b7ab6b5d819f59907"
+    },
+    {
+      "bytes": 414856,
+      "path": "runs/training-encoding-optimization-20260930/after-3/update-00001.sts-model",
+      "sha256": "8dfe505b5dafded4ce7073a896273e1b0bae720ae8e076ebe240fae42471f329"
+    },
+    {
+      "bytes": 414857,
+      "path": "runs/training-encoding-optimization-20260930/after-3/update-00002.sts-model",
+      "sha256": "e58d55e5f4316e952236e832e44716eaf3d6831ebe7e011d2b73f261118334d5"
+    },
+    {
+      "bytes": 2596,
+      "path": "runs/training-encoding-optimization-20260930/after-protocol.json",
+      "sha256": "ab057186582812ed1ba715c62d774de1797bbb6717da27f38cf3c704adaaa536"
+    },
+    {
+      "bytes": 6401,
+      "path": "runs/training-encoding-optimization-20260930/after-results.json",
+      "sha256": "99941108b3b59f4404bb059c07074ed67c993a42cc9cdf2b700efff16e656e0a"
+    },
+    {
+      "bytes": 34603,
+      "path": "runs/training-encoding-optimization-20260930/after-source-sha256.json",
+      "sha256": "a073241c751f7477d77256d84672d2690c30cbb9fd1ce107d950ac9dc5c9781d"
+    },
+    {
+      "bytes": 627829,
+      "path": "runs/training-encoding-optimization-20260930/after-source.zip",
+      "sha256": "fef58cb1ff988070e43bbd3bca9e5e7c7c7ea56d7fa244b97b336f10e1e3d820"
+    },
+    {
+      "bytes": 2255,
+      "path": "runs/training-encoding-optimization-20260930/audit.py",
+      "sha256": "4677d4e1944c8f196a040eddda760b65f778b23dfbeec9ed415dfbbf841b8c4f"
+    },
+    {
+      "bytes": 414857,
+      "path": "runs/training-encoding-optimization-20260930/before-1/final.sts-model",
+      "sha256": "dda2166daf67abbe32ebce087f0193d428971b6046b55931b174b8bc69a1459a"
+    },
+    {
+      "bytes": 414854,
+      "path": "runs/training-encoding-optimization-20260930/before-1/initial.sts-model",
+      "sha256": "f2f5138248f140bc105611eb118b94433d607ea7bbf100b6ef4b2ff2b29ab7e1"
+    },
+    {
+      "bytes": 146513,
+      "path": "runs/training-encoding-optimization-20260930/before-1/ppo.json",
+      "sha256": "f2e492bed4d9da38b075053940a4d4ca2b5d0e9353cd3b287ed787132cd30a00"
+    },
+    {
+      "bytes": 5765242,
+      "path": "runs/training-encoding-optimization-20260930/before-1/rollout-00001.json",
+      "sha256": "68de470e4cd249b5a52b9ed810e733a009ad5b26d8ae5b0a8ed62f4ce33f109f"
+    },
+    {
+      "bytes": 5835421,
+      "path": "runs/training-encoding-optimization-20260930/before-1/rollout-00002.json",
+      "sha256": "e655c5c3293f499e118d5cefb159858115d798bcba5bfbb0a659d5c0d082f8f3"
+    },
+    {
+      "bytes": 1782,
+      "path": "runs/training-encoding-optimization-20260930/before-1/timings.json",
+      "sha256": "5aa8cfbdfc8db5687bc7c7d11e644ac78a2bfef7c54f0457ae2ff0ce829affba"
+    },
+    {
+      "bytes": 414856,
+      "path": "runs/training-encoding-optimization-20260930/before-1/update-00001.sts-model",
+      "sha256": "5d44c3eed8cf663e3e82885c75d3aa2112c04b9eb74f569c1cba7d28e4b50228"
+    },
+    {
+      "bytes": 414857,
+      "path": "runs/training-encoding-optimization-20260930/before-1/update-00002.sts-model",
+      "sha256": "dda2166daf67abbe32ebce087f0193d428971b6046b55931b174b8bc69a1459a"
+    },
+    {
+      "bytes": 414857,
+      "path": "runs/training-encoding-optimization-20260930/before-2/final.sts-model",
+      "sha256": "d9a4dd44ffa6b252bde03e46d34d49806331c1bfd452aaf0d5261d0150f96c53"
+    },
+    {
+      "bytes": 414854,
+      "path": "runs/training-encoding-optimization-20260930/before-2/initial.sts-model",
+      "sha256": "7594fd1e98323a502982947fc163ea8f7792142f68c8d71ba7d14a60f1f9387f"
+    },
+    {
+      "bytes": 146519,
+      "path": "runs/training-encoding-optimization-20260930/before-2/ppo.json",
+      "sha256": "c6757481d73c05b03f6a62a03ac0cdd8e0c7e739fd3c24fbcba7ee0bc03e6dbc"
+    },
+    {
+      "bytes": 5765242,
+      "path": "runs/training-encoding-optimization-20260930/before-2/rollout-00001.json",
+      "sha256": "259735c5db93b5ae4b6a9dc3e17e319cc0c0bae190e6f234f82775dd82e52d6d"
+    },
+    {
+      "bytes": 5835421,
+      "path": "runs/training-encoding-optimization-20260930/before-2/rollout-00002.json",
+      "sha256": "72f557f41f933222cdc7dd0ce0e0cb7dcacae9d4fdcae805436e744a2ab8d5b2"
+    },
+    {
+      "bytes": 1784,
+      "path": "runs/training-encoding-optimization-20260930/before-2/timings.json",
+      "sha256": "24c95f054c22cadbab1f8f898d3b1501f72ff53cb60885c5bd99d26301954540"
+    },
+    {
+      "bytes": 414856,
+      "path": "runs/training-encoding-optimization-20260930/before-2/update-00001.sts-model",
+      "sha256": "7bee2003cb758de93fd6573edca46575acdf5a97348838aebf74a63026f00526"
+    },
+    {
+      "bytes": 414857,
+      "path": "runs/training-encoding-optimization-20260930/before-2/update-00002.sts-model",
+      "sha256": "d9a4dd44ffa6b252bde03e46d34d49806331c1bfd452aaf0d5261d0150f96c53"
+    },
+    {
+      "bytes": 414857,
+      "path": "runs/training-encoding-optimization-20260930/before-3/final.sts-model",
+      "sha256": "36bdcc0457b917cb95f2ea1d2ca43a2a93022c748334792f2ce7eb6165213997"
+    },
+    {
+      "bytes": 414854,
+      "path": "runs/training-encoding-optimization-20260930/before-3/initial.sts-model",
+      "sha256": "7037e0584178da63b27a238a6f831e0abfc5b543d7a9c1363f06f9e92a8a8ec9"
+    },
+    {
+      "bytes": 146520,
+      "path": "runs/training-encoding-optimization-20260930/before-3/ppo.json",
+      "sha256": "5385cfd81eba80d42ed5494b4f6095423ea450f801cdee7a5b1ab90650e9d9af"
+    },
+    {
+      "bytes": 5765242,
+      "path": "runs/training-encoding-optimization-20260930/before-3/rollout-00001.json",
+      "sha256": "6d43ab79879062e087e63cca4dade2b99fed6811842e0e3b29d8a676ccc76bf0"
+    },
+    {
+      "bytes": 5835421,
+      "path": "runs/training-encoding-optimization-20260930/before-3/rollout-00002.json",
+      "sha256": "acf8c2a2456d647bf2455fc8bdad0072c19f4b5f0283b3f4c4309168330e2838"
+    },
+    {
+      "bytes": 1785,
+      "path": "runs/training-encoding-optimization-20260930/before-3/timings.json",
+      "sha256": "2f72dff2465296bcda318478576f921fe592f7ba963698b65fe673aad1dd5ae3"
+    },
+    {
+      "bytes": 414856,
+      "path": "runs/training-encoding-optimization-20260930/before-3/update-00001.sts-model",
+      "sha256": "359cfce46749aece31a0b28227887119ed544c985ff19caf9a25785de25a7b8e"
+    },
+    {
+      "bytes": 414857,
+      "path": "runs/training-encoding-optimization-20260930/before-3/update-00002.sts-model",
+      "sha256": "36bdcc0457b917cb95f2ea1d2ca43a2a93022c748334792f2ce7eb6165213997"
+    },
+    {
+      "bytes": 2596,
+      "path": "runs/training-encoding-optimization-20260930/before-protocol.json",
+      "sha256": "05134e8f4e6933b236b450c23ebbf6b4de87eea5af688a53090ec1846349ffe2"
+    },
+    {
+      "bytes": 6407,
+      "path": "runs/training-encoding-optimization-20260930/before-results.json",
+      "sha256": "bc8b2e5b3ddde0a34f25135544f4abe1a3178e0277b4a78e2d010b74a9a48a33"
+    },
+    {
+      "bytes": 34603,
+      "path": "runs/training-encoding-optimization-20260930/before-source-sha256.json",
+      "sha256": "285470d83b261a305cf729786839c125082d0d89dd77c829011e9e7cca283027"
+    },
+    {
+      "bytes": 627366,
+      "path": "runs/training-encoding-optimization-20260930/before-source.zip",
+      "sha256": "8eeeaeff6708ee987ec2e49b653d86f5b6468bb9895c9179d49634fe46b1f5af"
+    },
+    {
+      "bytes": 6232,
+      "path": "runs/training-encoding-optimization-20260930/benchmark.py",
+      "sha256": "300bd510e03623b094a77334a75431b432ae38b004791f8ca25c68f49f9744e7"
+    },
+    {
+      "bytes": 212,
+      "path": "runs/training-encoding-optimization-20260930/canonical-audit.json",
+      "sha256": "146a198160f0a48f983511738e354d4868e8b16bf34e6cfe685535fa4b5ea8c2"
+    },
+    {
+      "bytes": 3092,
+      "path": "runs/training-encoding-optimization-20260930/compare.py",
+      "sha256": "b0a31610562f36be1dbacd27753770f10c950e3e3da08c458e88e8b6446029e5"
+    },
+    {
+      "bytes": 16361,
+      "path": "runs/training-encoding-optimization-20260930/encoding-probe.json",
+      "sha256": "397fd841782765c7e5aaee9f3d67ab24b78415717d31030c492caf29392f8a37"
+    },
+    {
+      "bytes": 3869,
+      "path": "runs/training-encoding-optimization-20260930/encoding_probe.py",
+      "sha256": "5aa73b61f329c7caf8798685e9f5d92d62d905a8c0cd4aab150a9b6de3b1c339"
+    },
+    {
+      "bytes": 536,
+      "path": "runs/training-encoding-optimization-20260930/parity.json",
+      "sha256": "377d74367efdf2ef9e258fdffe84ceef32154c6c02c394cd8be04095ad3e3844"
+    },
+    {
+      "bytes": 414856,
+      "path": "runs/training-encoding-optimization-20260930/profile-after-1/final.sts-model",
+      "sha256": "776a6f8e4ae5d2d2b45e6bf0cb993151f53ea57d595a9a8447689a141d73f64f"
+    },
+    {
+      "bytes": 414854,
+      "path": "runs/training-encoding-optimization-20260930/profile-after-1/initial.sts-model",
+      "sha256": "00f95f79a730a68e859d20f884775dd2b493b999f8eb4f55d5c5757e1d117206"
+    },
+    {
+      "bytes": 73174,
+      "path": "runs/training-encoding-optimization-20260930/profile-after-1/ppo.json",
+      "sha256": "9ad81aeb7df8b2b881f9c627dfcaf5af3159c5c0833e0d1e649db968feb9a3e6"
+    },
+    {
+      "bytes": 5765242,
+      "path": "runs/training-encoding-optimization-20260930/profile-after-1/rollout-00001.json",
+      "sha256": "82144ae132b1ba75a8b08d237dc135a386fa3bed53819ad0349f82e0dd161cf2"
+    },
+    {
+      "bytes": 1719,
+      "path": "runs/training-encoding-optimization-20260930/profile-after-1/timings.json",
+      "sha256": "02105742b085fd32a2c2f993d035125de60eaa6ca733c253d0eda9f7996e5d8b"
+    },
+    {
+      "bytes": 414856,
+      "path": "runs/training-encoding-optimization-20260930/profile-after-1/update-00001.sts-model",
+      "sha256": "776a6f8e4ae5d2d2b45e6bf0cb993151f53ea57d595a9a8447689a141d73f64f"
+    },
+    {
+      "bytes": 330016,
+      "path": "runs/training-encoding-optimization-20260930/profile-after-1-profiles/collect-40895-1923079800999541.prof",
+      "sha256": "e94e4b7fd022a36fc2c2777c22182230644ae12c8c8b1f88469ac51161a9cbb2"
+    },
+    {
+      "bytes": 335140,
+      "path": "runs/training-encoding-optimization-20260930/profile-after-1-profiles/collect-40896-1923081234271916.prof",
+      "sha256": "cae46772570fb2b450bd7a158c7fff7b8d2d074c63a9dcdf523b3a543bc7bb74"
+    },
+    {
+      "bytes": 333752,
+      "path": "runs/training-encoding-optimization-20260930/profile-after-1-profiles/collect-40897-1923079825245041.prof",
+      "sha256": "99ebd9ae050f842e7540cb99bb9b1658585f6d416e0ceb5395981274adbcd333"
+    },
+    {
+      "bytes": 333275,
+      "path": "runs/training-encoding-optimization-20260930/profile-after-1-profiles/collect-40898-1923079742652958.prof",
+      "sha256": "c3ac17c2f579c65fd1ab3bc3940c97e7f8795d66c545a5546247f281595a94cb"
+    },
+    {
+      "bytes": 334775,
+      "path": "runs/training-encoding-optimization-20260930/profile-after-1-profiles/collect-40899-1923080950650833.prof",
+      "sha256": "29bdcc1306994b790608f0a9c68bb4c359518832719c9aeafa80c8fb89f4009b"
+    },
+    {
+      "bytes": 335656,
+      "path": "runs/training-encoding-optimization-20260930/profile-after-1-profiles/collect-40900-1923082606604541.prof",
+      "sha256": "cce3e429323d78d468d29e12d7964b9c73a0d837cfa5a3e4b9ba008a7e97a2dd"
+    },
+    {
+      "bytes": 332411,
+      "path": "runs/training-encoding-optimization-20260930/profile-after-1-profiles/collect-40901-1923079458154625.prof",
+      "sha256": "fe3d4f2cdca1d07b5aea2690d6f8609c37a328834c3f9ae25cb101dbc372dccc"
+    },
+    {
+      "bytes": 339095,
+      "path": "runs/training-encoding-optimization-20260930/profile-after-1-profiles/collect-40902-1923082547975250.prof",
+      "sha256": "bcbc93b91c859436e95949cc102b1eef01c14993a7afeaa34a43ed396c2ff976"
+    },
+    {
+      "bytes": 59424,
+      "path": "runs/training-encoding-optimization-20260930/profile-after-1-profiles/update-40891-1923092538809166.prof",
+      "sha256": "8b76a54414f5d074c13237d3b78f6bb6fb7d9f15afe51593816526c483913274"
+    },
+    {
+      "bytes": 2595,
+      "path": "runs/training-encoding-optimization-20260930/profile-after-protocol.json",
+      "sha256": "6fffe4ef1544f3c1b99d1891f42de22f186e5c377dac8fb7e92d235763ec4fdf"
+    },
+    {
+      "bytes": 2114,
+      "path": "runs/training-encoding-optimization-20260930/profile-after-results.json",
+      "sha256": "f2c0330b3f33ee7fa52d4f9bd4888a759b76fa34c480b84f42bf146643f1a695"
+    },
+    {
+      "bytes": 34603,
+      "path": "runs/training-encoding-optimization-20260930/profile-after-source-sha256.json",
+      "sha256": "a073241c751f7477d77256d84672d2690c30cbb9fd1ce107d950ac9dc5c9781d"
+    },
+    {
+      "bytes": 627829,
+      "path": "runs/training-encoding-optimization-20260930/profile-after-source.zip",
+      "sha256": "fef58cb1ff988070e43bbd3bca9e5e7c7c7ea56d7fa244b97b336f10e1e3d820"
+    },
+    {
+      "bytes": 68922,
+      "path": "runs/training-encoding-optimization-20260930/profile-summary.json",
+      "sha256": "e82b6a096e5918cd90c5db19a9f4f5be9ca1095d3cdba38f6e3d7099315a6c5b"
+    },
+    {
+      "bytes": 3259,
+      "path": "runs/training-encoding-optimization-20260930/profile_summary.py",
+      "sha256": "443c16be2d817c7c1084e565ebd003958a4f3702612f24210c34b50c0a09c625"
+    },
+    {
+      "bytes": 1373,
+      "path": "runs/training-encoding-optimization-20260930/source-comparison.json",
+      "sha256": "88106150575e6a32b149fedcc2c88b3dd96590e7fdba1030303a0f655cb7e3e7"
+    },
+    {
+      "bytes": 8818,
+      "path": "runs/training-encoding-optimization-20260930/summarize.py",
+      "sha256": "244ee568056425cbbe9d873aa51d2b7cf6f9b196fcc255c76bc322cf78008cfe"
+    },
+    {
+      "bytes": 1098,
+      "path": "runs/training-encoding-optimization-20260930/timing-summary.json",
+      "sha256": "af03a5b949477d27393a56585b3a022fb81a809c89407ce9ce69604b85849703"
+    },
+    {
+      "bytes": 1737,
+      "path": "runs/training-encoding-optimization-20260930/validation.json",
+      "sha256": "2f1143ae667f718ef4942fcc02c0055f6adbdce64970066e2fe6915b311faa28"
+    },
+    {
+      "bytes": 329607,
+      "path": "runs/training-observation-reuse-20260930/profile-after-1-profiles/collect-37938-1921096891337666.prof",
+      "sha256": "c4b31c8e1cbee6050a11b3209eacac4991fcbe3210bcfd5b70d1a68bb1abdc6e"
+    },
+    {
+      "bytes": 334743,
+      "path": "runs/training-observation-reuse-20260930/profile-after-1-profiles/collect-37939-1921098310116916.prof",
+      "sha256": "cdc679677e6ac3d6d1461ddddcfc1a122b0339b979f71d347505fda5951c378a"
+    },
+    {
+      "bytes": 333448,
+      "path": "runs/training-observation-reuse-20260930/profile-after-1-profiles/collect-37940-1921097092116958.prof",
+      "sha256": "09e7bebbe203ec7e50b94b7203bee82292c3aa3cc70b0698b38a57c6bd910d01"
+    },
+    {
+      "bytes": 332866,
+      "path": "runs/training-observation-reuse-20260930/profile-after-1-profiles/collect-37941-1921096982708875.prof",
+      "sha256": "cae3009a6f0f9da1cc02d1983ec4815d063a1fef5278c75f6b124a88f35deb6c"
+    },
+    {
+      "bytes": 334436,
+      "path": "runs/training-observation-reuse-20260930/profile-after-1-profiles/collect-37942-1921098302999708.prof",
+      "sha256": "de4a6a3036622c54abedd4735f55dfa7a3650b18d75e17e7a1fce36a662526ea"
+    },
+    {
+      "bytes": 335317,
+      "path": "runs/training-observation-reuse-20260930/profile-after-1-profiles/collect-37943-1921100307573166.prof",
+      "sha256": "a7313ddab7b1ba237997ceae9cf0387e835b73f52cf57c41e9f6119430000d99"
+    },
+    {
+      "bytes": 332072,
+      "path": "runs/training-observation-reuse-20260930/profile-after-1-profiles/collect-37944-1921096672472125.prof",
+      "sha256": "e1839f63143ad3e1f48420b93630d858d3ea374b22cd9cd132f95f6e69a3cc67"
+    },
+    {
+      "bytes": 338756,
+      "path": "runs/training-observation-reuse-20260930/profile-after-1-profiles/collect-37945-1921099698914541.prof",
+      "sha256": "87359cd9ea704b4a96659573aad799c32550ca5453384d8986ad29244d3c904e"
+    },
+    {
+      "bytes": 59424,
+      "path": "runs/training-observation-reuse-20260930/profile-after-1-profiles/update-37930-1921110147482875.prof",
+      "sha256": "5a96e118b6d82d49305823db332cc7b668df7e69b8f0c03195e6276e60e1ab77"
+    },
+    {
+      "bytes": 2595,
+      "path": "runs/training-observation-reuse-20260930/profile-after-protocol.json",
+      "sha256": "e2dd1d87ed58d29b39546f9337b025fe944c95bb2ba74b586efcf924134e9933"
+    },
+    {
+      "bytes": 36489,
+      "path": "tests/agent/test_full_profile.py",
+      "sha256": "1f1f2d856cb8a7c41edd62d02da7b5addc0a5093bdf17cfb7afa8dd78bfc9b8e"
+    },
+    {
+      "bytes": 15337,
+      "path": "tests/agent/test_prepared_public.py",
+      "sha256": "51ea8b3ee9a4e6eb1469ae9675c4d36e96cc3414a0984c6658c3560162146d05"
+    }
+  ],
+  "baseline_repetitions": [
+    {
+      "collection_seconds": [
+        15.72363991709426,
+        14.788574750069529
+      ],
+      "final_fingerprint": "sts_policy_state_v2:03f3236c25f69c0f63e9d6349619ce0703e26a2f68789ae1a674b5fb7094e99c",
+      "implementation": {
+        "build": "76deaa272e316e473c14a61d81c774190d15720e12c0194d9c11fac3ae72a2f9",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "3bb46e266528055ab1804b95e5d790b0b5a125e092571fe16c018657173bd649",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "invocation_seconds": 49.469257874879986,
+      "label": "before-1",
+      "packed_rollout_bytes": [
+        1264370604,
+        1238192578
+      ],
+      "parent_peak_rss_bytes": 3945644032,
+      "process_seconds": 50.250493000028655,
+      "report_seconds": 49.098531583091244,
+      "runtime": {
+        "device": "cpu",
+        "python": "3.11.15",
+        "threads": 1,
+        "torch": "2.13.0"
+      },
+      "summary": {
+        "abandoned": 0,
+        "accepted_decisions": 8192,
+        "act1_clear_rate": 0.0,
+        "act1_clears": 0,
+        "components": {
+          "act_cleared": 0.0,
+          "combat_loss": 66.0,
+          "combat_win": 332.0,
+          "end_turn_action": 1229.0,
+          "potion_use_action": 45.0,
+          "run_abandoned": 0.0,
+          "run_defeat": 72.0,
+          "run_victory": 0.0,
+          "win_hp_fraction": 227.84506887291639
+        },
+        "controlled_attempts": 0,
+        "cutoffs": 16,
+        "decisions_per_second": 166.8481670604828,
+        "episode_attempts": 88,
+        "failed_episodes": 0,
+        "genuine_start_attempts": 88,
+        "goal": "act1",
+        "losses": 72,
+        "mean_hp_on_win": null,
+        "potion_use_actions": 45,
+        "processed_decisions": 8192,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task": "full_run",
+        "task_return": -34.33287327817707,
+        "trained_decisions": 8192,
+        "wins": 0
+      },
+      "update_seconds": [
+        9.118356707971543,
+        8.86997166601941
+      ]
+    },
+    {
+      "collection_seconds": [
+        16.149473666911945,
+        15.214334457879886
+      ],
+      "final_fingerprint": "sts_policy_state_v2:03f3236c25f69c0f63e9d6349619ce0703e26a2f68789ae1a674b5fb7094e99c",
+      "implementation": {
+        "build": "76deaa272e316e473c14a61d81c774190d15720e12c0194d9c11fac3ae72a2f9",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "3bb46e266528055ab1804b95e5d790b0b5a125e092571fe16c018657173bd649",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "invocation_seconds": 50.432225457858294,
+      "label": "before-2",
+      "packed_rollout_bytes": [
+        1264370604,
+        1238192578
+      ],
+      "parent_peak_rss_bytes": 4557520896,
+      "process_seconds": 51.34894387493841,
+      "report_seconds": 49.97783179092221,
+      "runtime": {
+        "device": "cpu",
+        "python": "3.11.15",
+        "threads": 1,
+        "torch": "2.13.0"
+      },
+      "summary": {
+        "abandoned": 0,
+        "accepted_decisions": 8192,
+        "act1_clear_rate": 0.0,
+        "act1_clears": 0,
+        "components": {
+          "act_cleared": 0.0,
+          "combat_loss": 66.0,
+          "combat_win": 332.0,
+          "end_turn_action": 1229.0,
+          "potion_use_action": 45.0,
+          "run_abandoned": 0.0,
+          "run_defeat": 72.0,
+          "run_victory": 0.0,
+          "win_hp_fraction": 227.84506887291639
+        },
+        "controlled_attempts": 0,
+        "cutoffs": 16,
+        "decisions_per_second": 163.91267300811487,
+        "episode_attempts": 88,
+        "failed_episodes": 0,
+        "genuine_start_attempts": 88,
+        "goal": "act1",
+        "losses": 72,
+        "mean_hp_on_win": null,
+        "potion_use_actions": 45,
+        "processed_decisions": 8192,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task": "full_run",
+        "task_return": -34.33287327817707,
+        "trained_decisions": 8192,
+        "wins": 0
+      },
+      "update_seconds": [
+        9.130941957933828,
+        8.857223625062034
+      ]
+    },
+    {
+      "collection_seconds": [
+        16.379102208884433,
+        15.347391542047262
+      ],
+      "final_fingerprint": "sts_policy_state_v2:03f3236c25f69c0f63e9d6349619ce0703e26a2f68789ae1a674b5fb7094e99c",
+      "implementation": {
+        "build": "76deaa272e316e473c14a61d81c774190d15720e12c0194d9c11fac3ae72a2f9",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "3bb46e266528055ab1804b95e5d790b0b5a125e092571fe16c018657173bd649",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "invocation_seconds": 50.731704582925886,
+      "label": "before-3",
+      "packed_rollout_bytes": [
+        1264370604,
+        1238192578
+      ],
+      "parent_peak_rss_bytes": 3904978944,
+      "process_seconds": 51.661516124848276,
+      "report_seconds": 50.280219291802496,
+      "runtime": {
+        "device": "cpu",
+        "python": "3.11.15",
+        "threads": 1,
+        "torch": "2.13.0"
+      },
+      "summary": {
+        "abandoned": 0,
+        "accepted_decisions": 8192,
+        "act1_clear_rate": 0.0,
+        "act1_clears": 0,
+        "components": {
+          "act_cleared": 0.0,
+          "combat_loss": 66.0,
+          "combat_win": 332.0,
+          "end_turn_action": 1229.0,
+          "potion_use_action": 45.0,
+          "run_abandoned": 0.0,
+          "run_defeat": 72.0,
+          "run_victory": 0.0,
+          "win_hp_fraction": 227.84506887291639
+        },
+        "controlled_attempts": 0,
+        "cutoffs": 16,
+        "decisions_per_second": 162.92689481836834,
+        "episode_attempts": 88,
+        "failed_episodes": 0,
+        "genuine_start_attempts": 88,
+        "goal": "act1",
+        "losses": 72,
+        "mean_hp_on_win": null,
+        "potion_use_actions": 45,
+        "processed_decisions": 8192,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task": "full_run",
+        "task_return": -34.33287327817707,
+        "trained_decisions": 8192,
+        "wins": 0
+      },
+      "update_seconds": [
+        9.096337166847661,
+        8.869866207940504
+      ]
+    }
+  ],
+  "canonical_audit": {
+    "canonical_decisions": 16384,
+    "canonical_trajectories": 176,
+    "labels": [
+      "before-1",
+      "after-1"
+    ],
+    "private_partials": 0,
+    "private_permissions_checked": 606,
+    "seconds": 5.814858749974519
+  },
+  "diagnostic_profiles": {
+    "baseline_collection_breakdown": {
+      "parts": {
+        "encoding": 48.214760394,
+        "game_actions": 6.552051039,
+        "inference_and_features": 14.247925897000002,
+        "other_setup_and_bookkeeping": 26.47007173199995,
+        "public_decision": 71.15276450900002,
+        "recording": 11.423852293000001,
+        "stale_state_guard": 53.67536347000001
+      },
+      "total": 231.73678933399998
+    },
+    "interpretation": "cProfile diagnostics only; collection sums eight workers. Individual cumulative rows overlap. Throughput medians exclude these runs. Baseline profile is reused from the exact matching prior source/runtime; fresh unprofiled baseline timings were measured for this experiment.",
+    "optimized_collection_breakdown": {
+      "parts": {
+        "encoding": 33.734121228999996,
+        "game_actions": 6.457486698,
+        "inference_and_features": 14.347302865,
+        "other_setup_and_bookkeeping": 26.035732154000044,
+        "public_decision": 70.334604351,
+        "recording": 11.389474465000001,
+        "stale_state_guard": 53.460305283
+      },
+      "total": 215.759027045
+    },
+    "wire_copy_calls": {
+      "baseline": 8208,
+      "optimized": 4104
+    }
+  },
+  "implementation_choices": [
+    "Compile field-name indexes once per pack; keep first-index semantics, encounter order and current subclass vocabularies.",
+    "Prepared encoding reads only canonical immutable Node/Field/Link records and tuples after exact owner/type checks. Ordinary pack still validates and walks wire data.",
+    "Both paths use the same traversal, reference registration, candidate ordering, capacity errors, table layout and NumPy allocation. Arrays remain independent.",
+    "No encoder wire copy is needed. Recorder wire copies, external/disk validation, custom encoder hooks, adapter guards, RNG, rewards, optimizer and worker scheduling remain unchanged."
+  ],
+  "limitations": [
+    "One host and seed schedule; three fresh before/after repetitions. OS caches and background load uncontrolled.",
+    "Packing microbenchmark excludes public preparation, inference, PPO and recording. Profiler instrumentation affects timing; cumulative rows overlap.",
+    "50k estimate is linear extrapolation excluding evaluation/export, not a fresh 50k learning result.",
+    "Parent peak RSS excludes workers; no overall memory-reduction claim. Exact optimizer/RNG resume still requires matching source/runtime."
+  ],
+  "optimized_repetitions": [
+    {
+      "collection_seconds": [
+        14.746100374963135,
+        13.939719749847427
+      ],
+      "final_fingerprint": "sts_policy_state_v2:03f3236c25f69c0f63e9d6349619ce0703e26a2f68789ae1a674b5fb7094e99c",
+      "implementation": {
+        "build": "c35a6b56bda335778f457c2a8c58b3d59bfd5b8b807cb290504c75f01b5ac5cf",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "3bb46e266528055ab1804b95e5d790b0b5a125e092571fe16c018657173bd649",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "invocation_seconds": 47.53177045797929,
+      "label": "after-1",
+      "packed_rollout_bytes": [
+        1264370604,
+        1238192578
+      ],
+      "parent_peak_rss_bytes": 4198547456,
+      "process_seconds": 48.25706879212521,
+      "report_seconds": 47.151797708822414,
+      "runtime": {
+        "device": "cpu",
+        "python": "3.11.15",
+        "threads": 1,
+        "torch": "2.13.0"
+      },
+      "summary": {
+        "abandoned": 0,
+        "accepted_decisions": 8192,
+        "act1_clear_rate": 0.0,
+        "act1_clears": 0,
+        "components": {
+          "act_cleared": 0.0,
+          "combat_loss": 66.0,
+          "combat_win": 332.0,
+          "end_turn_action": 1229.0,
+          "potion_use_action": 45.0,
+          "run_abandoned": 0.0,
+          "run_defeat": 72.0,
+          "run_victory": 0.0,
+          "win_hp_fraction": 227.84506887291639
+        },
+        "controlled_attempts": 0,
+        "cutoffs": 16,
+        "decisions_per_second": 173.73674807879536,
+        "episode_attempts": 88,
+        "failed_episodes": 0,
+        "genuine_start_attempts": 88,
+        "goal": "act1",
+        "losses": 72,
+        "mean_hp_on_win": null,
+        "potion_use_actions": 45,
+        "processed_decisions": 8192,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task": "full_run",
+        "task_return": -34.33287327817707,
+        "trained_decisions": 8192,
+        "wins": 0
+      },
+      "update_seconds": [
+        9.025383208179846,
+        8.855569415958598
+      ]
+    },
+    {
+      "collection_seconds": [
+        15.122424667002633,
+        14.091856333892792
+      ],
+      "final_fingerprint": "sts_policy_state_v2:03f3236c25f69c0f63e9d6349619ce0703e26a2f68789ae1a674b5fb7094e99c",
+      "implementation": {
+        "build": "c35a6b56bda335778f457c2a8c58b3d59bfd5b8b807cb290504c75f01b5ac5cf",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "3bb46e266528055ab1804b95e5d790b0b5a125e092571fe16c018657173bd649",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "invocation_seconds": 48.22706074989401,
+      "label": "after-2",
+      "packed_rollout_bytes": [
+        1264370604,
+        1238192578
+      ],
+      "parent_peak_rss_bytes": 4632150016,
+      "process_seconds": 48.972556083928794,
+      "report_seconds": 47.8557918749284,
+      "runtime": {
+        "device": "cpu",
+        "python": "3.11.15",
+        "threads": 1,
+        "torch": "2.13.0"
+      },
+      "summary": {
+        "abandoned": 0,
+        "accepted_decisions": 8192,
+        "act1_clear_rate": 0.0,
+        "act1_clears": 0,
+        "components": {
+          "act_cleared": 0.0,
+          "combat_loss": 66.0,
+          "combat_win": 332.0,
+          "end_turn_action": 1229.0,
+          "potion_use_action": 45.0,
+          "run_abandoned": 0.0,
+          "run_defeat": 72.0,
+          "run_victory": 0.0,
+          "win_hp_fraction": 227.84506887291639
+        },
+        "controlled_attempts": 0,
+        "cutoffs": 16,
+        "decisions_per_second": 171.18095175208626,
+        "episode_attempts": 88,
+        "failed_episodes": 0,
+        "genuine_start_attempts": 88,
+        "goal": "act1",
+        "losses": 72,
+        "mean_hp_on_win": null,
+        "potion_use_actions": 45,
+        "processed_decisions": 8192,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task": "full_run",
+        "task_return": -34.33287327817707,
+        "trained_decisions": 8192,
+        "wins": 0
+      },
+      "update_seconds": [
+        9.127443166915327,
+        8.87962095811963
+      ]
+    },
+    {
+      "collection_seconds": [
+        15.329422625014558,
+        14.20210895803757
+      ],
+      "final_fingerprint": "sts_policy_state_v2:03f3236c25f69c0f63e9d6349619ce0703e26a2f68789ae1a674b5fb7094e99c",
+      "implementation": {
+        "build": "c35a6b56bda335778f457c2a8c58b3d59bfd5b8b807cb290504c75f01b5ac5cf",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "3bb46e266528055ab1804b95e5d790b0b5a125e092571fe16c018657173bd649",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "invocation_seconds": 48.61031812499277,
+      "label": "after-3",
+      "packed_rollout_bytes": [
+        1264370604,
+        1238192578
+      ],
+      "parent_peak_rss_bytes": 3805609984,
+      "process_seconds": 49.48403187491931,
+      "report_seconds": 48.151495582889766,
+      "runtime": {
+        "device": "cpu",
+        "python": "3.11.15",
+        "threads": 1,
+        "torch": "2.13.0"
+      },
+      "summary": {
+        "abandoned": 0,
+        "accepted_decisions": 8192,
+        "act1_clear_rate": 0.0,
+        "act1_clears": 0,
+        "components": {
+          "act_cleared": 0.0,
+          "combat_loss": 66.0,
+          "combat_win": 332.0,
+          "end_turn_action": 1229.0,
+          "potion_use_action": 45.0,
+          "run_abandoned": 0.0,
+          "run_defeat": 72.0,
+          "run_victory": 0.0,
+          "win_hp_fraction": 227.84506887291639
+        },
+        "controlled_attempts": 0,
+        "cutoffs": 16,
+        "decisions_per_second": 170.12971042400932,
+        "episode_attempts": 88,
+        "failed_episodes": 0,
+        "genuine_start_attempts": 88,
+        "goal": "act1",
+        "losses": 72,
+        "mean_hp_on_win": null,
+        "potion_use_actions": 45,
+        "processed_decisions": 8192,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task": "full_run",
+        "task_return": -34.33287327817707,
+        "trained_decisions": 8192,
+        "wins": 0
+      },
+      "update_seconds": [
+        9.134585333056748,
+        8.901946417056024
+      ]
+    }
+  ],
+  "packing_microbenchmark": {
+    "contexts": {
+      "ancient": 3,
+      "combat": 83,
+      "event": 5,
+      "map": 11,
+      "relic_choice": 1,
+      "rest": 5,
+      "rewards": 25,
+      "shop": 3,
+      "treasure": 1
+    },
+    "exact_arrays_and_bindings": true,
+    "frozen_codec_sha256": "5b2c5b2101ec667e6c05e3c59dc5b8b285fa02c8f2d8da2cfd53abb14b67db8f",
+    "limitations": [
+      "Packing microbenchmark only; excludes public preparation, inference, PPO and recording.",
+      "Five alternating-order repetitions; background load and OS caches uncontrolled."
+    ],
+    "median_seconds": {
+      "baseline": 0.5140323750674725,
+      "indexed_wire": 0.4707101669628173,
+      "prepared_records": 0.3928096250165254
+    },
+    "nodes": 701308,
+    "samples": 137,
+    "seconds": {
+      "baseline": [
+        0.5142703331075609,
+        0.5140323750674725,
+        0.5131099580321461,
+        0.5133588330354542,
+        0.5456582079641521
+      ],
+      "indexed_wire": [
+        0.4999600830487907,
+        0.47341824998147786,
+        0.46992141706869006,
+        0.4707101669628173,
+        0.4691901251208037
+      ],
+      "prepared_records": [
+        0.3917542500421405,
+        0.3927338330540806,
+        0.4257864160463214,
+        0.42658908292651176,
+        0.3928096250165254
+      ]
+    }
+  },
+  "parity": {
+    "decisions": 8192,
+    "episodes": 88,
+    "equal": [
+      "every_public_state_action_execution_and_outcome",
+      "masks_log_probabilities_values_rewards_advantages_returns",
+      "all_non_timing_update_metrics",
+      "final_model_weights",
+      "all_non_timing_summary_metrics"
+    ],
+    "final_fingerprint": "sts_policy_state_v2:03f3236c25f69c0f63e9d6349619ce0703e26a2f68789ae1a674b5fb7094e99c",
+    "labels": [
+      "before-1",
+      "before-2",
+      "before-3",
+      "after-1",
+      "after-2",
+      "after-3"
+    ],
+    "seconds": 40.651724041905254
+  },
+  "phase_timings": {
+    "canonical_audit_seconds": 5.814858749974519,
+    "core_tests_seconds": 103.72,
+    "diagnostic_profile_process_seconds": 40.878741584019735,
+    "fresh_baseline_process_seconds": 153.26095299981534,
+    "full_gym_tests_seconds": 112.97,
+    "implementation_seconds": null,
+    "independent_review_seconds_reported": 286,
+    "note": "Implementation duration was not separately measured. Review/tests overlap; phase times must not be summed as task elapsed time.",
+    "optimized_process_seconds": 146.7136567509733,
+    "parity_seconds": 40.651724041905254,
+    "release_preparation": "Not applicable; local Python source optimization.",
+    "user_wait": "No user setup/input required."
+  },
+  "protocol": {
+    "checkpoint_every_round": true,
+    "config_sha256": "c697c47a83a22b2a6f2507a83590657e13faee9236b450aae9ec02f788d7d8ca",
+    "decisions": 8192,
+    "experiment": {
+      "encounters": [
+        "overgrowth",
+        "underdocks"
+      ],
+      "ppo": {
+        "batch_size": 16,
+        "clip_ratio": 0.2,
+        "entropy_weight": 0.01,
+        "episode_decisions": 512,
+        "episode_seconds": 120.0,
+        "epochs": 2,
+        "gae_lambda": 0.95,
+        "gamma": 1.0,
+        "gradient_clip": 0.5,
+        "learning_rate": 0.0003,
+        "normalize_advantages": true,
+        "rollout_steps": 4096,
+        "target_kl": 0.03,
+        "value_weight": 0.5
+      },
+      "schema": "sts_ppo_experiment_v2",
+      "source": "ironclad_a0_full_run_v1",
+      "training": {
+        "action_policy": "commit_card_selection_v1",
+        "mode": "full_run",
+        "reward": {
+          "goal": "act1",
+          "schema": "sts_full_run_reward_v3",
+          "weights": {
+            "act_cleared": 1.0,
+            "combat_loss": 0.0,
+            "combat_win": 0.1,
+            "end_turn_action": -0.001,
+            "potion_use_action": 0.0,
+            "run_abandoned": -1.0,
+            "run_defeat": -1.0,
+            "run_victory": 0.0,
+            "win_hp_fraction": 0.025
+          }
+        },
+        "scenario_set": "ironclad_a0_full_run_v1"
+      }
+    },
+    "host": {
+      "logical_cpus": 18,
+      "machine": "arm64",
+      "os": "macOS-26.6.2-arm64-arm-64bit"
+    },
+    "implementation": {
+      "build": "c35a6b56bda335778f457c2a8c58b3d59bfd5b8b807cb290504c75f01b5ac5cf",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "3bb46e266528055ab1804b95e5d790b0b5a125e092571fe16c018657173bd649",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "limitations": [
+      "Fresh parent per replica; persistent workers within invocation.",
+      "OS caches and background load uncontrolled.",
+      "Parent RSS excludes worker memory."
+    ],
+    "model": "runs/act1-50k-8workers-20260929/chunk-01/initial.sts-model",
+    "model_sha256": "ccd33403e9d061f4866d4e68b7fe864605b598b24d4dbd5c695ef14c6e913642",
+    "private_plan_sha256": "be8a0734af2b83e9520ad94a5d8a14ebf8433ec37a9ea1912db8ff95d55cd7c9",
+    "profile": false,
+    "purpose": "Throughput only. Same frozen initializer/config/seeds; no strength selection.",
+    "recording": true,
+    "replicas": 3,
+    "runtime": {
+      "device": "cpu",
+      "python": "3.11.15",
+      "threads": 1,
+      "torch": "2.13.0"
+    },
+    "schema": "sts_act1_training_throughput_v1",
+    "script_sha256": "300bd510e03623b094a77334a75431b432ae38b004791f8ca25c68f49f9744e7",
+    "threads_per_process": 1,
+    "workers": 8
+  },
+  "recorded_utc": "2026-09-30T05:49:51.923949+00:00",
+  "schema": "sts_training_encoding_optimization_evidence_v1",
+  "scope": "Headless CPU encoding optimization with unchanged arrays and learning semantics; no policy selection or checkpoint promotion.",
+  "source_commit": "5ad1d9daf6eff51222bbcf6371fb819f2937e0e8",
+  "source_comparison": {
+    "baseline_implementation": {
+      "build": "76deaa272e316e473c14a61d81c774190d15720e12c0194d9c11fac3ae72a2f9",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "3bb46e266528055ab1804b95e5d790b0b5a125e092571fe16c018657173bd649",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "baseline_profile": "Reused exact matching source/runtime profile from training-observation-reuse-20260930; diagnostic only.",
+    "baseline_timing": "Three fresh repetitions before edits, then three optimized repetitions.",
+    "changed_sources": [
+      "game/agent/encoding/codec.py",
+      "game/agent/encoding/full.py"
+    ],
+    "matched_protocol_fields": [
+      "runtime",
+      "script_sha256",
+      "model_sha256",
+      "config_sha256",
+      "experiment",
+      "private_plan_sha256",
+      "host",
+      "workers",
+      "threads_per_process",
+      "decisions",
+      "replicas",
+      "profile",
+      "recording",
+      "checkpoint_every_round"
+    ],
+    "optimized_implementation": {
+      "build": "c35a6b56bda335778f457c2a8c58b3d59bfd5b8b807cb290504c75f01b5ac5cf",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "3bb46e266528055ab1804b95e5d790b0b5a125e092571fe16c018657173bd649",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "rules_and_reference_policy_digests_unchanged": true
+  },
+  "timings": {
+    "baseline": {
+      "cold_collection_seconds": 16.149473666911945,
+      "collection_seconds": 31.36380812479183,
+      "decisions_per_second": 159.53590048418158,
+      "parent_peak_rss_median": 3945644032,
+      "process_seconds": 51.34894387493841,
+      "process_seconds_range": [
+        50.250493000028655,
+        51.661516124848276
+      ],
+      "projected_50k_seconds": 313.40908126793465,
+      "update_seconds": 17.98816558299586,
+      "warm_collection_seconds": 15.214334457879886
+    },
+    "collection_time_reduction_percent": 6.853527209909471,
+    "optimized": {
+      "cold_collection_seconds": 15.122424667002633,
+      "collection_seconds": 29.214281000895426,
+      "decisions_per_second": 167.27736216097466,
+      "parent_peak_rss_median": 4198547456,
+      "process_seconds": 48.972556083928794,
+      "process_seconds_range": [
+        48.25706879212521,
+        49.48403187491931
+      ],
+      "projected_50k_seconds": 298.9047612544482,
+      "update_seconds": 18.007064125034958,
+      "warm_collection_seconds": 14.091856333892792
+    },
+    "speedup": 1.0485248878358928,
+    "time_reduction_percent": 4.627919508524592
+  },
+  "validation": {
+    "compileall": {
+      "command": ".venv/bin/python -m compileall -q game/agent tests/agent",
+      "status": "passed"
+    },
+    "core": {
+      "command": "PYTHONPATH=. .venv/bin/python -m pytest -q tests/agent/test_prepared_public.py tests/agent/test_encoding.py tests/agent/test_full_profile.py tests/agent/test_training_model.py tests/agent/test_ppo.py tests/agent/test_ppo_parallel.py tests/agent/test_ppo_no_signal.py tests/agent/test_training_checkpoint.py tests/agent/test_act_training.py tests/agent/test_full_run_training.py tests/agent/test_full_run_rewards.py tests/agent/test_commit_selection_training.py tests/agent/test_recording.py tests/agent/test_training_records.py tests/agent/test_gym_env.py tests/agent/test_headless_adapter.py tests/agent/test_analysis_training.py",
+      "passed": 594,
+      "seconds": 103.72
+    },
+    "diff_check": "passed",
+    "full_gym": {
+      "command": "PYTHONPATH=. .venv/bin/python -m pytest -q tests/agent/test_full_gym.py",
+      "passed": 23,
+      "seconds": 112.97
+    },
+    "independent_semantic_review": {
+      "differential_cases_reported": 810,
+      "focused_tests_reported": 9,
+      "result": "No blocking findings",
+      "scope": "Exact arrays and action/reference bindings, capacity boundaries and exception details across v1/v2, custom field vocabularies, malformed inputs, reordered mutable records, owner gating, array independence and custom hooks.",
+      "seconds_reported": 286,
+      "source_edits": false
+    },
+    "note": "Final gates ran on the optimized production sources before timed repetitions. Earlier development/reviewer tests are not added to the unique final count.",
+    "unique_final_tests_passed": 617,
+    "warnings": "Existing Gymnasium constant-Box-bound warning in checker tests."
+  },
+  "working_tree": "Includes earlier analysis/evaluation and training optimizations. Frozen sources bind each measured build; prior evidence is not repinned."
+}

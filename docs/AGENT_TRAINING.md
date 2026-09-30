@@ -47,12 +47,28 @@ provides:
   public state**. Native legality and the checkpoint's policy mask remain
   distinct. A forced confirmation is labelled as the only policy-allowed action.
 
-Build once, then serve the report locally:
+Get the reported experiment results immediately, without building the viewer:
+
+```bash
+sts-agent-analyze summary --input runs/act1-50k-8workers-20260929
+```
+
+`summary` emits JSON from the compact PPO/evaluation reports. It checks PPO
+configuration identities and pinned evaluation plans, retains failed/interrupted/
+unattempted cases in the reported denominators, and keeps each source's status,
+objective, checkpoint identities and results separate. Consecutive PPO chunks are
+not pooled as independent learners. Its validation scope is explicitly
+`report_metadata_only`: it does **not** read canonical trajectories, rollout
+sidecars or checkpoint files, verify paired starting states, or recompute rewards.
+Use these reported metrics for quick feedback; use `build` for independent
+recording validation and the decision viewer.
+
+Build once with parallel episode exporters, then serve the report locally:
 
 ```bash
 sts-agent-analyze build \
   --input runs/act1-pilot-20260929 \
-  --output-dir runs/act1-analysis-20260929 --goal act1
+  --output-dir runs/act1-analysis-20260929 --goal act1 --workers 8
 
 sts-agent-analyze serve runs/act1-analysis-20260929 \
   --checkpoint initializer=runs/training-readiness-20260929/filtered-initializer.sts-model \
@@ -93,7 +109,18 @@ the previous HUD. Net HP changes include healing and are not damage totals.
 
 Exports use compressed chunks of 16 decisions, loaded on demand with two chunks
 cached. The output directory is new and never overwrites an existing report;
-failed builds have no completed `report.json`. The report can be copied and
+failed builds have no completed `report.json`. `build --workers N` accepts 1–8
+workers (default 1). These workers independently validate and export episodes;
+they do not run training or inference. Episode identities are reserved before
+writing, report order is stable, and paired-start checks run in the parent.
+Worker errors stop the export without retries; Ctrl-C stops and cleans up workers
+and exits with status 130. Start again with a new output directory after failure
+or interruption. Compressed decision contents are the same as serial export.
+The CLI reports full elapsed time and the report includes metadata preparation,
+episode wall time and summed per-episode phase timings. Summed worker times can
+exceed elapsed wall time when workers run in parallel.
+
+The report can be copied and
 inspected without its original trajectory files. Core export/inspection and the
 viewer use the standard library; checkpoint comparison requires `sts-agent[train]`.
 
@@ -122,6 +149,29 @@ pairing and Act 1 horizon findings (367 seconds across review and corrections).
 Browser checks exercised overview, loop navigation, same-state inference and
 training charts. Export and validation ran concurrently with implementation;
 implementation time was not separately measured.
+
+Parallel export benchmark (2026-09-29): on the existing 50k experiment's 541
+episodes / 56,844 decisions, the installed `summary` command returned in
+**0.128 seconds**, including startup. Full validation/export with eight workers
+took **62.98 seconds**, compared with the previously measured 472.88-second
+serial export of the same recordings (about **7.5× faster**). This comparison
+reuses the historical serial timing; cache state and host load were not controlled.
+All 3,801 compressed decision chunks (340,140,044 bytes) match the original
+export byte for byte, as do every episode row and all 16 paired-start checks.
+Sorting episode IDs before reducing collection returns makes aggregation order
+stable; the largest difference from the old unsorted mean was 1.67e-16.
+
+Summed worker phase time was about 57.2% canonical loading/validation and 41.8%
+encoding/compression/writing; these are shares of worker time, not elapsed time.
+The 39 focused analysis tests passed in 11.21 seconds, including the loopback
+viewer check, and seven package checks passed in 5.63 seconds. Changed modules
+compiled successfully. Independent semantic review took 166 seconds and found
+no blockers; large-transfer, abrupt-exit and Ctrl-C probes left no worker or
+transfer-thread leaks. Whole-export parity checking took 0.78 seconds.
+The [benchmark evidence](evidence/analysis_export_optimization_2026_09_29.json)
+retains source identities, timings, parity checks and artifact hashes. Benchmark
+outputs are under `runs/analysis-export-optimization-20260929/`; earlier
+experiment artifacts and the currently served viewer remain intact.
 
 ## Intended result
 
@@ -1538,13 +1588,13 @@ gate was needed for this measurement-only change.
 
 ### Training performance optimization (2026-09-29)
 
-Three measured passes have reduced data-processing overhead while preserving
+The first three measured passes reduced data-processing overhead while preserving
 public observations, action mappings and numerical training results. The earlier
 passes added bounded static schema-metadata caching, cheaper exact primitive
 handling, and removal of redundant encoding validations. Their original
 [source and timing evidence](evidence/training_optimization_2026_09_29.json) and
 [second-pass evidence](evidence/training_optimization2_2026_09_29.json) remain
-unchanged. The latest pass reuses work within one observation or corpus preparation.
+unchanged. The third pass reuses work within one observation or corpus preparation.
 
 For standard combat and full-run PPO environments, a training-only encoder keeps
 the freshly validated packed graph for the exact current decision object. Gym
@@ -1568,7 +1618,7 @@ is no global or persistent disk cache.
 The unchanged benchmark script, models, corpus, seeds and configuration were run
 in fresh output directories on the same CPU with one PyTorch thread:
 
-| Measurement | Original baseline | Previous optimization | Current |
+| Measurement | Original baseline | Second pass | Third pass |
 | --- | ---: | ---: | ---: |
 | Complete 512-decision PPO process, median of three | 64.43 s | 23.40 s | **19.24 s** |
 | PPO decisions per second | 7.95 | 21.88 | **26.61** |
@@ -2369,7 +2419,7 @@ Compare a trained actor against a frozen initializer on identical Act 1 cases:
 sts-agent-evaluate --act1 --checkpoint runs/act1-ppo/final.sts-model \
   --reference-checkpoint runs/training-readiness-20260929/filtered-initializer.sts-model \
   --output-dir runs/act1-evaluation --split validation --start-index 710000 \
-  --campaign-cases 16 --max-decisions 1024 --time-limit 90
+  --campaign-cases 16 --max-decisions 1024 --time-limit 90 --workers 8
 ```
 
 This evaluates heuristic, reference and learned policies on the same frozen
@@ -2382,6 +2432,56 @@ combat hybrid instead of a reference actor. The old `--full-run` evaluation keep
 its full-campaign victory metric. Choose fresh output directories and disjoint
 episode ranges for follow-up runs; the example training budget is a bounded
 integration run, not evidence that 1,024 decisions establish playing strength.
+
+Evaluation accepts `--workers 1` through `--workers 8` for both `--act1` and
+`--full-run`; the default is serial. Each persistent worker loads frozen
+checkpoint copies once, verifies their digests against the published plan and
+uses one Torch thread. Every case/policy game has its own engine, seed and files.
+The same case seed is reused across its three policies regardless of scheduling.
+Canonical recording validation and outcome analysis also run in the worker;
+the parent retains the fixed plan order and computes the paired summaries.
+Evaluation workers are independent of the PPO collector and analysis exporter
+worker settings. Other evaluation modes reject parallel worker requests.
+
+The parent stops assigning games after failure or interruption, retains completed
+acknowledgements from sibling workers and never retries a game. Interrupted and
+unattempted rows remain in the planned denominator. Workers receive a cooperative
+stop, followed by bounded forced cleanup if needed; forced terminations are
+reported, and failed cleanup cannot produce a successful batch. Public failure
+categories contain no private seed or exception text. The report/plan's
+`execution` field records the scheduling mode, worker count and worker thread
+count; existing public trajectory and Act 1/full-run report schemas are retained.
+
+Gameplay still obeys each episode's configured decision/time limits. The parent
+also guards worker startup (30 seconds) and a stuck game/analysis job (twice its
+gameplay time limit plus 30 seconds). A worker deadline is an operational failure,
+not a game defeat. For reproducibility comparisons, allow enough gameplay time:
+host contention can make wall-clock cutoffs differ between worker counts even
+when seeded decisions otherwise agree. Per-policy summed game time is distinct
+from the complete evaluation's elapsed `total_seconds`, especially in parallel.
+
+Matched evaluation benchmark (2026-09-29): the frozen 50k actor, its initializer
+and the heuristic each played the same 16 performance-benchmark starts with one
+worker and then eight. Each batch completed 48 games / 7,066 decisions. Evaluation
+including canonical outcome validation took **288.55 seconds serially** and
+**65.86 seconds with eight workers**, a **4.38× speedup**. Whole installed-command
+elapsed time was 289.52 and 66.63 seconds respectively. This is one matched local
+measurement, with serial measured first; it is not a general scaling guarantee.
+Every initial state, transition record, outcome and non-timing metric matched.
+Both runs retained all planned cases with no failures or time/decision cutoffs.
+The learner's one genuine-start Act 1 clear in each batch also exercised the
+successful public stopping boundary. These starts were used to measure throughput;
+the result is not a new policy-selection or playing-strength claim.
+
+The final affected regression gate passed **105 tests in 80.13 seconds**, and the
+changed modules compiled successfully. Independent semantic review found no
+blockers and took approximately 270 seconds, including acknowledgement-draining,
+abrupt-exit and cancellation-cleanup probes. Independent artifact comparison took
+1.25 seconds and checked paired seeds, canonical file/footer digests, unchanged
+source/models, 98 owner-only private files and absence of partial recordings.
+The [retained benchmark evidence](evidence/evaluation_parallel_2026_09_29.json)
+binds source identities, measured timings, parity checks and the generated
+artifacts under `runs/evaluation-parallel-20260929/`.
 
 PPO rollout schema v4 retains the goal, all measured components and the previous
 public act marker alongside the combat reward context. The collector checks the
@@ -2483,6 +2583,317 @@ pilot; the preceding 758-test validation was reused after verifying matching
 implementation and runtime. Artifact manifest preparation took 1.16 seconds.
 The [retained evidence](evidence/act1_pilot_2026_09_29.json) binds the frozen
 protocol, all learner results, paired outcomes, audit and artifact hashes.
+
+## Single-learner 50k experiment (2026-09-29)
+
+The requested follow-up trained **one learner for 50,000 decisions with eight
+parallel collectors**. It used the same imitation-trained actor and vocabulary
+as the previous pilot, a fresh Act 1 critic and optimizer, and the current
+`commit_card_selection_v1` policy. Rewards, both Ironclad A0 regions and the
+512-decision episode cap followed the Act 1 preset.
+
+The experiment increased `rollout_steps` from 1,024 to 4,096 so that eight
+workers retained an allowance of 512 decisions each. Keeping the old rollout
+size would have reduced each worker's allowance to 128. The final partial
+rollout contained 848 decisions, or 106 per worker. The existing 20,000-decision
+invocation limit was respected through three chunks of 16,384, 16,384 and
+17,232 decisions, with exact checkpoint/optimizer/RNG/cursor resume between
+chunks. These are continuations of one learner, not three independent learners.
+
+All 50,000 decisions were trained in 13 PPO rounds and 6,250 optimizer steps,
+with no skipped updates or failed episodes. Training took **428.54 seconds
+(7m 9s), or 116.67 decisions/second**:
+
+| Training phase | Seconds |
+| --- | ---: |
+| Parallel experience collection | 298.96 |
+| Model updates | 126.69 |
+| Other overhead | 2.89 |
+
+There were **2 Act 1 clears in 493 training episodes**, alongside 388 defeats
+and 103 quota/episode cutoffs. These sampled training outcomes do not measure
+the final greedy policy's clear rate. The previous pilot averaged about 47
+decisions/second, but the larger rollout batch, updated selection mask and new
+game seeds mean this follow-up is not a matched-workload speed benchmark.
+
+The final checkpoint was compared against its own initialization and the
+heuristic on 16 fresh paired validation starts, eight in each region. The
+initializer uses the same current selection mask as the final learner. This
+isolates their learned-weight comparison from the selection-filter change;
+neither reference is selected using evaluation results. Evaluation took
+263.88 seconds (4m 24s).
+
+| Policy | Act 1 clears | Defeats | Cutoffs | Mean last observed floor |
+| --- | ---: | ---: | ---: | ---: |
+| Heuristic | 0/16 | 16 | 0 | 13.25 |
+| Initializer with current selection mask | 0/16 | 16 | 0 | 11.00 |
+| Final 50k learner | 0/16 | 16 | 0 | 10.875 |
+
+There is **no observed improvement** in Act 1 clear rate or mean floor against
+the initializer. The paired clear-rate difference is zero, with the existing
+conservative 95% interval spanning approximately ±67.91 percentage points.
+One learner and 16 development starts do not establish policy equivalence or
+general performance. Every planned case remains in the denominator; no
+intermediate checkpoint was selected or promoted.
+
+The resolved configuration, protocol, chunk reports and evaluation are under
+`runs/act1-50k-8workers-20260929/`. The final inference bundle is
+`chunk-03/final.sts-model`; the matching owner-only continuation state is
+`runs/act1-50k-8workers-20260929-private/chunk-03/final.resume.pt`.
+Use the experiment's saved `config.json` and eight workers for exact resume.
+The [retained evidence](evidence/act1_50k_8workers_2026_09_29.json) records the
+configuration, timings, checkpoint identities, results and artifact checks.
+
+Post-experiment verification restored all three chunk checkpoints, confirmed
+493 unique training episode seeds, and validated all 50,000 training decisions
+against their canonical public recordings, including action masks and recomputed
+rewards. The export verified identical public starts for all 16 evaluation cases.
+All 562 private files retained owner-only permissions and no partial artifacts
+remained. The analysis heuristics flagged no selection-toggle or reward-navigation
+loops in the evaluation episodes; this is a check of these recordings, not a
+general guarantee about future behavior.
+
+The separate viewer export is `runs/act1-50k-8workers-20260929-analysis/`, with
+541 episodes and 56,844 decisions. Verification and export took 473.97 seconds
+(7m 54s), including 472.88 seconds for the export; this time is separate from
+training and evaluation. Its `chunk-01`, `chunk-02` and `chunk-03` training groups
+are consecutive segments of the same learner. Load the first chunk's
+`initial.sts-model` and each chunk's `final.sts-model` to compare the initializer,
+16,384-, 32,768- and 50,000-decision checkpoints on a recorded public state.
+
+## Act 1 training throughput follow-up (2026-09-29)
+
+A matched benchmark repeats the current Act 1 workload: **one learner, eight
+persistent collectors, and 8,192 decisions in two 4,096-decision rounds**. Each
+worker gets 512 decisions per round. Three fresh processes per version use the
+same frozen initializer, private seed plan, rewards and optimizer configuration
+as each other. The initializer and resolved configuration come from the 50k
+experiment. Recording, every-round checkpoints and worker cleanup are included;
+evaluation and analysis export are separate. Diagnostic profiler runs are excluded
+from these timing medians.
+
+| Measurement | Before | Optimized |
+| --- | ---: | ---: |
+| Complete process, 8,192 decisions | 71.70 s | **60.28 s** |
+| Parallel collection, both rounds | 49.34 s | **40.04 s** |
+| PPO updates, both rounds | 20.23 s | **18.20 s** |
+| Decisions/second, including process overhead | 114.25 | **135.89** |
+| First collection round, including worker startup | 25.37 s | 20.55 s |
+| Second collection round, reusing workers | 23.97 s | 19.22 s |
+
+The complete workload uses **15.9% less time**, or **18.9% more decisions per
+second**. At this rate 50k decisions would take approximately **6m 8s**, excluding
+evaluation and export. That is an extrapolation, not another measured 50k learning
+experiment. Game lengths and later policy behavior can change throughput. Baseline
+process times were 70.24–72.75 seconds; optimized times were 59.16–60.51 seconds.
+OS caches and background host load were not controlled.
+
+Profiling identified repeated Python schema inspection during public observation
+conversion and repeated vocabulary hashing during PPO batch preparation. The
+public codec now prepares bounded reusable schema readers and serialization field
+layouts. It still validates every input and every public semantic invariant;
+only schema work is reused. Union member ordering, exact primitive/Literal types,
+recursive graphs and per-parse generic substitutions are preserved. The immutable
+vocabulary computes its unchanged digest once when constructed, including after
+loading a checkpoint. Model architecture, policy masks, sampling, rewards and
+optimizer mathematics are unchanged.
+
+Collection remains the main cost, around two-thirds of the complete process.
+This pass does not reduce the retained observation payload: the two 4,096-step
+rollouts contain 1.264 GB and 1.238 GB of packed data. Median parent peak RSS was
+4.11 GB before and 4.15 GB after; those measurements exclude collector processes
+and are not total pool memory.
+
+Validation passed **635 focused contract, full-game projection, PPO, worker,
+checkpoint, recording, Gym and encoding/package checks**, plus compilation and
+diff checks. All six timing repetitions matched every recorded public state,
+action and outcome, masks, likelihoods, values, rewards, advantages, returns,
+non-timing update metrics and final model weights. An additional canonical reload
+validated 176 baseline/optimized trajectories containing 16,384 decisions; all
+652 generated private files/directories retained owner-only permissions, with
+no partial artifacts. Independent semantic review found no blockers and compared 1,438
+valid/malformed cases with the original codec, matching acceptance, decoded
+values and error details. Inference bundles keep their wire format; exact
+optimizer/RNG resume still requires the matching source build.
+
+The raw protocol, source snapshots, profiles and reports are under
+`runs/training-throughput-20260929/`. The
+[retained evidence](evidence/training_throughput_2026_09_29.json) binds the inputs,
+source identities, timing repetitions and validation results. These are throughput
+checks; no checkpoint is selected or promoted for playing strength.
+
+### Further snapshot copy optimization
+
+The next pass reuses the preceding accepted three-repetition baseline and runs
+three more repetitions of the identical eight-worker, 8,192-decision workload.
+The benchmark script, initializer, configuration, private seed-plan digest,
+runtime and host match; the source manifests differ only in the new private
+snapshot copier and its two consumers.
+
+| Measurement | Previous optimized build | With faster snapshot copying |
+| --- | ---: | ---: |
+| Complete process, 8,192 decisions | 60.28 s | **58.98 s** |
+| Parallel collection, both rounds | 40.04 s | **38.94 s** |
+| PPO updates, both rounds | 18.20 s | 18.27 s |
+| Decisions/second, including process overhead | 135.89 | **138.88** |
+
+This is **2.2% less total time** and **2.8% less collection time** in the measured
+medians. The optimized range was 57.85–59.22 seconds, slightly overlapping the
+baseline's 59.16–60.51 seconds; this is a modest result on one machine with
+uncontrolled background load, not a guaranteed speedup. The linear 50k estimate
+is now approximately **6m 0s**, excluding evaluation/export; no new 50k learning
+experiment was run.
+
+Private run/combat snapshots now use a detached dataclass copier that reuses
+field-name metadata and directly returns exact immutable scalars. Mutable data
+is still freshly copied, and namedtuples, container subclasses and custom leaf
+copying retain the existing behavior. Snapshot validation, RNG capture/restore,
+stale-action guards and snapshot schemas remain unchanged. Because the change
+lives in the engine package, its source/rules digest changes legitimately;
+historical evidence retains its original digest, and exact optimizer/RNG resume
+still requires the matching build.
+
+Validation passed **541 engine, snapshot/restore, public projection, recording,
+PPO/parallel and package checks**. Independent semantic review found no blockers
+and matched 315 differential cases against the standard copier. All six timing
+repetitions matched every public transition, learning input, non-timing update
+metric and final model weight, excluding only run identities and source/timing
+metadata. Canonical reload independently validated 176 trajectories / 16,384
+decisions against their original source bindings. All 327 new private
+files/directories retained owner-only permissions; no partial artifacts remained.
+
+The separate diagnostic profile still identifies public-observation conversion
+and serialization as the largest remaining collection costs. Collection occupies
+about two-thirds of the process, and the large packed rollout payload is unchanged.
+An exploratory update-only probe with four Torch threads took 7.23 seconds versus
+9.07 seconds with one thread, but produced different weights. The default remains
+one thread; thread tuning needs a separately identified reproducibility/learning
+comparison, and that single probe is not an end-to-end speed claim.
+
+Raw reports, profiles and frozen source snapshots are under
+`runs/training-snapshot-optimization-20260929/`. The
+[retained evidence](evidence/training_snapshot_optimization_2026_09_29.json)
+binds this result to the previous baseline, inputs, source changes and checks.
+
+### Validated-observation reuse (2026-09-30)
+
+Projection, encoding and PPO recording now share one prepared public observation.
+Preparation validates and reconstructs canonical immutable records, including
+canonical field order for structurally equivalent caller records. The owner
+retains its serialized form; consumers requesting wire data receive independent
+dictionary copies. Reuse requires the exact prepared decision object; equal-but-different
+decisions cannot borrow another owner's validation. Owners stay with the current
+frame/encoding and are released with the existing reset, failure and cleanup
+paths. Nonterminal cutoffs and Act 1 completion retain their actual final decision.
+
+The standard full-run and combat PPO paths use this automatically, as does the
+built-in full-run Gym encoder. Custom encoders keep their own hooks and validating
+fallback. Standalone unprepared inputs and disk recordings are still validated
+independently. The recorder shares its action, execution, sequence, reward and
+completion checks across both paths. Engine guards, game rules, RNG, model
+architecture, policy masks, rewards and optimizer mathematics are unchanged.
+
+Three **fresh** baseline repetitions and three optimized repetitions use the same
+one-learner, eight-worker, 8,192-decision workload described above, including
+recordings, checkpoints and cleanup. The baseline already includes the previous
+optimizations; today's fresh measurements avoid comparing host conditions across
+days. Medians are:
+
+| Measurement | Fresh baseline | Prepared observations |
+| --- | ---: | ---: |
+| Complete process, 8,192 decisions | 56.69 s | **52.14 s** |
+| Parallel collection, both rounds | 36.76 s | **32.11 s** |
+| PPO updates, both rounds | 17.98 s | 18.07 s |
+| Decisions/second, including process overhead | 144.50 | **157.13** |
+
+Collection uses **12.6% less time**, and the complete process uses **8.0% less
+time**. Baseline runs took 55.65–57.05 seconds; optimized runs took 50.31–52.53
+seconds. Background load and OS caches remain uncontrolled. The linear estimate
+for 50k decisions is **5m 18s**, excluding evaluation/export; this is a throughput
+experiment, not a new 50k learning result or evidence of stronger play.
+
+A separate 4,096-decision profile reduced full-public parsing calls from 16,534
+to 4,180: approximately four passes per decision become one. The baseline
+diagnostic profile has the exact matching source/runtime from the preceding
+experiment; instrumented timings are excluded from the fresh throughput medians.
+Canonical graph construction, tensor packing and stale-state guards remain
+substantial costs. Packed rollout sizes are unchanged.
+
+All **714 final regression tests passed**, covering contracts, ownership and
+mutation isolation, custom encoders, encoding failures, full campaigns, recording,
+analysis, PPO workers/checkpoints and package integration. Independent semantic
+review found no blockers. All six timed runs matched every public transition,
+mask, reward, value, likelihood, advantage, return, non-timing update metric and
+final model weight. Canonical reload validated 176 trajectories / 16,384 decisions
+against their original bindings; all 606 private files/directories retained
+owner-only permissions, with no partial artifacts. Wire schemas and the engine's
+rules digest are unchanged; exact optimizer/RNG resume still requires the matching
+source build.
+
+Raw reports and frozen sources are under
+`runs/training-observation-reuse-20260930/`; the
+[retained evidence](evidence/training_observation_reuse_2026_09_30.json) records
+inputs, source identities, timing repetitions, profiles, checks and measured
+phase timings.
+
+### Direct prepared-observation encoding (2026-09-30)
+
+The encoder now traverses the prepared owner's canonical immutable public records
+directly, avoiding an intermediate dictionary copy. Field indexes are computed
+once per packing operation. Both paths use the same ordered traversal, reference
+registration, candidate sorting, capacity checks and array allocation. Canonical
+dataclass field order and visible tuple order are preserved. Exact owner checks
+still gate reuse; ordinary inputs and custom encoders retain validation, and
+recorders still receive independent wire copies. No training configuration change
+is needed to use this in standard combat/full-run PPO or the built-in full-run Gym
+encoder.
+
+Three fresh baseline repetitions and three optimized repetitions use the same
+frozen initializer, configuration and seed schedule, with one learner, eight
+workers and 8,192 decisions in two 4,096-decision rounds. Recording, checkpointing
+and cleanup are included. This baseline already contains validated-observation
+reuse and all preceding optimizations. Medians are:
+
+| Measurement | Fresh baseline | Direct record encoding |
+| --- | ---: | ---: |
+| Complete process, 8,192 decisions | 51.35 s | **48.97 s** |
+| Parallel collection, both rounds | 31.36 s | **29.21 s** |
+| PPO updates, both rounds | 17.99 s | 18.01 s |
+| Decisions/second, including process overhead | 159.54 | **167.28** |
+
+Collection uses **6.9% less time**, and the complete process uses **4.6% less
+time**. Baseline runs took 50.25–51.66 seconds; optimized runs took 48.26–49.48
+seconds. A separate alternating-order packing probe on 137 recorded decisions,
+701,308 tree rows and nine decision types took 0.514 → 0.393 seconds at the median
+(23.6% less packing time), with exact arrays and action/reference bindings. That
+probe excludes public preparation, inference, recording and PPO. Background load
+and OS caches are uncontrolled in these measurements. The linear estimate for
+50k decisions is **4m 59s**, excluding evaluation/export; it is not a new 50k
+learning result or evidence of stronger play.
+
+A separate 4,096-decision diagnostic profile reduced wire-copy calls from 8,208
+to 4,104, retaining the recorder's copies. Encoding's share of profiled collection
+time fell from 20.8% to 15.6%; public-observation construction (32.6%) and
+stale-state guards (24.8%) remain larger costs. These instrumented measurements
+are excluded from the throughput medians.
+
+All **617 final regression tests passed**, covering v1/v2 encoding, prepared-owner
+isolation, custom hooks, exact capacity errors, full public command families,
+all five characters, both Act 1 regions, A0/A10, controlled complete campaigns,
+recording, analysis consumers and PPO workers/checkpoints. Independent semantic
+review found no blockers, including 810 additional differential cases against
+the frozen pre-change encoder. All six timed runs matched every public transition,
+mask, reward, value, likelihood, advantage, return, non-timing update metric and
+final model weight. Canonical reload validated 176 trajectories / 16,384 decisions
+with their original source bindings; all 606 private files/directories retained
+owner-only permissions, with no partial artifacts. Game rules, stale-state guards, RNG, rewards,
+model architecture and optimizer mathematics are unchanged. Exact optimizer/RNG
+resume still requires the matching source build.
+
+Raw reports and frozen source snapshots are under
+`runs/training-encoding-optimization-20260930/`; the
+[retained evidence](evidence/training_encoding_optimization_2026_09_30.json)
+binds the inputs, source identities, timing repetitions and validation.
 
 ## Implementation sequence and next experiment
 
