@@ -31,41 +31,83 @@ def _dataclass_schema(cls):
 
 
 def _read(value, annotation, path, substitutions=None):
-    substitutions = substitutions or {}
+    return _reader(id(annotation), annotation)(value, path, substitutions or {})
+
+
+def _invalid(path):
+    raise ContractError(f'{path}: invalid value or type')
+
+
+@lru_cache(maxsize=128)
+def _record_readers(cls):
+    # Resolve children lazily: recursive Node schemas must finish preparing their
+    # own reader before asking for readers of their fields.
+    return tuple((key, _reader(id(kind), kind)) for key, kind in _dataclass_schema(cls)[1])
+
+
+@lru_cache(maxsize=128)
+def _reader(identity, annotation):
+    """Prepare schema work only; every call still checks its input values.
+
+    Annotation identity is part of the key because unions compare equal even
+    when their member order differs. Retaining the annotation prevents id reuse.
+    Generic substitutions remain local to each parse, never captured here.
+    """
     if isinstance(annotation, TypeVar):
-        annotation = substitutions[annotation]
-    # Most leaves are exact primitives; bool must never count as an integer.
+        def variable(value, path, substitutions):
+            kind = substitutions[annotation]
+            if isinstance(kind, TypeVar):
+                _invalid(path)
+            return _reader(id(kind), kind)(value, path, substitutions)
+        return variable
     if annotation in (str, int, bool, type(None)):
-        if type(value) is annotation:
-            return value
-        raise ContractError(f'{path}: invalid value or type')
+        def primitive(value, path, substitutions):
+            if type(value) is annotation:
+                return value
+            _invalid(path)
+        return primitive
     origin, args = get_origin(annotation), get_args(annotation)
     if origin is Literal:
-        if any(type(value) is type(v) and value == v for v in args):
-            return value
-    elif origin in (Union, UnionType):
-        for member in args:
-            # Preserve member order without raising for each scalar mismatch.
-            if member in (str, int, bool, type(None)):
-                if type(value) is member:
-                    return value
-                continue
-            try:
-                return _read(value, member, path, substitutions)
-            except ContractError:
-                pass
-    elif origin is tuple:
-        if type(value) is list and len(args) == 2 and args[1] is Ellipsis:
-            return tuple(_read(v, args[0], f'{path}[{i}]', substitutions) for i, v in enumerate(value))
-    elif is_dataclass(origin or annotation):
+        def literal(value, path, substitutions):
+            if any(type(value) is type(v) and value == v for v in args):
+                return value
+            _invalid(path)
+        return literal
+    if origin in (Union, UnionType):
+        readers = tuple((member, _reader(id(member), member)) for member in args)
+        def union(value, path, substitutions):
+            for member, read in readers:
+                # Preserve member order without raising for scalar mismatches.
+                if member in (str, int, bool, type(None)):
+                    if type(value) is member:
+                        return value
+                    continue
+                try:
+                    return read(value, path, substitutions)
+                except ContractError:
+                    pass
+            _invalid(path)
+        return union
+    if origin is tuple and len(args) == 2 and args[1] is Ellipsis:
+        read = _reader(id(args[0]), args[0])
+        def sequence(value, path, substitutions):
+            if type(value) is list:
+                return tuple(read(v, f'{path}[{i}]', substitutions) for i, v in enumerate(value))
+            _invalid(path)
+        return sequence
+    if is_dataclass(origin or annotation):
         cls = origin or annotation
-        names, hints, parameters = _dataclass_schema(cls)
-        if type(value) is not dict or value.keys() != names:
-            raise ContractError(f'{path}: missing or extra {cls.__name__} fields')
-        mapping = {**substitutions, **dict(zip(parameters, args))} if parameters else substitutions
-        return cls(**{key: _read(value[key], kind, f'{path}.{key}', mapping)
-                      for key, kind in hints})
-    raise ContractError(f'{path}: invalid value or type')
+        names, _, parameters = _dataclass_schema(cls)
+        def record(value, path, substitutions):
+            if type(value) is not dict or value.keys() != names:
+                raise ContractError(f'{path}: missing or extra {cls.__name__} fields')
+            mapping = {**substitutions, **dict(zip(parameters, args))} if parameters else substitutions
+            return cls(**{key: read(value[key], f'{path}.{key}', mapping)
+                          for key, read in _record_readers(cls)})
+        return record
+    def unsupported(value, path, substitutions):
+        _invalid(path)
+    return unsupported
 
 
 def from_dict(value):
@@ -78,6 +120,11 @@ def from_dict(value):
     return result
 
 
+@lru_cache(maxsize=128)
+def _wire_fields(cls):
+    return tuple(field.name for field in fields(cls))
+
+
 def _wire(value):
     # Exact builtin values cannot be dataclass instances. Subclasses still take
     # the structural path below, as they did before this fast path.
@@ -86,7 +133,7 @@ def _wire(value):
     if type(value) is tuple:
         return [_wire(v) for v in value]
     if is_dataclass(value) and not isinstance(value, type):
-        return {f.name: _wire(getattr(value, f.name)) for f in fields(value)}
+        return {name: _wire(getattr(value, name)) for name in _wire_fields(type(value))}
     raise ContractError('Expected immutable public values')
 
 

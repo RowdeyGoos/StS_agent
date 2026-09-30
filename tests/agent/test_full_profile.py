@@ -49,6 +49,10 @@ def check(adapter, *, encode=True):
     assert f.loads(f.dumps(frame.decision)) == frame.decision
     if encode:
         encoded = ENCODER.encode(frame.decision)
+        prepared = ENCODER.encode_prepared(frame.decision, adapter.prepared_for(frame.decision))
+        assert prepared.candidate_refs == encoded.candidate_refs
+        assert prepared.reference_refs == encoded.reference_refs
+        assert all(np.array_equal(v, prepared.observation[k]) for k, v in encoded.observation.items())
         decoded = ENCODER.decode(encoded.observation)
         reencoded = ENCODER.encode(decoded)
         assert all(np.array_equal(v, reencoded.observation[k]) for k, v in encoded.observation.items())

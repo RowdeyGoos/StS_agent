@@ -11,6 +11,7 @@ import numpy as np
 
 from game.agent import contracts as c
 from game.agent.encoding import DEFAULT_PROFILE, EncodingError, PublicEncoder
+from game.agent.encoding.full import FullRunEncoder
 from game.agent.headless import AdapterFault, HeadlessAdapter, UnsupportedProfile
 
 
@@ -60,7 +61,6 @@ class StsEnv(gym.Env):
         self.render_mode = render_mode
         self._decision_profile = decision_profile
         if decision_profile == 'full_run_v2':
-            from game.agent.encoding.full import FullRunEncoder
             self.encoder = FullRunEncoder(profile)
         elif decision_profile == 'combat_reward_map_v1':
             self.encoder = PublicEncoder(profile)
@@ -138,6 +138,9 @@ class StsEnv(gym.Env):
         return self._adapter.observe()
 
     def _encode(self, public):
+        prepared = self._adapter.prepared_for(public) if self._adapter is not None else None
+        if prepared is not None and isinstance(self.encoder, FullRunEncoder):
+            return self.encoder.encode_prepared(public, prepared)
         return self.encoder.encode(public)
 
     def _dispatch(self, candidate_ref):

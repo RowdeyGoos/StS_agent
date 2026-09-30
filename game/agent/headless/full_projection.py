@@ -500,8 +500,8 @@ class FullProjection:
         self.commands = {f'action:{i}': commands[a.ref] for i, a in enumerate(candidates)}
         candidates = tuple(replace(a, ref=f'action:{i}') for i, a in enumerate(candidates))
         result = f.PublicDecision(f.SCHEMA, f.PROFILE, public_run, context, candidates)
-        f.require_ready(result)
-        return result
+        self.prepared = f.PreparedPublic(result)
+        return self.prepared.value
 
     def present(self, legal):
         if not self.modal:

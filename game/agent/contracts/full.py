@@ -150,6 +150,48 @@ def require_ready(value):
     to_dict(value)
 
 
+def _copy_public_wire(value):
+    # Prepared data has already passed the strict codec: only plain dict/list
+    # containers and immutable JSON scalars can occur here.
+    if type(value) is dict:
+        return {key: _copy_public_wire(child) for key, child in value.items()}
+    if type(value) is list:
+        return [_copy_public_wire(child) for child in value]
+    return value
+
+
+@dataclass(frozen=True, slots=True, init=False, eq=False)
+class PreparedPublic:
+    """One owned, validated public value for cooperating in-process consumers.
+
+    The parsed value is canonical and deeply immutable, even if the input used
+    mutable record objects. Wire copies belong to their caller. This owner never
+    carries an engine, dispatch binding or private state, and is not a wire type.
+    """
+    _value: PublicDecision | RunOutcome
+    _wire: dict
+
+    def __init__(self, value):
+        wire = _wire(value) if type(value) is PublicDecision else to_dict(value)
+        canonical = from_dict(wire)
+        object.__setattr__(self, '_value', canonical)
+        # Structurally matching caller dataclasses can have different field
+        # order. Retain exactly the canonical value's wire traversal order.
+        object.__setattr__(self, '_wire', _wire(canonical))
+
+    @property
+    def value(self):
+        return self._value
+
+    def require(self, value):
+        if value is not self._value:
+            raise ContractError('Prepared observation does not belong to this decision')
+
+    def wire_for(self, value):
+        self.require(value)
+        return _copy_public_wire(self._wire)
+
+
 def dumps(value):
     return json.dumps(to_dict(value), sort_keys=True, separators=(',', ':'), allow_nan=False)
 

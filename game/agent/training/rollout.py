@@ -193,9 +193,11 @@ def collect(model, experiment, generator, *, cursor, iteration, decisions=None,
                         allow_nan=False).encode(), private=True)
                     metadata = Metadata.create(identity, episode_id=episode_id,
                         scenario=experiment.source+':'+name, split='train', evidence=row['evidence'])
-                    writer = stack.enter_context(TrajectoryWriter(output/(episode_id+SUFFIX), metadata, public)
+                    public_owner = None if prepared is None else prepared.prepared_for(public)
+                    writer = stack.enter_context(TrajectoryWriter(output/(episode_id+SUFFIX), metadata, public,
+                            prepared=public_owner)
                         if full_run else CombatTrainingRecorder(output/(episode_id+SUFFIX),
-                            metadata, public, summary, reward_spec=objective))
+                            metadata, public, summary, reward_spec=objective, prepared=public_owner))
                 current = None
                 while True:
                     check_cancel(cancel)
@@ -275,11 +277,13 @@ def collect(model, experiment, generator, *, cursor, iteration, decisions=None,
                         progress['components'][key] += amount
                     progress['steps'] = len(steps)
                     if writer is not None:
+                        public_owner = None if prepared is None else prepared.prepared_for(public)
                         if full_run:
-                            writer.append(chosen, c.from_dict(execution), public)
+                            writer.append(chosen, c.from_dict(execution), public, prepared=public_owner)
                         else:
                             writer.append(chosen, c.from_dict(execution), public, combat_summary=summary,
-                                          reward=reward, terminated=terminated, truncated=truncated)
+                                          reward=reward, terminated=terminated, truncated=truncated,
+                                          prepared=public_owner)
                     if terminated or truncated:
                         outcome = c.from_dict(info['outcome'])
                         break

@@ -4,7 +4,7 @@ References are replaced by local table indexes and candidates are sorted by
 semantics. Raw reference ordinals and candidate names/order are not features.
 Visible list order, duplicate physical entities and every public value survive.
 """
-from dataclasses import dataclass
+from dataclasses import dataclass, fields as dataclass_fields
 import re
 
 import numpy as np
@@ -110,13 +110,28 @@ class PublicEncoder:
         Capacity checks and exact integer/text/reference values are unchanged.
         Use encode() for fixed Gym shapes; pack() is for compact consumer storage.
         """
-        wire = self._ready_wire(decision)
+        return self._pack(decision, self._ready_wire(decision))
+
+    def _pack(self, decision, wire, *, record_types=()):
+        """Pack validated wire data, or canonical records from a prepared owner.
+
+        Record traversal is private and opt-in: ordinary pack() still validates
+        and traverses its wire value. Both paths emit the same ordered tables.
+        """
         p = self.profile
         if isinstance(decision, c.RunOutcome):
             obs = self._tables(0, 0, 0, 0)
             obs['outcome'][:] = (OUTCOMES.index(decision.kind) + 1, REASONS.index(decision.reason) + 1)
             return EncodedDecision(obs, (), ())
         nodes, strings, references, definitions = [], {}, {}, {}
+        field_ids = {}
+        for index, name in enumerate(self.fields, 1):
+            field_ids.setdefault(name, index)
+        record_fields = {cls: tuple((field.name, field_ids.get(field.name))
+                                   for field in dataclass_fields(cls))
+                         for cls in record_types}
+        node_capacity = p.nodes
+        matches_reference = self.reference_pattern.fullmatch
 
         def check(dimension, required, capacity):
             if required > capacity:
@@ -137,8 +152,9 @@ class PublicEncoder:
             return strings[value]
 
         def visit(value, parent=0, field=0, position=0):
-            check('nodes', len(nodes) + 1, p.nodes)
             index = len(nodes) + 1
+            if index > node_capacity:
+                raise CapacityError('nodes', index, node_capacity)
             row = [parent, field, position, 0, 0]
             nodes.append(row)
             if type(value) is dict:
@@ -147,10 +163,11 @@ class PublicEncoder:
                     reference(value['ref'])
                     definitions[value['ref']] = index
                 for order, (key, child) in enumerate(value.items()):
-                    if key not in self.fields:
+                    field_id = field_ids.get(key)
+                    if field_id is None:
                         raise EncodingError('Unsupported public field: ' + key)
-                    visit(child, index, self.fields.index(key) + 1, order)
-            elif type(value) is list:
+                    visit(child, index, field_id, order)
+            elif type(value) is list or (record_types and type(value) is tuple):
                 row[3] = ARRAY
                 for order, child in enumerate(value):
                     visit(child, index, 0, order)
@@ -162,9 +179,20 @@ class PublicEncoder:
                 check('integer_magnitude', abs(value), INTEGER_MAX)
                 row[3:] = (INTEGER, value)
             elif type(value) is str:
-                row[3:] = (REFERENCE, reference(value)) if self.reference_pattern.fullmatch(value) else (TEXT, string(value))
+                row[3:] = (REFERENCE, reference(value)) if matches_reference(value) else (TEXT, string(value))
             else:
-                raise EncodingError('Unsupported public value type')
+                attributes = record_fields.get(type(value))
+                if attributes is None:
+                    raise EncodingError('Unsupported public value type')
+                row[3] = OBJECT
+                ref = getattr(value, 'ref', None)
+                if ref is not None:
+                    reference(ref)
+                    definitions[ref] = index
+                for order, (name, field_id) in enumerate(attributes):
+                    if field_id is None:
+                        raise EncodingError('Unsupported public field: ' + name)
+                    visit(getattr(value, name), index, field_id, order)
 
         visit({'run': wire['run'], 'context': wire['context']})
         check('candidates', len(decision.candidates), p.candidates)

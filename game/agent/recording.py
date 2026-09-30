@@ -92,7 +92,7 @@ def _public(value):
     return result
 
 
-def _transition(current, value, index):
+def _transition_start(current, value, index):
     _keys(value, ('record', 'index', 'action', 'execution', 'next', 'reward'))
     _require(value['record'] == 'transition' and type(value['index']) is int
              and value['index'] == index, 'Invalid transition sequence')
@@ -107,10 +107,24 @@ def _transition(current, value, index):
     _require(type(report) is c.ExecutionReport and report.status == 'reconciled'
              and report.reason == 'none' and report.mutation in ('none', 'applied'),
              'Only reconciled actions are transitions')
-    successor = _public(value['next'])
+    return action, report
+
+
+def _transition_result(current, value, action, report, successor):
     reward = int(isinstance(successor, c.RunOutcome) and successor.kind == 'victory')
     _require(type(value['reward']) is int and value['reward'] == reward, 'Invalid sparse reward')
     return Transition(current, action, report, successor, reward)
+
+
+def _transition(current, value, index):
+    action, report = _transition_start(current, value, index)
+    return _transition_result(current, value, action, report, _public(value['next']))
+
+
+def _prepared_wire(value, prepared):
+    if type(prepared) is not f.PreparedPublic:
+        raise f.ContractError('Expected a prepared public observation')
+    return prepared.wire_for(value)
 
 
 def _ending(current, value, count, digest):
@@ -147,11 +161,12 @@ class TrajectoryWriter:
     the complete artifact, via an atomic, no-clobber hard link on the same volume.
     """
 
-    def __init__(self, path, metadata, initial):
+    def __init__(self, path, metadata, initial, *, prepared=None):
         self.path = Path(path)
         _require(self.path.name.endswith(SUFFIX), 'Use a .trajectory.jsonl filename')
         self.metadata = _metadata(asdict(metadata))
-        self.current = _public(f.to_dict(initial))
+        initial_wire = f.to_dict(initial) if prepared is None else _prepared_wire(initial, prepared)
+        self.current = _public(initial_wire) if prepared is None else prepared.value
         self.count, self._digest, self._closed = 0, hashlib.sha256(), False
         self.partial = self.path.with_name(self.path.name + '.partial')
         self.path.parent.mkdir(parents=True, exist_ok=True)
@@ -160,7 +175,7 @@ class TrajectoryWriter:
         self._file = self.partial.open('xb')
         try:
             self._write({'record': 'header', 'schema': SCHEMA,
-                         'metadata': asdict(self.metadata), 'initial': f.to_dict(initial)})
+                         'metadata': asdict(self.metadata), 'initial': initial_wire})
         except BaseException:
             self.abort()
             raise
@@ -172,11 +187,19 @@ class TrajectoryWriter:
         self._file.flush()
         self._digest.update(line)
 
-    def append(self, action, execution, successor):
+    def append(self, action, execution, successor, *, prepared=None):
         value = {'record': 'transition', 'index': self.count, 'action': action.ref,
-                 'execution': c.to_dict(execution), 'next': f.to_dict(successor),
+                 'execution': c.to_dict(execution),
+                 'next': f.to_dict(successor) if prepared is None else _prepared_wire(successor, prepared),
                  'reward': int(isinstance(successor, c.RunOutcome) and successor.kind == 'victory')}
-        transition = _transition(self.current, value, self.count)
+        if prepared is None:
+            transition = _transition(self.current, value, self.count)
+        else:
+            # Only the successor's conversion was already performed. Keep all
+            # action, execution, sequence and sparse-reward checks shared with
+            # the ordinary writer and the independent disk loader.
+            chosen, report = _transition_start(self.current, value, self.count)
+            transition = _transition_result(self.current, value, chosen, report, prepared.value)
         _require(action == transition.action, 'Chosen action does not match its advertised identity')
         self._write(value)
         self.current = transition.successor

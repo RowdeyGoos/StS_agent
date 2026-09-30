@@ -49,6 +49,28 @@ def tiny_corpus():
     return Corpus(tuple(examples), vocab, RewardSpec(), 'controlled-tiny-corpus', 'train', 4, 0)
 
 
+def test_frozen_vocabulary_identity_survives_wire_and_worker_round_trips():
+    from dataclasses import FrozenInstanceError
+    import hashlib
+    import json
+    import pickle
+    from game.agent.training.features import SCHEMA
+
+    vocabulary = Vocabulary(('hp', 'énergie'))
+    wire = vocabulary.to_dict()
+    expected = SCHEMA + ':' + hashlib.sha256(json.dumps(wire, sort_keys=True,
+        separators=(',', ':'), ensure_ascii=False).encode()).hexdigest()
+    for copy in (vocabulary, Vocabulary.from_dict(wire), pickle.loads(pickle.dumps(vocabulary))):
+        assert copy.identity == expected and copy.to_dict() == wire
+        assert copy == vocabulary
+    changed = replace(vocabulary, names=('block', *vocabulary.names))
+    assert changed.identity != expected and vocabulary.identity == expected
+    wire['names'].append('external mutation')
+    assert vocabulary.identity == expected and vocabulary.names == ('hp', 'énergie')
+    with pytest.raises(FrozenInstanceError):
+        vocabulary.names = ()
+
+
 def renamed(public):
     mapping = {'card:0':'card:91', 'card:1':'card:7', 'enemy:0':'enemy:142', 'potion:0':'potion:38',
                'action:0':'action:99', 'action:1':'action:4', 'action:2':'action:217', 'action:3':'action:83'}

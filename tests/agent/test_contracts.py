@@ -144,6 +144,31 @@ def test_serialization_fast_path_keeps_subclass_and_mutability_rejections():
             _wire(value)
 
 
+def test_prepared_readers_keep_recursive_validation_after_schema_cache_eviction():
+    from dataclasses import make_dataclass
+    from game.agent.contracts import full as f
+    from game.agent.contracts.codec import _read, _wire
+
+    public = f.PublicDecision(f.SCHEMA, f.PROFILE, f.Node('run', 'run'),
+        f.Node('combat', 'combat', children=(f.Node('child', 'child',
+            fields=(f.Field('hp', 12),)),)), (f.Candidate('action:0', 'end_turn'),))
+    wire = f.to_dict(public)
+    assert f.from_dict(wire) == public
+    # More schemas than any metadata cache retains; subsequent parsing must
+    # still enforce the same recursive structure, not reuse a prior input.
+    for i in range(160):
+        cls = make_dataclass(f'PublicFixture{i}', [('value', int)], frozen=True)
+        assert _wire(_read({'value': i}, cls, '$')) == {'value': i}
+    assert f.from_dict(wire) == public
+    for field in ({'key': 'hp', 'value': 1.5}, {'key': 'hp'},
+                  {'key': 'hp', 'value': 12, 'private': 1}):
+        bad = deepcopy(wire)
+        bad['context']['children'][0]['fields'][0] = field
+        with pytest.raises(ContractError):
+            f.from_dict(bad)
+    assert f.to_dict(public) == wire
+
+
 def test_known_empty_zero_not_applicable_and_unavailable_are_distinct():
     decision = combat_decision('regent')
     assert decision.context.resources.stars == known(0)

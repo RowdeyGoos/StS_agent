@@ -48,3 +48,23 @@ class FullRunEncoder(PublicEncoder):
         # V2 to_dict already checks every readiness invariant, including legal
         # candidates. V1 separately checks availability and keeps its own path.
         return self.contract.to_dict(decision)
+
+    def _pack_prepared(self, decision, prepared):
+        if type(prepared) is not full.PreparedPublic:
+            raise full.ContractError('Expected a prepared public observation')
+        prepared.require(decision)
+        # Preparation owns canonical immutable records. Traverse those records
+        # directly; a mutable wire copy is only needed by consumers that own it.
+        roots = None if isinstance(decision, full.RunOutcome) else {
+            'run': decision.run, 'context': decision.context}
+        return self._pack(decision, roots, record_types=(full.Node, full.Field, full.Link))
+
+    def encode_prepared(self, decision, prepared):
+        if type(prepared) is not full.PreparedPublic:
+            raise full.ContractError('Expected a prepared public observation')
+        prepared.require(decision)
+        # Custom encoders retain their encode/pack/_ready_wire hooks and full
+        # validation. Only the exact built-in encoder opts into this reuse.
+        if type(self) is not FullRunEncoder:
+            return self.encode(decision)
+        return self._pad(self._pack_prepared(decision, prepared))

@@ -157,7 +157,7 @@ class CombatTrainingRecorder:
     A failure between the two publications may leave a valid canonical artifact,
     but never a complete training pair. Partials are retained for diagnosis.
     """
-    def __init__(self, path, metadata, initial, initial_combat, *, reward_spec=None):
+    def __init__(self, path, metadata, initial, initial_combat, *, reward_spec=None, prepared=None):
         self.spec = RewardSpec() if reward_spec is None else reward_spec
         _require(type(self.spec) is RewardSpec and self.spec.task == 'combat', 'Expected a combat RewardSpec')
         self.initial = self.current = public_summary(initial_combat)
@@ -169,7 +169,7 @@ class CombatTrainingRecorder:
         self.partial = self.path.with_name(self.path.name + '.partial')
         if self.path.exists():
             raise FileExistsError(self.path)
-        self.writer = TrajectoryWriter(path, metadata, initial)
+        self.writer = TrajectoryWriter(path, metadata, initial, prepared=prepared)
         self.rows = []
         self._file = None
         self._closed = False
@@ -179,7 +179,8 @@ class CombatTrainingRecorder:
             self.abort()
             raise
 
-    def append(self, action, execution, successor, *, combat_summary, reward, terminated, truncated):
+    def append(self, action, execution, successor, *, combat_summary, reward, terminated, truncated,
+               prepared=None):
         _require(not self._closed, 'Recorder is closed')
         _require(not self.rows or not (self.rows[-1]['terminated'] or self.rows[-1]['truncated']),
                  'Action after task boundary')
@@ -188,7 +189,7 @@ class CombatTrainingRecorder:
         _require(finite(reward) == self.spec.evaluate(components), 'Environment reward disagrees with recorder')
         _flags(after, terminated, truncated)
         _state(after, successor)
-        self.writer.append(action, execution, successor)
+        self.writer.append(action, execution, successor, prepared=prepared)
         self.rows.append({'index': len(self.rows), 'components': asdict(components), 'reward': reward,
                           'terminated': terminated, 'truncated': truncated, 'combat': asdict(after)})
         self.current = after

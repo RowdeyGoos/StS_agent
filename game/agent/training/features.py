@@ -3,7 +3,7 @@
 Opaque references only join graph nodes; their spelling/ordinals never become
 features. The lossless encoding is retained separately from learned scalars.
 """
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import hashlib
 import json
 import math
@@ -20,12 +20,15 @@ SCHEMA = 'sts_learned_public_graph_v1'
 @dataclass(frozen=True, slots=True)
 class Vocabulary:
     names: tuple[str, ...]
+    _identity: str = field(init=False, repr=False, compare=False)
 
     def __post_init__(self):
         if (type(self.names) is not tuple or len(self.names) > 65536 or
                 any(type(n) is not str or len(n.encode('utf-8')) > 256 for n in self.names) or
                 self.names != tuple(sorted(set(self.names)))):
             raise ValueError('Expected a bounded, sorted, unique public vocabulary')
+        object.__setattr__(self, '_identity', SCHEMA + ':' + hashlib.sha256(json.dumps(
+            self.to_dict(), sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode()).hexdigest())
 
     @classmethod
     def fit(cls, decisions, *, split):
@@ -57,8 +60,7 @@ class Vocabulary:
 
     @property
     def identity(self):
-        return SCHEMA + ':' + hashlib.sha256(json.dumps(self.to_dict(), sort_keys=True,
-            separators=(',', ':'), ensure_ascii=False).encode()).hexdigest()
+        return self._identity
 
 
 def _number(value):
@@ -172,15 +174,24 @@ class _RolloutEncoder(FullRunEncoder):
         self.clear()
 
     def clear(self):
-        self._decision = self._graph = None
+        self._decision = self._graph = self._prepared = None
 
     def encode(self, decision):
         self.clear()
-        graph = self.pack(decision)
+        return self._remember(decision, self.pack(decision))
+
+    def encode_prepared(self, decision, prepared):
+        self.clear()
+        return self._remember(decision, self._pack_prepared(decision, prepared), prepared)
+
+    def _remember(self, decision, graph, prepared=None):
         fixed = self._pad(graph)
         if type(decision) is f.PublicDecision:
-            self._decision, self._graph = decision, graph
+            self._decision, self._graph, self._prepared = decision, graph, prepared
         return fixed
+
+    def prepared_for(self, decision):
+        return self._prepared if decision is self._decision else None
 
     def features_for(self, decision):
         if self._decision is None or decision is not self._decision:

@@ -1,6 +1,6 @@
 """Synchronous owner of a RunEngine's public decision/command boundary."""
 from copy import deepcopy
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import hashlib
 import json
 
@@ -21,6 +21,7 @@ class DecisionFrame:
     """
     decision: c.PublicDecision
     binding: object
+    prepared: object = field(default=None, repr=False, compare=False)
 
 
 class HeadlessAdapter:
@@ -86,6 +87,16 @@ class HeadlessAdapter:
         # Retain references as well as testing identity, so repeated external
         # restores cannot recycle an old root's Python id into a valid binding.
         return all(current is saved for current, saved in zip(self._owned_roots(), self._roots))
+
+    def prepared_for(self, decision):
+        """Reuse public conversion only for this attachment's current frame.
+
+        This grants no dispatch authority; step() still checks the private
+        state guard. Consuming/resetting the frame also releases this owner.
+        """
+        if self._frame is not None and self._frame.decision is decision:
+            return self._frame.prepared
+        return None
 
     def _guard(self):
         # Private control guard ONLY. Projection reads explicit owned fields; it
@@ -172,7 +183,7 @@ class HeadlessAdapter:
         self._ids = identities
         self._commands = projection.commands
         self._stamp = stamp
-        self._frame = DecisionFrame(decision, object())
+        self._frame = DecisionFrame(decision, object(), getattr(projection, 'prepared', None))
         return self._frame
 
     def step(self, binding, candidate_ref):
