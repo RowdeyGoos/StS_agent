@@ -1,0 +1,520 @@
+{
+  "analysis_seconds": 85.49116312502883,
+  "bindings": {
+    "runs/act1-reward-navigation-20260930/analysis.json": "33a5ab1437e9ccaa0336666649646beee5ed0d4c24f8d540e34b6181ba97a3d5",
+    "runs/act1-reward-navigation-20260930/evaluation.json": "ee336f7235620046522be5f056a9ce437e817b9f865f8fbd372beebe352cfb49",
+    "runs/act1-reward-navigation-20260930/experiment.py": "d61e225622ff37c9531c0e8d5e15b00bc1586ec9727922e067c2822668cd5d5d",
+    "runs/act1-reward-navigation-20260930/protocol.json": "e3fe84ef7f4a554339b8695b1874b959e5eed8e49e8effac4a8832d0e39c0d94",
+    "runs/act1-reward-navigation-20260930/same-state-comparison.json": "d0dedbb7fdf14615e10234a945690ba85f79bae845b46ae123cb4b51d4cd2efc",
+    "runs/act1-reward-navigation-20260930/source-sha256.json": "99ce63002c7c79e09d82e2df506f9f57d12636acc61e0137f1f2dbe0915427ae",
+    "runs/act1-reward-navigation-20260930/source.zip": "a5679149002482bdba003a8beafee4c63b305f90de6e65ccf021b29a92d52f4d",
+    "runs/act1-reward-navigation-20260930/validation.json": "617d2aa7249f8517991984cd6a5cdd893354c50b0f9dab5be6679d19571c622b",
+    "runs/act1-reward-navigation-20260930/viewer-check.json": "2f7ec28a2a656e5378f035991761ff47125c539136eae372f7cca7907668f3a9"
+  },
+  "date": "2026-09-30",
+  "decision": "Enable commit_decisions_v1 in new Act 1 and shaped campaign presets. Preserve old checkpoints and reward weights. No experiment training performed; repeat learning with this policy as a separate authorized experiment.",
+  "export_totals": {
+    "decisions": 65224,
+    "games": 384
+  },
+  "implementation": {
+    "build": "6a27de4481021fccbdbcda3bede283f4ceb0b8f25653691ce51a354e0772a896",
+    "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+    "rules": "cb4110d297799c139c5912c30a0e0903630c1c8ab2141eded608b90a7b1e0926",
+    "target": "sts2-v0.107.1-steam-23811903"
+  },
+  "limitations": [
+    "One model per reward arm on reused development cases; not a new training comparison or a generalization claim.",
+    "Known card-reward modals only; unknown/removal shapes preserve all legal exits.",
+    "No model, reward or game-rule changes; new policy is an explicit frozen-weight inference ablation.",
+    "New bundles use existing PPO serialization with a fresh unused optimizer and zero new-experiment counters; training lineage remains 100k in this record.",
+    "Headless evidence only."
+  ],
+  "lineage": {
+    "control": {
+      "all_tensors_exactly_equal": true,
+      "architecture": {
+        "hidden_size": 48,
+        "message_layers": 2,
+        "schema": "sts_graph_actor_critic_v1"
+      },
+      "bundle": "runs/act1-reward-navigation-20260930/control/frozen-100k.sts-model",
+      "counters": "zero for new policy experiment; no exact optimizer continuation",
+      "fresh_unused_resume_sha256": "5a11083e7c07958560de9e99a6d3f35a7754bf1fa5fbc388d85b8e1a455d94c0",
+      "new_policy": "commit_decisions_v1",
+      "new_training_decisions": 0,
+      "old_policy": "commit_card_selection_v1",
+      "optimizer": "fresh and empty, unused",
+      "reward_spec": {
+        "goal": "act1",
+        "schema": "sts_full_run_reward_v3",
+        "weights": {
+          "act_cleared": 1.0,
+          "combat_loss": 0.0,
+          "combat_win": 0.1,
+          "end_turn_action": -0.001,
+          "potion_use_action": 0.0,
+          "run_abandoned": -1.0,
+          "run_defeat": -1.0,
+          "run_victory": 0.0,
+          "win_hp_fraction": 0.025
+        }
+      },
+      "sha256": "efe9e43c81909c7a57c6d80d485b6acf0ace67a88ae9a9971c2738e253df2798",
+      "source": "runs/act1-combat-reward-ab-20260930/control/chunk-06/final.sts-model",
+      "source_sha256": "f278995389d072d5d6ac401d0b644f3da3ca22b86cca6ac2e2ac3c13febdf940",
+      "source_training_decisions": 100000,
+      "vocabulary_identity": "sts_learned_public_graph_v1:d5e8fb739d4b0466314b2ffb2d98e56101bf6859f660d36f0fefa9d8e6ef7ce9"
+    },
+    "increased": {
+      "all_tensors_exactly_equal": true,
+      "architecture": {
+        "hidden_size": 48,
+        "message_layers": 2,
+        "schema": "sts_graph_actor_critic_v1"
+      },
+      "bundle": "runs/act1-reward-navigation-20260930/increased/frozen-100k.sts-model",
+      "counters": "zero for new policy experiment; no exact optimizer continuation",
+      "fresh_unused_resume_sha256": "8e4549532eaa4e84352ebc5b5e7697b395aa1a3098442451ca29f0994bc978e8",
+      "new_policy": "commit_decisions_v1",
+      "new_training_decisions": 0,
+      "old_policy": "commit_card_selection_v1",
+      "optimizer": "fresh and empty, unused",
+      "reward_spec": {
+        "goal": "act1",
+        "schema": "sts_full_run_reward_v3",
+        "weights": {
+          "act_cleared": 1.0,
+          "combat_loss": 0.0,
+          "combat_win": 0.2,
+          "end_turn_action": -0.001,
+          "potion_use_action": 0.0,
+          "run_abandoned": -1.0,
+          "run_defeat": -1.0,
+          "run_victory": 0.0,
+          "win_hp_fraction": 0.1
+        }
+      },
+      "sha256": "d14bc9f297704ba9f1c2404ea0b00c323f50400af44898593e75e628c8671bee",
+      "source": "runs/act1-combat-reward-ab-20260930/increased/chunk-06/final.sts-model",
+      "source_sha256": "cef902d2ada669a4bd6a6d0c50bbc32466899f6c91fbc1d16b3ddf6fe34ca44f",
+      "source_training_decisions": 100000,
+      "vocabulary_identity": "sts_learned_public_graph_v1:d5e8fb739d4b0466314b2ffb2d98e56101bf6859f660d36f0fefa9d8e6ef7ce9"
+    }
+  },
+  "new_training_decisions": 0,
+  "original_traces_reproduced": 128,
+  "panels": [
+    {
+      "arm": "increased",
+      "behavior_flags": {
+        "heuristic": {
+          "flagged_episodes": 0,
+          "flags": {}
+        },
+        "learned": {
+          "flagged_episodes": 0,
+          "flags": {}
+        },
+        "reference": {
+          "flagged_episodes": 3,
+          "flags": {
+            "reward_navigation": 3
+          }
+        }
+      },
+      "changed_filtered_traces": 3,
+      "differences": [
+        {
+          "act1_cleared": true,
+          "filtered_episode": "3262ba1c6e6f4c5c9f436893c9663e99",
+          "final_hud": {
+            "act": 1,
+            "floor": 16,
+            "gold": 253,
+            "hp": 53,
+            "max_hp": 80
+          },
+          "first_changed_step": 159,
+          "new_status": "success",
+          "new_steps": 206,
+          "old_status": "cutoff",
+          "old_steps": 1024,
+          "original_episode": "a805d149344a4125804a39ebc5b8eb07",
+          "prior_episode": "430d185120e64a789ce440124b1f911b"
+        },
+        {
+          "act1_cleared": false,
+          "filtered_episode": "e533b15fa6da44e2b5c48663c653bd4e",
+          "final_hud": {
+            "act": 1,
+            "floor": 14,
+            "gold": 220,
+            "hp": 1,
+            "max_hp": 1
+          },
+          "first_changed_step": 40,
+          "new_status": "defeat",
+          "new_steps": 190,
+          "old_status": "cutoff",
+          "old_steps": 1024,
+          "original_episode": "127b0ed48efc413c823bfd4a4b5b092e",
+          "prior_episode": "2b2edfda06e1478fbbace76f3d66e1e9"
+        },
+        {
+          "act1_cleared": false,
+          "filtered_episode": "01429697af4745cfab9503dc71b2898e",
+          "final_hud": {
+            "act": 1,
+            "floor": 16,
+            "gold": 273,
+            "hp": 7,
+            "max_hp": 80
+          },
+          "first_changed_step": 149,
+          "new_status": "defeat",
+          "new_steps": 206,
+          "old_status": "cutoff",
+          "old_steps": 1024,
+          "original_episode": "c1e301fde47b459d94d402d4833771dd",
+          "prior_episode": "992416e5bccc40118fa4f4aec79559c6"
+        }
+      ],
+      "export_seconds": 43.32753624999896,
+      "exported_decisions": 33135,
+      "exported_games": 192,
+      "original_traces_reproduced": 64,
+      "paired_vs_original": {
+        "act1_clear_rate_difference": 0.015625,
+        "act1_clears_only_candidate": 1,
+        "act1_clears_only_reference": 0,
+        "cases": 64,
+        "conclusion": "inconclusive",
+        "difference_group_hoeffding_95": [
+          -0.3239003789351549,
+          0.3551503789351549
+        ]
+      },
+      "report": "runs/act1-reward-navigation-20260930/eval-increased/act1.json",
+      "seconds": 206.58806195808575,
+      "sha256": "facae401abcec129425c927128286d86c69e791360139d56dcdcf2705ad6dfb2",
+      "summary": {
+        "heuristic": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.0,
+          "act1_clear_rate_group_hoeffding_95": [
+            0,
+            0.16976268946757744
+          ],
+          "act1_clears": 0,
+          "attempted": 64,
+          "cutoffs": 0,
+          "decisions_per_second": 32.74145208256693,
+          "defeats": 64,
+          "failures": 0,
+          "mean_last_observed_floor": 12.0,
+          "planned": 64,
+          "policy_seconds": 42.445197615073994,
+          "run_wins": 0,
+          "steps": 10069,
+          "total_seconds": 307.5306487509515,
+          "unattempted": 0
+        },
+        "learned": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.171875,
+          "act1_clear_rate_group_hoeffding_95": [
+            0.0021123105324225566,
+            0.34163768946757744
+          ],
+          "act1_clears": 11,
+          "attempted": 64,
+          "cutoffs": 0,
+          "decisions_per_second": 25.723667796464138,
+          "defeats": 53,
+          "failures": 0,
+          "mean_last_observed_floor": 12.6875,
+          "planned": 64,
+          "policy_seconds": 118.65601869416423,
+          "run_wins": 0,
+          "steps": 10298,
+          "total_seconds": 400.33171324874274,
+          "unattempted": 0
+        },
+        "reference": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.15625,
+          "act1_clear_rate_group_hoeffding_95": [
+            0,
+            0.32601268946757744
+          ],
+          "act1_clears": 10,
+          "attempted": 64,
+          "cutoffs": 3,
+          "decisions_per_second": 22.609464252541706,
+          "defeats": 51,
+          "failures": 0,
+          "mean_last_observed_floor": 12.4375,
+          "planned": 64,
+          "policy_seconds": 177.36898031528108,
+          "run_wins": 0,
+          "steps": 12768,
+          "total_seconds": 564.7192634635139,
+          "unattempted": 0
+        }
+      },
+      "unchanged_filtered_traces": 61,
+      "view": "runs/act1-reward-navigation-20260930-analysis-increased",
+      "view_metadata_bytes": 8088800,
+      "view_sha256": "525df8c83ce3582d672bab85c768c524ea3ae48d4b2b8db6a9cc41b7188519f7"
+    },
+    {
+      "arm": "control",
+      "behavior_flags": {
+        "heuristic": {
+          "flagged_episodes": 0,
+          "flags": {}
+        },
+        "learned": {
+          "flagged_episodes": 0,
+          "flags": {}
+        },
+        "reference": {
+          "flagged_episodes": 0,
+          "flags": {}
+        }
+      },
+      "changed_filtered_traces": 0,
+      "differences": [],
+      "export_seconds": 34.945570667041466,
+      "exported_decisions": 32089,
+      "exported_games": 192,
+      "original_traces_reproduced": 64,
+      "paired_vs_original": {
+        "act1_clear_rate_difference": 0.0,
+        "act1_clears_only_candidate": 0,
+        "act1_clears_only_reference": 0,
+        "cases": 64,
+        "conclusion": "inconclusive",
+        "difference_group_hoeffding_95": [
+          -0.3395253789351549,
+          0.3395253789351549
+        ]
+      },
+      "report": "runs/act1-reward-navigation-20260930/eval-control/act1.json",
+      "seconds": 166.97185170906596,
+      "sha256": "68fd70cb8ac9545e2c2a67e1e17bad1c653aaf81aca9bdd31fbd0cc0657a7eef",
+      "summary": {
+        "heuristic": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.0,
+          "act1_clear_rate_group_hoeffding_95": [
+            0,
+            0.16976268946757744
+          ],
+          "act1_clears": 0,
+          "attempted": 64,
+          "cutoffs": 0,
+          "decisions_per_second": 33.343935553577815,
+          "defeats": 64,
+          "failures": 0,
+          "mean_last_observed_floor": 12.0,
+          "planned": 64,
+          "policy_seconds": 41.94951110542752,
+          "run_wins": 0,
+          "steps": 10069,
+          "total_seconds": 301.9739521695301,
+          "unattempted": 0
+        },
+        "learned": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.015625,
+          "act1_clear_rate_group_hoeffding_95": [
+            0,
+            0.18538768946757744
+          ],
+          "act1_clears": 1,
+          "attempted": 64,
+          "cutoffs": 0,
+          "decisions_per_second": 25.954266834482993,
+          "defeats": 63,
+          "failures": 0,
+          "mean_last_observed_floor": 12.046875,
+          "planned": 64,
+          "policy_seconds": 126.07274806173518,
+          "run_wins": 0,
+          "steps": 11010,
+          "total_seconds": 424.20770620158873,
+          "unattempted": 0
+        },
+        "reference": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.015625,
+          "act1_clear_rate_group_hoeffding_95": [
+            0,
+            0.18538768946757744
+          ],
+          "act1_clears": 1,
+          "attempted": 64,
+          "cutoffs": 0,
+          "decisions_per_second": 25.93441653197761,
+          "defeats": 63,
+          "failures": 0,
+          "mean_last_observed_floor": 12.046875,
+          "planned": 64,
+          "policy_seconds": 125.82865742919967,
+          "run_wins": 0,
+          "steps": 11010,
+          "total_seconds": 424.53239641711116,
+          "unattempted": 0
+        }
+      },
+      "unchanged_filtered_traces": 64,
+      "view": "runs/act1-reward-navigation-20260930-analysis-control",
+      "view_metadata_bytes": 7817278,
+      "view_sha256": "45402470d2e213831e7f9b46a09253781714604fb3abf74a6f4f13751fa10a9d"
+    }
+  ],
+  "phase_timings": {
+    "analysis_seconds": 85.49116312502883,
+    "evaluation_seconds": 373.5599136671517,
+    "frozen_bundles_verified_utc": "2026-09-30 11:12:54 UTC",
+    "independent_review_seconds": null,
+    "preparation_and_verification_start_utc": "2026-09-30 10:59:28 UTC",
+    "preparation_and_verification_wall_seconds": 806,
+    "release_preparation_seconds": null,
+    "targeted_tests_seconds": 67.02,
+    "user_wait_seconds": null
+  },
+  "private_owner_only_files": 388,
+  "protocol_sha256": "e3fe84ef7f4a554339b8695b1874b959e5eed8e49e8effac4a8832d0e39c0d94",
+  "repaired_loops": [
+    {
+      "act1_cleared": true,
+      "filtered_episode": "3262ba1c6e6f4c5c9f436893c9663e99",
+      "final_hud": {
+        "act": 1,
+        "floor": 16,
+        "gold": 253,
+        "hp": 53,
+        "max_hp": 80
+      },
+      "first_changed_step": 159,
+      "new_status": "success",
+      "new_steps": 206,
+      "old_status": "cutoff",
+      "old_steps": 1024,
+      "original_episode": "a805d149344a4125804a39ebc5b8eb07",
+      "prior_episode": "430d185120e64a789ce440124b1f911b"
+    },
+    {
+      "act1_cleared": false,
+      "filtered_episode": "e533b15fa6da44e2b5c48663c653bd4e",
+      "final_hud": {
+        "act": 1,
+        "floor": 14,
+        "gold": 220,
+        "hp": 1,
+        "max_hp": 1
+      },
+      "first_changed_step": 40,
+      "new_status": "defeat",
+      "new_steps": 190,
+      "old_status": "cutoff",
+      "old_steps": 1024,
+      "original_episode": "127b0ed48efc413c823bfd4a4b5b092e",
+      "prior_episode": "2b2edfda06e1478fbbace76f3d66e1e9"
+    },
+    {
+      "act1_cleared": false,
+      "filtered_episode": "01429697af4745cfab9503dc71b2898e",
+      "final_hud": {
+        "act": 1,
+        "floor": 16,
+        "gold": 273,
+        "hp": 7,
+        "max_hp": 80
+      },
+      "first_changed_step": 149,
+      "new_status": "defeat",
+      "new_steps": 206,
+      "old_status": "cutoff",
+      "old_steps": 1024,
+      "original_episode": "c1e301fde47b459d94d402d4833771dd",
+      "prior_episode": "992416e5bccc40118fa4f4aec79559c6"
+    }
+  ],
+  "runtime": {
+    "device": "cpu",
+    "python": "3.11.15",
+    "threads": 1,
+    "torch": "2.13.0"
+  },
+  "same_public_starts_verified": 64,
+  "schema": "sts_reward_navigation_ablation_evidence_v1",
+  "status": "complete",
+  "validation": {
+    "command": "PYTHONPATH=. .venv/bin/python -m pytest -q tests/agent/test_reward_navigation_policy.py tests/agent/test_action_policy.py tests/agent/test_commit_selection.py tests/agent/test_commit_selection_training.py tests/agent/test_selection_order.py tests/agent/test_full_profile.py tests/agent/test_full_run_training.py tests/agent/test_act_training.py",
+    "compileall": "game tests; passed",
+    "diff_check": "passed",
+    "files": {
+      "tests/agent/test_act_training.py": "cc85d59b9953bbd204934fd8415dc0e221aa86898f60638653833fcf3e4f9dec",
+      "tests/agent/test_action_policy.py": "a577fe433af96de5d48bfa661bedb1cacf4e8886cf3aebf3ce032052ed01781b",
+      "tests/agent/test_commit_selection.py": "bf2a1d42912c6a22a92e17893db71812e7972eace304361a90e30c717e112e25",
+      "tests/agent/test_commit_selection_training.py": "83aa74a855af9e76f24f407686818eb24a91f8066c0d9bb74456a8b12e40d3de",
+      "tests/agent/test_full_profile.py": "1f1f2d856cb8a7c41edd62d02da7b5addc0a5093bdf17cfb7afa8dd78bfc9b8e",
+      "tests/agent/test_full_run_training.py": "5934cd0d5cbeb2709a622eb08ec3c247ba3844f5241866600362bf63c891e3c5",
+      "tests/agent/test_reward_navigation_policy.py": "332ddf8f8b68f6e7ad4e34396e8c488bce8ad7c218707f9f82490c6d36673734",
+      "tests/agent/test_selection_order.py": "24dabbf8ccfd5710c2dbddace190004012ac7609e6da4d71ad03eb7dcad8822b"
+    },
+    "independent_review": {
+      "limitations": "Known card-reward modals only; removal/unknown shapes retain native exits.",
+      "recorded_loop_steps": [
+        159,
+        149,
+        40
+      ],
+      "result": "No blocking findings",
+      "review_elapsed_seconds": null,
+      "reviewer": "reward_navigation_review",
+      "scope": "New action-policy semantics, public/private separation, native legality and action order, consumers/checkpoint compatibility, recorded loops"
+    },
+    "seconds": 67.02,
+    "status": "passed",
+    "tests": 303
+  },
+  "viewer": {
+    "example": "http://127.0.0.1:8771/#run=3262ba1c6e6f4c5c9f436893c9663e99&step=159",
+    "filtered_close_probability": 0.0,
+    "http_checks": [
+      {
+        "bytes": 6727,
+        "route": "/",
+        "status": 200
+      },
+      {
+        "bytes": 291031,
+        "route": "/api/report",
+        "status": 200
+      },
+      {
+        "bytes": 49529,
+        "route": "/api/run?id=3262ba1c6e6f4c5c9f436893c9663e99",
+        "status": 200
+      },
+      {
+        "bytes": 214730,
+        "route": "/api/decision?id=3262ba1c6e6f4c5c9f436893c9663e99&step=159",
+        "status": 200
+      },
+      {
+        "bytes": 4349,
+        "route": "/api/compare?id=3262ba1c6e6f4c5c9f436893c9663e99&step=159",
+        "status": 200
+      }
+    ],
+    "matches_recorded_policy": true,
+    "models": 4,
+    "url": "http://127.0.0.1:8771"
+  }
+}

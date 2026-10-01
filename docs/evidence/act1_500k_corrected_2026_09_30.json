@@ -1,0 +1,2142 @@
+{
+  "artifacts": {
+    "analysis_decisions": 204347,
+    "analysis_episodes": 1531,
+    "analysis_json_sha256": "dfbdd0bed40084d2b626f668a8459d461982bfa04ad30cb8be0e6a4ea31a655c",
+    "analysis_script_sha256": "06dbdc849ef9a1b2642a3a8bc036b3a9442c09ab949552c37967b7e584d44676",
+    "evaluation_report_sha256": "c35651f8e1ba0bde78a97907100b37377b639a7829107cc0fa393f3a47199eed",
+    "experiment_script_sha256": "53ddc380392f39cefb42434730313bdbb8a8a6572d751064b1bc5165827a148e",
+    "final_checkpoint": "runs/act1-500k-fixed-8workers-20260930/chunk-08/final.sts-model",
+    "final_checkpoint_sha256": "cfe80fb0679bd7b0757081126ef99f8818fae6e1fe1a4a3faa3019811037a9e4",
+    "initialization_verification_sha256": "54954ffd8a392ee8a2f71886daa79096bb0884b58c932fd33eac1dbf7b071641",
+    "parent_analysis_sha256": "1de6d4f287d90c3900d3fee73b83cde50e9e5e138babea689395d5d4172d35b2",
+    "private_root": "runs/act1-500k-fixed-8workers-20260930-private",
+    "protocol_sha256": "0d6c2485e638dc627831d40e3062801fd7392c328315d805e23214aefb01e4fa",
+    "public_root": "runs/act1-500k-fixed-8workers-20260930",
+    "training_report_sha256": "36a7ebe6809bfec7f1a357bfb78649589908f7b27fa412ebca292731cbb856d6",
+    "viewer_check_sha256": "2f39a7859196ea886fcc098b370274fa21ed9b662d48bd42653242b27b537a5c"
+  },
+  "checkpoints": [
+    {
+      "checkpoint": "chunk-02/final.sts-model",
+      "chunk": 2,
+      "decisions": 400000,
+      "segment_decisions": 21328,
+      "sha256": "471fe018d4d0b96aa2b9d81d7a4e659a612597d30145958e2e446a19bfc7baa6"
+    },
+    {
+      "checkpoint": "chunk-05/final.sts-model",
+      "chunk": 5,
+      "decisions": 450000,
+      "segment_decisions": 71328,
+      "sha256": "2d88006e7f4800807bffc574dc01242424a7598b8144d090e4a70aee0a5b2c3a"
+    },
+    {
+      "checkpoint": "chunk-08/final.sts-model",
+      "chunk": 8,
+      "decisions": 500000,
+      "segment_decisions": 121328,
+      "sha256": "cfe80fb0679bd7b0757081126ef99f8818fae6e1fe1a4a3faa3019811037a9e4"
+    }
+  ],
+  "checks": {
+    "actor_and_critic_weights_retained_exactly": true,
+    "all_viewer_reports_within_64_mib_limit": true,
+    "baseline_games_identical_to_parent_and_each_other": 128,
+    "canonical_training_decisions_validated": 121328,
+    "new_optimizer_rng_and_cursor_verified": true,
+    "no_partial_artifacts_in_new_segment": true,
+    "original_failed_collection_preserved_and_excluded": true,
+    "paired_cases_verified": 192,
+    "paired_public_start_states_identical": 64,
+    "private_files_owner_only": 1583,
+    "segment_final_resume_states_restored": 8,
+    "unique_training_reset_seeds": 955,
+    "within_segment_exact_resume_boundaries_verified": 7
+  },
+  "chunks": [
+    {
+      "chunk": 1,
+      "final_sha256": "882a49fc7f0100b295e831946ebf2e5f2b882c71f59308eeaa1bfb85721ff083",
+      "initialization": "weights_only_new_segment",
+      "report_sha256": "050f403bb05b9321a0965eb5b5573884efc6ab7404b4e9e6e068c870f894a3a9",
+      "seconds": 107.25978508382104,
+      "summary": {
+        "abandoned": 0,
+        "accepted_decisions": 16384,
+        "act1_clear_rate": 0.024,
+        "act1_clears": 3,
+        "components": {
+          "act_cleared": 3.0,
+          "combat_loss": 90.0,
+          "combat_win": 732.0,
+          "end_turn_action": 2468.0,
+          "potion_use_action": 67.0,
+          "run_abandoned": 0.0,
+          "run_defeat": 90.0,
+          "run_victory": 0.0,
+          "win_hp_fraction": 497.13693355105494
+        },
+        "controlled_attempts": 0,
+        "cutoffs": 32,
+        "decisions_per_second": 152.75063237537054,
+        "episode_attempts": 125,
+        "failed_episodes": 0,
+        "genuine_start_attempts": 125,
+        "goal": "act1",
+        "losses": 90,
+        "mean_hp_on_win": null,
+        "potion_use_actions": 67,
+        "processed_decisions": 16384,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task": "full_run",
+        "task_return": -3.8395766612236075,
+        "trained_decisions": 16384,
+        "wins": 0
+      }
+    },
+    {
+      "chunk": 2,
+      "final_sha256": "471fe018d4d0b96aa2b9d81d7a4e659a612597d30145958e2e446a19bfc7baa6",
+      "initialization": "exact_resume",
+      "report_sha256": "eaeb3590ffe76c0cf5d1ae89fe8de53209a7bd8c9d9cb04619a19cb464fb7fcb",
+      "seconds": 32.04981108289212,
+      "summary": {
+        "abandoned": 0,
+        "accepted_decisions": 4944,
+        "act1_clear_rate": 0.0,
+        "act1_clears": 0,
+        "components": {
+          "act_cleared": 0.0,
+          "combat_loss": 29.0,
+          "combat_win": 221.0,
+          "end_turn_action": 769.0,
+          "potion_use_action": 13.0,
+          "run_abandoned": 0.0,
+          "run_defeat": 29.0,
+          "run_victory": 0.0,
+          "win_hp_fraction": 143.41540742010233
+        },
+        "controlled_attempts": 0,
+        "cutoffs": 16,
+        "decisions_per_second": 154.2598796358915,
+        "episode_attempts": 45,
+        "failed_episodes": 0,
+        "genuine_start_attempts": 45,
+        "goal": "act1",
+        "losses": 29,
+        "mean_hp_on_win": null,
+        "potion_use_actions": 13,
+        "processed_decisions": 4944,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task": "full_run",
+        "task_return": -4.083614814497436,
+        "trained_decisions": 4944,
+        "wins": 0
+      }
+    },
+    {
+      "chunk": 3,
+      "final_sha256": "98809575a35c349cd2944827c5adc8f4b564752b674ab1d7fb1276017001a47d",
+      "initialization": "exact_resume",
+      "report_sha256": "28bc4089baa99d90d36d2f3c3ad4c86e31dc939be6fc4a7ebdc095f4ad70391d",
+      "seconds": 110.21286699990742,
+      "summary": {
+        "abandoned": 0,
+        "accepted_decisions": 16384,
+        "act1_clear_rate": 0.023622047244094488,
+        "act1_clears": 3,
+        "components": {
+          "act_cleared": 3.0,
+          "combat_loss": 92.0,
+          "combat_win": 702.0,
+          "end_turn_action": 2438.0,
+          "potion_use_action": 76.0,
+          "run_abandoned": 0.0,
+          "run_defeat": 92.0,
+          "run_victory": 0.0,
+          "win_hp_fraction": 470.3789266564503
+        },
+        "controlled_attempts": 0,
+        "cutoffs": 32,
+        "decisions_per_second": 148.65777876927712,
+        "episode_attempts": 127,
+        "failed_episodes": 0,
+        "genuine_start_attempts": 127,
+        "goal": "act1",
+        "losses": 92,
+        "mean_hp_on_win": null,
+        "potion_use_actions": 76,
+        "processed_decisions": 16384,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task": "full_run",
+        "task_return": -9.478526833588727,
+        "trained_decisions": 16384,
+        "wins": 0
+      }
+    },
+    {
+      "chunk": 4,
+      "final_sha256": "a26b3df7c96af2053ccdc85ff90f65b855b8aebe1034d57ac33ddf58772feca7",
+      "initialization": "exact_resume",
+      "report_sha256": "0d52ff5775b2889f3bb5c65c5a80d0f17981440002cc73f89431d4881d875bab",
+      "seconds": 109.91391466697678,
+      "summary": {
+        "abandoned": 0,
+        "accepted_decisions": 16384,
+        "act1_clear_rate": 0.03816793893129771,
+        "act1_clears": 5,
+        "components": {
+          "act_cleared": 5.0,
+          "combat_loss": 94.0,
+          "combat_win": 723.0,
+          "end_turn_action": 2446.0,
+          "potion_use_action": 64.0,
+          "run_abandoned": 0.0,
+          "run_defeat": 94.0,
+          "run_victory": 0.0,
+          "win_hp_fraction": 489.00913683403576
+        },
+        "controlled_attempts": 0,
+        "cutoffs": 32,
+        "decisions_per_second": 149.0621096486386,
+        "episode_attempts": 131,
+        "failed_episodes": 0,
+        "genuine_start_attempts": 131,
+        "goal": "act1",
+        "losses": 94,
+        "mean_hp_on_win": null,
+        "potion_use_actions": 64,
+        "processed_decisions": 16384,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task": "full_run",
+        "task_return": -6.920771579149089,
+        "trained_decisions": 16384,
+        "wins": 0
+      }
+    },
+    {
+      "chunk": 5,
+      "final_sha256": "2d88006e7f4800807bffc574dc01242424a7598b8144d090e4a70aee0a5b2c3a",
+      "initialization": "exact_resume",
+      "report_sha256": "23dae96a1de57a3fec1bbc333809c6b34d8f757371a2083ab22d9caccd147158",
+      "seconds": 115.66635137517005,
+      "summary": {
+        "abandoned": 0,
+        "accepted_decisions": 17232,
+        "act1_clear_rate": 0.029411764705882353,
+        "act1_clears": 4,
+        "components": {
+          "act_cleared": 4.0,
+          "combat_loss": 92.0,
+          "combat_win": 753.0,
+          "end_turn_action": 2574.0,
+          "potion_use_action": 98.0,
+          "run_abandoned": 0.0,
+          "run_defeat": 92.0,
+          "run_victory": 0.0,
+          "win_hp_fraction": 506.69024799695444
+        },
+        "controlled_attempts": 0,
+        "cutoffs": 40,
+        "decisions_per_second": 148.98023318905493,
+        "episode_attempts": 136,
+        "failed_episodes": 0,
+        "genuine_start_attempts": 136,
+        "goal": "act1",
+        "losses": 92,
+        "mean_hp_on_win": null,
+        "potion_use_actions": 98,
+        "processed_decisions": 17232,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task": "full_run",
+        "task_return": -2.606743800076115,
+        "trained_decisions": 17232,
+        "wins": 0
+      }
+    },
+    {
+      "chunk": 6,
+      "final_sha256": "41cb3f16b93f9d66a559e2ffe3553c18c710f933bbaf2a301f79efe68bef2000",
+      "initialization": "exact_resume",
+      "report_sha256": "d7a7201f7f6224d5e6cf526834109da0dd7a325a9a94ed41530164199384f44a",
+      "seconds": 111.82172670890577,
+      "summary": {
+        "abandoned": 0,
+        "accepted_decisions": 16384,
+        "act1_clear_rate": 0.05384615384615385,
+        "act1_clears": 7,
+        "components": {
+          "act_cleared": 7.0,
+          "combat_loss": 91.0,
+          "combat_win": 739.0,
+          "end_turn_action": 2403.0,
+          "potion_use_action": 144.0,
+          "run_abandoned": 0.0,
+          "run_defeat": 91.0,
+          "run_victory": 0.0,
+          "win_hp_fraction": 495.3553232957996
+        },
+        "controlled_attempts": 0,
+        "cutoffs": 32,
+        "decisions_per_second": 146.5189322523235,
+        "episode_attempts": 130,
+        "failed_episodes": 0,
+        "genuine_start_attempts": 130,
+        "goal": "act1",
+        "losses": 91,
+        "mean_hp_on_win": null,
+        "potion_use_actions": 144,
+        "processed_decisions": 16384,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task": "full_run",
+        "task_return": -0.11911691760499027,
+        "trained_decisions": 16384,
+        "wins": 0
+      }
+    },
+    {
+      "chunk": 7,
+      "final_sha256": "673579aa58017e33ee828835a5d2d36a23c566abdad4378076cdf3cff0c35d33",
+      "initialization": "exact_resume",
+      "report_sha256": "90026e8713655a9afe655685e655b85f9b46520b351634d432276ef45c2dc2f8",
+      "seconds": 111.4698017500341,
+      "summary": {
+        "abandoned": 0,
+        "accepted_decisions": 16384,
+        "act1_clear_rate": 0.047244094488188976,
+        "act1_clears": 6,
+        "components": {
+          "act_cleared": 6.0,
+          "combat_loss": 89.0,
+          "combat_win": 746.0,
+          "end_turn_action": 2387.0,
+          "potion_use_action": 108.0,
+          "run_abandoned": 0.0,
+          "run_defeat": 89.0,
+          "run_victory": 0.0,
+          "win_hp_fraction": 512.8245320563752
+        },
+        "controlled_attempts": 0,
+        "cutoffs": 32,
+        "decisions_per_second": 146.9815119680608,
+        "episode_attempts": 127,
+        "failed_episodes": 0,
+        "genuine_start_attempts": 127,
+        "goal": "act1",
+        "losses": 89,
+        "mean_hp_on_win": null,
+        "potion_use_actions": 108,
+        "processed_decisions": 16384,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task": "full_run",
+        "task_return": 2.033613301409402,
+        "trained_decisions": 16384,
+        "wins": 0
+      }
+    },
+    {
+      "chunk": 8,
+      "final_sha256": "cfe80fb0679bd7b0757081126ef99f8818fae6e1fe1a4a3faa3019811037a9e4",
+      "initialization": "exact_resume",
+      "report_sha256": "ca285255fc6b02f0f03157b4f3e7b658bc570b91eb65a8e1db624d5252a7a951",
+      "seconds": 115.61893758294173,
+      "summary": {
+        "abandoned": 0,
+        "accepted_decisions": 17232,
+        "act1_clear_rate": 0.05970149253731343,
+        "act1_clears": 8,
+        "components": {
+          "act_cleared": 8.0,
+          "combat_loss": 86.0,
+          "combat_win": 783.0,
+          "end_turn_action": 2546.0,
+          "potion_use_action": 151.0,
+          "run_abandoned": 0.0,
+          "run_defeat": 86.0,
+          "run_victory": 0.0,
+          "win_hp_fraction": 534.0667703313429
+        },
+        "controlled_attempts": 0,
+        "cutoffs": 40,
+        "decisions_per_second": 149.04132800596145,
+        "episode_attempts": 134,
+        "failed_episodes": 0,
+        "genuine_start_attempts": 134,
+        "goal": "act1",
+        "losses": 86,
+        "mean_hp_on_win": null,
+        "potion_use_actions": 151,
+        "processed_decisions": 17232,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task": "full_run",
+        "task_return": 11.10566925828359,
+        "trained_decisions": 17232,
+        "wins": 0
+      }
+    }
+  ],
+  "cumulative_learning_curve": [
+    {
+      "act1_clears": 1,
+      "boss_reaches": 19,
+      "cases": 64,
+      "cutoffs": 0,
+      "decisions": 50000,
+      "mean_last_observed_floor": 10.578125,
+      "segment": "original"
+    },
+    {
+      "act1_clears": 4,
+      "boss_reaches": 31,
+      "cases": 64,
+      "cutoffs": 2,
+      "decisions": 100000,
+      "mean_last_observed_floor": 12.1875,
+      "segment": "original"
+    },
+    {
+      "act1_clears": 2,
+      "boss_reaches": 22,
+      "cases": 64,
+      "cutoffs": 0,
+      "decisions": 150000,
+      "mean_last_observed_floor": 10.765625,
+      "segment": "original"
+    },
+    {
+      "act1_clears": 10,
+      "boss_reaches": 32,
+      "cases": 64,
+      "cutoffs": 0,
+      "decisions": 200000,
+      "mean_last_observed_floor": 12.5625,
+      "segment": "original"
+    },
+    {
+      "act1_clears": 8,
+      "boss_reaches": 28,
+      "cases": 64,
+      "cutoffs": 1,
+      "decisions": 250000,
+      "mean_last_observed_floor": 11.875,
+      "segment": "original"
+    },
+    {
+      "act1_clears": 7,
+      "boss_reaches": 37,
+      "cases": 64,
+      "cutoffs": 0,
+      "decisions": 300000,
+      "mean_last_observed_floor": 12.90625,
+      "segment": "original"
+    },
+    {
+      "act1_clears": 9,
+      "boss_reaches": 40,
+      "cases": 64,
+      "cutoffs": 0,
+      "decisions": 350000,
+      "mean_last_observed_floor": 13.5,
+      "segment": "original"
+    },
+    {
+      "act1_clears": 6,
+      "boss_reaches": 44,
+      "cases": 64,
+      "cutoffs": 0,
+      "decisions": 400000,
+      "mean_last_observed_floor": 14.203125,
+      "segment": "corrected_engine_fresh_optimizer"
+    },
+    {
+      "act1_clears": 7,
+      "boss_reaches": 40,
+      "cases": 64,
+      "cutoffs": 0,
+      "decisions": 450000,
+      "mean_last_observed_floor": 13.421875,
+      "segment": "corrected_engine_fresh_optimizer"
+    },
+    {
+      "act1_clears": 5,
+      "boss_reaches": 43,
+      "cases": 64,
+      "cutoffs": 0,
+      "decisions": 500000,
+      "mean_last_observed_floor": 13.171875,
+      "segment": "corrected_engine_fresh_optimizer"
+    }
+  ],
+  "cumulative_trained_decisions": 500000,
+  "date": "2026-09-30",
+  "evaluation": [
+    {
+      "decisions": 400000,
+      "paired_vs_heuristic": {
+        "learned": {
+          "act1_clear_rate_difference": 0.09375,
+          "act1_clears_only_candidate": 6,
+          "act1_clears_only_heuristic": 0,
+          "cases": 64,
+          "conclusion": "inconclusive",
+          "difference_group_hoeffding_95": [
+            -0.2457753789351549,
+            0.4332753789351549
+          ]
+        },
+        "reference": {
+          "act1_clear_rate_difference": 0.0,
+          "act1_clears_only_candidate": 0,
+          "act1_clears_only_heuristic": 0,
+          "cases": 64,
+          "conclusion": "inconclusive",
+          "difference_group_hoeffding_95": [
+            -0.3395253789351549,
+            0.3395253789351549
+          ]
+        }
+      },
+      "paired_vs_reference": {
+        "act1_clear_rate_difference": 0.09375,
+        "act1_clears_only_candidate": 6,
+        "act1_clears_only_reference": 0,
+        "cases": 64,
+        "conclusion": "inconclusive",
+        "difference_group_hoeffding_95": [
+          -0.2457753789351549,
+          0.4332753789351549
+        ]
+      },
+      "report": "eval-400000/act1.json",
+      "report_sha256": "73bf6ac300a6258183f16d7c2ea38980abda5e9d8a25e354777586def911450a",
+      "seconds": 144.0032629170455,
+      "status": "complete",
+      "summary": {
+        "heuristic": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.0,
+          "act1_clear_rate_group_hoeffding_95": [
+            0,
+            0.16976268946757744
+          ],
+          "act1_clears": 0,
+          "attempted": 64,
+          "boss_reaches": 26,
+          "by_region": {
+            "overgrowth": {
+              "act1_clears": 0,
+              "boss_reaches": 8,
+              "cases": 32,
+              "mean_last_observed_floor": 10.625
+            },
+            "underdocks": {
+              "act1_clears": 0,
+              "boss_reaches": 18,
+              "cases": 32,
+              "mean_last_observed_floor": 13.375
+            }
+          },
+          "cutoffs": 0,
+          "decisions_per_second": 32.27675074396443,
+          "defeats": 64,
+          "failures": 0,
+          "mean_last_observed_floor": 12.0,
+          "planned": 64,
+          "policy_seconds": 42.45259130978957,
+          "review_flag_episode_counts": {},
+          "review_flags": {},
+          "run_wins": 0,
+          "steps": 10069,
+          "total_seconds": 311.9582909652963,
+          "unattempted": 0,
+          "warning_examples": []
+        },
+        "learned": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.09375,
+          "act1_clear_rate_group_hoeffding_95": [
+            0,
+            0.26351268946757744
+          ],
+          "act1_clears": 6,
+          "attempted": 64,
+          "boss_reaches": 44,
+          "by_region": {
+            "overgrowth": {
+              "act1_clears": 3,
+              "boss_reaches": 24,
+              "cases": 32,
+              "mean_last_observed_floor": 14.125
+            },
+            "underdocks": {
+              "act1_clears": 3,
+              "boss_reaches": 20,
+              "cases": 32,
+              "mean_last_observed_floor": 14.28125
+            }
+          },
+          "cutoffs": 0,
+          "decisions_per_second": 25.157106082839103,
+          "defeats": 58,
+          "failures": 0,
+          "mean_last_observed_floor": 14.203125,
+          "planned": 64,
+          "policy_seconds": 124.84150459407829,
+          "review_flag_episode_counts": {},
+          "review_flags": {},
+          "run_wins": 0,
+          "steps": 10666,
+          "total_seconds": 423.97563395719044,
+          "unattempted": 0,
+          "warning_examples": []
+        },
+        "reference": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.0,
+          "act1_clear_rate_group_hoeffding_95": [
+            0,
+            0.16976268946757744
+          ],
+          "act1_clears": 0,
+          "attempted": 64,
+          "boss_reaches": 6,
+          "by_region": {
+            "overgrowth": {
+              "act1_clears": 0,
+              "boss_reaches": 4,
+              "cases": 32,
+              "mean_last_observed_floor": 9.65625
+            },
+            "underdocks": {
+              "act1_clears": 0,
+              "boss_reaches": 2,
+              "cases": 32,
+              "mean_last_observed_floor": 9.6875
+            }
+          },
+          "cutoffs": 0,
+          "decisions_per_second": 27.969637781015027,
+          "defeats": 64,
+          "failures": 0,
+          "mean_last_observed_floor": 9.671875,
+          "planned": 64,
+          "policy_seconds": 74.10578614287078,
+          "review_flag_episode_counts": {},
+          "review_flags": {},
+          "run_wins": 0,
+          "steps": 7371,
+          "total_seconds": 263.535768954549,
+          "unattempted": 0,
+          "warning_examples": []
+        }
+      }
+    },
+    {
+      "decisions": 450000,
+      "paired_vs_heuristic": {
+        "learned": {
+          "act1_clear_rate_difference": 0.109375,
+          "act1_clears_only_candidate": 7,
+          "act1_clears_only_heuristic": 0,
+          "cases": 64,
+          "conclusion": "inconclusive",
+          "difference_group_hoeffding_95": [
+            -0.2301503789351549,
+            0.4489003789351549
+          ]
+        },
+        "reference": {
+          "act1_clear_rate_difference": 0.0,
+          "act1_clears_only_candidate": 0,
+          "act1_clears_only_heuristic": 0,
+          "cases": 64,
+          "conclusion": "inconclusive",
+          "difference_group_hoeffding_95": [
+            -0.3395253789351549,
+            0.3395253789351549
+          ]
+        }
+      },
+      "paired_vs_reference": {
+        "act1_clear_rate_difference": 0.109375,
+        "act1_clears_only_candidate": 7,
+        "act1_clears_only_reference": 0,
+        "cases": 64,
+        "conclusion": "inconclusive",
+        "difference_group_hoeffding_95": [
+          -0.2301503789351549,
+          0.4489003789351549
+        ]
+      },
+      "report": "eval-450000/act1.json",
+      "report_sha256": "07ed6836dc217443d414fba28218b5ad1bfbc0d11f1f653d8179f83bb90df3ce",
+      "seconds": 138.38955254107714,
+      "status": "complete",
+      "summary": {
+        "heuristic": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.0,
+          "act1_clear_rate_group_hoeffding_95": [
+            0,
+            0.16976268946757744
+          ],
+          "act1_clears": 0,
+          "attempted": 64,
+          "boss_reaches": 26,
+          "by_region": {
+            "overgrowth": {
+              "act1_clears": 0,
+              "boss_reaches": 8,
+              "cases": 32,
+              "mean_last_observed_floor": 10.625
+            },
+            "underdocks": {
+              "act1_clears": 0,
+              "boss_reaches": 18,
+              "cases": 32,
+              "mean_last_observed_floor": 13.375
+            }
+          },
+          "cutoffs": 0,
+          "decisions_per_second": 33.02394467261317,
+          "defeats": 64,
+          "failures": 0,
+          "mean_last_observed_floor": 12.0,
+          "planned": 64,
+          "policy_seconds": 42.29305246821605,
+          "review_flag_episode_counts": {},
+          "review_flags": {},
+          "run_wins": 0,
+          "steps": 10069,
+          "total_seconds": 304.89997787424363,
+          "unattempted": 0,
+          "warning_examples": []
+        },
+        "learned": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.109375,
+          "act1_clear_rate_group_hoeffding_95": [
+            0,
+            0.27913768946757744
+          ],
+          "act1_clears": 7,
+          "attempted": 64,
+          "boss_reaches": 40,
+          "by_region": {
+            "overgrowth": {
+              "act1_clears": 3,
+              "boss_reaches": 21,
+              "cases": 32,
+              "mean_last_observed_floor": 14.15625
+            },
+            "underdocks": {
+              "act1_clears": 4,
+              "boss_reaches": 19,
+              "cases": 32,
+              "mean_last_observed_floor": 12.6875
+            }
+          },
+          "cutoffs": 0,
+          "decisions_per_second": 26.115853842038685,
+          "defeats": 57,
+          "failures": 0,
+          "mean_last_observed_floor": 13.421875,
+          "planned": 64,
+          "policy_seconds": 115.06637908727862,
+          "review_flag_episode_counts": {
+            "end_turn_with_playable_card": 4
+          },
+          "review_flags": {
+            "end_turn_with_playable_card": 4
+          },
+          "run_wins": 0,
+          "steps": 10135,
+          "total_seconds": 388.0784469579812,
+          "unattempted": 0,
+          "warning_examples": []
+        },
+        "reference": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.0,
+          "act1_clear_rate_group_hoeffding_95": [
+            0,
+            0.16976268946757744
+          ],
+          "act1_clears": 0,
+          "attempted": 64,
+          "boss_reaches": 6,
+          "by_region": {
+            "overgrowth": {
+              "act1_clears": 0,
+              "boss_reaches": 4,
+              "cases": 32,
+              "mean_last_observed_floor": 9.65625
+            },
+            "underdocks": {
+              "act1_clears": 0,
+              "boss_reaches": 2,
+              "cases": 32,
+              "mean_last_observed_floor": 9.6875
+            }
+          },
+          "cutoffs": 0,
+          "decisions_per_second": 28.574545703637448,
+          "defeats": 64,
+          "failures": 0,
+          "mean_last_observed_floor": 9.671875,
+          "planned": 64,
+          "policy_seconds": 71.65191319724545,
+          "review_flag_episode_counts": {},
+          "review_flags": {},
+          "run_wins": 0,
+          "steps": 7371,
+          "total_seconds": 257.95685700303875,
+          "unattempted": 0,
+          "warning_examples": []
+        }
+      }
+    },
+    {
+      "decisions": 500000,
+      "paired_vs_heuristic": {
+        "learned": {
+          "act1_clear_rate_difference": 0.078125,
+          "act1_clears_only_candidate": 5,
+          "act1_clears_only_heuristic": 0,
+          "cases": 64,
+          "conclusion": "inconclusive",
+          "difference_group_hoeffding_95": [
+            -0.2614003789351549,
+            0.4176503789351549
+          ]
+        },
+        "reference": {
+          "act1_clear_rate_difference": 0.0,
+          "act1_clears_only_candidate": 0,
+          "act1_clears_only_heuristic": 0,
+          "cases": 64,
+          "conclusion": "inconclusive",
+          "difference_group_hoeffding_95": [
+            -0.3395253789351549,
+            0.3395253789351549
+          ]
+        }
+      },
+      "paired_vs_reference": {
+        "act1_clear_rate_difference": 0.078125,
+        "act1_clears_only_candidate": 5,
+        "act1_clears_only_reference": 0,
+        "cases": 64,
+        "conclusion": "inconclusive",
+        "difference_group_hoeffding_95": [
+          -0.2614003789351549,
+          0.4176503789351549
+        ]
+      },
+      "report": "eval-500000/act1.json",
+      "report_sha256": "a82294c0f527949269fbef42f6088a73dbc3aef556dc5a20573e3f769b02e661",
+      "seconds": 137.41655649989843,
+      "status": "complete",
+      "summary": {
+        "heuristic": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.0,
+          "act1_clear_rate_group_hoeffding_95": [
+            0,
+            0.16976268946757744
+          ],
+          "act1_clears": 0,
+          "attempted": 64,
+          "boss_reaches": 26,
+          "by_region": {
+            "overgrowth": {
+              "act1_clears": 0,
+              "boss_reaches": 8,
+              "cases": 32,
+              "mean_last_observed_floor": 10.625
+            },
+            "underdocks": {
+              "act1_clears": 0,
+              "boss_reaches": 18,
+              "cases": 32,
+              "mean_last_observed_floor": 13.375
+            }
+          },
+          "cutoffs": 0,
+          "decisions_per_second": 33.20557502913096,
+          "defeats": 64,
+          "failures": 0,
+          "mean_last_observed_floor": 12.0,
+          "planned": 64,
+          "policy_seconds": 42.082243972690776,
+          "review_flag_episode_counts": {},
+          "review_flags": {},
+          "run_wins": 0,
+          "steps": 10069,
+          "total_seconds": 303.23221299936995,
+          "unattempted": 0,
+          "warning_examples": []
+        },
+        "learned": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.078125,
+          "act1_clear_rate_group_hoeffding_95": [
+            0,
+            0.24788768946757744
+          ],
+          "act1_clears": 5,
+          "attempted": 64,
+          "boss_reaches": 43,
+          "by_region": {
+            "overgrowth": {
+              "act1_clears": 3,
+              "boss_reaches": 23,
+              "cases": 32,
+              "mean_last_observed_floor": 13.5625
+            },
+            "underdocks": {
+              "act1_clears": 2,
+              "boss_reaches": 20,
+              "cases": 32,
+              "mean_last_observed_floor": 12.78125
+            }
+          },
+          "cutoffs": 0,
+          "decisions_per_second": 26.388886483485972,
+          "defeats": 59,
+          "failures": 0,
+          "mean_last_observed_floor": 13.171875,
+          "planned": 64,
+          "policy_seconds": 110.51814202801324,
+          "review_flag_episode_counts": {
+            "end_turn_with_playable_card": 47
+          },
+          "review_flags": {
+            "end_turn_with_playable_card": 77
+          },
+          "run_wins": 0,
+          "steps": 9898,
+          "total_seconds": 375.08213945268653,
+          "unattempted": 0,
+          "warning_examples": []
+        },
+        "reference": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.0,
+          "act1_clear_rate_group_hoeffding_95": [
+            0,
+            0.16976268946757744
+          ],
+          "act1_clears": 0,
+          "attempted": 64,
+          "boss_reaches": 6,
+          "by_region": {
+            "overgrowth": {
+              "act1_clears": 0,
+              "boss_reaches": 4,
+              "cases": 32,
+              "mean_last_observed_floor": 9.65625
+            },
+            "underdocks": {
+              "act1_clears": 0,
+              "boss_reaches": 2,
+              "cases": 32,
+              "mean_last_observed_floor": 9.6875
+            }
+          },
+          "cutoffs": 0,
+          "decisions_per_second": 28.687580282744847,
+          "defeats": 64,
+          "failures": 0,
+          "mean_last_observed_floor": 9.671875,
+          "planned": 64,
+          "policy_seconds": 72.7766235677991,
+          "review_flag_episode_counts": {},
+          "review_flags": {},
+          "run_wins": 0,
+          "steps": 7371,
+          "total_seconds": 256.940457415767,
+          "unattempted": 0,
+          "warning_examples": []
+        }
+      }
+    }
+  ],
+  "experiment": {
+    "encounters": [
+      "overgrowth",
+      "underdocks"
+    ],
+    "ppo": {
+      "batch_size": 16,
+      "clip_ratio": 0.2,
+      "entropy_weight": 0.01,
+      "episode_decisions": 512,
+      "episode_seconds": 120.0,
+      "epochs": 2,
+      "gae_lambda": 0.95,
+      "gamma": 1.0,
+      "gradient_clip": 0.5,
+      "learning_rate": 0.0003,
+      "normalize_advantages": true,
+      "rollout_steps": 4096,
+      "target_kl": 0.03,
+      "value_weight": 0.5
+    },
+    "schema": "sts_ppo_experiment_v2",
+    "source": "ironclad_a0_full_run_v1",
+    "training": {
+      "action_policy": "commit_card_selection_v1",
+      "mode": "full_run",
+      "reward": {
+        "goal": "act1",
+        "schema": "sts_full_run_reward_v3",
+        "weights": {
+          "act_cleared": 1.0,
+          "combat_loss": 0.0,
+          "combat_win": 0.1,
+          "end_turn_action": -0.001,
+          "potion_use_action": 0.0,
+          "run_abandoned": -1.0,
+          "run_defeat": -1.0,
+          "run_victory": 0.0,
+          "win_hp_fraction": 0.025
+        }
+      },
+      "scenario_set": "ironclad_a0_full_run_v1"
+    }
+  },
+  "implementation": {
+    "build": "72f3f38eafc2fa9824249a9eaee7d40466830944a0814b87ff4cb2a33e9fe451",
+    "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+    "rules": "cb4110d297799c139c5912c30a0e0903630c1c8ab2141eded608b90a7b1e0926",
+    "target": "sts2-v0.107.1-steam-23811903"
+  },
+  "iterations": [
+    {
+      "act1_clears": 2,
+      "collection_seconds": 16.26616037497297,
+      "cumulative_decisions": 382768,
+      "decisions": 4096,
+      "episodes": 30,
+      "iteration": 1,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.013378669004055155,
+        "clip_fraction": 0.1182861328125,
+        "entropy": 0.5997494524344802,
+        "loss": 0.003952307419694989,
+        "policy_loss": -0.0011103217429990764,
+        "value_mse": 0.02212024767834464
+      },
+      "optimizer_steps": 512,
+      "segment_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 789,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      },
+      "update_seconds": 10.571069415891543
+    },
+    {
+      "act1_clears": 0,
+      "collection_seconds": 16.25593699980527,
+      "cumulative_decisions": 386864,
+      "decisions": 4096,
+      "episodes": 33,
+      "iteration": 2,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.010270306350520286,
+        "clip_fraction": 0.0975341796875,
+        "entropy": 0.5920703544979915,
+        "loss": -0.0023037650657897757,
+        "policy_loss": -0.0005698906825273298,
+        "value_mse": 0.008373657784431998
+      },
+      "optimizer_steps": 512,
+      "segment_decisions": 8192,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 833,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      },
+      "update_seconds": 10.304977332940325
+    },
+    {
+      "act1_clears": 0,
+      "collection_seconds": 16.15365858282894,
+      "cumulative_decisions": 390960,
+      "decisions": 4096,
+      "episodes": 30,
+      "iteration": 3,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.00908266912810518,
+        "clip_fraction": 0.0975341796875,
+        "entropy": 0.6057460359297693,
+        "loss": -0.0025726428411871893,
+        "policy_loss": 0.0006089489615987986,
+        "value_mse": 0.005751735558760629
+      },
+      "optimizer_steps": 512,
+      "segment_decisions": 12288,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 784,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      },
+      "update_seconds": 10.645867749815807
+    },
+    {
+      "act1_clears": 1,
+      "collection_seconds": 15.828770000021905,
+      "cumulative_decisions": 395056,
+      "decisions": 4096,
+      "episodes": 32,
+      "iteration": 4,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.00934476750101787,
+        "clip_fraction": 0.0875244140625,
+        "entropy": 0.5824434160313103,
+        "loss": 0.0017093301471504674,
+        "policy_loss": 0.0004249934900144581,
+        "value_mse": 0.014217542357982893
+      },
+      "optimizer_steps": 512,
+      "segment_decisions": 16384,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 782,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      },
+      "update_seconds": 10.30702104093507
+    },
+    {
+      "act1_clears": 0,
+      "collection_seconds": 16.520099834073335,
+      "cumulative_decisions": 399152,
+      "decisions": 4096,
+      "episodes": 35,
+      "iteration": 5,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.008143798614767661,
+        "clip_fraction": 0.0885009765625,
+        "entropy": 0.5836241796787363,
+        "loss": -0.002971106828226766,
+        "policy_loss": -0.0006612992183363531,
+        "value_mse": 0.007052867951188091
+      },
+      "optimizer_steps": 512,
+      "segment_decisions": 20480,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 825,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      },
+      "update_seconds": 10.173878332832828
+    },
+    {
+      "act1_clears": 0,
+      "collection_seconds": 2.9747197499964386,
+      "cumulative_decisions": 400000,
+      "decisions": 848,
+      "episodes": 10,
+      "iteration": 6,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.0055790285515063005,
+        "clip_fraction": 0.06308962264150944,
+        "entropy": 0.5834677916652752,
+        "loss": -0.010243369108241683,
+        "policy_loss": -0.006751663895007575,
+        "value_mse": 0.004685948445804347
+      },
+      "optimizer_steps": 106,
+      "segment_decisions": 21328,
+      "signal": {
+        "nonzero_advantages": 848,
+        "nonzero_returns": 848,
+        "nonzero_rewards": 162,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      },
+      "update_seconds": 1.8346542501822114
+    },
+    {
+      "act1_clears": 1,
+      "collection_seconds": 17.48534324998036,
+      "cumulative_decisions": 404096,
+      "decisions": 4096,
+      "episodes": 30,
+      "iteration": 7,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.008564243223233348,
+        "clip_fraction": 0.090576171875,
+        "entropy": 0.6098288070352282,
+        "loss": -0.0006342255510389805,
+        "policy_loss": -0.0010007337059505517,
+        "value_mse": 0.012929592086720731
+      },
+      "optimizer_steps": 512,
+      "segment_decisions": 25424,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 787,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      },
+      "update_seconds": 10.756907624891028
+    },
+    {
+      "act1_clears": 0,
+      "collection_seconds": 16.822165209101513,
+      "cumulative_decisions": 408192,
+      "decisions": 4096,
+      "episodes": 32,
+      "iteration": 8,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.0124414902640817,
+        "clip_fraction": 0.11572265625,
+        "entropy": 0.5948663092567585,
+        "loss": -0.005459899419747671,
+        "policy_loss": -0.0016458018362754956,
+        "value_mse": 0.004269132070021442
+      },
+      "optimizer_steps": 512,
+      "segment_decisions": 29520,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 770,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      },
+      "update_seconds": 10.556955833919346
+    },
+    {
+      "act1_clears": 1,
+      "collection_seconds": 16.59899654216133,
+      "cumulative_decisions": 412288,
+      "decisions": 4096,
+      "episodes": 30,
+      "iteration": 9,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.00911252518316985,
+        "clip_fraction": 0.08544921875,
+        "entropy": 0.6018262674042489,
+        "loss": -0.003108217245880951,
+        "policy_loss": -0.0033176572937918536,
+        "value_mse": 0.012455403376861796
+      },
+      "optimizer_steps": 512,
+      "segment_decisions": 33616,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 773,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      },
+      "update_seconds": 10.55899312486872
+    },
+    {
+      "act1_clears": 1,
+      "collection_seconds": 16.196663334034383,
+      "cumulative_decisions": 416384,
+      "decisions": 4096,
+      "episodes": 35,
+      "iteration": 10,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.008410515165259369,
+        "clip_fraction": 0.083984375,
+        "entropy": 0.5969025349186268,
+        "loss": 0.0021271295236147125,
+        "policy_loss": 0.0007701678650846588,
+        "value_mse": 0.01465197355082637
+      },
+      "optimizer_steps": 512,
+      "segment_decisions": 37712,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 795,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      },
+      "update_seconds": 10.3673976669088
+    },
+    {
+      "act1_clears": 1,
+      "collection_seconds": 17.994814000092447,
+      "cumulative_decisions": 420480,
+      "decisions": 4096,
+      "episodes": 32,
+      "iteration": 11,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.00868757623646843,
+        "clip_fraction": 0.0936279296875,
+        "entropy": 0.5726829149934929,
+        "loss": 0.00045071200793245225,
+        "policy_loss": -0.0006540207359648775,
+        "value_mse": 0.013663123403375721
+      },
+      "optimizer_steps": 512,
+      "segment_decisions": 41808,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 775,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      },
+      "update_seconds": 10.23790629208088
+    },
+    {
+      "act1_clears": 4,
+      "collection_seconds": 16.444589915918186,
+      "cumulative_decisions": 424576,
+      "decisions": 4096,
+      "episodes": 32,
+      "iteration": 12,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.01099135498569126,
+        "clip_fraction": 0.1070556640625,
+        "entropy": 0.5368033360282425,
+        "loss": 0.010481616467586718,
+        "policy_loss": -0.0019816920184894116,
+        "value_mse": 0.03566268318627408
+      },
+      "optimizer_steps": 512,
+      "segment_decisions": 45904,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 799,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      },
+      "update_seconds": 10.57869341596961
+    },
+    {
+      "act1_clears": 0,
+      "collection_seconds": 16.455998957855627,
+      "cumulative_decisions": 428672,
+      "decisions": 4096,
+      "episodes": 33,
+      "iteration": 13,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.011287330143307628,
+        "clip_fraction": 0.1070556640625,
+        "entropy": 0.5446395703474991,
+        "loss": -0.000715710149052029,
+        "policy_loss": 0.0016576703164901119,
+        "value_mse": 0.006146029456431279
+      },
+      "optimizer_steps": 512,
+      "segment_decisions": 50000,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 806,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      },
+      "update_seconds": 10.528435833053663
+    },
+    {
+      "act1_clears": 0,
+      "collection_seconds": 16.436002583010122,
+      "cumulative_decisions": 432768,
+      "decisions": 4096,
+      "episodes": 34,
+      "iteration": 14,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.010717336599110894,
+        "clip_fraction": 0.097412109375,
+        "entropy": 0.5523465331352782,
+        "loss": -0.0029856383389414987,
+        "policy_loss": -0.0005108065270178486,
+        "value_mse": 0.0060972668586600776
+      },
+      "optimizer_steps": 512,
+      "segment_decisions": 54096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 771,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      },
+      "update_seconds": 10.399055124958977
+    },
+    {
+      "act1_clears": 0,
+      "collection_seconds": 17.408533833920956,
+      "cumulative_decisions": 436864,
+      "decisions": 4096,
+      "episodes": 33,
+      "iteration": 15,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.011581387071633031,
+        "clip_fraction": 0.1219482421875,
+        "entropy": 0.5613115569576621,
+        "loss": -0.006809816978602612,
+        "policy_loss": -0.0034133816552639473,
+        "value_mse": 0.00443335969043801
+      },
+      "optimizer_steps": 512,
+      "segment_decisions": 58192,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 762,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      },
+      "update_seconds": 10.478161416016519
+    },
+    {
+      "act1_clears": 4,
+      "collection_seconds": 16.96362620894797,
+      "cumulative_decisions": 440960,
+      "decisions": 4096,
+      "episodes": 30,
+      "iteration": 16,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.007774562263033857,
+        "clip_fraction": 0.085205078125,
+        "entropy": 0.5682580509455875,
+        "loss": 0.01076575432853133,
+        "policy_loss": -0.0014232763987820363,
+        "value_mse": 0.035743221765642375
+      },
+      "optimizer_steps": 512,
+      "segment_decisions": 62288,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 779,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      },
+      "update_seconds": 10.812913917005062
+    },
+    {
+      "act1_clears": 0,
+      "collection_seconds": 17.251614875160158,
+      "cumulative_decisions": 445056,
+      "decisions": 4096,
+      "episodes": 31,
+      "iteration": 17,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.009413391566482687,
+        "clip_fraction": 0.096435546875,
+        "entropy": 0.5576907874492463,
+        "loss": -0.004037618852635205,
+        "policy_loss": -0.0011598180535656866,
+        "value_mse": 0.005398211804731545
+      },
+      "optimizer_steps": 512,
+      "segment_decisions": 66384,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 803,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      },
+      "update_seconds": 10.62137316702865
+    },
+    {
+      "act1_clears": 0,
+      "collection_seconds": 16.054586249869317,
+      "cumulative_decisions": 449152,
+      "decisions": 4096,
+      "episodes": 33,
+      "iteration": 18,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.010505361883494935,
+        "clip_fraction": 0.10595703125,
+        "entropy": 0.5466074603609741,
+        "loss": -0.006694816119306779,
+        "policy_loss": -0.0038416125389630906,
+        "value_mse": 0.00522574339743187
+      },
+      "optimizer_steps": 512,
+      "segment_decisions": 70480,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 809,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      },
+      "update_seconds": 10.233345749787986
+    },
+    {
+      "act1_clears": 0,
+      "collection_seconds": 3.0529168751090765,
+      "cumulative_decisions": 450000,
+      "decisions": 848,
+      "episodes": 9,
+      "iteration": 19,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.007921478507753663,
+        "clip_fraction": 0.07311320754716981,
+        "entropy": 0.512545292248141,
+        "loss": -0.009888875166411107,
+        "policy_loss": -0.006782528838880782,
+        "value_mse": 0.004038216148608558
+      },
+      "optimizer_steps": 106,
+      "segment_decisions": 71328,
+      "signal": {
+        "nonzero_advantages": 848,
+        "nonzero_returns": 848,
+        "nonzero_rewards": 160,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      },
+      "update_seconds": 1.8601229169871658
+    },
+    {
+      "act1_clears": 2,
+      "collection_seconds": 18.022955750115216,
+      "cumulative_decisions": 454096,
+      "decisions": 4096,
+      "episodes": 33,
+      "iteration": 20,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.008664033724024023,
+        "clip_fraction": 0.087158203125,
+        "entropy": 0.5481613732408732,
+        "loss": 0.003600758818720351,
+        "policy_loss": -0.0020227308677931433,
+        "value_mse": 0.022210206263252985
+      },
+      "optimizer_steps": 512,
+      "segment_decisions": 75424,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 776,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      },
+      "update_seconds": 10.582098542014137
+    },
+    {
+      "act1_clears": 4,
+      "collection_seconds": 16.992236874997616,
+      "cumulative_decisions": 458192,
+      "decisions": 4096,
+      "episodes": 33,
+      "iteration": 21,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.00893148545293343,
+        "clip_fraction": 0.0867919921875,
+        "entropy": 0.521638979378622,
+        "loss": 0.010244833273645781,
+        "policy_loss": -0.000532863195076061,
+        "value_mse": 0.03198817203519866
+      },
+      "optimizer_steps": 512,
+      "segment_decisions": 79520,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 801,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      },
+      "update_seconds": 10.38212929200381
+    },
+    {
+      "act1_clears": 0,
+      "collection_seconds": 16.993310166988522,
+      "cumulative_decisions": 462288,
+      "decisions": 4096,
+      "episodes": 32,
+      "iteration": 22,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.009396534056044459,
+        "clip_fraction": 0.097412109375,
+        "entropy": 0.5615565728803631,
+        "loss": -0.0018886892517002707,
+        "policy_loss": -0.0011695034818330896,
+        "value_mse": 0.009792760430400449
+      },
+      "optimizer_steps": 512,
+      "segment_decisions": 83616,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 775,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      },
+      "update_seconds": 10.651310916990042
+    },
+    {
+      "act1_clears": 1,
+      "collection_seconds": 16.849308208096772,
+      "cumulative_decisions": 466384,
+      "decisions": 4096,
+      "episodes": 32,
+      "iteration": 23,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.012731255392396168,
+        "clip_fraction": 0.1019287109375,
+        "entropy": 0.53391315654153,
+        "loss": 0.0027190371934011637,
+        "policy_loss": -0.000625298544036923,
+        "value_mse": 0.01736693459588423
+      },
+      "optimizer_steps": 512,
+      "segment_decisions": 87712,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 772,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      },
+      "update_seconds": 10.46525412495248
+    },
+    {
+      "act1_clears": 1,
+      "collection_seconds": 17.61265154182911,
+      "cumulative_decisions": 470480,
+      "decisions": 4096,
+      "episodes": 32,
+      "iteration": 24,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.00818469447879977,
+        "clip_fraction": 0.077880859375,
+        "entropy": 0.5269508973287884,
+        "loss": 0.002450602179123962,
+        "policy_loss": -0.000939655215915991,
+        "value_mse": 0.01731953254875407
+      },
+      "optimizer_steps": 512,
+      "segment_decisions": 91808,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 774,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      },
+      "update_seconds": 10.142010791925713
+    },
+    {
+      "act1_clears": 1,
+      "collection_seconds": 16.684125167084858,
+      "cumulative_decisions": 474576,
+      "decisions": 4096,
+      "episodes": 33,
+      "iteration": 25,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.0106656502225988,
+        "clip_fraction": 0.105712890625,
+        "entropy": 0.5162452922959346,
+        "loss": 0.0021263709154482058,
+        "policy_loss": -0.001159866285888711,
+        "value_mse": 0.016897379958663805
+      },
+      "optimizer_steps": 512,
+      "segment_decisions": 95904,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 792,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      },
+      "update_seconds": 10.24712458299473
+    },
+    {
+      "act1_clears": 1,
+      "collection_seconds": 16.591155000030994,
+      "cumulative_decisions": 478672,
+      "decisions": 4096,
+      "episodes": 32,
+      "iteration": 26,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.009535729215883748,
+        "clip_fraction": 0.091064453125,
+        "entropy": 0.48843604273861274,
+        "loss": 0.0025119720789916755,
+        "policy_loss": -0.0012004083109786734,
+        "value_mse": 0.017193481849062664
+      },
+      "optimizer_steps": 512,
+      "segment_decisions": 100000,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 781,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      },
+      "update_seconds": 10.511188499862328
+    },
+    {
+      "act1_clears": 3,
+      "collection_seconds": 17.810871874913573,
+      "cumulative_decisions": 482768,
+      "decisions": 4096,
+      "episodes": 30,
+      "iteration": 27,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.008478505903383393,
+        "clip_fraction": 0.082275390625,
+        "entropy": 0.4999212938710116,
+        "loss": 0.009397998021086096,
+        "policy_loss": -0.00044191630331624765,
+        "value_mse": 0.02967825472023833
+      },
+      "optimizer_steps": 512,
+      "segment_decisions": 104096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 771,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      },
+      "update_seconds": 10.978971833828837
+    },
+    {
+      "act1_clears": 2,
+      "collection_seconds": 17.5706371658016,
+      "cumulative_decisions": 486864,
+      "decisions": 4096,
+      "episodes": 33,
+      "iteration": 28,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.011106249293881376,
+        "clip_fraction": 0.0963134765625,
+        "entropy": 0.4929638735484332,
+        "loss": 0.009841006734859548,
+        "policy_loss": 0.0011257638252573088,
+        "value_mse": 0.02728976350499579
+      },
+      "optimizer_steps": 512,
+      "segment_decisions": 108192,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 787,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      },
+      "update_seconds": 10.381398916942999
+    },
+    {
+      "act1_clears": 1,
+      "collection_seconds": 17.011532583041117,
+      "cumulative_decisions": 490960,
+      "decisions": 4096,
+      "episodes": 33,
+      "iteration": 29,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.008369165392474898,
+        "clip_fraction": 0.0870361328125,
+        "entropy": 0.5050333103863522,
+        "loss": 0.0020815066632167145,
+        "policy_loss": -0.00044034281745553017,
+        "value_mse": 0.01514436374145589
+      },
+      "optimizer_steps": 512,
+      "segment_decisions": 112288,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 802,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      },
+      "update_seconds": 10.389186667045578
+    },
+    {
+      "act1_clears": 4,
+      "collection_seconds": 16.422522665932775,
+      "cumulative_decisions": 495056,
+      "decisions": 4096,
+      "episodes": 31,
+      "iteration": 30,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.008048151071150755,
+        "clip_fraction": 0.08447265625,
+        "entropy": 0.480260339245433,
+        "loss": 0.010899949644681328,
+        "policy_loss": -0.00269225557349273,
+        "value_mse": 0.03678961518289725
+      },
+      "optimizer_steps": 512,
+      "segment_decisions": 116384,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 801,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      },
+      "update_seconds": 10.378356916829944
+    },
+    {
+      "act1_clears": 1,
+      "collection_seconds": 16.73778724996373,
+      "cumulative_decisions": 499152,
+      "decisions": 4096,
+      "episodes": 29,
+      "iteration": 31,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.009018156311753955,
+        "clip_fraction": 0.0897216796875,
+        "entropy": 0.47631171462126076,
+        "loss": 0.00021216870118223596,
+        "policy_loss": -0.0017202440731125535,
+        "value_mse": 0.013391060331628069
+      },
+      "optimizer_steps": 512,
+      "segment_decisions": 120480,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 778,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      },
+      "update_seconds": 10.755194375058636
+    },
+    {
+      "act1_clears": 0,
+      "collection_seconds": 3.149829292204231,
+      "cumulative_decisions": 500000,
+      "decisions": 848,
+      "episodes": 8,
+      "iteration": 32,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.010421007588723474,
+        "clip_fraction": 0.08313679245283019,
+        "entropy": 0.4603579951063642,
+        "loss": -0.007447118919237323,
+        "policy_loss": -0.003992751144083604,
+        "value_mse": 0.0022984251046645507
+      },
+      "optimizer_steps": 106,
+      "segment_decisions": 121328,
+      "signal": {
+        "nonzero_advantages": 848,
+        "nonzero_returns": 848,
+        "nonzero_rewards": 154,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      },
+      "update_seconds": 1.9115629170555621
+    }
+  ],
+  "learners": 1,
+  "limitations": [
+    "One learner seed and a development evaluation set; not a final held-out claim.",
+    "Sampled training successes are separate from greedy evaluation clear rate.",
+    "Training/evaluation/analysis timings are reported separately; background load is uncontrolled.",
+    "The extension and reused development set are not an independent confirmation of the first 250k results.",
+    "Cumulative 500k includes a documented engine correction and optimizer reset at 378672 decisions; it is not one exact uninterrupted PPO experiment.",
+    "The failure-affected collection was discarded. New training starts use a separate unused range; the failed live adapter is never retried."
+  ],
+  "prior_trained_decisions": 378672,
+  "recorded_utc": "2026-09-30T09:13:50.857053+00:00",
+  "review_example": {
+    "combat_fields": {
+      "block": 0,
+      "energy": 1,
+      "hp": 80,
+      "max_hp": 80,
+      "round": 1,
+      "strength": 0
+    },
+    "displayed_incoming_damage": 14,
+    "episode_id": "143c8f37bbb34540aaf9d5e3367a1c05",
+    "hud": {
+      "act": 1,
+      "floor": 1,
+      "gold": 99,
+      "hp": 80,
+      "max_hp": 80
+    },
+    "interpretation": "Recorded preferences on one public state, without simulating alternative actions.",
+    "legal_cards": [
+      {
+        "kind": "play_card",
+        "label": "Play card \u00b7 Defend",
+        "ref": "action:0",
+        "subject": "card:12",
+        "target": null
+      },
+      {
+        "kind": "play_card",
+        "label": "Play card \u00b7 Defend",
+        "ref": "action:1",
+        "subject": "card:13",
+        "target": null
+      },
+      {
+        "kind": "play_card",
+        "label": "Play card \u00b7 Defend",
+        "ref": "action:2",
+        "subject": "card:14",
+        "target": null
+      }
+    ],
+    "preferences": [
+      {
+        "label": "350k",
+        "top": {
+          "allowed": true,
+          "name": "Play card \u00b7 Defend",
+          "probability": 0.4299640655517578,
+          "ref": "action:0"
+        }
+      },
+      {
+        "label": "400k",
+        "top": {
+          "allowed": true,
+          "name": "Play card \u00b7 Defend",
+          "probability": 0.3502524495124817,
+          "ref": "action:0"
+        }
+      },
+      {
+        "label": "450k",
+        "top": {
+          "allowed": true,
+          "name": "Play card \u00b7 Defend",
+          "probability": 0.3828306496143341,
+          "ref": "action:0"
+        }
+      },
+      {
+        "label": "500k",
+        "top": {
+          "allowed": true,
+          "name": "End turn",
+          "probability": 0.32618653774261475,
+          "ref": "action:3"
+        }
+      }
+    ],
+    "state_sha256": "0b2978a448bdab0e76f9d2419c64262c1093fcf3c1407f1dd599970c4e057b61",
+    "step": 4
+  },
+  "reward_components": {
+    "act_cleared": 36.0,
+    "combat_loss": 663.0,
+    "combat_win": 5399.0,
+    "end_turn_action": 18031.0,
+    "potion_use_action": 721.0,
+    "run_abandoned": 0.0,
+    "run_defeat": 663.0,
+    "run_victory": 0.0,
+    "win_hp_fraction": 3648.8772781421158
+  },
+  "runtime": {
+    "device": "cpu",
+    "python": "3.11.15",
+    "threads": 1,
+    "torch": "2.13.0"
+  },
+  "schema": "sts_act1_500k_corrected_engine_evidence_v1",
+  "segment_iterations": 32,
+  "segment_optimizer_updates": 15166,
+  "segment_trained_decisions": 121328,
+  "source": {
+    "architecture": {
+      "hidden_size": 48,
+      "message_layers": 2,
+      "schema": "sts_graph_actor_critic_v1"
+    },
+    "identity": "ppo_v1:cd2ca9ff81cedc413946296e1c2e2c47d4da8fc656140673cc322819eaa89ea5",
+    "implementation": {
+      "build": "c35a6b56bda335778f457c2a8c58b3d59bfd5b8b807cb290504c75f01b5ac5cf",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "3bb46e266528055ab1804b95e5d790b0b5a125e092571fe16c018657173bd649",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "parameter_count": 97394,
+    "path": "runs/act1-500k-8workers-20260930/chunk-23/update-00098.sts-model",
+    "sha256": "cd2ca9ff81cedc413946296e1c2e2c47d4da8fc656140673cc322819eaa89ea5"
+  },
+  "status": "complete",
+  "timings": {
+    "analysis": 244.07986929197796,
+    "collection": 497.6141209178604,
+    "evaluation": 419.8093719580211,
+    "training": 814.013195250649,
+    "training_other": 6.795555749209598,
+    "turn_start_to_training_launch_seconds": 556,
+    "updates": 309.603518583579
+  },
+  "training": {
+    "accepted_decisions": 121328,
+    "act1_clears": 36,
+    "cutoffs": 256,
+    "episode_attempts": 955,
+    "failed_episodes": 0,
+    "losses": 663,
+    "processed_decisions": 121328,
+    "skipped_decisions": 0,
+    "skipped_updates": 0,
+    "trained_decisions": 121328
+  },
+  "validation": {
+    "actual_failure_snapshot": {
+      "combat_win_component": 0,
+      "defeat_snapshot_roundtrip": true,
+      "hp": 0,
+      "no_rewards_created": true,
+      "reconciled_defeat": true,
+      "sha256": "aa81636f431d1e91e9e98b4d2225319af516abf368e7e5df0a4f54f60a40477b",
+      "training_reward": -1.001
+    },
+    "compileall_passed": true,
+    "completed_utc": "2026-09-30T08:43:40.334391+00:00",
+    "focused_integration": {
+      "command": "PYTHONPATH=. .venv/bin/python -m pytest -q tests/headless/test_terminal_outcomes.py tests/headless/test_native_end_boundary.py tests/headless/test_potions_complete.py tests/headless/test_native_death_start.py tests/headless/test_underdocks.py tests/agent/test_terminal_training.py tests/agent/test_combat_training.py tests/agent/test_full_run_training.py tests/agent/test_full_gym.py tests/agent/test_ppo_parallel.py tests/agent/test_ppo.py tests/agent/test_training_checkpoint.py",
+      "log_sha256": "036d37a48bbf365b3873ff49dd1501fd80220e9383ab319dab4e101b76a71707",
+      "passed": 745,
+      "seconds": 207.56,
+      "warnings": 2
+    },
+    "implementation": {
+      "build": "72f3f38eafc2fa9824249a9eaee7d40466830944a0814b87ff4cb2a33e9fe451",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "cb4110d297799c139c5912c30a0e0903630c1c8ab2141eded608b90a7b1e0926",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "independent_semantic_review": {
+      "private_schema_decision": "Keep v48/v69 layouts. Reject contradictory zero-HP player-victory terminal records atomically. Rules/source identity changes.",
+      "probe_cases": 6,
+      "probe_description": "Haunted Ship and Test Subject; no revival, Fairy in a Bottle and Lizard Tail; JSON continuation comparisons passed.",
+      "scope": "Combat winner precedence, player revival, enemy revival, snapshot validation and affected consumers; read-only.",
+      "status": "no_blocking_findings"
+    },
+    "limitations": [
+      "Regression states and headless replay; no new native capture or live-game claim."
+    ],
+    "regression_tests": 9,
+    "source_sha256": {
+      "game/headless/core/combat.py": "58f662671ce55b951d04c599730a2b734ec725ecbff01e98577caeda01054562",
+      "game/headless/core/snapshots.py": "af0c8256e7479d35aca8372b62a667f3f73f165578f183bcdd24d7ac1ce830ae",
+      "tests/agent/test_terminal_training.py": "5139e06909f8af821ae22d55f8ec3bb56d37c1aaee53eb56161d933db5aeab18",
+      "tests/headless/test_terminal_outcomes.py": "b65c4e143a6744ad7c5e81d8b85b36caf9613ba0abcbde7b1e2d7da9dda935b5"
+    },
+    "status": "passed"
+  },
+  "viewer": {
+    "checkpoints": [
+      "350k",
+      "400k",
+      "450k",
+      "500k"
+    ],
+    "review_url": "http://127.0.0.1:8769/#run=143c8f37bbb34540aaf9d5e3367a1c05&step=4",
+    "url": "http://127.0.0.1:8769/",
+    "verified_endpoints": [
+      "report",
+      "run",
+      "first_decision",
+      "last_decision",
+      "compare"
+    ],
+    "view": "runs/act1-500k-fixed-8workers-20260930-analysis-500000"
+  },
+  "views": [
+    {
+      "build_seconds": 50.97343666595407,
+      "decisions": 400000,
+      "episodes": 362,
+      "evaluation_cases": 64,
+      "metadata_bytes": 12901926,
+      "recorded_decisions": 49434,
+      "report_sha256": "d08ea44490d7697cc99c3a404145352d7cb5ad9d5a7baff5e556016558dcc143",
+      "root": "runs/act1-500k-fixed-8workers-20260930-analysis-400000",
+      "training_decisions": 21328
+    },
+    {
+      "build_seconds": 80.20386608294211,
+      "decisions": 450000,
+      "episodes": 586,
+      "evaluation_cases": 64,
+      "metadata_bytes": 20764032,
+      "recorded_decisions": 77575,
+      "report_sha256": "6810752ac7a92556f41eae636888f5779c5ff8352a888c8c852a6e91cf4f521c",
+      "root": "runs/act1-500k-fixed-8workers-20260930-analysis-450000",
+      "training_decisions": 50000
+    },
+    {
+      "build_seconds": 79.54018654092215,
+      "decisions": 500000,
+      "episodes": 583,
+      "evaluation_cases": 64,
+      "metadata_bytes": 20738707,
+      "recorded_decisions": 77338,
+      "report_sha256": "0420d50833dedb9cf780806daec7b72dee811aff234fcc5722d74083c9d1eeaa",
+      "root": "runs/act1-500k-fixed-8workers-20260930-analysis-500000",
+      "training_decisions": 50000
+    }
+  ],
+  "workers": 8
+}

@@ -1,0 +1,349 @@
+{
+  "artifacts": {
+    "private_root": "runs/act1-heldout-250k-20260930-private",
+    "public_root": "runs/act1-heldout-250k-20260930",
+    "report_sha256": "5e8ea748d194b101609f7f93e609ae22f776ad439ad3cee7ef406fe0caa634d6",
+    "viewer": "runs/act1-heldout-250k-20260930-analysis"
+  },
+  "bindings": {
+    "runs/act1-heldout-250k-20260930/analysis.json": "32c61f7ee6d21224dfa3a2ee39238e41f07a52718fa2e535850ab198d1c4b5f3",
+    "runs/act1-heldout-250k-20260930/check_viewer.py": "e01ad9686e25a942eb28177c9456fbd7818572a526ab753e28bf4e5964b272b3",
+    "runs/act1-heldout-250k-20260930/evaluation.json": "a7ecdc1aade04bf1961cd5ebdc0571ce8751147aa9c9b3106e245b240cdbaaf7",
+    "runs/act1-heldout-250k-20260930/experiment.py": "827d41df3cc85a6c5d55dc8d03c3abd614e3a7a5058cab6dffc1fc79bb552a18",
+    "runs/act1-heldout-250k-20260930/protocol.json": "6780831479258e0f7f6fc7f946f6f648b873f51c8dc14911216909b4427212dc",
+    "runs/act1-heldout-250k-20260930/viewer-check.json": "15622b849b7ad9e4addb3d08c599c1145b00d566e54dfca6ff27556bd8b1361c"
+  },
+  "checks": {
+    "canonical_decisions_validated": 128391,
+    "canonical_games_validated": 768,
+    "fresh_engine_seeds": 256,
+    "frozen_checkpoint_source_runtime_bindings_match": true,
+    "no_partial_artifacts": true,
+    "paired_public_starts_verified": 256,
+    "parent_dependencies_verified_unchanged": true,
+    "private_files_owner_only": 774,
+    "reused_tests": 303,
+    "viewer_metadata_bytes": 31522695
+  },
+  "date": "2026-09-30",
+  "limitations": [
+    "One trained learner; this panel checks new starts, not independent training-seed repeatability.",
+    "Genuine-start Ironclad A0 Act 1, all-seen/unlocked headless profile; not native-game or whole-campaign evidence.",
+    "Once used to guide subsequent development, these cases should be treated as validation for future claims."
+  ],
+  "paired_vs_heuristic": {
+    "learned": {
+      "act1_clear_rate_difference": 0.1640625,
+      "act1_clears_only_candidate": 49,
+      "act1_clears_only_heuristic": 7,
+      "cases": 256,
+      "conclusion": "inconclusive",
+      "difference_group_hoeffding_95": [
+        -0.005700189467577443,
+        0.33382518946757744
+      ]
+    },
+    "reference": {
+      "act1_clear_rate_difference": 0.03515625,
+      "act1_clears_only_candidate": 20,
+      "act1_clears_only_heuristic": 11,
+      "cases": 256,
+      "conclusion": "inconclusive",
+      "difference_group_hoeffding_95": [
+        -0.13460643946757744,
+        0.20491893946757744
+      ]
+    }
+  },
+  "paired_vs_reference": {
+    "act1_clear_rate_difference": 0.12890625,
+    "act1_clears_only_candidate": 42,
+    "act1_clears_only_reference": 9,
+    "cases": 256,
+    "conclusion": "inconclusive",
+    "difference_group_hoeffding_95": [
+      -0.04085643946757744,
+      0.29866893946757744
+    ]
+  },
+  "protocol": {
+    "action_policy": "commit_decisions_v1",
+    "authorization": "User approved proceeding with a fresh train/validation/test comparison after the 250k extension.",
+    "batches": [
+      64,
+      64,
+      64,
+      64
+    ],
+    "bindings": {
+      "runs/act1-increased-250k-8workers-20260930/analysis.json": "a864f5483d05e3b93e0ef361d7c786d872edab414c63ce82a24f835b1fd7f286",
+      "runs/act1-increased-250k-8workers-20260930/chunk-09/final.sts-model": "daf8bc2596b2d91128210efb027e5e9544bd744d29a42210f29a6a8f463ccd6e",
+      "runs/act1-increased-250k-8workers-20260930/protocol.json": "c07fb4c32140b65a126a9fadd680e451b5f63e3e8d86b8ab3b5d977c1729af08",
+      "runs/act1-reward-navigation-20260930/increased/frozen-100k.sts-model": "d14bc9f297704ba9f1c2404ea0b00c323f50400af44898593e75e628c8671bee",
+      "runs/act1-reward-navigation-20260930/source-sha256.json": "99ce63002c7c79e09d82e2df506f9f57d12636acc61e0137f1f2dbe0915427ae",
+      "runs/act1-reward-navigation-20260930/validation.json": "617d2aa7249f8517991984cd6a5cdd893354c50b0f9dab5be6679d19571c622b"
+    },
+    "candidate": {
+      "checkpoint": "runs/act1-increased-250k-8workers-20260930/chunk-09/final.sts-model",
+      "decisions": 250000,
+      "sha256": "daf8bc2596b2d91128210efb027e5e9544bd744d29a42210f29a6a8f463ccd6e"
+    },
+    "cases": 256,
+    "date": "2026-09-30",
+    "dependencies": {
+      "gymnasium": "1.0.0",
+      "numpy": "2.4.6",
+      "pytest": "8.4.2",
+      "torch": "2.13.0"
+    },
+    "execution": "Four fixed 64-case batches respect the existing evaluator cap. All three policies face each start. Aggregate once across the full panel.",
+    "freshness": {
+      "audit_schemas": {
+        "sts_combat_replay_v1": 96,
+        "sts_combat_replay_v2": 1629,
+        "sts_ppo_episode_replay_v1": 13340,
+        "sts_private_replay_v1": 228,
+        "sts_private_replay_v2": 3496
+      },
+      "checked_engine_seeds": 256,
+      "distinct_prior_seed_values": 17885,
+      "overlaps": 0,
+      "retained_audit_files": 18789,
+      "retained_case_files": 27,
+      "scope": "All retained experiment audit and case files under runs before this panel; no claims about unrecorded external experiments."
+    },
+    "goal": "act1",
+    "implementation": {
+      "build": "6a27de4481021fccbdbcda3bede283f4ceb0b8f25653691ce51a354e0772a896",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "cb4110d297799c139c5912c30a0e0903630c1c8ab2141eded608b90a7b1e0926",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "limitations": [
+      "One trained learner; this panel checks new starts, not independent training-seed repeatability.",
+      "Genuine-start Ironclad A0 Act 1, all-seen/unlocked headless profile; not native-game or whole-campaign evidence.",
+      "Once used to guide subsequent development, these cases should be treated as validation for future claims."
+    ],
+    "limits": {
+      "episode_seconds": 90,
+      "max_decisions": 1024,
+      "total_wall_seconds": 2400
+    },
+    "planned_games": 768,
+    "preparation_seconds": 1.048047082964331,
+    "prepared_utc": "2026-09-30T12:44:02.488552+00:00",
+    "primary": "Act 1 clear-rate difference of the frozen 250k endpoint versus its frozen filtered 100k initializer, paired by start.",
+    "private_registry_sha256": "e69ba698fae4715cde1e07a97cc2ae8f5851cd65354060e96ae489d7cd3f8417",
+    "reference": {
+      "checkpoint": "runs/act1-reward-navigation-20260930/increased/frozen-100k.sts-model",
+      "decisions": 100000,
+      "sha256": "d14bc9f297704ba9f1c2404ea0b00c323f50400af44898593e75e628c8671bee"
+    },
+    "regions": {
+      "overgrowth": 128,
+      "underdocks": 128
+    },
+    "runtime": {
+      "device": "cpu",
+      "python": "3.11.15",
+      "threads": 1,
+      "torch": "2.13.0"
+    },
+    "schema": "sts_act1_heldout_250k_protocol_v1",
+    "script_sha256": "827d41df3cc85a6c5d55dc8d03c3abd614e3a7a5058cab6dffc1fc79bb552a18",
+    "secondary": [
+      "individual clear rates",
+      "regional clear rates",
+      "boss reach",
+      "last observed floor",
+      "review flags",
+      "cutoffs",
+      "operational failures",
+      "heuristic baseline"
+    ],
+    "selection": "Only the preselected 250k endpoint and 100k initializer; no intermediate checkpoint search, training, reward tuning, case removal or sample-size adaptation.",
+    "source_commit": "85b58ba3fac6ba07d8a34aadc6bb56f11e46a261",
+    "split": "test",
+    "training_reward_spec": {
+      "goal": "act1",
+      "schema": "sts_full_run_reward_v3",
+      "weights": {
+        "act_cleared": 1.0,
+        "combat_loss": 0.0,
+        "combat_win": 0.2,
+        "end_turn_action": -0.001,
+        "potion_use_action": 0.0,
+        "run_abandoned": -1.0,
+        "run_defeat": -1.0,
+        "run_victory": 0.0,
+        "win_hp_fraction": 0.1
+      }
+    },
+    "uncertainty": "Existing paired source-group Hoeffding 95% interval over all 256 planned cases; improved only if its lower bound exceeds zero.",
+    "validation": {
+      "reused_tests": 303,
+      "source_and_test_bindings_match": true,
+      "unchanged_runtime": true
+    },
+    "workers": 8
+  },
+  "schema": "sts_act1_heldout_250k_evidence_v1",
+  "session_first_clock_utc": "2026-09-30 12:39:08 UTC",
+  "status": "complete",
+  "summary": {
+    "heuristic": {
+      "abandoned": 0,
+      "act1_clear_rate": 0.0546875,
+      "act1_clear_rate_group_hoeffding_95": [
+        0,
+        0.13956884473378872
+      ],
+      "act1_clears": 14,
+      "attempted": 256,
+      "boss_reaches": 117,
+      "by_region": {
+        "overgrowth": {
+          "act1_clears": 4,
+          "boss_reaches": 47,
+          "cases": 128
+        },
+        "underdocks": {
+          "act1_clears": 10,
+          "boss_reaches": 70,
+          "cases": 128
+        }
+      },
+      "cutoffs": 0,
+      "decisions_per_second": 32.784348696099606,
+      "defeats": 242,
+      "failures": 0,
+      "mean_last_observed_floor": 12.19140625,
+      "planned": 256,
+      "policy_seconds": 169.74673041445203,
+      "review_flag_episodes": 0,
+      "review_flags": {},
+      "run_wins": 0,
+      "steps": 40361,
+      "total_seconds": 1231.1057442114688,
+      "unattempted": 0
+    },
+    "learned": {
+      "abandoned": 0,
+      "act1_clear_rate": 0.21875,
+      "act1_clear_rate_group_hoeffding_95": [
+        0.13386865526621128,
+        0.3036313447337887
+      ],
+      "act1_clears": 56,
+      "attempted": 256,
+      "boss_reaches": 191,
+      "by_region": {
+        "overgrowth": {
+          "act1_clears": 35,
+          "boss_reaches": 95,
+          "cases": 128
+        },
+        "underdocks": {
+          "act1_clears": 21,
+          "boss_reaches": 96,
+          "cases": 128
+        }
+      },
+      "cutoffs": 0,
+      "decisions_per_second": 24.623266872729857,
+      "defeats": 200,
+      "failures": 0,
+      "mean_last_observed_floor": 14.29296875,
+      "planned": 256,
+      "policy_seconds": 571.1475192680955,
+      "review_flag_episodes": 114,
+      "review_flags": {
+        "end_turn_with_playable_card": 133
+      },
+      "run_wins": 0,
+      "steps": 46664,
+      "total_seconds": 1895.1181515106,
+      "unattempted": 0
+    },
+    "reference": {
+      "abandoned": 0,
+      "act1_clear_rate": 0.08984375,
+      "act1_clear_rate_group_hoeffding_95": [
+        0.004962405266211278,
+        0.17472509473378872
+      ],
+      "act1_clears": 23,
+      "attempted": 256,
+      "boss_reaches": 132,
+      "by_region": {
+        "overgrowth": {
+          "act1_clears": 13,
+          "boss_reaches": 60,
+          "cases": 128
+        },
+        "underdocks": {
+          "act1_clears": 10,
+          "boss_reaches": 72,
+          "cases": 128
+        }
+      },
+      "cutoffs": 0,
+      "decisions_per_second": 25.985195029099557,
+      "defeats": 233,
+      "failures": 0,
+      "mean_last_observed_floor": 12.765625,
+      "planned": 256,
+      "policy_seconds": 468.435820187442,
+      "review_flag_episodes": 0,
+      "review_flags": {},
+      "run_wins": 0,
+      "steps": 41366,
+      "total_seconds": 1591.9064664966427,
+      "unattempted": 0
+    }
+  },
+  "timings": {
+    "analysis": 156.0669891659636,
+    "evaluation": 690.1127060409635,
+    "preparation": 1.048047082964331
+  },
+  "validation_note": "All 768 new test trajectories were canonically validated. Prior 303-test implementation evidence was reused after source, test, runtime and dependency verification; tests were not rerun and no production source changed.",
+  "viewer": {
+    "candidate_identity_matches_recording": true,
+    "candidate_preferred_action_matches_recording": true,
+    "checkpoints": [
+      "100k initializer",
+      "250k"
+    ],
+    "example_url": "http://127.0.0.1:8773/#run=5e92c67f549f449da792ac9dce154094&step=0",
+    "http_checks": [
+      {
+        "bytes": 6727,
+        "route": "/",
+        "status": 200
+      },
+      {
+        "bytes": 1153152,
+        "route": "/api/report",
+        "status": 200
+      },
+      {
+        "bytes": 49669,
+        "route": "/api/run?id=5e92c67f549f449da792ac9dce154094",
+        "status": 200
+      },
+      {
+        "bytes": 92979,
+        "route": "/api/decision?id=5e92c67f549f449da792ac9dce154094&step=0",
+        "status": 200
+      },
+      {
+        "bytes": 1993,
+        "route": "/api/compare?id=5e92c67f549f449da792ac9dce154094&step=0",
+        "status": 200
+      }
+    ],
+    "runs": 768,
+    "url": "http://127.0.0.1:8773/"
+  }
+}

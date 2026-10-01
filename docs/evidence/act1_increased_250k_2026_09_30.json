@@ -1,0 +1,1937 @@
+{
+  "additional_trained_decisions": 150000,
+  "artifacts": {
+    "analysis_decisions": 244375,
+    "analysis_games": 1736,
+    "analysis_script_sha256": "7a8537d4926926d32d5c6809119cb213015a9677935568621d6ec808d655b472",
+    "evaluation_report_sha256": "4c321ff8c78cc181d0ee8353976ade8f12f08a2884bdaba31ed25f8a82e96fa5",
+    "experiment_script_sha256": "3c71fba3e6e2fe7b6c6d0f085159d62839ee6dbd1927c7d00460ac18b04f844f",
+    "final_checkpoint": "runs/act1-increased-250k-8workers-20260930/chunk-09/final.sts-model",
+    "final_checkpoint_sha256": "daf8bc2596b2d91128210efb027e5e9544bd744d29a42210f29a6a8f463ccd6e",
+    "private_root": "runs/act1-increased-250k-8workers-20260930-private",
+    "protocol_sha256": "c07fb4c32140b65a126a9fadd680e451b5f63e3e8d86b8ab3b5d977c1729af08",
+    "public_root": "runs/act1-increased-250k-8workers-20260930",
+    "training_report_sha256": "1efee22a889f89f4b91f56c05c49e4f85d8c9a445830a203497e99aa825d3fcf"
+  },
+  "bindings": {
+    "runs/act1-increased-250k-8workers-20260930/analysis.json": "a864f5483d05e3b93e0ef361d7c786d872edab414c63ce82a24f835b1fd7f286",
+    "runs/act1-increased-250k-8workers-20260930/analyze.py": "7a8537d4926926d32d5c6809119cb213015a9677935568621d6ec808d655b472",
+    "runs/act1-increased-250k-8workers-20260930/config.json": "30092801b2d24a3e6c0b39dc291083c58989aad6a24932308c4665690305b127",
+    "runs/act1-increased-250k-8workers-20260930/evaluation.json": "4c321ff8c78cc181d0ee8353976ade8f12f08a2884bdaba31ed25f8a82e96fa5",
+    "runs/act1-increased-250k-8workers-20260930/experiment.py": "3c71fba3e6e2fe7b6c6d0f085159d62839ee6dbd1927c7d00460ac18b04f844f",
+    "runs/act1-increased-250k-8workers-20260930/protocol.json": "c07fb4c32140b65a126a9fadd680e451b5f63e3e8d86b8ab3b5d977c1729af08",
+    "runs/act1-increased-250k-8workers-20260930/review-examples.json": "19607013d6a4c30e9fb8538bceef9c5b8cb3aa5779f1d6e4f7b156e5b5a03cf0",
+    "runs/act1-increased-250k-8workers-20260930/training.json": "1efee22a889f89f4b91f56c05c49e4f85d8c9a445830a203497e99aa825d3fcf",
+    "runs/act1-increased-250k-8workers-20260930/viewer-check.json": "6719e9e0288ce49b730d6b118cd4c475ee3f5506649c06857e4708f8213498f4"
+  },
+  "checkpoints": [
+    {
+      "additional_decisions": 50000,
+      "checkpoint": "chunk-03/final.sts-model",
+      "chunk": 3,
+      "cumulative_decisions": 150000,
+      "sha256": "ee3532faa9434b001af80810f830cbcc350ca55b224682edb85851bf200593a3"
+    },
+    {
+      "additional_decisions": 100000,
+      "checkpoint": "chunk-06/final.sts-model",
+      "chunk": 6,
+      "cumulative_decisions": 200000,
+      "sha256": "2bda27aca7af15b58616bffe45210c2e87eb529c26dcb3289f345778d2da4859"
+    },
+    {
+      "additional_decisions": 150000,
+      "checkpoint": "chunk-09/final.sts-model",
+      "chunk": 9,
+      "cumulative_decisions": 250000,
+      "sha256": "daf8bc2596b2d91128210efb027e5e9544bd744d29a42210f29a6a8f463ccd6e"
+    }
+  ],
+  "checks": {
+    "all_viewer_metadata_within_64_mib": true,
+    "baseline_game_replays_matched_parent": 384,
+    "canonical_training_decisions_validated": 150000,
+    "copied_actor_and_critic_exactly": true,
+    "distinct_baseline_games_reproduced": 128,
+    "exact_resume_transitions_verified": 9,
+    "final_resume_states_restored": 9,
+    "fresh_optimizer_rng_cursor_verified": true,
+    "no_partial_artifacts": true,
+    "paired_evaluation_cases_verified": 192,
+    "paired_public_starts_verified": 64,
+    "private_files_owner_only": 1798,
+    "unique_training_reset_seeds": 1160
+  },
+  "cumulative_trained_decisions": 250000,
+  "date": "2026-09-30",
+  "evaluation": [
+    {
+      "cumulative_decisions": 150000,
+      "paired_vs_heuristic": {
+        "learned": {
+          "act1_clear_rate_difference": 0.125,
+          "act1_clears_only_candidate": 8,
+          "act1_clears_only_heuristic": 0,
+          "cases": 64,
+          "conclusion": "inconclusive",
+          "difference_group_hoeffding_95": [
+            -0.2145253789351549,
+            0.4645253789351549
+          ]
+        },
+        "reference": {
+          "act1_clear_rate_difference": 0.171875,
+          "act1_clears_only_candidate": 11,
+          "act1_clears_only_heuristic": 0,
+          "cases": 64,
+          "conclusion": "inconclusive",
+          "difference_group_hoeffding_95": [
+            -0.1676503789351549,
+            0.5114003789351549
+          ]
+        }
+      },
+      "paired_vs_initializer": {
+        "act1_clear_rate_difference": -0.046875,
+        "act1_clears_only_candidate": 5,
+        "act1_clears_only_reference": 8,
+        "cases": 64,
+        "conclusion": "inconclusive",
+        "difference_group_hoeffding_95": [
+          -0.3864003789351549,
+          0.2926503789351549
+        ]
+      },
+      "report_sha256": "68e4bdfb0c8fe999d6da36505d2cd3efb7bea818380aacaf39847e0be4e4ee15",
+      "seconds": 166.39205804094672,
+      "summary": {
+        "heuristic": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.0,
+          "act1_clear_rate_group_hoeffding_95": [
+            0,
+            0.16976268946757744
+          ],
+          "act1_clears": 0,
+          "attempted": 64,
+          "boss_reaches": 26,
+          "by_region": {
+            "overgrowth": {
+              "act1_clears": 0,
+              "boss_reaches": 8
+            },
+            "underdocks": {
+              "act1_clears": 0,
+              "boss_reaches": 18
+            }
+          },
+          "cutoffs": 0,
+          "decisions_per_second": 32.50979344639043,
+          "defeats": 64,
+          "failures": 0,
+          "mean_last_observed_floor": 12.0,
+          "mean_living_combat_exit_hp_fraction": 0.6589971855661004,
+          "observed_living_combat_exits": 369,
+          "planned": 64,
+          "policy_seconds": 42.86746217403561,
+          "review_flag_episodes": 0,
+          "review_flags": {},
+          "run_wins": 0,
+          "steps": 10069,
+          "total_seconds": 309.7220539590344,
+          "unattempted": 0
+        },
+        "learned": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.125,
+          "act1_clear_rate_group_hoeffding_95": [
+            0,
+            0.29476268946757744
+          ],
+          "act1_clears": 8,
+          "attempted": 64,
+          "boss_reaches": 34,
+          "by_region": {
+            "overgrowth": {
+              "act1_clears": 3,
+              "boss_reaches": 16
+            },
+            "underdocks": {
+              "act1_clears": 5,
+              "boss_reaches": 18
+            }
+          },
+          "cutoffs": 0,
+          "decisions_per_second": 24.95642420951205,
+          "defeats": 56,
+          "failures": 0,
+          "mean_last_observed_floor": 12.421875,
+          "mean_living_combat_exit_hp_fraction": 0.6914233616557208,
+          "observed_living_combat_exits": 455,
+          "planned": 64,
+          "policy_seconds": 124.37088829022832,
+          "review_flag_episodes": 39,
+          "review_flags": {
+            "end_turn_with_playable_card": 52
+          },
+          "run_wins": 0,
+          "steps": 10591,
+          "total_seconds": 424.3797072484158,
+          "unattempted": 0
+        },
+        "reference": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.171875,
+          "act1_clear_rate_group_hoeffding_95": [
+            0.0021123105324225566,
+            0.34163768946757744
+          ],
+          "act1_clears": 11,
+          "attempted": 64,
+          "boss_reaches": 34,
+          "by_region": {
+            "overgrowth": {
+              "act1_clears": 6,
+              "boss_reaches": 15
+            },
+            "underdocks": {
+              "act1_clears": 5,
+              "boss_reaches": 19
+            }
+          },
+          "cutoffs": 0,
+          "decisions_per_second": 25.615081655952835,
+          "defeats": 53,
+          "failures": 0,
+          "mean_last_observed_floor": 12.6875,
+          "mean_living_combat_exit_hp_fraction": 0.6787501992659243,
+          "observed_living_combat_exits": 437,
+          "planned": 64,
+          "policy_seconds": 117.81607345910743,
+          "review_flag_episodes": 0,
+          "review_flags": {},
+          "run_wins": 0,
+          "steps": 10298,
+          "total_seconds": 402.02877891692333,
+          "unattempted": 0
+        }
+      }
+    },
+    {
+      "cumulative_decisions": 200000,
+      "paired_vs_heuristic": {
+        "learned": {
+          "act1_clear_rate_difference": 0.140625,
+          "act1_clears_only_candidate": 9,
+          "act1_clears_only_heuristic": 0,
+          "cases": 64,
+          "conclusion": "inconclusive",
+          "difference_group_hoeffding_95": [
+            -0.1989003789351549,
+            0.4801503789351549
+          ]
+        },
+        "reference": {
+          "act1_clear_rate_difference": 0.171875,
+          "act1_clears_only_candidate": 11,
+          "act1_clears_only_heuristic": 0,
+          "cases": 64,
+          "conclusion": "inconclusive",
+          "difference_group_hoeffding_95": [
+            -0.1676503789351549,
+            0.5114003789351549
+          ]
+        }
+      },
+      "paired_vs_initializer": {
+        "act1_clear_rate_difference": -0.03125,
+        "act1_clears_only_candidate": 6,
+        "act1_clears_only_reference": 8,
+        "cases": 64,
+        "conclusion": "inconclusive",
+        "difference_group_hoeffding_95": [
+          -0.3707753789351549,
+          0.3082753789351549
+        ]
+      },
+      "report_sha256": "800712d0920ae558826bd281ac1436df97fe9417d662bd99badca572e175f40a",
+      "seconds": 168.03957500006072,
+      "summary": {
+        "heuristic": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.0,
+          "act1_clear_rate_group_hoeffding_95": [
+            0,
+            0.16976268946757744
+          ],
+          "act1_clears": 0,
+          "attempted": 64,
+          "boss_reaches": 26,
+          "by_region": {
+            "overgrowth": {
+              "act1_clears": 0,
+              "boss_reaches": 8
+            },
+            "underdocks": {
+              "act1_clears": 0,
+              "boss_reaches": 18
+            }
+          },
+          "cutoffs": 0,
+          "decisions_per_second": 33.14748997316464,
+          "defeats": 64,
+          "failures": 0,
+          "mean_last_observed_floor": 12.0,
+          "mean_living_combat_exit_hp_fraction": 0.6589971855661004,
+          "observed_living_combat_exits": 369,
+          "planned": 64,
+          "policy_seconds": 41.30534570268355,
+          "review_flag_episodes": 0,
+          "review_flags": {},
+          "run_wins": 0,
+          "steps": 10069,
+          "total_seconds": 303.7635732947383,
+          "unattempted": 0
+        },
+        "learned": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.140625,
+          "act1_clear_rate_group_hoeffding_95": [
+            0,
+            0.31038768946757744
+          ],
+          "act1_clears": 9,
+          "attempted": 64,
+          "boss_reaches": 44,
+          "by_region": {
+            "overgrowth": {
+              "act1_clears": 6,
+              "boss_reaches": 23
+            },
+            "underdocks": {
+              "act1_clears": 3,
+              "boss_reaches": 21
+            }
+          },
+          "cutoffs": 0,
+          "decisions_per_second": 25.10355186295323,
+          "defeats": 55,
+          "failures": 0,
+          "mean_last_observed_floor": 13.953125,
+          "mean_living_combat_exit_hp_fraction": 0.6751316241589917,
+          "observed_living_combat_exits": 488,
+          "planned": 64,
+          "policy_seconds": 137.4917634818703,
+          "review_flag_episodes": 0,
+          "review_flags": {},
+          "run_wins": 0,
+          "steps": 11506,
+          "total_seconds": 458.3415152889211,
+          "unattempted": 0
+        },
+        "reference": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.171875,
+          "act1_clear_rate_group_hoeffding_95": [
+            0.0021123105324225566,
+            0.34163768946757744
+          ],
+          "act1_clears": 11,
+          "attempted": 64,
+          "boss_reaches": 34,
+          "by_region": {
+            "overgrowth": {
+              "act1_clears": 6,
+              "boss_reaches": 15
+            },
+            "underdocks": {
+              "act1_clears": 5,
+              "boss_reaches": 19
+            }
+          },
+          "cutoffs": 0,
+          "decisions_per_second": 26.03980149417398,
+          "defeats": 53,
+          "failures": 0,
+          "mean_last_observed_floor": 12.6875,
+          "mean_living_combat_exit_hp_fraction": 0.6787501992659243,
+          "observed_living_combat_exits": 437,
+          "planned": 64,
+          "policy_seconds": 115.77118643908761,
+          "review_flag_episodes": 0,
+          "review_flags": {},
+          "run_wins": 0,
+          "steps": 10298,
+          "total_seconds": 395.47152470820583,
+          "unattempted": 0
+        }
+      }
+    },
+    {
+      "cumulative_decisions": 250000,
+      "paired_vs_heuristic": {
+        "learned": {
+          "act1_clear_rate_difference": 0.265625,
+          "act1_clears_only_candidate": 17,
+          "act1_clears_only_heuristic": 0,
+          "cases": 64,
+          "conclusion": "inconclusive",
+          "difference_group_hoeffding_95": [
+            -0.07390037893515489,
+            0.6051503789351549
+          ]
+        },
+        "reference": {
+          "act1_clear_rate_difference": 0.171875,
+          "act1_clears_only_candidate": 11,
+          "act1_clears_only_heuristic": 0,
+          "cases": 64,
+          "conclusion": "inconclusive",
+          "difference_group_hoeffding_95": [
+            -0.1676503789351549,
+            0.5114003789351549
+          ]
+        }
+      },
+      "paired_vs_initializer": {
+        "act1_clear_rate_difference": 0.09375,
+        "act1_clears_only_candidate": 10,
+        "act1_clears_only_reference": 4,
+        "cases": 64,
+        "conclusion": "inconclusive",
+        "difference_group_hoeffding_95": [
+          -0.2457753789351549,
+          0.4332753789351549
+        ]
+      },
+      "report_sha256": "c7c2905f0901add2ee65f5c1ebadde49f48e0ea473df88012f408f29edf0383f",
+      "seconds": 166.82960245897993,
+      "summary": {
+        "heuristic": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.0,
+          "act1_clear_rate_group_hoeffding_95": [
+            0,
+            0.16976268946757744
+          ],
+          "act1_clears": 0,
+          "attempted": 64,
+          "boss_reaches": 26,
+          "by_region": {
+            "overgrowth": {
+              "act1_clears": 0,
+              "boss_reaches": 8
+            },
+            "underdocks": {
+              "act1_clears": 0,
+              "boss_reaches": 18
+            }
+          },
+          "cutoffs": 0,
+          "decisions_per_second": 33.18059127306133,
+          "defeats": 64,
+          "failures": 0,
+          "mean_last_observed_floor": 12.0,
+          "mean_living_combat_exit_hp_fraction": 0.6589971855661004,
+          "observed_living_combat_exits": 369,
+          "planned": 64,
+          "policy_seconds": 42.41419139574282,
+          "review_flag_episodes": 0,
+          "review_flags": {},
+          "run_wins": 0,
+          "steps": 10069,
+          "total_seconds": 303.4605356226675,
+          "unattempted": 0
+        },
+        "learned": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.265625,
+          "act1_clear_rate_group_hoeffding_95": [
+            0.09586231053242256,
+            0.43538768946757744
+          ],
+          "act1_clears": 17,
+          "attempted": 64,
+          "boss_reaches": 44,
+          "by_region": {
+            "overgrowth": {
+              "act1_clears": 10,
+              "boss_reaches": 23
+            },
+            "underdocks": {
+              "act1_clears": 7,
+              "boss_reaches": 21
+            }
+          },
+          "cutoffs": 0,
+          "decisions_per_second": 25.181025968886686,
+          "defeats": 47,
+          "failures": 0,
+          "mean_last_observed_floor": 13.96875,
+          "mean_living_combat_exit_hp_fraction": 0.6995278691071573,
+          "observed_living_combat_exits": 500,
+          "planned": 64,
+          "policy_seconds": 131.44665586133488,
+          "review_flag_episodes": 30,
+          "review_flags": {
+            "end_turn_with_playable_card": 34
+          },
+          "run_wins": 0,
+          "steps": 11177,
+          "total_seconds": 443.86594945774414,
+          "unattempted": 0
+        },
+        "reference": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.171875,
+          "act1_clear_rate_group_hoeffding_95": [
+            0.0021123105324225566,
+            0.34163768946757744
+          ],
+          "act1_clears": 11,
+          "attempted": 64,
+          "boss_reaches": 34,
+          "by_region": {
+            "overgrowth": {
+              "act1_clears": 6,
+              "boss_reaches": 15
+            },
+            "underdocks": {
+              "act1_clears": 5,
+              "boss_reaches": 19
+            }
+          },
+          "cutoffs": 0,
+          "decisions_per_second": 26.13789754370903,
+          "defeats": 53,
+          "failures": 0,
+          "mean_last_observed_floor": 12.6875,
+          "mean_living_combat_exit_hp_fraction": 0.6787501992659243,
+          "observed_living_combat_exits": 437,
+          "planned": 64,
+          "policy_seconds": 115.21087615774013,
+          "review_flag_episodes": 0,
+          "review_flags": {},
+          "run_wins": 0,
+          "steps": 10298,
+          "total_seconds": 393.98731220746413,
+          "unattempted": 0
+        }
+      }
+    }
+  ],
+  "experiment": {
+    "encounters": [
+      "overgrowth",
+      "underdocks"
+    ],
+    "ppo": {
+      "batch_size": 16,
+      "clip_ratio": 0.2,
+      "entropy_weight": 0.01,
+      "episode_decisions": 512,
+      "episode_seconds": 120.0,
+      "epochs": 2,
+      "gae_lambda": 0.95,
+      "gamma": 1.0,
+      "gradient_clip": 0.5,
+      "learning_rate": 0.0003,
+      "normalize_advantages": true,
+      "rollout_steps": 4096,
+      "target_kl": 0.03,
+      "value_weight": 0.5
+    },
+    "schema": "sts_ppo_experiment_v2",
+    "source": "ironclad_a0_full_run_v1",
+    "training": {
+      "action_policy": "commit_decisions_v1",
+      "mode": "full_run",
+      "reward": {
+        "goal": "act1",
+        "schema": "sts_full_run_reward_v3",
+        "weights": {
+          "act_cleared": 1.0,
+          "combat_loss": 0.0,
+          "combat_win": 0.2,
+          "end_turn_action": -0.001,
+          "potion_use_action": 0.0,
+          "run_abandoned": -1.0,
+          "run_defeat": -1.0,
+          "run_victory": 0.0,
+          "win_hp_fraction": 0.1
+        }
+      },
+      "scenario_set": "ironclad_a0_full_run_v1"
+    }
+  },
+  "implementation": {
+    "build": "6a27de4481021fccbdbcda3bede283f4ceb0b8f25653691ce51a354e0772a896",
+    "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+    "rules": "cb4110d297799c139c5912c30a0e0903630c1c8ab2141eded608b90a7b1e0926",
+    "target": "sts2-v0.107.1-steam-23811903"
+  },
+  "inherited_trained_decisions": 100000,
+  "initializer": {
+    "all_tensors_equal_original_100k": true,
+    "checkpoint": "runs/act1-reward-navigation-20260930/increased/frozen-100k.sts-model",
+    "exact_continuation_from_original_optimizer": false,
+    "fresh_learner_rng_and_disjoint_reserved_training_range": true,
+    "learned_actor_and_critic_retained": true,
+    "optimizer": "fresh empty optimizer for the changed action-policy experiment",
+    "resume_sha256": "9c50311126f715eb472f8904bf5278390c157c4bb147b0307413bc2708e8d0ec",
+    "sha256": "d14bc9f297704ba9f1c2404ea0b00c323f50400af44898593e75e628c8671bee",
+    "start_sha256": "76b425b0b42ec857fbdc4c8b5e282cfc22e126697f964454bbf2276eed5ed051"
+  },
+  "iterations": [
+    {
+      "act1_clears": 0,
+      "additional_decisions": 4096,
+      "cumulative_decisions": 104096,
+      "episodes": 35,
+      "iteration": 1,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.007774133726002219,
+        "clip_fraction": 0.09619140625,
+        "entropy": 0.7930268747732043,
+        "loss": -0.0020680660163634457,
+        "policy_loss": -0.0015517972351517528,
+        "value_mse": 0.01482799976656679
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 819,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 0,
+      "additional_decisions": 8192,
+      "cumulative_decisions": 108192,
+      "episodes": 37,
+      "iteration": 2,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.006776374581477285,
+        "clip_fraction": 0.0765380859375,
+        "entropy": 0.7460800184635445,
+        "loss": 0.000582466988817032,
+        "policy_loss": -0.0013090468246446108,
+        "value_mse": 0.018704627337683633
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 790,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 0,
+      "additional_decisions": 12288,
+      "cumulative_decisions": 112288,
+      "episodes": 35,
+      "iteration": 3,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.009168089336185403,
+        "clip_fraction": 0.103271484375,
+        "entropy": 0.7544623186986428,
+        "loss": 0.0025665365292297793,
+        "policy_loss": -0.0017479076559538953,
+        "value_mse": 0.02371813542504242
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 805,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 1,
+      "additional_decisions": 16384,
+      "cumulative_decisions": 116384,
+      "episodes": 34,
+      "iteration": 4,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.007888472999979967,
+        "clip_fraction": 0.0869140625,
+        "entropy": 0.7473978293128312,
+        "loss": 0.0059418580513010966,
+        "policy_loss": -0.00046224826292018406,
+        "value_mse": 0.02775616916369472
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 797,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 0,
+      "additional_decisions": 20480,
+      "cumulative_decisions": 120480,
+      "episodes": 32,
+      "iteration": 5,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.006640695049384249,
+        "clip_fraction": 0.083984375,
+        "entropy": 0.7614306947216392,
+        "loss": 0.0017991277227338287,
+        "policy_loss": 0.0007781354215694591,
+        "value_mse": 0.017270597488277417
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 795,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 1,
+      "additional_decisions": 24576,
+      "cumulative_decisions": 124576,
+      "episodes": 29,
+      "iteration": 6,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.0077501420680050614,
+        "clip_fraction": 0.0904541015625,
+        "entropy": 0.7499035269138403,
+        "loss": 0.001393938044202514,
+        "policy_loss": -0.0004222983079671394,
+        "value_mse": 0.018630542566370423
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 730,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 0,
+      "additional_decisions": 28672,
+      "cumulative_decisions": 128672,
+      "episodes": 30,
+      "iteration": 7,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.008172173323970355,
+        "clip_fraction": 0.0904541015625,
+        "entropy": 0.763638583041029,
+        "loss": 3.9986281080928165e-05,
+        "policy_loss": 0.00047242957043636125,
+        "value_mse": 0.014407884287720663
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 783,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 0,
+      "additional_decisions": 32768,
+      "cumulative_decisions": 132768,
+      "episodes": 31,
+      "iteration": 8,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.009565158156917164,
+        "clip_fraction": 0.101318359375,
+        "entropy": 0.7216764496988617,
+        "loss": -0.0007362530459431582,
+        "policy_loss": -0.0009498164763499517,
+        "value_mse": 0.014860654774111026
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 785,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 0,
+      "additional_decisions": 36864,
+      "cumulative_decisions": 136864,
+      "episodes": 34,
+      "iteration": 9,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.008259273027135805,
+        "clip_fraction": 0.086669921875,
+        "entropy": 0.7353209970751777,
+        "loss": 0.0024738575957599096,
+        "policy_loss": 0.000661465684970608,
+        "value_mse": 0.01833120314631742
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 800,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 0,
+      "additional_decisions": 40960,
+      "cumulative_decisions": 140960,
+      "episodes": 33,
+      "iteration": 10,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.007468222928252999,
+        "clip_fraction": 0.0860595703125,
+        "entropy": 0.7390342691214755,
+        "loss": 0.0008450129726043087,
+        "policy_loss": -0.000992505327303661,
+        "value_mse": 0.018455721086866106
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 819,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 0,
+      "additional_decisions": 45056,
+      "cumulative_decisions": 145056,
+      "episodes": 35,
+      "iteration": 11,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.006336282107312741,
+        "clip_fraction": 0.075439453125,
+        "entropy": 0.7393859797739424,
+        "loss": 0.0016533053985767765,
+        "policy_loss": -0.000691058739903383,
+        "value_mse": 0.019476447122542595
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 828,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 1,
+      "additional_decisions": 49152,
+      "cumulative_decisions": 149152,
+      "episodes": 30,
+      "iteration": 12,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.010310072472464071,
+        "clip_fraction": 0.0916748046875,
+        "entropy": 0.7608580306405202,
+        "loss": 0.004998437085305341,
+        "policy_loss": 0.0003465661393420305,
+        "value_mse": 0.02452090180486266
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 792,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 0,
+      "additional_decisions": 50000,
+      "cumulative_decisions": 150000,
+      "episodes": 11,
+      "iteration": 13,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.006544436297087297,
+        "clip_fraction": 0.07900943396226415,
+        "entropy": 0.7718908187915694,
+        "loss": -0.005480019050597583,
+        "policy_loss": -0.004786780191901719,
+        "value_mse": 0.014051334014302998
+      },
+      "optimizer_steps": 106,
+      "rollout_decisions": 848,
+      "signal": {
+        "nonzero_advantages": 848,
+        "nonzero_returns": 848,
+        "nonzero_rewards": 165,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 1,
+      "additional_decisions": 54096,
+      "cumulative_decisions": 154096,
+      "episodes": 34,
+      "iteration": 14,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.008124362656047879,
+        "clip_fraction": 0.0897216796875,
+        "entropy": 0.758625838207081,
+        "loss": 0.0047460014902753755,
+        "policy_loss": -0.0010427445213281317,
+        "value_mse": 0.026750007582450053
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 814,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 1,
+      "additional_decisions": 58192,
+      "cumulative_decisions": 158192,
+      "episodes": 35,
+      "iteration": 15,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.008155861901087746,
+        "clip_fraction": 0.092529296875,
+        "entropy": 0.7225074645248242,
+        "loss": 0.006202261077305593,
+        "policy_loss": -0.0007513736782129854,
+        "value_mse": 0.028357418515952304
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 826,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 1,
+      "additional_decisions": 62288,
+      "cumulative_decisions": 162288,
+      "episodes": 32,
+      "iteration": 16,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.00887800913716319,
+        "clip_fraction": 0.0894775390625,
+        "entropy": 0.7239455064991489,
+        "loss": 0.0071510808302264195,
+        "policy_loss": 0.0007876665804360528,
+        "value_mse": 0.027205738112570543
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 826,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 0,
+      "additional_decisions": 66384,
+      "cumulative_decisions": 166384,
+      "episodes": 33,
+      "iteration": 17,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.007716497453770899,
+        "clip_fraction": 0.085205078125,
+        "entropy": 0.7563164818566293,
+        "loss": 0.004067283353833773,
+        "policy_loss": 0.0013881083759770263,
+        "value_mse": 0.020484678935645206
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 800,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 1,
+      "additional_decisions": 70480,
+      "cumulative_decisions": 170480,
+      "episodes": 29,
+      "iteration": 18,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.006810892726207385,
+        "clip_fraction": 0.07958984375,
+        "entropy": 0.7456267622765154,
+        "loss": 0.007518676863583096,
+        "policy_loss": -0.0009551214752718806,
+        "value_mse": 0.03186013137928967
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 805,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 1,
+      "additional_decisions": 74576,
+      "cumulative_decisions": 174576,
+      "episodes": 33,
+      "iteration": 19,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.006748300116043993,
+        "clip_fraction": 0.0782470703125,
+        "entropy": 0.7403468696866184,
+        "loss": 0.0063706771261422546,
+        "policy_loss": -0.0015976825143297901,
+        "value_mse": 0.030743656097001804
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 840,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 0,
+      "additional_decisions": 78672,
+      "cumulative_decisions": 178672,
+      "episodes": 33,
+      "iteration": 20,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.008692711505858597,
+        "clip_fraction": 0.10009765625,
+        "entropy": 0.7197092389687896,
+        "loss": 0.0013162088089302415,
+        "policy_loss": -0.0029263984724821057,
+        "value_mse": 0.022879398612531077
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 787,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 1,
+      "additional_decisions": 82768,
+      "cumulative_decisions": 182768,
+      "episodes": 28,
+      "iteration": 21,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.008860418924086844,
+        "clip_fraction": 0.09228515625,
+        "entropy": 0.6996981468400918,
+        "loss": 0.007146039078179456,
+        "policy_loss": -0.0004360975835879799,
+        "value_mse": 0.029158236167859286
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 785,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 1,
+      "additional_decisions": 86864,
+      "cumulative_decisions": 186864,
+      "episodes": 29,
+      "iteration": 22,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.008610130396789373,
+        "clip_fraction": 0.08935546875,
+        "entropy": 0.7214748483966105,
+        "loss": 0.0069635589943572995,
+        "policy_loss": 0.0002908416172431316,
+        "value_mse": 0.027774931064413977
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 797,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 0,
+      "additional_decisions": 90960,
+      "cumulative_decisions": 190960,
+      "episodes": 32,
+      "iteration": 23,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.008701719245095774,
+        "clip_fraction": 0.092041015625,
+        "entropy": 0.7224415094242431,
+        "loss": 0.002724083518842235,
+        "policy_loss": -0.0019601432904892135,
+        "value_mse": 0.02381728249747539
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 789,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 1,
+      "additional_decisions": 95056,
+      "cumulative_decisions": 195056,
+      "episodes": 29,
+      "iteration": 24,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.00861260974525635,
+        "clip_fraction": 0.0863037109375,
+        "entropy": 0.7140100550604984,
+        "loss": 0.008276192315861408,
+        "policy_loss": -0.0008606099800090306,
+        "value_mse": 0.03255380539303587
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 763,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 1,
+      "additional_decisions": 99152,
+      "cumulative_decisions": 199152,
+      "episodes": 32,
+      "iteration": 25,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.008853498397982662,
+        "clip_fraction": 0.095947265625,
+        "entropy": 0.7122184152249247,
+        "loss": 0.009288200077207875,
+        "policy_loss": -0.0008047680112213129,
+        "value_mse": 0.03443030400376301
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 812,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 0,
+      "additional_decisions": 100000,
+      "cumulative_decisions": 200000,
+      "episodes": 10,
+      "iteration": 26,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.00606552309250648,
+        "clip_fraction": 0.06426886792452831,
+        "entropy": 0.6436698034686862,
+        "loss": 0.002010880402763778,
+        "policy_loss": -0.004163373103541024,
+        "value_mse": 0.025221906413482327
+      },
+      "optimizer_steps": 106,
+      "rollout_decisions": 848,
+      "signal": {
+        "nonzero_advantages": 848,
+        "nonzero_returns": 848,
+        "nonzero_rewards": 175,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 1,
+      "additional_decisions": 104096,
+      "cumulative_decisions": 204096,
+      "episodes": 29,
+      "iteration": 27,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.01015842172438397,
+        "clip_fraction": 0.111328125,
+        "entropy": 0.6904680285952054,
+        "loss": 0.006469723150530626,
+        "policy_loss": -0.0036092844438826432,
+        "value_mse": 0.03396737445746112
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 779,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 2,
+      "additional_decisions": 108192,
+      "cumulative_decisions": 208192,
+      "episodes": 29,
+      "iteration": 28,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.00855325769973092,
+        "clip_fraction": 0.0899658203125,
+        "entropy": 0.6715822879341431,
+        "loss": 0.01173193597833233,
+        "policy_loss": -0.00017400684373569675,
+        "value_mse": 0.03724353149959825
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 797,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 0,
+      "additional_decisions": 112288,
+      "cumulative_decisions": 212288,
+      "episodes": 31,
+      "iteration": 29,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.009453673436098597,
+        "clip_fraction": 0.0994873046875,
+        "entropy": 0.7199552040547132,
+        "loss": 0.0007465279159077909,
+        "policy_loss": -0.0006939936356502585,
+        "value_mse": 0.017280147792007483
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 801,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 1,
+      "additional_decisions": 116384,
+      "cumulative_decisions": 216384,
+      "episodes": 28,
+      "iteration": 30,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.009019786912176642,
+        "clip_fraction": 0.1036376953125,
+        "entropy": 0.7024222867912613,
+        "loss": 0.004244779058353743,
+        "policy_loss": -0.0030965831283538137,
+        "value_mse": 0.028731170178161847
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 784,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 1,
+      "additional_decisions": 120480,
+      "cumulative_decisions": 220480,
+      "episodes": 32,
+      "iteration": 31,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.007639765402700505,
+        "clip_fraction": 0.0882568359375,
+        "entropy": 0.6812662942102179,
+        "loss": 0.004770868641571724,
+        "policy_loss": -0.001318147437814332,
+        "value_mse": 0.025803358200391813
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 791,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 1,
+      "additional_decisions": 124576,
+      "cumulative_decisions": 224576,
+      "episodes": 28,
+      "iteration": 32,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.008411960464300705,
+        "clip_fraction": 0.091796875,
+        "entropy": 0.6945353147457354,
+        "loss": 0.0075631590152624995,
+        "policy_loss": 0.0014944380636734422,
+        "value_mse": 0.026028147940451163
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 801,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 1,
+      "additional_decisions": 128672,
+      "cumulative_decisions": 228672,
+      "episodes": 31,
+      "iteration": 33,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.008002569959216999,
+        "clip_fraction": 0.0904541015625,
+        "entropy": 0.6789375143125653,
+        "loss": 0.008948700214205019,
+        "policy_loss": 0.0009197164863508078,
+        "value_mse": 0.029636717764333298
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 800,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 1,
+      "additional_decisions": 132768,
+      "cumulative_decisions": 232768,
+      "episodes": 30,
+      "iteration": 34,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.007071264867974492,
+        "clip_fraction": 0.078857421875,
+        "entropy": 0.6570517237414606,
+        "loss": 0.010192894280407927,
+        "policy_loss": -0.00035505292362358887,
+        "value_mse": 0.03423692854175897
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 792,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 1,
+      "additional_decisions": 136864,
+      "cumulative_decisions": 236864,
+      "episodes": 30,
+      "iteration": 35,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.008425129137521026,
+        "clip_fraction": 0.09130859375,
+        "entropy": 0.6537118475534953,
+        "loss": 0.007560714845567418,
+        "policy_loss": -0.0009745991083036643,
+        "value_mse": 0.030144864341309585
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 792,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 2,
+      "additional_decisions": 140960,
+      "cumulative_decisions": 240960,
+      "episodes": 29,
+      "iteration": 36,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.007144407141680631,
+        "clip_fraction": 0.078369140625,
+        "entropy": 0.6713829481159337,
+        "loss": 0.013609329380415147,
+        "policy_loss": 0.00014730041493749013,
+        "value_mse": 0.040351716289478645
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 775,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 2,
+      "additional_decisions": 145056,
+      "cumulative_decisions": 245056,
+      "episodes": 29,
+      "iteration": 37,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.0075418285805142204,
+        "clip_fraction": 0.0892333984375,
+        "entropy": 0.6838195742457174,
+        "loss": 0.009907569828556007,
+        "policy_loss": -0.00214682136902411,
+        "value_mse": 0.03778517372393253
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 774,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 2,
+      "additional_decisions": 149152,
+      "cumulative_decisions": 249152,
+      "episodes": 29,
+      "iteration": 38,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.008633205185788029,
+        "clip_fraction": 0.0931396484375,
+        "entropy": 0.6441043003287632,
+        "loss": 0.01283905108084582,
+        "policy_loss": -0.0008079633407760412,
+        "value_mse": 0.04017611552717426
+      },
+      "optimizer_steps": 512,
+      "rollout_decisions": 4096,
+      "signal": {
+        "nonzero_advantages": 4096,
+        "nonzero_returns": 4096,
+        "nonzero_rewards": 801,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    },
+    {
+      "act1_clears": 0,
+      "additional_decisions": 150000,
+      "cumulative_decisions": 250000,
+      "episodes": 10,
+      "iteration": 39,
+      "kl_early_stop": false,
+      "mean_update": {
+        "approx_kl": 0.007808520103215003,
+        "clip_fraction": 0.07665094339622641,
+        "entropy": 0.6276489541215716,
+        "loss": 0.0005104168854161815,
+        "policy_loss": -0.005377950937539901,
+        "value_mse": 0.02432971271106376
+      },
+      "optimizer_steps": 106,
+      "rollout_decisions": 848,
+      "signal": {
+        "nonzero_advantages": 848,
+        "nonzero_returns": 848,
+        "nonzero_rewards": 170,
+        "policy": "skip_zero_signal_v1",
+        "replayed_nonzero_value_errors": null
+      }
+    }
+  ],
+  "learners": 1,
+  "limitations": [
+    "One learner and reused development starts; no independent repeatability/generalization claim.",
+    "100k inherited decisions were trained with commit_card_selection_v1; the additional 150k use commit_decisions_v1.",
+    "The policy change starts a fresh optimizer/RNG/cursor boundary with identical inherited weights; exact resume is used only within this segment.",
+    "Reward coefficients, model/vocabulary and engine rules remain unchanged. Headless evidence only."
+  ],
+  "mean_training_win_hp_fraction": 0.6605715378887229,
+  "optimizer_updates": 18750,
+  "policy_restricted_training_decisions": 1082,
+  "preparation_timing": {
+    "elapsed_seconds": 233,
+    "first_clock_utc": "2026-09-30 11:38:20 UTC",
+    "initialization_verified_utc": "2026-09-30 11:42:13 UTC"
+  },
+  "protocol": {
+    "additional_training_decisions": 150000,
+    "authorization": "User asked to extend training to 250k decisions. Continue one increased-reward learner from the filtered 100k actor with 150k additional decisions and 8 workers; preserve intermediate checkpoints.",
+    "chunk_decisions": [
+      16384,
+      16384,
+      17232,
+      16384,
+      16384,
+      17232,
+      16384,
+      16384,
+      17232
+    ],
+    "config_sha256": "30092801b2d24a3e6c0b39dc291083c58989aad6a24932308c4665690305b127",
+    "cumulative_training_target": 250000,
+    "date": "2026-09-30",
+    "dependencies": {
+      "gymnasium": "1.0.0",
+      "numpy": "2.4.6",
+      "pytest": "8.4.2",
+      "torch": "2.13.0"
+    },
+    "evaluation": {
+      "cases": 64,
+      "episode_seconds": 90,
+      "goal": "act1",
+      "max_decisions": 1024,
+      "reference": "runs/act1-reward-navigation-20260930/increased/frozen-100k.sts-model",
+      "reference_baseline_act1_clears": 11,
+      "regions": {
+        "overgrowth": 32,
+        "underdocks": 32
+      },
+      "schedule": "Evaluate all three retained endpoints after training on the same 64 development starts as the frozen filter experiment.",
+      "split": "validation",
+      "wall_limit_seconds_per_panel": 1800,
+      "workers": 8
+    },
+    "experiment": {
+      "encounters": [
+        "overgrowth",
+        "underdocks"
+      ],
+      "ppo": {
+        "batch_size": 16,
+        "clip_ratio": 0.2,
+        "entropy_weight": 0.01,
+        "episode_decisions": 512,
+        "episode_seconds": 120.0,
+        "epochs": 2,
+        "gae_lambda": 0.95,
+        "gamma": 1.0,
+        "gradient_clip": 0.5,
+        "learning_rate": 0.0003,
+        "normalize_advantages": true,
+        "rollout_steps": 4096,
+        "target_kl": 0.03,
+        "value_weight": 0.5
+      },
+      "schema": "sts_ppo_experiment_v2",
+      "source": "ironclad_a0_full_run_v1",
+      "training": {
+        "action_policy": "commit_decisions_v1",
+        "mode": "full_run",
+        "reward": {
+          "goal": "act1",
+          "schema": "sts_full_run_reward_v3",
+          "weights": {
+            "act_cleared": 1.0,
+            "combat_loss": 0.0,
+            "combat_win": 0.2,
+            "end_turn_action": -0.001,
+            "potion_use_action": 0.0,
+            "run_abandoned": -1.0,
+            "run_defeat": -1.0,
+            "run_victory": 0.0,
+            "win_hp_fraction": 0.1
+          }
+        },
+        "scenario_set": "ironclad_a0_full_run_v1"
+      }
+    },
+    "implementation": {
+      "build": "6a27de4481021fccbdbcda3bede283f4ceb0b8f25653691ce51a354e0772a896",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "cb4110d297799c139c5912c30a0e0903630c1c8ab2141eded608b90a7b1e0926",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "inherited_training_decisions": 100000,
+    "initializer": {
+      "all_tensors_equal_original_100k": true,
+      "checkpoint": "runs/act1-reward-navigation-20260930/increased/frozen-100k.sts-model",
+      "exact_continuation_from_original_optimizer": false,
+      "fresh_learner_rng_and_disjoint_reserved_training_range": true,
+      "learned_actor_and_critic_retained": true,
+      "optimizer": "fresh empty optimizer for the changed action-policy experiment",
+      "resume_sha256": "9c50311126f715eb472f8904bf5278390c157c4bb147b0307413bc2708e8d0ec",
+      "sha256": "d14bc9f297704ba9f1c2404ea0b00c323f50400af44898593e75e628c8671bee",
+      "start_sha256": "76b425b0b42ec857fbdc4c8b5e282cfc22e126697f964454bbf2276eed5ed051"
+    },
+    "learners": 1,
+    "limitations": [
+      "One learner and reused development starts; no independent repeatability/generalization claim.",
+      "100k inherited decisions were trained with commit_card_selection_v1; the additional 150k use commit_decisions_v1.",
+      "The policy change starts a fresh optimizer/RNG/cursor boundary with identical inherited weights; exact resume is used only within this segment.",
+      "Reward coefficients, model/vocabulary and engine rules remain unchanged. Headless evidence only."
+    ],
+    "milestones": [
+      150000,
+      200000,
+      250000
+    ],
+    "parent_bindings": {
+      "runs/act1-combat-reward-ab-20260930/increased/chunk-06/final.sts-model": "cef902d2ada669a4bd6a6d0c50bbc32466899f6c91fbc1d16b3ddf6fe34ca44f",
+      "runs/act1-reward-navigation-20260930/analysis.json": "33a5ab1437e9ccaa0336666649646beee5ed0d4c24f8d540e34b6181ba97a3d5",
+      "runs/act1-reward-navigation-20260930/increased/frozen-100k.sts-model": "d14bc9f297704ba9f1c2404ea0b00c323f50400af44898593e75e628c8671bee",
+      "runs/act1-reward-navigation-20260930/protocol.json": "e3fe84ef7f4a554339b8695b1874b959e5eed8e49e8effac4a8832d0e39c0d94",
+      "runs/act1-reward-navigation-20260930/source-sha256.json": "99ce63002c7c79e09d82e2df506f9f57d12636acc61e0137f1f2dbe0915427ae",
+      "runs/act1-reward-navigation-20260930/source.zip": "a5679149002482bdba003a8beafee4c63b305f90de6e65ccf021b29a92d52f4d",
+      "runs/act1-reward-navigation-20260930/validation.json": "617d2aa7249f8517991984cd6a5cdd893354c50b0f9dab5be6679d19571c622b"
+    },
+    "prepared_utc": "2026-09-30T11:42:10.644868+00:00",
+    "primary": "Act 1 clear rate and paired difference against the filtered frozen 100k initializer at the predeclared 250k endpoint.",
+    "private_registry_sha256": "d5faf5fb58455a21b06f5d55a2d53783f5a0a25360d1015c648a4e1e80ec155f",
+    "runtime": {
+      "device": "cpu",
+      "python": "3.11.15",
+      "threads": 1,
+      "torch": "2.13.0"
+    },
+    "schema": "sts_act1_increased_250k_extension_v1",
+    "script_sha256": "3c71fba3e6e2fe7b6c6d0f085159d62839ee6dbd1927c7d00460ac18b04f844f",
+    "secondary": [
+      "150k and 200k descriptive checkpoints",
+      "boss reach",
+      "floor reached",
+      "combat win HP",
+      "behavior review flags",
+      "cutoffs",
+      "operational failures"
+    ],
+    "selection": "Retain every planned endpoint; no adaptive reward tuning, extra training or promotion of the best intermediate checkpoint.",
+    "source_commit": "85b58ba3fac6ba07d8a34aadc6bb56f11e46a261",
+    "training_wall_limit_seconds": 3600,
+    "validation": {
+      "initialization_and_new_exact_resume_boundary_verified": true,
+      "reused_tests": 303,
+      "source_and_test_bindings_match": true,
+      "unchanged_runtime": true
+    },
+    "workers": 8,
+    "working_tree_status": [
+      " M README.md",
+      " M configs/training/act1_ppo.json",
+      " M configs/training/full_run_shaped_ppo.json",
+      " M docs/AGENT_TRAINING.md",
+      " M docs/HEADLESS_ENGINE.md",
+      " M docs/STATUS.md",
+      " M game/agent/action_policy.py",
+      " M game/headless/core/combat.py",
+      " M game/headless/core/snapshots.py",
+      " M tests/agent/test_action_policy.py",
+      " M tests/agent/test_selection_order.py",
+      "?? docs/evidence/act1_250k_8workers_2026_09_30.json",
+      "?? docs/evidence/act1_500k_corrected_2026_09_30.json",
+      "?? docs/evidence/act1_500k_interrupted_2026_09_30.json",
+      "?? docs/evidence/act1_combat_reward_scratch_ab_2026_09_30.json",
+      "?? docs/evidence/act1_reward_navigation_filter_2026_09_30.json",
+      "?? tests/agent/test_reward_navigation_policy.py",
+      "?? tests/agent/test_terminal_training.py",
+      "?? tests/headless/test_terminal_outcomes.py"
+    ]
+  },
+  "review_examples": {
+    "added_clear_episode": "15b85fe0b4e74b8d8636ad181a3ca0e2",
+    "block": 0,
+    "displayed_incoming_damage": 14,
+    "energy": 1,
+    "flagged_episode": "00ccf836da244230a56802aff30c9412",
+    "initializer_failed_episode": "34b13dc06dc94a5597642b1e73ef8c2a",
+    "interpretation": "Actual end-turn transition and public same-state preferences. Alternative actions were not simulated.",
+    "legal_defends": 2,
+    "preferences": [
+      {
+        "checkpoint": "100k initializer",
+        "matches_recorded_policy": false,
+        "preferred_action": "Play card \u00b7 Defend",
+        "probability": 0.39213475584983826
+      },
+      {
+        "checkpoint": "150k",
+        "matches_recorded_policy": false,
+        "preferred_action": "End turn",
+        "probability": 0.5666616559028625
+      },
+      {
+        "checkpoint": "200k",
+        "matches_recorded_policy": false,
+        "preferred_action": "Play card \u00b7 Defend",
+        "probability": 0.46441513299942017
+      },
+      {
+        "checkpoint": "250k",
+        "matches_recorded_policy": true,
+        "preferred_action": "End turn",
+        "probability": 0.5310032963752747
+      }
+    ],
+    "recorded_hp_delta": -14,
+    "state_sha256": "a99f93f3e37999264d0d96683798ed3bb7afc12af69db8689817314f6d3f9977",
+    "step": 5
+  },
+  "reward_components": {
+    "act_cleared": 27.0,
+    "combat_loss": 823.0,
+    "combat_win": 6369.0,
+    "end_turn_action": 22889.0,
+    "potion_use_action": 1590.0,
+    "run_abandoned": 0.0,
+    "run_defeat": 825.0,
+    "run_victory": 0.0,
+    "win_hp_fraction": 4207.180124813276
+  },
+  "runtime": {
+    "device": "cpu",
+    "python": "3.11.15",
+    "threads": 1,
+    "torch": "2.13.0"
+  },
+  "schema": "sts_act1_increased_250k_extension_evidence_v1",
+  "selection": "All checkpoints retained; no automatic promotion or reward-default change.",
+  "status": "complete",
+  "timings": {
+    "analysis": 415.084624415962,
+    "collection": 617.0653930006083,
+    "evaluation": 501.2612354999874,
+    "training": 1011.6911606683861,
+    "training_other": 8.080771334702149,
+    "updates": 386.5449963330757
+  },
+  "training": {
+    "accepted_decisions": 150000,
+    "act1_clears": 27,
+    "cutoffs": 308,
+    "episode_attempts": 1160,
+    "failed_episodes": 0,
+    "losses": 825,
+    "processed_decisions": 150000,
+    "skipped_decisions": 0,
+    "skipped_updates": 0,
+    "trained_decisions": 150000
+  },
+  "training_review_flags": {
+    "end_turn_with_playable_card": 751
+  },
+  "validation": {
+    "initialization_and_new_exact_resume_boundary_verified": true,
+    "reused_tests": 303,
+    "source_and_test_bindings_match": true,
+    "unchanged_runtime": true
+  },
+  "validation_note": "Reused the unchanged 303-test result from the reward-navigation change after source/test/runtime checks; verified fresh initialization and all new training/evaluation records. No production source was changed for this experiment.",
+  "viewer": {
+    "checkpoints": 4,
+    "comparison_matches_recorded_policy": true,
+    "example_url": "http://127.0.0.1:8772/#run=00ccf836da244230a56802aff30c9412&step=5",
+    "http_checks": [
+      {
+        "bytes": 6727,
+        "route": "/",
+        "status": 200
+      },
+      {
+        "bytes": 294627,
+        "route": "/api/report",
+        "status": 200
+      },
+      {
+        "bytes": 144693,
+        "route": "/api/decision?id=00ccf836da244230a56802aff30c9412&step=5",
+        "status": 200
+      },
+      {
+        "bytes": 3756,
+        "route": "/api/compare?id=00ccf836da244230a56802aff30c9412&step=5",
+        "status": 200
+      },
+      {
+        "bytes": 43509,
+        "route": "/api/run?id=15b85fe0b4e74b8d8636ad181a3ca0e2",
+        "status": 200
+      }
+    ],
+    "runs": 192,
+    "url": "http://127.0.0.1:8772"
+  },
+  "views": [
+    {
+      "cumulative_decisions": 150000,
+      "decisions": 50000,
+      "episodes": 406,
+      "kind": "training",
+      "metadata_bytes": 13909178,
+      "path": "runs/act1-increased-250k-8workers-20260930-analysis-training-150000",
+      "report_sha256": "b3d7cba61c32ca086329a4e64e4fdb0188e32c88298336f221670cd7516c570c",
+      "seconds": 50.91074374993332
+    },
+    {
+      "cumulative_decisions": 200000,
+      "decisions": 50000,
+      "episodes": 389,
+      "kind": "training",
+      "metadata_bytes": 13854907,
+      "path": "runs/act1-increased-250k-8workers-20260930-analysis-training-200000",
+      "report_sha256": "7687fc86df7b54268d3355028e2a6b5acd119c61411ab298d3a8a7de01bbdb21",
+      "seconds": 52.99067533388734
+    },
+    {
+      "cumulative_decisions": 250000,
+      "decisions": 50000,
+      "episodes": 365,
+      "kind": "training",
+      "metadata_bytes": 13840720,
+      "path": "runs/act1-increased-250k-8workers-20260930-analysis-training-250000",
+      "report_sha256": "c02cc0a1c297b4281522275faaddc3950b57c6e1d98e6ef0ad88dcabf6c6283d",
+      "seconds": 53.87260533403605
+    },
+    {
+      "cumulative_decisions": 150000,
+      "decisions": 30958,
+      "episodes": 192,
+      "kind": "evaluation",
+      "metadata_bytes": 7608362,
+      "path": "runs/act1-increased-250k-8workers-20260930-analysis-eval-150000",
+      "report_sha256": "f63ba779e6f9cb0fb58076b483792a7898584c1210a2770cf66ad288ba2783fc",
+      "seconds": 34.41428470797837
+    },
+    {
+      "cumulative_decisions": 200000,
+      "decisions": 31873,
+      "episodes": 192,
+      "kind": "evaluation",
+      "metadata_bytes": 7807490,
+      "path": "runs/act1-increased-250k-8workers-20260930-analysis-eval-200000",
+      "report_sha256": "6bebe6f0a6471e31e9087f937dbe7e0cebd7a5c800a53b9a61b5020588c7bac1",
+      "seconds": 36.0522228339687
+    },
+    {
+      "cumulative_decisions": 250000,
+      "decisions": 31544,
+      "episodes": 192,
+      "kind": "evaluation",
+      "metadata_bytes": 7752621,
+      "path": "runs/act1-increased-250k-8workers-20260930-analysis-eval-250000",
+      "report_sha256": "6b4dc814966f9e5e4f38750bcea0ffd4768212a017d1058256291ac391236df6",
+      "seconds": 35.58715654211119
+    }
+  ],
+  "workers": 8
+}

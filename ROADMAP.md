@@ -1,6 +1,6 @@
 # Roadmap
 
-Priorities updated 2026-09-29. This file owns priorities;
+Priorities updated 2026-09-30. This file owns priorities;
 [current status](docs/STATUS.md) owns capability and evidence. Follow [AGENTS.md](AGENTS.md) for the development
 process. Completed packets and old campaign instructions are historical references.
 
@@ -42,8 +42,14 @@ Further work should start from a new concrete requirement:
    needed. Unsupported shapes with no identified gameplay caller retain explicit
    limits; they are not an unbounded implementation queue.
 3. **Improve Act 1 completion.** The current training goal is Ironclad A0 Act 1
-   clear rate across Overgrowth and Underdocks, using configurable act-clear and
-   combat rewards. Full-campaign training is deferred until repeatable Act 1
+   clear rate across Overgrowth and Underdocks. The immediate learning focus is
+   [combat specialization](docs/AGENT_TRAINING.md#campaign-derived-combat-training):
+   genuine frozen combat starts from both regions, whole-campaign data splits,
+   a victory-first combat objective with modest HP shaping, and matched
+   encounter-level comparisons. Keep the noncombat heuristic fixed during hybrid
+   Act 1 checks. The existing model architecture and parallel PPO remain in use;
+   increase training budgets after checking population coverage and the combat
+   benchmark. Full-campaign training is deferred until repeatable Act 1
    progress. Use the [Act 1 workflow](docs/AGENT_TRAINING.md#act-1-training-and-configurable-act-rewards)
    for the finite task horizon and paired initializer comparison. Stronger full-run learning,
    throughput targets, stronger policies, exhaustive branch/seed coverage and a
@@ -68,9 +74,9 @@ Further work should start from a new concrete requirement:
    mandatory single-card selections across training and playback; optional and
    multiple-card selections preserve native actions because order can matter.
    PPO now skips updates with no advantage or value-learning signal and records
-   skipped work separately. Next, improve the remaining selector and reward-screen
-   completion behavior and establish useful Act 1 completion targets before
-   increasing training budgets.
+   skipped work separately. The newer commit-decisions policy prevents reversible
+   selection and reward-navigation loops while retaining native selection order.
+   Whole-run learning remains available for later integration work.
 
 [Current status](docs/STATUS.md#implementation-gaps-versus-remaining-live-tests)
 owns remaining evidence limits, and the

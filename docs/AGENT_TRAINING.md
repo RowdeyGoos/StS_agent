@@ -1,10 +1,12 @@
 # Agent training guide
 
-Prepared 2026-09-28, updated 2026-09-29 against checkout `05445c65`.
+Prepared 2026-09-28; current workflow updated 2026-09-30.
 **Status: milestones 1–7 implemented and validated.**
 **Current training goal: clear Act 1 with Ironclad at A0.** Measure improvement
 by paired Act 1 clear rate across Overgrowth and Underdocks. Training all three
-acts is deferred until this goal shows useful progress; see
+acts is deferred until this goal shows useful progress. The next learning focus is
+**combat specialization**, with fixed noncombat decisions in hybrid Act 1 checks;
+see [campaign-derived combat training](#campaign-derived-combat-training) and
 [Act 1 training and configurable act rewards](#act-1-training-and-configurable-act-rewards).
 The user authorized milestones 1–7 and requested a summary of key
 implementation details and choices after each milestone. A bounded CPU imitation
@@ -19,6 +21,510 @@ This document owns training usage, implementation choices and measured results. 
 owns the full-game objective, the [public contract](AGENT_CONTRACT.md) owns actor
 information, and the [execution guide](AGENT_EXECUTION.md) owns existing recordings
 and workers. The retired training pipelines are not implementation dependencies.
+
+## Campaign-derived combat training
+
+Freeze actual Act 1 combat starts before training. The corpus builder runs
+Ironclad A0 campaigns through both Overgrowth and Underdocks, using a fixed public
+heuristic or an explicitly supplied full-run checkpoint as the collector. Every
+reached ordinary fight, elite and boss is captured before the collector's first
+combat action. This preserves the campaign's real deck, upgrades, HP, relics,
+potions, draw order and RNG state, including fights from campaigns that later die.
+It does not equip invented late-game decks or retry losing source campaigns.
+
+```bash
+sts-agent-train build-combat-corpus --output-dir runs/combat-corpus \
+  --checkpoint runs/act1-increased-500k-8workers-20260930/chunk-15/final.sts-model \
+  --train-campaigns 32 --validation-campaigns 16 --test-campaigns 16 \
+  --route-policy mixed_elites --capture-turns 8
+```
+
+Counts are **per region** (128 campaigns in this example). The default source
+limit is 1,024 decisions / 120 seconds per campaign, stopping at the Act 1
+completion boundary. Omit `--checkpoint` to use the heuristic. The default
+private seed offset is 1,000,000; choose a fresh `--start-index` when building a
+new experimental population. Splits are assigned to entire source campaigns
+before play: fights from one campaign can never cross train/validation/test.
+
+The v2 corpus supports `--route-policy mixed_elites`: alternating campaigns in
+each region/split use the collector's original route or a route maximizing the
+number of reachable elites. The route chooser reads only legal choices and the
+public map graph; combat, rewards and other choices still use the frozen
+collector. Losing sources remain in the corpus, without retries or HP/inventory
+assistance. Defaults remain `collector` routing and one opening per fight.
+
+`--capture-turns 8` also freezes the first ordinary player decision in turns 2–8
+when reached, with a maximum of eight starts per combat (allowed range 1–12).
+It waits for pending enemy/card selections to finish before capturing a later
+turn. These states preserve real hand/deck order, enemy powers, HP, potions and
+RNG. Their purpose is direct practice of blocking, potion timing and changing
+enemy mechanics such as Vantom's Slippery stacks. They are collector-conditioned
+states, not new independent fights or expert action labels. Openings and all
+continuations share both a combat ID and their campaign's split.
+
+The public `corpus.json` lists opaque case and campaign IDs, encounter/floor,
+inventory and initial-public-state digests, actual HP/deck ranges, coverage by
+region and fight type, and missing encounter/region/type combinations. It also
+reports opening/continuation counts, missing elites/bosses, potion availability
+by type, HP bands, displayed attack pressure and visible enemy powers. Attack
+pressure uses displayed damage × hits minus current block, not a forecast of
+all end-turn effects. A relic-choice context that hides combat reports this
+information as unavailable. Inspect
+these gaps before setting a training budget. Collector survival and routing bias
+remain: later fights only contain inventories that this collector reached.
+The private sibling directory contains owner-only seed mappings and exact engine
+snapshots. Keep both directories together; the actor only sees public decisions.
+Restoration checks snapshot bytes, source campaign seed, and public initial state;
+each episode gets a fresh engine and fresh adapter history.
+Snapshot JSON preserves engine map insertion order, including visible potion
+powers. The builder derives the initial public digest from the exact bytes it
+publishes; generic sorted-key report serialization must not be used for engine
+snapshots. A Liquid Bronze + Regen regression covers this later-turn boundary.
+
+The builder also writes `combat-training.json` and `combat-ppo.json`. Their
+default task reward is **+1 for combat victory plus 0.1 × remaining HP fraction
+on victory**; other components are zero. HP is a smaller shaping term than victory.
+Weights remain configurable through the existing combat reward schema. PPO's
+source binds the exact corpus identity. Its `encounters` configuration now names
+the available room-kind buckets (`combat`, `elite`, `boss`): the deterministic
+episode schedule gives each kind equal frequency. Within each kind, a seeded
+local RNG chooses an encounter uniformly, then a source fight uniformly. It
+chooses opening versus continuation with equal probability when both exist,
+then a later turn uniformly. Long fights therefore do not gain sampling weight
+simply because they produced more snapshots. A missing kind is omitted from the
+generated config and reported in coverage; this is never an all-encounter claim.
+Neither training collection nor vocabulary fitting loads held-out combat starts.
+Missing encounters cannot be silently supplied from another source.
+
+Use the existing imitation learner and graph actor-critic (default hidden size
+48, two message layers), followed by combat PPO:
+
+```bash
+sts-agent-train collect --combat-corpus runs/combat-corpus/corpus.json \
+  --split train --output-dir runs/combat-demos-train --max-decisions 512 --time-limit 120
+sts-agent-train collect --combat-corpus runs/combat-corpus/corpus.json \
+  --split validation --output-dir runs/combat-demos-validation --max-decisions 512 --time-limit 120
+sts-agent-train imitate --train-dir runs/combat-demos-train \
+  --validation-dir runs/combat-demos-validation --output-dir runs/combat-imitation \
+  --action-policy commit_decisions_v1 --updates 128
+sts-agent-train ppo --checkpoint runs/combat-imitation/final.sts-model \
+  --config runs/combat-corpus/combat-ppo.json --combat-corpus runs/combat-corpus/corpus.json \
+  --output-dir runs/combat-ppo --decisions 20000 --workers 8
+```
+
+Demonstrations use each requested train/validation fight once; `--split test`
+is rejected. PPO retains the existing commit-selection policy, native selection
+order, 1–8 persistent collectors, and checkpoint/resume workflow. The generated
+rollout is 4,096 total decisions, with 512 decisions / 120 seconds per fight and
+two optimization epochs. Resume with the same corpus, experiment, implementation
+and worker allocation, using the matching `.resume.pt` file. A different corpus
+or factory is rejected at learner creation and collection. Existing full-run
+checkpoints can be **benchmark actors** below; this does not reinterpret their
+run-value critic as a combat critic or enable cross-objective exact resume.
+
+```bash
+sts-agent-evaluate --combat-corpus runs/combat-corpus/corpus.json \
+  --candidate warmup=runs/combat-imitation/final.sts-model \
+  --candidate combat_20k=runs/combat-ppo/final.sts-model \
+  --split validation --output-dir runs/combat-evaluation \
+  --max-decisions 512 --time-limit 120 --workers 8
+```
+
+Add named 250k/500k full-run checkpoints to compare their combat choices directly.
+Every policy, including heuristic and random-legal baselines, receives the **same
+frozen start**. The benchmark writes a plan before running games and then
+`combat-benchmark.json`, with overall and per-encounter/region/fight-type wins,
+losses, cutoffs, HP, potion use, turns and paired win differences. All planned
+cases remain in denominators after failures or cancellation. Confidence bounds
+group fights by source campaign; correlated fights are not independent trials.
+These results measure the frozen combat population, not Act 1 clear probability.
+HP on wins is conditional on winning; net HP changes include cleanup healing.
+
+Corpus evaluation defaults to `--combat-starts opening`, measuring complete
+fights only. Use `--combat-starts continuation` for a separate tactical diagnostic,
+or `all` for an explicitly mixed population. Reports group outcomes by encounter,
+fight type, starting HP, attack pressure and potion availability; these groupings
+describe outcomes, not a proof that an individual block/potion decision was
+optimal. The held-out test lock also binds the chosen start population.
+Do not compare continuation win rates to full-fight win rates. Expanding the
+corpus requires a new corpus-bound training run; it is not an exact optimizer
+resume from a different corpus, and it does not itself update a model.
+
+Keep `--split test` for the final, preselected comparison. Its first use locks the
+checkpoint identities and limits before loading any test snapshots. Different
+test candidates/limits and subsequent validation benchmarks on that corpus are
+rejected. Use a new population for another held-out claim after further tuning.
+Test starts are never used as imitation demonstrations or PPO samples.
+
+Completed public combat trajectories work with `sts-agent-analyze build`; combat
+task rewards remain in their separate sidecars. The new benchmark's grouped
+metrics are in its JSON report, rather than the viewer's full-run learning charts.
+For Act 1 integration, reuse `sts-agent-evaluate --act1 --checkpoint FULL_RUN_MODEL
+--combat-checkpoint COMBAT_MODEL ... --workers 8`: the hybrid uses the combat
+model inside fights and the unchanged heuristic for other decisions. Keep that
+controller and campaign cases fixed when comparing combat checkpoints.
+
+### Expanded combat population (2026-09-30)
+
+The current corpus is `runs/act1-combat-expanded-verified-20260930/corpus.json`.
+It uses the frozen 500k Act 1 collector, mixed elite routes and up to eight
+reached turns per fight. All **42 regional Act 1 encounters**, including all six
+elites and six bosses, appear in every split. Native event fights reached on the
+route are retained too. The 128 unassisted campaigns yielded:
+
+| Split | Source campaigns | Fights | Opening + later-turn starts | Elite fights | Boss fights | Starts with potions |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Train | 64 | 502 | 1,873 | 53 | 35 | 290 |
+| Validation | 32 | 250 | 920 | 38 | 12 | 116 |
+| Test | 32 | 267 | 997 | 34 | 16 | 128 |
+
+This expands training from 150 fights (two elites, 13 bosses) to 502 fights and
+1,873 practice starts. Each room kind receives one third of the default training
+schedule. Collection took **9m 28s**. Test gameplay evaluation remains unopened.
+The expansion itself did not train a policy. The subsequent
+[fresh 250k experiment](#fresh-combat-policy-250k-decisions-2026-09-30) binds this
+corpus and fits its vocabulary on expanded training observations.
+
+All **2,793 train/validation starts** pass two independent exact restores, their
+public digest check, one direct legal action, and isolation from the untouched
+second instance. They contain 384 states with a legal potion-use action, 1,922
+with a playable block card under unblocked/lethal displayed attack pressure,
+and 455 with a playable block card but no displayed attack. Vantom contributes
+33 states with Slippery active and 33 with it depleted, covering all stack counts
+0–8 and all four move phases. These are coverage counts, not optimal-action
+labels. Restoration verification took 29.7 seconds; **99 focused checks** passed
+in 2m 43s, including parallel PPO/resume and evaluation. Independent semantic
+review found no remaining blockers.
+
+The unchanged 500k Act 1 actor wins **224/250** full-fight validation starts:
+190/200 ordinary fights, 30/38 elites and 4/12 bosses (including 1/4 Vantom).
+The heuristic wins 212/250 and random legal wins 145/250. All 750 planned games
+finish without failures or cutoffs in 58.5 seconds with eight workers. These are
+small, campaign-conditioned boss samples; they motivate the training focus,
+not a general boss mastery claim or evidence of a newly improved model.
+`runs/combat-inspection-expanded-20260930` exports all 750 episodes / 10,512
+decisions, with public trajectories grouped by policy. Its canonical run cutoff
+labels still differ from combat victory; the combat benchmark JSON owns the
+fight-win counts. Full configuration, coverage, hashes and checks are recorded in
+[expansion evidence](evidence/combat_corpus_expansion_2026_09_30.json).
+
+The first collection, `runs/act1-combat-expanded-20260930`, was rejected by
+restoration verification: sorted JSON keys reordered visible potion powers in
+some continuations. It was retained for diagnosis and replaced by a fresh
+collection under the fixed implementation, with no old hash/evidence repinning.
+
+### Fresh combat policy: 250k decisions (2026-09-30)
+
+`runs/combat-fresh-250k-20260930` trains one new actor and critic for exactly
+**250,000 PPO decisions with eight workers**. All weights and the optimizer start
+fresh; no Act 1 or imitation weights are transferred. The existing 48-wide,
+two-layer graph architecture has 80,738 parameters with this vocabulary. A
+training-only heuristic pass over all 1,873 starts produces 16,920 public
+observations for fitting 627 vocabulary names; those actions are not imitation
+targets, and no validation/test observations enter fitting.
+
+The objective is the corpus preset: **+1 combat win and +0.1 × HP fraction on
+victory**, with other components zero and `commit_decisions_v1` unchanged. The
+run retains 4,096-decision rollouts, two optimization epochs, learning rate
+0.0003 and the balanced encounter/fight/turn sampler. Its 15,399 episode attempts
+use 1,729 distinct training starts: 5,129 ordinary fights, 5,091 elites and 5,179
+bosses; 7,685 openings and 7,714 continuations. Potions are available in 4,616
+starts. All 250,000 decisions receive updates, with no skipped updates or failed
+game episodes. There are 485 training decision-budget cutoffs, retained with
+the existing bootstrap semantics.
+
+The predeclared checkpoints are `chunk-03/final.sts-model` (50k),
+`chunk-06/final.sts-model` (100k), `chunk-09/final.sts-model` (150k),
+`chunk-12/final.sts-model` (200k) and `chunk-15/final.sts-model` (250k).
+Matching exact optimizer/RNG resume files live under the owner-only sibling
+`runs/combat-fresh-250k-20260930-private`. Every closed update is retained too.
+
+One local orchestration error interrupted worker startup after **66,384** trained
+decisions: a helper named `inspect.py` shadowed Python's standard library.
+The helper was renamed, the stalled process was stopped and cleanup verified,
+and training resumed exactly from `chunk-04/final.sts-model` into
+`chunk-05-resumed`. The failed `chunk-05` attempt had no games or updates and is
+preserved. Production sources, corpus bindings, rewards and the original protocol
+were unchanged. All 15 completed chunk boundaries pass exact restore checks.
+
+After training, all checkpoints receive the same **250 validation openings**:
+
+| Policy | All fights / 250 | Ordinary / 200 | Elites / 38 | Bosses / 12 | Vantom / 4 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Untrained fresh actor | 208 | 188 | 19 | 1 | 0 |
+| Fresh combat 50k | 218 | 192 | 23 | 3 | 2 |
+| Fresh combat 100k | 211 | 185 | 24 | 2 | 1 |
+| Fresh combat 150k | 211 | 185 | 24 | 2 | 1 |
+| Fresh combat 200k | 211 | 185 | 24 | 2 | 1 |
+| Fresh combat 250k | 214 | 186 | 25 | 3 | 2 |
+| Existing Act 1 500k | 224 | 190 | 30 | 4 | 1 |
+| Heuristic | 212 | 188 | 23 | 1 | 0 |
+| Random legal | 145 | 139 | 6 | 0 | 0 |
+
+The final model wins **85.6%**, versus 89.6% for the existing Act 1 actor, 84.8%
+for the heuristic and 83.2% for its untrained initialization. Against the Act 1
+actor it gains three cases and loses thirteen; no specialized-model improvement
+over that reference is established. The 50k checkpoint leads this development
+curve at 87.2%, but no checkpoint is automatically promoted. The final model's
+mean HP fraction on wins is 64.74%, versus 61.76% for the reference; these are
+different sets of won fights. Both make 115 potion-use actions, so the aggregate
+count does not establish better potion timing. Vantom's 2/4 versus 1/4 is a small
+descriptive sample, not evidence of general boss mastery.
+
+PPO takes **34m 28.6s**: 23m 12.3s collecting, 11m 3.2s updating, with the
+remaining time in checkpointing/orchestration. Vocabulary fitting takes 112.2s
+after its separate observation collection. The eight-worker validation takes
+**3m 21.1s** for all 2,250 games, with no failures or cutoffs. Final verification
+takes 2.4s; exporting 750 final/reference/heuristic games and 10,150 decisions
+takes 10.4s. Setup and the interrupted worker-start attempt are outside the PPO
+timing. No held-out test evaluation was opened, and this is one learner seed.
+
+The inspector data is `runs/combat-fresh-250k-20260930-inspection`. Its run outcome
+labels remain canonical campaign outcomes; the combat benchmark report owns the
+fight-win counts. The [experiment evidence](evidence/combat_fresh_250k_2026_09_30.json)
+records the configuration, train-only vocabulary, sampling counts, complete curve,
+checkpoint identities, recovery, timings and operational checks. The subsequent
+[500k extension](#fresh-combat-policy-500k-decisions-2026-09-30) continues this exact
+learner and retains the original artifacts.
+
+### Fresh combat policy: 500k decisions (2026-09-30)
+
+`runs/combat-fresh-500k-20260930` resumes the fresh combat learner at 250k and
+trains **250,000 additional decisions, reaching 500,000 total**. The actor, critic,
+optimizer, RNG and episode cursor all continue exactly. Eight workers, the
+expanded training corpus, balanced sampler, frozen vocabulary, architecture,
+`commit_decisions_v1` and rewards (+1 win, +0.1 × HP fraction on victory) remain
+unchanged. No imitation or vocabulary refitting occurs during the extension.
+
+The retained checkpoints are `chunk-03/final.sts-model` (300k),
+`chunk-06/final.sts-model` (350k), `chunk-09/final.sts-model` (400k),
+`chunk-12/final.sts-model` (450k) and `chunk-15/final.sts-model` (500k).
+Exact resume files live in the matching directories under the owner-only sibling
+`runs/combat-fresh-500k-20260930-private`. Every closed update is retained too.
+
+All additional decisions receive updates, with no failed episodes or skipped
+updates. The 15,564 episode attempts comprise 10,368 wins, 4,707 defeats and
+489 decision-budget cutoffs using the existing bootstrap semantics. They use
+1,767 distinct training starts: 5,179 ordinary, 5,151 elite and 5,234 boss starts;
+7,795 openings and 7,769 continuations. Potions are available in 4,670 starts.
+
+All five new milestones, the 250k parent and the fixed reference policies receive
+the same **250 validation openings**:
+
+| Policy | All fights / 250 | Ordinary / 200 | Elites / 38 | Bosses / 12 | Vantom / 4 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Fresh combat 250k parent | 214 | 186 | 25 | 3 | 2 |
+| Fresh combat 300k | 217 | 189 | 25 | 3 | 2 |
+| Fresh combat 350k | 217 | 191 | 22 | 4 | 2 |
+| Fresh combat 400k | 212 | 190 | 20 | 2 | 0 |
+| Fresh combat 450k | 218 | 189 | 26 | 3 | 0 |
+| Fresh combat 500k | 213 | 187 | 23 | 3 | 1 |
+| Existing Act 1 500k | 224 | 190 | 30 | 4 | 1 |
+| Heuristic | 212 | 188 | 23 | 1 | 0 |
+| Random legal | 145 | 139 | 6 | 0 | 0 |
+
+The final model wins **85.2%**, versus 85.6% for its parent and 89.6% for the
+Act 1 reference. Relative to its parent it gains seven fights and loses eight;
+relative to the Act 1 reference it gains two and loses thirteen. More decisions
+have not established an overall improvement. The 450k checkpoint leads this
+extension at 87.2%, tying the original 50k checkpoint; no checkpoint is
+automatically promoted. Final mean HP fraction on wins is 64.10%, versus 64.74%
+at 250k, conditional on different sets of won fights. Potion-use actions fall
+from 115 to 108; aggregate counts do not establish whether timing improved.
+The four Vantom starts remain a small descriptive sample.
+
+Additional PPO takes **34m 01.9s**: 22m 54.8s collecting and 10m 54.4s updating,
+with the remainder in checkpointing/orchestration. Eight-worker validation takes
+**3m 14.6s** for 2,250 games, with no failures or cutoffs. All 15 completed chunk
+boundaries restore exactly. All 1,000 repeated parent/Act 1/heuristic/random games
+reproduce their earlier gameplay outcomes, HP, steps, potion use and task returns.
+Final verification takes 1.7s; exporting 1,000 final/parent/reference/heuristic games
+and 13,897 decisions takes 13.6s. Test evaluation remains unopened, and no hybrid
+full Act 1 evaluation or learner-seed replication is part of this extension.
+
+The inspector data is `runs/combat-fresh-500k-20260930-inspection`. Its canonical
+campaign cutoff labels still differ from combat victory; the combat benchmark
+JSON owns fight-win counts. The [extension evidence](evidence/combat_fresh_500k_2026_09_30.json)
+records the parent bindings, exact continuation, full 0–500k learning curve,
+sampling, checkpoint hashes, timings and checks. The following diagnostic examines
+the plateau before another budget increase.
+
+### Combat learning plateau diagnostic (2026-10-01)
+
+`runs/combat-diagnostic-20261001` compares the unchanged saved actors on all
+502 training openings against the bound, previously evaluated 250 validation
+openings. Six validation starts under two models reproduce all material results
+exactly before the larger comparison. The engine, public projection, model
+architecture, vocabulary, rewards and existing training artifacts remain unchanged.
+This is development evidence; no held-out test was opened.
+
+| Policy | Greedy training wins / 502 | Greedy validation wins / 250 |
+| --- | ---: | ---: |
+| Untrained initialization | 443 | 208 |
+| Combat 50k | 457 | 218 |
+| Combat 250k | 461 | 214 |
+| Combat 500k | 460 | 213 |
+| Act 1 500k reference | 453 | 224 |
+| Heuristic | 443 | 212 |
+
+The training/validation gap is largely present at initialization. Giving ordinary,
+elite and boss openings equal weight yields 61.6%/50.8% before training and
+72.4%/59.7% at 500k. These remain different, collector-conditioned populations;
+their gap alone does not establish overfitting as the plateau's main cause.
+
+A separate panel freezes **36 openings per split: 12 ordinary, 12 elite and
+12 boss fights**. Each checkpoint uses the same two explicit action-RNG seeds per
+case. Sampling uses the production PPO distribution and candidate-ref mapping;
+it does not consume the engine RNG. This panel deliberately weights difficult
+fights more heavily than the full opening benchmark.
+
+| Policy | Sampled train wins / 72 | Sampled validation wins / 72 | Greedy validation wins / 36 |
+| --- | ---: | ---: | ---: |
+| Untrained initialization | 22 | 17 | 17 |
+| Combat 50k | 36 | 27 | 20 |
+| Combat 500k | 47 | 43 | 19 |
+
+The observed sampled-policy improvement is substantial on this small panel,
+despite the much flatter greedy curve. Greedy-only reporting misses part of the
+learning progress. Two repetitions are not independent source campaigns and do
+not establish that sampled deployment improves the entire validation population.
+The production combat benchmark remains greedy; both modes are available in this
+bound diagnostic harness.
+
+The learnability test starts from the original untrained actor/critic with a fresh
+optimizer, RNG and cursor. It uses **50,000 decisions and eight workers**, with
+10k/25k/50k checkpoints, on 32 training states with recorded heuristic victories:
+eight immediate kills, ten states with block available under incoming damage,
+ten with potions used by the winning witness, and four Vantom turns. These are
+29 fights from 21 source campaigns; the four Vantom turns share one fight.
+Worker schedules cycle deterministically, with unequal episode exposure under
+fixed decision quotas. No validation case can enter the subset factory.
+
+Greedy wins at 0/10k/25k/50k are **29/29/30/30 out of 32**. The predeclared 31/32
+target is not met. Sampled wins rise from **38/64 to 58/64**; Vantom rises from
+3/8 to 8/8 on those repeated training starts. The final greedy failures are a
+Waterfall Giant and Ruby Raiders start. This is memorization evidence, not new
+generalization evidence or proof that representation capacity is the bottleneck.
+
+The chosen set has limited tactical headroom: the untrained greedy actor already
+wins every immediate-kill, block-pressure and Vantom case. Removing potion use
+from the heuristic still wins nine of the ten potion cases. Availability and a
+winning demonstration therefore do not establish that the intended tactic is
+necessary. The next useful change is to track both greedy and sampled checkpoint
+evaluation and build harder, verified tactical cases that distinguish potion
+timing, blocking and boss sequencing. A larger model or another long continuation
+is not justified by this diagnostic alone.
+
+All 50,000 decisions receive updates, with no failed training episodes, skipped
+updates or KL early stops; all four chunk boundaries restore exactly. PPO takes
+**7m 6.5s** (4m 56.0s collection, 2m 7.0s updates). The initial 3,112-game diagnostic
+takes 5m 12.6s, and the final 160-game evaluation takes 15.8s; all complete without
+failures or decision cutoffs. Verification covers 32 independent restore pairs,
+768 legal/repeatable sampled selections, unchanged global Torch RNG, and rejection
+of validation, unlisted and incorrectly bound cases. The independent semantic
+review found no remaining blockers after adding configuration binding and a
+mandatory verification gate.
+
+The inspector dataset, `runs/combat-diagnostic-20261001-inspection`, contains 128
+unchanged public traces and 1,370 decisions: untrained, existing combat 500k,
+diagnostic 50k and winning heuristic on each start. Canonical campaign cutoffs
+remain distinct from combat wins. The [diagnostic evidence](evidence/combat_plateau_diagnostic_2026_10_01.json)
+binds the protocols, results, checkpoints, verification and inspection export.
+The original 500k model remains the existing combat candidate; the tiny-set model
+is retained only for diagnosis.
+
+### Initial combat corpus pilot (2026-09-30)
+
+Initial delivery check (2026-09-30):
+`runs/act1-combat-corpus-20260930/corpus.json` contains **297 fights from 32
+campaigns**, split into 150 train / 74 validation / 73 test starts. The fixed
+collector is the existing 500k Act 1 model. Training covers 38 encounter IDs,
+with 135 ordinary fights, two elites and 13 bosses; its real decks contain 10–21
+cards and starting HP spans 8–80. Validation lacks an Underdocks elite, so this
+is a pilot population requiring broader elite coverage before a long experiment.
+
+**The initial combat comparison is invalid for policy-strength claims.** The
+action-mapping correction below supersedes its interpretation; its original
+artifacts and measurements are retained. The eight-worker comparison completed all **296 validation games in
+35.29 seconds**, without failures or cutoffs. Both existing 250k and 500k actors
+won 67/74 fights, compared with 66/74 for the heuristic and 46/74 for random-legal.
+Both labelled learned actors won 64/65 ordinary fights and 1/7 bosses, but those
+games did not always execute the chosen action. The 500k actor's mean HP fraction on
+wins was 69.0%, versus 65.4% at 250k. The held-out benchmark remains unopened.
+
+All 154 affected checks pass after correcting one existing CLI diagnostic
+expectation; independent semantic review closed three concrete findings. Installed
+commands also completed eight imitation updates with the unchanged 48-wide,
+two-layer model, 256 PPO decisions plus an exact 256-decision continuation using
+eight workers, and six paired Act 1 integration games including the combat hybrid.
+The two hybrid games ended in defeat; these tiny training runs prove integration,
+not improved playing strength. Corpus collection took 176.97 seconds, imitation
+62.48 seconds, the two PPO chunks 7.39/7.52 seconds, and hybrid comparison 21.66
+seconds. Some work ran concurrently. The [delivery evidence](evidence/combat_specialization_pilot_2026_09_30.json)
+retains artifacts, hashes, coverage gaps, commands and review/validation timings.
+
+### Combat evaluation action mapping correction (2026-09-30)
+
+Combat evaluation and demonstration collection previously passed a candidate's
+position in `env.public_state.candidates` to Gym. Gym expects its encoded action
+slot, which sorts by public-reference traversal and can differ after history
+references a card. A policy could choose Perfected Strike while Strike actually
+played, and the recorder would label that transition with the intended card.
+Card-selection actions were affected too. The shared evaluator now resolves
+the exact current candidate through `env.action_index(candidate)`; tensor layout,
+native commands and card rules are unchanged.
+
+The reported episode `3fd80e938a23438ea6ba8663906bcb2d` reproduced all 37 original
+transitions through the faulty path, with ten mismatched actions. At index 29,
+the intended Perfected Strike occupied public position 4 but encoded slot 0.
+Correct dispatch spent two energy, discarded Perfected Strike and reduced
+Vantom from 76 to 56 HP; the historical record spent one energy, discarded Strike
+and reduced HP to 70. This is a controlled diagnosis, not a new benchmark.
+
+Previous combat baseline/benchmark reports and combat demonstration transitions
+from this evaluator require regeneration before policy comparison or value
+training. This includes the pilot's matched comparison and imitation warm-up;
+its 512-decision combat model is only an integration smoke artifact. Preserve
+original records and hashes. Rebuild the source-bound corpus under the corrected
+implementation before new collection; do not repin its old source identity.
+PPO collection already dispatches encoded slots correctly, and campaign corpus
+collection, full-run demonstrations and Act 1/full-run evaluation dispatch
+candidate references directly. Their action dispatch is unaffected by this bug.
+Replay regressions now compare recorded successors against independent direct
+adapter execution, including the differing card order after a redraw.
+
+Regeneration is complete under the corrected implementation. Use
+`runs/act1-combat-corpus-corrected-20260930/corpus.json`: all 297 initial public
+states, inventories and native snapshots exactly match their original cases.
+The new train/validation demonstration directories contain 150/74 episodes and
+2,039/999 decisions. The eight-worker comparison in
+`runs/act1-combat-matched-corrected-20260930/combat-benchmark.json` completed all
+296 games without failures or cutoffs in 26.37 seconds. Both existing Act 1
+actors won 67/74, the heuristic 66/74 and random-legal 43/74. Each learned actor
+won 64/65 ordinary fights, 2/2 elites and 1/7 bosses. Random-legal has fresh
+case-derived policy RNG because the rebuilt cases have new opaque IDs; game
+starts and game RNG are unchanged. These are development combat results on
+eight source campaigns, not Act 1 clear rates or evidence of model improvement.
+
+The replacement smoke in `runs/act1-combat-smoke-corrected-20260930/` starts from
+clean demonstrations, repeats eight imitation updates and 256 + 256 PPO decisions
+with eight workers, and verifies exact checkpoint resume. It is still only a
+512-decision integration model. Corpus generation took 145.06 seconds, imitation
+55.72 seconds and PPO 6.20/6.27 seconds; overlapping phases are not summed into a
+throughput claim. No held-out benchmark was opened.
+
+All 558 regenerated evaluation, demonstration and PPO episodes were independently
+replayed by restoring their starts and dispatching recorded references directly
+through the adapter, comparing exact execution reports and public successors:
+**7,822 actions, zero mismatches**, including card selections. The rebuilt
+`runs/combat-inspection-corrected-20260930/` viewer contains those unchanged public
+recordings and supports comparison with the clean smoke and existing 250k/500k
+checkpoints. The old Vantom episode maps to `130b89feb58245778da56b0063679e1e`;
+its corrected sequence has 29 decisions. Combat victories still appear as
+canonical external stops in this viewer; use the combat benchmark for task wins.
+The [regeneration evidence](evidence/combat_specialization_pilot_2026_09_30.json)
+retains new artifact bindings and correspondence separately from the invalid
+original comparison, whose files and hashes are preserved.
 
 ## Decision analysis tools
 
@@ -302,11 +808,16 @@ with CombatTrainingEnv(encounter="overgrowth_nibbit") as env:
         decision = env.public_state
         candidate = choose_action(decision)
         observation, reward, terminated, truncated, info = env.step(
-            decision.candidates.index(candidate))
+            env.action_index(candidate))
         if terminated or truncated:
             print(info["combat"], info["outcome"])
             break
 ```
+
+`action_index` maps a candidate object from the current `public_state` to its
+encoded action slot without re-encoding. Public-list positions are not Gym action
+indices. If selecting from `env.encoder.decode(observation)` instead, that
+decoded list is already in encoded order and its index can be passed directly.
 
 `public_state` exposes the immutable structured decision used by the encoder,
 without a binding or engine reference. Combat ownership, rather than a context
@@ -2040,7 +2551,8 @@ been run for these weights.
 The shared [`action_policy.py`](../game/agent/action_policy.py) layer restricts
 policy choices over the complete public decision. It does not change native
 legality, the canonical adapter, candidate order or game rules. The current
-`commit_card_selection_v1` policy blocks undo in known deferred selectors:
+`commit_decisions_v1` policy includes the unchanged `commit_card_selection_v1`
+restrictions on undo in known deferred selectors:
 
 - Combat manual selections, relic card selections, Meat Cleaver Cook and Sea Glass
   retain every unselected pick up to the maximum. Selected cards cannot be
@@ -2057,9 +2569,27 @@ legality, the canonical adapter, candidate order or game rules. The current
   Cook cancellation and potion actions remain legal, so this prevents selection
   toggles rather than guaranteeing progress through every navigation action.
 
+It also prevents repeated card-reward inspection loops in combat reward screens
+(main and extra rewards) and event reward batches. The first opening can be
+closed. Reopening a reward that was already closed, with only reward navigation
+in between, masks `close_reward`; choosing, skipping, rerolling and sacrificing
+remain separate legal decisions. Inspecting a different reward does not reset
+this allowance, so the agent can inspect A, inspect B, then resolve either first.
+An actual gameplay command, including a reroll or an inventory change, resets
+inspection. A reroll can keep the modal open; closing it then reopening counts
+as repeated inspection of the rerolled offers.
+
+The rule uses only public reward references, offer/option structure and recorded
+public action history. It requires the current opening and an earlier close of
+the same reward since the last gameplay command. Missing history, unknown or
+incomplete modal shapes, non-card rewards and close-only exits retain full legal
+support. Native candidates and their order stay intact; only the policy mask
+changes. No choice or confirmation is dispatched automatically. This bounds the
+recognized inspection loops, not every possible navigation or gameplay cycle.
+
 The Act 1 and shaped full-run presets enable this policy. It is versioned
 separately: existing checkpoints keep their original behavior, and historical
-recordings are not rewritten. All-legal and original singleton policy identities
+recordings are not rewritten. All-legal, original singleton and card-selection-only policy identities
 retain their existing serialization. An explicit policy reset transfers weights
 to a new experiment; it cannot be combined with exact optimizer resume.
 
@@ -2098,10 +2628,10 @@ serialization and identities. New filtered checkpoints use inference bundle v3
 and bind the action-policy version to corpus, experiment, behavior and resume
 identities. Exact resume cannot change that policy. To enable it:
 
-- For new imitation, add `--action-policy commit_card_selection_v1` to the existing
+- For new imitation, add `--action-policy commit_decisions_v1` to the existing
   `sts-agent-train imitate` command, including full-run imitation when applicable.
 - For PPO, use experiment schema `sts_ppo_experiment_v2` with
-  `training.action_policy` set to `commit_card_selection_v1`. The shaped full-run
+  `training.action_policy` set to `commit_decisions_v1`. The shaped full-run
   example configuration already does this.
 - When the source checkpoint has a different action policy, add
   `--reset-action-policy`. This starts a new experiment with copied model weights
@@ -2432,6 +2962,22 @@ combat hybrid instead of a reference actor. The old `--full-run` evaluation keep
 its full-campaign victory metric. Choose fresh output directories and disjoint
 episode ranges for follow-up runs; the example training budget is a bounded
 integration run, not evidence that 1,024 decisions establish playing strength.
+
+Use the splits according to how their results are consumed:
+
+- `train` supplies learner updates and vocabulary fitting.
+- `validation` supplies repeated checkpoint comparisons, reward experiments and
+  development feedback. Reusing the same paired starts makes these comparisons
+  easier to interpret.
+- `test` supplies a fresh comparison after freezing checkpoint identities,
+  action policies, case counts and success criteria. Check that its engine seeds
+  have not appeared in retained training or earlier evaluations. Include every
+  planned case and aggregate the fixed panel without adapting its size to results.
+
+The split label alone does not establish independence. Once test outcomes guide
+further tuning, treat those cases as development evidence for subsequent claims.
+A fresh test panel measures generalization across starts; repeatability across
+independently trained learners is a separate question.
 
 Evaluation accepts `--workers 1` through `--workers 8` for both `--act1` and
 `--full-run`; the default is serial. Each persistent worker loads frozen
@@ -2895,6 +3441,677 @@ Raw reports and frozen source snapshots are under
 [retained evidence](evidence/training_encoding_optimization_2026_09_30.json)
 binds the inputs, source identities, timing repetitions and validation.
 
+## Single-learner 250k learning curve (2026-09-30)
+
+One learner trained for **250,000 decisions with eight workers**, starting from
+the same frozen initializer as the 50k experiment. This was a fresh learner,
+with a new optimizer/RNG and training starts; it did not continue the old 50k
+weights. The 97,394-parameter model, vocabulary, Act 1 goal, selection policy
+and reward weights were held fixed. Fifteen bounded invocations preserved the
+model, optimizer, RNG and cursor across fourteen resume boundaries. Checkpoints
+at 50k, 100k, 150k, 200k and 250k were declared before training.
+
+All **250,000 decisions were trained**, in 65 PPO rounds and 31,250 optimizer
+steps, with no failed episodes or skipped updates. The 2,393 sampled training
+episodes contained 12 Act 1 clears, 1,867 defeats and 514 quota/episode cutoffs.
+Recorded training combat outcomes were 11,136 victories and 1,855 defeats;
+the additional run defeats occurred outside those combat-defeat measurements.
+
+| Phase | Elapsed time |
+| --- | ---: |
+| Training, including collection and updates | 25m 43s |
+| Parallel collection within training | 15m 43s |
+| Model updates within training | 9m 46s |
+| Five evaluation panels | 11m 36s |
+| Verification, export and cross-panel comparison | 6m 53s |
+| Preparing bounded viewer views | 14s |
+
+Training averaged **162.1 decisions/second**. These are measured experiment
+times; changed seeds and evolving policy behavior prevent treating comparisons
+with the earlier 50k experiment as an isolated optimization benchmark.
+
+All five checkpoints were evaluated after training on the **same 64 fresh,
+paired headless Ironclad A0 starts**, 32 per region. Each panel reran the
+initializer and heuristic, for 960 evaluation games in total. The 128 unique
+baseline games reproduced identical public decisions and outcomes across all
+five panels. Repeated baselines are not additional independent samples.
+
+| Policy/checkpoint | Act 1 clears | Boss reached | Mean last observed floor | Cutoffs |
+| --- | ---: | ---: | ---: | ---: |
+| Heuristic | 0/64 | 26/64 | 12.00 | 0 |
+| Frozen initializer | 0/64 | 6/64 | 9.67 | 0 |
+| 50k | 1/64 | 19/64 | 10.58 | 0 |
+| 100k | 4/64 | 31/64 | 12.19 | 2 |
+| 150k | 2/64 | 22/64 | 10.77 | 0 |
+| 200k | 10/64 | 32/64 | 12.56 | 0 |
+| 250k, predetermined final endpoint | 8/64 | 28/64 | 11.88 | 1 |
+
+Boss reach means the public map marks a boss node as visited. The final learner
+cleared 4/32 starts in each region. Its observed clear-rate gain over the
+initializer was **12.5 percentage points**, and it reached the boss much more
+often. The curve is uneven: 200k had the highest observed clear count, while
+250k regressed on both clears and mean floor. No checkpoint was promoted or
+selected as a replacement based on these development results. One learner and
+64 development starts do not establish repeatability; the existing conservative
+paired 95% interval for the final clear-rate difference is approximately
+**−21.45 to +46.45 percentage points**, so its formal verdict remains
+`inconclusive` despite the positive observed result.
+
+The analysis identifies concrete follow-up work. Repeated reward opening/closing
+caused the two 100k cutoffs and the one 250k cutoff. No selection-toggle warning
+was found in the evaluation recordings. At 250k, the descriptive
+`end_turn_with_playable_card` flag appeared 97 times across 51/64 episodes;
+the earlier four checkpoint panels had none. One final-policy recording,
+`152abb937aa7472ab067fcc092c084fc`, step 4, ends a turn with one energy, zero
+block, three legal Defends and seven displayed incoming damage. The initializer,
+100k and 200k checkpoints prefer a Defend on that same public state. These
+preferences and flags are review evidence; alternative outcomes were not
+simulated. Inspect these behaviors and repeat the comparison with additional
+learner seeds before increasing the budget again.
+
+All training rewards and policy masks were checked against canonical public
+recordings. Verification restored all fifteen saved continuation states,
+confirmed 2,393 unique training reset seeds, checked paired public starts and
+preserved owner-only permissions on 3,454 private files. All planned evaluation
+games completed without operational failures, and no partial artifacts remained.
+The experiment changed no production game, model or training implementation.
+
+The [retained evidence](evidence/act1_250k_8workers_2026_09_30.json) contains the
+resolved configuration, learning curve, per-region results, source/checkpoint
+identities, review examples, timings and validation. Raw artifacts are under
+`runs/act1-250k-8workers-20260930/`; the final bundle is
+`chunk-15/final.sts-model`, and its owner-only continuation state is
+`runs/act1-250k-8workers-20260930-private/chunk-15/final.resume.pt`.
+
+The complete export retains **3,353 episodes / 386,016 decisions**. Its 104 MB
+metadata file exceeds the viewer's existing 64 MiB limit, so five bounded views
+reuse the validated decision chunks without changing that limit. Each contains
+one 50k training block and its 192-game evaluation panel; all five together
+preserve every episode. `viewer-views.json` binds their paths and hashes. Serve
+the final view, optionally loading four explicitly named comparison bundles:
+
+```bash
+sts-agent-analyze serve runs/act1-250k-8workers-20260930-analysis-250000 \
+  --port 8767 \
+  --checkpoint initial=runs/act1-250k-8workers-20260930/chunk-01/initial.sts-model \
+  --checkpoint 100k=runs/act1-250k-8workers-20260930/chunk-06/final.sts-model \
+  --checkpoint 200k=runs/act1-250k-8workers-20260930/chunk-12/final.sts-model \
+  --checkpoint 250k=runs/act1-250k-8workers-20260930/chunk-15/final.sts-model
+```
+
+Replace the view suffix with `050000`, `100000`, `150000` or `200000` to inspect
+an earlier block. Evaluation policy labels keep the five panels separate.
+
+## Interrupted extension toward 500k decisions (2026-09-30)
+
+The requested extension reused the **250k final checkpoint exactly**, including
+actor, critic, Adam state, both learner RNGs, counters and episode cursor. It kept
+one learner, eight workers, the same Act 1 objective, reward weights, model and
+action policy. The additional budget was 250,000 decisions, with planned new
+checkpoints at 300k, 350k, 400k, 450k and 500k.
+
+Training stopped on an engine fault at **378,672 trained decisions** after
+13m 59.7s of additional training work. The successful extension contains 128,672
+trained decisions in 33 completed rollouts, with no skipped updates. The failed
+99th collection was discarded; its 324 received steps were not trained. The
+last complete checkpoint retains 47,334 optimizer updates and iteration 98:
+
+```text
+runs/act1-500k-8workers-20260930/chunk-23/update-00098.sts-model
+runs/act1-500k-8workers-20260930-private/chunk-23/update-00098.resume.pt
+```
+
+The failing episode reached a Haunted Ship with the player at 3 HP, the enemy
+at 1 HP and Thorns active. Ending the turn killed both. Combat incorrectly
+reported a player win, then reward generation rejected the dead player. A
+separate diagnostic engine reproduced all 92 recorded transitions exactly before
+the unique end-turn command reproduced the fault. The original failed adapter
+was not retried; partial artifacts remain preserved. No production sources were
+changed during that interrupted segment.
+
+The already published 300k and 350k milestones were evaluated using the original
+64 paired development starts, the frozen initializer and the heuristic:
+
+| Checkpoint | Act 1 clears | Mean last observed floor | Cutoffs |
+| --- | ---: | ---: | ---: |
+| 250k, previous endpoint | 8/64 | 11.88 | 1 |
+| 300k | 7/64 | 12.91 | 0 |
+| 350k | 9/64 | 13.50 | 0 |
+
+Both new panels completed without operational failures in 4m 31.1s combined.
+The initializer and heuristic again cleared 0/64. These reused development
+starts and one learner do not establish repeatability; the formal paired
+conclusions remain `inconclusive`. No 400k, 450k or 500k result exists.
+
+The [interrupted-extension evidence](evidence/act1_500k_interrupted_2026_09_30.json)
+retains verified checkpoint continuity, completed-update accounting, panel
+results and bounded analysis views. The frozen original protocol is retained
+alongside a separately identified evaluation supplement for the two completed
+milestones. The remaining budget at interruption was **121,328 decisions**.
+
+Repairing the engine changes implementation identity. The existing exact-resume
+guard intentionally rejects that change; continuing with saved actor and critic
+weights and a fresh optimizer/RNG is a new, explicitly identified training
+segment, not exact resume. Do not repin the old checkpoint or call the interrupted
+experiment complete. The approved correction and continuation are recorded below.
+
+## 500k continuation after the terminal-outcome fix (2026-09-30)
+
+The user subsequently approved the engine fix and the fresh-optimizer
+continuation. The corrected engine and snapshot validator prioritize player death
+after normal revival effects. Nine new regression cases, replay of the saved
+failure state and 745 focused engine/agent tests passed; an independent semantic
+review found no blockers. The saved failure now produces a reconciled defeat,
+zero victory components and a −1.001 training reward. Fairy/Lizard Tail and enemy
+revival behavior remain covered. This is headless regression evidence, not a new
+native gameplay capture.
+
+The new segment is recorded separately under
+`runs/act1-500k-fixed-8workers-20260930/`. It retains the 378,672-decision actor and
+critic weights, uses a fresh optimizer, learner RNGs and disjoint training starts,
+and resets its internal counters. Its checkpoints label **cumulative** decisions;
+for example, 400k contains 21,328 decisions from the new segment. Model, reward,
+action-policy and eight-worker PPO settings are unchanged. Only subsequent chunks
+within the corrected source version use exact optimizer resume. The frozen
+original protocol and failed artifacts are retained without modification.
+
+The corrected segment completed all **121,328 additional decisions** in
+**13m 34.0s**, reaching **500,000 cumulative trained decisions**. It recorded 955
+training episodes, 36 Act 1 clears, 663 defeats and 256 cutoffs, with zero failed
+episodes, skipped decisions or skipped updates. These are stochastic collection
+results; checkpoint evaluation uses the separate paired development panel.
+
+| Cumulative decisions | New-segment decisions | Checkpoint under the new segment root |
+| --- | ---: | --- |
+| 400,000 | 21,328 | `chunk-02/final.sts-model` |
+| 450,000 | 71,328 | `chunk-05/final.sts-model` |
+| 500,000 | 121,328 | `chunk-08/final.sts-model` |
+
+Each final bundle has a corresponding owner-only `final.resume.pt` under the
+same chunk in `runs/act1-500k-fixed-8workers-20260930-private/`. The final bundle's
+SHA-256 is `cfe80fb0679bd7b0757081126ef99f8818fae6e1fe1a4a3faa3019811037a9e4`.
+Internal learner counters describe this segment; the recorded lineage supplies
+the prior 378,672 decisions. This is a cumulative training budget with a documented
+engine correction and optimizer reset, not one uninterrupted optimizer trajectory.
+
+The three planned checkpoints were evaluated on the same 64 genuine-start
+development cases, with 32 from each Act 1 region. The initializer and heuristic
+were rerun under the corrected engine. All **576 evaluation games** completed
+without operational failures or decision cutoffs in **6m 59.8s**.
+
+| Checkpoint | Act 1 clears | Boss reached | Mean last observed floor |
+| --- | ---: | ---: | ---: |
+| 350k, earlier engine/optimizer segment | 9/64 | 40/64 | 13.50 |
+| 400k | 6/64 | 44/64 | 14.20 |
+| 450k | 7/64 | 40/64 | 13.42 |
+| 500k | 5/64 | 43/64 | 13.17 |
+
+Both baselines again cleared 0/64. The 500k endpoint's observed clear rate is
+**7.8125%**, below 350k's 14.0625%; this continuation does not demonstrate a
+clear-rate improvement. The final paired interval against the initializer is
+approximately **−26.14 to +41.77 percentage points**, retaining the formal
+`inconclusive` verdict. The reused development panel, one learner and intervening
+optimizer reset do not establish the cause of the variation. No checkpoint was
+promoted or selected from the curve as a replacement for the planned endpoint.
+
+The final learner cleared 3/32 Overgrowth and 2/32 Underdocks starts. Its
+`end_turn_with_playable_card` review flag reappeared 77 times across 47/64 games,
+versus zero at 400k and four at 450k. These are descriptive flags, not proof of
+bad play; for example, ending with unused Defends against a stunned enemy can be
+reasonable. A concrete review state is episode
+`143c8f37bbb34540aaf9d5e3367a1c05`, step 4: one energy, zero block, three legal
+Defends and 14 displayed incoming damage. The 500k policy prefers End Turn
+(probability 0.326), while 350k/400k/450k prefer a Defend on the same state.
+Alternative outcomes were not simulated. No selector-toggle or reward-navigation
+loop flags appeared in these three evaluation panels.
+
+All 121,328 new training decisions passed canonical recording, reward and
+policy-mask validation. The initial actor/critic tensors match the saved 378,672
+checkpoint exactly; the empty optimizer and new RNG/cursor were verified. Seven
+subsequent resume boundaries and all eight chunk endpoints were checked, with
+eight-worker allocation throughout. The three panels' 64 public starts and 128
+baseline decision traces match one another and the prior panel; their new source
+identity remains distinct. The failed original collection is retained separately.
+
+Verification and export took **4m 04.1s**. Three bounded views retain **1,531
+episodes / 204,347 recorded decisions**, including all successful training updates
+and the 576 evaluation games. Each respects the existing 64 MiB metadata limit.
+The [retained evidence](evidence/act1_500k_corrected_2026_09_30.json) binds the
+source correction, tests/review, initialization, complete learning curve,
+checkpoint identities, timings, viewer views and review example. To inspect the
+final view with all four comparison checkpoints:
+
+```bash
+sts-agent-analyze serve runs/act1-500k-fixed-8workers-20260930-analysis-500000 \
+  --port 8769 \
+  --checkpoint 350k=runs/act1-500k-8workers-20260930/chunk-21/final.sts-model \
+  --checkpoint 400k=runs/act1-500k-fixed-8workers-20260930/chunk-02/final.sts-model \
+  --checkpoint 450k=runs/act1-500k-fixed-8workers-20260930/chunk-05/final.sts-model \
+  --checkpoint 500k=runs/act1-500k-fixed-8workers-20260930/chunk-08/final.sts-model
+```
+
+## Combat reward comparison from scratch (2026-09-30)
+
+The user requested higher combat-win and remaining-HP rewards, then explicitly
+chose to start from scratch. The comparison in
+`runs/act1-combat-reward-ab-20260930/` uses two matched arms:
+
+| Component | Current-reward control | Increased combat rewards |
+| --- | ---: | ---: |
+| `combat_win` | +0.1 | +0.2 |
+| `win_hp_fraction` | +0.025 | +0.1 |
+| `act_cleared` | +1.0 | +1.0 |
+| `run_defeat`, `run_abandoned` | −1.0 each | −1.0 each |
+| `end_turn_action` | −0.001 | −0.001 |
+| All other components | 0 | 0 |
+
+Both actor and critic are freshly constructed from the same random initialization.
+No imitation or PPO parameters are copied from the previous 500k model. Only the
+existing architecture, frozen observation vocabulary, action-policy version and
+control settings are reused; even the vocabulary's embedding weights are random.
+Both arms begin with an empty optimizer, identical learner RNGs and the same
+reserved training-start range, disjoint from the checked prior experiments and
+evaluation starts. The initialized tensors are checked against an independently
+constructed fresh model and against each other before collection.
+
+Each arm has one learner, eight collection workers and **100,000 decisions from
+zero**, with checkpoints at 50k and 100k. Arms run sequentially. The existing
+4,096-step PPO rollout and 512-decision episode cap remain unchanged, and bounded
+chunks use exact resume only within their own arm. These counts do not inherit
+the previous model's 500k decisions. The frozen protocol sets the 100k paired
+Act 1 clear-rate difference as the primary endpoint; 50k is descriptive.
+
+Evaluation uses the same 64 development starts as the earlier learning curve,
+with 32 per Act 1 region, a 1,024-decision limit and eight workers. Each panel
+runs the current-reward checkpoint, increased-reward checkpoint and heuristic.
+Raw training returns have different scales and are not a performance comparison.
+One learner seed, reused development cases and changing both weights together
+limit conclusions about repeatability, generalization and either reward alone.
+The existing reward/Act 1 tests passed **41 checks in 21.32 seconds**; no
+production implementation changed for this experiment.
+
+Both arms completed all 100,000 decisions without failed episodes or skipped
+updates. The control took **10m 04.3s** and the increased-reward arm **10m 07.1s**,
+for **20m 11.5s** total. Collection recorded 1/1,103 Act 1 clears for the control
+and 3/1,151 for increased rewards; quota/episode cutoffs were 207 and 206. The
+first 4,096 collected actions, masks, values and outcome components match exactly
+between arms, before their different rewards affect the first PPO update.
+
+All **384 evaluation games** completed without operational failures in
+**5m 33.9s**:
+
+| Decisions from scratch | Control Act 1 clears | Increased-reward Act 1 clears | Control / increased cutoffs |
+| --- | ---: | ---: | ---: |
+| 50,000 | 0/64 | 2/64 | 0 / 0 |
+| 100,000 | 1/64 | 10/64 | 0 / 3 |
+
+At the primary 100k endpoint, the observed difference is **+14.06 percentage
+points** (15.625% versus 1.5625%). Ten paired cases cleared only with increased
+rewards and one only with the control. The existing conservative paired 95%
+interval is −19.89 to +48.02 percentage points, so its formal conclusion remains
+`inconclusive`. The observed gain is promising, but one learner seed on reused
+development cases does not establish a reliable improvement. This matched
+from-scratch comparison does not isolate why the earlier warm-started 500k model
+performed differently.
+
+The increased-reward policy's three cutoffs all hit the 1,024-decision limit
+while repeatedly opening and closing card rewards, on floors 14, 13 and 3.
+They remain non-wins in the denominator. These are reward-navigation loops,
+not selector deselection loops; no policy or engine change was made during the
+experiment to remove them. Measured post-win HP during training averaged 64.37%
+for the control and 65.62% for increased rewards, but these on-policy samples
+include different fights and are not a matched damage-reduction estimate.
+
+Both planned checkpoints and every closed-update checkpoint are retained. The
+100k endpoints are `control/chunk-06/final.sts-model` and
+`increased/chunk-06/final.sts-model`; the 50k endpoints use `chunk-03` instead.
+Matching private optimizer/RNG state is under the same paths in
+`runs/act1-combat-reward-ab-20260930-private/`.
+
+At 100k, the control reached the boss in **26/64** games and increased rewards
+in **32/64**. Increased rewards cleared 6/32 Overgrowth and 4/32 Underdocks starts;
+the control cleared 1/32 and 0/32. Mean last observed floor was 12.05 versus
+12.44. HP after observed living combat exits averaged **68.65% versus 68.14%**,
+so this diagnostic does not show a higher remaining-HP fraction despite the
+clear-rate gain. It includes automatic healing and different encountered fights,
+and excludes any instantaneous fight without a projected combat state. Neither
+learned checkpoint produced end-turn-with-playable-card or selector-toggle flags
+in either evaluation panel; the three reward-navigation flags remain.
+
+Full verification/export took **6m 38.3s**. It checked the fresh initialization,
+all 12 exact-resume boundaries and endpoint states, all **200,000 training
+decisions**, and 128 paired cases across the two evaluation panels. Six bounded
+views retain **2,638 episodes / 258,914 recorded decisions**, within the existing
+64 MiB metadata limit. Production sources remained identical to the corrected
+500k implementation. The [experiment evidence](evidence/act1_combat_reward_scratch_ab_2026_09_30.json)
+binds configurations, initialization, checkpoints, source identity, timings,
+record validation, paired results, the six views and checked viewer examples.
+
+The final evaluation view is available locally on port 8770. It includes the
+untrained policy and both reward variants for same-state comparisons; critic
+values use different reward scales and must not be compared as clear probabilities.
+To restart it:
+
+```bash
+sts-agent-analyze serve runs/act1-combat-reward-ab-20260930-analysis-eval-100000 \
+  --port 8770 \
+  --checkpoint 'Untrained=runs/act1-combat-reward-ab-20260930/control/start.sts-model' \
+  --checkpoint 'Current rewards 100k=runs/act1-combat-reward-ab-20260930/control/chunk-06/final.sts-model' \
+  --checkpoint 'Increased rewards 50k=runs/act1-combat-reward-ab-20260930/increased/chunk-03/final.sts-model' \
+  --checkpoint 'Increased rewards 100k=runs/act1-combat-reward-ab-20260930/increased/chunk-06/final.sts-model'
+```
+
+Episode `9b874e98c6ba405598d246fc505f370b` is an increased-reward Underdocks clear.
+Episode `2b2edfda06e1478fbbace76f3d66e1e9`, step 37, starts the floor-3 reward
+navigation loop. These are public recording and inference examples; alternatives
+were not simulated in that experiment. The following frozen-weight ablation
+addresses those loops separately. Repeating the reward comparison with another
+learner seed and fresh evaluation starts remains necessary before treating the
+weights as a reliable improvement.
+
+## Reward-navigation filter and frozen-weight evaluation (2026-09-30)
+
+The user approved fixing the observed reward open/close loops in the shared
+policy-action layer and re-evaluating both 100k checkpoints without training.
+`commit_decisions_v1` composes the existing ordered selector commitment with the
+[card-reward inspection rule](#shared-policy-actions-and-selection-order).
+Both current training presets adopt this new identity; reward weights, engine
+rules, public legal candidates and the old policy versions remain unchanged.
+
+The experiment in `runs/act1-reward-navigation-20260930/` copies every actor and
+critic tensor exactly into a separately named policy bundle for each arm. The
+new bundles use existing PPO serialization with a fresh, unused optimizer and
+zero new-experiment counters. Their lineage explicitly records **100k prior
+training decisions and zero additional training**. This is an inference
+ablation, not an exact optimizer continuation. Original checkpoints and earlier
+recordings retain their original bytes and identities.
+
+Each arm is evaluated before and after filtering on the same 64 development
+starts, with eight workers, the existing 1,024-decision cap and the unchanged
+heuristic baseline. All **384 games** completed without operational failures in
+**6m 13.6s**:
+
+| Frozen 100k model | Original Act 1 clears | Filtered Act 1 clears | Reward-loop cutoffs, original → filtered |
+| --- | ---: | ---: | ---: |
+| Current-reward control | 1/64 | 1/64 | 0 → 0 |
+| Increased combat rewards | 10/64 | 11/64 | 3 → 0 |
+
+The three originally stuck runs now resolve their rewards with an explicit card
+choice. The floor-14 Underdocks run clears Act 1 in 206 decisions. The other two
+subsequently lose, in 206 and 190 decisions, instead of consuming all 1,024 steps.
+Only those three trajectories change: all other **61 increased-reward runs and
+all 64 control runs** retain identical decisions and public observations. The
+128 original-policy replays also exactly reproduce the earlier recordings. Each
+first divergence is the previously repeated close, at steps 159, 149 and 40.
+Same-state inference confirms zero probability for that close and identical
+critic values; only the policy permission changes. The filtered panels contain
+no reward-navigation, selector-toggle or unused-playable-card review flags.
+
+The observed clear-rate increase is one game, not evidence of a repeatable
+learning improvement. Both comparisons retain the conservative `inconclusive`
+paired verdict on this reused development panel. Coverage is limited to known
+card-reward modals; removal and unknown shapes retain their exits. The next
+learning experiment should use the new policy from the outset in both reward
+arms, with another learner seed and fresh evaluation starts.
+
+Validation passed **303 targeted tests in 67.02s**, compilation and diff checks,
+plus an independent semantic review of public inputs, order/legality and
+checkpoint compatibility. Tests include rerolls, multiple reward inspection and
+resolution order, incomplete history/unknown shapes, selection order, PPO worker
+collection/replay, imitation, checkpoint playback and resume/reset behavior.
+Recording validation/export took **1m 25.5s**, producing two bounded views with
+**384 games / 65,224 decisions**. The
+[retained evidence](evidence/act1_reward_navigation_filter_2026_09_30.json)
+binds sources, checkpoint lineage, tests/review, paired traces, timings and the
+checked viewer endpoints.
+
+The increased-reward before/after viewer runs locally on port 8771. Episode
+`3262ba1c6e6f4c5c9f436893c9663e99`, step 159, shows the repaired decision in the
+run that subsequently clears Act 1. To restart it:
+
+```bash
+sts-agent-analyze serve runs/act1-reward-navigation-20260930-analysis-increased \
+  --port 8771 \
+  --checkpoint 'Original increased 100k=runs/act1-combat-reward-ab-20260930/increased/chunk-06/final.sts-model' \
+  --checkpoint 'Filtered increased 100k=runs/act1-reward-navigation-20260930/increased/frozen-100k.sts-model' \
+  --checkpoint 'Original control 100k=runs/act1-combat-reward-ab-20260930/control/chunk-06/final.sts-model' \
+  --checkpoint 'Filtered control 100k=runs/act1-reward-navigation-20260930/control/frozen-100k.sts-model'
+```
+
+## Increased-reward continuation to 250k decisions (2026-09-30)
+
+The user requested extending the learner to **250,000 total decisions**. The
+experiment in `runs/act1-increased-250k-8workers-20260930/` continues the
+increased-reward 100k actor/critic for **150,000 additional decisions**, with one
+learner and eight workers. It retains `combat_win = 0.2`,
+`win_hp_fraction = 0.1`, `act_cleared = 1`, defeat/abandonment at −1 and end-turn
+cost at −0.001. The architecture, vocabulary and engine rules remain unchanged.
+
+The continuation uses `commit_decisions_v1`. Every starting tensor matches the
+original increased-reward 100k checkpoint, through its frozen filtered bundle.
+Because the original training used the earlier action policy, this segment
+starts with a fresh optimizer, learner RNG and disjoint reserved training range.
+It does not claim uninterrupted optimizer continuation from the original 100k.
+All nine bounded chunks then use exact resume within this segment. The protocol
+fixes the total budget and 150k/200k/250k endpoints before training; no intermediate
+result changes the budget or reward settings.
+
+All **150,000 additional decisions** were accepted and trained, with **zero failed
+episodes and zero skipped updates**, in **16m 51.7s**. The 1,160 sampled training
+episodes include 27 Act 1 clears, 825 defeats and 308 quota/episode cutoffs. Clears
+in consecutive 50k blocks were 3, 9 and 15; these stochastic on-policy counts are
+descriptive and are not the paired evaluation measure.
+
+Evaluation compares each checkpoint with the filtered 100k initializer and the
+heuristic on the same 64 development starts, split evenly between Overgrowth and
+Underdocks. All **576 games** completed without operational failures or cutoffs
+in **8m 21.3s**, with eight workers:
+
+| Total training decisions | Act 1 clears | Clear rate | Mean last observed floor |
+| --- | ---: | ---: | ---: |
+| 100k filtered initializer | 11/64 | 17.19% | 12.69 |
+| 150k | 8/64 | 12.50% | 12.42 |
+| 200k | 9/64 | 14.06% | 13.95 |
+| 250k, planned final endpoint | 17/64 | 26.56% | 13.97 |
+
+The final observed gain is **six clears / 9.375 percentage points** over the
+initializer. Ten paired starts clear only with the 250k model and four only with
+the initializer. The conservative paired 95% interval is approximately −24.58 to
++43.33 percentage points, retaining the formal `inconclusive` verdict. One
+learner and reused development starts do not establish repeatability or
+generalization. The two earlier checkpoints regressed on clear rate, so this
+extension also demonstrates that the learning curve is not monotonic.
+
+The retained checkpoints are `chunk-03/final.sts-model` (150k),
+`chunk-06/final.sts-model` (200k), and `chunk-09/final.sts-model` (250k). Matching
+private resume states use the same relative paths under
+`runs/act1-increased-250k-8workers-20260930-private/`. Resume counters record this
+150k segment; the experiment lineage separately records the inherited 100k.
+
+Boss reach rose from **34/64** for the initializer to **44/64** at both 200k and
+250k. The final model clears 10/32 Overgrowth starts and 7/32 Underdocks starts.
+HP at observed living combat exits averages 69.95%, versus 67.88% for the
+initializer; these are different fights and include healing, so they are not a
+matched damage-reduction estimate. No selector-toggle or reward-navigation flags
+appear in the evaluation panels. End-turn-with-playable-card flags number 52
+across 39 games at 150k, zero at 200k, and 34 across 30 games at 250k.
+
+One concrete review state is episode `00ccf836da244230a56802aff30c9412`, step 5:
+one energy, zero block, two legal Defends and 14 displayed incoming damage. The
+250k policy ends the turn and the recorded successor loses 14 HP. Same-state
+comparison shows the 100k and 200k models prefer a Defend, while 150k and 250k
+prefer End Turn (probabilities 0.567 and 0.531). This is a useful review target;
+the flags alone do not prove every flagged action is a mistake, and alternative
+actions were not simulated. Episode `15b85fe0b4e74b8d8636ad181a3ca0e2` is one of
+the ten final-model clears on a start where the initializer loses.
+
+Initialization and all nine exact-resume transitions/endpoints were verified.
+All **150k new training decisions** passed canonical observation, reward and
+policy-mask validation. Across the three panels, all 64 public start states match,
+and all 384 initializer/heuristic replays reproduce the parent baseline traces.
+The unchanged 303-test source/runtime evidence from the filter implementation is
+reused; no production code changed for this experiment. Full validation/export
+took **6m 55.1s**. Six bounded views retain **1,736 episodes / 244,375 decisions**,
+including every new training decision and all 576 evaluation games. The
+[experiment evidence](evidence/act1_increased_250k_2026_09_30.json) binds the
+protocol, lineage, checkpoints, source/runtime, validation, timings, learning
+curve and viewer examples.
+
+The final viewer runs locally on port 8772 with all four same-reward checkpoints:
+
+```bash
+sts-agent-analyze serve runs/act1-increased-250k-8workers-20260930-analysis-eval-250000 \
+  --port 8772 \
+  --checkpoint '100k initializer=runs/act1-reward-navigation-20260930/increased/frozen-100k.sts-model' \
+  --checkpoint '150k=runs/act1-increased-250k-8workers-20260930/chunk-03/final.sts-model' \
+  --checkpoint '200k=runs/act1-increased-250k-8workers-20260930/chunk-06/final.sts-model' \
+  --checkpoint '250k=runs/act1-increased-250k-8workers-20260930/chunk-09/final.sts-model'
+```
+
+## Held-out Act 1 test (2026-09-30)
+
+After reviewing the development results, the user approved a fresh comparison
+of the frozen 250k endpoint against the filtered 100k initializer. The protocol
+in `runs/act1-heldout-250k-20260930/` fixes **256 test starts**, with 128 per Act 1
+region, before any game is played. Four fixed 64-case batches respect the existing
+evaluator's per-call limit. Eight workers run both checkpoints and the usual
+heuristic on every case, for **768 games**. There is no training, intermediate
+checkpoint search, reward change or adaptive sample-size adjustment.
+
+All 256 engine seeds are disjoint from the retained experiment metadata checked
+at preparation: 18,789 replay audits and 27 case files under `runs/`. The
+checkpoints, action policy, source/runtime and sample size are bound in the
+published protocol; replay seeds remain in private experiment files. Each
+trajectory is labelled `test`. This is a new-start test of one trained learner,
+not a repeat of training with independent learner seeds.
+
+| Frozen policy | Act 1 clears | Clear rate | Overgrowth | Underdocks |
+| --- | ---: | ---: | ---: | ---: |
+| Filtered 100k initializer | 23/256 | 8.98% | 13/128 | 10/128 |
+| 250k endpoint | 56/256 | 21.88% | 35/128 | 21/128 |
+| Heuristic | 14/256 | 5.47% | 4/128 | 10/128 |
+
+The observed paired gain is **33 clears / 12.89 percentage points**: 42 cases
+clear only with the 250k model and nine only with the initializer. The gain
+appears in both regions and extends beyond the reused development cases.
+The predeclared source-group Hoeffding 95% interval is **−4.09 to +29.87 percentage
+points**, retaining the protocol's formal `inconclusive` conclusion. This
+conservative interval and one learner do not establish training repeatability.
+The earlier 64-case panel remains validation evidence; its percentages should
+not be pooled with this independently chosen test panel.
+
+Boss reach increases from **132/256 to 191/256**. The 250k recordings contain
+133 end-turn-with-playable-card review flags across 114 games; these remain
+diagnostics, not proof that every flagged action is a mistake. No selector-toggle
+or reward-navigation flags appear in any of the three policies' test recordings.
+
+All **768 games** completed without cutoffs, operational failures or unattempted
+cases in **11m 30.1s**. All **128,391 decisions** passed canonical recording
+validation, and all **256 paired starts** matched. Validation/export took
+**2m 36.1s**. Source, checkpoint and runtime/dependency bindings remain unchanged;
+the prior 303-test evidence is reused, not rerun. The
+[held-out evidence](evidence/act1_heldout_250k_2026_09_30.json) records the frozen
+protocol, identities, summaries, validation and timings. Once these test outcomes
+guide further changes, use a fresh panel for the next independent test claim.
+
+The test viewer retains all 768 games and both frozen model comparisons:
+
+```bash
+sts-agent-analyze serve runs/act1-heldout-250k-20260930-analysis \
+  --port 8773 \
+  --checkpoint '100k initializer=runs/act1-reward-navigation-20260930/increased/frozen-100k.sts-model' \
+  --checkpoint '250k=runs/act1-increased-250k-8workers-20260930/chunk-09/final.sts-model'
+```
+
+## Increased-reward continuation to 500k decisions (2026-09-30)
+
+The user requested extending the current increased-reward 250k learner to
+**500,000 total decisions**. The experiment in
+`runs/act1-increased-500k-8workers-20260930/` adds **250,000 decisions** with one
+learner and eight workers. It preserves `combat_win = 0.2`,
+`win_hp_fraction = 0.1`, `act_cleared = 1`, defeat/abandonment at −1 and end-turn
+cost at −0.001, together with `commit_decisions_v1`, the model architecture,
+vocabulary and engine rules.
+
+This is an **exact resume from 250k**: actor, critic, Adam moments, both learner
+RNGs, sampling cursor and worker allocation carry forward. The start checkpoint
+round-trip retains the parent's semantic private-state digest. There is no new
+optimizer or objective reset. The original 100k policy-change reset remains in
+the earlier lineage; internal resume counters finish at 400k and the inherited
+100k offset makes the reported total 500k. Before collection, the next 250k
+reserved engine seeds were checked against retained experiment audits/case files,
+the validation panel and the recent 256-case test panel, with zero overlap.
+
+All **250,000 new decisions** were accepted and trained in **29m 7.5s**, with no
+failed episodes, skipped updates or skipped decisions. The 1,732 training
+episodes contain 164 Act 1 clears, 1,050 defeats and 518 rollout-quota/episode
+cutoffs. The latter remain bootstrapped training cutoffs. Clears in consecutive
+50k blocks were **17, 32, 32, 34 and 49**; these stochastic training counts are
+descriptive, not the fixed-policy validation measure.
+
+The protocol fixes checkpoints at **300k, 350k, 400k, 450k and 500k** before
+training, retained respectively in `chunk-03`, `chunk-06`, `chunk-09`, `chunk-12`
+and `chunk-15` as `final.sts-model`. Every update also retains an inference bundle
+and owner-only resume state. Private counterparts use the matching paths under
+`runs/act1-increased-500k-8workers-20260930-private/`.
+
+Validation compares all five milestones with the frozen 250k parent and heuristic
+on the existing 64 development starts, 32 per region. All **960 games** complete
+without operational failures, unattempted cases or cutoffs in **14m 45.7s**, with
+eight workers:
+
+| Total training decisions | Act 1 clears | Clear rate | Mean last observed floor |
+| --- | ---: | ---: | ---: |
+| 250k frozen parent | 17/64 | 26.56% | 13.97 |
+| 300k | 14/64 | 21.88% | 14.00 |
+| 350k | 9/64 | 14.06% | 14.06 |
+| 400k | 21/64 | 32.81% | 14.67 |
+| 450k | 20/64 | 31.25% | 14.23 |
+| 500k, planned final endpoint | 18/64 | 28.13% | 14.47 |
+
+The planned 500k endpoint gains **one clear / 1.5625 percentage points** over
+the parent. Nine paired starts clear only at 500k and eight only at 250k. The
+conservative paired 95% interval is **−32.39 to +35.52 percentage points**,
+retaining the formal `inconclusive` verdict. This run demonstrates completion
+and checkpoint continuation, with little final clear-rate gain on this panel.
+The 400k checkpoint has the highest observed validation score and remains a
+descriptive intermediate result; it is not automatically promoted over the
+predeclared endpoint. The learning curve is visibly non-monotonic.
+
+The recent 256-case held-out test panel is excluded from collection and these
+validation runs. Results remain development evidence; this extension does not
+claim a new held-out test or repeatability across learner seeds.
+
+The final model reaches the boss in **50/64 games**, versus 44/64 for its parent,
+and clears 7/32 Overgrowth and 11/32 Underdocks starts. Living combat-exit HP
+averages 72.42%, versus 69.95% for the parent; this includes different fights and
+healing and is not a matched damage-reduction estimate. End-turn-with-playable-card
+flags number 0, 0, 0, 3 and 69 at the five milestones, versus 34 for the parent.
+The 500k flags occur across 36 games. They identify review candidates, not proven
+strategic mistakes. Selector-toggle and reward-navigation flags remain absent.
+
+All **15 exact-resume transitions and final resume states** verified successfully.
+The exporter canonically validates all **250k new training decisions**, including
+rewards and policy masks, and all **960 evaluation games / 163,041 decisions**.
+Across the five panels, all 64 paired public starts match, and **640 baseline
+replays** reproduce the parent's recorded traces. Ten bounded views retain
+**2,692 episodes / 413,041 decisions**. Full validation/export takes **12m 7.7s**.
+The unchanged 303-test source/runtime/dependency evidence is reused; no production
+code changed. The [experiment evidence](evidence/act1_increased_500k_2026_09_30.json)
+binds the protocol, checkpoint lineage, validation, timings and complete curve.
+
+The final viewer loads the parent and three later milestones for same-state
+comparison; all five training milestones and validation exports remain retained:
+
+```bash
+sts-agent-analyze serve runs/act1-increased-500k-8workers-20260930-analysis-eval-500000 \
+  --port 8774 \
+  --checkpoint '250k parent=runs/act1-increased-250k-8workers-20260930/chunk-09/final.sts-model' \
+  --checkpoint '400k=runs/act1-increased-500k-8workers-20260930/chunk-09/final.sts-model' \
+  --checkpoint '450k=runs/act1-increased-500k-8workers-20260930/chunk-12/final.sts-model' \
+  --checkpoint '500k=runs/act1-increased-500k-8workers-20260930/chunk-15/final.sts-model'
+```
+
 ## Implementation sequence and next experiment
 
 1. Milestones 1 and 2 established combat episodes, measured baselines,
@@ -2916,26 +4133,28 @@ are recorded above. Hardware and larger compute budgets remain experiment
 settings; cloud jobs, native game launches, live corpus collection and
 profile/save access are outside this implementation's scope.
 
-The signal guard, paired filter comparison, shaped campaign pilot and first
-Act 1 pilot are complete. Act 1 remains the current training target:
+The signal guard, paired filter comparison, shaped campaign pilots and cumulative
+500k Act 1 training budget are complete. The terminal-outcome fix and authorized
+optimizer reset remain explicit in the checkpoint lineage. Act 1 remains the
+current training target:
 
-1. Increase useful success exposure with Act 1 late-act/boss continuation training
-   and successful public demonstrations from training cases. Label assisted
-   continuations explicitly and keep their results separate from genuine-start
-   Act 1 clear rate; the first pilot produced only one clear in 303 training
-   episodes and no clear-rate improvement in validation.
-2. Include optional/multiple-card selections and reward-screen completion in
-   targeted demonstrations, including states reached by the learned actors.
-   Verify that greedy playback confirms selections or resolves/skips rewards
-   and leaves the screen. Preserve ordered outcomes, native legality and public
-   inputs. The current commitment filter preserves ordered outcomes while
-   blocking selector undo; use it for new training and retain the historical
-   initializer as a separately identified reference.
-3. Repeat a bounded multi-seed comparison against the frozen initializer after
-   that training change. Judge progress by Act 1 clear rate, with floors, combat
-   outcomes and cutoff counts as secondary diagnostics. Expand to later acts only
-   after repeatable Act 1 improvement; keep the initializer as the reference
-   until paired evidence supports replacing it.
+1. Review paired regressions between the 250k parent and 500k endpoint on the
+   existing validation cases, using 400k as a diagnostic intermediate. Inspect
+   end-turn and late-combat decisions to choose one concrete follow-up hypothesis.
+   Judge progress by Act 1 clear rate, with boss reach, floors, combat outcomes
+   and cutoffs as diagnostics. Retain the completed 250k held-out result as its
+   original evidence; use fresh test cases for a later frozen comparison. Preserve
+   ordered outcomes, native legality and public inputs in any policy change.
+2. Repeat the bounded, predeclared reward comparison from scratch with
+   `commit_decisions_v1` in both arms and another learner seed. Freeze the budget
+   and endpoint before collection; preserve all planned cases and keep reward,
+   action-filter and optimizer-reset effects distinct. Do not promote whichever
+   checkpoint happens to lead the development curve.
+3. If success exposure remains limiting, add Act 1 late-act/boss continuations and
+   successful public demonstrations from training cases. Include reward-screen
+   completion and ordered selectors. Label assisted continuations explicitly and
+   keep their outcomes separate from genuine-start Act 1 clear rate. Expand to
+   later acts only after repeatable Act 1 improvement.
 
 Configurable rewards now provide dense learning signal, and the guard prevents
 updates when both advantages and value errors are absent. The remaining

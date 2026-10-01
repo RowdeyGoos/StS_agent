@@ -13,8 +13,11 @@ this is not a claim of exhaustive equivalence or a complete autonomous agent.
 live-demonstrated bridge behavior, known failures and implementation gaps.
 
 The current training goal is **clearing Act 1 with Ironclad at A0**, measured by
-Act 1 clear rate across both regions. Use the [Act 1 preset and paired evaluation](docs/AGENT_TRAINING.md#act-1-training-and-configurable-act-rewards)
-for the configurable act-clear reward and stopping boundary.
+Act 1 clear rate across both regions. The current learning focus is
+[combat specialization with campaign-derived starts and matched benchmarks](docs/AGENT_TRAINING.md#campaign-derived-combat-training),
+with a fixed noncombat controller for hybrid Act 1 checks. The
+[Act 1 preset and paired evaluation](docs/AGENT_TRAINING.md#act-1-training-and-configurable-act-rewards)
+retain the configurable act-clear reward and stopping boundary.
 
 Requires Python 3.10+. New coding sessions follow [AGENTS.md](AGENTS.md).
 
@@ -131,6 +134,10 @@ sts-agent-play --output-dir runs/train --split train --seed 30 \
   --episodes 2 --workers 2 --max-decisions 600 --time-limit 120
 ```
 
+New traces use lossless gzip compression. Existing plain traces remain readable;
+`sts-agent-analyze compress --input runs` previews a verified migration that
+preserves their content hashes. See [trace storage](docs/AGENT_EXECUTION.md#compress-existing-public-traces).
+
 Public trajectories go under `runs/train`; private replay seeds/configuration go
 under the separate owner-only `runs/train-private` directory. Interrupted writes
 remain `.partial`, and finished artifacts are never overwritten. Worker scheduling
@@ -214,8 +221,11 @@ collection in combat or full-run training. Rollout decisions remain a total
 budget across workers; exact resume restores the saved worker count. See
 [parallel collection and horizon choices](docs/AGENT_TRAINING.md#parallel-ppo-collection-2026-09-29).
 
-For broader combat training, freeze the paired evaluation population before
-training three learners through five cumulative stages:
+For the current combat focus, use the
+[campaign-derived corpus workflow](docs/AGENT_TRAINING.md#campaign-derived-combat-training)
+to train and compare policies on frozen fights from both Act 1 regions. Both PPO
+and matched combat evaluation support eight workers. The earlier finite fixture
+curriculum remains available:
 
 ```bash
 sts-agent-evaluate --freeze-suite configs/training/combat_benchmark.json \
@@ -242,7 +252,10 @@ card-selection commitment policy from an older full-run checkpoint. This keeps t
 actor and starts a fresh critic and optimizer. The shared policy layer blocks
 deselection in known deferred card selectors, including optional and multiple-card
 choices. Picks retain their native order; confirmation remains a separate action
-and is available whenever the minimum is met, including zero.
+and is available whenever the minimum is met, including zero. The current
+`commit_decisions_v1` policy also allows one inspection of each card reward,
+then blocks closing it again after reopening without gameplay progress.
+Choices, skips, rerolls and inspection of other rewards remain available.
 Checkpoint metadata preserves the policy used during training. See the
 [policy rules and selector inventory](docs/AGENT_TRAINING.md#shared-policy-actions-and-selection-order).
 Assisted demonstrations are labelled separately and provide no normal-run value
@@ -252,7 +265,7 @@ and the
 
 For the current Act 1 goal, train with `configs/training/act1_ppo.json` and
 `--reset-objective` when transferring an existing campaign actor. Add
-`--reset-action-policy` when adopting its `commit_card_selection_v1` policy from
+`--reset-action-policy` when adopting its `commit_decisions_v1` policy from
 an older checkpoint; omit each reset flag when that setting already matches.
 The preset rewards each act clear at +1 alongside the existing combat shaping and ends the
 episode after Act 1. `sts-agent-evaluate --act1 --checkpoint PATH
@@ -271,6 +284,16 @@ metrics without replay validation. For validated viewer data, use
 overview, run timeline, decision inspector and PPO reward diagnostics. Add
 `--checkpoint LABEL=PATH` to compare checkpoint preferences on the same recorded
 state. See the [analysis guide](docs/AGENT_TRAINING.md#decision-analysis-tools).
+
+For cross-experiment learning curves, install the optional `tracking` extra and
+use `sts-agent-track import runs --store runs/experiment-tracking`, then
+`sts-agent-track serve --store runs/experiment-tracking --port 5050`. Add
+`--tracking-dir runs/experiment-tracking` to training/evaluation commands for
+live logging. The local MLflow dashboard joins exact PPO continuations, keeps
+evaluation populations separate, curates initial, final, evaluated and retained
+checkpoints with their scores in Models,
+and links to the decision inspector. See the
+[experiment tracking guide](docs/EXPERIMENT_TRACKING.md).
 
 `sts-agent-play --checkpoint PATH --output-dir runs/run-playback` uses a full-run
 checkpoint for every decision. `sts-agent-evaluate --full-run --checkpoint PATH

@@ -1,0 +1,2543 @@
+{
+  "artifacts": {
+    "analysis_decisions": 258914,
+    "analysis_episodes": 2638,
+    "analysis_script_sha256": "e81ce00905e1244fc8e5adaf8e80e6d5b1888440a540139b6f754fa8e0e54864",
+    "evaluation_report_sha256": "c666578d484fb2ef0e33943eaf97080bce4c8653a02cfe1d98c6d75ecc3622f6",
+    "experiment_script_sha256": "29c8f83da882568336ddcb1b5d534979f6d4f44aef9ce2de3efc3cc3a878b887",
+    "initial_collection_pairing_sha256": "0bdb631d816531dd544d082d1c6206bf24210e019487a51fc064b81e1b36aa67",
+    "private_root": "runs/act1-combat-reward-ab-20260930-private",
+    "protocol_sha256": "2545097daebc9f6a97b43cba5206fe3bcfd2f794c4cd9d13e2682b8ac35cf93a",
+    "public_root": "runs/act1-combat-reward-ab-20260930",
+    "raw_analysis_sha256": "68147372b3e36d4e69b0ef2a8595faa5630ad2413a2ed5f2a591f2be96628f5c",
+    "review_examples_sha256": "c281fa290de554565ec6626896a03d51e69caebb37bdffacab7453fa5e8bdf82",
+    "training_report_sha256": "454ee206ff110781c9a8576454cfa0ef06f96429e1caae1eca8427b3bcca9fe5",
+    "validation_sha256": "e2a918e367e98fd54fd41e26bc07a9f3d6f11fa35cb2d95a87cdfa53847578e9",
+    "viewer_check_sha256": "8b249ca7da5df7c5f03b66235ba539cda7ae62660c67ecb478a923d90d2a237e"
+  },
+  "checks": {
+    "all_viewer_reports_within_64_mib_limit": true,
+    "canonical_training_decisions_validated": 200000,
+    "exact_resume_boundaries_verified": 12,
+    "final_resume_states_restored": 12,
+    "first_4096_decisions_same_actions_masks_values_and_outcome_components": true,
+    "first_rollout_comparison_sha256": "ee9f54ce3eb057c19f454883c6c414ff98d48632b8a2f99a74f487d19671e6e2",
+    "fresh_random_weights_verified": true,
+    "heuristic_traces_identical_across_panels": 64,
+    "identical_initial_parameters_and_rng": true,
+    "no_partial_artifacts": true,
+    "paired_evaluation_cases_verified": 128,
+    "paired_public_start_states_identical": 64,
+    "private_files_owner_only": 2719
+  },
+  "date": "2026-09-30",
+  "evaluation": [
+    {
+      "decisions": 50000,
+      "paired_vs_control": {
+        "act1_clear_rate_difference": 0.03125,
+        "act1_clears_only_candidate": 2,
+        "act1_clears_only_reference": 0,
+        "cases": 64,
+        "conclusion": "inconclusive",
+        "difference_group_hoeffding_95": [
+          -0.3082753789351549,
+          0.3707753789351549
+        ]
+      },
+      "paired_vs_heuristic": {
+        "learned": {
+          "act1_clear_rate_difference": 0.03125,
+          "act1_clears_only_candidate": 2,
+          "act1_clears_only_heuristic": 0,
+          "cases": 64,
+          "conclusion": "inconclusive",
+          "difference_group_hoeffding_95": [
+            -0.3082753789351549,
+            0.3707753789351549
+          ]
+        },
+        "reference": {
+          "act1_clear_rate_difference": 0.0,
+          "act1_clears_only_candidate": 0,
+          "act1_clears_only_heuristic": 0,
+          "cases": 64,
+          "conclusion": "inconclusive",
+          "difference_group_hoeffding_95": [
+            -0.3395253789351549,
+            0.3395253789351549
+          ]
+        }
+      },
+      "report_sha256": "fc6880c632a5517c4cdf0c0bcc70059e7af24f807960f08510d53b17663f38c5",
+      "seconds": 127.48023220780306,
+      "summary": {
+        "control": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.0,
+          "act1_clear_rate_group_hoeffding_95": [
+            0,
+            0.16976268946757744
+          ],
+          "act1_clears": 0,
+          "attempted": 64,
+          "boss_reaches": 5,
+          "by_region": {
+            "overgrowth": {
+              "act1_clears": 0,
+              "boss_reaches": 4,
+              "cases": 32
+            },
+            "underdocks": {
+              "act1_clears": 0,
+              "boss_reaches": 1,
+              "cases": 32
+            }
+          },
+          "cutoffs": 0,
+          "decisions_per_second": 27.49053677521819,
+          "defeats": 64,
+          "failures": 0,
+          "mean_hp_fraction_on_observed_exit": 0.658434916428222,
+          "mean_last_observed_floor": 8.5,
+          "observed_alive_combat_exits": 349,
+          "planned": 64,
+          "policy_seconds": 77.83587129460648,
+          "review_flag_episode_counts": {},
+          "review_flags": {},
+          "run_wins": 0,
+          "steps": 7519,
+          "total_seconds": 273.5123021234758,
+          "unattempted": 0
+        },
+        "heuristic": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.0,
+          "act1_clear_rate_group_hoeffding_95": [
+            0,
+            0.16976268946757744
+          ],
+          "act1_clears": 0,
+          "attempted": 64,
+          "boss_reaches": 26,
+          "by_region": {
+            "overgrowth": {
+              "act1_clears": 0,
+              "boss_reaches": 8,
+              "cases": 32
+            },
+            "underdocks": {
+              "act1_clears": 0,
+              "boss_reaches": 18,
+              "cases": 32
+            }
+          },
+          "cutoffs": 0,
+          "decisions_per_second": 32.114641271906265,
+          "defeats": 64,
+          "failures": 0,
+          "mean_hp_fraction_on_observed_exit": 0.6589971855661004,
+          "mean_last_observed_floor": 12.0,
+          "observed_alive_combat_exits": 369,
+          "planned": 64,
+          "policy_seconds": 43.98897471069358,
+          "review_flag_episode_counts": {},
+          "review_flags": {},
+          "run_wins": 0,
+          "steps": 10069,
+          "total_seconds": 313.5330055456143,
+          "unattempted": 0
+        },
+        "increased": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.03125,
+          "act1_clear_rate_group_hoeffding_95": [
+            0,
+            0.20101268946757744
+          ],
+          "act1_clears": 2,
+          "attempted": 64,
+          "boss_reaches": 8,
+          "by_region": {
+            "overgrowth": {
+              "act1_clears": 1,
+              "boss_reaches": 4,
+              "cases": 32
+            },
+            "underdocks": {
+              "act1_clears": 1,
+              "boss_reaches": 4,
+              "cases": 32
+            }
+          },
+          "cutoffs": 0,
+          "decisions_per_second": 28.097572586807292,
+          "defeats": 62,
+          "failures": 0,
+          "mean_hp_fraction_on_observed_exit": 0.649813327469315,
+          "mean_last_observed_floor": 8.609375,
+          "observed_alive_combat_exits": 345,
+          "planned": 64,
+          "policy_seconds": 75.14975185832009,
+          "review_flag_episode_counts": {},
+          "review_flags": {},
+          "run_wins": 0,
+          "steps": 7479,
+          "total_seconds": 266.17957750242203,
+          "unattempted": 0
+        }
+      }
+    },
+    {
+      "decisions": 100000,
+      "paired_vs_control": {
+        "act1_clear_rate_difference": 0.140625,
+        "act1_clears_only_candidate": 10,
+        "act1_clears_only_reference": 1,
+        "cases": 64,
+        "conclusion": "inconclusive",
+        "difference_group_hoeffding_95": [
+          -0.1989003789351549,
+          0.4801503789351549
+        ]
+      },
+      "paired_vs_heuristic": {
+        "learned": {
+          "act1_clear_rate_difference": 0.15625,
+          "act1_clears_only_candidate": 10,
+          "act1_clears_only_heuristic": 0,
+          "cases": 64,
+          "conclusion": "inconclusive",
+          "difference_group_hoeffding_95": [
+            -0.1832753789351549,
+            0.4957753789351549
+          ]
+        },
+        "reference": {
+          "act1_clear_rate_difference": 0.015625,
+          "act1_clears_only_candidate": 1,
+          "act1_clears_only_heuristic": 0,
+          "cases": 64,
+          "conclusion": "inconclusive",
+          "difference_group_hoeffding_95": [
+            -0.3239003789351549,
+            0.3551503789351549
+          ]
+        }
+      },
+      "report_sha256": "d07c7b3aabab555232db852f551b98b89d071ebe4ad21348b956e2e4e33fbc29",
+      "seconds": 206.40265895798802,
+      "summary": {
+        "control": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.015625,
+          "act1_clear_rate_group_hoeffding_95": [
+            0,
+            0.18538768946757744
+          ],
+          "act1_clears": 1,
+          "attempted": 64,
+          "boss_reaches": 26,
+          "by_region": {
+            "overgrowth": {
+              "act1_clears": 1,
+              "boss_reaches": 10,
+              "cases": 32
+            },
+            "underdocks": {
+              "act1_clears": 0,
+              "boss_reaches": 16,
+              "cases": 32
+            }
+          },
+          "cutoffs": 0,
+          "decisions_per_second": 25.792634763155366,
+          "defeats": 63,
+          "failures": 0,
+          "mean_hp_fraction_on_observed_exit": 0.6864566751024497,
+          "mean_last_observed_floor": 12.046875,
+          "observed_alive_combat_exits": 426,
+          "planned": 64,
+          "policy_seconds": 125.78800196596421,
+          "review_flag_episode_counts": {},
+          "review_flags": {},
+          "run_wins": 0,
+          "steps": 11010,
+          "total_seconds": 426.8660453304183,
+          "unattempted": 0
+        },
+        "heuristic": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.0,
+          "act1_clear_rate_group_hoeffding_95": [
+            0,
+            0.16976268946757744
+          ],
+          "act1_clears": 0,
+          "attempted": 64,
+          "boss_reaches": 26,
+          "by_region": {
+            "overgrowth": {
+              "act1_clears": 0,
+              "boss_reaches": 8,
+              "cases": 32
+            },
+            "underdocks": {
+              "act1_clears": 0,
+              "boss_reaches": 18,
+              "cases": 32
+            }
+          },
+          "cutoffs": 0,
+          "decisions_per_second": 33.11649822702822,
+          "defeats": 64,
+          "failures": 0,
+          "mean_hp_fraction_on_observed_exit": 0.6589971855661004,
+          "mean_last_observed_floor": 12.0,
+          "observed_alive_combat_exits": 369,
+          "planned": 64,
+          "policy_seconds": 41.32536313170567,
+          "review_flag_episode_counts": {},
+          "review_flags": {},
+          "run_wins": 0,
+          "steps": 10069,
+          "total_seconds": 304.0478474195115,
+          "unattempted": 0
+        },
+        "increased": {
+          "abandoned": 0,
+          "act1_clear_rate": 0.15625,
+          "act1_clear_rate_group_hoeffding_95": [
+            0,
+            0.32601268946757744
+          ],
+          "act1_clears": 10,
+          "attempted": 64,
+          "boss_reaches": 32,
+          "by_region": {
+            "overgrowth": {
+              "act1_clears": 6,
+              "boss_reaches": 15,
+              "cases": 32
+            },
+            "underdocks": {
+              "act1_clears": 4,
+              "boss_reaches": 17,
+              "cases": 32
+            }
+          },
+          "cutoffs": 3,
+          "decisions_per_second": 22.896297284607964,
+          "defeats": 51,
+          "failures": 0,
+          "mean_hp_fraction_on_observed_exit": 0.6813836127127817,
+          "mean_last_observed_floor": 12.4375,
+          "observed_alive_combat_exits": 431,
+          "planned": 64,
+          "policy_seconds": 174.52140104561113,
+          "review_flag_episode_counts": {
+            "reward_navigation": 3
+          },
+          "review_flags": {
+            "reward_navigation": 3
+          },
+          "run_wins": 0,
+          "steps": 12768,
+          "total_seconds": 557.6447510831058,
+          "unattempted": 0
+        }
+      }
+    }
+  ],
+  "experiments": {
+    "control": {
+      "encounters": [
+        "overgrowth",
+        "underdocks"
+      ],
+      "ppo": {
+        "batch_size": 16,
+        "clip_ratio": 0.2,
+        "entropy_weight": 0.01,
+        "episode_decisions": 512,
+        "episode_seconds": 120.0,
+        "epochs": 2,
+        "gae_lambda": 0.95,
+        "gamma": 1.0,
+        "gradient_clip": 0.5,
+        "learning_rate": 0.0003,
+        "normalize_advantages": true,
+        "rollout_steps": 4096,
+        "target_kl": 0.03,
+        "value_weight": 0.5
+      },
+      "schema": "sts_ppo_experiment_v2",
+      "source": "ironclad_a0_full_run_v1",
+      "training": {
+        "action_policy": "commit_card_selection_v1",
+        "mode": "full_run",
+        "reward": {
+          "goal": "act1",
+          "schema": "sts_full_run_reward_v3",
+          "weights": {
+            "act_cleared": 1.0,
+            "combat_loss": 0.0,
+            "combat_win": 0.1,
+            "end_turn_action": -0.001,
+            "potion_use_action": 0.0,
+            "run_abandoned": -1.0,
+            "run_defeat": -1.0,
+            "run_victory": 0.0,
+            "win_hp_fraction": 0.025
+          }
+        },
+        "scenario_set": "ironclad_a0_full_run_v1"
+      }
+    },
+    "increased": {
+      "encounters": [
+        "overgrowth",
+        "underdocks"
+      ],
+      "ppo": {
+        "batch_size": 16,
+        "clip_ratio": 0.2,
+        "entropy_weight": 0.01,
+        "episode_decisions": 512,
+        "episode_seconds": 120.0,
+        "epochs": 2,
+        "gae_lambda": 0.95,
+        "gamma": 1.0,
+        "gradient_clip": 0.5,
+        "learning_rate": 0.0003,
+        "normalize_advantages": true,
+        "rollout_steps": 4096,
+        "target_kl": 0.03,
+        "value_weight": 0.5
+      },
+      "schema": "sts_ppo_experiment_v2",
+      "source": "ironclad_a0_full_run_v1",
+      "training": {
+        "action_policy": "commit_card_selection_v1",
+        "mode": "full_run",
+        "reward": {
+          "goal": "act1",
+          "schema": "sts_full_run_reward_v3",
+          "weights": {
+            "act_cleared": 1.0,
+            "combat_loss": 0.0,
+            "combat_win": 0.2,
+            "end_turn_action": -0.001,
+            "potion_use_action": 0.0,
+            "run_abandoned": -1.0,
+            "run_defeat": -1.0,
+            "run_victory": 0.0,
+            "win_hp_fraction": 0.1
+          }
+        },
+        "scenario_set": "ironclad_a0_full_run_v1"
+      }
+    }
+  },
+  "implementation": {
+    "build": "72f3f38eafc2fa9824249a9eaee7d40466830944a0814b87ff4cb2a33e9fe451",
+    "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+    "rules": "cb4110d297799c139c5912c30a0e0903630c1c8ab2141eded608b90a7b1e0926",
+    "target": "sts2-v0.107.1-steam-23811903"
+  },
+  "inherited_training_decisions": 0,
+  "initialization": {
+    "all_initial_tensors_equal_fresh_seeded_constructor": true,
+    "all_initial_tensors_identical": true,
+    "from_scratch": true,
+    "no_imitation_or_ppo_weights_copied": true,
+    "optimizer_empty_in_both_arms": true,
+    "same_fresh_rng_and_reserved_training_seed_range": true,
+    "seed_range_disjoint_from_checked_history_and_evaluation": true
+  },
+  "learners_per_arm": 1,
+  "limitations": [
+    "One learner seed per arm and a reused development evaluation panel; no repeatability or generalization claim.",
+    "Both rewards change together; this tests their combined effect, not their individual contributions.",
+    "Both actor and critic are freshly initialized with zero prior training. Architecture, action filtering and a frozen vocabulary originally fitted on training data are reused; their embedding weights are random.",
+    "On-policy trajectories and actual episode consumption may diverge despite matched reserved seed ranges.",
+    "Reward totals on different scales are not the primary comparison; Act 1 clears remain the target.",
+    "Headless evidence only; no new native-game validation.",
+    "Post-combat evaluation HP is a descriptive measurement of observed transitions from combat to a living non-combat public state. It excludes any instant fight without a projected combat state and does not isolate damage from automatic healing."
+  ],
+  "primary_endpoint": {
+    "act1_clear_rate_difference": 0.140625,
+    "act1_clears_only_candidate": 10,
+    "act1_clears_only_reference": 1,
+    "cases": 64,
+    "conclusion": "inconclusive",
+    "difference_group_hoeffding_95": [
+      -0.1989003789351549,
+      0.4801503789351549
+    ]
+  },
+  "recorded_clock_times": {
+    "evaluation_launched_utc": "2026-09-30 10:36:23 UTC",
+    "first_observed_utc": "2026-09-30 10:09:42 UTC",
+    "training_launched_utc": "2026-09-30 10:15:52 UTC"
+  },
+  "review_examples": {
+    "reward_navigation_cutoffs": [
+      {
+        "episode_id": "430d185120e64a789ce440124b1f911b",
+        "flags": [
+          {
+            "end": 1023,
+            "kind": "reward_navigation",
+            "level": "warning",
+            "reason": "868 consecutive selection/navigation actions including reversals in the same room/context. The recording ends at a cutoff.",
+            "start": 156
+          }
+        ],
+        "floor": 14,
+        "outcome": {
+          "kind": "truncated",
+          "reason": "decision_budget",
+          "schema": "sts_run_outcome_v1"
+        },
+        "step": 156
+      },
+      {
+        "episode_id": "992416e5bccc40118fa4f4aec79559c6",
+        "flags": [
+          {
+            "end": 1023,
+            "kind": "reward_navigation",
+            "level": "warning",
+            "reason": "878 consecutive selection/navigation actions including reversals in the same room/context. The recording ends at a cutoff.",
+            "start": 146
+          }
+        ],
+        "floor": 13,
+        "outcome": {
+          "kind": "truncated",
+          "reason": "decision_budget",
+          "schema": "sts_run_outcome_v1"
+        },
+        "step": 146
+      },
+      {
+        "episode_id": "2b2edfda06e1478fbbace76f3d66e1e9",
+        "flags": [
+          {
+            "end": 1023,
+            "kind": "reward_navigation",
+            "level": "warning",
+            "reason": "987 consecutive selection/navigation actions including reversals in the same room/context. The recording ends at a cutoff.",
+            "start": 37
+          }
+        ],
+        "floor": 3,
+        "outcome": {
+          "kind": "truncated",
+          "reason": "decision_budget",
+          "schema": "sts_run_outcome_v1"
+        },
+        "step": 37
+      }
+    ],
+    "successful_increased_episode": {
+      "episode_id": "9b874e98c6ba405598d246fc505f370b",
+      "first_act": "underdocks",
+      "step": 0,
+      "steps": 232
+    }
+  },
+  "runtime": {
+    "device": "cpu",
+    "python": "3.11.15",
+    "threads": 1,
+    "torch": "2.13.0"
+  },
+  "schema": "sts_act1_combat_reward_scratch_ab_evidence_v1",
+  "source_metadata": {
+    "architecture": {
+      "hidden_size": 48,
+      "message_layers": 2,
+      "schema": "sts_graph_actor_critic_v1"
+    },
+    "identity": "ppo_v1:cfe80fb0679bd7b0757081126ef99f8818fae6e1fe1a4a3faa3019811037a9e4",
+    "path": "runs/act1-500k-fixed-8workers-20260930/chunk-08/final.sts-model",
+    "sha256": "cfe80fb0679bd7b0757081126ef99f8818fae6e1fe1a4a3faa3019811037a9e4",
+    "used_only_for": "architecture, frozen vocabulary, action-policy version and control reward settings; no learned tensors copied",
+    "vocabulary_identity": "sts_learned_public_graph_v1:d5e8fb739d4b0466314b2ffb2d98e56101bf6859f660d36f0fefa9d8e6ef7ce9"
+  },
+  "status": "complete",
+  "timings": {
+    "analysis": 398.30998820788227,
+    "evaluation": 333.8828911657911,
+    "training": 1211.4870927918237
+  },
+  "total_trained_decisions": 200000,
+  "trained_decisions_per_arm": 100000,
+  "training": {
+    "control": {
+      "checkpoints": [
+        {
+          "additional_decisions": 50000,
+          "arm": "control",
+          "checkpoint": "control/chunk-03/final.sts-model",
+          "chunk": 3,
+          "sha256": "2cb4a7eaf362b3d14465e63f194cbcd0da5810e9b9b413318947c346ae5de638"
+        },
+        {
+          "additional_decisions": 100000,
+          "arm": "control",
+          "checkpoint": "control/chunk-06/final.sts-model",
+          "chunk": 6,
+          "sha256": "f278995389d072d5d6ac401d0b644f3da3ca22b86cca6ac2e2ac3c13febdf940"
+        }
+      ],
+      "chunks": [
+        {
+          "chunk": 1,
+          "final_sha256": "a28e398be035fa836b2dea9b7727918376845c949e5483d246ef1c6df42e20a6",
+          "report": "control/chunk-01/ppo.json",
+          "report_sha256": "efa03b981a6f0cc9cfe6cd4367b68329b2e2271678ff9e5c191487fbe846bdcf",
+          "seconds": 92.24866275000386,
+          "status": "complete",
+          "summary": {
+            "abandoned": 0,
+            "accepted_decisions": 16384,
+            "act1_clear_rate": 0.0,
+            "act1_clears": 0,
+            "components": {
+              "act_cleared": 0.0,
+              "combat_loss": 192.0,
+              "combat_win": 508.0,
+              "end_turn_action": 3720.0,
+              "potion_use_action": 39.0,
+              "run_abandoned": 0.0,
+              "run_defeat": 193.0,
+              "run_victory": 0.0,
+              "win_hp_fraction": 284.9391908094495
+            },
+            "controlled_attempts": 0,
+            "cutoffs": 32,
+            "decisions_per_second": 177.6069106215777,
+            "episode_attempts": 225,
+            "failed_episodes": 0,
+            "genuine_start_attempts": 225,
+            "goal": "act1",
+            "losses": 193,
+            "mean_hp_on_win": null,
+            "potion_use_actions": 39,
+            "processed_decisions": 16384,
+            "skipped_decisions": 0,
+            "skipped_updates": 0,
+            "task": "full_run",
+            "task_return": -138.79652022976367,
+            "trained_decisions": 16384,
+            "wins": 0
+          }
+        },
+        {
+          "chunk": 2,
+          "final_sha256": "6f5ed806ed1ba13bbf0e34df4ba54be4bfbe0e80c4c56d2d29ae9581d7dd6857",
+          "report": "control/chunk-02/ppo.json",
+          "report_sha256": "1d6c36b3c4c697592ff2ee4c8436e1413bea2e1f3acd679c71081a9aad5d56ff",
+          "seconds": 94.01797291589901,
+          "status": "complete",
+          "summary": {
+            "abandoned": 0,
+            "accepted_decisions": 16384,
+            "act1_clear_rate": 0.0,
+            "act1_clears": 0,
+            "components": {
+              "act_cleared": 0.0,
+              "combat_loss": 161.0,
+              "combat_win": 609.0,
+              "end_turn_action": 3102.0,
+              "potion_use_action": 50.0,
+              "run_abandoned": 0.0,
+              "run_defeat": 161.0,
+              "run_victory": 0.0,
+              "win_hp_fraction": 390.97784712422913
+            },
+            "controlled_attempts": 0,
+            "cutoffs": 32,
+            "decisions_per_second": 174.2645527430784,
+            "episode_attempts": 193,
+            "failed_episodes": 0,
+            "genuine_start_attempts": 193,
+            "goal": "act1",
+            "losses": 161,
+            "mean_hp_on_win": null,
+            "potion_use_actions": 50,
+            "processed_decisions": 16384,
+            "skipped_decisions": 0,
+            "skipped_updates": 0,
+            "task": "full_run",
+            "task_return": -93.42755382189421,
+            "trained_decisions": 16384,
+            "wins": 0
+          }
+        },
+        {
+          "chunk": 3,
+          "final_sha256": "2cb4a7eaf362b3d14465e63f194cbcd0da5810e9b9b413318947c346ae5de638",
+          "report": "control/chunk-03/ppo.json",
+          "report_sha256": "e65643a2e6414a334d3d56762fc5cf17558733ee47ad42dd400d32252fb118be",
+          "seconds": 102.9849682499189,
+          "status": "complete",
+          "summary": {
+            "abandoned": 0,
+            "accepted_decisions": 17232,
+            "act1_clear_rate": 0.0,
+            "act1_clears": 0,
+            "components": {
+              "act_cleared": 0.0,
+              "combat_loss": 155.0,
+              "combat_win": 694.0,
+              "end_turn_action": 3009.0,
+              "potion_use_action": 50.0,
+              "run_abandoned": 0.0,
+              "run_defeat": 156.0,
+              "run_victory": 0.0,
+              "win_hp_fraction": 457.5146248755253
+            },
+            "controlled_attempts": 0,
+            "cutoffs": 39,
+            "decisions_per_second": 167.3253902276517,
+            "episode_attempts": 195,
+            "failed_episodes": 0,
+            "genuine_start_attempts": 195,
+            "goal": "act1",
+            "losses": 156,
+            "mean_hp_on_win": null,
+            "potion_use_actions": 50,
+            "processed_decisions": 17232,
+            "skipped_decisions": 0,
+            "skipped_updates": 0,
+            "task": "full_run",
+            "task_return": -78.1711343781118,
+            "trained_decisions": 17232,
+            "wins": 0
+          }
+        },
+        {
+          "chunk": 4,
+          "final_sha256": "e51ac660237a26f7555ca9e6fae303b9c0e3b81f9f2d03b0ad20d9843d5581fc",
+          "report": "control/chunk-04/ppo.json",
+          "report_sha256": "453121b626948614b6367694c80041ef681cc36b9db8d059d620f7257234abdd",
+          "seconds": 100.15257629100233,
+          "status": "complete",
+          "summary": {
+            "abandoned": 0,
+            "accepted_decisions": 16384,
+            "act1_clear_rate": 0.0,
+            "act1_clears": 0,
+            "components": {
+              "act_cleared": 0.0,
+              "combat_loss": 150.0,
+              "combat_win": 684.0,
+              "end_turn_action": 2853.0,
+              "potion_use_action": 53.0,
+              "run_abandoned": 0.0,
+              "run_defeat": 151.0,
+              "run_victory": 0.0,
+              "win_hp_fraction": 448.76932105148546
+            },
+            "controlled_attempts": 0,
+            "cutoffs": 32,
+            "decisions_per_second": 163.5903998354951,
+            "episode_attempts": 183,
+            "failed_episodes": 0,
+            "genuine_start_attempts": 183,
+            "goal": "act1",
+            "losses": 151,
+            "mean_hp_on_win": null,
+            "potion_use_actions": 53,
+            "processed_decisions": 16384,
+            "skipped_decisions": 0,
+            "skipped_updates": 0,
+            "task": "full_run",
+            "task_return": -74.23376697371282,
+            "trained_decisions": 16384,
+            "wins": 0
+          }
+        },
+        {
+          "chunk": 5,
+          "final_sha256": "41c74b3568302d4a014a32394a3f24abdc026f6b131306e5ae1215e229a77176",
+          "report": "control/chunk-05/ppo.json",
+          "report_sha256": "8fcc08e615154ad0a4b8e9dbe5c80c4913f33f8e2b7093f457d90ad4f398df51",
+          "seconds": 103.40959524991922,
+          "status": "complete",
+          "summary": {
+            "abandoned": 0,
+            "accepted_decisions": 16384,
+            "act1_clear_rate": 0.0,
+            "act1_clears": 0,
+            "components": {
+              "act_cleared": 0.0,
+              "combat_loss": 122.0,
+              "combat_win": 660.0,
+              "end_turn_action": 2699.0,
+              "potion_use_action": 63.0,
+              "run_abandoned": 0.0,
+              "run_defeat": 123.0,
+              "run_victory": 0.0,
+              "win_hp_fraction": 435.31551667753314
+            },
+            "controlled_attempts": 0,
+            "cutoffs": 32,
+            "decisions_per_second": 158.4379085944909,
+            "episode_attempts": 155,
+            "failed_episodes": 0,
+            "genuine_start_attempts": 155,
+            "goal": "act1",
+            "losses": 123,
+            "mean_hp_on_win": null,
+            "potion_use_actions": 63,
+            "processed_decisions": 16384,
+            "skipped_decisions": 0,
+            "skipped_updates": 0,
+            "task": "full_run",
+            "task_return": -48.816112083061675,
+            "trained_decisions": 16384,
+            "wins": 0
+          }
+        },
+        {
+          "chunk": 6,
+          "final_sha256": "f278995389d072d5d6ac401d0b644f3da3ca22b86cca6ac2e2ac3c13febdf940",
+          "report": "control/chunk-06/ppo.json",
+          "report_sha256": "4cb949fcd31e1667b6db937933fe807e8c170fdf5c96b44333d72cb848c78e39",
+          "seconds": 111.53532895911485,
+          "status": "complete",
+          "summary": {
+            "abandoned": 0,
+            "accepted_decisions": 17232,
+            "act1_clear_rate": 0.006578947368421052,
+            "act1_clears": 1,
+            "components": {
+              "act_cleared": 1.0,
+              "combat_loss": 111.0,
+              "combat_win": 694.0,
+              "end_turn_action": 2715.0,
+              "potion_use_action": 77.0,
+              "run_abandoned": 0.0,
+              "run_defeat": 111.0,
+              "run_victory": 0.0,
+              "win_hp_fraction": 459.91336569710154
+            },
+            "controlled_attempts": 0,
+            "cutoffs": 40,
+            "decisions_per_second": 154.49813221348617,
+            "episode_attempts": 152,
+            "failed_episodes": 0,
+            "genuine_start_attempts": 152,
+            "goal": "act1",
+            "losses": 111,
+            "mean_hp_on_win": null,
+            "potion_use_actions": 77,
+            "processed_decisions": 17232,
+            "skipped_decisions": 0,
+            "skipped_updates": 0,
+            "task": "full_run",
+            "task_return": -31.81716585757244,
+            "trained_decisions": 17232,
+            "wins": 0
+          }
+        }
+      ],
+      "iterations": [
+        {
+          "act1_clears": 0,
+          "decisions": 4096,
+          "episodes": 70,
+          "iteration": 1,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.008045193513680715,
+            "clip_fraction": 0.1195068359375,
+            "entropy": 1.3006212424952537,
+            "loss": 0.022581828605325427,
+            "policy_loss": -0.0034272598368261242,
+            "value_mse": 0.07803060206788359
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 1154,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 8192,
+          "episodes": 57,
+          "iteration": 2,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.005540038520848611,
+            "clip_fraction": 0.081787109375,
+            "entropy": 1.27462805993855,
+            "loss": -0.010531016655477288,
+            "policy_loss": -0.004010812648630235,
+            "value_mse": 0.012452153759113571
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 1090,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 12288,
+          "episodes": 53,
+          "iteration": 3,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.006446997616876615,
+            "clip_fraction": 0.0904541015625,
+            "entropy": 1.2517530185868964,
+            "loss": -0.01789968280991161,
+            "policy_loss": -0.007862742211727891,
+            "value_mse": 0.004961180387567765
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 1033,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 16384,
+          "episodes": 45,
+          "iteration": 4,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.006760737056538346,
+            "clip_fraction": 0.0863037109375,
+            "entropy": 1.203041164088063,
+            "loss": -0.017583579785423353,
+            "policy_loss": -0.006484188448666828,
+            "value_mse": 0.001862039917000402
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 946,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 20480,
+          "episodes": 49,
+          "iteration": 5,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.005601320830464829,
+            "clip_fraction": 0.070556640625,
+            "entropy": 1.1665934096090496,
+            "loss": -0.017616976276258356,
+            "policy_loss": -0.0067203011822130065,
+            "value_mse": 0.0015385173418280829
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 969,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 24576,
+          "episodes": 50,
+          "iteration": 6,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.005504811500031792,
+            "clip_fraction": 0.0615234375,
+            "entropy": 1.1464539493899792,
+            "loss": -0.014653569694019097,
+            "policy_loss": -0.0040839454959495924,
+            "value_mse": 0.0017898300935144107
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 929,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 28672,
+          "episodes": 46,
+          "iteration": 7,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.006424959158721322,
+            "clip_fraction": 0.0794677734375,
+            "entropy": 1.1139338667271659,
+            "loss": -0.016598718841123627,
+            "policy_loss": -0.006172189583594445,
+            "value_mse": 0.0014256179933909152
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 890,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 32768,
+          "episodes": 48,
+          "iteration": 8,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.004739561250516999,
+            "clip_fraction": 0.060791015625,
+            "entropy": 1.0627949665649794,
+            "loss": -0.012156845201388933,
+            "policy_loss": -0.0023975821677595377,
+            "value_mse": 0.0017373711776826894
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 912,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 36864,
+          "episodes": 48,
+          "iteration": 9,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.006166896617742168,
+            "clip_fraction": 0.0877685546875,
+            "entropy": 1.0450861528515816,
+            "loss": -0.013806416714032821,
+            "policy_loss": -0.004137312309467234,
+            "value_mse": 0.0015635115094028151
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 902,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 40960,
+          "episodes": 45,
+          "iteration": 10,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.008141960963712336,
+            "clip_fraction": 0.1112060546875,
+            "entropy": 0.9801965596852824,
+            "loss": -0.014421193213365768,
+            "policy_loss": -0.0054196792079892475,
+            "value_mse": 0.0016009007374009343
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 882,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 45056,
+          "episodes": 46,
+          "iteration": 11,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.007050824103771447,
+            "clip_fraction": 0.083740234375,
+            "entropy": 0.9978565978817642,
+            "loss": -0.010978384282680054,
+            "policy_loss": -0.0017061594226106536,
+            "value_mse": 0.0014126818165891564
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 860,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 49152,
+          "episodes": 44,
+          "iteration": 12,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.006781980271171051,
+            "clip_fraction": 0.089599609375,
+            "entropy": 0.999099483131431,
+            "loss": -0.012397940865412238,
+            "policy_loss": -0.003251239060773514,
+            "value_mse": 0.0016885854898305297
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 874,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 50000,
+          "episodes": 12,
+          "iteration": 13,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.00642210132341375,
+            "clip_fraction": 0.07959905660377359,
+            "entropy": 1.0230630197614994,
+            "loss": -0.012873395517433309,
+            "policy_loss": -0.003388947367949306,
+            "value_mse": 0.001492366140361278
+          },
+          "optimizer_steps": 106,
+          "rollout_decisions": 848,
+          "signal": {
+            "nonzero_advantages": 848,
+            "nonzero_returns": 848,
+            "nonzero_rewards": 178,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 54096,
+          "episodes": 46,
+          "iteration": 14,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.007113372509138571,
+            "clip_fraction": 0.085205078125,
+            "entropy": 0.9776862507569604,
+            "loss": -0.01107383010275953,
+            "policy_loss": -0.002343953339732252,
+            "value_mse": 0.002093971910255732
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 882,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 58192,
+          "episodes": 47,
+          "iteration": 15,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.005796413543976087,
+            "clip_fraction": 0.0665283203125,
+            "entropy": 0.995856870431453,
+            "loss": -0.009781194497918477,
+            "policy_loss": -0.00118204423415591,
+            "value_mse": 0.0027188365294250616
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 886,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 62288,
+          "episodes": 46,
+          "iteration": 16,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.007337735840678761,
+            "clip_fraction": 0.0894775390625,
+            "entropy": 0.9610668058739975,
+            "loss": -0.008953156351708458,
+            "policy_loss": -0.0005431541831057984,
+            "value_mse": 0.002401332484566865
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 872,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 66384,
+          "episodes": 44,
+          "iteration": 17,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.007018875431981542,
+            "clip_fraction": 0.0775146484375,
+            "entropy": 0.9783205800922588,
+            "loss": -0.00602964461359079,
+            "policy_loss": 0.0027991482020297553,
+            "value_mse": 0.0019088251712560123
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 892,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 70480,
+          "episodes": 40,
+          "iteration": 18,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.006869504542237337,
+            "clip_fraction": 0.0888671875,
+            "entropy": 0.9376242378493771,
+            "loss": -0.01009190055901854,
+            "policy_loss": -0.0017251797362405341,
+            "value_mse": 0.0020190428439263997
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 847,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 74576,
+          "episodes": 39,
+          "iteration": 19,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.007689064272312862,
+            "clip_fraction": 0.0872802734375,
+            "entropy": 0.8544471510103904,
+            "loss": -0.008897787788555434,
+            "policy_loss": -0.0016024251290218672,
+            "value_mse": 0.002498218569940036
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 847,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 78672,
+          "episodes": 38,
+          "iteration": 20,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.006752818988616127,
+            "clip_fraction": 0.084228515625,
+            "entropy": 0.8768588796374388,
+            "loss": -0.007794454413215135,
+            "policy_loss": -0.00023535989748779684,
+            "value_mse": 0.002418986323959871
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 815,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 82768,
+          "episodes": 38,
+          "iteration": 21,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.006412455726945154,
+            "clip_fraction": 0.0772705078125,
+            "entropy": 0.8954535261145793,
+            "loss": -0.00899704201356144,
+            "policy_loss": -0.0010028066353697795,
+            "value_mse": 0.001920599993468386
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 841,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 1,
+          "decisions": 86864,
+          "episodes": 37,
+          "iteration": 22,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.005575442732833835,
+            "clip_fraction": 0.0596923828125,
+            "entropy": 0.8376851752400398,
+            "loss": -0.005409974556641828,
+            "policy_loss": -0.0025491986016277224,
+            "value_mse": 0.01103215075238495
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 803,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 90960,
+          "episodes": 30,
+          "iteration": 23,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.008528951124731066,
+            "clip_fraction": 0.0972900390625,
+            "entropy": 0.8525427146232687,
+            "loss": -0.009539173884149932,
+            "policy_loss": -0.002964445793622872,
+            "value_mse": 0.0039013977586819237
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 797,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 95056,
+          "episodes": 39,
+          "iteration": 24,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.00787435885092691,
+            "clip_fraction": 0.09423828125,
+            "entropy": 0.8524343174649402,
+            "loss": -0.006906773775881447,
+            "policy_loss": -0.00018831684064934961,
+            "value_mse": 0.0036117714128067746
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 833,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 99152,
+          "episodes": 35,
+          "iteration": 25,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.007570535066406592,
+            "clip_fraction": 0.0906982421875,
+            "entropy": 0.820702851517126,
+            "loss": -0.008231042927945964,
+            "policy_loss": -0.0017191852002724772,
+            "value_mse": 0.003390340924852353
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 795,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 100000,
+          "episodes": 11,
+          "iteration": 26,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.004205088477630063,
+            "clip_fraction": 0.045990566037735846,
+            "entropy": 0.8995730933153404,
+            "loss": -0.011829751108790625,
+            "policy_loss": -0.004271922053171779,
+            "value_mse": 0.002875805683631696
+          },
+          "optimizer_steps": 106,
+          "rollout_decisions": 848,
+          "signal": {
+            "nonzero_advantages": 848,
+            "nonzero_returns": 848,
+            "nonzero_rewards": 167,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        }
+      ],
+      "mean_post_combat_win_hp_fraction": 0.6436554601806506,
+      "optimizer_updates": 12500,
+      "reward_components": {
+        "act_cleared": 1.0,
+        "combat_loss": 891.0,
+        "combat_win": 3849.0,
+        "end_turn_action": 18098.0,
+        "potion_use_action": 332.0,
+        "run_abandoned": 0.0,
+        "run_defeat": 895.0,
+        "run_victory": 0.0,
+        "win_hp_fraction": 2477.429866235324
+      },
+      "timings": {
+        "collection": 374.61081300047226,
+        "training": 604.3491044158582,
+        "training_other": 5.540232416242361,
+        "updates": 224.19805899914354
+      },
+      "training": {
+        "accepted_decisions": 100000,
+        "act1_clears": 1,
+        "cutoffs": 207,
+        "episode_attempts": 1103,
+        "failed_episodes": 0,
+        "losses": 895,
+        "processed_decisions": 100000,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "trained_decisions": 100000
+      },
+      "unique_training_reset_seeds": 1103
+    },
+    "increased": {
+      "checkpoints": [
+        {
+          "additional_decisions": 50000,
+          "arm": "increased",
+          "checkpoint": "increased/chunk-03/final.sts-model",
+          "chunk": 3,
+          "sha256": "a72bb76c70382977d5865469c3e6db3b1a4f6df2ddfcf4483f44147e1c3eb389"
+        },
+        {
+          "additional_decisions": 100000,
+          "arm": "increased",
+          "checkpoint": "increased/chunk-06/final.sts-model",
+          "chunk": 6,
+          "sha256": "cef902d2ada669a4bd6a6d0c50bbc32466899f6c91fbc1d16b3ddf6fe34ca44f"
+        }
+      ],
+      "chunks": [
+        {
+          "chunk": 1,
+          "final_sha256": "a51fcc4e8ecf6328661d5424af8e4ca55e40e4a3eacb51e1d4f6c65d8b7cd100",
+          "report": "increased/chunk-01/ppo.json",
+          "report_sha256": "f016d4465be22dcd57a351c990d642a646ef4ed874aae30f7d36e3d154a318bf",
+          "seconds": 94.18452350003645,
+          "status": "complete",
+          "summary": {
+            "abandoned": 0,
+            "accepted_decisions": 16384,
+            "act1_clear_rate": 0.0,
+            "act1_clears": 0,
+            "components": {
+              "act_cleared": 0.0,
+              "combat_loss": 202.0,
+              "combat_win": 537.0,
+              "end_turn_action": 3686.0,
+              "potion_use_action": 42.0,
+              "run_abandoned": 0.0,
+              "run_defeat": 203.0,
+              "run_victory": 0.0,
+              "win_hp_fraction": 303.91856480782064
+            },
+            "controlled_attempts": 0,
+            "cutoffs": 31,
+            "decisions_per_second": 173.95639316467594,
+            "episode_attempts": 234,
+            "failed_episodes": 0,
+            "genuine_start_attempts": 234,
+            "goal": "act1",
+            "losses": 203,
+            "mean_hp_on_win": null,
+            "potion_use_actions": 42,
+            "processed_decisions": 16384,
+            "skipped_decisions": 0,
+            "skipped_updates": 0,
+            "task": "full_run",
+            "task_return": -68.8941435192179,
+            "trained_decisions": 16384,
+            "wins": 0
+          }
+        },
+        {
+          "chunk": 2,
+          "final_sha256": "14db1d5784f297eb8ae9da7d865e5c2cfa544d6a6c241d79eef7ca24ac314c09",
+          "report": "increased/chunk-02/ppo.json",
+          "report_sha256": "596c1279c352e50e4abb22e4c9da3bae8c682d159cb99c5f483d8007b6fb3c78",
+          "seconds": 96.30640112492256,
+          "status": "complete",
+          "summary": {
+            "abandoned": 0,
+            "accepted_decisions": 16384,
+            "act1_clear_rate": 0.0,
+            "act1_clears": 0,
+            "components": {
+              "act_cleared": 0.0,
+              "combat_loss": 172.0,
+              "combat_win": 635.0,
+              "end_turn_action": 3132.0,
+              "potion_use_action": 47.0,
+              "run_abandoned": 0.0,
+              "run_defeat": 172.0,
+              "run_victory": 0.0,
+              "win_hp_fraction": 421.0924308938888
+            },
+            "controlled_attempts": 0,
+            "cutoffs": 32,
+            "decisions_per_second": 170.1236865735198,
+            "episode_attempts": 204,
+            "failed_episodes": 0,
+            "genuine_start_attempts": 204,
+            "goal": "act1",
+            "losses": 172,
+            "mean_hp_on_win": null,
+            "potion_use_actions": 47,
+            "processed_decisions": 16384,
+            "skipped_decisions": 0,
+            "skipped_updates": 0,
+            "task": "full_run",
+            "task_return": -6.022756910611067,
+            "trained_decisions": 16384,
+            "wins": 0
+          }
+        },
+        {
+          "chunk": 3,
+          "final_sha256": "a72bb76c70382977d5865469c3e6db3b1a4f6df2ddfcf4483f44147e1c3eb389",
+          "report": "increased/chunk-03/ppo.json",
+          "report_sha256": "1fe1ad4db83d47c7a009fe2c2bd002a47570cf02e55d869008b6faf22682bd1f",
+          "seconds": 103.72726275003515,
+          "status": "complete",
+          "summary": {
+            "abandoned": 0,
+            "accepted_decisions": 17232,
+            "act1_clear_rate": 0.0,
+            "act1_clears": 0,
+            "components": {
+              "act_cleared": 0.0,
+              "combat_loss": 154.0,
+              "combat_win": 705.0,
+              "end_turn_action": 3061.0,
+              "potion_use_action": 71.0,
+              "run_abandoned": 0.0,
+              "run_defeat": 154.0,
+              "run_victory": 0.0,
+              "win_hp_fraction": 468.96153811920925
+            },
+            "controlled_attempts": 0,
+            "cutoffs": 39,
+            "decisions_per_second": 166.1279739110262,
+            "episode_attempts": 193,
+            "failed_episodes": 0,
+            "genuine_start_attempts": 193,
+            "goal": "act1",
+            "losses": 154,
+            "mean_hp_on_win": null,
+            "potion_use_actions": 71,
+            "processed_decisions": 17232,
+            "skipped_decisions": 0,
+            "skipped_updates": 0,
+            "task": "full_run",
+            "task_return": 30.835153811921014,
+            "trained_decisions": 17232,
+            "wins": 0
+          }
+        },
+        {
+          "chunk": 4,
+          "final_sha256": "5df3540d03d2ff20c145fca787d0f3ecf716455ee0b419d786d9a293210c7102",
+          "report": "increased/chunk-04/ppo.json",
+          "report_sha256": "10bd7240c258f852e22216fd9c6ca0875b3868b1dfcb62b0712fc091cf418646",
+          "seconds": 101.61267800000496,
+          "status": "complete",
+          "summary": {
+            "abandoned": 0,
+            "accepted_decisions": 16384,
+            "act1_clear_rate": 0.0,
+            "act1_clears": 0,
+            "components": {
+              "act_cleared": 0.0,
+              "combat_loss": 146.0,
+              "combat_win": 687.0,
+              "end_turn_action": 2797.0,
+              "potion_use_action": 49.0,
+              "run_abandoned": 0.0,
+              "run_defeat": 146.0,
+              "run_victory": 0.0,
+              "win_hp_fraction": 450.5402583227116
+            },
+            "controlled_attempts": 0,
+            "cutoffs": 32,
+            "decisions_per_second": 161.23972246848174,
+            "episode_attempts": 178,
+            "failed_episodes": 0,
+            "genuine_start_attempts": 178,
+            "goal": "act1",
+            "losses": 146,
+            "mean_hp_on_win": null,
+            "potion_use_actions": 49,
+            "processed_decisions": 16384,
+            "skipped_decisions": 0,
+            "skipped_updates": 0,
+            "task": "full_run",
+            "task_return": 33.65702583227125,
+            "trained_decisions": 16384,
+            "wins": 0
+          }
+        },
+        {
+          "chunk": 5,
+          "final_sha256": "4af174363b9a2b0734f52c1cac910a7865c9d4c44ae547c52baa0f2028476316",
+          "report": "increased/chunk-05/ppo.json",
+          "report_sha256": "f96a19b9fa24931df1162411ee8817dea8f5773d7f010b794cc887cedd2951fb",
+          "seconds": 102.12006191699766,
+          "status": "complete",
+          "summary": {
+            "abandoned": 0,
+            "accepted_decisions": 16384,
+            "act1_clear_rate": 0.0058823529411764705,
+            "act1_clears": 1,
+            "components": {
+              "act_cleared": 1.0,
+              "combat_loss": 137.0,
+              "combat_win": 707.0,
+              "end_turn_action": 2729.0,
+              "potion_use_action": 50.0,
+              "run_abandoned": 0.0,
+              "run_defeat": 137.0,
+              "run_victory": 0.0,
+              "win_hp_fraction": 483.98060468227766
+            },
+            "controlled_attempts": 0,
+            "cutoffs": 32,
+            "decisions_per_second": 160.4386022926306,
+            "episode_attempts": 170,
+            "failed_episodes": 0,
+            "genuine_start_attempts": 170,
+            "goal": "act1",
+            "losses": 137,
+            "mean_hp_on_win": null,
+            "potion_use_actions": 50,
+            "processed_decisions": 16384,
+            "skipped_decisions": 0,
+            "skipped_updates": 0,
+            "task": "full_run",
+            "task_return": 51.06906046822786,
+            "trained_decisions": 16384,
+            "wins": 0
+          }
+        },
+        {
+          "chunk": 6,
+          "final_sha256": "cef902d2ada669a4bd6a6d0c50bbc32466899f6c91fbc1d16b3ddf6fe34ca44f",
+          "report": "increased/chunk-06/ppo.json",
+          "report_sha256": "df43610cfc1c5a1eb7aed3c1a631a5a236354c30b2f6485d1bc3345f350eabe4",
+          "seconds": 109.18706108396873,
+          "status": "complete",
+          "summary": {
+            "abandoned": 0,
+            "accepted_decisions": 17232,
+            "act1_clear_rate": 0.011627906976744186,
+            "act1_clears": 2,
+            "components": {
+              "act_cleared": 2.0,
+              "combat_loss": 130.0,
+              "combat_win": 728.0,
+              "end_turn_action": 2834.0,
+              "potion_use_action": 56.0,
+              "run_abandoned": 0.0,
+              "run_defeat": 130.0,
+              "run_victory": 0.0,
+              "win_hp_fraction": 495.4603529782433
+            },
+            "controlled_attempts": 0,
+            "cutoffs": 40,
+            "decisions_per_second": 157.8208977229269,
+            "episode_attempts": 172,
+            "failed_episodes": 0,
+            "genuine_start_attempts": 172,
+            "goal": "act1",
+            "losses": 130,
+            "mean_hp_on_win": null,
+            "potion_use_actions": 56,
+            "processed_decisions": 17232,
+            "skipped_decisions": 0,
+            "skipped_updates": 0,
+            "task": "full_run",
+            "task_return": 64.31203529782445,
+            "trained_decisions": 17232,
+            "wins": 0
+          }
+        }
+      ],
+      "iterations": [
+        {
+          "act1_clears": 0,
+          "decisions": 4096,
+          "episodes": 70,
+          "iteration": 1,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.008352714248758275,
+            "clip_fraction": 0.1207275390625,
+            "entropy": 1.300582171534188,
+            "loss": 0.031028099880131776,
+            "policy_loss": -0.003698175583849661,
+            "value_mse": 0.0954641938660643
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 1154,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 8192,
+          "episodes": 58,
+          "iteration": 2,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.007220789575512754,
+            "clip_fraction": 0.08740234375,
+            "entropy": 1.2662991924444214,
+            "loss": -0.007186872205238615,
+            "policy_loss": -0.004721831588540226,
+            "value_mse": 0.020395902868585836
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 1080,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 12288,
+          "episodes": 54,
+          "iteration": 3,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.008070277821389027,
+            "clip_fraction": 0.1192626953125,
+            "entropy": 1.2276673425221816,
+            "loss": -0.017394182385032764,
+            "policy_loss": -0.009612395302610821,
+            "value_mse": 0.008989771316009865
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 1004,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 16384,
+          "episodes": 52,
+          "iteration": 4,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.00688148334120342,
+            "clip_fraction": 0.0926513671875,
+            "entropy": 1.210708694648929,
+            "loss": -0.015157652745074301,
+            "policy_loss": -0.006535080519824987,
+            "value_mse": 0.0069690280211034406
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 979,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 20480,
+          "episodes": 53,
+          "iteration": 5,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.00675503964703239,
+            "clip_fraction": 0.0968017578125,
+            "entropy": 1.1597575849154964,
+            "loss": -0.014802149495153571,
+            "policy_loss": -0.0067307468634680845,
+            "value_mse": 0.0070523452313864254
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 954,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 24576,
+          "episodes": 55,
+          "iteration": 6,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.005491379123668594,
+            "clip_fraction": 0.070068359375,
+            "entropy": 1.1462294884258881,
+            "loss": -0.013483606225236144,
+            "policy_loss": -0.0049029758338292595,
+            "value_mse": 0.0057633300800716825
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 980,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 28672,
+          "episodes": 51,
+          "iteration": 7,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.008639212370326277,
+            "clip_fraction": 0.1185302734375,
+            "entropy": 1.1046415075543337,
+            "loss": -0.01711855440862564,
+            "policy_loss": -0.009336619452369632,
+            "value_mse": 0.0065289593094348675
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 945,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 32768,
+          "episodes": 45,
+          "iteration": 8,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.007380873316378711,
+            "clip_fraction": 0.09716796875,
+            "entropy": 1.0391329382546246,
+            "loss": -0.013044297833403107,
+            "policy_loss": -0.0064658582596166525,
+            "value_mse": 0.0076257780701780575
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 884,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 36864,
+          "episodes": 47,
+          "iteration": 9,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.007423280601415172,
+            "clip_fraction": 0.089111328125,
+            "entropy": 1.0714655567426234,
+            "loss": -0.012716349020593043,
+            "policy_loss": -0.0051706996746361256,
+            "value_mse": 0.006338011541856758
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 892,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 40960,
+          "episodes": 45,
+          "iteration": 10,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.006337302483188978,
+            "clip_fraction": 0.0833740234375,
+            "entropy": 1.0261296569369733,
+            "loss": -0.009019867361530487,
+            "policy_loss": -0.0015206991884042509,
+            "value_mse": 0.0055242549651666195
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 897,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 45056,
+          "episodes": 42,
+          "iteration": 11,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.007745748501065464,
+            "clip_fraction": 0.1087646484375,
+            "entropy": 1.0071476193261333,
+            "loss": -0.010282756995366071,
+            "policy_loss": -0.0035575275560404407,
+            "value_mse": 0.006692492824640794
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 891,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 49152,
+          "episodes": 46,
+          "iteration": 12,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.005966495332813793,
+            "clip_fraction": 0.0792236328125,
+            "entropy": 0.9786022385815158,
+            "loss": -0.006597101464649313,
+            "policy_loss": -0.00040122237624018453,
+            "value_mse": 0.007180286540005909
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 896,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 50000,
+          "episodes": 13,
+          "iteration": 13,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.00572075750590917,
+            "clip_fraction": 0.07016509433962265,
+            "entropy": 0.9726233904091817,
+            "loss": -0.011092071957394199,
+            "policy_loss": -0.00456731545053563,
+            "value_mse": 0.006402953213766076
+          },
+          "optimizer_steps": 106,
+          "rollout_decisions": 848,
+          "signal": {
+            "nonzero_advantages": 848,
+            "nonzero_returns": 848,
+            "nonzero_rewards": 186,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 54096,
+          "episodes": 47,
+          "iteration": 14,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.004375504871859448,
+            "clip_fraction": 0.05419921875,
+            "entropy": 0.9420078775729053,
+            "loss": -0.0044792137978220126,
+            "policy_loss": 0.00029228579296614043,
+            "value_mse": 0.009297158122080873
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 881,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 58192,
+          "episodes": 45,
+          "iteration": 15,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.006321391278106603,
+            "clip_fraction": 0.0809326171875,
+            "entropy": 0.9581890249974094,
+            "loss": -0.007803605551998771,
+            "policy_loss": -0.002950980955574778,
+            "value_mse": 0.009458531510972534
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 877,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 62288,
+          "episodes": 43,
+          "iteration": 16,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.009060607981837165,
+            "clip_fraction": 0.101806640625,
+            "entropy": 0.9748536265688017,
+            "loss": -0.01061777335962688,
+            "policy_loss": -0.005674277495927527,
+            "value_mse": 0.009610079709545971
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 872,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 66384,
+          "episodes": 43,
+          "iteration": 17,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.005467750281695771,
+            "clip_fraction": 0.0667724609375,
+            "entropy": 0.9805727937491611,
+            "loss": -0.0065023508432204835,
+            "policy_loss": -0.002055571701930603,
+            "value_mse": 0.010717896447204112
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 851,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 70480,
+          "episodes": 44,
+          "iteration": 18,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.006355657818517102,
+            "clip_fraction": 0.078369140625,
+            "entropy": 0.9351162444218062,
+            "loss": -0.006496178838460764,
+            "policy_loss": -0.002009048208492459,
+            "value_mse": 0.009728062437261542
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 860,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 74576,
+          "episodes": 43,
+          "iteration": 19,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.005811455791217668,
+            "clip_fraction": 0.0770263671875,
+            "entropy": 0.8553484499570914,
+            "loss": -0.005961854500128538,
+            "policy_loss": -0.0032972488952509593,
+            "value_mse": 0.0117777572399973
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 859,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 78672,
+          "episodes": 38,
+          "iteration": 20,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.006479741827206453,
+            "clip_fraction": 0.0823974609375,
+            "entropy": 0.8758026148425415,
+            "loss": -0.005222783930548758,
+            "policy_loss": -0.0017724161152727902,
+            "value_mse": 0.010615314972255874
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 843,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 1,
+          "decisions": 82768,
+          "episodes": 45,
+          "iteration": 21,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.006802348935707414,
+            "clip_fraction": 0.078125,
+            "entropy": 0.8689169874996878,
+            "loss": 0.00038495634908031207,
+            "policy_loss": -0.001122693423894816,
+            "value_mse": 0.02039363864741972
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 864,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 86864,
+          "episodes": 44,
+          "iteration": 22,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.0062970834474072035,
+            "clip_fraction": 0.0751953125,
+            "entropy": 0.8849568195291795,
+            "loss": -0.004059935262375802,
+            "policy_loss": -0.0017921939106599893,
+            "value_mse": 0.013163652562980133
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 884,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 90960,
+          "episodes": 39,
+          "iteration": 23,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.008930917131465321,
+            "clip_fraction": 0.0921630859375,
+            "entropy": 0.8727825189125724,
+            "loss": -0.00303644996984076,
+            "policy_loss": -0.0012215822498546913,
+            "value_mse": 0.013825914480548818
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 848,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 2,
+          "decisions": 95056,
+          "episodes": 40,
+          "iteration": 24,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.006018514312017942,
+            "clip_fraction": 0.0626220703125,
+            "entropy": 0.8526415148517117,
+            "loss": 0.005305684849190584,
+            "policy_loss": -0.0008383910953853047,
+            "value_mse": 0.029340981404857303
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 850,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 99152,
+          "episodes": 38,
+          "iteration": 25,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.006073972801573291,
+            "clip_fraction": 0.068115234375,
+            "entropy": 0.8218223697622307,
+            "loss": 0.00370241446307773,
+            "policy_loss": 0.0005974068753857864,
+            "value_mse": 0.02264646316962171
+          },
+          "optimizer_steps": 512,
+          "rollout_decisions": 4096,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4096,
+            "nonzero_rewards": 809,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        },
+        {
+          "act1_clears": 0,
+          "decisions": 100000,
+          "episodes": 11,
+          "iteration": 26,
+          "kl_early_stop": false,
+          "mean_update": {
+            "approx_kl": 0.004276086486363124,
+            "clip_fraction": 0.049528301886792456,
+            "entropy": 0.8442395323852323,
+            "loss": -0.004452543566003442,
+            "policy_loss": -0.0037447581383979545,
+            "value_mse": 0.015469219526803156
+          },
+          "optimizer_steps": 106,
+          "rollout_decisions": 848,
+          "signal": {
+            "nonzero_advantages": 848,
+            "nonzero_returns": 848,
+            "nonzero_rewards": 160,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          }
+        }
+      ],
+      "mean_post_combat_win_hp_fraction": 0.6561524755699303,
+      "optimizer_updates": 12500,
+      "reward_components": {
+        "act_cleared": 3.0,
+        "combat_loss": 941.0,
+        "combat_win": 3999.0,
+        "end_turn_action": 18239.0,
+        "potion_use_action": 315.0,
+        "run_abandoned": 0.0,
+        "run_defeat": 942.0,
+        "run_victory": 0.0,
+        "win_hp_fraction": 2623.9537498041514
+      },
+      "timings": {
+        "collection": 379.97317066811956,
+        "training": 607.1379883759655,
+        "training_other": 5.462001955369487,
+        "updates": 221.70281575247645
+      },
+      "training": {
+        "accepted_decisions": 100000,
+        "act1_clears": 3,
+        "cutoffs": 206,
+        "episode_attempts": 1151,
+        "failed_episodes": 0,
+        "losses": 942,
+        "processed_decisions": 100000,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "trained_decisions": 100000
+      },
+      "unique_training_reset_seeds": 1151
+    }
+  },
+  "validation": {
+    "command": "PYTHONPATH=. .venv/bin/python -m pytest -q tests/agent/test_full_run_rewards.py tests/agent/test_act_training.py",
+    "implementation": {
+      "build": "72f3f38eafc2fa9824249a9eaee7d40466830944a0814b87ff4cb2a33e9fe451",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "cb4110d297799c139c5912c30a0e0903630c1c8ab2141eded608b90a7b1e0926",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "production_changes_for_experiment": false,
+    "runtime": {
+      "device": "cpu",
+      "python": "3.11.15",
+      "threads": 1,
+      "torch": "2.13.0"
+    },
+    "seconds": 21.32,
+    "status": "passed",
+    "test_sha256": {
+      "tests/agent/test_act_training.py": "cc85d59b9953bbd204934fd8415dc0e221aa86898f60638653833fcf3e4f9dec",
+      "tests/agent/test_full_run_rewards.py": "fa217bbe04096741c7736a7665ebd9e3db6d3666c6ed76ce5ec77b467603f012"
+    },
+    "tests_passed": 41
+  },
+  "viewer": {
+    "checkpoints": 4,
+    "first_last_decisions_and_same_state_comparison_checked": true,
+    "loop_example_url": "http://127.0.0.1:8770/#run=2b2edfda06e1478fbbace76f3d66e1e9&step=37",
+    "loop_state_sha256": "8db8157c69aae41badb1184476361d77efdb32a6c624818b2854e25c44d84208",
+    "report_sha256": "2a209ef2b7cba287a49c71767d7cc95500d637c9fc5c40c7fbbc18a00ba02ba9",
+    "runs": 192,
+    "status": "verified",
+    "successful_run_url": "http://127.0.0.1:8770/#run=9b874e98c6ba405598d246fc505f370b&step=0",
+    "url": "http://127.0.0.1:8770"
+  },
+  "views": [
+    {
+      "arm": "control",
+      "build_seconds": 41.83059054217301,
+      "decisions": 50000,
+      "episodes": 613,
+      "kind": "training",
+      "metadata_bytes": 14522312,
+      "recorded_decisions": 50000,
+      "report_sha256": "d17d9dcba5dab4ce462dfae07e2bc75bc1a02a5bdcb015e7bb1ac3da41b85154",
+      "root": "runs/act1-combat-reward-ab-20260930-analysis-control-050000"
+    },
+    {
+      "arm": "control",
+      "build_seconds": 46.477554416051134,
+      "decisions": 100000,
+      "episodes": 490,
+      "kind": "training",
+      "metadata_bytes": 14046292,
+      "recorded_decisions": 50000,
+      "report_sha256": "6f3ae343531045c919de13f00d9b65941406d0ed3d5e19f0640e81a5e4b9e988",
+      "root": "runs/act1-combat-reward-ab-20260930-analysis-control-100000"
+    },
+    {
+      "arm": "increased",
+      "build_seconds": 41.40768145909533,
+      "decisions": 50000,
+      "episodes": 631,
+      "kind": "training",
+      "metadata_bytes": 14590443,
+      "recorded_decisions": 50000,
+      "report_sha256": "1d351aeb008f3fb63e2b5f707de4b90c08e2fab8de21c4b8378aef1efb798035",
+      "root": "runs/act1-combat-reward-ab-20260930-analysis-increased-050000"
+    },
+    {
+      "arm": "increased",
+      "build_seconds": 45.03635145793669,
+      "decisions": 100000,
+      "episodes": 520,
+      "kind": "training",
+      "metadata_bytes": 14118446,
+      "recorded_decisions": 50000,
+      "report_sha256": "cb0232686ecbd348370bd37652bf663bfc7ffadafd8109cdcd084b96e0cf6728",
+      "root": "runs/act1-combat-reward-ab-20260930-analysis-increased-100000"
+    },
+    {
+      "arm": null,
+      "build_seconds": 25.62126799998805,
+      "decisions": 50000,
+      "episodes": 192,
+      "kind": "evaluation",
+      "metadata_bytes": 6190214,
+      "recorded_decisions": 25067,
+      "report_sha256": "7a070a080f1c0c5571797f812aa4f1b7ae6722e09f6aa4b30bf822dc571fe034",
+      "root": "runs/act1-combat-reward-ab-20260930-analysis-eval-050000"
+    },
+    {
+      "arm": null,
+      "build_seconds": 41.07396395900287,
+      "decisions": 100000,
+      "episodes": 192,
+      "kind": "evaluation",
+      "metadata_bytes": 8227502,
+      "recorded_decisions": 33847,
+      "report_sha256": "2a209ef2b7cba287a49c71767d7cc95500d637c9fc5c40c7fbbc18a00ba02ba9",
+      "root": "runs/act1-combat-reward-ab-20260930-analysis-eval-100000"
+    }
+  ],
+  "workers": 8
+}

@@ -1,0 +1,1429 @@
+{
+  "artifacts": {
+    "runs/combat-diagnostic-20261001-inspection-inputs/sources.json": "c2ad2ffb51f6763d0c9498cf44c36035d65ebe8924d278de3888ef4eded61e48",
+    "runs/combat-diagnostic-20261001-inspection/report.json": "b7505f2d36dc5f24a0e231c16e203ee4baa8c2d1eaa4131d6a6ea112e2ea7197",
+    "runs/combat-diagnostic-20261001-private/chunk-01/final.resume.pt": "c94988bdbe575a148c9ef559428a7dc300f7bd18352251379fc0899de4e7ca36",
+    "runs/combat-diagnostic-20261001-private/chunk-02/final.resume.pt": "7629cad0f865f11b7bc14ad20fa56cb3fe58b5fe990e50ce1e67f074a9fd64c8",
+    "runs/combat-diagnostic-20261001-private/chunk-03/final.resume.pt": "753cdd91f7bfee2a4acd8741750ad5a8b682ce2ed684dc66e9bf94ab64215f27",
+    "runs/combat-diagnostic-20261001-private/chunk-04/final.resume.pt": "60649f45743ba61d47f6d50daede1bc1d8f4f392241eba492dd155cec99a97a6",
+    "runs/combat-diagnostic-20261001/analysis.json": "8338c4afc1bcdba8668275a2020d577ab53c60691c15b43c29ee2c331a46aeeb",
+    "runs/combat-diagnostic-20261001/analyze-before-training.py": "2503f1e20afc5ee0417ac140e9a2f86944edd589f51a43019d2db9f026e2f733",
+    "runs/combat-diagnostic-20261001/analyze_diagnostic.py": "ae6e8548b35a836d82fe2c0c2d67565523dea1a84e2297120bedf40f918442f4",
+    "runs/combat-diagnostic-20261001/before-training-analysis.json": "1eda6eb2f32522425d679457d853c54f70f0d4c044f8ad765d16c2f710e02d04",
+    "runs/combat-diagnostic-20261001/chunk-01/final.sts-model": "28b88284ce99e0e44ffad33259518e7c3964f73884fadddf5b99dfeedf92f566",
+    "runs/combat-diagnostic-20261001/chunk-01/ppo.json": "1bc6d4d30f1b4200592e0f7ebf676e2b6cf4f9345cb4f2ed4798553903a7e48f",
+    "runs/combat-diagnostic-20261001/chunk-02/final.sts-model": "4b30bc26096b8900b2a3ddccc1d4bb4eded8eb29921b476578fa2d5222543e20",
+    "runs/combat-diagnostic-20261001/chunk-02/ppo.json": "7e0df9d1a8652176d873fe8980dfcbd693fae08ff11a58787c8c0153dc9a0530",
+    "runs/combat-diagnostic-20261001/chunk-03/final.sts-model": "66affa1619952ef4a8a91dbe654005ae446c4509ed05c279feeeec7d42077154",
+    "runs/combat-diagnostic-20261001/chunk-03/ppo.json": "f8c41f580b4b50363b9fef2e0d1fa7eb0e6210769eeec9d17aea6d4b4ac3979f",
+    "runs/combat-diagnostic-20261001/chunk-04/final.sts-model": "62336a63bad8aaedd72a29ea60b4b2e7d8725156aec308218dcafdf685aefab1",
+    "runs/combat-diagnostic-20261001/chunk-04/ppo.json": "beb59198ce3739ff74c6e05f16816bb3649819fa6a43664d9b05a1b02cd11ba3",
+    "runs/combat-diagnostic-20261001/config.json": "44fc993e7f4cd0317afa323449a123bc1d0154ec4ce15a6db31f7f6447ff3130",
+    "runs/combat-diagnostic-20261001/diagnosis-plan.json": "dc8ac8c283eec1ae5943463d448ca44655dfa72d38afc339ba135c8c1a60154e",
+    "runs/combat-diagnostic-20261001/diagnosis.json": "05a686b53312feca6344be679ed495cd662cdcd79a21df048b278f157fff5418",
+    "runs/combat-diagnostic-20261001/diagnostic-preflight.py": "71d2b1468dfe21e1a608b4955fdb26eac2618d4ee01c0786767d2fbcf27d4688",
+    "runs/combat-diagnostic-20261001/diagnostic.py": "8128d34cab804963af1f94b7c59a33b97b257f1b6b91ea88071e5d495f7a9743",
+    "runs/combat-diagnostic-20261001/export_diagnostic.py": "d5e075192f40bd3e4f6b71611a773aca0ed97d4b5f79dd4ac299e97875478be5",
+    "runs/combat-diagnostic-20261001/inspection.json": "f63a5ac8cf70495993ed295461f5e9073e1da1da36034271cd513af570dcb78b",
+    "runs/combat-diagnostic-20261001/protocol-v2.json": "db79b3315fc85595157f397a58aadb8e363e859e30e0384563c7c7f941b6111a",
+    "runs/combat-diagnostic-20261001/protocol.json": "2b5d1853b669fa95d3310e05847e2705b8a59c65a22b21f2d8505ad3f7d4a35b",
+    "runs/combat-diagnostic-20261001/subset.json": "1a80d3727966b8b77acd2afee18d6f4a012b8b5f9218877660d4e6e72cf123a1",
+    "runs/combat-diagnostic-20261001/tiny-plan.json": "4ce8935dd3edc0519079b813c651fdd4264f356a88f9f0375fda54f859fc82ba",
+    "runs/combat-diagnostic-20261001/tiny.json": "9235d825ff1eda6dbed7dab474df707f28f1980f409ad66aadd9c547b1f24283",
+    "runs/combat-diagnostic-20261001/training.json": "fdae6467252f22bccdad85895a67cb636a7df01cecb645f898c6306e89a2cc13",
+    "runs/combat-diagnostic-20261001/verification-v2.json": "7e304fe23605a1bd49942f83f4da5da65a5affebfefaff0a946307271b85bf30",
+    "runs/combat-diagnostic-20261001/verification.json": "9caad6c79fef941de0c012fc1ca9db1f2073ff9fbd02c7de00c2896e91d744bd",
+    "runs/combat-diagnostic-20261001/verify-preflight.py": "233e1090576a83f4b62036a9b07e41556a0d5761a320a54fe2a778454bf41d05",
+    "runs/combat-diagnostic-20261001/verify_diagnostic.py": "4398fcdd6acaf07af573f8d1ce3aba5228330497e83a3d2f420c9ec87ba32ed6"
+  },
+  "configuration": {
+    "action_policy": "commit_decisions_v1",
+    "architecture": {
+      "hidden_size": 48,
+      "message_layers": 2,
+      "schema": "sts_graph_actor_critic_v1"
+    },
+    "original_500k_checkpoint_changed": false,
+    "parameters": 80738,
+    "production_sources_changed": false,
+    "reward": {
+      "schema": "sts_training_reward_v1",
+      "weights": {
+        "combat_loss": 0.0,
+        "combat_win": 1.0,
+        "end_turn_action": 0.0,
+        "potion_use_action": 0.0,
+        "win_hp_fraction": 0.1
+      }
+    },
+    "training_decisions": 50000,
+    "vocabulary": "sts_learned_public_graph_v1:92cad810202830648b14db1329b7cd2693b0f48322f35873f4727c35814a3a32",
+    "workers": 8
+  },
+  "date": "2026-10-01",
+  "experiment": "runs/combat-diagnostic-20261001",
+  "implementation": {
+    "build": "2fabcca7af1870ea86821b4123afeb967dae03b1ad94c095ce895947461352c6",
+    "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+    "rules": "cb4110d297799c139c5912c30a0e0903630c1c8ab2141eded608b90a7b1e0926",
+    "target": "sts2-v0.107.1-steam-23811903"
+  },
+  "inspection": {
+    "browser_comparison_verified": true,
+    "canonical_campaign_cutoffs_distinct_from_combat_wins": true,
+    "checkpoints": [
+      "Untrained",
+      "Combat 500k",
+      "Tiny 50k"
+    ],
+    "dataset": "runs/combat-diagnostic-20261001-inspection",
+    "decisions": 1370,
+    "episodes": 128,
+    "unchanged_public_hardlinks": true,
+    "url": "http://127.0.0.1:51002/#run=8bf6d5406daa694c1f4f48ce3d1e3da4&step=0"
+  },
+  "interpretation": [
+    "Sampled performance improves on the fixed small panel even when the greedy headline is flat.",
+    "The train/validation gap largely predates training and alone does not establish overfitting as the principal cause.",
+    "The tiny learner improves sampled success but misses its predeclared greedy target.",
+    "The selected tactical states have limited greedy headroom and mostly do not require potions under the heuristic."
+  ],
+  "limitations": [
+    "Development validation is reused; no held-out test opened.",
+    "One existing learner and one tiny learner seed; source fights are correlated within campaigns.",
+    "Training/validation opening composition differs; raw split gaps are not pure overfitting estimates.",
+    "The tiny subset is deliberately selected for known heuristic solvability; memorization is not generalization.",
+    "Tiny failure does not isolate architecture, feature representation, exploration or optimization.",
+    "Sampled panels emphasize bosses/elites and must not be compared directly to the raw full-opening population.",
+    "The tiny learner is a diagnostic artifact and is not promoted."
+  ],
+  "matched_greedy": {
+    "act1_500k": {
+      "train": {
+        "equal_encounter_win_rate": 0.8521691486807765,
+        "equal_room_kind_win_rate": 0.697443042479958,
+        "planned": 502,
+        "source_groups": 64,
+        "win_rate": 0.9023904382470119,
+        "wins": 453
+      },
+      "validation": {
+        "equal_encounter_win_rate": 0.8474881707439846,
+        "equal_room_kind_win_rate": 0.69093567251462,
+        "planned": 250,
+        "source_groups": 32,
+        "win_rate": 0.896,
+        "wins": 224
+      }
+    },
+    "combat_250k": {
+      "train": {
+        "equal_encounter_win_rate": 0.8813566278682559,
+        "equal_room_kind_win_rate": 0.7419933938391691,
+        "planned": 502,
+        "source_groups": 64,
+        "win_rate": 0.9183266932270916,
+        "wins": 461
+      },
+      "validation": {
+        "equal_encounter_win_rate": 0.7803416222020875,
+        "equal_room_kind_win_rate": 0.6126315789473685,
+        "planned": 250,
+        "source_groups": 32,
+        "win_rate": 0.856,
+        "wins": 214
+      }
+    },
+    "combat_500k": {
+      "train": {
+        "equal_encounter_win_rate": 0.8731348754604569,
+        "equal_room_kind_win_rate": 0.7237509277706161,
+        "planned": 502,
+        "source_groups": 64,
+        "win_rate": 0.9163346613545816,
+        "wins": 460
+      },
+      "validation": {
+        "equal_encounter_win_rate": 0.7954025302862512,
+        "equal_room_kind_win_rate": 0.5967543859649123,
+        "planned": 250,
+        "source_groups": 32,
+        "win_rate": 0.852,
+        "wins": 213
+      }
+    },
+    "combat_50k": {
+      "train": {
+        "equal_encounter_win_rate": 0.8586198685035896,
+        "equal_room_kind_win_rate": 0.7006636543962221,
+        "planned": 502,
+        "source_groups": 64,
+        "win_rate": 0.9103585657370518,
+        "wins": 457
+      },
+      "validation": {
+        "equal_encounter_win_rate": 0.8087200912782307,
+        "equal_room_kind_win_rate": 0.6050877192982456,
+        "planned": 250,
+        "source_groups": 32,
+        "win_rate": 0.872,
+        "wins": 218
+      }
+    },
+    "heuristic": {
+      "train": {
+        "equal_encounter_win_rate": 0.8196591522172919,
+        "equal_room_kind_win_rate": 0.5954559856938856,
+        "planned": 502,
+        "source_groups": 64,
+        "win_rate": 0.8824701195219123,
+        "wins": 443
+      },
+      "validation": {
+        "equal_encounter_win_rate": 0.7770839625490787,
+        "equal_room_kind_win_rate": 0.5428654970760234,
+        "planned": 250,
+        "source_groups": 32,
+        "win_rate": 0.848,
+        "wins": 212
+      }
+    },
+    "untrained": {
+      "train": {
+        "equal_encounter_win_rate": 0.8143827103129427,
+        "equal_room_kind_win_rate": 0.6161278001310815,
+        "planned": 502,
+        "source_groups": 64,
+        "win_rate": 0.8824701195219123,
+        "wins": 443
+      },
+      "validation": {
+        "equal_encounter_win_rate": 0.7555723346421022,
+        "equal_room_kind_win_rate": 0.5077777777777778,
+        "planned": 250,
+        "source_groups": 32,
+        "win_rate": 0.832,
+        "wins": 208
+      }
+    }
+  },
+  "next_step": "Track both greedy and repeated sampled evaluation, then strengthen verified tactical cases before changing architecture or increasing the long-run budget.",
+  "panel_definition": {
+    "action_rng_repetitions": 2,
+    "cases_per_split": 36,
+    "engine_rng_unchanged": true,
+    "room_kinds": {
+      "boss": 12,
+      "combat": 12,
+      "elite": 12
+    },
+    "same_case_repeat_seeds_across_checkpoints": true
+  },
+  "potion_ablation": {
+    "cases": [
+      {
+        "case_id": "909d7a5213194e34a246ceff252ebb95",
+        "no_potion_won": true
+      },
+      {
+        "case_id": "b8ca0445e84f4b4980784ea3fc8da998",
+        "no_potion_won": true
+      },
+      {
+        "case_id": "beb7a193441742e2af80238569e3cb13",
+        "no_potion_won": true
+      },
+      {
+        "case_id": "ffdf4a40540a4158beabb9a840c99809",
+        "no_potion_won": true
+      },
+      {
+        "case_id": "fa2f1d6cd35e407aa2f7ff9684b4bf31",
+        "no_potion_won": true
+      },
+      {
+        "case_id": "a0af6f7670b94ce3a5bb554e32a2fbff",
+        "no_potion_won": true
+      },
+      {
+        "case_id": "5dca1bc5314d43b697764be2a02fa183",
+        "no_potion_won": true
+      },
+      {
+        "case_id": "86a925b29b1b4146a4718ea5e4f8e33f",
+        "no_potion_won": false
+      },
+      {
+        "case_id": "08bf870529e5407cac8cdd6f038b870c",
+        "no_potion_won": true
+      },
+      {
+        "case_id": "e9d95e602a1843c2b3e9a14575894ae2",
+        "no_potion_won": true
+      }
+    ],
+    "interpretation": "An ablated heuristic result is not proof that a potion is necessary for every policy.",
+    "no_potion_heuristic": {
+      "attempted": 10,
+      "cutoffs": 0,
+      "failures": 0,
+      "hp_change_observations": 10,
+      "losses": 1,
+      "mean_final_turn_observed": 4.8,
+      "mean_hp_change_observed": -22.9,
+      "mean_hp_fraction_on_win": 0.34444444444444444,
+      "mean_hp_on_win": 27.555555555555557,
+      "mean_task_return": 0.9309999999999998,
+      "planned": 10,
+      "potion_use_actions": 0,
+      "source_groups": 9,
+      "steps": 163,
+      "unattempted": 0,
+      "win_rate": 0.9,
+      "win_rate_group_hoeffding_95": [
+        0.42953983458018874,
+        1
+      ],
+      "wins": 9
+    },
+    "witness_wins": 10
+  },
+  "runtime": {
+    "device": "cpu",
+    "python": "3.11.15",
+    "threads": 1,
+    "torch": "2.13.0"
+  },
+  "sampled_panels": {
+    "train": {
+      "combat_500k": {
+        "greedy": {
+          "planned": 36,
+          "source_groups": 25,
+          "win_rate": 0.7222222222222222,
+          "wins": 26
+        },
+        "sampled": {
+          "planned": 72,
+          "source_groups": 25,
+          "win_rate": 0.6527777777777778,
+          "wins": 47
+        }
+      },
+      "combat_50k": {
+        "greedy": {
+          "planned": 36,
+          "source_groups": 25,
+          "win_rate": 0.8055555555555556,
+          "wins": 29
+        },
+        "sampled": {
+          "planned": 72,
+          "source_groups": 25,
+          "win_rate": 0.5,
+          "wins": 36
+        }
+      },
+      "untrained": {
+        "greedy": {
+          "planned": 36,
+          "source_groups": 25,
+          "win_rate": 0.5833333333333334,
+          "wins": 21
+        },
+        "sampled": {
+          "planned": 72,
+          "source_groups": 25,
+          "win_rate": 0.3055555555555556,
+          "wins": 22
+        }
+      }
+    },
+    "validation": {
+      "combat_500k": {
+        "greedy": {
+          "planned": 36,
+          "source_groups": 21,
+          "win_rate": 0.5277777777777778,
+          "wins": 19
+        },
+        "sampled": {
+          "planned": 72,
+          "source_groups": 21,
+          "win_rate": 0.5972222222222222,
+          "wins": 43
+        }
+      },
+      "combat_50k": {
+        "greedy": {
+          "planned": 36,
+          "source_groups": 21,
+          "win_rate": 0.5555555555555556,
+          "wins": 20
+        },
+        "sampled": {
+          "planned": 72,
+          "source_groups": 21,
+          "win_rate": 0.375,
+          "wins": 27
+        }
+      },
+      "untrained": {
+        "greedy": {
+          "planned": 36,
+          "source_groups": 21,
+          "win_rate": 0.4722222222222222,
+          "wins": 17
+        },
+        "sampled": {
+          "planned": 72,
+          "source_groups": 21,
+          "win_rate": 0.2361111111111111,
+          "wins": 17
+        }
+      }
+    }
+  },
+  "schema": "sts_combat_plateau_diagnostic_evidence_v1",
+  "status": "complete",
+  "timings_seconds": {
+    "collection": 296.0054367899429,
+    "correction_review": 19,
+    "diagnosis": 312.4831784579437,
+    "export": 2.545721499947831,
+    "final_verification": 10.296905874973163,
+    "independent_review": 153,
+    "preflight_verification": 10.274337833980098,
+    "preparation": 0.2702464999165386,
+    "smoke": 4.365368083119392,
+    "tiny_evaluation": 15.810619042022154,
+    "training": 426.47038716683164,
+    "updates": 127.00830991612747
+  },
+  "tiny": {
+    "case_episode_exposure_range": [
+      81,
+      494
+    ],
+    "cases": 32,
+    "categories": {
+      "block_available_under_threat": 10,
+      "immediate_kill": 8,
+      "potion_available_used_by_witness": 10,
+      "vantom": 4
+    },
+    "distinct_fights": 29,
+    "final_greedy_failures": [
+      "underdocks_waterfall_giant",
+      "overgrowth_ruby_raiders"
+    ],
+    "goal_greedy_wins": 31,
+    "goal_met": false,
+    "results": {
+      "combat_500k:greedy": {
+        "by_category": {
+          "block_available_under_threat": {
+            "attempted": 10,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 10,
+            "losses": 0,
+            "mean_final_turn_observed": 4.3,
+            "mean_hp_change_observed": -4.9,
+            "mean_hp_fraction_on_win": 0.5987499999999999,
+            "mean_hp_on_win": 48.2,
+            "mean_task_return": 1.0598750000000001,
+            "planned": 10,
+            "potion_use_actions": 0,
+            "source_groups": 8,
+            "steps": 110,
+            "unattempted": 0,
+            "win_rate": 1.0,
+            "win_rate_group_hoeffding_95": [
+              0.4918449431640225,
+              1
+            ],
+            "wins": 10
+          },
+          "immediate_kill": {
+            "attempted": 8,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 8,
+            "losses": 0,
+            "mean_final_turn_observed": 4.125,
+            "mean_hp_change_observed": 5.875,
+            "mean_hp_fraction_on_win": 0.5671875000000001,
+            "mean_hp_on_win": 45.375,
+            "mean_task_return": 1.05671875,
+            "planned": 8,
+            "potion_use_actions": 0,
+            "source_groups": 8,
+            "steps": 16,
+            "unattempted": 0,
+            "win_rate": 1.0,
+            "win_rate_group_hoeffding_95": [
+              0.5198386043400396,
+              1
+            ],
+            "wins": 8
+          },
+          "potion_available_used_by_witness": {
+            "attempted": 10,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 10,
+            "losses": 1,
+            "mean_final_turn_observed": 4.6,
+            "mean_hp_change_observed": -20.5,
+            "mean_hp_fraction_on_win": 0.3777777777777778,
+            "mean_hp_on_win": 30.22222222222222,
+            "mean_task_return": 0.9339999999999999,
+            "planned": 10,
+            "potion_use_actions": 9,
+            "source_groups": 9,
+            "steps": 171,
+            "unattempted": 0,
+            "win_rate": 0.9,
+            "win_rate_group_hoeffding_95": [
+              0.42953983458018874,
+              1
+            ],
+            "wins": 9
+          },
+          "vantom": {
+            "attempted": 4,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 4,
+            "losses": 0,
+            "mean_final_turn_observed": 8.0,
+            "mean_hp_change_observed": -38.5,
+            "mean_hp_fraction_on_win": 0.275,
+            "mean_hp_on_win": 22.0,
+            "mean_task_return": 1.0275,
+            "planned": 4,
+            "potion_use_actions": 1,
+            "source_groups": 1,
+            "steps": 73,
+            "unattempted": 0,
+            "win_rate": 1.0,
+            "win_rate_group_hoeffding_95": [
+              0,
+              1
+            ],
+            "wins": 4
+          }
+        },
+        "immediate_kill_first_action_wins": 4,
+        "summary": {
+          "attempted": 32,
+          "cutoffs": 0,
+          "failures": 0,
+          "hp_change_observations": 32,
+          "losses": 1,
+          "mean_final_turn_observed": 4.8125,
+          "mean_hp_change_observed": -11.28125,
+          "mean_hp_fraction_on_win": 0.48467741935483855,
+          "mean_hp_on_win": 38.87096774193548,
+          "mean_task_return": 1.015703125,
+          "planned": 32,
+          "potion_use_actions": 10,
+          "source_groups": 21,
+          "steps": 370,
+          "unattempted": 0,
+          "win_rate": 0.96875,
+          "win_rate_group_hoeffding_95": [
+            0.6187752500181237,
+            1
+          ],
+          "wins": 31
+        }
+      },
+      "combat_50k:greedy": {
+        "by_category": {
+          "block_available_under_threat": {
+            "attempted": 10,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 10,
+            "losses": 0,
+            "mean_final_turn_observed": 3.8,
+            "mean_hp_change_observed": -5.4,
+            "mean_hp_fraction_on_win": 0.5929411764705882,
+            "mean_hp_on_win": 47.7,
+            "mean_task_return": 1.0592941176470587,
+            "planned": 10,
+            "potion_use_actions": 0,
+            "source_groups": 8,
+            "steps": 87,
+            "unattempted": 0,
+            "win_rate": 1.0,
+            "win_rate_group_hoeffding_95": [
+              0.4918449431640225,
+              1
+            ],
+            "wins": 10
+          },
+          "immediate_kill": {
+            "attempted": 8,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 8,
+            "losses": 0,
+            "mean_final_turn_observed": 4.0,
+            "mean_hp_change_observed": 5.875,
+            "mean_hp_fraction_on_win": 0.5671875,
+            "mean_hp_on_win": 45.375,
+            "mean_task_return": 1.05671875,
+            "planned": 8,
+            "potion_use_actions": 0,
+            "source_groups": 8,
+            "steps": 13,
+            "unattempted": 0,
+            "win_rate": 1.0,
+            "win_rate_group_hoeffding_95": [
+              0.5198386043400396,
+              1
+            ],
+            "wins": 8
+          },
+          "potion_available_used_by_witness": {
+            "attempted": 10,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 10,
+            "losses": 1,
+            "mean_final_turn_observed": 4.1,
+            "mean_hp_change_observed": -21.5,
+            "mean_hp_fraction_on_win": 0.36388888888888893,
+            "mean_hp_on_win": 29.11111111111111,
+            "mean_task_return": 0.9327499999999999,
+            "planned": 10,
+            "potion_use_actions": 10,
+            "source_groups": 9,
+            "steps": 156,
+            "unattempted": 0,
+            "win_rate": 0.9,
+            "win_rate_group_hoeffding_95": [
+              0.42953983458018874,
+              1
+            ],
+            "wins": 9
+          },
+          "vantom": {
+            "attempted": 4,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 4,
+            "losses": 0,
+            "mean_final_turn_observed": 7.25,
+            "mean_hp_change_observed": -29.75,
+            "mean_hp_fraction_on_win": 0.384375,
+            "mean_hp_on_win": 30.75,
+            "mean_task_return": 1.0384375,
+            "planned": 4,
+            "potion_use_actions": 1,
+            "source_groups": 1,
+            "steps": 63,
+            "unattempted": 0,
+            "win_rate": 1.0,
+            "win_rate_group_hoeffding_95": [
+              0,
+              1
+            ],
+            "wins": 4
+          }
+        },
+        "immediate_kill_first_action_wins": 5,
+        "summary": {
+          "attempted": 32,
+          "cutoffs": 0,
+          "failures": 0,
+          "hp_change_observations": 32,
+          "losses": 1,
+          "mean_final_turn_observed": 4.375,
+          "mean_hp_change_observed": -10.65625,
+          "mean_hp_fraction_on_win": 0.4928842504743832,
+          "mean_hp_on_win": 39.516129032258064,
+          "mean_task_return": 1.0164981617647058,
+          "planned": 32,
+          "potion_use_actions": 11,
+          "source_groups": 21,
+          "steps": 319,
+          "unattempted": 0,
+          "win_rate": 0.96875,
+          "win_rate_group_hoeffding_95": [
+            0.6187752500181237,
+            1
+          ],
+          "wins": 31
+        }
+      },
+      "tiny_10k:greedy": {
+        "by_category": {
+          "block_available_under_threat": {
+            "attempted": 10,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 10,
+            "losses": 0,
+            "mean_final_turn_observed": 3.6,
+            "mean_hp_change_observed": -10.4,
+            "mean_hp_fraction_on_win": 0.5304411764705882,
+            "mean_hp_on_win": 42.7,
+            "mean_task_return": 1.0530441176470586,
+            "planned": 10,
+            "potion_use_actions": 0,
+            "source_groups": 8,
+            "steps": 81,
+            "unattempted": 0,
+            "win_rate": 1.0,
+            "win_rate_group_hoeffding_95": [
+              0.4918449431640225,
+              1
+            ],
+            "wins": 10
+          },
+          "immediate_kill": {
+            "attempted": 8,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 8,
+            "losses": 0,
+            "mean_final_turn_observed": 4.0,
+            "mean_hp_change_observed": 6.0,
+            "mean_hp_fraction_on_win": 0.56875,
+            "mean_hp_on_win": 45.5,
+            "mean_task_return": 1.056875,
+            "planned": 8,
+            "potion_use_actions": 0,
+            "source_groups": 8,
+            "steps": 12,
+            "unattempted": 0,
+            "win_rate": 1.0,
+            "win_rate_group_hoeffding_95": [
+              0.5198386043400396,
+              1
+            ],
+            "wins": 8
+          },
+          "potion_available_used_by_witness": {
+            "attempted": 10,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 10,
+            "losses": 3,
+            "mean_final_turn_observed": 4.3,
+            "mean_hp_change_observed": -26.1,
+            "mean_hp_fraction_on_win": 0.38571428571428573,
+            "mean_hp_on_win": 30.857142857142858,
+            "mean_task_return": 0.7270000000000001,
+            "planned": 10,
+            "potion_use_actions": 10,
+            "source_groups": 9,
+            "steps": 159,
+            "unattempted": 0,
+            "win_rate": 0.7,
+            "win_rate_group_hoeffding_95": [
+              0.22953983458018867,
+              1
+            ],
+            "wins": 7
+          },
+          "vantom": {
+            "attempted": 4,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 4,
+            "losses": 0,
+            "mean_final_turn_observed": 7.0,
+            "mean_hp_change_observed": -24.75,
+            "mean_hp_fraction_on_win": 0.44687499999999997,
+            "mean_hp_on_win": 35.75,
+            "mean_task_return": 1.0446875,
+            "planned": 4,
+            "potion_use_actions": 1,
+            "source_groups": 1,
+            "steps": 57,
+            "unattempted": 0,
+            "win_rate": 1.0,
+            "win_rate_group_hoeffding_95": [
+              0,
+              1
+            ],
+            "wins": 4
+          }
+        },
+        "immediate_kill_first_action_wins": 5,
+        "summary": {
+          "attempted": 32,
+          "cutoffs": 0,
+          "failures": 0,
+          "hp_change_observations": 32,
+          "losses": 3,
+          "mean_final_turn_observed": 4.34375,
+          "mean_hp_change_observed": -13.0,
+          "mean_hp_fraction_on_win": 0.49454868154158205,
+          "mean_hp_on_win": 39.6551724137931,
+          "mean_task_return": 0.9510684742647059,
+          "planned": 32,
+          "potion_use_actions": 11,
+          "source_groups": 21,
+          "steps": 309,
+          "unattempted": 0,
+          "win_rate": 0.90625,
+          "win_rate_group_hoeffding_95": [
+            0.5562752500181237,
+            1
+          ],
+          "wins": 29
+        }
+      },
+      "tiny_25k:greedy": {
+        "by_category": {
+          "block_available_under_threat": {
+            "attempted": 10,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 10,
+            "losses": 0,
+            "mean_final_turn_observed": 3.5,
+            "mean_hp_change_observed": -8.8,
+            "mean_hp_fraction_on_win": 0.5504411764705882,
+            "mean_hp_on_win": 44.3,
+            "mean_task_return": 1.0550441176470586,
+            "planned": 10,
+            "potion_use_actions": 0,
+            "source_groups": 8,
+            "steps": 80,
+            "unattempted": 0,
+            "win_rate": 1.0,
+            "win_rate_group_hoeffding_95": [
+              0.4918449431640225,
+              1
+            ],
+            "wins": 10
+          },
+          "immediate_kill": {
+            "attempted": 8,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 8,
+            "losses": 0,
+            "mean_final_turn_observed": 4.0,
+            "mean_hp_change_observed": 6.0,
+            "mean_hp_fraction_on_win": 0.56875,
+            "mean_hp_on_win": 45.5,
+            "mean_task_return": 1.056875,
+            "planned": 8,
+            "potion_use_actions": 0,
+            "source_groups": 8,
+            "steps": 10,
+            "unattempted": 0,
+            "win_rate": 1.0,
+            "win_rate_group_hoeffding_95": [
+              0.5198386043400396,
+              1
+            ],
+            "wins": 8
+          },
+          "potion_available_used_by_witness": {
+            "attempted": 10,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 10,
+            "losses": 2,
+            "mean_final_turn_observed": 4.2,
+            "mean_hp_change_observed": -23.0,
+            "mean_hp_fraction_on_win": 0.38593750000000004,
+            "mean_hp_on_win": 30.875,
+            "mean_task_return": 0.830875,
+            "planned": 10,
+            "potion_use_actions": 10,
+            "source_groups": 9,
+            "steps": 148,
+            "unattempted": 0,
+            "win_rate": 0.8,
+            "win_rate_group_hoeffding_95": [
+              0.32953983458018876,
+              1
+            ],
+            "wins": 8
+          },
+          "vantom": {
+            "attempted": 4,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 4,
+            "losses": 0,
+            "mean_final_turn_observed": 7.0,
+            "mean_hp_change_observed": -25.5,
+            "mean_hp_fraction_on_win": 0.4375,
+            "mean_hp_on_win": 35.0,
+            "mean_task_return": 1.04375,
+            "planned": 4,
+            "potion_use_actions": 1,
+            "source_groups": 1,
+            "steps": 57,
+            "unattempted": 0,
+            "win_rate": 1.0,
+            "win_rate_group_hoeffding_95": [
+              0,
+              1
+            ],
+            "wins": 4
+          }
+        },
+        "immediate_kill_first_action_wins": 6,
+        "summary": {
+          "attempted": 32,
+          "cutoffs": 0,
+          "failures": 0,
+          "hp_change_observations": 32,
+          "losses": 2,
+          "mean_final_turn_observed": 4.28125,
+          "mean_hp_change_observed": -11.625,
+          "mean_hp_fraction_on_win": 0.49639705882352936,
+          "mean_hp_on_win": 39.8,
+          "mean_task_return": 0.9840372242647057,
+          "planned": 32,
+          "potion_use_actions": 11,
+          "source_groups": 21,
+          "steps": 295,
+          "unattempted": 0,
+          "win_rate": 0.9375,
+          "win_rate_group_hoeffding_95": [
+            0.5875252500181237,
+            1
+          ],
+          "wins": 30
+        }
+      },
+      "tiny_50k:greedy": {
+        "by_category": {
+          "block_available_under_threat": {
+            "attempted": 10,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 10,
+            "losses": 0,
+            "mean_final_turn_observed": 3.6,
+            "mean_hp_change_observed": -9.3,
+            "mean_hp_fraction_on_win": 0.5441911764705882,
+            "mean_hp_on_win": 43.8,
+            "mean_task_return": 1.054419117647059,
+            "planned": 10,
+            "potion_use_actions": 0,
+            "source_groups": 8,
+            "steps": 83,
+            "unattempted": 0,
+            "win_rate": 1.0,
+            "win_rate_group_hoeffding_95": [
+              0.4918449431640225,
+              1
+            ],
+            "wins": 10
+          },
+          "immediate_kill": {
+            "attempted": 8,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 8,
+            "losses": 0,
+            "mean_final_turn_observed": 4.0,
+            "mean_hp_change_observed": 6.0,
+            "mean_hp_fraction_on_win": 0.56875,
+            "mean_hp_on_win": 45.5,
+            "mean_task_return": 1.056875,
+            "planned": 8,
+            "potion_use_actions": 0,
+            "source_groups": 8,
+            "steps": 13,
+            "unattempted": 0,
+            "win_rate": 1.0,
+            "win_rate_group_hoeffding_95": [
+              0.5198386043400396,
+              1
+            ],
+            "wins": 8
+          },
+          "potion_available_used_by_witness": {
+            "attempted": 10,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 10,
+            "losses": 2,
+            "mean_final_turn_observed": 4.2,
+            "mean_hp_change_observed": -21.0,
+            "mean_hp_fraction_on_win": 0.41718750000000004,
+            "mean_hp_on_win": 33.375,
+            "mean_task_return": 0.833375,
+            "planned": 10,
+            "potion_use_actions": 10,
+            "source_groups": 9,
+            "steps": 157,
+            "unattempted": 0,
+            "win_rate": 0.8,
+            "win_rate_group_hoeffding_95": [
+              0.32953983458018876,
+              1
+            ],
+            "wins": 8
+          },
+          "vantom": {
+            "attempted": 4,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 4,
+            "losses": 0,
+            "mean_final_turn_observed": 7.0,
+            "mean_hp_change_observed": -25.5,
+            "mean_hp_fraction_on_win": 0.4375,
+            "mean_hp_on_win": 35.0,
+            "mean_task_return": 1.04375,
+            "planned": 4,
+            "potion_use_actions": 1,
+            "source_groups": 1,
+            "steps": 57,
+            "unattempted": 0,
+            "win_rate": 1.0,
+            "win_rate_group_hoeffding_95": [
+              0,
+              1
+            ],
+            "wins": 4
+          }
+        },
+        "immediate_kill_first_action_wins": 4,
+        "summary": {
+          "attempted": 32,
+          "cutoffs": 0,
+          "failures": 0,
+          "hp_change_observations": 32,
+          "losses": 2,
+          "mean_final_turn_observed": 4.3125,
+          "mean_hp_change_observed": -11.15625,
+          "mean_hp_fraction_on_win": 0.5026470588235294,
+          "mean_hp_on_win": 40.3,
+          "mean_task_return": 0.9846231617647057,
+          "planned": 32,
+          "potion_use_actions": 11,
+          "source_groups": 21,
+          "steps": 310,
+          "unattempted": 0,
+          "win_rate": 0.9375,
+          "win_rate_group_hoeffding_95": [
+            0.5875252500181237,
+            1
+          ],
+          "wins": 30
+        }
+      },
+      "tiny_50k:sampled": {
+        "by_category": {
+          "block_available_under_threat": {
+            "attempted": 20,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 20,
+            "losses": 1,
+            "mean_final_turn_observed": 4.1,
+            "mean_hp_change_observed": -9.55,
+            "mean_hp_fraction_on_win": 0.5694272445820432,
+            "mean_hp_on_win": 45.8421052631579,
+            "mean_task_return": 1.0040955882352942,
+            "planned": 20,
+            "potion_use_actions": 0,
+            "source_groups": 8,
+            "steps": 199,
+            "unattempted": 0,
+            "win_rate": 0.95,
+            "win_rate_group_hoeffding_95": [
+              0.44184494316402245,
+              1
+            ],
+            "wins": 19
+          },
+          "immediate_kill": {
+            "attempted": 16,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 16,
+            "losses": 1,
+            "mean_final_turn_observed": 4.0625,
+            "mean_hp_change_observed": 5.3125,
+            "mean_hp_fraction_on_win": 0.5975,
+            "mean_hp_on_win": 47.8,
+            "mean_task_return": 0.9935156249999999,
+            "planned": 16,
+            "potion_use_actions": 0,
+            "source_groups": 8,
+            "steps": 28,
+            "unattempted": 0,
+            "win_rate": 0.9375,
+            "win_rate_group_hoeffding_95": [
+              0.45733860434003965,
+              1
+            ],
+            "wins": 15
+          },
+          "potion_available_used_by_witness": {
+            "attempted": 20,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 20,
+            "losses": 4,
+            "mean_final_turn_observed": 4.45,
+            "mean_hp_change_observed": -22.55,
+            "mean_hp_fraction_on_win": 0.39296875000000003,
+            "mean_hp_on_win": 31.4375,
+            "mean_task_return": 0.8314375000000002,
+            "planned": 20,
+            "potion_use_actions": 16,
+            "source_groups": 9,
+            "steps": 345,
+            "unattempted": 0,
+            "win_rate": 0.8,
+            "win_rate_group_hoeffding_95": [
+              0.32953983458018876,
+              1
+            ],
+            "wins": 16
+          },
+          "vantom": {
+            "attempted": 8,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 8,
+            "losses": 0,
+            "mean_final_turn_observed": 7.75,
+            "mean_hp_change_observed": -35.375,
+            "mean_hp_fraction_on_win": 0.3140625,
+            "mean_hp_on_win": 25.125,
+            "mean_task_return": 1.03140625,
+            "planned": 8,
+            "potion_use_actions": 1,
+            "source_groups": 1,
+            "steps": 139,
+            "unattempted": 0,
+            "win_rate": 1.0,
+            "win_rate_group_hoeffding_95": [
+              0,
+              1
+            ],
+            "wins": 8
+          }
+        },
+        "immediate_kill_first_action_wins": 6,
+        "summary": {
+          "attempted": 64,
+          "cutoffs": 0,
+          "failures": 0,
+          "hp_change_observations": 64,
+          "losses": 6,
+          "mean_final_turn_observed": 4.65625,
+          "mean_hp_change_observed": -13.125,
+          "mean_hp_fraction_on_win": 0.49278651115618666,
+          "mean_hp_on_win": 39.51724137931034,
+          "mean_task_return": 0.9509087775735294,
+          "planned": 64,
+          "potion_use_actions": 17,
+          "source_groups": 21,
+          "steps": 711,
+          "unattempted": 0,
+          "win_rate": 0.90625,
+          "win_rate_group_hoeffding_95": [
+            0.5562752500181237,
+            1
+          ],
+          "wins": 58
+        }
+      },
+      "untrained:greedy": {
+        "by_category": {
+          "block_available_under_threat": {
+            "attempted": 10,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 10,
+            "losses": 0,
+            "mean_final_turn_observed": 3.9,
+            "mean_hp_change_observed": -8.1,
+            "mean_hp_fraction_on_win": 0.5591911764705882,
+            "mean_hp_on_win": 45.0,
+            "mean_task_return": 1.0559191176470588,
+            "planned": 10,
+            "potion_use_actions": 0,
+            "source_groups": 8,
+            "steps": 89,
+            "unattempted": 0,
+            "win_rate": 1.0,
+            "win_rate_group_hoeffding_95": [
+              0.4918449431640225,
+              1
+            ],
+            "wins": 10
+          },
+          "immediate_kill": {
+            "attempted": 8,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 8,
+            "losses": 0,
+            "mean_final_turn_observed": 4.0,
+            "mean_hp_change_observed": 6.0,
+            "mean_hp_fraction_on_win": 0.56875,
+            "mean_hp_on_win": 45.5,
+            "mean_task_return": 1.056875,
+            "planned": 8,
+            "potion_use_actions": 0,
+            "source_groups": 8,
+            "steps": 12,
+            "unattempted": 0,
+            "win_rate": 1.0,
+            "win_rate_group_hoeffding_95": [
+              0.5198386043400396,
+              1
+            ],
+            "wins": 8
+          },
+          "potion_available_used_by_witness": {
+            "attempted": 10,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 10,
+            "losses": 3,
+            "mean_final_turn_observed": 4.6,
+            "mean_hp_change_observed": -29.5,
+            "mean_hp_fraction_on_win": 0.325,
+            "mean_hp_on_win": 26.0,
+            "mean_task_return": 0.7227500000000001,
+            "planned": 10,
+            "potion_use_actions": 10,
+            "source_groups": 9,
+            "steps": 180,
+            "unattempted": 0,
+            "win_rate": 0.7,
+            "win_rate_group_hoeffding_95": [
+              0.22953983458018867,
+              1
+            ],
+            "wins": 7
+          },
+          "vantom": {
+            "attempted": 4,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 4,
+            "losses": 0,
+            "mean_final_turn_observed": 7.0,
+            "mean_hp_change_observed": -24.5,
+            "mean_hp_fraction_on_win": 0.44999999999999996,
+            "mean_hp_on_win": 36.0,
+            "mean_task_return": 1.045,
+            "planned": 4,
+            "potion_use_actions": 1,
+            "source_groups": 1,
+            "steps": 58,
+            "unattempted": 0,
+            "win_rate": 1.0,
+            "win_rate_group_hoeffding_95": [
+              0,
+              1
+            ],
+            "wins": 4
+          }
+        },
+        "immediate_kill_first_action_wins": 5,
+        "summary": {
+          "attempted": 32,
+          "cutoffs": 0,
+          "failures": 0,
+          "hp_change_observations": 32,
+          "losses": 3,
+          "mean_final_turn_observed": 4.53125,
+          "mean_hp_change_observed": -13.3125,
+          "mean_hp_fraction_on_win": 0.4902383367139959,
+          "mean_hp_on_win": 39.310344827586206,
+          "mean_task_return": 0.9506778492647059,
+          "planned": 32,
+          "potion_use_actions": 11,
+          "source_groups": 21,
+          "steps": 339,
+          "unattempted": 0,
+          "win_rate": 0.90625,
+          "win_rate_group_hoeffding_95": [
+            0.5562752500181237,
+            1
+          ],
+          "wins": 29
+        }
+      },
+      "untrained:sampled": {
+        "by_category": {
+          "block_available_under_threat": {
+            "attempted": 20,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 20,
+            "losses": 5,
+            "mean_final_turn_observed": 5.05,
+            "mean_hp_change_observed": -22.3,
+            "mean_hp_fraction_on_win": 0.5108333333333334,
+            "mean_hp_on_win": 41.06666666666667,
+            "mean_task_return": 0.7883124999999999,
+            "planned": 20,
+            "potion_use_actions": 0,
+            "source_groups": 8,
+            "steps": 230,
+            "unattempted": 0,
+            "win_rate": 0.75,
+            "win_rate_group_hoeffding_95": [
+              0.2418449431640225,
+              1
+            ],
+            "wins": 15
+          },
+          "immediate_kill": {
+            "attempted": 16,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 16,
+            "losses": 2,
+            "mean_final_turn_observed": 4.1875,
+            "mean_hp_change_observed": 2.9375,
+            "mean_hp_fraction_on_win": 0.6062500000000001,
+            "mean_hp_on_win": 48.5,
+            "mean_task_return": 0.928046875,
+            "planned": 16,
+            "potion_use_actions": 0,
+            "source_groups": 8,
+            "steps": 30,
+            "unattempted": 0,
+            "win_rate": 0.875,
+            "win_rate_group_hoeffding_95": [
+              0.39483860434003965,
+              1
+            ],
+            "wins": 14
+          },
+          "potion_available_used_by_witness": {
+            "attempted": 20,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 20,
+            "losses": 14,
+            "mean_final_turn_observed": 5.25,
+            "mean_hp_change_observed": -41.35,
+            "mean_hp_fraction_on_win": 0.26458333333333334,
+            "mean_hp_on_win": 21.166666666666668,
+            "mean_task_return": 0.3079375,
+            "planned": 20,
+            "potion_use_actions": 14,
+            "source_groups": 9,
+            "steps": 326,
+            "unattempted": 0,
+            "win_rate": 0.3,
+            "win_rate_group_hoeffding_95": [
+              0,
+              0.7704601654198113
+            ],
+            "wins": 6
+          },
+          "vantom": {
+            "attempted": 8,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 8,
+            "losses": 5,
+            "mean_final_turn_observed": 10.125,
+            "mean_hp_change_observed": -56.125,
+            "mean_hp_fraction_on_win": 0.14583333333333334,
+            "mean_hp_on_win": 11.666666666666666,
+            "mean_task_return": 0.38046875,
+            "planned": 8,
+            "potion_use_actions": 2,
+            "source_groups": 1,
+            "steps": 176,
+            "unattempted": 0,
+            "win_rate": 0.375,
+            "win_rate_group_hoeffding_95": [
+              0,
+              1
+            ],
+            "wins": 3
+          }
+        },
+        "immediate_kill_first_action_wins": 6,
+        "summary": {
+          "attempted": 64,
+          "cutoffs": 0,
+          "failures": 0,
+          "hp_change_observations": 64,
+          "losses": 26,
+          "mean_final_turn_observed": 5.53125,
+          "mean_hp_change_observed": -26.171875,
+          "mean_hp_fraction_on_win": 0.47828947368421043,
+          "mean_hp_on_win": 38.3421052631579,
+          "mean_task_return": 0.6221484375,
+          "planned": 64,
+          "potion_use_actions": 16,
+          "source_groups": 21,
+          "steps": 762,
+          "unattempted": 0,
+          "win_rate": 0.59375,
+          "win_rate_group_hoeffding_95": [
+            0.24377525001812372,
+            0.9437247499818763
+          ],
+          "wins": 38
+        }
+      }
+    },
+    "source_campaigns": 21,
+    "starts": {
+      "continuation": 22,
+      "opening": 10
+    }
+  },
+  "training": {
+    "decisions": 50000,
+    "episodes": 5655,
+    "exact_resume_boundaries_checked": 4,
+    "failed_episodes": 0,
+    "iterations": 15,
+    "kl_early_stops": 0,
+    "losses": 602,
+    "quota_cutoffs": 109,
+    "skipped_updates": 0,
+    "trained": 50000,
+    "wins": 4944
+  },
+  "validation": {
+    "evaluation_cutoffs": 0,
+    "evaluation_failures": 0,
+    "focused_verification": {
+      "diagnostic_sha256": "8128d34cab804963af1f94b7c59a33b97b257f1b6b91ea88071e5d495f7a9743",
+      "global_torch_rng_unchanged": true,
+      "legal_repeatable_sampled_selections": 768,
+      "prior_evaluation_games_reproduced": 12,
+      "protocol_sha256": "db79b3315fc85595157f397a58aadb8e363e859e30e0384563c7c7f941b6111a",
+      "rejected": [
+        "wrong_subset_hash",
+        "validation_case",
+        "unlisted_training_case"
+      ],
+      "restored_independent_training_pairs": 32,
+      "script_sha256": "4398fcdd6acaf07af573f8d1ce3aba5228330497e83a3d2f420c9ec87ba32ed6",
+      "seconds": 10.296905874973163,
+      "status": "passed",
+      "test_unopened": true
+    },
+    "heldout_test_unopened": true,
+    "independent_review": "No remaining blockers after config binding and mandatory verification gates; read-only review.",
+    "initial_diagnostic_games": 3112,
+    "new_games_including_smoke": 3284,
+    "tiny_evaluation_games": 160
+  }
+}

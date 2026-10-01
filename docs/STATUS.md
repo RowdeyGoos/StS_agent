@@ -962,7 +962,9 @@ state retains that accounting. Broader selector training remains follow-up work;
 the paired development pilot removed the sampled mandatory-single-card loops and
 showed useful shaped signal and modest progress gains, but no run-win improvement.
 Optional selection toggles and repeated reward opening/closing remain measured
-weaknesses of those historical checkpoints; the new filter targets the former.
+weaknesses of those historical checkpoints. The current `commit_decisions_v1`
+filter also blocks repeated closing of known card rewards after reopening without
+gameplay progress, preserving first inspection, ordered choices and valid rerolls.
 The current user-selected curriculum goal is now **Act 1 completion**, with a
 [configurable act-clear reward and paired Act 1 evaluation](AGENT_TRAINING.md#act-1-training-and-configurable-act-rewards).
 Episodes stop successfully at the public Act 1 completion boundary; reports
@@ -973,30 +975,144 @@ The first [Act 1 pilot](AGENT_TRAINING.md#act-1-pilot-2026-09-29) trained three
 learners for 10,240 decisions each. All three and the initializer cleared 0/16
 paired validation starts; the heuristic cleared 1/16. Two learners reached higher
 floors on average, while one regressed and retained an optional-selection loop.
-Only one of 303 training episodes cleared Act 1. No checkpoint was promoted;
-targeted late-act/boss practice and successful demonstrations are the next
-recommendation.
-The subsequent [single-learner 50k experiment](AGENT_TRAINING.md#single-learner-50k-experiment-2026-09-29)
-used eight collectors and the broader selection filter. All 50,000 decisions
-trained in 428.54 seconds without failed episodes or skipped updates. The final
-policy and its initializer with the same filter both cleared 0/16 fresh paired
-validation starts; mean last observed floors were 10.875 and 11.00. This run
-also shows no observed playing-strength improvement. Its larger rollout batch
-and changed selection mask make the timing comparison a different-workload
-measurement, rather than an isolated worker-count benchmark.
+Only one of 303 training episodes cleared Act 1. No checkpoint was promoted.
+The completed [single-learner 250k learning curve](AGENT_TRAINING.md#single-learner-250k-learning-curve-2026-09-30)
+used eight workers and the same frozen initializer, model and reward settings as
+the earlier 50k experiment. All 250,000 decisions trained in 25m 43s without
+failed episodes or skipped updates. On 64 fresh paired starts, the final learner
+cleared Act 1 **8/64** times and reached the boss **28/64** times, versus **0/64**
+and **6/64** for the initializer. The 200k checkpoint cleared 10/64, so the observed
+gain was uneven across training. One seed and this development set do not establish
+repeatability; no checkpoint was promoted. Recorded reward-navigation cutoffs and
+new end-turn review flags are concrete follow-up targets before another budget
+increase. Five bounded viewer views retain all 3,353 episodes / 386,016 decisions
+while respecting the viewer's existing 64 MiB metadata limit.
+The subsequent [500k continuation](AGENT_TRAINING.md#500k-continuation-after-the-terminal-outcome-fix-2026-09-30)
+is now complete. The exact continuation initially stopped at 378,672 decisions
+when Thorns killed the last enemy on a player-lethal hit and combat incorrectly
+reported victory. Combat and snapshot validation now prioritize player death
+after revival effects; 745 focused engine/agent tests and an independent semantic
+review passed. The user-approved new segment retained actor/critic weights,
+reset optimizer/RNG state and trained the remaining **121,328 decisions** with
+eight workers in **13m 34s**, without failures or skipped updates. The original
+failed collection remains preserved and excluded. On the same 64 development
+starts, 400k/450k/500k cleared **6/7/5** times, with no evaluation failures or
+cutoffs. The final **5/64** is below the earlier 350k checkpoint's **9/64**;
+this continuation did not demonstrate a clear-rate improvement. Model, reward
+and action-policy settings stayed unchanged, and the source change/reset is
+recorded explicitly rather than presented as uninterrupted optimizer resume.
+The subsequent [combat-reward comparison from scratch](AGENT_TRAINING.md#combat-reward-comparison-from-scratch-2026-09-30)
+trained two identically initialized actors/critics for 100k decisions each with
+eight workers, inheriting no imitation or PPO weights. Increasing combat win
+from +0.1 to +0.2 and the post-win HP coefficient from +0.025 to +0.1 produced
+**10/64** Act 1 clears versus **1/64** for the matched current-reward control;
+the 50k checkpoints cleared 2/64 versus 0/64. Training took 20m 11s total and
+evaluation 5m 34s, with no operational failures or skipped training updates.
+Three increased-reward evaluation games hit the decision cap in reward
+open/close loops and remain non-wins. The observed gain is promising, but one
+learner seed and the reused development cases do not establish repeatability;
+the conservative paired interval remains inconclusive. Both arms and their
+checkpoints are retained separately without promoting a new default.
+The subsequent [reward-navigation fix and frozen-weight evaluation](AGENT_TRAINING.md#reward-navigation-filter-and-frozen-weight-evaluation-2026-09-30)
+removed all three known reward-loop cutoffs with `commit_decisions_v1`, without
+training. Increased-reward clears rose from **10/64 to 11/64**; the control stayed
+at **1/64**. Only the three looping trajectories changed; the other 125 learned
+before/after traces match exactly. All 384 evaluation games and 303 targeted
+tests passed, with an independent semantic review. New presets enable this
+version while old checkpoints retain their original behavior and reward weights.
+The [increased-reward continuation to 250k](AGENT_TRAINING.md#increased-reward-continuation-to-250k-decisions-2026-09-30)
+added 150k decisions with eight workers in **16m 52s**, without failures or skipped
+updates. Final Act 1 clears rose from **11/64 to 17/64** on the reused development
+panel; 150k/200k scored 8/64 and 9/64. All 576 evaluation games completed without
+cutoffs. Loop flags remain absent, while end-turn review flags remain a concrete
+follow-up. The policy-change optimizer reset
+and all intermediate checkpoints remain explicit in the lineage.
+
+The subsequent [held-out Act 1 test](AGENT_TRAINING.md#held-out-act-1-test-2026-09-30)
+compares the frozen endpoints on **256 fresh starts**, evenly split by region.
+The 250k model clears **56/256 (21.88%)**, versus **23/256 (8.98%)** for the 100k
+initializer and 14/256 for the heuristic. The paired gain is 12.89 percentage
+points, with 42 candidate-only clears and nine initializer-only clears. Both
+regions improve, while the predeclared conservative 95% interval still includes
+zero (−4.09 to +29.87 points). All 768 games finish without failures or cutoffs in
+**11m 30s** with eight workers. This is one learner's new-start test; cases used
+to guide later tuning become development evidence for subsequent claims.
+
+The [increased-reward continuation to 500k](AGENT_TRAINING.md#increased-reward-continuation-to-500k-decisions-2026-09-30)
+adds 250k decisions by exact resume from the 250k parent, preserving optimizer,
+RNG, cursor and eight-worker allocation. Training takes **29m 7s**, with no failed
+episodes or skipped updates. Validation clear counts at 300k/350k/400k/450k/500k
+are **14/9/21/20/18 out of 64**, versus 17/64 for the parent. The planned final
+endpoint gains one clear; 400k has the highest observed intermediate score.
+All 960 validation games finish without failures or cutoffs in **14m 46s**.
+This is an uneven development curve with little final gain, not a new held-out
+result. All milestones and resume states remain retained for comparison.
+
+The current [combat specialization workflow](AGENT_TRAINING.md#campaign-derived-combat-training)
+freezes genuine Act 1 combat starts from both regions with real campaign
+inventories and exact RNG snapshots. Whole source campaigns stay in one data
+split, train-only samples feed the existing parallel PPO learner, and matched
+serial/parallel benchmarks compare combat or full-run actors on identical starts.
+Reports expose encounter/type/region gaps and group uncertainty by source
+campaign. Victory remains the primary combat signal, with modest configurable HP
+shaping. Hybrid Act 1 checks retain the fixed noncombat heuristic. This is new
+training/evaluation capability, not evidence that a specialized model is stronger.
+The v2 collector can mix normal and public elite-seeking routes and retain up to
+12 reached turn starts per combat. Training balances ordinary/elite/boss fights,
+then encounters and source fights, with separate opening/continuation sampling.
+Coverage now includes potion availability, attack pressure, HP bands and visible
+enemy powers. Benchmarks default to full-fight openings; later-turn diagnostics
+have a separate population setting and cannot inflate that headline win rate.
+The [expanded population](AGENT_TRAINING.md#expanded-combat-population-2026-09-30)
+contains 1,019 fights / 3,790 starts, with every regional Act 1 encounter in every
+split. All 2,793 train/validation starts restore exactly; 99 focused checks pass.
+The unchanged 500k actor's new full-fight baseline wins 30/38 elites and 4/12
+bosses. The [fresh combat learner now reaches 500k decisions](AGENT_TRAINING.md#fresh-combat-policy-500k-decisions-2026-09-30),
+continuing its 250k checkpoint exactly with eight workers and checkpoints every
+50k decisions. It wins 213/250 validation openings (23/38 elites, 3/12 bosses),
+versus its parent's 214/250, the Act 1 reference's 224/250 and the heuristic's
+212/250. The 450k and original 50k checkpoints tie at 218/250; the additional
+training establishes no overall improvement. All 2,250 new evaluation games
+finish without failures or cutoffs, and 1,000 repeated parent/baseline games
+match their prior results exactly. No checkpoint is automatically promoted,
+and held-out test evaluation remains unopened.
+The subsequent [plateau diagnostic](AGENT_TRAINING.md#combat-learning-plateau-diagnostic-2026-10-01)
+finds sampled-policy progress that the greedy headline misses on a small fixed
+panel. A separate 50k-decision fit to 32 known-winnable training starts improves
+sampled performance but misses its 31/32 greedy target. The selected tactical
+cases have substantial ceiling effects; next priorities are evaluating both
+action-selection modes and strengthening the tactical curriculum. No model is
+promoted, and the held-out test remains unopened.
+The initial combat comparison and demonstrations have been replaced after an
+[action-mapping correction](AGENT_TRAINING.md#combat-evaluation-action-mapping-correction-2026-09-30):
+the shared evaluator confused public-list positions with encoded Gym slots.
+Regenerated recordings and the clean combat smoke all pass direct adapter replay;
+the original artifacts remain historical evidence. PPO collection and direct
+Act 1/full-run evaluation already used the correct mapping.
+
 The local [decision analysis tools](AGENT_TRAINING.md#decision-analysis-tools)
-now inspect the existing pilot's 383 public trajectories (44,027 decisions),
-including its 80 evaluation episodes and 303 training episodes. The viewer has
-split/evidence filters, floor timelines, exact decision links, PPO reward/learner
+provide split/evidence filters, floor timelines, exact decision links, PPO reward/learner
 diagnostics, and same-state comparison of explicitly loaded checkpoints. Its
 exploratory flags locate both known optional-selection loops. These are public
 recording/inference results; no additional playing-strength result is claimed.
+New headless recordings use [lossless gzip trace storage](AGENT_EXECUTION.md#compress-existing-public-traces).
+Readers and inspector exports retain historical plain-path and canonical-hash
+compatibility. The migration tool verifies decompressed bytes before removing
+plain copies, preserves shared hard-link aliases, and excludes private trees and
+unfinished recordings. It does not drop decisions or alter model checkpoints.
 Analysis now separates quick reported metrics (`sts-agent-analyze summary`)
 from full recording validation and viewer export (`build --workers 8`). On the
 50k experiment's 541 episodes / 56,844 decisions, quick summary took 0.128 seconds
 and the eight-worker export took 62.98 seconds, versus the previous 472.88-second
 serial export. Every compressed decision chunk matched the original; see the
 [analysis guide and benchmark evidence](AGENT_TRAINING.md#decision-analysis-tools).
+Optional [local MLflow tracking](EXPERIMENT_TRACKING.md) now provides experiment
+comparison, continuous exact-resume PPO curves, a curated Models catalog of
+initial, final, evaluated and retained public checkpoints with population-specific
+evaluations, and inspector links. Per-update recovery files remain available.
+Historical report import does not rerun games or
+change old source identities. Tracking is opt-in, writes only from the parent
+process, and retains canonical outputs if dashboard logging fails.
 Actual Act 1/full-run evaluation games now also support 1–8 persistent workers.
 A matched 48-game / 7,066-decision benchmark took 288.55 seconds serially and
 65.86 seconds with eight workers (4.38× faster), including canonical outcome
