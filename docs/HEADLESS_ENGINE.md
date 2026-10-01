@@ -194,6 +194,13 @@ it does not infer missing state. Reuse the same rules/catalogs when restoring.
 Mutable branch state is independent, while immutable definitions may be shared.
 Do not serialize arbitrary callables or import a type named by a snapshot.
 
+Terminal outcome checks resolve player death before enemy elimination, after
+Fairy in a Bottle and Lizard Tail have had their normal chance to revive the
+player. If a lethal hit and Thorns kill both sides, the run ends in defeat without
+victory hooks or rewards. Snapshot validation uses the same precedence and rejects
+a contradictory zero-HP player victory atomically. This correction changes the
+rules identity without changing the v48/v69 snapshot layouts.
+
 The [Neow's Fury choice correction](evidence/neows_fury_2026_09_22.md) changes the
 default card-catalog fingerprint. Saves from the previous default catalog are
 incompatible even though these structural schema versions remain unchanged.

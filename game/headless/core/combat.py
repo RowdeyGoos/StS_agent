@@ -346,10 +346,12 @@ class CombatEngine:
         return [i for i, enemy in enumerate(self.enemies) if enemy.is_alive]
 
     def _check_terminal(self) -> None:
-        if not self._living_enemies() and self.player.combat_is_ending:
-            self.done, self.winner = True, "player"
-        elif not self.player.is_alive:
+        # Retaliation can kill the last enemy on the hit that kills the player.
+        # Damage has already resolved revival effects before this boundary.
+        if not self.player.is_alive:
             self.done, self.winner = True, "enemy"
+        elif not self._living_enemies() and self.player.combat_is_ending:
+            self.done, self.winner = True, "player"
 
     def _refresh_persistent_statuses(self) -> None:
         from game.headless.core.enemy_lifecycle import settle_enemies

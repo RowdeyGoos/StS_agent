@@ -230,7 +230,7 @@ def restore_combat(snapshot, *, cards=None, monsters=None) -> dict:
             enemies.append(enemy)
         if not enemies or type(snapshot["turn"]) is not int or snapshot["turn"] < 1:
             raise ValueError("Invalid combat state.")
-        winner = "player" if not any(e.is_alive or e.prevents_combat_end for e in enemies) else "enemy" if not player.is_alive else None
+        winner = "enemy" if not player.is_alive else "player" if not any(e.is_alive or e.prevents_combat_end for e in enemies) else None
         if type(snapshot["done"]) is not bool or snapshot["done"] != (winner is not None) or snapshot["winner"] != winner:
             raise ValueError("Invalid terminal state.")
         config = snapshot["config"]
