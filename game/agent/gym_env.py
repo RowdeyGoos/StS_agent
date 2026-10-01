@@ -42,7 +42,7 @@ def combat_map_slice(seed):
 
 
 class StsEnv(gym.Env):
-    """Fixed candidate-index actions; masked choices are non-mutating rejections.
+    """Fixed encoded action slots; masked choices are non-mutating rejections.
 
     ``engine_factory(seed)`` must return a fresh exclusively owned RunEngine.
     Custom factories remain subject to the adapter's declared content coverage.
@@ -128,11 +128,26 @@ class StsEnv(gym.Env):
         """Immutable structured state from the same owner as the fixed encoding.
 
         A cutoff retains the final decision. Bindings and engine state remain
-        private; callers dispatch a candidate's index through step().
+        private; callers resolve candidates through action_index() before step().
         """
         if self._failed:
             raise EnvironmentFailure('reset_required_after_failure')
         return self._public_state
+
+    def action_index(self, candidate):
+        """Map a candidate from the current public_state to its encoded slot.
+
+        Structured candidate order can differ from tensor action order. Pass
+        the current candidate object, not one from a prior or decoded decision.
+        This only resolves a slot; step() still checks the dispatch binding.
+        """
+        if self._failed:
+            raise EnvironmentFailure('reset_required_after_failure')
+        if self._adapter is None or self._done:
+            raise gym.error.ResetNeeded('Call reset before selecting a new action')
+        if not any(candidate is current for current in self._public_state.candidates):
+            raise ValueError('Candidate must belong to the current public decision')
+        return self._encoded.candidate_refs.index(candidate.ref)
 
     def _observe(self):
         return self._adapter.observe()

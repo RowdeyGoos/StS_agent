@@ -88,7 +88,7 @@ def _episode(case, policy, identity, output, audit, config, *, chooser=None,
                 if chosen not in allowed:
                     raise ValueError('Evaluation chooser violated its configured action policy')
                 policy_seconds += time.perf_counter() - before
-                _, reward, terminated, truncated, info = env.step(public.candidates.index(chosen))
+                _, reward, terminated, truncated, info = env.step(env.action_index(chosen))
                 report = info['execution']
                 if report is not None:
                     execution = c.from_dict(report)

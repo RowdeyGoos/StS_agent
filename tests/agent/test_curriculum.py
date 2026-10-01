@@ -57,7 +57,7 @@ def test_curriculum_excludes_test_combinations_and_exercises_selectors():
         with environment(encounter=name) as env:
             env.reset(seed=0)
             choice=next(x for x in env.public_state.candidates if x.kind=='select_card')
-            result=env.step(env.public_state.candidates.index(choice))
+            result=env.step(env.action_index(choice))
             assert result[4]['execution']['status']=='reconciled'
 
 

@@ -37,7 +37,7 @@ def record(tmp_path, *, mode='win', spec=None):
         with CombatTrainingRecorder(path, metadata(), env.public_state, info['combat'], reward_spec=spec) as writer:
             state = env.public_state
             action = next(a for a in state.candidates if a.kind == ('end_turn' if mode == 'loss' else 'play_card'))
-            _, reward, done, cut, info = env.step(state.candidates.index(action))
+            _, reward, done, cut, info = env.step(env.action_index(action))
             writer.append(action, c.from_dict(info['execution']), env.public_state,
                           combat_summary=info['combat'], reward=reward, terminated=done, truncated=cut)
             writer.finish(c.from_dict(info['outcome']), combat_summary=info['combat'], terminated=done, truncated=cut)
@@ -162,7 +162,7 @@ def test_pre_dispatch_timeout_has_no_fake_transition_or_extra_reward(tmp_path, m
             if after_action:
                 state = env.public_state
                 action = next(a for a in state.candidates if a.kind == 'end_turn')
-                _, reward, done, cut, info = env.step(state.candidates.index(action))
+                _, reward, done, cut, info = env.step(env.action_index(action))
                 writer.append(action, c.from_dict(info['execution']), env.public_state,
                               combat_summary=info['combat'], reward=reward, terminated=done, truncated=cut)
             clock[0] += 2

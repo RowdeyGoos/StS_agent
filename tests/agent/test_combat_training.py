@@ -39,7 +39,7 @@ def act(env, kind, definition=None):
     entities = {n.ref: n for n in f.walk(public.context) if n.ref}
     choice = next(a for a in public.candidates if a.kind == kind and
                   (definition is None or entities[a.subject].definition_id == definition))
-    return env.step(public.candidates.index(choice))
+    return env.step(env.action_index(choice))
 
 
 def test_victory_reads_post_hook_hp_ends_before_rewards_and_never_reports_run_victory():
@@ -245,11 +245,10 @@ def test_scenarios_seed_splits_determinism_and_independent_episodes():
             a, b = first.public_state, second.public_state
             assert f.dumps(a) == f.dumps(b)
             choice = choose_action(a)
-            index = a.candidates.index(choice)
-            result = first.step(index)
+            result = first.step(first.action_index(choice))
             if not trace:
                 assert second._adapter._engine.snapshot() == original
-            other = second.step(index)
+            other = second.step(second.action_index(next(c for c in b.candidates if c == choice)))
             assert result[1:] == other[1:]
             trace.append(f.dumps(a))
             if result[2] or result[3]:
@@ -278,6 +277,102 @@ def test_baseline_report_pairs_cases_records_canonical_rewards_and_private_repla
     assert 'policy_seed' not in path.read_text() and '"seed"' not in path.read_text()
     with pytest.raises(FileExistsError):
         evaluate_baselines(output_dir=path.parent, cases_per_scenario=1)
+
+
+@pytest.mark.parametrize('policy', ['heuristic', 'random_legal', 'custom'])
+def test_evaluation_records_the_exact_action_executed_after_card_order_changes(tmp_path, policy):
+    from game.agent.provenance import implementation
+    from game.agent.training.config import TrainingConfig
+    from game.agent.training.evaluation import BaselineCase, _episode
+
+    def make(_):
+        return fixture(0, cards=('strike', 'perfected_strike'), enemy_hp=200, relics=())
+
+    def perfected_first(decision):
+        nodes = {n.ref: n for n in f.walk(decision.context) if n.ref}
+        return next((a for a in decision.candidates if a.kind == 'play_card' and
+                     nodes[a.subject].definition_id == 'perfected_strike'),
+                    next(a for a in decision.candidates if a.kind == 'end_turn'))
+
+    output, private = tmp_path / 'public', tmp_path / 'private'
+    output.mkdir()
+    private.mkdir(mode=0o700)
+    result = _episode(BaselineCase('overgrowth_nibbit', 'validation', 0, 1, 12, 30.),
+                      policy, implementation(), output, private, TrainingConfig(),
+                      engine_factory=make, chooser=perfected_first if policy == 'custom' else None)
+    assert result['status'] == 'truncated', result
+    trajectory = load_trajectory(output / result['trajectory'])
+    # Public history can introduce a card ref before its current hand position.
+    # The public candidate list and encoded action slots then have different orders.
+    from game.agent.encoding.full import FullRunEncoder
+    encoder = FullRunEncoder()
+    if policy == 'custom':
+        assert any(encoder.pack(t.observation).candidate_refs !=
+                   tuple(a.ref for a in t.observation.candidates) for t in trajectory.transitions)
+    adapter = HeadlessAdapter(make(0), decision_profile=f.PROFILE)
+    for index, transition in enumerate(trajectory.transitions):
+        frame = adapter.observe()
+        assert frame.decision == transition.observation, index
+        assert adapter.step(frame.binding, transition.action.ref) == transition.execution
+        after = adapter.observe()
+        assert getattr(after, 'decision', after) == transition.successor, index
+    if policy == 'custom':
+        transition = trajectory.transitions[2]
+        before, after = transition.observation.context, transition.successor.context
+        assert before.get('energy') - after.get('energy') == 2
+        hand = next(n for n in after.children if n.kind == 'pile' and n.definition_id == 'hand')
+        assert [n.definition_id for n in hand.children] == ['strike']
+        enemy_before = next(n for n in f.walk(before) if n.kind == 'enemy')
+        enemy_after = next(n for n in f.walk(after) if n.kind == 'enemy')
+        assert enemy_before.get('hp') - enemy_after.get('hp') == 10
+
+
+def test_action_index_uses_current_encoded_order_without_reencoding(monkeypatch):
+    with CombatTrainingEnv(engine_factory=lambda _: fixture(
+            0, cards=('strike', 'perfected_strike'), enemy_hp=200, relics=())) as env:
+        env.reset(seed=0)
+        act(env, 'play_card', 'perfected_strike')
+        act(env, 'end_turn')
+        public = env.public_state
+        refs = env._encoded.candidate_refs
+        assert refs != tuple(a.ref for a in public.candidates)
+
+        def unexpected(*args, **kwargs):
+            pytest.fail('Mapping an existing candidate must not re-encode')
+        monkeypatch.setattr(env.encoder, 'encode', unexpected)
+        monkeypatch.setattr(env.encoder, 'encode_prepared', unexpected)
+        for candidate in public.candidates:
+            assert refs[env.action_index(candidate)] == candidate.ref
+
+
+def test_action_index_rejects_foreign_candidates_and_stopped_episodes():
+    from dataclasses import replace
+    with CombatTrainingEnv(engine_factory=lambda _: fixture(0, enemy_hp=200)) as env:
+        with pytest.raises(gym.error.ResetNeeded):
+            env.action_index(None)
+        env.reset(seed=0)
+        current = env.public_state.candidates[0]
+        before = env._adapter._engine.snapshot()
+        for foreign in (None, current.ref, replace(current), replace(current, kind='end_turn')):
+            with pytest.raises(ValueError, match='current public decision'):
+                env.action_index(foreign)
+        assert env._adapter._engine.snapshot() == before
+        env.step(env.action_index(current))
+        with pytest.raises(ValueError, match='current public decision'):
+            env.action_index(current)
+        env.reset(seed=0)
+        assert env.public_state.candidates[0] == current
+        with pytest.raises(ValueError, match='current public decision'):
+            env.action_index(current)
+        env._failed = True
+        with pytest.raises(EnvironmentFailure, match='reset_required_after_failure'):
+            env.action_index(env._frame.decision.candidates[0])
+        env.reset(seed=0, options={'max_decisions': 1})
+        env.step(env.action_index(env.public_state.candidates[0]))
+        with pytest.raises(gym.error.ResetNeeded):
+            env.action_index(env.public_state.candidates[0])
+    with pytest.raises(gym.error.ResetNeeded):
+        env.action_index(current)
 
 
 def test_failed_baseline_stops_without_publishing_partial_episode(tmp_path, monkeypatch):

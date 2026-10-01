@@ -135,7 +135,7 @@ def test_two_instant_entry_wins_are_measured_once_each_with_distinct_owners():
         paid=[]
         for _ in range(80):
             choice=choose_action(env.public_state)
-            _,reward,done,cut,info=env.step(env.public_state.candidates.index(choice))
+            _,reward,done,cut,info=env.step(env.action_index(choice))
             parts=info['training_reward']['components']
             if parts['combat_win']:
                 assert choice.kind=='choose_map_node'
@@ -186,7 +186,7 @@ def test_noncombat_potion_and_abandonment_are_distinct_from_combat():
             decision=env.public_state
             nodes={n.ref:n for n in f.walk(decision.context) if n.ref}
             choice=next(a for a in decision.candidates if a.kind=='choose_event_option' and nodes[a.subject].definition_id==label)
-            assert env.step(decision.candidates.index(choice))[1]==0
+            assert env.step(env.action_index(choice))[1]==0
         _,reward,done,cut,info=act(env,'abandon_run')
         assert (reward,done,cut)==(-4.,True,False)
         assert info['training_reward']['components']['run_defeat']==info['training_reward']['components']['combat_loss']==0
@@ -214,7 +214,7 @@ def test_event_death_and_event_combat_use_their_own_boundaries(fight):
             decision=env.public_state
             nodes={n.ref:n for n in f.walk(decision.context) if n.ref}
             choice=next(a for a in decision.candidates if a.kind=='choose_event_option' and nodes[a.subject].definition_id==label)
-            _,reward,done,cut,info=env.step(decision.candidates.index(choice))
+            _,reward,done,cut,info=env.step(env.action_index(choice))
         if fight:
             assert reward==0 and not done and not cut
             assert act(env,'play_card')[1]==2 and env.public_state.context.kind=='rewards'
