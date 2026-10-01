@@ -12,7 +12,7 @@ from game.agent.full_policy import choose_action
 from game.agent.headless import HeadlessAdapter
 from game.agent.provenance import implementation
 from game.agent.progress import completed_act
-from game.agent.recording import EVIDENCE, SPLITS, Metadata, SUFFIX, TrajectoryWriter
+from game.agent.recording import EVIDENCE, SPLITS, Metadata, COMPRESSED_SUFFIX as SUFFIX, TrajectoryWriter
 
 
 class RunCancelled(Exception):

@@ -13,6 +13,7 @@ from game.agent.contracts import full as f
 from game.agent.full_policy import choose_action
 from game.agent.gym_env import EnvironmentFailure
 from game.agent.headless import AdapterFault, HeadlessAdapter
+from game.agent.trace_storage import is_trajectory
 from game.agent.recording import load_trajectory
 from game.agent.training.env import CombatTrainingEnv
 from game.agent.training.evaluation import evaluate_baselines
@@ -385,7 +386,7 @@ def test_failed_baseline_stops_without_publishing_partial_episode(tmp_path, monk
     assert report['summary']['random_legal']['attempted'] == 1
     assert report['summary']['random_legal']['win_rate'] == 0.0
     assert len(list(path.parent.glob('*.trajectory.jsonl.partial'))) == 1
-    assert not list(path.parent.glob('*.trajectory.jsonl'))
+    assert not any(is_trajectory(p) for p in path.parent.glob('*'))
 
 
 @pytest.mark.parametrize('factory', [lambda seed: RunEngine(seed=seed),

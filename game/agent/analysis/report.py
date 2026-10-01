@@ -14,6 +14,7 @@ from game.agent.contracts import full as f
 from game.agent.contracts.codec import _wire
 from game.agent.progress import completed_act
 from game.agent.recording import SUFFIX, load_trajectory
+from game.agent.trace_storage import open_trajectory
 from game.agent.training.rewards import strict_json
 from .decisions import json_bytes, state_digest, summarize
 from .sources import collect_metadata, discover, identity, validate_overlay
@@ -112,7 +113,7 @@ def build_report(inputs, output_dir, *, title='Act 1 · Decision lab', goal=None
     # equal episode IDs; each worker rechecks its reservation in the full loader.
     jobs_to_export, reserved = [], set()
     for path in trajectories:
-        with path.open('rb') as source:
+        with open_trajectory(path) as source:
             key = identity(strict_json(source.readline().decode('utf-8'))['metadata']['episode_id'])
         if key in reserved:
             raise ValueError('Duplicate trajectory episode identity')

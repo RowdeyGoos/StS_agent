@@ -12,6 +12,7 @@ from pathlib import Path
 from game.agent import contracts as c
 from game.agent.contracts import full as f
 from game.agent.headless.combat_summary import CombatSummary
+from game.agent.trace_storage import is_trajectory, logical_path
 from game.agent.recording import (SUFFIX as TRAJECTORY_SUFFIX, Trajectory, TrajectoryError,
                                   TrajectoryWriter, Transition, load_trajectory)
 from .rewards import RewardComponents, RewardSpec, finite, measure, public_summary, strict_json
@@ -164,8 +165,9 @@ class CombatTrainingRecorder:
         _require(not self.initial.completed, 'Combat task must start in an ongoing fight')
         _state(self.initial, initial)
         path = Path(path)
-        _require(path.name.endswith(TRAJECTORY_SUFFIX), 'Use a .trajectory.jsonl filename')
-        self.path = path.with_name(path.name[:-len(TRAJECTORY_SUFFIX)] + SUFFIX)
+        _require(is_trajectory(path), 'Use a .trajectory.jsonl or .trajectory.jsonl.gz filename')
+        logical = logical_path(path)
+        self.path = path.with_name(logical.name[:-len(TRAJECTORY_SUFFIX)] + SUFFIX)
         self.partial = self.path.with_name(self.path.name + '.partial')
         if self.path.exists():
             raise FileExistsError(self.path)

@@ -71,7 +71,9 @@ comparison against the heuristic and combat hybrid.
 ## Public format and private replay separation
 
 [`recording.py`](../game/agent/recording.py) owns `sts_public_trajectory_v1` JSONL
-files ending in `.trajectory.jsonl`. Each artifact contains:
+files with logical names ending in `.trajectory.jsonl`. New runner, PPO and
+evaluation recordings use lossless `.trajectory.jsonl.gz` containers by default;
+explicit plain `TrajectoryWriter` paths remain supported. Each artifact contains:
 
 1. A header with its first complete public decision/outcome and strict metadata:
    opaque episode ID, pinned target, build/rules/policy identities, public scenario
@@ -83,7 +85,10 @@ files ending in `.trajectory.jsonl`. Each artifact contains:
    of the exact preceding bytes. No records may follow completion.
 
 The loader additionally exposes `Trajectory.sha256`, a SHA-256 of the entire
-published file including its footer. This adds loader metadata without changing
+uncompressed JSONL including its footer. Both containers produce the same hash.
+Missing historical plain paths resolve to their compressed sibling, so old report
+references and hashes remain valid. A present plain file is validated as-is,
+never silently replaced by its sibling. This adds loader metadata without changing
 the v1 wire format or sparse-reward validator. Combat training uses that complete
 digest to join a [separate task sidecar](AGENT_TRAINING.md#milestone-2-usage-and-record-semantics).
 
@@ -124,6 +129,37 @@ races. Interrupted/failed files remain partial and the loader rejects them. A
 partial file may contain a complete footer if interruption occurred immediately
 before publication; its filename still prevents loading it as completed evidence.
 This protocol requires a filesystem supporting same-directory hard links.
+Both container types share the partial reservation and publication namespace.
+Gzip is closed before the underlying file is fsynced, and readers validate through
+the gzip trailer as well as the canonical JSONL completion record.
+
+## Compress existing public traces
+
+Preview the public traces in an explicit directory, then apply with a new result
+log. The tool excludes private/audit trees, symlinks and unfinished recordings:
+
+```bash
+sts-agent-analyze compress --input runs
+sts-agent-analyze compress --input runs --apply --workers 8 \
+  --report runs/trace-compression.jsonl
+```
+
+Each compressed file is streamed back through SHA-256 and length verification
+before its plain copy is removed. All selected hard-link aliases are published
+and synced first, and continue sharing compressed storage. Groups with hard links
+outside the selected public inputs or an unfinished recording are retained.
+Existing compressed siblings must reproduce the same bytes; conflicts preserve
+the originals and appear as failures. The tool does not rewrite historical reports,
+hashes, checkpoints, private resume states or inspector exports. A rerun with a new
+log safely finishes an interrupted migration. A preview with zero groups confirms
+that no selected plain traces remain. Loaders, datasets and new inspector exports
+read either representation; external scripts should use `open_trajectory` or
+`load_trajectory` instead of reading compressed files as text.
+
+Compression preserves every recorded decision; it is not a sampling or deletion
+policy. Old inspector exports can be rebuilt separately from retained inputs.
+
+## Worker lifecycle
 
 Workers use fresh `spawn` processes and independent engines/RNGs. Episode `i` uses
 private seed `base_seed + i`, independent of scheduling; returned summaries retain
@@ -141,11 +177,11 @@ peers; no uncertain action is retried. Already completed artifacts remain valid.
 ## Loading public datasets and model samples
 
 ```python
-from pathlib import Path
 from game.agent.dataset import load_dataset
 from game.agent.provenance import implementation
+from game.agent.analysis.sources import discover
 
-paths = sorted(Path("runs/train").glob("*.trajectory.jsonl"))
+paths = [p for p in discover(["runs/train"]) if p.name.endswith(".trajectory.jsonl")]
 for episode in load_dataset(paths, split="train",
                             expected={"rules": implementation().rules}):
     for transition in episode.transitions:

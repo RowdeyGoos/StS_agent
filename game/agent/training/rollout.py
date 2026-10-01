@@ -17,7 +17,8 @@ from game.agent.encoding.full import FullRunEncoder
 from game.agent.gym_env import FullRunEnv
 from game.agent.provenance import implementation
 from game.agent.progress import completed_act
-from game.agent.recording import Metadata, SUFFIX, TrajectoryWriter
+from game.agent.recording import Metadata, COMPRESSED_SUFFIX as SUFFIX, TrajectoryWriter
+from game.agent.trace_storage import trajectory_digest
 from game.agent.runner import RunCancelled, prepare_directories
 from .env import CombatTrainingEnv
 from .features import FeatureEncoder, _RolloutEncoder
@@ -304,7 +305,7 @@ def collect(model, experiment, generator, *, cursor, iteration, decisions=None,
                     if full_run:
                         writer.finish(outcome, check_cancel=lambda:check_cancel(cancel))
                         row.update(trajectory=writer.path.name,
-                                   trajectory_sha256=hashlib.sha256(writer.path.read_bytes()).hexdigest())
+                                   trajectory_sha256=trajectory_digest(writer.path))
                     else:
                         writer.finish(outcome, combat_summary=summary, terminated=terminated, truncated=truncated,
                                       check_cancel=lambda:check_cancel(cancel))

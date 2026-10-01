@@ -11,7 +11,7 @@ from game.agent import contracts as c
 from game.agent.action_policy import ALL_LEGAL, action_mask
 from game.agent.contracts import full as f
 from game.agent.progress import completed_act
-from game.agent.recording import SUFFIX
+from game.agent.trace_storage import is_trajectory, logical_path, storage_path
 from game.agent.training.ppo_config import PPOExperiment
 from game.agent.training.rewards import (ACT_RUN_SCHEMA, SHAPED_RUN_SCHEMAS, finite,
                                         measure_act_run, measure_full_run, measure_run, strict_json)
@@ -42,6 +42,8 @@ def discover(inputs):
     files = set()
     for value in inputs:
         path = Path(value).absolute()
+        if is_trajectory(path):
+            path = storage_path(path)
         if not path.exists() or not public_path(path) or any(p.is_symlink() for p in (path, *path.parents)):
             raise ValueError('Inputs must be existing public paths without symlinks or private directories')
         if path.is_file():
@@ -55,9 +57,10 @@ def discover(inputs):
         for item in candidates:
             if item.is_symlink() or not public_path(item):
                 continue
-            if (item.name.endswith(SUFFIX) or item.name in REPORT_NAMES | PLAN_NAMES or
+            if (is_trajectory(item) or item.name in REPORT_NAMES | PLAN_NAMES or
                     re.fullmatch(r'rollout-\d{5}\.json', item.name)):
-                files.add(item)
+                # A verified migration can briefly expose both containers.
+                files.add(logical_path(item) if is_trajectory(item) else item)
     return sorted(files)
 
 

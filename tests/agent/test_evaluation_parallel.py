@@ -14,6 +14,7 @@ pytest.importorskip('torch')
 pytest.importorskip('gymnasium')
 
 from game.agent.analysis.report import build_report
+from game.agent.trace_storage import is_trajectory
 from game.agent.recording import load_trajectory
 from game.agent.training import evaluation_workers as pool
 from game.agent.training import run_evaluation
@@ -125,7 +126,7 @@ def test_worker_rechecks_checkpoint_digest_after_plan_publication(bundles, tmp_p
         output_dir=tmp_path/'changed', goal='act1', workers=2, cases=2)
     assert report['status'] == 'failed' and report['failure'] == 'ValueError'
     assert all(r['status'] == 'unattempted' for r in report['episodes'])
-    assert not list(path.parent.glob('*.trajectory.jsonl'))
+    assert not any(is_trajectory(p) for p in path.parent.glob('*'))
     assert _children() == before
 
 
@@ -137,7 +138,7 @@ def test_pre_cancelled_batch_never_dispatches_a_game(bundles, tmp_path):
     assert report['status'] == 'interrupted'
     assert all(s['planned'] == s['unattempted'] == 2 for s in report['summary'].values())
     assert report['paired_vs_reference']['conclusion'] == 'incomplete'
-    assert not list(path.parent.glob('*.trajectory.jsonl'))
+    assert not any(is_trajectory(p) for p in path.parent.glob('*'))
     assert _children() == before
 
 
@@ -190,5 +191,5 @@ def test_invalid_worker_setting_is_rejected_before_model_or_output_access(tmp_pa
 def test_cli_does_not_silently_ignore_workers_for_unsupported_evaluators(tmp_path):
     result = subprocess.run([sys.executable, '-S', '-m', 'game.cli.agent_evaluate', '--workers', '2',
                              '--output-dir', str(tmp_path/'output')], capture_output=True, text=True, timeout=30)
-    assert result.returncode == 2 and 'require --act1 or --full-run' in result.stderr
+    assert result.returncode == 2 and 'require --act1, --full-run or --combat-corpus' in result.stderr
     assert not (tmp_path/'output').exists()

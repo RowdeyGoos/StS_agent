@@ -8,6 +8,11 @@ import time
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest='command', required=True)
+    compress = commands.add_parser('compress', help='Preview or verify lossless compression of public trajectories')
+    compress.add_argument('--input', action='append', required=True, help='Public roots; private trees and partials are excluded')
+    compress.add_argument('--apply', action='store_true', help='Replace verified plain copies with gzip containers')
+    compress.add_argument('--workers', type=int, default=1)
+    compress.add_argument('--report', help='New JSONL migration report, required with --apply')
     summary = commands.add_parser('summary', help='Quick reported metrics; no canonical recording validation or viewer export')
     summary.add_argument('--input', action='append', required=True, help='Public experiment directory; repeat to combine roots')
     build = commands.add_parser('build', help='Verify recordings and export compressed decision data')
@@ -28,7 +33,19 @@ def main(argv=None):
     inspect.add_argument('--checkpoint', action='append', default=[], metavar='LABEL=PATH')
     args = parser.parse_args(argv)
     try:
-        if args.command == 'summary':
+        if args.command == 'compress':
+            from game.agent.trace_compression import compress_traces
+            last = time.monotonic()
+            def progress(done, total, summary):
+                nonlocal last
+                if done == total or time.monotonic()-last >= 10:
+                    print(json.dumps({'done': done, 'total': total, **summary}), file=sys.stderr, flush=True)
+                    last = time.monotonic()
+            result = compress_traces(args.input, apply=args.apply, workers=args.workers,
+                                     report=args.report, progress=progress)
+            print(json.dumps(result, sort_keys=True))
+            return 1 if result['failed_groups'] else 0
+        elif args.command == 'summary':
             from game.agent.analysis.summary import quick_summary
             print(json.dumps(quick_summary(args.input), indent=2, allow_nan=False))
         elif args.command == 'build':

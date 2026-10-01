@@ -4,6 +4,7 @@ This module never opens audit files, snapshots, or paths supplied by file conten
 Private replay information belongs outside the public dataset directory.
 """
 from dataclasses import asdict, dataclass, field
+import gzip
 import hashlib
 import json
 import os
@@ -14,9 +15,10 @@ from game.agent import contracts as c
 from game.agent.contracts import full as f
 from game.agent.contracts.codec import _invalid_constant, _unique_object
 from game.agent.provenance import ENCODING, Implementation
+from game.agent.trace_storage import (SUFFIX, COMPRESSED_SUFFIX, is_trajectory,
+                                     logical_path, open_trajectory)
 
 SCHEMA = 'sts_public_trajectory_v1'
-SUFFIX = '.trajectory.jsonl'
 SPLITS = ('train', 'validation', 'test')
 EVIDENCE = ('headless_rollout', 'controlled_fixture')
 
@@ -59,7 +61,7 @@ class Trajectory:
     initial: f.PublicDecision | c.RunOutcome
     transitions: tuple[Transition, ...]
     outcome: c.RunOutcome
-    # Exact published file, INCLUDING the footer. Additive loader metadata;
+    # Exact canonical JSONL bytes, INCLUDING the footer, independent of compression.
     # neither the wire format nor semantic episode equality changes.
     sha256: str = field(default='', compare=False)
 
@@ -163,17 +165,22 @@ class TrajectoryWriter:
 
     def __init__(self, path, metadata, initial, *, prepared=None):
         self.path = Path(path)
-        _require(self.path.name.endswith(SUFFIX), 'Use a .trajectory.jsonl filename')
+        _require(is_trajectory(self.path), 'Use a .trajectory.jsonl or .trajectory.jsonl.gz filename')
         self.metadata = _metadata(asdict(metadata))
         initial_wire = f.to_dict(initial) if prepared is None else _prepared_wire(initial, prepared)
         self.current = _public(initial_wire) if prepared is None else prepared.value
         self.count, self._digest, self._closed = 0, hashlib.sha256(), False
-        self.partial = self.path.with_name(self.path.name + '.partial')
+        logical = logical_path(self.path)
+        # One reservation namespace for both representations of an episode.
+        self.partial = logical.with_name(logical.name + '.partial')
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        if self.path.exists():
+        if logical.exists() or logical.with_name(logical.name+'.gz').exists():
             raise FileExistsError(self.path)
-        self._file = self.partial.open('xb')
+        self._raw = self.partial.open('xb')
+        self._file = self._raw
         try:
+            if self.path.name.endswith(COMPRESSED_SUFFIX):
+                self._file = gzip.GzipFile(filename='', fileobj=self._raw, mode='wb', compresslevel=6, mtime=0)
             self._write({'record': 'header', 'schema': SCHEMA,
                          'metadata': asdict(self.metadata), 'initial': initial_wire})
         except BaseException:
@@ -211,11 +218,17 @@ class TrajectoryWriter:
         _ending(self.current, value, self.count, self._digest.hexdigest())
         try:
             self._write(value)
-            os.fsync(self._file.fileno())
-            self._file.close()
+            if self._file is not self._raw:
+                self._file.close()  # Finish gzip footer before durability/publication.
+            self._raw.flush()
+            os.fsync(self._raw.fileno())
+            self._raw.close()
             self._closed = True
             if check_cancel is not None:
                 check_cancel()
+            logical = logical_path(self.path)
+            if logical.exists() or logical.with_name(logical.name+'.gz').exists():
+                raise FileExistsError(self.path)
             os.link(self.partial, self.path)
             self.partial.unlink()
         except BaseException:
@@ -225,8 +238,11 @@ class TrajectoryWriter:
 
     def abort(self):
         if not self._closed:
-            self._file.close()
-            self._closed = True
+            try:
+                self._file.close()
+            finally:
+                self._raw.close()
+                self._closed = True
 
     def __enter__(self):
         return self
@@ -243,9 +259,9 @@ def load_trajectory(path, *, split=None, expected=None):
     No file content is ever interpreted as a filesystem path.
     """
     path = Path(path)
-    _require(path.name.endswith(SUFFIX), 'Only published public trajectories can be loaded')
+    _require(is_trajectory(path), 'Only published public trajectories can be loaded')
     digest, file_digest, transitions, outcome = hashlib.sha256(), hashlib.sha256(), [], None
-    with path.open('rb') as source:
+    with open_trajectory(path) as source:
         line = source.readline()
         header = _parse(line)
         _keys(header, ('record', 'schema', 'metadata', 'initial'))

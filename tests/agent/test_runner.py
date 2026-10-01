@@ -16,6 +16,7 @@ from game.agent import contracts as c
 from game.agent.contracts import full as f
 from game.agent.full_policy import choose_action
 from game.agent.headless import AdapterFault
+from game.agent.trace_storage import is_trajectory
 from game.agent.recording import SUFFIX, load_trajectory
 from game.agent.runner import RunCancelled, RunConfig, RunFailure, prepare_directories, run_episode
 from game.agent.workers import run_batch
@@ -35,7 +36,7 @@ def test_policy_gets_only_public_input_and_invalid_action_never_mutates(tmp_path
                     audit_dir=tmp_path/'private', engine_factory=lambda seed: run,
                     policy=invalid, policy_identity='test_invalid_v1')
     assert len(calls) == 1 and run.snapshot() == before
-    assert not list((tmp_path/'public').glob('*' + SUFFIX))
+    assert not any(is_trajectory(p) for p in (tmp_path/'public').glob('*'))
     assert len(list((tmp_path/'public').glob('*.partial'))) == 1
 
 
@@ -51,7 +52,7 @@ def test_uncertain_mutation_is_not_retried_or_published(tmp_path):
         run_episode(RunConfig(evidence='controlled_fixture'), output_dir=tmp_path/'public',
                     audit_dir=tmp_path/'private', engine_factory=lambda seed: run)
     assert len(attempts) == 1
-    assert not list((tmp_path/'public').glob('*' + SUFFIX))
+    assert not any(is_trajectory(p) for p in (tmp_path/'public').glob('*'))
     assert len(list((tmp_path/'public').glob('*.partial'))) == 1
 
 
@@ -155,7 +156,7 @@ def test_two_worker_cancellation_leaves_partial_files_and_no_children(tmp_path):
         thread.join(11)
     assert not multiprocessing.active_children()
     assert len(list((tmp_path/'public').glob('*.partial'))) == 2
-    assert not list((tmp_path/'public').glob('*' + SUFFIX))
+    assert not any(is_trajectory(p) for p in (tmp_path/'public').glob('*'))
 
 
 def _stalled_worker(config, output, audit, episode_id, stopped, sender):
@@ -180,7 +181,7 @@ def test_unresponsive_workers_are_terminated_and_joined(tmp_path, monkeypatch):
         timer.cancel()
     assert time.monotonic() - started < 7
     assert not multiprocessing.active_children()
-    assert not list((tmp_path/'public').glob('*' + SUFFIX))
+    assert not any(is_trajectory(p) for p in (tmp_path/'public').glob('*'))
 
 
 @pytest.mark.skipif(os.name != 'posix', reason='Exercises the POSIX spawn interrupt window')
@@ -221,7 +222,7 @@ def test_cli_sigterm_cancels_and_reaps_workers(tmp_path):
         assert process.returncode == 130, stderr
         assert json.loads(stderr)['status'] == 'cancelled' and not stdout
         assert len(list((tmp_path/'public').glob('*.partial'))) == 2
-        assert not list((tmp_path/'public').glob('*' + SUFFIX))
+        assert not any(is_trajectory(p) for p in (tmp_path/'public').glob('*'))
     finally:
         if process.poll() is None:
             process.kill()

@@ -11,6 +11,12 @@ from game.agent.contracts import full as f
 from game.agent.dataset import load_dataset, training_examples
 from game.agent.recording import Metadata, SUFFIX, TrajectoryError, TrajectoryWriter, load_trajectory
 from game.agent.runner import RunCancelled, RunConfig, run_episode
+from game.agent.trace_storage import open_trajectory
+
+
+def canonical_bytes(path):
+    with open_trajectory(path) as source:
+        return source.read()
 
 
 @pytest.fixture
@@ -21,7 +27,7 @@ def recorded(tmp_path):
 
 
 def rewritten(source, target, edit):
-    records = [json.loads(line) for line in source.read_text().splitlines()]
+    records = [json.loads(line) for line in canonical_bytes(source).splitlines()]
     edit(records)
     lines = [(json.dumps(row, separators=(',', ':')) + '\n').encode() for row in records[:-1]]
     records[-1]['sha256'] = hashlib.sha256(b''.join(lines)).hexdigest()
@@ -48,7 +54,7 @@ def test_round_trip_preserves_all_candidates_actions_and_cutoff(recorded):
 
 
 def test_audit_seed_and_backend_state_are_not_in_public_artifact(recorded, monkeypatch):
-    public = recorded.read_text()
+    public = canonical_bytes(recorded).decode()
     assert '178932465789876543210' not in public
     for forbidden in ('"seed"', '"rng"', '"snapshot"', '"binding"', '"audit"', '"private"'):
         assert forbidden not in public
@@ -93,7 +99,7 @@ def test_malformed_or_incompatible_artifacts_reject_even_with_new_digest(recorde
 
 def test_digest_truncation_duplicate_fields_and_trailing_records_reject(recorded):
     path = recorded.parent / ('bad' + SUFFIX)
-    source = recorded.read_bytes()
+    source = canonical_bytes(recorded)
     for corrupted in (
         source.replace(b'"scenario":', b'"scenario":"changed","scenario":', 1),
         source.replace(b'generated_campaign_all_unlocked_v1', b'changed_scenario'),

@@ -113,7 +113,7 @@ def evaluate_parallel(rows, configs, *, checkpoints, policies, source, output, p
             return
         if (status != 'complete' or type(index) is not int or assigned.get(worker) != index
                 or type(value) is not dict or value.get('status') not in ('terminated', 'truncated')
-                or value.get('trajectory') != rows[index]['episode_id']+'.trajectory.jsonl'):
+                or value.get('trajectory') != rows[index]['episode_id']+'.trajectory.jsonl.gz'):
             stop('failed', 'InvalidWorkerResult', worker)
             return
         rows[index].update(value)

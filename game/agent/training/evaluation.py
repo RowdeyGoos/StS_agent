@@ -15,7 +15,7 @@ from game.agent import contracts as c
 from game.agent.action_policy import action_mask
 from game.agent.full_policy import choose_action
 from game.agent.provenance import implementation
-from game.agent.recording import Metadata, SUFFIX
+from game.agent.recording import Metadata, COMPRESSED_SUFFIX as SUFFIX
 from game.agent.runner import RunCancelled, prepare_directories
 from .config import TrainingConfig
 from .env import CombatTrainingEnv
