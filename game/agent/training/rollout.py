@@ -123,6 +123,8 @@ def collect(model, experiment, generator, *, cursor, iteration, decisions=None,
         raise ValueError('Invalid collection encounter schedule')
     if (env_factory is None) != (experiment.source == SCENARIO_SET):
         raise ValueError('Custom collection requires a distinct source and an explicit environment factory')
+    from .combat_corpus import CorpusEnvironment, validate_factory
+    validate_factory(experiment, env_factory)
     if output_dir is not None:
         output, audit = prepare_directories(output_dir, audit_dir)
     else:
@@ -182,7 +184,14 @@ def collect(model, experiment, generator, *, cursor, iteration, decisions=None,
                 row['start_hp'] = public.run.get('hp') if full_run else summary['hp']
                 row['contexts'], row['action_kinds'] = {}, {}
                 from .run_task import environment as campaign_environment
-                row['evidence'] = 'headless_rollout' if full_run and env_factory is campaign_environment else 'controlled_fixture'
+                corpus_start = type(env_factory) is CorpusEnvironment
+                row['evidence'] = ('headless_rollout' if full_run and env_factory is campaign_environment
+                                   or corpus_start else 'controlled_fixture')
+                if corpus_start:
+                    row.update(case_id=env.corpus_case['case_id'], source_group=env.corpus_case['source_group'],
+                               public_state_sha256=env.corpus_case['public_state_sha256'],
+                               encounter=env.corpus_case['encounter'], room_kind=env.corpus_case['room_kind'],
+                               start_kind=env.corpus_case['start_kind'], start_turn=env.corpus_case['turn'])
                 writer = None
                 if output is not None:
                     replay = {'schema':'sts_ppo_episode_replay_v1', 'environment_reset_seed':seed,

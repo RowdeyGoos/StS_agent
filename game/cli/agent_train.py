@@ -10,7 +10,7 @@ from game.agent.action_policy import ALL_LEGAL, POLICIES
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest='command', required=True)
-    collect = sub.add_parser('collect', help='Record the current public heuristic on controlled combat starts')
+    collect = sub.add_parser('collect', help='Record the public heuristic on controlled or frozen combat starts')
     collect.add_argument('--output-dir', required=True)
     collect.add_argument('--split', choices=('train', 'validation', 'test'), default='train')
     collect.add_argument('--cases-per-scenario', type=int, default=1)
@@ -18,6 +18,20 @@ def main(argv=None):
     collect.add_argument('--max-decisions', type=int, default=96)
     collect.add_argument('--time-limit', type=float, default=30)
     collect.add_argument('--config')
+    collect.add_argument('--combat-corpus', help='Use the frozen train/validation combat partition')
+    combat = sub.add_parser('build-combat-corpus', help='Freeze genuine Act 1 combat starts from both regions')
+    combat.add_argument('--output-dir', required=True)
+    combat.add_argument('--checkpoint', help='Frozen full-run collector; default is the public heuristic')
+    combat.add_argument('--train-campaigns', type=int, default=32, help='Campaigns per region')
+    combat.add_argument('--validation-campaigns', type=int, default=16, help='Campaigns per region')
+    combat.add_argument('--test-campaigns', type=int, default=16, help='Campaigns per region')
+    combat.add_argument('--start-index', type=int, default=1000000, help='Private source seed schedule offset')
+    combat.add_argument('--max-decisions', type=int, default=1024)
+    combat.add_argument('--time-limit', type=float, default=120.)
+    combat.add_argument('--route-policy', choices=('collector', 'mixed_elites'), default='collector',
+                        help='mixed_elites sends half the campaigns along public elite-seeking routes')
+    combat.add_argument('--capture-turns', type=int, default=1,
+                        help='Retain the opening and up to this player turn (1–12) for combat practice')
     collect_run = sub.add_parser('collect-run', help='Record genuine campaigns and optional declared assisted demonstrations')
     collect_run.add_argument('--output-dir', required=True)
     collect_run.add_argument('--split', choices=('train','validation','test'), default='train')
@@ -56,6 +70,7 @@ def main(argv=None):
     ppo.add_argument('--reset-action-policy', action='store_true',
         help='Adopt the config action policy in a new experiment; keep weights, start a fresh optimizer')
     ppo.add_argument('--workers', type=int, help='1–8 persistent collectors; defaults to 1, or saved count on resume')
+    ppo.add_argument('--combat-corpus', help='Frozen corpus.json bound by the PPO config source identity')
     curriculum = sub.add_parser('curriculum', help='Run three or more learners through five fixed combat stages')
     curriculum.add_argument('--checkpoint', required=True)
     curriculum.add_argument('--config', required=True)
@@ -76,7 +91,8 @@ def main(argv=None):
         parser.error("Install the optional 'sts-agent[train]' dependencies")
     torch.set_num_threads(1)
     try:
-        if args.command in ('ppo','curriculum','collect-run'):
+        if (args.command in ('ppo','curriculum','collect-run','build-combat-corpus') or
+                args.command == 'collect' and args.combat_corpus):
             import signal
             import threading
             from game.agent.training.ppo_config import PPOExperiment
@@ -88,7 +104,22 @@ def main(argv=None):
             for sig in previous:
                 signal.signal(sig, interrupt)
             try:
-                if args.command == 'collect-run':
+                if args.command == 'build-combat-corpus':
+                    from game.agent.training.combat_corpus import CorpusConfig, build_corpus
+                    path, report = build_corpus(args.output_dir,
+                        CorpusConfig(args.train_campaigns, args.validation_campaigns, args.test_campaigns,
+                                     args.start_index, args.max_decisions, args.time_limit,
+                                     args.route_policy, args.capture_turns),
+                        checkpoint=args.checkpoint, cancel=stopped)
+                elif args.command == 'collect':
+                    if args.cases_per_scenario != 1 or args.start_index:
+                        raise ValueError('Corpus demonstrations use each frozen case once; omit case counts/seed offsets')
+                    from game.agent.training.combat_corpus import collect_corpus_demonstrations
+                    path, report = collect_corpus_demonstrations(corpus_path=args.combat_corpus,
+                        output_dir=args.output_dir, split=args.split, max_decisions=args.max_decisions,
+                        time_limit_seconds=args.time_limit, cancel=stopped,
+                        config=TrainingConfig.load(args.config) if args.config else None)
+                elif args.command == 'collect-run':
                     from game.agent.training.run_demonstrations import collect_run_demonstrations
                     path, report = collect_run_demonstrations(output_dir=args.output_dir, split=args.split,
                         cases=args.cases, start_index=args.start_index, max_decisions=args.max_decisions,
@@ -98,18 +129,23 @@ def main(argv=None):
                     path, report = run_curriculum(checkpoint=args.checkpoint,config=CurriculumConfig.load(args.config),
                         output_dir=args.output_dir,seeds=tuple(args.seeds),cancel=stopped)
                 else:
-                    path, report = run_ppo(checkpoint=args.checkpoint, experiment=PPOExperiment.load(args.config),
+                    experiment = PPOExperiment.load(args.config)
+                    factory = None
+                    if args.combat_corpus:
+                        from game.agent.training.combat_corpus import training_factory
+                        factory = training_factory(args.combat_corpus, experiment)
+                    path, report = run_ppo(checkpoint=args.checkpoint, experiment=experiment,
                         output_dir=args.output_dir, decisions=args.decisions, time_limit_seconds=args.time_limit,
                         resume_state=args.resume_state, seed=args.seed, start_index=args.start_index, cancel=stopped,
                         workers=args.workers, reset_objective=args.reset_objective,
-                        reset_action_policy=args.reset_action_policy)
+                        reset_action_policy=args.reset_action_policy, env_factory=factory)
             finally:
                 for sig, handler in previous.items():
                     signal.signal(sig, handler)
             print(json.dumps({'report':str(path), 'status':report['status'], 'summary':report.get('summary'),
                               'last_complete_checkpoint':report.get('last_complete_checkpoint'),
-                              'replicates':report.get('replicates')}, indent=2))
-            return 130 if report['status']=='cancelled' else 1 if report['status']=='failed' else 0
+                              'replicates':report.get('replicates'), 'coverage':report.get('coverage')}, indent=2))
+            return 130 if report['status'] in ('cancelled','interrupted') else 1 if report['status']=='failed' else 0
         if args.command == 'collect':
             path, report = collect_demonstrations(output_dir=args.output_dir, split=args.split,
                 cases_per_scenario=args.cases_per_scenario, start_index=args.start_index,

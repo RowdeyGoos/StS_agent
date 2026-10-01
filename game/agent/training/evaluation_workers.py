@@ -20,7 +20,7 @@ def settings(workers):
     return {'workers': workers, 'schedule': 'serial_v1' if workers == 1 else 'parallel_episodes_v1'}
 
 
-def _worker(checkpoints, policies, source, output, private, stopped, connection):
+def _worker(checkpoints, policies, source, output, private, stopped, connection, combat=None):
     signal.signal(signal.SIGINT, signal.SIG_IGN)
     index = None
     try:
@@ -29,7 +29,11 @@ def _worker(checkpoints, policies, source, output, private, stopped, connection)
         if asdict(implementation()) != source:
             raise ValueError('Evaluation implementation changed after planning')
         choices = {'heuristic': {}}
-        for name, (path, digest, task) in checkpoints.items():
+        combat_owner = None
+        if combat is not None:
+            from .combat_benchmark import CorpusEvaluator
+            combat_owner = CorpusEvaluator(combat, checkpoints, policies, source)
+        for name, (path, digest, task) in (() if combat_owner else checkpoints.items()):
             model = load_policy(path, expected_sha256=digest, task=task)
             identity = ('hybrid_v1:'+digest+':'+source['policy'] if name == 'hybrid' else model.identity)
             if identity != policies[name]:
@@ -41,14 +45,20 @@ def _worker(checkpoints, policies, source, output, private, stopped, connection)
             if not connection.poll(.02):
                 continue
             index, config, episode, policy = connection.recv()
-            result = run_episode(config, output_dir=output, audit_dir=private,
-                                 episode_id=episode, cancel=stopped, **choices[policy])
-            # Canonical loading/outcome analysis is part of the worker's job,
-            # so replay validation does not serialize all games in the parent.
-            row = describe(result, split=config.split, goal=config.goal)
+            if combat_owner is not None:
+                row = combat_owner.run(config, episode, policy, output, private, stopped)
+                if row['status'] not in ('terminated', 'truncated'):
+                    connection.send((row['status'], index, row['failure']))
+                    break
+            else:
+                result = run_episode(config, output_dir=output, audit_dir=private,
+                                     episode_id=episode, cancel=stopped, **choices[policy])
+                # Replay validation stays with the episode's worker.
+                row = describe(result, split=config.split, goal=config.goal)
+                del result
             connection.send(('complete', index, row))
             index = None
-            del result, row
+            del row
     except BaseException as error:
         # Seeds, engine state and exception text never enter public reports.
         status = 'interrupted' if isinstance(error, (RunCancelled, KeyboardInterrupt)) else 'failed'
@@ -60,7 +70,8 @@ def _worker(checkpoints, policies, source, output, private, stopped, connection)
         connection.close()
 
 
-def evaluate_parallel(rows, configs, *, checkpoints, policies, source, output, private, workers, cancel=None):
+def evaluate_parallel(rows, configs, *, checkpoints, policies, source, output, private, workers, cancel=None,
+                      combat=None):
     """Update the preplanned rows in place; keep every case after failure/stop.
 
     One small config enters each worker and one public description comes back.
@@ -116,8 +127,9 @@ def evaluate_parallel(rows, configs, *, checkpoints, policies, source, output, p
                 stop('interrupted', 'RunCancelled')
                 break
             parent, child = context.Pipe()
-            process = context.Process(target=_worker, args=(checkpoints, policies, source,
-                str(output), str(private), stopped, child), name='sts-evaluation-worker')
+            worker_args = (checkpoints, policies, source, str(output), str(private), stopped, child)
+            process = context.Process(target=_worker, args=worker_args + ((combat,) if combat is not None else ()),
+                                      name='sts-evaluation-worker')
             active[worker] = (process, parent, None)
             phases[worker] = 'starting'
             deadlines[worker] = time.monotonic()+STARTUP_SECONDS

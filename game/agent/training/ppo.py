@@ -81,6 +81,8 @@ class PPOLearner:
             env_factory = environment
         if (env_factory is None) != (experiment.source == SCENARIO_SET):
             raise ValueError('Custom collection requires a distinct source and environment factory')
+        from .combat_corpus import validate_factory
+        validate_factory(experiment, env_factory)
         if next(model.parameters()).device.type != 'cpu':
             raise ValueError('PPO currently supports CPU')
         if model.action_policy != experiment.training.action_policy:

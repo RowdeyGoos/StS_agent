@@ -21,15 +21,20 @@ def main(argv=None):
     parser.add_argument('--combat-checkpoint', help='Frozen combat comparison bundle for --full-run')
     parser.add_argument('--reference-checkpoint', help='Frozen campaign initializer to compare with --checkpoint')
     parser.add_argument('--campaign-cases', type=int, default=2)
-    parser.add_argument('--workers', type=int, default=1, help='1–8 game workers for --act1/--full-run (default: 1)')
+    parser.add_argument('--workers', type=int, default=1, help='1–8 game workers for campaign or combat-corpus evaluation')
+    parser.add_argument('--combat-corpus', help='Matched genuine Act 1 combat starts in corpus.json')
+    parser.add_argument('--combat-starts', choices=('opening', 'continuation', 'all'), default='opening',
+                        help='Whole fights by default; continuations are separate tactical diagnostics')
     parser.add_argument('--freeze-suite', metavar='CONFIG', help='Freeze benchmark settings, cases and private snapshots before tuning')
     parser.add_argument('--suite', help='Frozen suite.json for paired evaluation or checkpoint selection')
     parser.add_argument('--candidate', action='append', default=[], help='Named inference bundle: imitation=PATH or ppo_NAME=PATH')
     parser.add_argument('--select-development', help='Complete benchmark.json from development; write selection.json')
     parser.add_argument('--selection', help='Locked selection.json required for --suite with --split test')
     args = parser.parse_args(argv)
-    if not 1 <= args.workers <= 8 or args.workers != 1 and not (args.act1 or args.full_run):
-        parser.error('--workers accepts 1–8 and parallel workers require --act1 or --full-run')
+    if args.combat_starts != 'opening' and not args.combat_corpus:
+        parser.error('--combat-starts requires --combat-corpus')
+    if not 1 <= args.workers <= 8 or args.workers != 1 and not (args.act1 or args.full_run or args.combat_corpus):
+        parser.error('--workers accepts 1–8 and parallel workers require --act1, --full-run or --combat-corpus')
     try:
         from game.agent.training.evaluation import evaluate_baselines
     except ModuleNotFoundError as error:
@@ -39,7 +44,7 @@ def main(argv=None):
     try:
         from game.agent.training.config import TrainingConfig
         config = TrainingConfig.load(args.config) if args.config else TrainingConfig()
-        if args.checkpoint or args.suite or args.freeze_suite:
+        if args.checkpoint or args.suite or args.freeze_suite or args.combat_corpus:
             try:
                 import torch
             except ModuleNotFoundError as error:
@@ -47,6 +52,34 @@ def main(argv=None):
                     raise
                 parser.error("Checkpoint evaluation requires the optional 'sts-agent[train]' dependencies")
             torch.set_num_threads(1)
+        if args.combat_corpus:
+            if (args.act1 or args.full_run or args.hybrid or args.suite or args.freeze_suite or
+                    args.selection or args.select_development or args.config or args.encounters or
+                    args.start_index or args.cases_per_scenario != 4 or args.audit_dir or
+                    args.combat_checkpoint or args.reference_checkpoint or args.checkpoint and args.candidate):
+                parser.error('Combat corpus evaluation uses its frozen cases; choose --candidate or --checkpoint and limits/workers')
+            from game.agent.training.combat_benchmark import evaluate_corpus
+            checkpoints = {'learned':args.checkpoint} if args.checkpoint else {}
+            for value in args.candidate:
+                name, sep, bundle = value.partition('=')
+                if not sep or not bundle or name in checkpoints:
+                    parser.error('Use distinct --candidate NAME=PATH arguments')
+                checkpoints[name] = bundle
+            import signal
+            import threading
+            stopped = threading.Event()
+            previous = {sig:signal.getsignal(sig) for sig in (signal.SIGINT,signal.SIGTERM)}
+            for sig in previous: signal.signal(sig,lambda *_:stopped.set())
+            try:
+                path, report = evaluate_corpus(corpus_path=args.combat_corpus, output_dir=args.output_dir,
+                    checkpoints=checkpoints, split=args.split, max_decisions=args.max_decisions,
+                    time_limit_seconds=args.time_limit, workers=args.workers, cancel=stopped,
+                    start_kind=args.combat_starts)
+            finally:
+                for sig, handler in previous.items(): signal.signal(sig,handler)
+            print(json.dumps({'report':str(path), 'status':report['status'], 'summary':report['summary'],
+                              'coverage':report['coverage'], 'total_seconds':report['total_seconds']},indent=2))
+            return 130 if report['status']=='interrupted' else 0 if report['status']=='complete' else 1
         if args.full_run or args.act1:
             if (args.full_run and args.act1 or not args.checkpoint or
                     (args.combat_checkpoint is None)==(args.reference_checkpoint is None) or

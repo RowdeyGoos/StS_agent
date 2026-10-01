@@ -48,8 +48,9 @@ def _audit(path, case, identity, policy, config, scenario_set=SCENARIO_SET):
 
 
 def _episode(case, policy, identity, output, audit, config, *, chooser=None,
-             engine_factory=None, scenario_set=SCENARIO_SET, cancel=None):
-    episode_id = uuid.uuid4().hex
+             engine_factory=None, scenario_set=SCENARIO_SET, cancel=None,
+             episode_id=None, expected_start=None, evidence='controlled_fixture'):
+    episode_id = uuid.uuid4().hex if episode_id is None else episode_id
     path = output / (episode_id + SUFFIX)
     result = {'episode_id': episode_id, 'encounter': case.encounter, 'policy': policy,
               'status': 'failed', 'trajectory': None, 'training': None, 'combat': None,
@@ -64,12 +65,17 @@ def _episode(case, policy, identity, output, audit, config, *, chooser=None,
     try:
         _audit(audit / (episode_id + '.audit.json'), case, identity, policy, config, scenario_set)
         observation, info = env.reset(seed=case.seed)
+        if expected_start is not None:
+            from .combat_corpus import public_digest
+            result['public_state_sha256'] = public_digest(env.public_state)
+            if result['public_state_sha256'] != expected_start:
+                raise ValueError('Combat initial public state differs from its frozen case')
         result['observation_bytes'] = sum(value.nbytes for value in observation.values())
         result['start_hp'] = info['combat']['hp']
         result['start_max_hp'] = info['combat']['max_hp']
         metadata = Metadata.create(identity, episode_id=episode_id,
                                    scenario=scenario_set + ':' + case.encounter,
-                                   split=case.split, evidence='controlled_fixture')
+                                   split=case.split, evidence=evidence)
         before = time.perf_counter()
         writer = CombatTrainingRecorder(path, metadata, env.public_state, info['combat'],
                                          reward_spec=config.reward)

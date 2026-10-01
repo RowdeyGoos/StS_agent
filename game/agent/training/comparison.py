@@ -46,7 +46,7 @@ def summary(rows):
         'mean_task_return':sum(r.get('task_return',0.) for r in rows)/len(rows)}
 
 
-def paired(rows, baseline):
+def paired(rows, baseline, *, baseline_name='heuristic'):
     left, right = {r['case_id']:r for r in rows}, {r['case_id']:r for r in baseline}
     if len(left)!=len(rows) or len(right)!=len(baseline) or set(left)!=set(right):
         raise ValueError('Paired comparison requires the same unique planned cases')
@@ -55,7 +55,7 @@ def paired(rows, baseline):
     gain=sum(won(left[k]) and not won(right[k]) for k in left)
     loss=sum(won(right[k]) and not won(left[k]) for k in left)
     delta=(gain-loss)/len(rows)
-    return {'cases':len(rows), 'wins_only_candidate':gain, 'wins_only_heuristic':loss,
+    return {'cases':len(rows), 'wins_only_candidate':gain, 'wins_only_'+baseline_name:loss,
             'win_rate_difference':delta, 'difference_group_hoeffding_95':interval(delta, rows, paired=True)}
 
 
