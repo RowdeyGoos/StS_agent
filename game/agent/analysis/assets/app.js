@@ -21,11 +21,29 @@ function set(id,...children) { $(id).replaceChildren(...children.flat().filter(x
 function badge(text,kind='') { return el('span',{class:'badge '+kind},text); }
 function stat(label,value) { return el('div',{class:'state-stat'},label,el('b',{},value)); }
 function error(message) { $('error').textContent=message; $('error').hidden=!message; }
-async function api(route) {
-  const response = await fetch('/api/'+route,{cache:'no-store'});
-  const value=await response.json();
-  if (!response.ok) throw new Error(value.error || 'Unable to load recording');
-  return value;
+async function api(route,isCurrent=()=>true) {
+  const [resource,query]=route.split('?'),step=new URLSearchParams(query).get('step');
+  const label=step==null?'recording':`${resource==='compare'?'checkpoint comparison for ':''}step ${Number(step)+1}`;
+  for(let attempt=0;attempt<2;attempt++) {
+    let response,value,failure;
+    try {
+      response=await fetch('/api/'+route,{cache:'no-store'});
+      value=await response.json();
+    } catch(e) {
+      failure=response?'the server response was empty, incomplete or invalid':'the connection to the viewer failed';
+    }
+    const valid=value!==null&&typeof value==='object'&&!Array.isArray(value);
+    if(response?.ok&&valid)return value;
+    if(response&&!response.ok)failure=`${typeof value?.error==='string'?value.error:'the server rejected the request'} (HTTP ${response.status})`;
+    failure=failure||'the server response was empty, incomplete or invalid';
+    const message=`Unable to load ${label}: ${failure}.`;
+    // These are read-only requests. Retry transport failures once, but preserve
+    // definitive server errors (including invalid indices and corrupt exports).
+    if(attempt||response&&!response.ok&&response.status<500)throw new Error(message+' Try loading it again.');
+    if(!isCurrent())throw new Error(message);
+    await new Promise(resolve=>setTimeout(resolve,200));
+    if(!isCurrent())throw new Error(message);
+  }
 }
 let report, run, decision, comparison, view='overview', sequence=0;
 function switchView(name,autoload=true) {
@@ -79,7 +97,7 @@ async function openRun(id,step=null) {
   error(''); switchView('inspector',false);
   $('run-title').textContent='Loading run…';
   try {
-    const loaded=await api('run?id='+encodeURIComponent(id));
+    const loaded=await api('run?id='+encodeURIComponent(id),()=>token===sequence);
     if(token!==sequence)return;
     run=loaded; decision=null; comparison=null;
     document.querySelector('.decision-main').hidden=!run.steps;
@@ -225,7 +243,7 @@ async function chooseStep(step) {
   const id=run.id,token=++sequence;
   comparison=null; error(''); $('compare').disabled=true;
   try {
-    const value=await api(`decision?id=${encodeURIComponent(id)}&step=${step}`);
+    const value=await api(`decision?id=${encodeURIComponent(id)}&step=${step}`,()=>token===sequence);
     if(token!==sequence||run.id!==id)return;
     decision=value;
     const row=run.timeline[step];
@@ -275,7 +293,7 @@ async function compare() {
   if(!decision||!report.models.length)return;
   const token=sequence,id=run.id,step=decision.step;
   $('compare').disabled=true;$('compare').textContent='Scoring this state…';error('');
-  try {const value=await api(`compare?id=${id}&step=${step}`);if(token===sequence){if(value.state_sha256!==decision.state_sha256)throw new Error('Comparison state mismatch');comparison=value;renderActions();}}
+  try {const value=await api(`compare?id=${id}&step=${step}`,()=>token===sequence);if(token===sequence){if(value.state_sha256!==decision.state_sha256)throw new Error('Comparison state mismatch');comparison=value;renderActions();}}
   catch(e){if(token===sequence)error(e.message);}
   finally{if(token===sequence){$('compare').disabled=false;$('compare').textContent='Recompute comparison';}}
 }
