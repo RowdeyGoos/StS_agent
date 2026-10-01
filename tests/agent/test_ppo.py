@@ -24,13 +24,13 @@ def controlled_env(**settings):
     return CombatTrainingEnv(engine_factory=lambda seed:fixture(seed, hp=1, enemy_hp=6, relics=()), **settings)
 
 
-def owner(seed=0, *, env_factory=controlled_env, config=None, workers=1):
+def owner(seed=0, *, env_factory=controlled_env, config=None, workers=1, architecture=None):
     experiment = PPOExperiment(ppo=config or PPOConfig(rollout_steps=16, batch_size=8, epochs=2),
                                encounters=('strike_or_die',), source='controlled_strike_or_die_v1')
     with env_factory(encounter='strike_or_die') as env:
         env.reset(seed=0)
         vocabulary = Vocabulary.fit([env.public_state], split='train')
-    return PPOLearner(ActorCritic(vocabulary, Architecture(16, 1), seed=seed), experiment,
+    return PPOLearner(ActorCritic(vocabulary, architecture or Architecture(16, 1), seed=seed), experiment,
                       seed=seed, env_factory=env_factory, workers=workers)
 
 
@@ -79,11 +79,29 @@ def test_real_wins_and_defeats_use_task_flags_not_canonical_run_cutoffs():
     assert all(s.terminated and not s.truncated and s.next_value == 0 for s in rollout.steps)
     wins = [e for e in rollout.progress['episodes'] if e['combat']['outcome']=='victory']
     assert wins and all(e['outcome']['kind']=='truncated' for e in wins)
-    assert all(s.mask[s.action] and s.candidate_refs == s.state.graph.candidate_refs for s in rollout.steps)
+    assert all(s.mask[s.action] and s.candidate_refs == s.state.candidate_refs for s in rollout.steps)
     result = learner.update(rollout)
     assert result['optimizer_steps'] > 0 and learner.phase == 'boundary' and learner.episode_cursor == 16
     with pytest.raises(ValueError):
         learner.update(rollout)
+
+
+@pytest.mark.parametrize('damage', ('references', 'legal_mask', 'policy_mask', 'candidates'))
+def test_compact_rollout_keeps_independent_action_mapping_checks(damage):
+    with owner() as learner:
+        rollout = learner.collect()
+        step = rollout.steps[0]
+        state = step.state
+        if damage == 'references':
+            state = replace(state, candidate_refs=tuple(reversed(state.candidate_refs)))
+        elif damage == 'legal_mask':
+            state = replace(state, legal_mask=tuple(False for _ in state.legal_mask))
+        elif damage == 'policy_mask':
+            state = replace(state, policy_mask=tuple(False for _ in state.policy_mask))
+        else:
+            state = replace(state, candidates=state.candidates[:-1])
+        with pytest.raises(ValueError, match='mapping'):
+            replay_batch([replace(step, state=state)], learner.model.vocabulary)
 
 
 def long_env(**settings):
@@ -179,8 +197,8 @@ def test_shared_graph_rollout_matches_custom_encoder_and_releases_current_state(
         else:
             assert type(env.encoder) is CustomEncoder
     for a, b in zip(left.steps, right.steps):
-        for key in a.state.graph.observation:
-            assert (a.state.graph.observation[key] == b.state.graph.observation[key]).all()
+        assert a.state.candidate_refs == b.state.candidate_refs
+        assert a.state.legal_mask == b.state.legal_mask
         for key in ('nodes', 'parents', 'positions', 'fields', 'numbers', 'links', 'link_positions', 'candidates'):
             assert (getattr(a.state, key) == getattr(b.state, key)).all()
     ma, mb = shared.update(left), custom.update(right)

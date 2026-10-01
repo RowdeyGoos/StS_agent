@@ -66,6 +66,20 @@ class Trajectory:
     sha256: str = field(default='', compare=False)
 
 
+@dataclass(frozen=True, slots=True)
+class TrajectoryCompletion:
+    """Receipt for an incrementally validated, successfully published trace.
+
+    The digest covers every canonical byte, including the completion footer.
+    It describes the writer's bytes; callers can verify storage independently
+    without reparsing all observations.
+    """
+    metadata: Metadata
+    steps: int
+    outcome: c.RunOutcome
+    sha256: str
+
+
 def _require(condition, reason):
     if not condition:
         raise TrajectoryError(reason)
@@ -170,6 +184,7 @@ class TrajectoryWriter:
         initial_wire = f.to_dict(initial) if prepared is None else _prepared_wire(initial, prepared)
         self.current = _public(initial_wire) if prepared is None else prepared.value
         self.count, self._digest, self._closed = 0, hashlib.sha256(), False
+        self.completion = None
         logical = logical_path(self.path)
         # One reservation namespace for both representations of an episode.
         self.partial = logical.with_name(logical.name + '.partial')
@@ -231,6 +246,8 @@ class TrajectoryWriter:
                 raise FileExistsError(self.path)
             os.link(self.partial, self.path)
             self.partial.unlink()
+            self.completion = TrajectoryCompletion(self.metadata, self.count, outcome,
+                                                   self._digest.hexdigest())
         except BaseException:
             self.abort()
             raise

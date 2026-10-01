@@ -49,6 +49,14 @@ class FullRunEncoder(PublicEncoder):
         # candidates. V1 separately checks availability and keeps its own path.
         return self.contract.to_dict(decision)
 
+    def _pack(self, decision, wire, *, record_types=()):
+        if (type(decision) is full.PublicDecision and
+                record_types == (full.Node, full.Field, full.Link) and
+                self.fields == FullRunEncoder.fields):
+            from .full_records import pack_records
+            return pack_records(self, decision)
+        return super()._pack(decision, wire, record_types=record_types)
+
     def _pack_prepared(self, decision, prepared):
         if type(prepared) is not full.PreparedPublic:
             raise full.ContractError('Expected a prepared public observation')

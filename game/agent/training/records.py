@@ -4,7 +4,7 @@ Terminal HUD facts are attested by the combat owner, not reconstructed from
 hidden state. Digests bind the exact canonical file, including its run footer.
 Loaders accept explicit paths only and never open private replay audits.
 """
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 import json
 import os
 from pathlib import Path
@@ -12,7 +12,7 @@ from pathlib import Path
 from game.agent import contracts as c
 from game.agent.contracts import full as f
 from game.agent.headless.combat_summary import CombatSummary
-from game.agent.trace_storage import is_trajectory, logical_path
+from game.agent.trace_storage import is_trajectory, logical_path, trajectory_digest
 from game.agent.recording import (SUFFIX as TRAJECTORY_SUFFIX, Trajectory, TrajectoryError,
                                   TrajectoryWriter, Transition, load_trajectory)
 from .rewards import RewardComponents, RewardSpec, finite, measure, public_summary, strict_json
@@ -40,6 +40,15 @@ def _flags(summary, terminated, truncated):
     _require(terminated == summary.completed, 'Task termination disagrees with combat result')
 
 
+def _owned_public(value, prepared):
+    if prepared is None:
+        prepared = f.PreparedPublic(value)
+    else:
+        _require(type(prepared) is f.PreparedPublic, 'Expected a prepared public observation')
+        prepared.require(value)
+    return prepared.value, prepared
+
+
 def _state(summary, state):
     if summary.completed:
         _require(type(state) is c.RunOutcome, 'Completed combat must end its canonical trajectory')
@@ -65,6 +74,16 @@ class TaskEnding:
 class TrainingTransition:
     index: int
     transition: Transition
+    components: RewardComponents
+    reward: float
+    terminated: bool
+    truncated: bool
+    combat: CombatSummary
+
+
+@dataclass(frozen=True, slots=True)
+class _TrainingRow:
+    index: int
     components: RewardComponents
     reward: float
     terminated: bool
@@ -163,6 +182,7 @@ class CombatTrainingRecorder:
         _require(type(self.spec) is RewardSpec and self.spec.task == 'combat', 'Expected a combat RewardSpec')
         self.initial = self.current = public_summary(initial_combat)
         _require(not self.initial.completed, 'Combat task must start in an ongoing fight')
+        initial, prepared = _owned_public(initial, prepared)
         _state(self.initial, initial)
         path = Path(path)
         _require(is_trajectory(path), 'Use a .trajectory.jsonl or .trajectory.jsonl.gz filename')
@@ -172,7 +192,7 @@ class CombatTrainingRecorder:
         if self.path.exists():
             raise FileExistsError(self.path)
         self.writer = TrajectoryWriter(path, metadata, initial, prepared=prepared)
-        self.rows = []
+        self._rows = []
         self._file = None
         self._closed = False
         try:
@@ -184,16 +204,16 @@ class CombatTrainingRecorder:
     def append(self, action, execution, successor, *, combat_summary, reward, terminated, truncated,
                prepared=None):
         _require(not self._closed, 'Recorder is closed')
-        _require(not self.rows or not (self.rows[-1]['terminated'] or self.rows[-1]['truncated']),
+        _require(not self._rows or not (self._rows[-1].terminated or self._rows[-1].truncated),
                  'Action after task boundary')
+        successor, prepared = _owned_public(successor, prepared)
         after = public_summary(combat_summary)
         components = measure(action, execution, self.current, after)
         _require(finite(reward) == self.spec.evaluate(components), 'Environment reward disagrees with recorder')
         _flags(after, terminated, truncated)
         _state(after, successor)
         self.writer.append(action, execution, successor, prepared=prepared)
-        self.rows.append({'index': len(self.rows), 'components': asdict(components), 'reward': reward,
-                          'terminated': terminated, 'truncated': truncated, 'combat': asdict(after)})
+        self._rows.append(_TrainingRow(len(self._rows), components, reward, terminated, truncated, after))
         self.current = after
 
     def finish(self, outcome, *, combat_summary, terminated, truncated, check_cancel=None):
@@ -207,24 +227,31 @@ class CombatTrainingRecorder:
         else:
             _require(type(outcome) is c.RunOutcome and outcome.kind == 'truncated' and outcome.reason in
                      ('decision_budget', 'time_budget', 'external_stop'), 'Invalid combat cutoff')
-        if self.rows:
-            last = self.rows[-1]
-            if not (last['terminated'] or last['truncated']):
+        if self._rows:
+            last = self._rows[-1]
+            if not (last.terminated or last.truncated):
                 # A pre-dispatch timeout ends the last accepted transition, with
                 # no extra command, measured event, or fabricated terminal reward.
                 _require(truncated, 'Unrecorded task termination')
-                last['truncated'] = True
-            _require((last['terminated'], last['truncated']) == (terminated, truncated),
+                last = self._rows[-1] = replace(last, truncated=True)
+            _require((last.terminated, last.truncated) == (terminated, truncated),
                      'Final transition task flags mismatch')
         try:
             self.writer.finish(outcome, check_cancel=check_cancel)
-            trajectory = load_trajectory(self.writer.path, split=self.writer.metadata.split)
-            value = {'schema': SCHEMA, 'task': 'combat', 'trajectory_sha256': trajectory.sha256,
-                     'episode_id': trajectory.metadata.episode_id, 'reward_spec': self.spec.to_dict(),
+            completion = self.writer.completion
+            _require(completion is not None and completion.steps == len(self._rows),
+                     'Missing or extra canonical training transitions')
+            # append() checked each measurement against the advertised action,
+            # its public successor and the previous combat summary. Rows retain
+            # only those immutable validated facts. Verify stored bytes (also
+            # gzip CRC/footer), without rebuilding every public observation.
+            _require(trajectory_digest(self.writer.path) == completion.sha256,
+                     'Published training trajectory digest mismatch')
+            value = {'schema': SCHEMA, 'task': 'combat', 'trajectory_sha256': completion.sha256,
+                     'episode_id': completion.metadata.episode_id, 'reward_spec': self.spec.to_dict(),
                      'reward_spec_id': self.spec.identity, 'initial_combat': asdict(self.initial),
-                     'transitions': self.rows,
+                     'transitions': [asdict(row) for row in self._rows],
                      'ending': {'terminated': terminated, 'truncated': truncated, 'combat': asdict(final)}}
-            _validate(value, self.spec, trajectory)
             json.dump(value, self._file, sort_keys=True, separators=(',', ':'), allow_nan=False)
             self._file.write('\n')
             self._file.flush()

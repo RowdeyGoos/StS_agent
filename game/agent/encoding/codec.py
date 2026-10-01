@@ -195,7 +195,13 @@ class PublicEncoder:
                     visit(getattr(value, name), index, field_id, order)
 
         visit({'run': wire['run'], 'context': wire['context']})
-        check('candidates', len(decision.candidates), p.candidates)
+        return self._finish_pack(decision, nodes, strings, references, definitions)
+
+    def _finish_pack(self, decision, nodes, strings, references, definitions):
+        """Shared final tables and action ordering for both public traversals."""
+        p = self.profile
+        if len(decision.candidates) > p.candidates:
+            raise CapacityError('candidates', len(decision.candidates), p.candidates)
         # Candidate order/opaque names carry no policy semantics. All arguments
         # must already have appeared in the complete public entity graph.
         rows = []

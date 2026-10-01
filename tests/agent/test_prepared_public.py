@@ -129,6 +129,29 @@ def rich_decision():
                                f.Candidate('action:3', 'play_card', 'card:0')))
 
 
+def test_direct_preparation_matches_wire_validation_without_serialization(monkeypatch):
+    source = rich_decision()
+    expected = f.from_dict(f.to_dict(source))
+    def forbidden(*args):
+        pytest.fail('Preparing public records performed a wire round trip')
+    with monkeypatch.context() as patch:
+        patch.setattr(f, '_wire', forbidden)
+        patch.setattr(f, 'from_dict', forbidden)
+        owner = f.PreparedPublic(source)
+    assert owner.value == expected and owner.value is not source
+    assert all(a is not b for a, b in zip(f.walk(source.run), f.walk(owner.value.run)))
+    assert all(a is not b for a, b in zip(f.walk(source.context), f.walk(owner.value.context)))
+    assert owner.wire_for(owner.value) == f.to_dict(expected)
+
+
+@pytest.mark.parametrize('value', [1.0, float('nan'), {}, [], object(), f.Field])
+def test_direct_record_and_wire_paths_reject_the_same_invalid_scalar_types(value):
+    source = replace(decision(), run=f.Node('run', 'run', fields=(f.Field('hp', value),)))
+    for prepare in (f.PreparedPublic, f.to_dict):
+        with pytest.raises(c.ContractError):
+            prepare(source)
+
+
 def test_prepared_packing_needs_no_wire_copy_and_owns_its_arrays(monkeypatch):
     np = pytest.importorskip('numpy')
     from game.agent.encoding.full import FullRunEncoder
@@ -194,6 +217,44 @@ def test_prepared_terminal_packing_matches_without_a_wire_copy(monkeypatch):
     assert actual.candidate_refs == actual.reference_refs == ()
     assert all(np.array_equal(value, actual.observation[key])
                for key, value in expected.observation.items())
+
+
+def test_specialized_packing_matches_reference_looking_metadata_and_repeated_links():
+    np = pytest.importorskip('numpy')
+    from game.agent.encoding.full import FullRunEncoder
+    # Metadata strings can resemble references too; the lossless encoder must
+    # retain its existing reference-table ordering, even before a definition.
+    source = replace(decision(), context=f.Node('card:77', 'enemy:9', children=(
+        f.Node('card', 'strike', 'card:3', fields=(f.Field('potion:8', '火🔥'),),
+               links=(f.Link('card:22', ('enemy:9', 'enemy:9')),)),
+        f.Node('enemy', 'jaw_worm', 'enemy:9'))),
+        candidates=(f.Candidate('action:8', 'play_card', 'card:3', 'enemy:9'),
+                    f.Candidate('action:1', 'end_turn')))
+    owner, encoder = f.PreparedPublic(source), FullRunEncoder()
+    expected = encoder.pack(owner.value)
+    actual = encoder._pack_prepared(owner.value, owner)
+    assert actual.candidate_refs == expected.candidate_refs
+    assert actual.reference_refs == expected.reference_refs
+    assert all(np.array_equal(value, actual.observation[key])
+               for key, value in expected.observation.items())
+
+
+def test_specialized_packing_preserves_competing_capacity_failures():
+    pytest.importorskip('numpy')
+    from game.agent.encoding.full import FullRunEncoder, FullRunProfile
+    from game.agent.encoding.schema import CapacityError
+    owner = f.PreparedPublic(rich_decision())
+    for nodes in range(1, 85):
+        for strings, references in ((1, 1), (6, 2), (12, 8)):
+            encoder = FullRunEncoder(FullRunProfile(nodes=nodes, strings=strings,
+                                                   references=references, string_bytes=6))
+            errors = []
+            for call in (lambda: encoder.pack(owner.value),
+                         lambda: encoder._pack_prepared(owner.value, owner)):
+                with pytest.raises(CapacityError) as error:
+                    call()
+                errors.append((error.value.dimension, error.value.required, error.value.capacity))
+            assert errors[0] == errors[1]
 
 
 @pytest.mark.parametrize('failure', ('identity', 'owner_type', 'capacity', 'padding', 'terminal'))

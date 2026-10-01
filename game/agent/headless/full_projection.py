@@ -13,7 +13,7 @@ from game.headless.powers.status import SUPPORTED_STATUS_NAMES, modify_attack_da
 from game.headless.powers.hive import damage_multiplier
 from game.headless.powers.necrobinder import TEMP_STRENGTH
 from .errors import UnsupportedProfile
-from .full_cards import card_node, signature
+from .full_cards import CardViews, card_node
 from .full_relics import labels as relic_labels
 from .identity import number
 
@@ -129,11 +129,12 @@ class FullProjection:
     def run(self):
         s, combat = self.state, self.engine.combat
         p = combat.player if combat else None
+        cards = CardViews()
         deck = []
-        for card in sorted(s.deck, key=signature):
+        for card in sorted(s.deck, key=cards.signature):
             ref = self.ref('card', ('deck', card.instance_id))
             self.card_refs[card.instance_id] = ref
-            deck.append(card_node(card, ref))
+            deck.append(cards.card(card, ref))
         # Equal copies use already-public names as tie breakers.
         deck.sort(key=lambda n: (n.definition_id, n.get('upgrade_level'), number(n.ref)))
         current = self.engine.graph.node(s.current_node_id) if self.engine.graph and s.current_node_id else None
@@ -189,19 +190,20 @@ class FullProjection:
     def combat(self):
         combat = self.engine.combat
         p, d, r = combat.player, combat.player.deck, combat.player.rules
+        cards = CardViews(p)
         visible = [(('combat', self.epoch, card.instance_id), card)
                    for name, attr in PILES if name != 'draw' for card in getattr(d, attr)]
-        draw = [(('combat', self.epoch, card.instance_id), card) for card in sorted(d.draw_pile, key=lambda c: signature(c, p))]
-        self.ids.reconcile_draw(visible, draw, lambda c: signature(c, p))
+        draw = [(('combat', self.epoch, card.instance_id), card) for card in sorted(d.draw_pile, key=cards.signature)]
+        self.ids.reconcile_draw(visible, draw, cards.signature)
         for key, card in (*visible, *draw):
             self.card_refs[card.instance_id] = self.ref('card', key)
         piles = []
         for name, attr in PILES:
             originals = getattr(d, attr)
             if name == 'draw':
-                originals = sorted(originals, key=lambda c: (signature(c, p), number(self.card_refs[c.instance_id])))
+                originals = sorted(originals, key=lambda c: (cards.signature(c), number(self.card_refs[c.instance_id])))
             piles.append(node('pile', name, count=len(originals), order='canonical' if name == 'draw' else 'visible',
-                              children=[card_node(card, self.card_refs[card.instance_id], p, on_table=name in ('hand', 'in_play')) for card in originals]))
+                              children=[cards.card(card, self.card_refs[card.instance_id], on_table=name in ('hand', 'in_play')) for card in originals]))
         # Detached power cards have no native inspectable pile. Only retained
         # pre-play descriptions may be included, not their hidden later state.
         piles.append(node('pile', 'powers', count=len(self.power_cards), coverage='observed_plays',

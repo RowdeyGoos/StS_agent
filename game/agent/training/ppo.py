@@ -45,12 +45,12 @@ def objective(logp, old_logp, advantage, values, returns, entropy, config):
 
 def replay_batch(steps, vocabulary, *, action_policy=None):
     for step in steps:
-        if (step.candidate_refs != step.state.graph.candidate_refs or
+        if (step.candidate_refs != step.state.candidate_refs or
                 step.mask != step.state.policy_mask or
                 action_policy is not None and step.state.action_policy != action_policy or
                 any(permitted and not legal for permitted, legal in
-                    zip(step.mask, step.state.graph.observation['action_mask'])) or
-                len(step.mask) != len(step.state.graph.observation['action_mask']) or
+                    zip(step.mask, step.state.legal_mask)) or
+                len(step.mask) != len(step.state.legal_mask) or
                 len(step.mask) != len(step.state.candidates) or type(step.action) is not int or
                 not 0 <= step.action < len(step.mask) or not step.mask[step.action] or
                 not math.isfinite(step.old_log_probability) or step.old_log_probability > 0):

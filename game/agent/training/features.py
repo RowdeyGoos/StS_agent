@@ -15,6 +15,8 @@ from game.agent.action_policy import ALL_LEGAL, action_mask, validate_policy
 from game.agent.encoding.full import FullRunEncoder
 
 SCHEMA = 'sts_learned_public_graph_v1'
+_FEATURE_ARRAYS = ('nodes', 'parents', 'positions', 'fields', 'numbers', 'links',
+                   'link_positions', 'candidates')
 
 
 @dataclass(frozen=True, slots=True)
@@ -70,6 +72,34 @@ def _number(value):
 
 
 @dataclass(frozen=True, slots=True)
+class RolloutFeatures:
+    """Current learner inputs, without the duplicate lossless public encoding.
+
+    Public observations and their full recordings remain model independent.
+    Exact ordered references and the original legal mask retain PPO's mapping
+    checks independently of the narrower policy mask.
+    """
+    vocabulary: str
+    nodes: np.ndarray
+    parents: np.ndarray
+    positions: np.ndarray
+    fields: np.ndarray
+    numbers: np.ndarray
+    links: np.ndarray
+    link_positions: np.ndarray
+    candidates: np.ndarray
+    roots: tuple[int, int]
+    action_policy: str
+    policy_mask: tuple[bool, ...]
+    candidate_refs: tuple[str, ...]
+    legal_mask: tuple[bool, ...]
+
+    @property
+    def nbytes(self):
+        return sum(getattr(self, key).nbytes for key in _FEATURE_ARRAYS)
+
+
+@dataclass(frozen=True, slots=True)
 class GraphFeatures:
     vocabulary: str
     graph: object
@@ -87,9 +117,14 @@ class GraphFeatures:
 
     @property
     def nbytes(self):
-        arrays = (self.nodes, self.parents, self.positions, self.fields, self.numbers,
-                  self.links, self.link_positions, self.candidates)
-        return sum(a.nbytes for a in arrays) + sum(a.nbytes for a in self.graph.observation.values())
+        return (sum(getattr(self, key).nbytes for key in _FEATURE_ARRAYS) +
+                sum(a.nbytes for a in self.graph.observation.values()))
+
+    def for_rollout(self):
+        return RolloutFeatures(self.vocabulary,
+            *(getattr(self, key) for key in _FEATURE_ARRAYS),
+            self.roots, self.action_policy, self.policy_mask, self.graph.candidate_refs,
+            tuple(bool(v) for v in self.graph.observation['action_mask']))
 
 
 class FeatureEncoder:

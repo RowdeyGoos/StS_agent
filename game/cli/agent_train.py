@@ -69,7 +69,9 @@ def main(argv=None):
         help='Start a different full-run reward objective: keep actor, reset critic/optimizer; incompatible with resume')
     ppo.add_argument('--reset-action-policy', action='store_true',
         help='Adopt the config action policy in a new experiment; keep weights, start a fresh optimizer')
-    ppo.add_argument('--workers', type=int, help='1–8 persistent collectors; defaults to 1, or saved count on resume')
+    ppo.add_argument('--workers', type=int, help='1–16 persistent collectors; defaults to 1, or saved count on resume')
+    ppo.add_argument('--update-threads', type=int, choices=(1, 2, 4, 8),
+        help='Learner CPU threads; >1 uses deterministic operations. Defaults to 1, or saved runtime on resume; spawned collectors use 1')
     ppo.add_argument('--combat-corpus', help='Frozen corpus.json bound by the PPO config source identity')
     curriculum = sub.add_parser('curriculum', help='Run three or more learners through five fixed combat stages')
     curriculum.add_argument('--checkpoint', required=True)
@@ -97,8 +99,12 @@ def _run(args, parser):
         if error.name not in ('torch', 'numpy', 'gymnasium'):
             raise
         parser.error("Install the optional 'sts-agent[train]' dependencies")
-    torch.set_num_threads(1)
+    previous_cpu = (torch.get_num_threads(), torch.are_deterministic_algorithms_enabled(),
+                    torch.is_deterministic_algorithms_warn_only_enabled())
     try:
+        torch.set_num_threads(1)
+        if args.command == 'ppo':
+            _configure_ppo_cpu(args, load_policy)
         if (args.command in ('ppo','curriculum','collect-run','build-combat-corpus') or
                 args.command == 'collect' and args.combat_corpus):
             import signal
@@ -255,6 +261,31 @@ def _run(args, parser):
         return 0 if report['status'] == 'complete' else 1
     except (ValueError, OSError) as error:
         parser.error(str(error))
+    finally:
+        torch.set_num_threads(previous_cpu[0])
+        torch.use_deterministic_algorithms(previous_cpu[1], warn_only=previous_cpu[2])
+
+
+def _configure_ppo_cpu(args, load_policy):
+    """Configure this CLI owner; the bound private runtime is still checked on resume."""
+    import torch
+    threads = args.update_threads if args.update_threads is not None else 1
+    deterministic, warn_only = threads > 1, False
+    if args.resume_state:
+        saved = load_policy(args.checkpoint).manifest['runtime']
+        if (type(saved) is not dict or type(saved.get('threads')) is not int or
+                saved['threads'] not in (1, 2, 4, 8) or
+                type(saved.get('deterministic_algorithms')) is not bool or
+                type(saved.get('deterministic_warn_only')) is not bool):
+            raise ValueError('Unsupported saved PPO CPU runtime')
+        if args.update_threads is not None and args.update_threads != saved['threads']:
+            raise ValueError('Exact PPO resume cannot change its CPU thread count')
+        threads = saved['threads']
+        deterministic, warn_only = saved['deterministic_algorithms'], saved['deterministic_warn_only']
+        if threads > 1 and (not deterministic or warn_only):
+            raise ValueError('Multithread PPO resume requires strict deterministic operations')
+    torch.set_num_threads(threads)
+    torch.use_deterministic_algorithms(deterministic, warn_only=warn_only)
 
 
 if __name__ == '__main__':

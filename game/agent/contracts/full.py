@@ -9,7 +9,7 @@ import json
 import re
 from typing import Literal
 
-from .codec import ContractError, _read, _wire, _unique_object, _invalid_constant
+from .codec import ContractError, _read, _read_record, _wire, _unique_object, _invalid_constant
 from .models import RunOutcome
 
 SCHEMA = 'sts_public_decision_v2'
@@ -150,16 +150,6 @@ def require_ready(value):
     to_dict(value)
 
 
-def _copy_public_wire(value):
-    # Prepared data has already passed the strict codec: only plain dict/list
-    # containers and immutable JSON scalars can occur here.
-    if type(value) is dict:
-        return {key: _copy_public_wire(child) for key, child in value.items()}
-    if type(value) is list:
-        return [_copy_public_wire(child) for child in value]
-    return value
-
-
 @dataclass(frozen=True, slots=True, init=False, eq=False)
 class PreparedPublic:
     """One owned, validated public value for cooperating in-process consumers.
@@ -169,15 +159,14 @@ class PreparedPublic:
     carries an engine, dispatch binding or private state, and is not a wire type.
     """
     _value: PublicDecision | RunOutcome
-    _wire: dict
 
     def __init__(self, value):
-        wire = _wire(value) if type(value) is PublicDecision else to_dict(value)
-        canonical = from_dict(wire)
+        if type(value) is PublicDecision:
+            canonical = _read_record(value, PublicDecision, '$')
+            validate(canonical)
+        else:
+            canonical = from_dict(to_dict(value))
         object.__setattr__(self, '_value', canonical)
-        # Structurally matching caller dataclasses can have different field
-        # order. Retain exactly the canonical value's wire traversal order.
-        object.__setattr__(self, '_wire', _wire(canonical))
 
     @property
     def value(self):
@@ -189,7 +178,9 @@ class PreparedPublic:
 
     def wire_for(self, value):
         self.require(value)
-        return _copy_public_wire(self._wire)
+        # Materialize only when a wire consumer needs it. Canonical field order
+        # and fresh containers preserve ownership without a retained dict tree.
+        return _wire(self._value)
 
 
 def dumps(value):

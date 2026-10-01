@@ -32,7 +32,7 @@ def _rollout_record(rollout, experiment):
             'experiment':experiment.identity, 'episodes':rollout.progress['episodes'],
             'steps':[{'episode_id':s.episode_id, 'episode_step':s.episode_step,
                 'candidate_refs':list(s.candidate_refs),
-                'legal_mask':[bool(v) for v in s.state.graph.observation['action_mask']],
+                'legal_mask':list(s.state.legal_mask),
                 **({'policy_mask':list(s.mask)} if restricted else {}),
                 'action':s.action, 'action_ref':s.candidate_refs[s.action],
                 'old_log_probability':s.old_log_probability, 'value':s.value, 'next_value':s.next_value,

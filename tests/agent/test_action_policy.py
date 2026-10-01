@@ -173,7 +173,7 @@ def test_ppo_mask_likelihoods_records_and_exact_resume(tmp_path,workers):
         assert len(forced)==2
         for s in forced:
             assert s.old_log_probability==0 and sum(s.mask)==1
-            assert all(s.state.graph.observation['action_mask'])
+            assert all(s.state.legal_mask)
             batch=replay_batch([s],model.vocabulary,action_policy=COMMIT_SINGLE_CARD)
             with torch.inference_mode():
                 logits,_=model(batch)

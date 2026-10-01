@@ -19,8 +19,8 @@ from .scenarios import episode_seed
 
 
 def collection_settings(workers):
-    if type(workers) is not int or not 1 <= workers <= 8:
-        raise ValueError('PPO workers must be between 1 and 8')
+    if type(workers) is not int or not 1 <= workers <= 16:
+        raise ValueError('PPO workers must be between 1 and 16')
     return {'workers': workers, 'schedule': 'serial_v1' if workers == 1 else 'parallel_quota_ranges_v1'}
 
 

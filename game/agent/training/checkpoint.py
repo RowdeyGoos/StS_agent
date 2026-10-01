@@ -44,7 +44,9 @@ def publish(path, data, *, private=False):
 
 def runtime():
     return {'python': platform.python_version(), 'torch': str(torch.__version__),
-            'threads': torch.get_num_threads(), 'device': 'cpu'}
+            'threads': torch.get_num_threads(), 'device': 'cpu',
+            'deterministic_algorithms': torch.are_deterministic_algorithms_enabled(),
+            'deterministic_warn_only': torch.is_deterministic_algorithms_warn_only_enabled()}
 
 
 def _tensor_bytes(value):

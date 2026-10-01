@@ -43,11 +43,11 @@ def child_pids():
 def test_quotas_and_reserved_seed_ranges_are_disjoint_and_bounded():
     assert allocations(7, 3, 100) == ((100, 3), (103, 2), (105, 2))
     assert allocations(2, 8, 4) == ((4, 1), (5, 1))
-    for count in range(1, 9):
+    for count in range(1, 17):
         ranges = allocations(19, count, 30)
         indexes = [i for start, n in ranges for i in range(start, start+n)]
         assert indexes == list(range(30, 49))
-    for args in ((0, 2, 0), (2, True, 0), (2, 9, 0), (1, 2, 2**60-1)):
+    for args in ((0, 2, 0), (2, True, 0), (2, 17, 0), (1, 2, 2**60-1)):
         with pytest.raises(ValueError):
             allocations(*args)
 
@@ -100,6 +100,39 @@ def test_parallel_resume_reproduces_next_rounds_weights_and_rng(tmp_path):
             assert torch.equal(left.update_generator.get_state(), right.update_generator.get_state())
         with pytest.raises(ValueError, match='worker allocation'):
             restore_ppo(bundle, state, env_factory=controlled_env, workers=1)
+
+
+def test_sixteen_collectors_resume_reuses_exact_schedule_and_cleans_up(tmp_path):
+    before = child_pids()
+    config = PPOConfig(rollout_steps=19, batch_size=8, epochs=1)
+    with learner(workers=16, config=config) as owner:
+        first = owner.collect()
+        assert len(child_pids()-before) == 16
+        assert [b['quota'] for b in first.progress['worker_batches']] == [2]*3+[1]*13
+        assert len(first.steps) == first.next_episode == 19
+        owner.update(first)
+        bundle, state = tmp_path/'public/model.sts-model', tmp_path/'private/model.resume.pt'
+        save_ppo_checkpoint(bundle, owner, resume_path=state)
+        expected = owner.collect()
+        owner.update(expected)
+        expected_weights = {k:v.clone() for k,v in owner.model.state_dict().items()}
+        action_rng = owner.action_generator.get_state()
+        update_rng = owner.update_generator.get_state()
+    assert child_pids() == before
+    with restore_ppo(bundle, state, env_factory=controlled_env) as restored:
+        actual = restored.collect()
+        assert restored.collection_settings['workers'] == 16
+        assert len(child_pids()-before) == 16
+        assert comparable(actual) == comparable(expected)
+        restored.update(actual)
+        assert all(torch.equal(value, restored.model.state_dict()[key]) for key,value in expected_weights.items())
+        assert torch.equal(restored.action_generator.get_state(), action_rng)
+        assert torch.equal(restored.update_generator.get_state(), update_rng)
+        assert restored.decisions == restored.episode_cursor == 38
+    assert child_pids() == before
+    assert not any(t.name == 'sts-ppo-transfer' for t in threading.enumerate())
+    with pytest.raises(ValueError, match='worker allocation'):
+        restore_ppo(bundle, state, env_factory=controlled_env, workers=8)
 
 
 def test_long_episode_cutoffs_keep_gae_separate_and_rotate_encounters():
@@ -295,8 +328,8 @@ def test_parallel_merge_matches_identical_jobs_executed_sequentially():
             import numpy as np
             for name in ('nodes', 'parents', 'positions', 'fields', 'numbers', 'links', 'link_positions', 'candidates'):
                 assert np.array_equal(getattr(left.state, name), getattr(right.state, name))
-            for key, value in left.state.graph.observation.items():
-                assert np.array_equal(value, right.state.graph.observation[key])
+            assert left.state.candidate_refs == right.state.candidate_refs
+            assert left.state.legal_mask == right.state.legal_mask
 
 
 def unresponsive_transport_worker(vocabulary, architecture, experiment, env_factory, stopped, connection):

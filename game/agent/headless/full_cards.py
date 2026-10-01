@@ -30,6 +30,10 @@ def public_static(value, kind, name):
 
 
 def card_node(card, ref=None, player=None, *, on_table=False):
+    return _card_node(card, ref, player, on_table, public_static)
+
+
+def _card_node(card, ref, player, on_table, static):
     spec = card.spec
     view = player
     if player is not None and not on_table and player.rules.powers.get('void_form'):
@@ -46,10 +50,10 @@ def card_node(card, ref=None, player=None, *, on_table=False):
               Field('stars', stars), Field('rarity', card.definition.rarity),
               Field('pool', card.definition.pool), Field('permanent_damage', card.permanent_damage),
               Field('permanent_block', card.permanent_block)]
-    children = [public_static(spec, 'spec', 'card_spec')]
-    children.extend(public_static(effect, 'mechanic', type(effect).__name__) for effect in card.definition.effects)
+    children = [static(spec, 'spec', 'card_spec')]
+    children.extend(static(effect, 'mechanic', type(effect).__name__) for effect in card.definition.effects)
     if card.enchantment is not None:
-        children.append(public_static(card.enchantment, 'enchantment', card.enchantment.definition_id))
+        children.append(static(card.enchantment, 'enchantment', card.enchantment.definition_id))
     if card.event_data:
         # Tinker Time's chosen kind/rider is printed on this created card.
         if set(card.event_data) - {'kind', 'rider'}:
@@ -64,5 +68,42 @@ def card_node(card, ref=None, player=None, *, on_table=False):
 
 def signature(card, player=None):
     # Only the exact projected description determines multiset ordering.
+    return _signature(card_node(card, player=player))
+
+
+def _signature(value):
     from game.agent.contracts.codec import _wire
-    return json.dumps(_wire(card_node(card, player=player)), sort_keys=True, separators=(',', ':'))
+    return json.dumps(_wire(value), sort_keys=True, separators=(',', ':'))
+
+
+class CardViews:
+    """Reuse descriptions only during one synchronous, read-only projection.
+
+    Private object identities are cache keys, never ordering keys or public data.
+    Retain their owners to prevent id reuse, including temporary modified specs.
+    Discard the cache before the engine can act or a new observation is built.
+    """
+
+    def __init__(self, player=None):
+        self.player = player
+        self._cards, self._signatures, self._static_values = {}, {}, {}
+
+    def _static(self, value, kind, name):
+        key = (id(value), kind, name)
+        if key not in self._static_values:
+            self._static_values[key] = (value, public_static(value, kind, name))
+        return self._static_values[key][1]
+
+    def card(self, card, ref=None, *, on_table=False):
+        key = (id(card), on_table)
+        if key not in self._cards:
+            self._cards[key] = (card, _card_node(card, None, self.player, on_table, self._static))
+        value = self._cards[key][1]
+        return value if ref is None else Node(value.kind, value.definition_id, ref,
+                                              value.fields, value.links, value.children)
+
+    def signature(self, card):
+        key = id(card)
+        if key not in self._signatures:
+            self._signatures[key] = _signature(self.card(card))
+        return self._signatures[key]

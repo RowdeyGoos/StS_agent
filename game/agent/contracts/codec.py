@@ -34,19 +34,29 @@ def _read(value, annotation, path, substitutions=None):
     return _reader(id(annotation), annotation)(value, path, substitutions or {})
 
 
+def _read_record(value, annotation, path):
+    """Clone typed public records using the same schema checks as wire input.
+
+    Only the input containers differ: immutable tuples and dataclass instances
+    replace JSON lists and dictionaries. Structural caller records are still
+    copied into canonical classes; no caller-owned mutable record is retained.
+    """
+    return _reader(id(annotation), annotation, True)(value, path, {})
+
+
 def _invalid(path):
     raise ContractError(f'{path}: invalid value or type')
 
 
 @lru_cache(maxsize=128)
-def _record_readers(cls):
+def _record_readers(cls, records=False):
     # Resolve children lazily: recursive Node schemas must finish preparing their
     # own reader before asking for readers of their fields.
-    return tuple((key, _reader(id(kind), kind)) for key, kind in _dataclass_schema(cls)[1])
+    return tuple((key, _reader(id(kind), kind, records)) for key, kind in _dataclass_schema(cls)[1])
 
 
-@lru_cache(maxsize=128)
-def _reader(identity, annotation):
+@lru_cache(maxsize=256)
+def _reader(identity, annotation, records=False):
     """Prepare schema work only; every call still checks its input values.
 
     Annotation identity is part of the key because unions compare equal even
@@ -58,7 +68,7 @@ def _reader(identity, annotation):
             kind = substitutions[annotation]
             if isinstance(kind, TypeVar):
                 _invalid(path)
-            return _reader(id(kind), kind)(value, path, substitutions)
+            return _reader(id(kind), kind, records)(value, path, substitutions)
         return variable
     if annotation in (str, int, bool, type(None)):
         def primitive(value, path, substitutions):
@@ -74,7 +84,7 @@ def _reader(identity, annotation):
             _invalid(path)
         return literal
     if origin in (Union, UnionType):
-        readers = tuple((member, _reader(id(member), member)) for member in args)
+        readers = tuple((member, _reader(id(member), member, records)) for member in args)
         def union(value, path, substitutions):
             for member, read in readers:
                 # Preserve member order without raising for scalar mismatches.
@@ -89,15 +99,25 @@ def _reader(identity, annotation):
             _invalid(path)
         return union
     if origin is tuple and len(args) == 2 and args[1] is Ellipsis:
-        read = _reader(id(args[0]), args[0])
+        read = _reader(id(args[0]), args[0], records)
         def sequence(value, path, substitutions):
-            if type(value) is list:
+            if type(value) is (tuple if records else list):
                 return tuple(read(v, f'{path}[{i}]', substitutions) for i, v in enumerate(value))
             _invalid(path)
         return sequence
     if is_dataclass(origin or annotation):
         cls = origin or annotation
         names, _, parameters = _dataclass_schema(cls)
+        if records:
+            def record(value, path, substitutions):
+                if (type(value) is not cls and
+                        (not is_dataclass(value) or isinstance(value, type) or
+                         frozenset(_wire_fields(type(value))) != names)):
+                    raise ContractError(f'{path}: missing or extra {cls.__name__} fields')
+                mapping = {**substitutions, **dict(zip(parameters, args))} if parameters else substitutions
+                return cls(**{key: read(getattr(value, key), f'{path}.{key}', mapping)
+                              for key, read in _record_readers(cls, True)})
+            return record
         def record(value, path, substitutions):
             if type(value) is not dict or value.keys() != names:
                 raise ContractError(f'{path}: missing or extra {cls.__name__} fields')

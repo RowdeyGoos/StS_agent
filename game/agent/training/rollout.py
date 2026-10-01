@@ -273,7 +273,7 @@ def collect(model, experiment, generator, *, cursor, iteration, decisions=None,
                         raise ValueError('Task reward disagrees with its public measurement')
                     current = None if terminated else infer(public)
                     next_value = 0.0 if terminated else current[3]
-                    step = RolloutStep(state, state.graph.candidate_refs, tuple(batch['mask'][0].tolist()), index,
+                    step = RolloutStep(state.for_rollout(), state.graph.candidate_refs, tuple(batch['mask'][0].tolist()), index,
                         logp.item(), value, next_value, float(reward), dict(measurement['components']),
                         terminated, truncated, episode_id, row['steps'],
                         measurement.get('context') if objective.schema in SHAPED_RUN_SCHEMAS else None)

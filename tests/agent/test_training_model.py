@@ -105,6 +105,26 @@ def test_fixed_and_packed_tables_match_without_padded_allocation(monkeypatch):
         FullRunEncoder(FullRunProfile(candidates=2)).pack(public)
 
 
+def test_compact_rollout_preserves_model_inputs_and_worker_serialization():
+    import pickle
+    public = decision()
+    vocabulary = Vocabulary.fit([public], split='train')
+    model = ActorCritic(vocabulary, Architecture(16, 1), seed=7)
+    state = FeatureEncoder(vocabulary).encode(public)
+    compact = state.for_rollout()
+    assert not hasattr(compact, 'graph')
+    assert compact.nbytes == state.nbytes - sum(a.nbytes for a in state.graph.observation.values())
+    assert compact.nbytes < state.nbytes
+    expected = collate([state], vocabulary=vocabulary)
+    for actual in (compact, pickle.loads(pickle.dumps(compact))):
+        assert actual.candidate_refs == state.graph.candidate_refs
+        assert actual.legal_mask == tuple(state.graph.observation['action_mask'])
+        assert actual.policy_mask == state.policy_mask
+        batch = collate([actual], vocabulary=vocabulary)
+        assert all(torch.equal(batch[k], expected[k]) for k in expected)
+        assert all(torch.equal(a, b) for a, b in zip(model(batch), model(expected)))
+
+
 def test_rollout_reuses_only_its_exact_prepared_graph(monkeypatch):
     from game.agent.training.features import _RolloutEncoder
     public, next_public = decision(), decision(hp=42)

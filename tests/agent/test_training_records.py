@@ -1,6 +1,7 @@
 """Recorded task outcomes, offline conversion, atomic publication and game effects."""
 import hashlib
 import json
+from dataclasses import dataclass, fields, replace
 from pathlib import Path
 import uuid
 
@@ -8,6 +9,7 @@ import pytest
 
 gym = pytest.importorskip('gymnasium')
 from game.agent import contracts as c
+from game.agent.contracts import full as f
 from game.agent.dataset import training_examples as canonical_examples
 from game.agent.encoding.full import FullRunEncoder
 from game.agent.provenance import Implementation
@@ -26,9 +28,9 @@ def metadata():
                            split='train', evidence='controlled_fixture')
 
 
-def record(tmp_path, *, mode='win', spec=None):
+def record(tmp_path, *, mode='win', spec=None, compressed=False):
     spec = spec or RewardSpec({'combat_loss': -1, 'win_hp_fraction': 0.25, 'end_turn_action': -0.01})
-    path = tmp_path / (uuid.uuid4().hex + '.trajectory.jsonl')
+    path = tmp_path / (uuid.uuid4().hex + '.trajectory.jsonl' + ('.gz' if compressed else ''))
     def factory(seed):
         return fixture(seed, hp=1 if mode == 'loss' else 40, enemy_hp=6 if mode == 'win' else 100,
                        relics=() if mode == 'loss' else ('burning_blood',))
@@ -68,6 +70,81 @@ def test_task_and_canonical_records_keep_distinct_rewards_and_bootstrap_flags(tm
     assert encoded.successor['action_mask'].any() == cut
     assert encoded.reward_spec_id == episode.reward_spec.identity
     assert 'reward_spec_id' not in encoded.observation
+
+
+@pytest.mark.parametrize('mode', ('win', 'loss', 'cutoff'))
+@pytest.mark.parametrize('compressed', (False, True))
+def test_incremental_finalization_remains_independently_loadable(tmp_path, monkeypatch, mode, compressed):
+    import game.agent.training.records as records
+    def forbidden(*args, **kwargs):
+        pytest.fail('Finalization reparsed the completed public trajectory')
+    with monkeypatch.context() as patch:
+        patch.setattr(records, 'load_trajectory', forbidden)
+        paths = record(tmp_path, mode=mode, compressed=compressed)
+    episode = load_training_episode(*paths, split='train')
+    assert len(episode.transitions) == 1
+    assert episode.ending.combat.outcome == {'win':'victory', 'loss':'defeat', 'cutoff':'ongoing'}[mode]
+    assert not list(tmp_path.glob('*.partial'))
+
+
+@pytest.mark.parametrize('compressed', (False, True))
+@pytest.mark.parametrize('damage', ('changed_bytes', 'truncated'))
+def test_incremental_finalization_checks_actual_stored_bytes(tmp_path, monkeypatch, compressed, damage):
+    import gzip
+    from game.agent.recording import TrajectoryWriter
+    finish, published = TrajectoryWriter.finish, []
+    def altered(writer, *args, **kwargs):
+        result = finish(writer, *args, **kwargs)
+        assert writer.completion is not None
+        published.append(writer.path)
+        data = writer.path.read_bytes()
+        if damage == 'truncated':
+            data = data[:-8]
+        else:
+            raw = gzip.decompress(data) if compressed else data
+            raw = raw[:-1] + b' '  # Still valid JSON; different canonical bytes.
+            data = gzip.compress(raw) if compressed else raw
+        writer.path.write_bytes(data)
+        return result
+    monkeypatch.setattr(TrajectoryWriter, 'finish', altered)
+    with pytest.raises(ValueError, match='digest|compressed'):
+        record(tmp_path, compressed=compressed)
+    assert len(published) == 1 and published[0].exists()
+    assert not list(tmp_path.glob('*.training.json'))
+    assert len(list(tmp_path.glob('*.training.json.partial'))) == 1
+
+
+@pytest.mark.parametrize('phase', ('initial', 'successor'))
+def test_recorder_checks_canonical_hud_in_structural_caller_records(tmp_path, phase):
+    with CombatTrainingEnv(engine_factory=lambda seed: fixture(seed, enemy_hp=100), max_decisions=1) as env:
+        _, info = env.reset(seed=0)
+        def misleading(public):
+            @dataclass
+            class InputNode:
+                kind: str
+                definition_id: str
+                ref: object
+                fields: tuple
+                links: tuple
+                children: tuple
+                def get(self, key, default=None):
+                    return public.run.get(key, default)
+            values = {field.name: getattr(public.run, field.name) for field in fields(f.Node)}
+            values['fields'] = tuple(replace(field, value=field.value+1) if field.key == 'hp' else field
+                                     for field in public.run.fields)
+            return replace(public, run=InputNode(**values))
+        path = tmp_path/'structural.trajectory.jsonl'
+        if phase == 'initial':
+            with pytest.raises(ValueError, match='HUD'):
+                CombatTrainingRecorder(path, metadata(), misleading(env.public_state), info['combat'])
+        else:
+            with CombatTrainingRecorder(path, metadata(), env.public_state, info['combat']) as writer:
+                action = next(a for a in env.public_state.candidates if a.kind == 'play_card')
+                _, reward, done, cut, info = env.step(env.action_index(action))
+                with pytest.raises(ValueError, match='HUD'):
+                    writer.append(action, c.from_dict(info['execution']), misleading(env.public_state),
+                                  combat_summary=info['combat'], reward=reward, terminated=done, truncated=cut)
+        assert not path.exists() and not list(tmp_path.glob('*.training.json'))
 
 
 def test_explicit_offline_conversion_and_mixed_spec_preflight_before_first_sample(tmp_path, pair):
@@ -150,10 +227,11 @@ def test_digest_covers_canonical_footer_and_sidecar_parser_rejects_ambiguity(tmp
 
 
 @pytest.mark.parametrize('after_action', [False, True])
-def test_pre_dispatch_timeout_has_no_fake_transition_or_extra_reward(tmp_path, monkeypatch, after_action):
+@pytest.mark.parametrize('compressed', [False, True])
+def test_pre_dispatch_timeout_has_no_fake_transition_or_extra_reward(tmp_path, monkeypatch, after_action, compressed):
     clock = [1.0]
     monkeypatch.setattr('game.agent.gym_env.time.monotonic', lambda: clock[0])
-    path = tmp_path / 'timeout.trajectory.jsonl'
+    path = tmp_path / ('timeout.trajectory.jsonl' + ('.gz' if compressed else ''))
     with CombatTrainingEnv(engine_factory=lambda seed: fixture(seed, enemy_hp=100), time_limit_seconds=1,
                            reward_spec=RewardSpec({'end_turn_action': -0.25})) as env:
         _, info = env.reset(seed=0)
@@ -218,8 +296,10 @@ def test_cancellation_or_concurrent_sidecar_never_publishes_over_existing_data(t
     assert writer.partial.exists()
     if phase == 'canonical_cancel':
         assert not path.exists() and not writer.path.exists() and writer.writer.partial.exists()
+        assert writer.writer.completion is None
     else:
         assert path.exists() and writer.path.read_text() == 'concurrent artifact'
+        assert writer.writer.completion is not None
 
 
 def test_no_clobber_and_full_record_pair_is_public_only(pair, monkeypatch):
