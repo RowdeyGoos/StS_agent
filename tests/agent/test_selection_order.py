@@ -1,7 +1,7 @@
 """Concrete game outcomes that prevent treating card selections as unordered."""
 import pytest
 
-from game.agent.action_policy import ALL_LEGAL, COMMIT_CARD_SELECTION, action_mask
+from game.agent.action_policy import ALL_LEGAL, COMMIT_CARD_SELECTION, COMMIT_DECISIONS, action_mask
 from game.agent.headless import HeadlessAdapter
 from game.headless.run.engine import RunEngine
 from game.headless.run.actions import ChooseRelicCard, ConfirmRelicSelection
@@ -37,7 +37,7 @@ def fury(order, policy=ALL_LEGAL):
     return [c.definition.definition_id for c in player.hand]
 
 
-@pytest.mark.parametrize('policy', [ALL_LEGAL, COMMIT_CARD_SELECTION])
+@pytest.mark.parametrize('policy', [ALL_LEGAL, COMMIT_CARD_SELECTION, COMMIT_DECISIONS])
 def test_neows_fury_preserves_order_and_reselection_has_a_direct_equivalent(policy):
     assert fury(('strike','defend'),policy)==['strike','defend']
     assert fury(('defend','strike'),policy)==['defend','strike']
@@ -46,7 +46,7 @@ def test_neows_fury_preserves_order_and_reselection_has_a_direct_equivalent(poli
     assert fury(('strike','defend','strike','defend','bash','strike'))==fury(('strike','bash'),policy)
 
 
-@pytest.mark.parametrize('policy', [ALL_LEGAL, COMMIT_CARD_SELECTION])
+@pytest.mark.parametrize('policy', [ALL_LEGAL, COMMIT_CARD_SELECTION, COMMIT_DECISIONS])
 def test_astrolabe_order_changes_seeded_transform_results(policy):
     def transform(order):
         run=RunEngine(seed=2,card_ids=('strike','injury','secret_weapon','defend'),rng_profile='native')
@@ -61,7 +61,7 @@ def test_astrolabe_order_changes_seeded_transform_results(policy):
     assert reverse==['defend','splash','curse_of_the_bell','mangle']
 
 
-@pytest.mark.parametrize('policy', [ALL_LEGAL, COMMIT_CARD_SELECTION])
+@pytest.mark.parametrize('policy', [ALL_LEGAL, COMMIT_CARD_SELECTION, COMMIT_DECISIONS])
 def test_purity_exhaust_order_changes_energy_through_draw_hooks(policy):
     def exhaust(order):
         run, player, cards=combat(('purity','drum_of_battle','strike','void','defend'))
@@ -76,7 +76,7 @@ def test_purity_exhaust_order_changes_energy_through_draw_hooks(policy):
     assert exhaust(('strike','drum_of_battle'))==2
 
 
-@pytest.mark.parametrize('policy', [ALL_LEGAL, COMMIT_CARD_SELECTION])
+@pytest.mark.parametrize('policy', [ALL_LEGAL, COMMIT_CARD_SELECTION, COMMIT_DECISIONS])
 def test_gambling_chip_discard_order_changes_sly_autoplay_block(policy):
     def discard(order):
         run=RunEngine(seed=2,card_ids=('abrasive','untouchable','defend'),rng_profile='native')

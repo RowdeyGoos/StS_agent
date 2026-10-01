@@ -7,7 +7,7 @@ import pytest
 
 torch = pytest.importorskip('torch')
 pytest.importorskip('gymnasium')
-from game.agent.action_policy import ALL_LEGAL, COMMIT_SINGLE_CARD, COMMIT_CARD_SELECTION, action_mask
+from game.agent.action_policy import ALL_LEGAL, COMMIT_SINGLE_CARD, COMMIT_CARD_SELECTION, COMMIT_DECISIONS, action_mask
 from game.agent.contracts import full as f
 from game.agent.headless import HeadlessAdapter
 from game.agent.full_policy import choose_action
@@ -200,7 +200,7 @@ def test_ppo_mask_likelihoods_records_and_exact_resume(tmp_path,workers):
             assert all(torch.equal(v,restored.model.state_dict()[k]) for k,v in model.state_dict().items())
 
 
-@pytest.mark.parametrize('mode', [COMMIT_SINGLE_CARD,COMMIT_CARD_SELECTION])
+@pytest.mark.parametrize('mode', [COMMIT_SINGLE_CARD,COMMIT_CARD_SELECTION,COMMIT_DECISIONS])
 def test_imitation_masks_checkpoint_and_resume_bind_the_same_policy(tmp_path,mode):
     result=run_episode(RunConfig(seed=4,split='train',max_decisions=2,evidence='controlled_fixture',
         scenario=RUN_SCENARIO_SET+':selector'),output_dir=tmp_path/'data',audit_dir=tmp_path/'data-private',
@@ -229,7 +229,8 @@ def test_imitation_masks_checkpoint_and_resume_bind_the_same_policy(tmp_path,mod
         load_run_corpus([loop.trajectory],split='train',action_policy=mode)
 
 
-@pytest.mark.parametrize('origin,target', [(ALL_LEGAL,COMMIT_SINGLE_CARD),(COMMIT_SINGLE_CARD,COMMIT_CARD_SELECTION)])
+@pytest.mark.parametrize('origin,target', [(ALL_LEGAL,COMMIT_SINGLE_CARD),(COMMIT_SINGLE_CARD,COMMIT_CARD_SELECTION),
+                                        (COMMIT_CARD_SELECTION,COMMIT_DECISIONS)])
 def test_explicit_policy_adoption_preserves_weights_and_rejects_resume_changes(tmp_path,origin,target):
     exp=experiment(target)
     old_exp=replace(exp,training=replace(exp.training,action_policy=origin),

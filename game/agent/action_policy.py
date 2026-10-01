@@ -8,7 +8,8 @@ from game.agent.contracts import full as f
 ALL_LEGAL = 'all_legal_v1'
 COMMIT_SINGLE_CARD = 'commit_single_card_v1'
 COMMIT_CARD_SELECTION = 'commit_card_selection_v1'
-POLICIES = (ALL_LEGAL, COMMIT_SINGLE_CARD, COMMIT_CARD_SELECTION)
+COMMIT_DECISIONS = 'commit_decisions_v1'
+POLICIES = (ALL_LEGAL, COMMIT_SINGLE_CARD, COMMIT_CARD_SELECTION, COMMIT_DECISIONS)
 
 
 def validate_policy(name):
@@ -31,8 +32,9 @@ Unrecognized shapes retain their complete legal support.
     allowed = (True,) * len(decision.candidates)
     if policy == ALL_LEGAL:
         return allowed
-    if policy == COMMIT_CARD_SELECTION:
-        return _commit_selection(decision, allowed)
+    if policy in (COMMIT_CARD_SELECTION, COMMIT_DECISIONS):
+        allowed = _commit_selection(decision, allowed)
+        return _commit_reward_navigation(decision, allowed) if policy == COMMIT_DECISIONS else allowed
     context = decision.context
     if context.kind == 'relic_choice' and context.definition_id == 'select':
         selection = context
@@ -127,3 +129,63 @@ or hidden engine state is needed.
     if actual != expected:
         return unrestricted
     return tuple(not (a.kind == undo and a.subject in selected) for a in decision.candidates)
+
+
+def _commit_reward_navigation(decision, unrestricted):
+    """Allow inspection once per reward between actual gameplay commands.
+
+Only a public previous close and current open witness remove close. Navigation among other
+rewards does not reset it; any non-navigation command does, including rerolls.
+Unknown modal shapes and incomplete attachment histories remain unrestricted.
+    """
+    context = decision.context
+    if context.kind != 'rewards' and not (context.kind == 'event' and context.get('stage') == 'event_rewards'):
+        return unrestricted
+    closes = [a for a in decision.candidates if a.kind == 'close_reward']
+    if len(closes) != 1 or closes[0].target is not None:
+        return unrestricted
+    close = closes[0]
+    rewards = [n for n in context.children if n.kind == 'reward' and n.ref == close.subject]
+    if (len(rewards) != 1 or rewards[0].definition_id != 'card' or
+            rewards[0].get('resolved') is not False or rewards[0].get('presentation') != 'choice'):
+        return unrestricted
+    reward = rewards[0]
+    offers = {n.ref for n in reward.children if n.kind == 'card'}
+    if not offers or None in offers or len(offers) != len(reward.children):
+        return unrestricted
+    alternatives = [a for a in decision.candidates if a.kind in ('reroll_card_reward', 'sacrifice_card_reward')]
+    if any(a.subject != reward.ref or a.target is not None for a in alternatives):
+        return unrestricted
+    choices = [a for a in decision.candidates if a != close and a not in alternatives]
+    if context.kind == 'rewards':
+        picks = [a for a in choices if a.kind in ('choose_reward_card', 'choose_extra_reward')]
+        skips = [a for a in choices if a.kind == 'skip_reward' and a.target is None]
+        if (len(skips) != 1 or len(picks) != len(offers) or len({a.kind for a in picks}) != 1 or
+                {a.target for a in picks} != offers or any(a.subject != reward.ref for a in choices) or
+                len(choices) != len(picks) + len(skips)):
+            return unrestricted
+    else:
+        # Event batches expose explicit option labels as well as offer targets.
+        index = [n for n in context.children if n.kind == 'reward'].index(reward)
+        labels = {n.ref: n.definition_id for n in context.children if n.kind == 'option'}
+        expected = {(f'reward_{index}_{i}', n.ref) for i, n in enumerate(reward.children)} | {(f'skip_{index}', None)}
+        if (any(a.kind != 'choose_event_option' for a in choices) or len(choices) != len(expected) or
+                {(labels.get(a.subject), a.target) for a in choices} != expected):
+            return unrestricted
+    histories = [n for n in decision.run.children if n.kind == 'history']
+    if len(histories) != 1 or not histories[0].children:
+        return unrestricted
+    history = histories[0].children
+    last = history[-1]
+    if (last.kind != 'history_event' or last.definition_id != 'open_reward' or
+            last.linked('history_subject') != (reward.ref,) or last.linked('history_target')):
+        return unrestricted
+    for event in reversed(history[:-1]):
+        if event.kind != 'history_event' or event.definition_id not in ('open_reward', 'close_reward'):
+            break
+        subject = event.linked('history_subject')
+        if len(subject) != 1 or event.linked('history_target'):
+            return unrestricted
+        if event.definition_id == 'close_reward' and subject == (reward.ref,):
+            return tuple(ok and a != close for a, ok in zip(decision.candidates, unrestricted))
+    return unrestricted
