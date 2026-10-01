@@ -2194,7 +2194,7 @@ took 159.22 seconds (2.65 minutes), and the final artifact audit took 8.90 secon
 
 ### Parallel PPO collection (2026-09-29)
 
-The `ppo` command supports `--workers 1` through `--workers 8` for both combat and
+The `ppo` command supports `--workers 1` through `--workers 16` for both combat and
 full-run tasks. The default remains one local collector, preserving the existing
 serial sampling path. For example:
 
@@ -3440,6 +3440,553 @@ Raw reports and frozen source snapshots are under
 `runs/training-encoding-optimization-20260930/`; the
 [retained evidence](evidence/training_encoding_optimization_2026_09_30.json)
 binds the inputs, source identities, timing repetitions and validation.
+
+### Current combat training speed (2026-10-01)
+
+A fresh benchmark measures the current 80,738-parameter, 48-wide/two-layer combat
+actor on an Apple M5 Pro (18 logical CPUs, 48 GiB RAM). Each timed invocation
+trains 8,192 decisions in two 4,096-decision PPO rounds, with two epochs, batch
+size 16, one Torch thread per process, gzip recording, per-update checkpoints and
+local MLflow logging. Each repetition starts from the same frozen 500k actor and
+critic with a fresh optimizer/RNG/cursor; it does not extend the research model.
+
+The older expanded corpus correctly rejects the new implementation identity.
+The existing collector therefore generated a new bounded population: 963 train
+starts from 263 fights in 32 source campaigns, covering both regions and all three
+fight types. Preparation took **166.33 seconds**, outside the training timings.
+Only this population's training partition enters PPO. Existing corpora, models
+and held-out evaluation artifacts remain unchanged.
+
+| Workers | Process time / 8,192 decisions | Decisions/second | Collection | PPO updates |
+| ---: | ---: | ---: | ---: | ---: |
+| 1 | 310.42 s | 26.39 | 283.05 s | 23.65 s |
+| 4 | 102.12 s | 80.22 | 76.20 s | 21.96 s |
+| 8, median of three | **75.49 s** | **108.52** | **49.00 s** | **22.45 s** |
+
+Eight workers deliver **4.11×** the serial whole-process throughput and **1.35×**
+the four-worker result. Worker count changes RNG streams and episode allocation,
+so this is a workload-level scaling comparison. Eight-worker times range from
+72.43 to 90.58 seconds (90.44–113.10 decisions/second); later measurements are
+slower, and background load/OS caches are uncontrolled. The median linear
+estimates are **7m 41s / 50k**, **38m 24s / 250k** and **1h 16m 48s / 500k**,
+excluding corpus preparation, evaluation and inspector export. The older long
+combat runs averaged 121–122 decisions/second on a different population and
+learner phase, with plain recording and no live tracking; this is not a matched
+before/after regression measurement.
+
+Collection occupies roughly **65%** of process time and PPO updates **30%**.
+Median checkpoint publication takes 0.13 seconds and MLflow log callbacks 0.27
+seconds; callback time excludes MLflow startup. A matched eight-worker run without
+tracking takes 86.93 seconds and produces identical weights, so the measurements
+do not isolate a throughput benefit from disabling tracking. Each rollout retains
+about **1.6 GB** of encoded arrays; parent peak RSS is about **4.0 GB**, excluding
+workers.
+
+A separate 2,048-decision diagnostic profiles all eight collectors. Public
+observation construction accounts for about 35% of profiled collection time,
+stale-state guards 19%, and prepared encoding 15%. These are instrumented call
+costs, not unprofiled wall-time estimates; nested cumulative costs overlap.
+The zlib compression call itself accounts for about **0.4%**. Public graph
+conversion/validation is the next performance target; compacting retained
+rollout data is a separate memory/copying opportunity. No optimization was
+implemented during this benchmark.
+
+All **51,200** timed/diagnostic decisions receive updates, with no failed episodes,
+skipped updates or early KL stops. The four matching eight-worker runs reproduce
+all non-timing update metrics and final model weights. Twenty-one representative
+compressed trajectory/task-sidecar pairs reload canonically; no partial artifacts,
+private-permission violations or tracking failures remain. The original model
+hash and production source identity are unchanged. The seven invocations take
+777.32 seconds in total, excluding preparation and post-run artifact checks.
+
+Raw protocols, profiles and reports are under `runs/combat-speed-20261001/`;
+the [retained evidence](evidence/combat_training_speed_2026_10_01.json) records
+the inputs, timings and checks. Tracked repeats appear in the local MLflow
+**Performance benchmarks** experiment. These results describe training speed,
+not playing strength or checkpoint selection.
+
+### Collector optimization and compact rollouts (2026-10-01)
+
+Training keeps the complete, model-independent public observation and canonical
+recordings. Three optimizations reduce repeated work without changing the state
+guard, action ordering, rewards, model inputs or PPO update mathematics:
+
+- `PreparedPublic` clones typed records directly through the same schema reader
+  used by the wire parser, then runs the existing graph semantic checks. It
+  constructs canonical immutable classes even for structural caller records and
+  materializes fresh wire dictionaries only when a consumer requests them.
+- `CombatTrainingRecorder` validates rewards, HUD facts and task boundaries as
+  transitions are appended, retaining compact immutable measurements. Completion
+  uses the canonical writer's count/digest receipt and independently streams the
+  saved bytes to verify the digest and gzip integrity. It no longer reconstructs
+  the whole trace at completion. Independent artifact loaders still perform full
+  schema, sequence, reward, outcome and digest validation. Publication retains
+  its no-overwrite, cancellation and partial-file behavior.
+- PPO retains `RolloutFeatures`: the current learner's arrays, exact ordered
+  candidate references, original legal mask and policy mask. Collection still
+  checks these against the Gym action slots before dispatch. The duplicate
+  lossless encoding is released after collection uses it; full public traces,
+  standalone encoders and imitation datasets keep their existing representations.
+  This is temporary learner storage, not a new public observation format.
+
+The matched benchmark freezes the baseline and optimized source trees separately.
+It regenerates every source campaign under the optimized implementation using
+the same collector/settings and the baseline's public identifier allocation
+order. Repeating that allocation preserves the production sampler's sorted-ID
+selection; it does not reuse old state under a new source identity. All 1,116
+regenerated snapshots, public cases and private registry entries match exactly,
+including 963 training starts from 263 fights. Only training starts enter PPO.
+Existing corpus, source and resume guards remain intact.
+
+The independent semantic review found and corrected one edge case: a structural
+caller record can implement a `get()` method that disagrees with its serialized
+fields. The recorder now checks HUD facts against its canonical owned value,
+before writing, and regressions cover both initial and successor observations.
+
+Three fresh invocations per version each train 8,192 decisions in two 4,096-step
+rounds with eight workers, the same frozen 80,738-parameter initializer, fresh
+optimizer/RNG, two epochs, batch size 16, gzip recording, checkpoints and local
+MLflow logging. All six invocations run sequentially, outside other tests and
+corpus generation. Medians from this matched rerun are:
+
+| Measure | Baseline | Optimized |
+| --- | ---: | ---: |
+| Whole process / 8,192 decisions | 90.30 s | **73.28 s** |
+| Collection | 61.34 s | **46.06 s** |
+| PPO updates | 24.18 s | 23.67 s |
+| Decisions / second | 90.72 | **111.80** |
+| First rollout's retained arrays | 1.606 GB | **0.305 GB** |
+| Parent peak RSS | 3.79 GB | **1.47 GB** |
+
+Throughput increases **23.2%**, process time falls **18.8%**, and collection time
+falls **24.9%**. Retained rollout arrays decrease **81.0%**; this counts NumPy
+buffers, not Python object overhead. Parent RSS excludes worker processes.
+Process ranges are 88.35–90.51 seconds before and 72.83–74.16 seconds after.
+Background activity and OS caches remain uncontrolled, so these matched results
+should not be compared directly with older timing sessions or used as a guarantee
+for a different model/population. No model quality improvement is claimed.
+
+A subsequent 2,048-decision diagnostic profiles all eight optimized collectors.
+It reproduces the original diagnostic's 119 episode results and final model
+weights. Nonoverlapping call-root totals give this division of aggregate
+profiled worker time:
+
+| Collector work | Before | Optimized |
+| --- | ---: | ---: |
+| Construct and validate public observations | 34.6% | 28.3% |
+| Snapshot/hash state guard | 18.9% | 24.1% |
+| Encode observations and extract model features | 18.8% | 23.2% |
+| Record transitions and verify completed files | 16.7% | 10.6% |
+| Model inference and action sampling | 2.2% | 2.8% |
+| Execute game commands | 1.8% | 2.2% |
+| Other setup, reset and bookkeeping | 7.0% | 8.7% |
+
+These shares include profiler overhead and are not CPU-cycle measurements.
+They exclude parent-side worker startup and result transfer. The guard takes
+almost the same aggregate profiled time (37.27 to 37.41 seconds); its share
+increases because observation construction and recording shrink. Recording
+completion falls from 22.36 to 0.60 aggregate seconds, with no full trajectory
+reloads during completion; streaming digest and gzip checks remain. Some
+serialization moves from observation preparation to recording, so category
+changes should not be interpreted independently as isolated optimizations.
+
+For the median-duration optimized **unprofiled** repetition above, total process
+time is **73.28 seconds**: collection **46.06 seconds / 62.9%**, PPO updates
+**23.71 seconds / 32.4%**, and other process work **3.51 seconds / 4.8%**.
+This uses one repetition for an additive time split, rather than independently
+selecting each phase's median. The worker profile cannot exactly subdivide those
+46.06 wall-clock seconds. The earlier benchmark's collection share was about
+65%; timings across sessions retain the uncontrolled-load limitation above.
+The existing retained evidence includes both profile breakdowns and raw bindings;
+the reproducible analysis is `runs/collector-optim-20261001/collector_breakdown.py`.
+
+All **49,152 decisions** receive PPO updates, with no failed episodes, skipped
+updates or early KL stops. Every repetition has bit-identical final model weights,
+identical update mathematics, action mappings, masks, likelihoods, values,
+advantages, returns and episode results. Independent strict loaders compare all
+**477 paired episodes / 8,192 decisions per version** from the first repetition:
+every public state, action, reward and outcome matches. Byte hashes necessarily
+differ where source/episode metadata differs. Original initializer bytes, engine
+rules and the entire state-guard source file remain unchanged.
+
+Validation includes 993 passing agent-suite tests; its sole failure was a
+sandbox-prohibited loopback bind, and that exact HTTP test passed separately with
+loopback access. The unchanged JavaScript harness was skipped because Node was
+absent from PATH. The final recording rerun passes 57 checks, including plain/gzip
+win/loss/cutoff, zero-action cutoffs, byte tampering, canonical HUD checks and
+publication failure. Compilation and diff checks pass. No incomplete artifacts,
+private-permission violations or tracking failures remain.
+
+The baseline/optimized timed invocations total 269.15/220.26 seconds. Corpus
+generation takes 170.46 seconds alongside integration tests; the agent suite
+takes 470.04 seconds and strict paired-trace verification 11.75 seconds. Independent
+read-only review takes approximately four minutes. These phases overlap;
+implementation time was not isolated. Source snapshots, protocol, array breakdown
+and reports are under `runs/collector-optim-20261001/`; the
+[retained evidence](evidence/collector_optimization_2026_10_01.json) binds the
+results and checks. Tracked invocations appear in the local MLflow
+**Performance benchmarks** experiment.
+
+### Card projection reuse and specialized encoding (2026-10-01)
+
+The next collector changes reuse card descriptions/signatures within each
+synchronous observation and specialize the prepared v2 graph traversal. Card
+views retain their cache-key owners, share static descriptions within that view,
+and distinguish pile-dependent costs. Every new observation starts fresh, so
+upgrades, enchantments, event-card modifiers and temporary costs are recalculated.
+Private object identities are cache keys only; public signatures and references
+still determine ordering. No engine or state-guard code changes.
+
+The specialized traversal visits canonical `Node`, `Field` and `Link` records
+directly and emits the existing lossless tables. It shares final table assembly
+and candidate ordering with the generic encoder, retaining exact scalar/text
+values, reference ordering and capacity-error precedence. Standalone inputs and
+custom encoder hooks keep their validating path. Full public observations,
+recordings, learner inputs and model-specific encoder boundaries are unchanged.
+
+A fresh three-way benchmark interleaves baseline, card reuse alone, and both
+changes, rotating their order over three repetitions. Each invocation uses the
+same frozen initializer, eight workers, 8,192 decisions, two PPO rounds, gzip
+recording, checkpoints and MLflow logging. Both new implementations regenerate
+their own source-bound population: all 1,116 cases and snapshot bytes match the
+baseline, with 963 training starts. No old corpus is repinned or admitted under
+a new implementation identity. Medians are:
+
+| Variant | Whole process | Collection | PPO updates | Decisions / second |
+| --- | ---: | ---: | ---: | ---: |
+| Prepared/compact baseline | 73.94 s | 46.05 s | 23.71 s | 110.80 |
+| Card reuse | 71.43 s | 43.99 s | 23.73 s | 114.69 |
+| Card reuse + specialized traversal | **69.94 s** | **42.56 s** | 23.68 s | **117.13** |
+
+Both changes reduce median process time **5.4%** and collection time **7.6%**,
+increasing throughput **5.7%**. Process ranges are 72.81–74.12, 70.87–71.86 and
+69.64–70.09 seconds respectively. These are unprofiled measurements from this
+interleaved session; background activity and temperature remain uncontrolled.
+They establish no model-quality improvement or speed guarantee for other models.
+
+A subsequent matched diagnostic profiles 2,048 decisions across eight collectors
+and reproduces the earlier diagnostic's 119 episode results and final weights.
+Nonoverlapping shares of aggregate profiled worker time are:
+
+| Collector work | Before these two changes | After |
+| --- | ---: | ---: |
+| Snapshot/hash state guard | 24.1% | 26.6% |
+| Construct and validate public observations | 28.3% | 23.5% |
+| Encode observations and extract model features | 23.2% | 22.5% |
+| Record transitions and verify completed files | 10.6% | 11.7% |
+| Model inference and action sampling | 2.8% | 3.2% |
+| Execute game commands | 2.2% | 2.5% |
+| Other setup, reset and bookkeeping | 8.7% | 10.0% |
+
+The state guard is unchanged; its larger share reflects reductions elsewhere.
+Encoding comprises approximately 16.4% packing and 6.0% feature extraction.
+These percentages include profiler overhead and exclude parent-side startup and
+result transfer; they are not exact shares of elapsed training time. The
+median-duration unprofiled combined run takes 69.94 seconds, comprising 42.66
+seconds collection (61.0%), 23.64 seconds updates (33.8%), and 3.63 seconds other
+work (5.2%). Unlike independently chosen phase medians, this split uses one
+repetition so the phases add to its total. The retained evidence includes the
+raw profile bindings and `collector_breakdown.py` analysis.
+
+All nine invocations produce bit-identical final weights and update mathematics.
+All **73,728** recorded PPO step metrics and **4,293** episode rows match the
+baseline. Independent strict loaders compare **954 paired episodes / 16,384
+paired decisions** across the two optimized variants' first repetitions: public
+states, action identities, rewards and outcomes match exactly. All 250 engine and
+adapter files, including the state guard, remain byte-identical. No failed
+episodes, partial artifacts, private-permission violations or tracking failures
+remain; initializer bytes are unchanged.
+
+Validation includes 1,001 passing agent-suite tests and one sandbox-blocked HTTP
+test that passes separately with loopback access. One unchanged UI harness is
+skipped because Node is unavailable on PATH. The new regressions cover every
+card/upgrade, dynamic and pile-dependent costs, cached/uncached combat traces,
+reference-looking metadata and competing capacity limits. Independent semantic
+review finds no blockers and additionally compares 600 generated graph/capacity
+cases against the frozen baseline. Compilation and diff checks pass.
+
+Timed training totals **644.69 seconds** across nine invocations. Each new corpus
+takes about **191.33 seconds**, generated concurrently with the 480.66-second
+agent suite; strict trace comparison takes 22.69 seconds. These phases overlap;
+implementation and review time are not isolated. Raw sources, protocols and
+reproducible comparison scripts are under `runs/collector-hotpaths-20261001/`;
+the [retained evidence](evidence/collector_hotpaths_2026_10_01.json) binds the
+results and checks. Runs are in the local **Performance benchmarks** experiment.
+
+### CPU versus MPS PPO updates (2026-10-01)
+
+An isolated device benchmark uses the current 80,738-parameter graph model,
+one real 4,096-decision training rollout collected with eight workers, two PPO
+epochs and identical initial weights, fresh Adam state and shuffle order. The
+host is an Apple M5 Pro with 48 GiB RAM, Python 3.11.15 and PyTorch 2.13.0;
+CPU execution uses the current one-thread setting. The production learner's
+CPU-only gate, all production sources and the research initializer remain
+unchanged. MPS runs in a separate benchmark harness with CPU fallback disabled.
+
+The harness's CPU update reproduces production weights and update metrics
+exactly. It reuses the production replay validation, collation, policy/loss
+checks, gradient clipping, parameter checks and full-rollout KL measurements.
+All device comparisons finish both epochs without KL early stops. Timings
+include per-batch transfers, both optimization and epoch measurements, and
+[MPS synchronization](https://docs.pytorch.org/docs/stable/generated/torch.mps.synchronize.html).
+After one full warm-up update per device and batch size, three interleaved
+repetitions give these medians:
+
+| Minibatch size | CPU update | MPS update | MPS versus CPU |
+| --- | ---: | ---: | --- |
+| 16, current default | 12.24 s | 19.83 s | **62% longer** |
+| 128, exploratory | 11.27 s | 3.87 s | **2.91× faster** |
+
+Ranges are 12.08–12.61 / 19.00–20.30 seconds at batch 16, and 11.27–11.29 /
+3.83–3.88 seconds at batch 128. First full MPS passes take 98.67 and 9.18
+seconds respectively; they are retained separately, not included in the warm
+medians. Warm model/device setup and copying final weights back to CPU add
+about 12–20 milliseconds. Collection, process startup, checkpoint writing and
+MLflow logging are outside these update timings. Background load and temperature
+remain uncontrolled.
+
+A separate fixed-batch diagnostic finds that MPS forward/backward computation
+is faster, but transfers, Adam and synchronization around scalar validation and
+metrics consume the gain at batch 16. That diagnostic adds synchronization at
+each stage and is not an additive profile of the full-update timings. Three
+initial-batch numerical probes agree within `rtol=2e-4, atol=2e-5`; the largest
+observed logit/gradient differences are 2.38e-6 / 1.13e-6. Cross-device training
+weights are not bit-identical, despite closely matching final aggregate metrics.
+This establishes no exact cross-device resume or learning-quality equivalence.
+
+Larger batches reduce optimizer steps from **512 to 64 per rollout** and change
+PPO's optimization behavior. The result supports a bounded MPS/batch-size
+learning experiment, not an automatic default change. Using the prior 33.8%
+update share, replacing CPU/batch-16 updates with warm MPS/batch-128 timings
+would imply roughly 23% less total training time; this is an extrapolation,
+not a measured end-to-end result, and excludes any learning-efficiency change.
+The changing-rollout experiment below did **not** realize that projection;
+the warm fixed-rollout result must not be used as a real-training speed estimate.
+
+Collection takes 22.07 seconds, the production CPU reference 12.04 seconds and
+CPU mirror verification 11.93 seconds. Device benchmark updates total 272.63
+seconds, including warm-ups. Raw inputs, scripts and results are under
+`runs/ppo-mps-benchmark-20261001/`; the
+[retained evidence](evidence/ppo_mps_benchmark_2026_10_01.json) records timings,
+numerical checks, runtime, source bindings and the diagnostic. No production
+GPU support or research-model promotion is introduced by this benchmark.
+
+### CPU/MPS learning and end-to-end comparison (2026-10-01)
+
+The follow-up freezes three arms—CPU/batch 16, CPU/batch 128 and MPS/batch
+128—with **two exploration/shuffle seeds and 50,000 decisions per learner**.
+All six share one saved untrained 80,738-parameter initialization, eight CPU
+collectors, 4,096-decision rollouts, two PPO epochs and the existing rewards.
+Checkpoints are fixed at 0, 25k and 50k. Arm order reverses between seeds;
+Adam and both RNG streams persist within each learner. Production sources,
+the state guard and validation checks remain unchanged. MPS updates use an
+isolated experimental harness with CPU fallback disabled.
+
+A fresh source-bound corpus contains 1,904 training starts from 64 campaigns.
+Validation uses 273 combat openings from 32 separate campaigns: 217 ordinary,
+40 elite and 16 boss fights. Each of 13 distinct checkpoint points receives
+one greedy and two paired, seeded sampled evaluations. All **10,647 games**
+finish without failures, unattempted cases or cutoffs. Test cases remain unopened.
+
+Measured training times include collection, updates, checkpoints and tracking;
+evaluation is measured separately. PPO update times include transfers, checks,
+epoch measurements and synchronization:
+
+| Arm | Training, seed 1 / seed 2 | Mean training | Mean collection | Mean PPO updates |
+| --- | --- | ---: | ---: | ---: |
+| CPU / batch 16 | 369.96 / 315.18 s | 342.57 s | 204.49 s | 131.95 s |
+| CPU / batch 128 | 367.91 / 377.20 s | 372.55 s | 232.41 s | 133.25 s |
+| MPS / batch 128 | 463.55 / 484.66 s | 474.10 s | 234.04 s | 230.98 s |
+
+At the same batch size, MPS takes **27.3% longer end to end** and **73.3% longer
+in PPO updates**. Full 4,096-decision MPS updates rise from about 8.7 seconds
+to 24–28 seconds across each run; CPU updates remain near 10–11 seconds.
+The earlier warm benchmark repeatedly reused a frozen rollout and did not
+capture this changing-rollout slowdown. Background load and temperature are
+uncontrolled: the second CPU/batch-16 run collects faster even on its identical
+first rollout. Its lower total cannot be attributed solely to batch size.
+
+The primary endpoint is sampled-policy win rate at 50k, averaging ordinary,
+elite and boss win rates equally. These are combat-local scores, not campaign
+clear rates:
+
+| Arm | Sampled, seed 1 | Sampled, seed 2 | Sampled mean | Greedy mean |
+| --- | ---: | ---: | ---: | ---: |
+| CPU / batch 16 | 52.13% | 53.95% | 53.04% | 60.80% |
+| CPU / batch 128 | 53.21% | 55.74% | 54.48% | 64.00% |
+| MPS / batch 128 | 54.80% | 56.01% | 55.40% | 61.69% |
+
+Pooled paired differences and approximate 95% campaign-cluster bootstrap
+intervals are **+1.44 pp [−1.47, +4.08]** for CPU128 versus CPU16,
+**+0.93 pp [−1.33, +3.13]** for MPS128 versus CPU128, and
+**+2.37 pp [−0.58, +4.98]** for MPS128 versus CPU16. All cross zero.
+The conditional sampled intervals, including each seed separately, stay above
+the declared −5 pp margin; conservative group bounds remain wide and cross it.
+This is descriptive support for trying larger batches, not established
+noninferiority across random initializations or learner seeds.
+
+Sampled performance improves from the shared initializer's 31.76%. Its greedy
+score is already 63.62%, so these results do not establish better greedy
+gameplay. Greedy outcomes vary more between seeds; MPS128 versus CPU128 has a
+pooled difference of −2.31 pp [−5.86, +0.54]. Batch128 also changes the learning
+schedule: 784 optimizer steps versus 6,252 at batch16 for the same decision
+budget. It is not a device-only change relative to the current default.
+
+**Keep CPU for this model.** Batch128 merits further learning experiments, but
+this implementation provides no MPS speed benefit on real training. Investigate
+the progressive slowdown before adopting MPS. Process-memory growth and
+[upstream reports about varying-shape MPS graph caches](https://github.com/pytorch/pytorch/issues/187455)
+suggest a possible explanation; the experiment does not identify the cause.
+
+All 18 public/private checkpoint bindings, optimizer state, counters, RNG
+streams and first-rollout equality checks pass independent review. The CPU
+harness reproduces production updates exactly; native MPS smoke checks pass.
+Private checkpoints are explicitly experimental audit state, not supported
+production exact-resume files. No model or default is promoted.
+
+Corpus preparation takes **406.84 seconds**, the six sequential training
+invocations **2,378.46 seconds**, and parallel evaluation **785.87 seconds**.
+Implementation and review elapsed times were not isolated; the final independent
+checkpoint audit takes 0.57 seconds after imports. Curves and timing plots are in
+the local [MPS learning comparison](http://127.0.0.1:5050/#/experiments/5/runs)
+MLflow experiment. Raw artifacts are under `runs/ppo-mps-learning-20261001/`;
+the [retained evidence](evidence/ppo_mps_learning_2026_10_01.json) includes
+per-seed results, conservative intervals, source bindings and review checks.
+
+### CPU collector scaling: 8, 12 and 16 workers (2026-10-01)
+
+PPO now accepts up to **16 collectors**. Its default remains one, exact resume
+retains the saved worker count, and matched combat evaluation still supports up
+to eight workers. The production change only raises the PPO limit and updates
+CLI help; allocation, RNG, recording, state guards and checkpoint semantics are
+unchanged.
+
+The benchmark runs three repetitions at each of 8, 12 and 16 workers, rotating
+their order. Each trains **8,192 decisions in two 4,096-decision rollouts** from
+the same frozen 500k combat actor/critic, with a fresh optimizer and identical
+learner seed/cursor. It uses CPU, one Torch thread per process, batch 16, two PPO
+epochs, normal compressed recordings, checkpoints and local MLflow tracking.
+A newly generated source-bound corpus supplies 995 training starts from 271
+fights in 32 campaigns; only its training partition is used. These are timing
+runs, with no research-model promotion or gameplay evaluation.
+
+All figures below are medians of three repetitions. Complete invocation time
+includes startup, both collection/update rounds and cleanup; controller polling
+and report reading add up to roughly 0.25 seconds of polling plus small overhead.
+Warm collection measures only the second rollout, after worker initialization.
+
+| Workers | Complete invocation, 8,192 decisions | Total collection, 8,192 decisions | Total PPO updates | Warm collection, 4,096 decisions | Episode cutoffs |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 8 | 58.43 s | 33.67 s | 21.56 s | 14.57 s | 16/535 (2.99%) |
+| 12 | 53.72 s | 28.65 s | 21.39 s | 11.20 s | 22/612 (3.59%) |
+| 16 | 51.15 s | 25.61 s | 21.91 s | 8.62 s | 29/537 (5.40%) |
+
+Sixteen workers take **12.5% less time overall** than eight and collect the warm
+rollout **1.69× as fast**; PPO update time is essentially unchanged. Twelve
+workers reduce total time by 8.1%. Longer runs can amortize startup, but this
+experiment does not measure their sustained speedup. Sixteen is the fastest
+tested option for subsequent combat experiments; learning quality still needs
+to be checked.
+
+The total rollout budget is shared: local quotas fall from 512 decisions at
+eight workers to 256 at sixteen, causing more bootstrapped episode cutoffs.
+Worker count also changes RNG streams and encounter allocation, so these are
+equal-budget workloads, not identical trajectories across settings. The existing
+encounter schedule gives twelve workers a different fight mix (266 ordinary,
+223 elite, 123 boss) than eight (177/178/180) or sixteen (176/180/181). Timing and
+training win-rate differences cannot be attributed solely to parallelism.
+
+All nine runs complete without failed episodes, skipped updates or KL early
+stops, with 1,024 optimizer steps each. Within each worker count, repeated
+trajectories and final weights match exactly. All **36 checkpoint/resume pairs**
+pass restoration, binding, allocation, counter and RNG checks. **54 focused PPO
+tests pass**, including real sixteen-process exact resume and cleanup; independent
+semantic review finds no blocking issue.
+
+Corpus preparation takes 141.30 seconds, the focused tests 36.34 seconds, all
+nine sequential training invocations 489.98 seconds, and the artifact checks
+1.91 seconds. Implementation and review elapsed times were not isolated. The
+[MLflow comparison](http://127.0.0.1:5050/#/experiments/4/runs?searchFilter=tags.sts.benchmark+%3D+%27worker_scaling_20261001%27)
+contains all nine runs and the timing figure. Raw results are under
+`runs/worker-scaling-20261001/`; the
+[retained evidence](evidence/worker_scaling_2026_10_01.json) binds the inputs,
+sources, repeated measurements, checkpoint checks and review.
+
+### CPU PPO update threads and profiling (2026-10-01)
+
+Use **`--update-threads 4`** with `sts-agent-train ppo` to give the learner four
+CPU compute threads. Supported counts are 1, 2, 4 and 8; new runs default to one.
+Counts above one enable strict PyTorch deterministic operations. With
+`--workers 16`, each spawned collector still uses one thread; with `--workers 1`,
+collection runs inside the learner process and shares its thread setting.
+
+Exact CLI resume automatically restores the saved thread count and determinism
+flags; an explicit different count rejects. These flags are now included in the
+checkpoint runtime identity, and the existing source/private-state checks remain
+in force. The CLI restores its caller's Torch settings on success or failure.
+Different thread counts change floating-point results, so they do not provide
+bit-identical continuation of each other. Existing inference weights remain
+loadable. PPO/model math, shuffle order, optimizer batches, state guards, zero-signal
+skips and full-rollout KL checks after each epoch are unchanged.
+
+A diagnostic captures two changing 4,096-decision combat rollouts from the frozen
+500k model, then replays the first with identical weights, Adam state and shuffle
+RNG. At one thread, a cProfile update takes 11.02 seconds: model forward passes
+account for **70.4%**, backward computation **17.9%**, replay validation and batch
+assembly **4.3%**, and Adam **2.1%**. Full-rollout epoch measurements account for
+**37.5% of the same total**, overlapping the forward/preparation categories.
+These are profiled elapsed-call shares, not independent CPU-cycle measurements.
+
+The initial three-repeat thread sweep gives 10.66 / 8.75 / 7.45 / 8.80 seconds
+at 1 / 2 / 4 / 8 threads without enforced determinism. Repeated four/eight-thread
+runs produce different weights, so that mode is not used by the new CLI option.
+With strict deterministic operations, four-thread updates take a median of
+**7.91 seconds**, about **26% less than one thread**, and all three repetitions
+match model fingerprints, Adam state and shuffle RNG exactly.
+The deterministic follow-up gives **8.87 seconds at two threads** and
+**9.22 seconds at eight**, also with exact within-setting replay across three
+repetitions. Four is the fastest tested supported setting on this host.
+
+Complete production CLI runs use 16 collectors, batch 16, two PPO epochs per
+4,096-decision rollout, normal compressed recordings, checkpoints and local
+MLflow. Each trains 8,192 decisions; two repetitions reverse the thread-setting
+order. A fresh source-bound corpus supplies 237 training starts from 63 fights
+in eight campaigns, covering ordinary fights, elites and bosses in both regions.
+Validation and test cases are not evaluated.
+
+| Learner threads | Total collection | Total PPO updates | Complete invocation |
+| ---: | ---: | ---: | ---: |
+| 1 | 25.59 s | 22.87 s | 51.81 s |
+| 4, strict deterministic | 26.25 s | 16.63 s | 46.38 s |
+
+These medians show **27.3% less update time** and **10.5% less total time**.
+Complete invocations include startup, recording, checkpointing, tracking and
+cleanup. Timing repetitions share a learner seed; they do not establish learning
+quality across seeds. Thread counts can change subsequent sampled trajectories,
+and background load and temperature remain uncontrolled.
+
+A larger KL-only batch of 64 saves roughly another half-second in one
+four-thread probe, but shifts the final KL by about 4.8e-11. That could change a
+threshold decision, so the original measurement and skip paths are retained.
+Batch assembly's small measured share does not justify a rollout-sized cache.
+
+The focused validation covers **103 distinct passing tests**, including genuine
+four-thread, two-collector exact continuation with model/Adam/RNG comparisons,
+runtime mismatch rejection and CLI setting restoration. A test fixture's missing
+resume path was corrected; the initial run passes 102 cases in 45.28 seconds and
+the subsequent CPU-setting suite passes all ten cases in 5.21 seconds. Independent
+semantic review finds no blocking issue. Corpus preparation takes 43.43 seconds;
+the four complete training invocations take 196.38 seconds in total.
+The final artifact audit restores all **16 checkpoint/resume pairs**, verifies
+their runtime, RNG and counters, and checks identical recorded trajectories and
+final weights within each repeated setting. It takes 1.09 seconds after imports.
+Implementation and review elapsed times were not isolated.
+
+Results and the timing figure are in the
+[local MLflow comparison](http://127.0.0.1:5050/#/experiments/4/runs?searchFilter=tags.sts.benchmark+%3D+%27ppo_cpu_update_20261001%27).
+Raw artifacts are under `runs/ppo-cpu-update-20261001/`; the
+[retained evidence](evidence/ppo_cpu_update_optimization_2026_10_01.json) binds
+the captured inputs, source versions, timing probes, runtime checks and review.
 
 ## Single-learner 250k learning curve (2026-09-30)
 

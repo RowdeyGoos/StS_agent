@@ -1,0 +1,1504 @@
+{
+  "artifacts": {
+    "runs/ppo-cpu-update-20261001/analysis.log": "d2534d78dabe1945c5fadc0e217de5a24e4738e39a4fc1d550b84e21c3c17eaa",
+    "runs/ppo-cpu-update-20261001/analyze.py": "216bf1fd447a6221ace28bee7c91151a028051c802a10ce335d2d2101b60a6fc",
+    "runs/ppo-cpu-update-20261001/baseline-profile.json": "46483997311d4f4cb6647cf1b0cb69a947f7a3f869fbee5820260f953ba26336",
+    "runs/ppo-cpu-update-20261001/baseline-profile.log": "6dc1b4fb5dcb9e41507bc0641bdbe0256cc72ea79f15ad0c78d1c8a9663b4aa6",
+    "runs/ppo-cpu-update-20261001/baseline-profile.prof": "8de7da1d2766488a917de53f40f30859f1c08d9acc57a2bcdad8f45af5d05a22",
+    "runs/ppo-cpu-update-20261001/baseline_model.py": "86ae52e8de67dda771c24500a994cd4d89d44b3485f54c1b146f3cef95cdf159",
+    "runs/ppo-cpu-update-20261001/baseline_ppo.py": "60fa44afe3b9c3011608c019814fe0465087584dcf4b01c00a6f5e9da2588289",
+    "runs/ppo-cpu-update-20261001/benchmark.py": "e08788b72051098cf3c80807b921541344c69b6be30546d0378088ef121be751",
+    "runs/ppo-cpu-update-20261001/capture.log": "f912e0dd19faa0b992a666c5c5297a78623fbe21832f7b19b6095c6c75928ad6",
+    "runs/ppo-cpu-update-20261001/capture.py": "4d1826c486306095c1083c0a40fcb54407e75db987f4ae8cde987a826785deee",
+    "runs/ppo-cpu-update-20261001/complete-1-repeat-1-result.json": "5e9755b517d04fc0536803915c787f3c7b544dbab213d386b752d5ed56edda2f",
+    "runs/ppo-cpu-update-20261001/complete-1-repeat-1.log": "2c3b09434fdf0672f5ea1be2f18105910a5aec43352f3ce19d1d90c47834efc1",
+    "runs/ppo-cpu-update-20261001/complete-1-repeat-1/ppo.json": "4ef739f7b97eff3561c9e1832dc6e544fc2afc50639bc08fc32981197840e07d",
+    "runs/ppo-cpu-update-20261001/complete-1-repeat-2-result.json": "aac82da2f4e4b6efc7c3c75e0a42382f54107ab07f6b1e6627b5178f80064ca1",
+    "runs/ppo-cpu-update-20261001/complete-1-repeat-2.log": "994f5405d7d643e3edd8cdbfb972ab89542224122b19f3c1b561d0f656e3a96e",
+    "runs/ppo-cpu-update-20261001/complete-1-repeat-2/ppo.json": "e292b0ccedb1e4ecb7eb163635e2085efc1b87d3f3fdc8b52965563692e3cb6f",
+    "runs/ppo-cpu-update-20261001/complete-4-repeat-1-result.json": "ed0c30de326f08bf91c2ec6ebb14e9e80adfb5c97ea609c814bae455bf92b110",
+    "runs/ppo-cpu-update-20261001/complete-4-repeat-1.log": "8236cbdd51350397ead3c26ea477b74af7c3c0a973613a0882939c0910c5f6ed",
+    "runs/ppo-cpu-update-20261001/complete-4-repeat-1/ppo.json": "ba5950fdd6c6ccbe3273ddfb576ae5b2dbba53416a1de22f2a6fb705b3c50120",
+    "runs/ppo-cpu-update-20261001/complete-4-repeat-2-result.json": "b64266387209b96ab0984d3cc8ed38261f0f28e6e68ab571b7ea8f1466b77f23",
+    "runs/ppo-cpu-update-20261001/complete-4-repeat-2.log": "3c8486e37b40466b37cd93b61c83d946ef7d2d576cac7044a11621507493611f",
+    "runs/ppo-cpu-update-20261001/complete-4-repeat-2/ppo.json": "d6d01a150f5537adc7faeeb250a7b014674d1795c683cb2f2927daa46915a1f9",
+    "runs/ppo-cpu-update-20261001/cpu-tests.log": "a853df1d18adb0397d4c26110e5aed742a472966b404a23c109b91c0ce69812d",
+    "runs/ppo-cpu-update-20261001/cpu-update-comparison.png": "c360a58992b82f490936e82f5261156db4f7092910968ec4989ca8882a8be5ae",
+    "runs/ppo-cpu-update-20261001/deterministic-1.json": "ed44a0ef558e9d368936873b209acdf65cde26092e0970adce7a20b676de74db",
+    "runs/ppo-cpu-update-20261001/deterministic-1.log": "13cb45fb8bc5f9b27ef66f0bbd2971e50406ab2f9f01c75f876e267a40b84d25",
+    "runs/ppo-cpu-update-20261001/deterministic-2-repeat-1.json": "13a56313e1d01a58bf7cec91572c40c96f292c5cca5932e99d81be523410e089",
+    "runs/ppo-cpu-update-20261001/deterministic-2-repeat-1.log": "3ae1c460bbf5c70153dbabc37cff6cd3f1e4adab1b0b863e88b866e14a15e9c8",
+    "runs/ppo-cpu-update-20261001/deterministic-2-repeat-2.json": "b9d6a011470dac8b55e87ebf5aea23f213ca20ed94608fd7c3d36babf9babde7",
+    "runs/ppo-cpu-update-20261001/deterministic-2-repeat-2.log": "830352ede464e971046b6ee6fd06bd0b9ac665ce761af789dabf3e3e4edafbdd",
+    "runs/ppo-cpu-update-20261001/deterministic-2-repeat-3.json": "96440238461692c1e6e2418354b9ce8172d93fdd7b2d5fb1a9f0381bacbd9952",
+    "runs/ppo-cpu-update-20261001/deterministic-2-repeat-3.log": "f044694e7d7de4a004d50a000b91d295d5865ed303341f69150d201575f3cb37",
+    "runs/ppo-cpu-update-20261001/deterministic-4-repeat-1.json": "5f9fae93d45daef9148600fdc1a15794649a435099bb51b5424c1df6eac186c1",
+    "runs/ppo-cpu-update-20261001/deterministic-4-repeat-1.log": "401138415fa48ae05312035a5ece28f23738f78c4cf99d266b4efedb8e1322cf",
+    "runs/ppo-cpu-update-20261001/deterministic-4-repeat-2.json": "98dea3eea09454663ec18b49fe96f43d7bae5aa9b20ae54a79147ef5b517cbee",
+    "runs/ppo-cpu-update-20261001/deterministic-4-repeat-2.log": "9af19fb7022dceee65f7beae392f1b1e1c7bcb24ea58762073540737ee31fb66",
+    "runs/ppo-cpu-update-20261001/deterministic-4-repeat-3.json": "630bb8cc2a00f0f273901d71991ee8cc6a40cf20f74b88c201a2dc31fd603f0c",
+    "runs/ppo-cpu-update-20261001/deterministic-4-repeat-3.log": "896a5ed7a89ddf053f44bb863930a1d201e1a72efe7af6a7d3452d723b87a679",
+    "runs/ppo-cpu-update-20261001/deterministic-8-repeat-1.json": "684ee414fc2a1da972ca80a3df36f88443b5fbbe12eacc26172785ab71a3c9cb",
+    "runs/ppo-cpu-update-20261001/deterministic-8-repeat-1.log": "d16092b7778b9de55b7ec3ca13234cf0e65f530a1d924c584e0862ecb36795c2",
+    "runs/ppo-cpu-update-20261001/deterministic-8-repeat-2.json": "0df2943474c45ed61e035f2b28e74a85d4180b90642c977d18cad2ea90002208",
+    "runs/ppo-cpu-update-20261001/deterministic-8-repeat-2.log": "1cdd0657e12a210813fd7a902805afa380223b173cdf682bb68e153f62b24142",
+    "runs/ppo-cpu-update-20261001/deterministic-8-repeat-3.json": "2a9b3ca3c8a47646011c154bbf8f6e9d82f624fd2b32f5db81dca20700ce6ccd",
+    "runs/ppo-cpu-update-20261001/deterministic-8-repeat-3.log": "88b49c02c0da307307428aef56247089e77f4cdc1e3cb63eed7ea3875835fdb4",
+    "runs/ppo-cpu-update-20261001/deterministic-followup-protocol.json": "34dc968f7a4d9a38cd46ae58d0c96d2a18579449b2c43e0dc40f89048b242445",
+    "runs/ppo-cpu-update-20261001/deterministic-followup.log": "1b2df8d81502bc60c9423f5102176884a5f385183f81be10765e3eb902dc4757",
+    "runs/ppo-cpu-update-20261001/end-to-end-preparation.json": "3f9542df1537aabee757f365d111cab10131e2aec7fd77ec59518e5246f1b282",
+    "runs/ppo-cpu-update-20261001/end-to-end-preparation.log": "ed86cf92f6b98f17c72298fc2cd8f51acc0db251e218b8be2be2de6bbb245f80",
+    "runs/ppo-cpu-update-20261001/end-to-end-protocol.json": "7f1fc55a287dd3268effb9261a15a47fd370857cde79160a5f6057e4524a1adc",
+    "runs/ppo-cpu-update-20261001/end-to-end-results.json": "037f094cfaad8bf073a95892d2294eabf71c326b3e71c4389b5bb03b6dd7b034",
+    "runs/ppo-cpu-update-20261001/end-to-end.log": "31ce2ad38b2dde0cab30d609b5e1ca92ccbf48919b7a7dcf5905d44a355c54fd",
+    "runs/ppo-cpu-update-20261001/end_to_end.py": "1cb1781f6bc08cb68b744c2d204b1abf5e8db820edddf51f22557e62f9e4abdd",
+    "runs/ppo-cpu-update-20261001/inputs.json": "40e37674d502478f8813248a62aa2508ad17d315332fb12956ba4b4a5819a954",
+    "runs/ppo-cpu-update-20261001/intent.json": "12de0bea0e635e18e14857a473bbbd9c82a61d1c475c33895fa8ad92f7c6edc4",
+    "runs/ppo-cpu-update-20261001/measure-128-1.json": "db96fdd591763eddd0a06c96d15bdcfd9ee917e5c8ee72bf8926b2a303dcf85b",
+    "runs/ppo-cpu-update-20261001/measure-128-1.log": "0db2831e0231c10a3c150422c4b503c3b54254640ad32ae0ba8a28ea1186b29e",
+    "runs/ppo-cpu-update-20261001/measure-128-4.json": "ffe6a0d1855978b8bcbe876742017764ceb60e2859b57611e60c8f0b4b61dcc7",
+    "runs/ppo-cpu-update-20261001/measure-128-4.log": "2763b48ed54fadafc878571d93a5617f1703c474fa7efd789fdce1f7aaed1efc",
+    "runs/ppo-cpu-update-20261001/measure-64-1.json": "f00e4bb717e7830af56944ca6be1df938af27d248ebe5ce0e294e6d7f7bba589",
+    "runs/ppo-cpu-update-20261001/measure-64-1.log": "afb63b0d2bcd98e6dd2dde1e5a8513ecb707b8552c6b1c085b7f83d4bf31f1ec",
+    "runs/ppo-cpu-update-20261001/measure-64-4.json": "daf91486f2d48b31d8f875dc1ce0afaa50d66215ec7023d40fd940411cceb7b1",
+    "runs/ppo-cpu-update-20261001/measure-64-4.log": "6d61126a534e912d70dc232c6a80867f1d0029c305191257ded1577ed57d46b3",
+    "runs/ppo-cpu-update-20261001/private/rollout-0.pkl.gz": "b2cb617e4272450e58e474f542912d615c156bb4852893ebc39792541eb722b2",
+    "runs/ppo-cpu-update-20261001/private/rollout-1.pkl.gz": "626009cc57fac7f38ffd3db27d731df8aaf0488f951c570ec55017c674f29fe9",
+    "runs/ppo-cpu-update-20261001/probe-protocol.json": "3c3edc41e372811bcc455f696726f14f21050c1deebb55eac179c0f3f205df4f",
+    "runs/ppo-cpu-update-20261001/probe.py": "0363508f62c0f9738540675ad53e6a8c54b55bd99208c826fcd7b2aa138c15e8",
+    "runs/ppo-cpu-update-20261001/probes.log": "a2535f025b318b2a6d5e1504604b14bc4ca723a4da520b5f6ddf6df312334460",
+    "runs/ppo-cpu-update-20261001/publish_results.py": "aaa3071decd94e0a3a44ba10a66f71734cb6166dcd64f2d8bad1ab1d0484f3c0",
+    "runs/ppo-cpu-update-20261001/semantic-review.json": "6686d390ffade85b56581093f76793a044c14016d245bb3a4178a4b5648523e1",
+    "runs/ppo-cpu-update-20261001/tests.log": "9dc4edf5ce5c382cd0063e217260c19b695ba648794b576fa9163f8b5ec4e507",
+    "runs/ppo-cpu-update-20261001/thread-protocol.json": "18b0e42517fa1cc0457e84d0182db9e36c42164dfb4e6ae11d4f8192332a5b55",
+    "runs/ppo-cpu-update-20261001/threads-1-repeat-1.json": "7f0834ed113e54e86adb07c76b5b4a86db2ee595c179919668c7be7a3b5a9083",
+    "runs/ppo-cpu-update-20261001/threads-1-repeat-1.log": "d27251d3b99b51db1c7d110ca76edcae89d375901f80f8f9f62e6f1728467976",
+    "runs/ppo-cpu-update-20261001/threads-1-repeat-2.json": "e781f02ee95f0d920da83111f957cdfad395a4f4210cddc1d3b67773559a166f",
+    "runs/ppo-cpu-update-20261001/threads-1-repeat-2.log": "20af0982e870a19e4d127dd29a8133f03ac9b8839991670eed117c6b6aafff42",
+    "runs/ppo-cpu-update-20261001/threads-1-repeat-3.json": "5e659014956b842be5eeaf04644084362d0c6451c82406646d070a19399ef42c",
+    "runs/ppo-cpu-update-20261001/threads-1-repeat-3.log": "2413ada1581c5b9dde5a282d1b4f3414fda7031d9ca8931b6e608252eebb0aff",
+    "runs/ppo-cpu-update-20261001/threads-2-repeat-1.json": "55c85e1132c24de5e12b7c5da616757a7fd329bcd18126caac644e53976bc666",
+    "runs/ppo-cpu-update-20261001/threads-2-repeat-1.log": "f35a7ffb9bdcedff34cbfb9334a2812b25ca1e4ad819047f553107a28ce2567f",
+    "runs/ppo-cpu-update-20261001/threads-2-repeat-2.json": "fdb8048de7545faacc393efd10a1049cd444f78f6e9f208876cc372406ce6c40",
+    "runs/ppo-cpu-update-20261001/threads-2-repeat-2.log": "ec12f9af4b4875d59fe037b448ec455ea81dcb61f1f2edb082515fd638af5abb",
+    "runs/ppo-cpu-update-20261001/threads-2-repeat-3.json": "65ffe986ccbfa335269a2371219c9bd0a11e20d7d8e5af5b3b9a98162d94ff87",
+    "runs/ppo-cpu-update-20261001/threads-2-repeat-3.log": "e5f5da7c1faf07269261f64f8d55dccd108926d14694f4d873077e4b1751739f",
+    "runs/ppo-cpu-update-20261001/threads-4-repeat-1.json": "348595d24da849a667e7cc47897d9fe118cb3eabdd4b576c1593391acd35c544",
+    "runs/ppo-cpu-update-20261001/threads-4-repeat-1.log": "87e576c9d4b90a77ebd281fc1dfdf233a7fba80e858719d762103b48e000cdd9",
+    "runs/ppo-cpu-update-20261001/threads-4-repeat-2.json": "4002133bd221fb8053ec6c6e281b05dccb29a926276e5abd86e1cc4393df0800",
+    "runs/ppo-cpu-update-20261001/threads-4-repeat-2.log": "e457bb061dcb39b00be45f1945cf8ae3e8a73ee1c4bc56615624afe4d3e77b8a",
+    "runs/ppo-cpu-update-20261001/threads-4-repeat-3.json": "1b63c9ca9521730209f9945542b76fe8cf56fd32d9c9094131766d538b539293",
+    "runs/ppo-cpu-update-20261001/threads-4-repeat-3.log": "07ec95d516885242d010454e6563e25fc488cc79d7d3f140508f5fe112dfdf77",
+    "runs/ppo-cpu-update-20261001/threads-8-repeat-1.json": "e3e3465063426677568719fa6b08eac48f96cc2cb7eabae2bad07b6c030db5b1",
+    "runs/ppo-cpu-update-20261001/threads-8-repeat-1.log": "00544c8e7aa3716f221f2567fea9626ffd8dfc3183e2f6879a280c43a192c80d",
+    "runs/ppo-cpu-update-20261001/threads-8-repeat-2.json": "e92939573ef83bc5a74e6bd66a5172a201f3a4f8bf06de42e498e24f4288918d",
+    "runs/ppo-cpu-update-20261001/threads-8-repeat-2.log": "2d3b38330ba9fde1122dc7cf21b940db2a72d329077119c1b9a4beffbea5cf32",
+    "runs/ppo-cpu-update-20261001/threads-8-repeat-3.json": "8360c6d91701555ef670f0c95845fafde8a772659fda6ff7b5820c43ecb8501f",
+    "runs/ppo-cpu-update-20261001/threads-8-repeat-3.log": "6c1f105371087015f6d0419699550a7fceb9d9ba83adbdda8909e163d126153c",
+    "runs/ppo-cpu-update-20261001/threads.log": "550626d5901fa11ecc1426dd4296224bcda9d30306e7ded4a6ff8108e57f3fc8",
+    "runs/ppo-cpu-update-20261001/tracking.json": "19690f57c1d86d12e24d6776706a47c771fbdae24736a7322e99c6a0065daf04"
+  },
+  "checkpoint_checks": {
+    "complete-1-repeat-1": [
+      {
+        "bundle_sha256": "c6d717d4bebf514baac1fac0da5650c7c3cd77071b1776befe85b4ed425d324c",
+        "name": "initial",
+        "resume_sha256": "68024eca3ff5c2d568423fe26c77596dfc4454be16e43afb770f1deaa7b29e50",
+        "runtime": {
+          "deterministic_algorithms": false,
+          "deterministic_warn_only": false,
+          "device": "cpu",
+          "python": "3.11.15",
+          "threads": 1,
+          "torch": "2.13.0"
+        }
+      },
+      {
+        "bundle_sha256": "f3e605138d4edfd5732ca1827f53c9a1ed9b8898341e75ab70a20412d3177332",
+        "name": "update-00001",
+        "resume_sha256": "b30afc9650a78146a473e311d72aaedd01fae2c09e99f86a3f385a90a21040d1",
+        "runtime": {
+          "deterministic_algorithms": false,
+          "deterministic_warn_only": false,
+          "device": "cpu",
+          "python": "3.11.15",
+          "threads": 1,
+          "torch": "2.13.0"
+        }
+      },
+      {
+        "bundle_sha256": "439804b2e95a816f781a104f2c26ba32c7449571e3fbd55ded85286da612bc3e",
+        "name": "update-00002",
+        "resume_sha256": "7015f039863fe76bd358c26b8f64fdff19c71c09817f3879bdfbd1b029c9c9fe",
+        "runtime": {
+          "deterministic_algorithms": false,
+          "deterministic_warn_only": false,
+          "device": "cpu",
+          "python": "3.11.15",
+          "threads": 1,
+          "torch": "2.13.0"
+        }
+      },
+      {
+        "bundle_sha256": "439804b2e95a816f781a104f2c26ba32c7449571e3fbd55ded85286da612bc3e",
+        "name": "final",
+        "resume_sha256": "7015f039863fe76bd358c26b8f64fdff19c71c09817f3879bdfbd1b029c9c9fe",
+        "runtime": {
+          "deterministic_algorithms": false,
+          "deterministic_warn_only": false,
+          "device": "cpu",
+          "python": "3.11.15",
+          "threads": 1,
+          "torch": "2.13.0"
+        }
+      }
+    ],
+    "complete-1-repeat-2": [
+      {
+        "bundle_sha256": "ed4f49576975c1bda46981b0b8e7d231ea1b2d01881717d2a2f91841c51ebbaf",
+        "name": "initial",
+        "resume_sha256": "e40c9e9eecadc1e8613e80a36ebaf8f6991df0a58e23a357750e3f7d25431d8a",
+        "runtime": {
+          "deterministic_algorithms": false,
+          "deterministic_warn_only": false,
+          "device": "cpu",
+          "python": "3.11.15",
+          "threads": 1,
+          "torch": "2.13.0"
+        }
+      },
+      {
+        "bundle_sha256": "9a5a6750c4751fa784dfaab1046c01e8b47c79d8c8a2883f1585d1254af87926",
+        "name": "update-00001",
+        "resume_sha256": "3c91eb8ed5f001fba6a5aee211b28b330dfda8bb157ed901029851ffac9354ea",
+        "runtime": {
+          "deterministic_algorithms": false,
+          "deterministic_warn_only": false,
+          "device": "cpu",
+          "python": "3.11.15",
+          "threads": 1,
+          "torch": "2.13.0"
+        }
+      },
+      {
+        "bundle_sha256": "59ccfa9e972bc60e1796288734dacb4480b702fb0c62c3602ebf950b7fee4f96",
+        "name": "update-00002",
+        "resume_sha256": "474dad22a9bd408b68c3da6e6b1345ea38e5af3b72be42f9441e7d0833695fce",
+        "runtime": {
+          "deterministic_algorithms": false,
+          "deterministic_warn_only": false,
+          "device": "cpu",
+          "python": "3.11.15",
+          "threads": 1,
+          "torch": "2.13.0"
+        }
+      },
+      {
+        "bundle_sha256": "59ccfa9e972bc60e1796288734dacb4480b702fb0c62c3602ebf950b7fee4f96",
+        "name": "final",
+        "resume_sha256": "474dad22a9bd408b68c3da6e6b1345ea38e5af3b72be42f9441e7d0833695fce",
+        "runtime": {
+          "deterministic_algorithms": false,
+          "deterministic_warn_only": false,
+          "device": "cpu",
+          "python": "3.11.15",
+          "threads": 1,
+          "torch": "2.13.0"
+        }
+      }
+    ],
+    "complete-4-repeat-1": [
+      {
+        "bundle_sha256": "a5bb0d2cafae536d6ebc663dc18ab7ed7e5f1477481d141e0eee5a3065daee14",
+        "name": "initial",
+        "resume_sha256": "44e34c5916adce09acc857096e82bf9353b9568305ff47c14307a6d9cb2acd3f",
+        "runtime": {
+          "deterministic_algorithms": true,
+          "deterministic_warn_only": false,
+          "device": "cpu",
+          "python": "3.11.15",
+          "threads": 4,
+          "torch": "2.13.0"
+        }
+      },
+      {
+        "bundle_sha256": "30650159c4457081050390a82f062835a030b299f90a2db67ac436634ca3b9f9",
+        "name": "update-00001",
+        "resume_sha256": "b8bb8b7afa95f9137468a17491558372402a49fe187a9991a2b10b1ce0332fe5",
+        "runtime": {
+          "deterministic_algorithms": true,
+          "deterministic_warn_only": false,
+          "device": "cpu",
+          "python": "3.11.15",
+          "threads": 4,
+          "torch": "2.13.0"
+        }
+      },
+      {
+        "bundle_sha256": "14469d7d25e17885ba65ae3084f39fede02287d9016b63cbf385eed13e775583",
+        "name": "update-00002",
+        "resume_sha256": "25bbbd695535b18a75785b4e3e46b060ad41486d43c3a3e2c4211013acfe23c7",
+        "runtime": {
+          "deterministic_algorithms": true,
+          "deterministic_warn_only": false,
+          "device": "cpu",
+          "python": "3.11.15",
+          "threads": 4,
+          "torch": "2.13.0"
+        }
+      },
+      {
+        "bundle_sha256": "14469d7d25e17885ba65ae3084f39fede02287d9016b63cbf385eed13e775583",
+        "name": "final",
+        "resume_sha256": "25bbbd695535b18a75785b4e3e46b060ad41486d43c3a3e2c4211013acfe23c7",
+        "runtime": {
+          "deterministic_algorithms": true,
+          "deterministic_warn_only": false,
+          "device": "cpu",
+          "python": "3.11.15",
+          "threads": 4,
+          "torch": "2.13.0"
+        }
+      }
+    ],
+    "complete-4-repeat-2": [
+      {
+        "bundle_sha256": "dc7193d80ff9bd30735f0ec37f1f8e0e3c1b0f18bf537fe1f20fefcfa6af3cba",
+        "name": "initial",
+        "resume_sha256": "1b3d772c8162a65e1fda94d01a73968260b8e9414cc71e189732183b6d5cd13e",
+        "runtime": {
+          "deterministic_algorithms": true,
+          "deterministic_warn_only": false,
+          "device": "cpu",
+          "python": "3.11.15",
+          "threads": 4,
+          "torch": "2.13.0"
+        }
+      },
+      {
+        "bundle_sha256": "633ba007b8746a19c270191bbac762f692ce57ed3571e69d827ba2dfaf533edc",
+        "name": "update-00001",
+        "resume_sha256": "b7f77dc9cf680f837150429092871155f9236c9c92caa45cad8b70354fc2ca26",
+        "runtime": {
+          "deterministic_algorithms": true,
+          "deterministic_warn_only": false,
+          "device": "cpu",
+          "python": "3.11.15",
+          "threads": 4,
+          "torch": "2.13.0"
+        }
+      },
+      {
+        "bundle_sha256": "a2c597779a4813ff53595d4c41fa034a0121ba3e2f32c6552c6e292371517d59",
+        "name": "update-00002",
+        "resume_sha256": "ce794d498a5eb6e5b6a056a94ea77cc344f01f6678bae00f7623f72a1270a9df",
+        "runtime": {
+          "deterministic_algorithms": true,
+          "deterministic_warn_only": false,
+          "device": "cpu",
+          "python": "3.11.15",
+          "threads": 4,
+          "torch": "2.13.0"
+        }
+      },
+      {
+        "bundle_sha256": "a2c597779a4813ff53595d4c41fa034a0121ba3e2f32c6552c6e292371517d59",
+        "name": "final",
+        "resume_sha256": "ce794d498a5eb6e5b6a056a94ea77cc344f01f6678bae00f7623f72a1270a9df",
+        "runtime": {
+          "deterministic_algorithms": true,
+          "deterministic_warn_only": false,
+          "device": "cpu",
+          "python": "3.11.15",
+          "threads": 4,
+          "torch": "2.13.0"
+        }
+      }
+    ]
+  },
+  "checks": {
+    "all_16_checkpoints_restored": true,
+    "changed_production_sources": [
+      "game/agent/training/checkpoint.py",
+      "game/cli/agent_train.py"
+    ],
+    "no_partial_records": true,
+    "production_ppo_and_model_math_unchanged": true,
+    "rng_counters_runtime_verified": true,
+    "same_runtime_repeated_trajectories_and_weights": true,
+    "train_only": true
+  },
+  "complete_training": {
+    "1": {
+      "collection_seconds": {
+        "maximum": 25.989238834008574,
+        "median": 25.590720062493347,
+        "minimum": 25.19220129097812
+      },
+      "seconds": {
+        "maximum": 52.31641570804641,
+        "median": 51.813666499452665,
+        "minimum": 51.310917290858924
+      },
+      "update_seconds": {
+        "maximum": 22.873962542042136,
+        "median": 22.86958366667386,
+        "minimum": 22.865204791305587
+      }
+    },
+    "4": {
+      "collection_seconds": {
+        "maximum": 26.49155837483704,
+        "median": 26.248092395369895,
+        "minimum": 26.00462641590275
+      },
+      "seconds": {
+        "maximum": 46.90135016688146,
+        "median": 46.37878514593467,
+        "minimum": 45.856220124987885
+      },
+      "update_seconds": {
+        "maximum": 16.98456025007181,
+        "median": 16.630217104102485,
+        "minimum": 16.27587395813316
+      }
+    }
+  },
+  "complete_training_runs": [
+    {
+      "collection_seconds": 25.19220129097812,
+      "label": "complete-1-repeat-1",
+      "repeat": 1,
+      "report_sha256": "4ef739f7b97eff3561c9e1832dc6e544fc2afc50639bc08fc32981197840e07d",
+      "rounds": [
+        {
+          "collection": 16.588964374968782,
+          "epochs": 2,
+          "kl_early_stop": false,
+          "update": 11.54749425011687
+        },
+        {
+          "collection": 8.603236916009337,
+          "epochs": 2,
+          "kl_early_stop": false,
+          "update": 11.317710541188717
+        }
+      ],
+      "runtime": {
+        "deterministic_algorithms": false,
+        "deterministic_warn_only": false,
+        "device": "cpu",
+        "python": "3.11.15",
+        "threads": 1,
+        "torch": "2.13.0"
+      },
+      "seconds": 51.310917290858924,
+      "summary": {
+        "accepted_decisions": 8192,
+        "components": {
+          "combat_loss": 181.0,
+          "combat_win": 212.0,
+          "end_turn_action": 1725.0,
+          "potion_use_action": 184.0,
+          "win_hp_fraction": 103.59593373493976
+        },
+        "cutoffs": 32,
+        "decisions_per_second": 167.3504406051123,
+        "episode_attempts": 425,
+        "failed_episodes": 0,
+        "losses": 181,
+        "mean_hp_on_win": 39.094339622641506,
+        "potion_use_actions": 184,
+        "processed_decisions": 8192,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task_return": 222.3595933734942,
+        "trained_decisions": 8192,
+        "wins": 212
+      },
+      "threads": 1,
+      "update_seconds": 22.865204791305587
+    },
+    {
+      "collection_seconds": 26.00462641590275,
+      "label": "complete-4-repeat-1",
+      "repeat": 1,
+      "report_sha256": "ba5950fdd6c6ccbe3273ddfb576ae5b2dbba53416a1de22f2a6fb705b3c50120",
+      "rounds": [
+        {
+          "collection": 17.191450250102207,
+          "epochs": 2,
+          "kl_early_stop": false,
+          "update": 8.13170808297582
+        },
+        {
+          "collection": 8.813176165800542,
+          "epochs": 2,
+          "kl_early_stop": false,
+          "update": 8.144165875157341
+        }
+      ],
+      "runtime": {
+        "deterministic_algorithms": true,
+        "deterministic_warn_only": false,
+        "device": "cpu",
+        "python": "3.11.15",
+        "threads": 4,
+        "torch": "2.13.0"
+      },
+      "seconds": 45.856220124987885,
+      "summary": {
+        "accepted_decisions": 8192,
+        "components": {
+          "combat_loss": 181.0,
+          "combat_win": 212.0,
+          "end_turn_action": 1725.0,
+          "potion_use_action": 184.0,
+          "win_hp_fraction": 103.59593373493976
+        },
+        "cutoffs": 32,
+        "decisions_per_second": 189.62445976896007,
+        "episode_attempts": 425,
+        "failed_episodes": 0,
+        "losses": 181,
+        "mean_hp_on_win": 39.094339622641506,
+        "potion_use_actions": 184,
+        "processed_decisions": 8192,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task_return": 222.3595933734942,
+        "trained_decisions": 8192,
+        "wins": 212
+      },
+      "threads": 4,
+      "update_seconds": 16.27587395813316
+    },
+    {
+      "collection_seconds": 26.49155837483704,
+      "label": "complete-4-repeat-2",
+      "repeat": 2,
+      "report_sha256": "d6d01a150f5537adc7faeeb250a7b014674d1795c683cb2f2927daa46915a1f9",
+      "rounds": [
+        {
+          "collection": 17.537766166962683,
+          "epochs": 2,
+          "kl_early_stop": false,
+          "update": 8.156998458085582
+        },
+        {
+          "collection": 8.953792207874358,
+          "epochs": 2,
+          "kl_early_stop": false,
+          "update": 8.827561791986227
+        }
+      ],
+      "runtime": {
+        "deterministic_algorithms": true,
+        "deterministic_warn_only": false,
+        "device": "cpu",
+        "python": "3.11.15",
+        "threads": 4,
+        "torch": "2.13.0"
+      },
+      "seconds": 46.90135016688146,
+      "summary": {
+        "accepted_decisions": 8192,
+        "components": {
+          "combat_loss": 181.0,
+          "combat_win": 212.0,
+          "end_turn_action": 1725.0,
+          "potion_use_action": 184.0,
+          "win_hp_fraction": 103.59593373493976
+        },
+        "cutoffs": 32,
+        "decisions_per_second": 184.58358097134794,
+        "episode_attempts": 425,
+        "failed_episodes": 0,
+        "losses": 181,
+        "mean_hp_on_win": 39.094339622641506,
+        "potion_use_actions": 184,
+        "processed_decisions": 8192,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task_return": 222.3595933734942,
+        "trained_decisions": 8192,
+        "wins": 212
+      },
+      "threads": 4,
+      "update_seconds": 16.98456025007181
+    },
+    {
+      "collection_seconds": 25.989238834008574,
+      "label": "complete-1-repeat-2",
+      "repeat": 2,
+      "report_sha256": "e292b0ccedb1e4ecb7eb163635e2085efc1b87d3f3fdc8b52965563692e3cb6f",
+      "rounds": [
+        {
+          "collection": 17.270981333917007,
+          "epochs": 2,
+          "kl_early_stop": false,
+          "update": 11.521748333005235
+        },
+        {
+          "collection": 8.718257500091568,
+          "epochs": 2,
+          "kl_early_stop": false,
+          "update": 11.352214209036902
+        }
+      ],
+      "runtime": {
+        "deterministic_algorithms": false,
+        "deterministic_warn_only": false,
+        "device": "cpu",
+        "python": "3.11.15",
+        "threads": 1,
+        "torch": "2.13.0"
+      },
+      "seconds": 52.31641570804641,
+      "summary": {
+        "accepted_decisions": 8192,
+        "components": {
+          "combat_loss": 181.0,
+          "combat_win": 212.0,
+          "end_turn_action": 1725.0,
+          "potion_use_action": 184.0,
+          "win_hp_fraction": 103.59593373493976
+        },
+        "cutoffs": 32,
+        "decisions_per_second": 164.73269664033148,
+        "episode_attempts": 425,
+        "failed_episodes": 0,
+        "losses": 181,
+        "mean_hp_on_win": 39.094339622641506,
+        "potion_use_actions": 184,
+        "processed_decisions": 8192,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task_return": 222.3595933734942,
+        "trained_decisions": 8192,
+        "wins": 212
+      },
+      "threads": 1,
+      "update_seconds": 22.873962542042136
+    }
+  ],
+  "deterministic_thread_matrix": {
+    "2": {
+      "maximum": 8.8902068331372,
+      "median": 8.870698832906783,
+      "minimum": 8.857996499864385
+    },
+    "4": {
+      "maximum": 7.96250508306548,
+      "median": 7.906577833928168,
+      "minimum": 7.893158375052735
+    },
+    "8": {
+      "maximum": 9.28632245818153,
+      "median": 9.221403500065207,
+      "minimum": 9.219400082947686
+    }
+  },
+  "final_fingerprints": {
+    "complete-1-repeat-1": "sts_policy_state_v2:ac791882a1222865e911c9082c288aa21e99fdc197bd8ce20b008ee16ab81c5a",
+    "complete-1-repeat-2": "sts_policy_state_v2:ac791882a1222865e911c9082c288aa21e99fdc197bd8ce20b008ee16ab81c5a",
+    "complete-4-repeat-1": "sts_policy_state_v2:1499a13e623f02b39075aa32b9e3d4d6952e8eff2de3e46c663a8e11295bee9a",
+    "complete-4-repeat-2": "sts_policy_state_v2:1499a13e623f02b39075aa32b9e3d4d6952e8eff2de3e46c663a8e11295bee9a"
+  },
+  "initial_thread_matrix": {
+    "1": {
+      "maximum": 10.762674167053774,
+      "median": 10.660556292161345,
+      "minimum": 10.577351375017315
+    },
+    "2": {
+      "maximum": 8.78891162504442,
+      "median": 8.745395375182852,
+      "minimum": 8.729409416904673
+    },
+    "4": {
+      "maximum": 7.684593416983262,
+      "median": 7.454805665882304,
+      "minimum": 7.436117292148992
+    },
+    "8": {
+      "maximum": 8.919342124834657,
+      "median": 8.802899042144418,
+      "minimum": 8.735117584001273
+    }
+  },
+  "inputs": {
+    "baseline_model_sha256": "86ae52e8de67dda771c24500a994cd4d89d44b3485f54c1b146f3cef95cdf159",
+    "baseline_ppo_sha256": "60fa44afe3b9c3011608c019814fe0465087584dcf4b01c00a6f5e9da2588289",
+    "capture_sha256": "4d1826c486306095c1083c0a40fcb54407e75db987f4ae8cde987a826785deee",
+    "corpus": "runs/worker-scaling-20261001/corpus/corpus.json",
+    "corpus_sha256": "14cb472c73c6bf60ccfbeb17d1cd0688a5eb3f036d4ba855f9917df1d4dc2b33",
+    "experiment": {
+      "encounters": [
+        "combat",
+        "elite",
+        "boss"
+      ],
+      "ppo": {
+        "batch_size": 16,
+        "clip_ratio": 0.2,
+        "entropy_weight": 0.01,
+        "episode_decisions": 512,
+        "episode_seconds": 120.0,
+        "epochs": 2,
+        "gae_lambda": 0.95,
+        "gamma": 1.0,
+        "gradient_clip": 0.5,
+        "learning_rate": 0.0003,
+        "normalize_advantages": true,
+        "rollout_steps": 4096,
+        "target_kl": 0.03,
+        "value_weight": 0.5
+      },
+      "schema": "sts_ppo_experiment_v2",
+      "source": "act1_combat_corpus_v2:14cb472c73c6bf60ccfbeb17d1cd0688a5eb3f036d4ba855f9917df1d4dc2b33",
+      "training": {
+        "action_policy": "commit_decisions_v1",
+        "mode": "combat",
+        "reward": {
+          "schema": "sts_training_reward_v1",
+          "weights": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 0.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.1
+          }
+        },
+        "scenario_set": "ironclad_a0_overgrowth_v1"
+      }
+    },
+    "implementation": {
+      "build": "28f9f8afaf8da88edd24a3cb64f665700f64e9d822e6c10c5691a9f86dc3c6f2",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "cb4110d297799c139c5912c30a0e0903630c1c8ab2141eded608b90a7b1e0926",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "model": "runs/combat-fresh-500k-20260930/chunk-15/final.sts-model",
+    "model_sha256": "e87849e68757f03ea2b073f5d5c9410a04bbf183a4b7b8edc5177eb300a70f2d",
+    "rounds": [
+      {
+        "bytes": 34004944,
+        "collection_seconds": 15.339380000019446,
+        "file": "private/rollout-0.pkl.gz",
+        "fingerprint": "sts_policy_state_v2:1e27cfa0fb80517500ef94ebaa1db3bff5c99ff373b302f939d4bd8be07b0c32",
+        "round": 0,
+        "sha256": "b2cb617e4272450e58e474f542912d615c156bb4852893ebc39792541eb722b2",
+        "update": {
+          "after": {
+            "approx_kl": 0.009262003876074232,
+            "clip_fraction": 0.103759765625,
+            "entropy": 0.7650123053463176,
+            "loss": -0.010873480878217379,
+            "policy_loss": -0.014983338965976145,
+            "value_mse": 0.023519965690439903
+          },
+          "batch_input_tensor_bytes": 1312136,
+          "decisions": 4096,
+          "epochs": 2,
+          "iteration": 1,
+          "kl_early_stop": false,
+          "max_gradient_norm": 4.9289021492004395,
+          "mean_update": {
+            "approx_kl": 0.011977896215199735,
+            "clip_fraction": 0.1202392578125,
+            "entropy": 0.7520261692116037,
+            "loss": 0.008443505876130075,
+            "policy_loss": 0.0008960809791460633,
+            "value_mse": 0.03013537238666686
+          },
+          "optimizer_steps": 512,
+          "optimizer_steps_total": 512,
+          "packed_rollout_bytes": 291201772,
+          "seconds": 10.634996792068705,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4017,
+            "nonzero_rewards": 151,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          },
+          "skip_reason": null,
+          "status": "updated"
+        }
+      },
+      {
+        "bytes": 34224311,
+        "collection_seconds": 7.287446334026754,
+        "file": "private/rollout-1.pkl.gz",
+        "fingerprint": "sts_policy_state_v2:3014e9dacbeee39fcfc5dcb213840086ea46d852cd4aef31dfb667d94f2db7b9",
+        "round": 1,
+        "sha256": "626009cc57fac7f38ffd3db27d731df8aaf0488f951c570ec55017c674f29fe9",
+        "update": {
+          "after": {
+            "approx_kl": 0.02117391224203402,
+            "clip_fraction": 0.180908203125,
+            "entropy": 0.7426914083771408,
+            "loss": -0.01503121928544715,
+            "policy_loss": -0.01603150232222106,
+            "value_mse": 0.016854388530759934
+          },
+          "batch_input_tensor_bytes": 1295372,
+          "decisions": 4096,
+          "epochs": 2,
+          "iteration": 2,
+          "kl_early_stop": false,
+          "max_gradient_norm": 4.3717756271362305,
+          "mean_update": {
+            "approx_kl": 0.011291848853517195,
+            "clip_fraction": 0.11572265625,
+            "entropy": 0.7357183947460726,
+            "loss": 6.273949111346155e-06,
+            "policy_loss": -0.004029045438073808,
+            "value_mse": 0.022785007459560802
+          },
+          "optimizer_steps": 512,
+          "optimizer_steps_total": 1024,
+          "packed_rollout_bytes": 288256336,
+          "seconds": 10.762198582990095,
+          "signal": {
+            "nonzero_advantages": 4096,
+            "nonzero_returns": 4014,
+            "nonzero_rewards": 162,
+            "policy": "skip_zero_signal_v1",
+            "replayed_nonzero_value_errors": null
+          },
+          "skip_reason": null,
+          "status": "updated"
+        }
+      }
+    ],
+    "schema": "sts_cpu_update_inputs_v1",
+    "scope": "Train-only captured public rollouts; no gameplay evaluation."
+  },
+  "limitations": [
+    "Repeated timing seeds, not a learning-quality experiment.",
+    "Floating-point thread changes alter weights; exact continuation requires the saved runtime.",
+    "Initial non-deterministic matrix motivated a separate deterministic follow-up; order and thermal/background effects are not fully controlled.",
+    "Complete invocations use two order-reversed repetitions and include startup/recording/checkpoints/tracking/cleanup; no evaluation.",
+    "Larger KL batches and a rollout cache were not adopted; original stopping and skip calculations are retained."
+  ],
+  "measurement_probes": [
+    {
+      "candidate": false,
+      "deterministic": false,
+      "exact_weights": true,
+      "fingerprint": "sts_policy_state_v2:1e27cfa0fb80517500ef94ebaa1db3bff5c99ff373b302f939d4bd8be07b0c32",
+      "label": "measure-128-1",
+      "max_parameter_difference": 0.0,
+      "measure_seconds": [
+        1.9675141659099609,
+        1.9419289170764387
+      ],
+      "measurement_batch": 128,
+      "optimizer_digest": "0f2a174534e18faac0db61930b6550c836d6245a5c1d055f004ecb086ef42b9c",
+      "result": {
+        "after": {
+          "approx_kl": 0.009262003877665848,
+          "clip_fraction": 0.103759765625,
+          "entropy": 0.7650123070925474,
+          "loss": -0.010873477556742728,
+          "policy_loss": -0.014983338885940611,
+          "value_mse": 0.023519965438026702
+        },
+        "batch_input_tensor_bytes": 1312136,
+        "decisions": 4096,
+        "epochs": 2,
+        "iteration": 1,
+        "kl_early_stop": false,
+        "max_gradient_norm": 4.9289021492004395,
+        "mean_update": {
+          "approx_kl": 0.011977896215199735,
+          "clip_fraction": 0.1202392578125,
+          "entropy": 0.7520261692116037,
+          "loss": 0.008443505876130075,
+          "policy_loss": 0.0008960809791460633,
+          "value_mse": 0.03013537238666686
+        },
+        "optimizer_steps": 512,
+        "optimizer_steps_total": 512,
+        "packed_rollout_bytes": 291201772,
+        "seconds": 10.479665500111878,
+        "signal": {
+          "nonzero_advantages": 4096,
+          "nonzero_returns": 4017,
+          "nonzero_rewards": 151,
+          "policy": "skip_zero_signal_v1",
+          "replayed_nonzero_value_errors": null
+        },
+        "skip_reason": null,
+        "status": "updated"
+      },
+      "round": 0,
+      "threads": 1,
+      "update_rng_exact": true
+    },
+    {
+      "candidate": false,
+      "deterministic": false,
+      "exact_weights": true,
+      "fingerprint": "sts_policy_state_v2:1e27cfa0fb80517500ef94ebaa1db3bff5c99ff373b302f939d4bd8be07b0c32",
+      "label": "measure-64-1",
+      "max_parameter_difference": 0.0,
+      "measure_seconds": [
+        1.9459140410181135,
+        1.9448205830994993
+      ],
+      "measurement_batch": 64,
+      "optimizer_digest": "0f2a174534e18faac0db61930b6550c836d6245a5c1d055f004ecb086ef42b9c",
+      "result": {
+        "after": {
+          "approx_kl": 0.00926200387038989,
+          "clip_fraction": 0.103759765625,
+          "entropy": 0.7650122996419668,
+          "loss": -0.010873481907765381,
+          "policy_loss": -0.01498334370990051,
+          "value_mse": 0.02351996550896729
+        },
+        "batch_input_tensor_bytes": 1312136,
+        "decisions": 4096,
+        "epochs": 2,
+        "iteration": 1,
+        "kl_early_stop": false,
+        "max_gradient_norm": 4.9289021492004395,
+        "mean_update": {
+          "approx_kl": 0.011977896215199735,
+          "clip_fraction": 0.1202392578125,
+          "entropy": 0.7520261692116037,
+          "loss": 0.008443505876130075,
+          "policy_loss": 0.0008960809791460633,
+          "value_mse": 0.03013537238666686
+        },
+        "optimizer_steps": 512,
+        "optimizer_steps_total": 512,
+        "packed_rollout_bytes": 291201772,
+        "seconds": 10.496744791045785,
+        "signal": {
+          "nonzero_advantages": 4096,
+          "nonzero_returns": 4017,
+          "nonzero_rewards": 151,
+          "policy": "skip_zero_signal_v1",
+          "replayed_nonzero_value_errors": null
+        },
+        "skip_reason": null,
+        "status": "updated"
+      },
+      "round": 0,
+      "threads": 1,
+      "update_rng_exact": true
+    },
+    {
+      "candidate": false,
+      "deterministic": true,
+      "exact_weights": false,
+      "fingerprint": "sts_policy_state_v2:533497be4e137936b668382e6733830f63ec6b19882d6a2bb2c8f7ed51d5cffc",
+      "label": "measure-128-4",
+      "max_parameter_difference": 0.0020489729940891266,
+      "measure_seconds": [
+        0.947530415840447,
+        0.9448386658914387
+      ],
+      "measurement_batch": 128,
+      "optimizer_digest": "b77911597d19f951f65ca672bfb66c6aeba613884e76009c1bda5fe3cc5ac7e0",
+      "result": {
+        "after": {
+          "approx_kl": 0.009261167084332556,
+          "clip_fraction": 0.103759765625,
+          "entropy": 0.7650059964507818,
+          "loss": -0.010875917330849916,
+          "policy_loss": -0.01498601317871362,
+          "value_mse": 0.023520307026046794
+        },
+        "batch_input_tensor_bytes": 1312136,
+        "decisions": 4096,
+        "epochs": 2,
+        "iteration": 1,
+        "kl_early_stop": false,
+        "max_gradient_norm": 4.928890228271484,
+        "mean_update": {
+          "approx_kl": 0.011977822043519382,
+          "clip_fraction": 0.1202392578125,
+          "entropy": 0.752025697263889,
+          "loss": 0.00844339686409512,
+          "policy_loss": 0.0008959900260379072,
+          "value_mse": 0.030135327092239095
+        },
+        "optimizer_steps": 512,
+        "optimizer_steps_total": 512,
+        "packed_rollout_bytes": 291201772,
+        "seconds": 7.449379540979862,
+        "signal": {
+          "nonzero_advantages": 4096,
+          "nonzero_returns": 4017,
+          "nonzero_rewards": 151,
+          "policy": "skip_zero_signal_v1",
+          "replayed_nonzero_value_errors": null
+        },
+        "skip_reason": null,
+        "status": "updated"
+      },
+      "round": 0,
+      "threads": 4,
+      "update_rng_exact": true
+    },
+    {
+      "candidate": false,
+      "deterministic": true,
+      "exact_weights": false,
+      "fingerprint": "sts_policy_state_v2:533497be4e137936b668382e6733830f63ec6b19882d6a2bb2c8f7ed51d5cffc",
+      "label": "measure-64-4",
+      "max_parameter_difference": 0.0020489729940891266,
+      "measure_seconds": [
+        0.9492318751290441,
+        0.9542169168125838
+      ],
+      "measurement_batch": 64,
+      "optimizer_digest": "b77911597d19f951f65ca672bfb66c6aeba613884e76009c1bda5fe3cc5ac7e0",
+      "result": {
+        "after": {
+          "approx_kl": 0.009261167153454153,
+          "clip_fraction": 0.103759765625,
+          "entropy": 0.7650059890002012,
+          "loss": -0.010875917781959288,
+          "policy_loss": -0.01498601174534997,
+          "value_mse": 0.02352030694964924
+        },
+        "batch_input_tensor_bytes": 1312136,
+        "decisions": 4096,
+        "epochs": 2,
+        "iteration": 1,
+        "kl_early_stop": false,
+        "max_gradient_norm": 4.928890228271484,
+        "mean_update": {
+          "approx_kl": 0.011977822043519382,
+          "clip_fraction": 0.1202392578125,
+          "entropy": 0.752025697263889,
+          "loss": 0.00844339686409512,
+          "policy_loss": 0.0008959900260379072,
+          "value_mse": 0.030135327092239095
+        },
+        "optimizer_steps": 512,
+        "optimizer_steps_total": 512,
+        "packed_rollout_bytes": 291201772,
+        "seconds": 7.379581124987453,
+        "signal": {
+          "nonzero_advantages": 4096,
+          "nonzero_returns": 4017,
+          "nonzero_rewards": 151,
+          "policy": "skip_zero_signal_v1",
+          "replayed_nonzero_value_errors": null
+        },
+        "skip_reason": null,
+        "status": "updated"
+      },
+      "round": 0,
+      "threads": 4,
+      "update_rng_exact": true
+    }
+  ],
+  "profile": {
+    "caveat": "One cProfile diagnostic with overhead; epoch_measurement includes forward/preparation and is not additive to them.",
+    "timings": {
+      "adam": {
+        "fraction": 0.02136175731177869,
+        "seconds": 0.235484293
+      },
+      "backward": {
+        "fraction": 0.17919788394732486,
+        "seconds": 1.975412715
+      },
+      "epoch_measurement_inclusive": {
+        "fraction": 0.3751298511928493,
+        "seconds": 4.1352959170000005
+      },
+      "forward": {
+        "fraction": 0.7043025119122128,
+        "seconds": 7.763976374
+      },
+      "replay_and_collate": {
+        "fraction": 0.04270814882595079,
+        "seconds": 0.47079919900000006
+      }
+    },
+    "total_seconds": 11.023638625000013
+  },
+  "protocol": {
+    "collector_sha256": "fce362d2e0cc8f337cb06642c198ddc53c8a5e2b312f2e3596feac488a30352f",
+    "decisions": 8192,
+    "jobs": [
+      {
+        "label": "complete-1-repeat-1",
+        "repeat": 1,
+        "threads": 1
+      },
+      {
+        "label": "complete-4-repeat-1",
+        "repeat": 1,
+        "threads": 4
+      },
+      {
+        "label": "complete-4-repeat-2",
+        "repeat": 2,
+        "threads": 4
+      },
+      {
+        "label": "complete-1-repeat-2",
+        "repeat": 2,
+        "threads": 1
+      }
+    ],
+    "model_sha256": "e87849e68757f03ea2b073f5d5c9410a04bbf183a4b7b8edc5177eb300a70f2d",
+    "private_plan_sha256": "336f1344fe105ed9a534dcf54e93b7b3218747232455a5acf1609819f814bbc4",
+    "scope": "Two fresh CPU thread settings, two order-reversed repeats each, normal CLI recording/checkpoints/local MLflow; no research model promotion.",
+    "script_sha256": "1cb1781f6bc08cb68b744c2d204b1abf5e8db820edddf51f22557e62f9e4abdd",
+    "source": {
+      "build": "6500f51753dd68f490ef33cbaf59da866efd95dbfa2b02218cb6219250710ee3",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "cb4110d297799c139c5912c30a0e0903630c1c8ab2141eded608b90a7b1e0926",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "source_files": {
+      "game/__init__.py": "f7418cbfa30373d46342a37b0dfe633d3f8871848fd93ddd2d23a33a6977989f",
+      "game/agent/__init__.py": "975d0e6e9b2ad48807c669f14aed2c1f38433d175ff20802f4f42bec94f1b92d",
+      "game/agent/action_policy.py": "191e0d8cc6f7ac1dac535178f7df8cb84f4ac3b33044c94559412777cf9bb957",
+      "game/agent/analysis/__init__.py": "0a645588a9d4540792f29fee9a255efa810c17a328265f0219dc2a96357e32e2",
+      "game/agent/analysis/decisions.py": "6be1cd3c2910a099b09de5c3b495c77dd744e90deb0a25bb8eda4057cacf5d1c",
+      "game/agent/analysis/parallel.py": "f7915e79005c3faef013b7e971e505ec9baf897902aa689bf1a46596d14cb6ae",
+      "game/agent/analysis/report.py": "63fac125839121bae33e1503e8043352088881ac19cb802ac98be555e523bb9e",
+      "game/agent/analysis/server.py": "1d0a11c19984af78add2dc01e6af5b87da90a9fa32a960253846e6bf3c9fdb51",
+      "game/agent/analysis/sources.py": "476c9211630495e5cf0425d75b11c99d630c2dd6cb7707cb7cf870acb5ac196a",
+      "game/agent/analysis/summary.py": "b14bba9f239019a5da5ea668569dd7054bccf3c97fec0a1693cea7b716f9ab7e",
+      "game/agent/contracts/__init__.py": "84f6067fd5eff73e2d6a636441e4769babcc3dec573407c09d9fe5e5ab0b9ff1",
+      "game/agent/contracts/codec.py": "e9acc0f398de7083aebdccdff5e9966858a450eed05c39951ca15af005590abf",
+      "game/agent/contracts/full.py": "aff5e562dbc1c2ebea4c3d2d92e8baa9f75780e3eb0528339aa31c42c40cd8c1",
+      "game/agent/contracts/models.py": "f79cfb6ea29956fd2afcc75281595aa940a7fb472b7db57c53906a2eb3e22833",
+      "game/agent/contracts/validation.py": "c1dc28b09dd046d8538ee4f6a5e01c6cf250359352a26d5515004cbef2246fd5",
+      "game/agent/dataset.py": "f6c6ec85b5926b7671988b4df4e6a757342584dcbce0ed6b817230a697b3714f",
+      "game/agent/encoding/__init__.py": "610c596808c5815647a622498984752d2c1c00b7a4de87c32a05f10a32ddbc9e",
+      "game/agent/encoding/codec.py": "3a4d711dae736230409d9222eaaf6a4b240f339adf4324ccc4bd0a8e5c03d1ee",
+      "game/agent/encoding/full.py": "c3c8895299726548b452124081d261ed9cf71c7bada40d5227302f6820f5b65a",
+      "game/agent/encoding/full_records.py": "92e64123ca371ff3fafa74cc1e6d74b34f9266551a9d7683f4691d5831d175e9",
+      "game/agent/encoding/schema.py": "eb3584ed7b10ca427b187911091484899489483cd85263ec6cd76192095f83ce",
+      "game/agent/full_policy.py": "901246c542280ec3d6c0edcebe970be5a7d4b59e68409369297845a0249a182e",
+      "game/agent/gym_env.py": "fd66b0c44a0736efb8a3a53af7dd4263495c636ae36ac42196ef0746e0a894c2",
+      "game/agent/headless/__init__.py": "6d5e99e1ca1311a6cf43a935af887af909fe9232a415a57a86a4830212df71ab",
+      "game/agent/headless/adapter.py": "3b787430d8417d5d20aa1ff6a169d24cf6df5b04754677fadf3034b654f46edf",
+      "game/agent/headless/cards.py": "e7a1d5af38feb4b4bda2492a3186f35dff856e469b5b7984984b4b4eae9888d0",
+      "game/agent/headless/combat_summary.py": "d6e1d65cfd6a0a691f31ecd9378184c9ac4e3f9959fcac3bbf2e85dfc95ecfaa",
+      "game/agent/headless/errors.py": "e4b0b44f0bca827df52e07284380ffc9151a0b6feebdc0ae0c6244ae6d120686",
+      "game/agent/headless/full_cards.py": "83d8a680e32d79778887e955296a4b55b433ac2f3db209e5308084669604ad9b",
+      "game/agent/headless/full_events.py": "573d67af599874535d5dcb4ff31ef09c9c6e96e6d29fed11688218878651487c",
+      "game/agent/headless/full_projection.py": "f1952e65d114ac53d6abd5ebd31c3d19605e20b5f44b560676693a6e399d4532",
+      "game/agent/headless/full_relics.py": "b9f5d251a384bd253472b4487286ed0899c589b0d28104bccd6e4b02ebb042b1",
+      "game/agent/headless/identity.py": "d58c28d3ccdb369ba806e325c7ba445da74e3ca04c46baecd9e10467b461291b",
+      "game/agent/headless/projection.py": "0b68a3adbe1a1d735e3c113cce2051c382fb7849f6d50dc7991c872360f50425",
+      "game/agent/live_recording.py": "8f9809eb48e1ba01065a5d4ffd7c9991983b765974eaaa6750be581725445221",
+      "game/agent/policy.py": "b09b052d9df94d9300dd35c679e487c6ad9b8aea5114e0f86dc0c8e014066148",
+      "game/agent/progress.py": "5482fd6392a8a3248d5e7b2642dd215157d6c8677fb67d99318bd33691ed60ec",
+      "game/agent/provenance.py": "a910b27c7b61d5e2f00c1451e82f2979c05d32d42fa5190f28dacc7da250d4ee",
+      "game/agent/recording.py": "deb89a52a7b927c6e05f2c612da6ad8b77945e2dcb412891751813a2c9e94784",
+      "game/agent/runner.py": "73137a388908a204b13514ac4cad2d7d64538cd70fb96a8c8d811559ede5b930",
+      "game/agent/trace_compression.py": "eb3ce0d4b1cb1711087e06a2913590371e99224cc861b8ac68fa1313b2e06cd4",
+      "game/agent/trace_storage.py": "153f898eb7d4f0b209cc1c98f80ace41383bb797789da212f1106992cb8aa4fa",
+      "game/agent/tracking/__init__.py": "59f56947f24681f9c5e9b7e3c26d965a9b2694c19f2a7e5b377eb5ff699efac4",
+      "game/agent/tracking/models.py": "d800a7201be0e17ae82bf597e54bdb6cd42f14637d9be861b1083925a5b91736",
+      "game/agent/tracking/records.py": "8b1875b25f457ce7a4fb4afee5f9272f66030a5a1f3efee550d6476b2541f54e",
+      "game/agent/tracking/reporting.py": "5109e9ccb66c23e6dfd60dc9a0a8b9e7bb6516fd9f8e9612dc45020630d60d3d",
+      "game/agent/tracking/store.py": "f44dcbdd032b53276dffebeaad97ab049093eb24ec8cf7de19c376bbac04f5b5",
+      "game/agent/training/__init__.py": "5869d0a1b0218a2d151a67343532395b3ed382db489ca92e3e92a737e48ac13a",
+      "game/agent/training/benchmark.py": "de6f69fcc926ac8e2b42784e23c1c12fa68d3fce715dc091dc4289b4515c7b3e",
+      "game/agent/training/benchmark_suite.py": "42d1eabd5ad9e8c66ce7681857bd840b474c3b4acba4b05f0f85845dc36f4095",
+      "game/agent/training/checkpoint.py": "0d790824cc522216eb363a00b25e658108f8055cd528e2f6612566f839ee5c75",
+      "game/agent/training/combat_benchmark.py": "dd7b25c30127c5f5788b243edb4c9bc0c823f939e351e86036782aca8e80199f",
+      "game/agent/training/combat_corpus.py": "9c81d3a7c6eb814fb4b58d5ab01f53196307e79647563b0815fce8d812ba7719",
+      "game/agent/training/comparison.py": "8c83e5716d43fda8fc077e30b4630ee294299e9dd2847ae2373f5e4410529f79",
+      "game/agent/training/config.py": "5f52ee8062d8a354bb84e8378d2bf77dba016146c21044fd8fad087b4ffb6113",
+      "game/agent/training/curriculum.py": "487a5fb1ecbdbc453b86cd7d57073ab78e033ca0fd29956472330b905c65619f",
+      "game/agent/training/curriculum_run.py": "e8e30c0375d6d76c0324ece47a37bd7cd1e8575c7c15ca855c5666ee340583d7",
+      "game/agent/training/dataset.py": "14099ace01863f75b6cd5b7790b2d021ba5badfdd34a2cf52ff4b1ba1979a04b",
+      "game/agent/training/demonstrations.py": "7f88cf83cbd06579cf14d18e2c2cb4aec5080f28fbe0e4c321465ca9a6bfa275",
+      "game/agent/training/env.py": "5caf50233cf10e05624af35df3249c0e6931e3f5997d6e843b7d0699409f5134",
+      "game/agent/training/evaluation.py": "7f6fcb6f3b247b94b1c95b391240ea148a373a5a432aa1623650737baae745c9",
+      "game/agent/training/evaluation_workers.py": "f92c869f9b0c27831ffc231f90160075ee4848763952d3acaebda04681f9067f",
+      "game/agent/training/features.py": "b6bcaee5068c51e674435f140e57e0a2d010a368a5549917957a59388c3b376a",
+      "game/agent/training/hybrid.py": "27bfa646797272531b2c05dfd79fe8c401eea7eceea30aaec93dde1215bf232d",
+      "game/agent/training/learner.py": "5359fc7fec2e741432b5cce34e7c47bae7f38cf6e7554b079738d03cd8e399a5",
+      "game/agent/training/model.py": "86ae52e8de67dda771c24500a994cd4d89d44b3485f54c1b146f3cef95cdf159",
+      "game/agent/training/parallel.py": "b4c1736f5fd42310d3b3f69286f6011514a6fba54feb11f523b539ffd8396323",
+      "game/agent/training/ppo.py": "60fa44afe3b9c3011608c019814fe0465087584dcf4b01c00a6f5e9da2588289",
+      "game/agent/training/ppo_config.py": "78d94adf80db9f884a131fb4419d2980b4943833bd57213d46addde17147db12",
+      "game/agent/training/ppo_run.py": "2132fa670e1dd28ab78f89b28796911459c9ba1082ad86404390de87fd8e5686",
+      "game/agent/training/records.py": "3701c62182cfe159d5c4bc329e3d01b110fdc02c0256bde9bcbab2834706342f",
+      "game/agent/training/rewards.py": "f32b6e237827a3539304db903e5291ddacdccd79fd85cb286472bc8c2c0e4125",
+      "game/agent/training/rollout.py": "9a26d9da531d91099e13b1943f6eb9e3a82a72b9d3aee87fa31d2f51f4255b4f",
+      "game/agent/training/run_corpus.py": "519b17cb678b8c8f81e422c9f693587d6c10b65313172abcee270d240b464a3e",
+      "game/agent/training/run_demonstrations.py": "468e83f2bb3f66f0addf05bdabc8a88f4c831de2ff58c8fba3319d919e06fdac",
+      "game/agent/training/run_evaluation.py": "5daf9cc49a5553fd9ec4ad887ec22fb9b442d91680d743a5a4cfd106720f6110",
+      "game/agent/training/run_task.py": "9d9f695db190273ab0d049a02dd1dff713466e6c023bef193a8dd25fa37e2584",
+      "game/agent/training/scenarios.py": "db3e34fa89a8807bc403910af8dfe2fbe0cee76deb1609f2d8e37376caf171f3",
+      "game/agent/workers.py": "002a8be4774435c2e166a025a254315860e40046244ecc264be9049c5afefcd3",
+      "game/backends/live/r0i_wire.py": "3733748ed4cd1a328c519c2aebed0e646cad35792d1cd18b28fd7c21e4e58fb8",
+      "game/cli/__init__.py": "141235bf90e18699c530b556eab0e515ea247c7e5a9887b9b4e0f9e842aaf498",
+      "game/cli/agent_analyze.py": "760ca41571859c5a468547f38dbca84ff71e32f0b371498dae49505236fdf1fe",
+      "game/cli/agent_evaluate.py": "6dc8482b37e70bab7b7165b5434129eccd172776c8c4587e99a16e8ca4e3b041",
+      "game/cli/agent_play.py": "9f65ff75c128c81ebcaa4947842f7ce2726adf0d100284222589c8fa8c9ef910",
+      "game/cli/agent_track.py": "e40e15c1fdf421143ba556abe57563e02b757343e4ee6d191c885a1916a8f6d1",
+      "game/cli/agent_train.py": "33769f580afba1658ee1086015c348d0e017f046463d080a6f590e45b725c12e",
+      "game/cli/headless_play.py": "0f889e18ea486f09f6efe6dd76e1b7ffef448a533f268a9bf7b26768ded82c73",
+      "game/headless/__init__.py": "2addd6413cb786f0d549743e7164cbb92d378a611b8fe6b724ca2af6cf434e2d",
+      "game/headless/cards/__init__.py": "2addd6413cb786f0d549743e7164cbb92d378a611b8fe6b724ca2af6cf434e2d",
+      "game/headless/cards/ancient.py": "ce3136417b636273bb9e4cd3e3ed006d9951b29408f7cc1eea23c80b76b9b1e2",
+      "game/headless/cards/base.py": "30c8adc60da542a0a1c379c58b808c7e58106edafddb795b04ba27fbe6c6b986",
+      "game/headless/cards/builders.py": "0da4bc3bbd22d8e56b5f155becc7e19456aae96b89b7c674208af7a4ae183dee",
+      "game/headless/cards/catalog.py": "65e766f0ef0fd6deadbc04f69cd201581352a147633c6a960fc4f4dbe2f30bfd",
+      "game/headless/cards/colorless.py": "e126643bb18e35dc9071b51ea227ba89ff252edff43b0d3e946d943f0e27a0fc",
+      "game/headless/cards/colorless_effects.py": "2b88d653df3a7d152f11df6895ff34ccc48a7934ee881269c22e394ee9776eb8",
+      "game/headless/cards/curses.py": "a1697d6b3812f371653c7ebf19a0e6f0c2a0c9dbcbe2d6e9e04576508fada65a",
+      "game/headless/cards/defect.py": "daad225dc87b1a9d95870abde21aae5b314c39541d2daf12c3b59728017fbcdc",
+      "game/headless/cards/defect_effects.py": "ce4a0ab00106ca188392ad2da9b13db0caa75053784508138769bc1570eb09f3",
+      "game/headless/cards/effects.py": "1b5740855ab03a2552791eee5a2996be0d3551e7b4a1829df238ac49a77652ee",
+      "game/headless/cards/event_cards.py": "b56ea4d11a603d9dc327f1b90c08e931d0c0c65dc4b8d4327812244fada26b00",
+      "game/headless/cards/event_effects.py": "4a267152c19170c7a8e158778aefdba666d789ea58c681a261c516291ca06733",
+      "game/headless/cards/extended_events.py": "f39227d3c6235c7e84d901279ba97e6059f95c0bee5d7a4a3875636ee3d48311",
+      "game/headless/cards/hive.py": "45bff59e3d7c6434189cdae23a988ff4faf587e67f10e019f72b2721844ccbb5",
+      "game/headless/cards/ironclad.py": "05e0cab0ad207c7d5a606e16f99bb5055f5d28ff7ae4594c8cffbdfc032792b6",
+      "game/headless/cards/ironclad_extended.py": "eb7a7a0292836a484817a2a314f7a1cf858ead1da3927d7a63aaefd2e88c89bc",
+      "game/headless/cards/ironclad_rare.py": "ba0c053654b135c6175360509aea352e1b509354c4979fddcf4e9c6f48977d27",
+      "game/headless/cards/necrobinder.py": "498497d4686497fd53781ab3868550ccafe56c058ce70e50dff34987cf5e0e08",
+      "game/headless/cards/necrobinder_effects.py": "11b6be00f9b0e5e40cd894f0567d98a285f588d92c8a862fab281fcbc4893f6d",
+      "game/headless/cards/operations.py": "60bead5b4087d985dd31972f9410ace9050c30043627f83c6ea1dfb75baf11fb",
+      "game/headless/cards/orb_effects.py": "ae438c3645e565fbe37f1a34be973c06cec0b201fd61ecee66568e2cd8c89899",
+      "game/headless/cards/osty_effects.py": "333e752252fea5aac9a73e92f9555dbb5d8acbc7309fedb203b2780eb9760bdb",
+      "game/headless/cards/pools.py": "c54cd9dcddb9c31a2ebce8185e877b04485677d62866ca1b3a7d63e6ad66a40e",
+      "game/headless/cards/regent.py": "4275f5d415d1252249c529dcf45ac6a0c0546fad54b3b8993dccc5c1ee228fce",
+      "game/headless/cards/regent_effects.py": "c7ebcdad6c8bc10ca6f5f2c7037d8b91a638d4af3fc015a73b39465fef281afa",
+      "game/headless/cards/silent.py": "4823d090f4e6c6af382605d56fa4f7e52b731cc758319e299c6e658231b0d7f3",
+      "game/headless/cards/silent_effects.py": "094bcbd68334e0181b87dd068e0b498ecdc6f2b8d63b8e97517934fad34d01cb",
+      "game/headless/cards/special.py": "721ead6675228adb40d3b5789ad1d3a10f4c8c6fb1b152703f38e4063613557f",
+      "game/headless/cards/status.py": "a08599756e4f04a431c0cd6c9823117de869178806900fb86d5130b78d933382",
+      "game/headless/characters.py": "e2a928fc06e301a9b2c4021813f52acd36fd966c9043cbacf085868b17a626f8",
+      "game/headless/core/__init__.py": "2addd6413cb786f0d549743e7164cbb92d378a611b8fe6b724ca2af6cf434e2d",
+      "game/headless/core/actions.py": "b3832cae51e021c4941d4a5d6c965f6b6d081526505f4fbd05ed32d6716f6ef9",
+      "game/headless/core/afflictions.py": "ed3b9aa43268ccb920b64726ec7f49e9a203796be77111d21c882bae4119926a",
+      "game/headless/core/ascension.py": "1556d8ff2e5ab6a851c247c6ec1483d0abb2ed53490d2ce02f331cda7bae4313",
+      "game/headless/core/autoplay.py": "9dc77c6a0f44c34d0bedb184bba962398fcab03b7448fce743a53c5dd23c4aee",
+      "game/headless/core/card_costs.py": "43e291e8053e47e9774576ce2ec916573ebca2ba635d759294ad6c01a8725e9a",
+      "game/headless/core/card_state.py": "119885c89bbfc2b35bb3cd528a0c9cfecb28509893ed312eafc38234e48c4b01",
+      "game/headless/core/choice_snapshots.py": "0e6c6823d3ec9d8d6bf8a10d1c7bd5711315b1127a931763a7aaca5d2168486d",
+      "game/headless/core/choices.py": "748a1e1f9f1009e8438921d744176e7ec2b02315e13754490390ee2a70ba79f6",
+      "game/headless/core/combat.py": "58f662671ce55b951d04c599730a2b734ec725ecbff01e98577caeda01054562",
+      "game/headless/core/content_order.py": "6cb5f6a2146e50f91de0060f67c7ae966767ada7d971bfaf5b3517df0189c2b2",
+      "game/headless/core/content_snapshots.py": "f7b8548ade930e3b88f1f798e6bc796c94dd2278409b6b05d850c63c9bba7f5c",
+      "game/headless/core/deck.py": "9dae39dcc12ba7ed4a5b5a1b0d7d2d240d1b7fe388a6ceeaa0d9d96c008b5fb1",
+      "game/headless/core/defect_snapshots.py": "a19fafcf9e4c3df8092acd794ec992f34fb0d295b7065366223639c3be0cf3e1",
+      "game/headless/core/discard.py": "d65d405d0d2bfd2d5e7fde6fdeb4fcb05c8b277acebfdddeea6e987ea859b356",
+      "game/headless/core/draw_hooks.py": "df0785837b144efadeac14111737d5e8ea6fbbfef010b49a595b7810329157cb",
+      "game/headless/core/enemy_lifecycle.py": "c3bda9df97d9f46d7ba724d24f0c6566f5f6153ed832821ba62a3adfa6689af4",
+      "game/headless/core/enemy_turn.py": "2a4964b9fd0087d9bf5fc29c83a55c19924772900930894dbd0c7b1e3bf1703f",
+      "game/headless/core/hook_scheduler.py": "7dc38ef90c7c979367f71b49f88543f9a4547ee714e8b805a4ac5c09de772553",
+      "game/headless/core/hook_snapshots.py": "9e40187c561bf5a7d56a9c4ba900a2386e5ff160394c7f0bae76cfbea16a789e",
+      "game/headless/core/native_rng.py": "83376811d1f52e630928086417ded7d8f31dfb512bc968e7257d7c8aa7e8a6a8",
+      "game/headless/core/native_service.py": "485fc79827033c001fd7d05a62a6e479d739a96b494c318bb16bb492271b9e69",
+      "game/headless/core/native_shuffle.py": "5a23f95f4b97d0cb207a00a17ac330b509193037897ce01287b9882d551ad024",
+      "game/headless/core/necrobinder_snapshots.py": "445ec6b89a407b98c06adae6d80c2668fb574ee0eaa2eeefe743491c81408b59",
+      "game/headless/core/orbs.py": "7c3d748e5eab58a50493579aca3070600f3ce96724dc9d8dbcab3df34b9b4681",
+      "game/headless/core/osty.py": "213406e60b92aa3d4916607ff1f642c32c3499eaa7ebe10ae8f7eae4f069370f",
+      "game/headless/core/piles.py": "e2af1d8128e6da151ffe3570b3a5289e5bde2741c5344c1f8cb7770e4347b795",
+      "game/headless/core/player.py": "9837de702b0da6b359fe8c890e4d0ebc42bd6fb7ecbca55868b2c5fdca2094e7",
+      "game/headless/core/regent_snapshots.py": "bc38bf786b65923858865ecfb6cd99605a1fa23512b651d0714d1d5c17637e67",
+      "game/headless/core/resolution.py": "a51a17ac870efc119f1bfd523bb2d591346b87b8de51cc71d7b6df79761348db",
+      "game/headless/core/rng.py": "cd7ed6c55854240660ddf100b28d3ae96b44e126b63d8be7e08a36ee1af365f4",
+      "game/headless/core/rule_snapshots.py": "e83a34113a904c89de66020878a69a86307e1ed5e2030a27d530ac15ddb02369",
+      "game/headless/core/selection.py": "a8ea9b8716b2e033c75c733152cbcaedc3a37807f5c4602b7884b46e060be07a",
+      "game/headless/core/silent_snapshots.py": "d3f365eae18940db725f90e547d5880b6aa3ce30ad83313be0b339b410fa6244",
+      "game/headless/core/snapshots.py": "af0c8256e7479d35aca8372b62a667f3f73f165578f183bcdd24d7ac1ce830ae",
+      "game/headless/core/state_records.py": "08bccd4250835aa09da1e0af286411e00464ec807c1367316995e8d7095dc1d7",
+      "game/headless/core/utils.py": "b3e6b9a1067d4427ec19d9c9ab8879fdc6375bb718b8948f0a33f5b84d433ee6",
+      "game/headless/enchantments/__init__.py": "159356b9c06fe83dc9deb1f890706351b6ab7d4af7dc6e0a172048b3b1ae23b8",
+      "game/headless/enchantments/base.py": "04bb1d0684298637862eeff90814d7f9d623bb09d71d315987f1d6d70f213428",
+      "game/headless/encounters/__init__.py": "2addd6413cb786f0d549743e7164cbb92d378a611b8fe6b724ca2af6cf434e2d",
+      "game/headless/encounters/base.py": "9ef11102dccf0525c119b8a28daffdd13665fecf6a30d924dccb67306acfcd04",
+      "game/headless/encounters/catalog.py": "b63749811fbe1fc326580e5d359b4bfef8e3d4ab33855c155c49928c3bfedb20",
+      "game/headless/encounters/events.py": "fd20c2e0a96c711479a2c5ca6c3a98730e4b6f4179f07b42bb40df25c9f7acd9",
+      "game/headless/encounters/extended_events.py": "47a6d0a39f804706b4daa8d9c2e177fea7d2fb273e70547e3d9f9d6b70d58751",
+      "game/headless/encounters/glory.py": "f2c2cf9dd9496c6b5254c4f6116ae2939767252309a75a2ae558859265197657",
+      "game/headless/encounters/hive.py": "f3cd58e20869e4e009ad008dab160a661757069675d101ec306d43828765f173",
+      "game/headless/encounters/loot.py": "33740b20ac51dde3184db5e9ce02278f44b6bb0c94a3abe1b767fcd019289d57",
+      "game/headless/encounters/overgrowth.py": "19c722501cdf5071c67cd6b201139c71936ffbeb4f398cfb5c0f1afbf74cf4d5",
+      "game/headless/encounters/progression.py": "fd2c155ff4f3f621de41e7c5c706f0f001f05bc90a58eb9ec76935b9f97f5805",
+      "game/headless/encounters/randomness.py": "73cc51acac209f8b9b2cfb637302a407c5b9a8b8828a9723c88ba409e95e15c2",
+      "game/headless/encounters/theft.py": "61ac01caae4a70a5a6959d291676b5a7bae03576bfb3601f80af9576002bb289",
+      "game/headless/encounters/underdocks.py": "710d4406dc6dcfb186378badea59ef4b42c2188f3ebb8e3380d8ce967f41cd4b",
+      "game/headless/events/__init__.py": "2e9bb682da793cb482bc48b26a716a26251f7ebb555898bff1378ea81e9c95a9",
+      "game/headless/events/act1_content.py": "2cbbda68e2b73b98a863f0c1852f5df27fe4465549a8dcdb584b2a976bcf5abc",
+      "game/headless/events/ancients.py": "6d46a106ea199cf2bd084f4325f05abdd0321c244a7b288eadc514d3d304d56e",
+      "game/headless/events/aroma_of_chaos.py": "deb5758b44a5ef07ad5ec1963f1b43211b6065d038075232a92912c89fec3ad1",
+      "game/headless/events/byrdonis_nest.py": "550a8b597a62102c90dc36a60480fd10aaa213f67b88000f331eebff99c21a9d",
+      "game/headless/events/catalog.py": "6e4ab4b22c4b6a0cdbc34b7d8e973d0c19817d3eec267b5ad4cc01d1e7aaf871",
+      "game/headless/events/checkpoint.py": "78ac411f1bed0558d04a2042567f58d822aab993e8af2c69b8b54b965d77c595",
+      "game/headless/events/combat.py": "d2fd119a3d0451f4d95eed4df470655b0c30547df52a261eb57a3c9ffd0d4ddb",
+      "game/headless/events/combat_layout.py": "9d7cd3315098dce17cc96161f76ceae0a29889d59f2ee65a16e09a8115a272ac",
+      "game/headless/events/crystal_validation.py": "0967f5be25c9129ce4cb91e07a2089d8fd63a06c61240ba510f354bb84413ba8",
+      "game/headless/events/deck_choice.py": "74012e5d5909a8d9e242d7f61e2da05fcc9fe3dbae06243fea3c8b93103ad73e",
+      "game/headless/events/dense_vegetation.py": "25568ae517e22ed0e05d929ebaf33723bd3f1bdea1e36725da7b74b29cbce843",
+      "game/headless/events/eligibility.py": "c7a279c5a00da1af250680c673ef8abd048611043efdfd1d490292844d99b409",
+      "game/headless/events/fights.py": "2927db99e91d8444c836406554af28f28752093d0a88e8a1263ecec8e4b11876",
+      "game/headless/events/flow.py": "f175cf886a675d57fcf8b047d2f6cc517de40881141a3bfe71d90393591158a5",
+      "game/headless/events/jungle_maze.py": "7c4448ae5dbbc7d597a3e79e46b9c9871b569ea955ac69dd2cd43626a9d345ca",
+      "game/headless/events/minigames.py": "144c4e9697214be8318785ce935d614e3d70e49df87c8119fab6de1f903509e8",
+      "game/headless/events/morphic_grove.py": "da17570768c9ce81dd50b9c2675eecc9637cf7bab682ba67a773c1a553bb5088",
+      "game/headless/events/operations.py": "2ed7f64b284b777b1478cce971dc79bb0e50ce253f82cc99f65d21df69ad952e",
+      "game/headless/events/potion_context.py": "393585a4ea1183bfdc25131b5ac575aa87e44c368076118fd2afd9e3cc7eb64e",
+      "game/headless/events/potion_rewards.py": "5ca84c1f365bd4140d0cb2feaafbee1232ae5885776833de2e22d7e5b4432569",
+      "game/headless/events/progression.py": "b2db1e467f7441c36f982cebbd49970b57e9a821931ac96f73adb3de628a190b",
+      "game/headless/events/resources.py": "2ee27f4cd7cf4ff2b6339ee0d5224320615cb4ea34331aa5c560dcb8dd8a3194",
+      "game/headless/events/reward_batch.py": "05f060ce3822171dfa1822c719826027172b72a2a6cba9169cc2e090829551ce",
+      "game/headless/events/roster.py": "548c1d42eff06b19f90da12f410511409f0e44b4a2b4ed70e1710becddb97b8c",
+      "game/headless/events/safe.py": "a62e67f5eca49637ff0f33fbde566416eb38bdaff2177d7e412fb729934fbe93",
+      "game/headless/events/sapphire_seed.py": "af2342736d127cdfd06cd70144a5cd45e1608f8e4e5e2c60bd0a95e79f44ccc9",
+      "game/headless/events/slippery_bridge.py": "87b18b022704cf7c1982c3e46f66e58a867936bcc939e1f248f01244f2541dc0",
+      "game/headless/events/social.py": "d07794be2d7f71771b761cdb0f39107f08528aad0e85a92776e7b1a08a78fb93",
+      "game/headless/events/special.py": "15fc130632ec8534700574988d2d949810ffea6cc8c15877a0dddd451f5dab54",
+      "game/headless/events/step_snapshots.py": "ad7c7a244ee7326b84c91ec6bc072e14ae3a3b2e85c7c764f73a908b88c6bbf2",
+      "game/headless/events/steps.py": "643697d320e48787e85fc6dbf97275df34b385437a68a8984603210b07963aea",
+      "game/headless/events/sunken_statue.py": "3548faedfbbeb2ca6532e857747bbfbd27a53f4bd4d61bf03b08166052b47aea",
+      "game/headless/events/tablet_of_truth.py": "411ba616d5690be915023f7088db47d2d1b10ad3df7fb072dccfc85efb13dcd7",
+      "game/headless/events/transformation.py": "3e6da5ef9dc65d1b7dd81dfb142c26acff22167f844be141f1fe024b44f8a974",
+      "game/headless/events/wellspring.py": "06b69853e0a1c166af4f455af3d1931ec09b7ac13bd1b0c1f2ed377690539cbf",
+      "game/headless/events/whispering_hollow.py": "56f386e9a090e3e267e172cd07554a596b07b7f25a48fc9fa80bef0492af2c21",
+      "game/headless/generation/__init__.py": "b9aa4d8171db0387d03b5246da87e9d883b2f54aa2f16ad7a9b20b4ef38f0d95",
+      "game/headless/generation/combat.py": "5c524d2210440c586f8e0369b60e738496a9b8c178f03c359e4d789e69a071b4",
+      "game/headless/generation/foreign.py": "6613be20467bb5e4e51509af4995007fabf04b8653bd9baea7136cfcfb562216",
+      "game/headless/generation/initialization.py": "b5e90a2f8648f4e385b3b02c7c52fd2dd3bbbf15a0451985330906529e7d8d9a",
+      "game/headless/generation/merchant.py": "ac97281c14339e4d039256467e9adcaccc42476fe60d46c89a6e81aa9f76fe26",
+      "game/headless/generation/odds.py": "fbf31166e00ab7d4e2e853cc6132bc5378c44967902711b63e39bdf3ea8ed64c",
+      "game/headless/generation/relics.py": "bc1e26596dd6088eb8b013de5c14683c89b5480b215c058cfda68b004d0a84b0",
+      "game/headless/generation/room_pools.py": "304f73a3b587b6902e0daa914e5658171194359f82d13e67e21519c5399b52ac",
+      "game/headless/generation/transforms.py": "18e96bd60aba695237ee00e5645480fce4343428cd20bbb0b4d1126f6bf7a441",
+      "game/headless/map/__init__.py": "2addd6413cb786f0d549743e7164cbb92d378a611b8fe6b724ca2af6cf434e2d",
+      "game/headless/map/act1.py": "22a1a81a2030c6f69c543c689fff21f2a2c1f317f8368a1f3134b830ee9546da",
+      "game/headless/map/golden_path.py": "2f74a17b65cf5292ac48ef0e2c1c751a47c2838483a1369328fb59828cd8df3e",
+      "game/headless/map/graph.py": "da3a1687d4598bd48c696769d45a4cf6d638d7e2154266d167a313c7dd2990ea",
+      "game/headless/map/overgrowth.py": "ac176be2c4f298c1944582a7bc89b29de0260dc7f8ae9c4b4cbf53a35cd5ea75",
+      "game/headless/map/postprocessing.py": "bea819d78cafb28f4768ad92b5efd3959d04908901ea288a38727c251a5997c1",
+      "game/headless/map/pruning.py": "75b4ecc93ca2981224a49fa2f58b6516891226b13a9cf0c72398fedc079007c8",
+      "game/headless/map/spoils.py": "af34f49c3cec16329537aca29c5ab2765d47d3373555a8434da56e2a3eb8aa62",
+      "game/headless/map/standard.py": "199816ef1bf4e4dfdaa0f41b5c85ce74dee5f08400c74c6a05251301e6f57415",
+      "game/headless/monsters/__init__.py": "2addd6413cb786f0d549743e7164cbb92d378a611b8fe6b724ca2af6cf434e2d",
+      "game/headless/monsters/ascension.py": "f0ae43c5daa34b78519a484d5fd1a8ca3f12530d33de0a96375730b65cf40d7e",
+      "game/headless/monsters/ascension_moves.py": "a13e748ff6b7731cf21ed94ff98aa045b8e1ac97d49ce7e3fd742fa4b242be75",
+      "game/headless/monsters/ascension_values.py": "d20ceb0a816af564bb03e9fd3269249f58d7a1e7b24ca77180c365766dd16ec8",
+      "game/headless/monsters/base.py": "80915cc9b2d25bf51fbdac2a88d0c3cbb3e39547451b153eed37a93af0a942a4",
+      "game/headless/monsters/bygone_effigy.py": "e46386f0d9e209ac5fac7acfbef14d17660602bc4e0b7d9edd664b00940d6d01",
+      "game/headless/monsters/byrdonis.py": "f4bdac191b01047a5492a421b41ce7d0a7d367b7d6e020a9990f083213edbbd6",
+      "game/headless/monsters/catalog.py": "4eee5bb8f3ef42815546e65e6dbc19f85e8f3caba8f5ba59936fbfeeea02648c",
+      "game/headless/monsters/ceremonial_beast.py": "18a92127d1d84b2d18692f97f62a9a0c5fefd31f1dfaa86220e4a3b641c02809",
+      "game/headless/monsters/event_monsters.py": "6aa04b3daecf812c3f4b627d98316332f1da9b5ea368fdf27fdf257a3e197ed9",
+      "game/headless/monsters/fogmog.py": "dba2c55d18f7e89696416d896a2793de142a737368133c596a5f6552043e80b6",
+      "game/headless/monsters/glory_bosses.py": "abbacb8664959f2875957089afc7340ef9e6a987e13a2298f88371a170aac129",
+      "game/headless/monsters/glory_elites.py": "8e124b38d452ed8d8879bba7a48f1ba30a4db543dc78eb8ea2c18fe256132c25",
+      "game/headless/monsters/glory_normal.py": "40c6c71a8b4b84b5ba91de8b12354e83c1b2bdcdb15fb0562dda381201af83c5",
+      "game/headless/monsters/glory_summons.py": "b179db52cf33b70a1c0738aafac070a77ee6a40dd423f95b85b9005ebeca0dce",
+      "game/headless/monsters/hive_bosses.py": "517527d6c929c7c2fe2e956f6b6fda60f6e55308345e4f515ff99cd293f43713",
+      "game/headless/monsters/hive_elites.py": "c1ec3f183ac3d296f11aba9397bfbe98b2f824c39e8bcadf82b3722420c60f08",
+      "game/headless/monsters/hive_hopper.py": "5ba0401ce90b2cdb9fc70a71e0735c37f0054c516d7c00c023879edfaba97998",
+      "game/headless/monsters/hive_normal.py": "fca48db019a6c61565961c15d0e70fda918a490eb2e0c7a3a86a5e3bb6dbcfa4",
+      "game/headless/monsters/hive_summons.py": "2b67a88f33cd03c5bac432fee3f77be820012a8c7cd60dff3c41d243a0795c7c",
+      "game/headless/monsters/interrupts.py": "4e5ef2b8f02338e4e7bfac88076612cfdf145c510595c8887befde14791474a0",
+      "game/headless/monsters/kin.py": "2fcb2bff0c0d902570d091b9887db3126b4baa7a117214f45d5a71e0309b6d42",
+      "game/headless/monsters/overgrowth.py": "90ac63bb963ab81240eab9defa243ee1f3ca307ca8c750dde4fdde25329651f4",
+      "game/headless/monsters/overgrowth_normal.py": "ccfe800723041755065fc508ef1cff841e65150b224de205dc253524ca47b906",
+      "game/headless/monsters/phrog_parasite.py": "08b9dea16246dbbde3a5f47b25f3ca904d08747acb12770b15fe6a3960c2f7b7",
+      "game/headless/monsters/ruby_raiders.py": "d688e7d8fb936c8b34accc956d78f5d402d73f0931120ddbfa2c9195a9b3bf18",
+      "game/headless/monsters/scripted.py": "e0b8d54a454956a7012a5735d7b876267deb1762558ddb84ee1e13f058e789aa",
+      "game/headless/monsters/underdocks_bosses.py": "ca4fc32169b8d5ac62bc8311785066f91be68e232ee1b309a03575eaa74a3a0f",
+      "game/headless/monsters/underdocks_elites.py": "92040a2e9cdcc84211d494532c7030679d95349497a354e1201cdd99c502f69a",
+      "game/headless/monsters/underdocks_normal.py": "b0e267619c7a2aa936410907c57529f48068a76d0f4c691330559c7cbaddaa5e",
+      "game/headless/monsters/underdocks_summons.py": "43b639f63a0d8f83eb26b8e1bb1786124cffa2f93c45257073734ab5c339b454",
+      "game/headless/monsters/vantom.py": "a564d66424ec69443addf89952edc3b66b9c5290432cb16c386120a5e5e177f5",
+      "game/headless/potions/__init__.py": "b605fe51f6fe49d5a53b5611ac1ad7f7ad43ab4de8cb1aec2d035f4202dc8ce2",
+      "game/headless/potions/base.py": "0c7fbe1f45edac1bc7f3f248cab5a4b7aed928b58682031a9990f3327edab150",
+      "game/headless/potions/character_effects.py": "8598f08811d1bec5d8292fecf76d86e4a5aac8da244d75d7c2c40ce827f3f435",
+      "game/headless/potions/combat.py": "dfa8d0cc636bf3f178389c5a7189684cfda8f4778549fd10f3ad359821a9ef47",
+      "game/headless/potions/pools.py": "ff97c3df44017f63738b7e31173068accc752c81e79cf1673edd90a2ae3f15ef",
+      "game/headless/potions/powers.py": "b8ab69df1039b011c9fdd3a9f7924680b9f9dc0dcd8c1727dca1af7ac3a17d24",
+      "game/headless/potions/selections.py": "274daa1dbdae39d2701d7cd1905a7b6c95786f450b99bf19836a988c0df5d77c",
+      "game/headless/potions/snapshots.py": "716593ea82a693cb704dda8b2049fbc9316fd06941065e63376be10bc31c8e10",
+      "game/headless/potions/use.py": "4e1c636a10b5522e5edd3d18641a996b9410daf48660d3149c51798a225c70ac",
+      "game/headless/powers/__init__.py": "2addd6413cb786f0d549743e7164cbb92d378a611b8fe6b724ca2af6cf434e2d",
+      "game/headless/powers/colorless.py": "d725604f3747ea0895a2d391f2ebeeae2ae629203be4597980640b077864e245",
+      "game/headless/powers/damage.py": "3819f2f92cc9f071af397a860b0d2ee8f537d6ad63a8e9c43161169308ff1b89",
+      "game/headless/powers/defect.py": "26322977752b6beac80b1c018911cdb8b25ad3385e53456e59e88773409c34ee",
+      "game/headless/powers/glory.py": "a2a4bfd0709c361fb435a76ed80ca0557776b7ccb897c8baec233b8440b5a62c",
+      "game/headless/powers/hive.py": "fa7d8d6c4b1bbd9289b0760927b6a361fc7ad882145b34faf8033f56743e0414",
+      "game/headless/powers/ironclad.py": "b5d97531f0a97b7a35846de5847e7f0651076c9e5d549130b96fc9ee11c493ca",
+      "game/headless/powers/lifecycle.py": "eabc2f81ed2a67b7ace4c27ca6b80fca3b832ffd19da110bc21b8d1d2a52215e",
+      "game/headless/powers/necrobinder.py": "e516b60bebc0c72859ad287999be3e88b1c207bdc8b88e1f035449dad4a86167",
+      "game/headless/powers/necrobinder_damage.py": "2ca89fd4f4aa97fccc5b286131a4b4fc45da3df8db50edff8a022fc8b8155418",
+      "game/headless/powers/regent.py": "a48f2d34fc1930129d38d29f1d3b22b4f90a9ef39f6900cc1a9069573bd6f832",
+      "game/headless/powers/silent.py": "413d3ce92b99bbec62d57df87f83dde7cc82856b3909874079b428e557166164",
+      "game/headless/powers/status.py": "8077aa32fd64796f741ba5d629d4ae6ad72ad0f274375e1ce859043e11e85a45",
+      "game/headless/powers/turns.py": "c9093c0548a83b12fbacce5509e2ba703723e202f764460b9e6b69a7b1b767a8",
+      "game/headless/powers/underdocks.py": "40a612b7b1f6afa35e6444bebfb963850e96880c3f18667c1e744e7d605cb642",
+      "game/headless/relics/__init__.py": "d796c39efea01c1ec6dac7421de55c5aefbd1fa1a4de668956383ceba32dbaec",
+      "game/headless/relics/ancient_combat.py": "8d76e7d27db758a0e1e47f7f51caa83a0ca8082dc747738b505142aa34ff57e0",
+      "game/headless/relics/ancient_content.py": "f7173359a1b6a793fd758ead01540e98d950f24cd1e0b37ee00bb2488bc0e769",
+      "game/headless/relics/ancient_map.py": "0b3aca3a736ec557b7f7bbd2a62fd99ae0914edcc7060ec3a63f450b57bdc38b",
+      "game/headless/relics/ancient_pickups.py": "15578a72bf7a5404f439ae5c584b12eeb1dc88a82daa7266b2602d58786cfdf0",
+      "game/headless/relics/ancient_state.py": "474c5482f3b0320069f2a5101ad86ea4fc6eac466dac7bf5e47cfee74ac716ea",
+      "game/headless/relics/base.py": "6367ee10a68c4d45e9175ebc519d56c96bd413456f20d81b81d7fd74897fe293",
+      "game/headless/relics/character_content.py": "47b6112591d68d44eeaad31e5a04e1b77de1ee9bb23b12f3e4a94ae0e25c7182",
+      "game/headless/relics/character_hooks.py": "28e62aad79bc3e3f325c31e8421d84213cf4a49ac1e25726483571720ea0d1f6",
+      "game/headless/relics/choices.py": "501532407ad7761b95d8b8dec9d10228e3d1f3d6784c17ff312458650dd49ab2",
+      "game/headless/relics/combat.py": "76ed7478e217516a38a179d90d5ff4b3b2d272871418ff751cbe9d2b34c9e2c0",
+      "game/headless/relics/damage.py": "9a239f3ce9b9863a5ea9285791daafcfd9ac8e133016f2358a365cabd43c6aaf",
+      "game/headless/relics/eligibility.py": "bd27b91ab80019786367b6c1899ecc197ffe575e97fb5f08a888ff64f5c752fd",
+      "game/headless/relics/event_content.py": "c3904b640f2e16af12a10870df7747350b12a8186b553640b979252ea468e564",
+      "game/headless/relics/neow.py": "33e22b0e438dd32665177e508d2ec9a350145ae47cf73061934f5b6953473c8b",
+      "game/headless/relics/pickup.py": "b629926ab32dad0ef0fc1baea081e92eddd3b1f20e6f71ecd4a39756e12c1959",
+      "game/headless/relics/plays.py": "c5672985143c73eaf4f89d0c4bc6cb5dac3c6f55e593f8aa3fc40016d90bd2b6",
+      "game/headless/relics/pools.py": "6da7ee6a51a1941613d9b24d2905e396be49f739a868d9ab894aed5f52f2acf7",
+      "game/headless/relics/reward_alternatives.py": "abd8ac968892c888940fff887b44b951eef9f92b62c726241cebda1ff7380eb9",
+      "game/headless/relics/rewards.py": "4bcd56fdff64d2e723d2a05e5e9f894b78cdc38e550a3276efa73d91ef776477",
+      "game/headless/relics/run_rules.py": "b6483a7d735e7578cebaf6948f0f1b94f917bb0fb29e75481b69b01ee30db2de",
+      "game/headless/relics/turns.py": "bb0449ef0296ed774d81bf35b9c54182b516e89ee2397b8d5f8f8a49fc14fafe",
+      "game/headless/run/__init__.py": "2addd6413cb786f0d549743e7164cbb92d378a611b8fe6b724ca2af6cf434e2d",
+      "game/headless/run/actions.py": "147b57789e165836b11a73ec7896be1c82e746f67afb666b7ea935dd8143d6dc",
+      "game/headless/run/ancient.py": "5b1046aa4b75989f3970a2dd45610b0b1acaca3efdc78f9d8281f5a49ece7dc2",
+      "game/headless/run/campaign.py": "4320a3995a06e5edf4d3c112f0581524d65d82e6413ef0b70d6b3c9c50fae657",
+      "game/headless/run/config.py": "0539cd1644e54c8b7b8d4ab5dfcb02ec6df4fbfce9528aec6c1a722f72a40ebb",
+      "game/headless/run/deck.py": "18219a5047562e42fb3fd4fe5e38a9ac04fc31abbe0dc477461906e969ae9586",
+      "game/headless/run/engine.py": "cdc5671acb072b92500597d557cecd2be1ae537b3eed8fcd0542af789ef9254c",
+      "game/headless/run/epilogue.py": "e348e9a97349c67fb0669025e12e55643969275a8284c0e44ab0908e5b5a2aa0",
+      "game/headless/run/event_combat.py": "4b69803c1126b4ebf0a788fac1aa8191ac4b9de0965ab26a79908b60e559c6e9",
+      "game/headless/run/events.py": "19939be97e2ce01de729bf4c864161d99fb37e10f06bb05ae0dea02535ebd2bb",
+      "game/headless/run/flow.py": "86debf1a9b0ed8e98a700f8d31320e97481352e06a218550613fe1cd55874d22",
+      "game/headless/run/hatching.py": "797915d26e2d4fe7e8afe7e6ddf2427e90b068f9797d0b8489c10155696cd35d",
+      "game/headless/run/inventory.py": "353abb21fa24314107e27136736002233e63bf4dab8cc1b29a2d0ffb0e244752",
+      "game/headless/run/lifecycle.py": "53da249e9ff95642da6b3c076fb9b9af00c2dd6145fbe8e0f44eec921b76538a",
+      "game/headless/run/map_travel.py": "f7a12a34904c0caf0317d918286fc66a6018d1a81b24ff4cd3acd57f6e1afec6",
+      "game/headless/run/removal_rewards.py": "4fd9b56c49bc149e735be6e8749f01561e0a1f740dcf1c75a8bb442380bdf673",
+      "game/headless/run/rest_site.py": "be4f09d3def47aa288ba0d22a0c6706d645736dd98df32a67b3a0c2bdb457ca1",
+      "game/headless/run/rewards.py": "d9e2dd9a4972f0b616c0f4914a20db428afd1b16c2803de07f13536a8a582cce",
+      "game/headless/run/rooms.py": "48aa77045152fdf7b9b1bd15bcee63d817b6eab1bd314a9faed1452bcffba492",
+      "game/headless/run/scenarios.py": "447db9884ef13b67525ea9f436db2582474da73469902bfd91a84cec03466e75",
+      "game/headless/run/shop.py": "ea74da749a41e91d4a598c203525ddfcbae5625b2f3a119b5d475a5d2bca27f8",
+      "game/headless/run/shop_validation.py": "708ad19b1b142620e027a7711f6f64438e4c3f8944a6f518b4f9b32f8210c4f3",
+      "game/headless/run/snapshots.py": "2241c849b178daf18f28a541debcd1f26ace4b015afb62326d55ba95bb6d5d07",
+      "game/headless/run/spoils_map.py": "d75f76d52f7bc04288dd930d06c29e872ab12bd732e881467f8ac5c2658eb5ae",
+      "game/headless/run/state.py": "8799d1f84de234c014bbbecb89e4a33b615e27f1e687cb1a534edd35f0b602ed",
+      "game/headless/run/treasure.py": "e138a2a4d5f0b028d20867455bbf209139fbad09d65bbe0a63ba5f6812a91d66",
+      "game/headless/run/treasure_validation.py": "a73121b62c8bb2f570cb255756ed90371ce5f6b249cde36c7249ea3852ea6099",
+      "game/headless/run/unknown_rooms.py": "e8ac15a5ed200facaf043571e7c9f0204ec0724860067eebfa45bd46c0877bc7",
+      "game/headless/shops/__init__.py": "2b7a842b6f0b4a626cd023d1b142681ca4638e92e7f6811ab5c1ae488a362ca5",
+      "game/headless/shops/catalog.py": "0802b1c4929e9b424a7b3a8d6efb3f7b88a742927ed4981d293600a8072fb39b",
+      "game/headless/treasure/__init__.py": "6d66f2b05a9c7c3cebcd87ac9a0c2963a9907030607b570d8bc40877f52cbfcd",
+      "game/headless/treasure/catalog.py": "e7b4860e87794da96b2c0c63e07f984e12117a7b9026238d8ffa83d07fec19e1"
+    },
+    "workers": 16
+  },
+  "publication": {
+    "experiment_id": "4",
+    "figure": "runs/ppo-cpu-update-20261001/cpu-update-comparison.png",
+    "figure_sha256": "c360a58992b82f490936e82f5261156db4f7092910968ec4989ca8882a8be5ae",
+    "runs": [
+      {
+        "label": "complete-1-repeat-1",
+        "metrics_verified": true,
+        "run_id": "b847417946fb4cd7837b6d7a0e344d87"
+      },
+      {
+        "label": "complete-4-repeat-1",
+        "metrics_verified": true,
+        "run_id": "d34b0b624d1c4054ace62bdf36f821f1"
+      },
+      {
+        "label": "complete-4-repeat-2",
+        "metrics_verified": true,
+        "run_id": "890a77aadf074052b129337246d371c9"
+      },
+      {
+        "label": "complete-1-repeat-2",
+        "metrics_verified": true,
+        "run_id": "ef93f6e7e13c4b279a61a6ddaecdd186"
+      },
+      {
+        "label": "update-replay-threads-1",
+        "metrics_verified": true,
+        "run_id": "78e0fef0b8dc424598f6e49ccc8615e7"
+      },
+      {
+        "label": "update-replay-threads-2",
+        "metrics_verified": true,
+        "run_id": "98c514fbad2e4e24a2d583fe08f1567c"
+      },
+      {
+        "label": "update-replay-threads-4",
+        "metrics_verified": true,
+        "run_id": "8711e5b65fdc492d8d5f0d5e46a0217f"
+      },
+      {
+        "label": "update-replay-threads-8",
+        "metrics_verified": true,
+        "run_id": "03f19ad517de4357bfc7db831fd3ff2e"
+      }
+    ],
+    "status": "complete",
+    "url": "http://127.0.0.1:5050/#/experiments/4/runs?searchFilter=tags.sts.benchmark+%3D+%27ppo_cpu_update_20261001%27"
+  },
+  "review": {
+    "findings": [
+      "Fresh CLI permits 1/2/4/8 learner threads; >1 requires strict deterministic operations.",
+      "Checkpoints bind thread count and enabled/warn-only determinism flags; normal private-state restore checks remain in force.",
+      "Saved settings are validated before configuration and explicit count changes reject.",
+      "Spawned collectors remain at one Torch thread; in-process collection shares learner thread count.",
+      "CLI restores caller thread/determinism settings on success and failures.",
+      "PPO/model math matches retained baseline; full-batch KL and zero-signal skip checks are unchanged.",
+      "Three deterministic four-thread probes match exact model fingerprints, Adam digests and shuffle RNG.",
+      "103 distinct focused tests passed after a test-only missing resume_path setup fix; no production fix was needed.",
+      "Frozen replay is an explicitly separate public-data benchmark and cannot start games or repin a stale corpus."
+    ],
+    "limits": [
+      "Cross-thread weights differ; exact continuation is supported only with the same saved runtime.",
+      "Owner separately verifies complete CLI benchmark artifacts."
+    ],
+    "reviewer": "/root/ppo_cpu_update_review",
+    "reviewer_ran_tests": false,
+    "scope": "CPU thread execution, determinism, same-runtime resume, CLI ownership, unchanged PPO/model math and bounded benchmark semantics",
+    "status": "no_blocking_findings"
+  },
+  "rollout_signatures": {
+    "complete-1-repeat-1": [
+      "cc0d498f3f61a33eef43ea94f120e2cf3963c9ffa5001f48e092313a6671b38b",
+      "3d085cbe479130c0b0d18ad3d7d9ef97a7ff95220c46c3baa239ce5ead0fa206"
+    ],
+    "complete-1-repeat-2": [
+      "cc0d498f3f61a33eef43ea94f120e2cf3963c9ffa5001f48e092313a6671b38b",
+      "3d085cbe479130c0b0d18ad3d7d9ef97a7ff95220c46c3baa239ce5ead0fa206"
+    ],
+    "complete-4-repeat-1": [
+      "cc0d498f3f61a33eef43ea94f120e2cf3963c9ffa5001f48e092313a6671b38b",
+      "d21d8985dbfa9f3ba52825950e9700d55473ba5d8933bd0208e66b27e41c912e"
+    ],
+    "complete-4-repeat-2": [
+      "cc0d498f3f61a33eef43ea94f120e2cf3963c9ffa5001f48e092313a6671b38b",
+      "d21d8985dbfa9f3ba52825950e9700d55473ba5d8933bd0208e66b27e41c912e"
+    ]
+  },
+  "schema": "sts_cpu_ppo_update_optimization_v1",
+  "status": "complete",
+  "timings": {
+    "audit_seconds": 1.0860048329923302,
+    "capture_collection_seconds": 22.6268263340462,
+    "complete_training_seconds": 196.38490329077467,
+    "cpu_tests_rerun_seconds": 5.21,
+    "elapsed_seconds": 1049.7067997455597,
+    "focused_tests_seconds": 45.28,
+    "preparation_seconds": 43.433877707924694
+  }
+}

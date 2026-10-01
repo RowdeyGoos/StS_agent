@@ -1,0 +1,3464 @@
+{
+  "artifacts": {
+    "runs/worker-scaling-20261001/analyze.py": "fbf6b73b14878ccaa9e318b0593a74bddef77af141d98f4de072057587a3ae2a",
+    "runs/worker-scaling-20261001/benchmark.py": "fc295cc4c289344e0e176d0b1f999e74fcd10d6d25deed369c320d81df351586",
+    "runs/worker-scaling-20261001/intent.json": "18d9a0bef848532db2290ece4f46e4045d12bd1ada67bc18e3a57ab5e861b32c",
+    "runs/worker-scaling-20261001/preparation.json": "5d9cd0a4820cc31d366a32affa85eefc1ad5e131a6554b0c5fca459a88067e01",
+    "runs/worker-scaling-20261001/prepare.py": "acc4c7635ec2652f2270b994fc9167d65732610106a27c6d1863be741ceb1e9c",
+    "runs/worker-scaling-20261001/protocol.json": "6657d10fcd72d493342f42a7433c88c0ed5c9618b7cedcd239b6cb93135138d7",
+    "runs/worker-scaling-20261001/publish_results.py": "a4e50672330786cfa01a6f9a147682cff6d985fe1fc651e18db38ec53c8a4513",
+    "runs/worker-scaling-20261001/results.json": "bc6b4d94a84a95a33fcd5cfd50010d46d963d4a18fe3fa9b3fb56db542077616",
+    "runs/worker-scaling-20261001/semantic-review.json": "af50da1e572fbbe435ccbe0a8ca8e1fd9021d8bb338edccbcaf5095c56bf9b2e",
+    "runs/worker-scaling-20261001/tests.log": "867589ad6e1020aeff1d3ac67b69ce5e6706ae5da44d85632291a31765fa75bc",
+    "runs/worker-scaling-20261001/tracking.json": "1ea311dec562e50f221f2bd06bc88cbce5a1eb45857327e07037e6f420b984e8",
+    "runs/worker-scaling-20261001/worker-scaling.png": "b06dc0deeb552489bec48b39b9964c246308eb1f2efa99a671b442d3f701e155",
+    "runs/worker-scaling-20261001/workers-12-repeat-1-result.json": "1f683dcc5e98331785154ab98283ccc8ab6aaf81faf75afd8e3207af22b64bb9",
+    "runs/worker-scaling-20261001/workers-12-repeat-1/ppo.json": "6eecd9c76be6180d7a7098964e009453f9943371d1078110a48ca9f1f54b0995",
+    "runs/worker-scaling-20261001/workers-12-repeat-2-result.json": "1cf82ee5458482c3159cd398b46486b2f75e87a3b4bbed166d975e4a4aa1659d",
+    "runs/worker-scaling-20261001/workers-12-repeat-2/ppo.json": "80fe314e8ab75cad4077eb84429f2d9a746f66c1a4a44353af59cf19ac2f8598",
+    "runs/worker-scaling-20261001/workers-12-repeat-3-result.json": "58e9b053996742dbdb1d1a7de02b9762ca0a26ad94b27d0f5503af1eb65c6c40",
+    "runs/worker-scaling-20261001/workers-12-repeat-3/ppo.json": "b4d6ef7ee78dbf7d8e6ba0fe04c267ad26464cc5feb85ef04419a024535dcc50",
+    "runs/worker-scaling-20261001/workers-16-repeat-1-result.json": "c59211c14813694aa06045dcee6543c077bc7c2fd493b2651261cb84e5c1bd9d",
+    "runs/worker-scaling-20261001/workers-16-repeat-1/ppo.json": "9c3f3e4be0ba7a80d7103716153a2382cf1e85c23317f1b6692f49e55473796f",
+    "runs/worker-scaling-20261001/workers-16-repeat-2-result.json": "48b750cef8611d110818e832dcf8f3dde24d9cf8ef391bfb0c943d2272c88b46",
+    "runs/worker-scaling-20261001/workers-16-repeat-2/ppo.json": "d37dd821b485313c584ecfbad6b108ec7530619bccd5cb8b6539b558dff097e7",
+    "runs/worker-scaling-20261001/workers-16-repeat-3-result.json": "a1c9d89b0bb7d22af56c53c5b5ef320da11366e6425897fc38787439a58e8bb5",
+    "runs/worker-scaling-20261001/workers-16-repeat-3/ppo.json": "5a3dd6c897406654b40252ade740bf17c01954051c2ea639d87f968b1d39ecb9",
+    "runs/worker-scaling-20261001/workers-8-repeat-1-result.json": "184fd464ddd3d110779e03ed1b42c1578fde6e22c37b4b845d60f9c60b304bfd",
+    "runs/worker-scaling-20261001/workers-8-repeat-1/ppo.json": "b7514f7fcd7e7dba24b42258e07ce00fcf3932d9c9383356e3ff501f057580d9",
+    "runs/worker-scaling-20261001/workers-8-repeat-2-result.json": "60750c24fcb2678ab6dcda704a0ed2a9d2c4dd2eac3a456ac9772461531d6cb5",
+    "runs/worker-scaling-20261001/workers-8-repeat-2/ppo.json": "c8d4640bf3d60e61ffee82813054c7669c4779bc76240f2bb0ed5909a180ebc1",
+    "runs/worker-scaling-20261001/workers-8-repeat-3-result.json": "c003bcf8655999be705d35b040355ced0a4a1e7d060a3795d22f43fff4979472",
+    "runs/worker-scaling-20261001/workers-8-repeat-3/ppo.json": "8d7cccc69a84398014d8fab30de9d60e52816ef3b301eabf9f64beb11b3acd5c"
+  },
+  "checkpoint_checks": {
+    "workers-12-repeat-1": [
+      {
+        "decisions": 0,
+        "model_sha256": "80bc2392a7e72f5f59af492dc223ad52aa80f9ddc651ea324cb9ecb0a949d720",
+        "name": "initial",
+        "resume_sha256": "d52a864b022d21302d267862d8cbc0cf2433bee0e9e114fa2ac59ccf93efb2b1"
+      },
+      {
+        "decisions": 4096,
+        "model_sha256": "d94955aea959824ea2ae3de8c4e9bea88995b14bed6b5c491f97f80f609ff3f2",
+        "name": "update-00001",
+        "resume_sha256": "535d6175d82a57b3939c239eb143e006c518f9944dae9b810ea06a65e11928b1"
+      },
+      {
+        "decisions": 8192,
+        "model_sha256": "d2a74ab517fc824e7bccb405f41e050c9ac187f0f1705b80f97787f5918006d7",
+        "name": "update-00002",
+        "resume_sha256": "3ce25cad7f64a37a64f9235427163801bb4ab5de1b7d83e05544cb954077cc2a"
+      },
+      {
+        "decisions": 8192,
+        "model_sha256": "d2a74ab517fc824e7bccb405f41e050c9ac187f0f1705b80f97787f5918006d7",
+        "name": "final",
+        "resume_sha256": "3ce25cad7f64a37a64f9235427163801bb4ab5de1b7d83e05544cb954077cc2a"
+      }
+    ],
+    "workers-12-repeat-2": [
+      {
+        "decisions": 0,
+        "model_sha256": "1786e65470c5d5f0d8c7522236589903516a85739b429f9fcfa23794aa759087",
+        "name": "initial",
+        "resume_sha256": "f4bc03153c27886f195ccff370b7d10fae07c75f2fd2567549fbff715f141207"
+      },
+      {
+        "decisions": 4096,
+        "model_sha256": "ea2b7ea5983dddd6ae371726080a23c715a32c9f126c1ec0300e7491194912f6",
+        "name": "update-00001",
+        "resume_sha256": "31d3f69f686bd4fc601532f86716a2dcd5cedde287fb834bf8e0772c3122ac0a"
+      },
+      {
+        "decisions": 8192,
+        "model_sha256": "eae4359411201f86489d60a51a5f79e6f4a9a381c7ef99fe055d7194aa89d82a",
+        "name": "update-00002",
+        "resume_sha256": "b90161f75a543f526df37b63b7644e28c66202c251e1a05fa7d14ab03020a8e5"
+      },
+      {
+        "decisions": 8192,
+        "model_sha256": "eae4359411201f86489d60a51a5f79e6f4a9a381c7ef99fe055d7194aa89d82a",
+        "name": "final",
+        "resume_sha256": "b90161f75a543f526df37b63b7644e28c66202c251e1a05fa7d14ab03020a8e5"
+      }
+    ],
+    "workers-12-repeat-3": [
+      {
+        "decisions": 0,
+        "model_sha256": "cb83dd2e3821cb7fa66b15af2aa55bcbc769f27d8b1ffb3be6d228f8795fc71f",
+        "name": "initial",
+        "resume_sha256": "2583838c1fedd197941f822811a3c891715afb90e9977c3c5ec3fd7cbb650660"
+      },
+      {
+        "decisions": 4096,
+        "model_sha256": "a02821b7af2eb82d5faf3c9ed1051233603a5f2ac3ac32d12e4622ae3b2eba27",
+        "name": "update-00001",
+        "resume_sha256": "7fd56514477f4ce3947263f18272eb16330071b285c0d93b93e752bf7444c01d"
+      },
+      {
+        "decisions": 8192,
+        "model_sha256": "34b91ea41495e338f9743a01a1942327e1f3abaa596f578f6b369932ac5ad6c2",
+        "name": "update-00002",
+        "resume_sha256": "6c8789f09e557f534ace9fc35bab2ef886347eacea71d74a716ecafa00c0e12f"
+      },
+      {
+        "decisions": 8192,
+        "model_sha256": "34b91ea41495e338f9743a01a1942327e1f3abaa596f578f6b369932ac5ad6c2",
+        "name": "final",
+        "resume_sha256": "6c8789f09e557f534ace9fc35bab2ef886347eacea71d74a716ecafa00c0e12f"
+      }
+    ],
+    "workers-16-repeat-1": [
+      {
+        "decisions": 0,
+        "model_sha256": "c241aff9cbae54ad2ea8e5c05e1d66adf5325b782cdfd45a3e07091f7dbf5e64",
+        "name": "initial",
+        "resume_sha256": "4414adaefa41ae4d58ece010f901c3d3e96b22d8895500a196116bbab8a7e146"
+      },
+      {
+        "decisions": 4096,
+        "model_sha256": "d7f8e792708716b73aec52c9cdd7a97112c056fb850724f2f5d9ee232e7a79bb",
+        "name": "update-00001",
+        "resume_sha256": "2251a65ffe23d5f3b1b2d7071c59472802a4454c99efa5cba5ed9752c775bba8"
+      },
+      {
+        "decisions": 8192,
+        "model_sha256": "8b97f6d7f589e3f6339895b14afa5d8db2785e750475d7ef88e7aa780502aaf0",
+        "name": "update-00002",
+        "resume_sha256": "5ee9f5c39486a0236ebe839c21d85fa74691e57aa6b38b848fea66a3b2fb4d43"
+      },
+      {
+        "decisions": 8192,
+        "model_sha256": "8b97f6d7f589e3f6339895b14afa5d8db2785e750475d7ef88e7aa780502aaf0",
+        "name": "final",
+        "resume_sha256": "5ee9f5c39486a0236ebe839c21d85fa74691e57aa6b38b848fea66a3b2fb4d43"
+      }
+    ],
+    "workers-16-repeat-2": [
+      {
+        "decisions": 0,
+        "model_sha256": "6e5900d92b7c120f7c338a0151a10079e312b071e73809237d49feb61e406a57",
+        "name": "initial",
+        "resume_sha256": "129b0ad7d73631f904c3f194969bcec265852acaf26de2073c8099282ee174af"
+      },
+      {
+        "decisions": 4096,
+        "model_sha256": "3890aaf4a1a4fbcc64fa4b219b64268618cc5f1cd3d36917624f05b81bb09d6c",
+        "name": "update-00001",
+        "resume_sha256": "90963f23d7f9b4216fd03d648798d272bc4304c42ef6f834a1d16ea03cc4e669"
+      },
+      {
+        "decisions": 8192,
+        "model_sha256": "5c5a376890070bf8f0c83b2a2c4274d388f721e82eb8f444f0f88b785efe8f82",
+        "name": "update-00002",
+        "resume_sha256": "0358dfda2dc06b956b09a2f40ca59837bac707fc8460aaed9e7f329fec2ae5d5"
+      },
+      {
+        "decisions": 8192,
+        "model_sha256": "5c5a376890070bf8f0c83b2a2c4274d388f721e82eb8f444f0f88b785efe8f82",
+        "name": "final",
+        "resume_sha256": "0358dfda2dc06b956b09a2f40ca59837bac707fc8460aaed9e7f329fec2ae5d5"
+      }
+    ],
+    "workers-16-repeat-3": [
+      {
+        "decisions": 0,
+        "model_sha256": "b8b7e337c0b4cc7d9823f9e4771770b7839aa9f2b1a2172f68baa972d1aed3e0",
+        "name": "initial",
+        "resume_sha256": "0f5883bf3d75165014323bf4f107e58cd979f0409a408e0c78a5bf4b5a9c8458"
+      },
+      {
+        "decisions": 4096,
+        "model_sha256": "1f28f664b5f691c956b191678453bdf24419ecc5b918335cfcd923fe6022b739",
+        "name": "update-00001",
+        "resume_sha256": "20422e4dda04828abe21bdc372a7007fd6dfb02af46bdfcd6f9107864670d571"
+      },
+      {
+        "decisions": 8192,
+        "model_sha256": "9b1f9a01b80881c643100396745f17c909a4a07b767966ccdf0eb303942b577c",
+        "name": "update-00002",
+        "resume_sha256": "f4400ffe78cab4d530fe116ff3bf3e4ded7568f33db0efa976249a75285c4e04"
+      },
+      {
+        "decisions": 8192,
+        "model_sha256": "6dd86754fe045d96a2e8d26a2c8c9798233152d1e13b1288f42eb1a62ec0fdc0",
+        "name": "final",
+        "resume_sha256": "b1132dc0124b7bdda227d72b727a5cbade5c755396b1eb96bae245c4d0654bd8"
+      }
+    ],
+    "workers-8-repeat-1": [
+      {
+        "decisions": 0,
+        "model_sha256": "22ca6d8e9c973d12e65f93311bddc8d12bd87e63ded43ff3b1c427d902909974",
+        "name": "initial",
+        "resume_sha256": "abf170f2c822cac82b3b4442a82ecf46e79883c13f28ab582600341abc5f90e0"
+      },
+      {
+        "decisions": 4096,
+        "model_sha256": "cc25ab20b953184bd334b575e910a952139632ef9c404199990dc2afeb687531",
+        "name": "update-00001",
+        "resume_sha256": "fe5822fff535871e1a88e86647b05a889bd7313d741acf98b004c8039f7bc96c"
+      },
+      {
+        "decisions": 8192,
+        "model_sha256": "b8b361cf7766990b56792b93526ca34b6c1d295037758f647416ad199d54c9f7",
+        "name": "update-00002",
+        "resume_sha256": "7c3b3548dbfc397bb67e336c439d0262a5b3940668d2558b1eaa7879dbe2e788"
+      },
+      {
+        "decisions": 8192,
+        "model_sha256": "b8b361cf7766990b56792b93526ca34b6c1d295037758f647416ad199d54c9f7",
+        "name": "final",
+        "resume_sha256": "7c3b3548dbfc397bb67e336c439d0262a5b3940668d2558b1eaa7879dbe2e788"
+      }
+    ],
+    "workers-8-repeat-2": [
+      {
+        "decisions": 0,
+        "model_sha256": "edba83752f9f6b43b3c15ad9e7643d91524bdcc8291f659f7cf7c7a737d0c857",
+        "name": "initial",
+        "resume_sha256": "a3d773e1a80969203a73856bbc98b524aa1478dbe9fe39302a4c464c884c25ac"
+      },
+      {
+        "decisions": 4096,
+        "model_sha256": "8c920bf165fc726dfdda719b009189fdea70cc4e43cbbeaa2a8df83b7283be55",
+        "name": "update-00001",
+        "resume_sha256": "204a3eb96622046ad851929d66656c1f5e46ecfc78212ea3799fb0c5e8007b92"
+      },
+      {
+        "decisions": 8192,
+        "model_sha256": "af718e29295115d12888a86998e5506dc2561abcf1e2986c14ef4143f35e815a",
+        "name": "update-00002",
+        "resume_sha256": "75d662156f815d12382b42e1f8768828072690ca5962dbf56f49f1c74d138404"
+      },
+      {
+        "decisions": 8192,
+        "model_sha256": "af718e29295115d12888a86998e5506dc2561abcf1e2986c14ef4143f35e815a",
+        "name": "final",
+        "resume_sha256": "75d662156f815d12382b42e1f8768828072690ca5962dbf56f49f1c74d138404"
+      }
+    ],
+    "workers-8-repeat-3": [
+      {
+        "decisions": 0,
+        "model_sha256": "359f3ffaa243382f271843dafd27ef68b353142483b985344afc8c4728cad5da",
+        "name": "initial",
+        "resume_sha256": "056af9a1cb645df7fdd349c8131f9d7a464a34d5d74804b5e7e1393505ac15da"
+      },
+      {
+        "decisions": 4096,
+        "model_sha256": "6f4dfef1206cf1acc4f4801c53b73f028a3d02078fc8d1cd4b813b45f2a773b8",
+        "name": "update-00001",
+        "resume_sha256": "ccb97655b44c3bcc68641af0061b9800ca8fc20931f4599b886e4938cbb1eaab"
+      },
+      {
+        "decisions": 8192,
+        "model_sha256": "e79d81a66c6e2c89fd414e15739ea9ed27f30b3fce604618468e119091a33d05",
+        "name": "update-00002",
+        "resume_sha256": "36aafee114c0fb8094c26c99056498eded6d1819133f984cbab6106a0eee3e8f"
+      },
+      {
+        "decisions": 8192,
+        "model_sha256": "e79d81a66c6e2c89fd414e15739ea9ed27f30b3fce604618468e119091a33d05",
+        "name": "final",
+        "resume_sha256": "36aafee114c0fb8094c26c99056498eded6d1819133f984cbab6106a0eee3e8f"
+      }
+    ]
+  },
+  "checks": {
+    "all_checkpoint_bindings_verified": true,
+    "comparable_optimizer_work": true,
+    "no_partial_records": true,
+    "no_test_evaluation": true,
+    "only_production_changes": [
+      "game/agent/training/parallel.py",
+      "game/cli/agent_train.py"
+    ],
+    "private_rng_and_cursors_verified": true,
+    "repeated_trajectories_identical_within_count": true,
+    "repeated_weights_identical_within_count": true,
+    "train_partition_only": true
+  },
+  "independent_review": {
+    "findings": [
+      "Allocations retain contiguous disjoint reserved episode ranges and stable worker-order action seeds.",
+      "Deterministic worker-index merge and local quota episode endings preserve GAE boundaries.",
+      "Exact resume retains the same saved worker allocation.",
+      "The real 16-process regression verifies closed checkpoint restoration, next rollout, weights, RNG and cleanup.",
+      "The harness uses sequential child sessions, production run_ppo, normal recording/checkpoints/local tracking, bound source identities and no retries.",
+      "The 900-second child budget and 960-second parent bound retain bounded session-scoped cancellation and cleanup.",
+      "Controller wall includes up to 0.25 seconds of polling and reading the child's timing report; spawn time measures dispatch rather than all initialization."
+    ],
+    "owner_post_run_verification": {
+      "checks": [
+        "All nine repetitions completed with 8192 trained decisions and no failed episodes or skipped updates.",
+        "Both rollout signatures and final model weights match exactly across all three repetitions within each worker count.",
+        "All runs performed two epochs per round and 1024 optimizer steps, with no KL early stopping.",
+        "All 36 actual production checkpoint/resume pairs passed restore, source/state bindings, saved worker allocation, counters and action/shuffle RNG checks.",
+        "Training episode origins match this corpus's training partition; no test evaluation and no partial records.",
+        "Only production differences from the preceding experiment are the PPO worker bound and CLI help."
+      ],
+      "status": "passed"
+    },
+    "owner_test_log": "54 passed in 36.34s",
+    "reviewer": "/root/worker_scaling_review",
+    "reviewer_ran_tests": false,
+    "scope": "PPO collector limit from 8 to 16, deterministic seed allocation, quota/GAE boundaries, same-count resume, cleanup and benchmark ownership/measurement.",
+    "status": "no_blocking_findings"
+  },
+  "interpretation": "Timing repetitions, not learning-seed evidence; sample streams and episode cutoffs differ across worker counts.",
+  "protocol": {
+    "architecture": {
+      "hidden_size": 48,
+      "message_layers": 2,
+      "schema": "sts_graph_actor_critic_v1"
+    },
+    "batch_size": 16,
+    "collector": "runs/act1-increased-500k-8workers-20260930/chunk-15/final.sts-model",
+    "collector_sha256": "fce362d2e0cc8f337cb06642c198ddc53c8a5e2b312f2e3596feac488a30352f",
+    "config_sha256": "b15560a3588db2c7abb74aa08463c2aa82ca2209523ac4b33e0e9721e88b7621",
+    "corpus": "runs/worker-scaling-20261001/corpus/corpus.json",
+    "corpus_coverage": {
+      "by_encounter": {
+        "dense_vegetation_event": 4,
+        "overgrowth_bygone_effigy": 7,
+        "overgrowth_byrdonis": 9,
+        "overgrowth_ceremonial_beast": 5,
+        "overgrowth_crawlers": 1,
+        "overgrowth_cubex": 7,
+        "overgrowth_flyconid": 2,
+        "overgrowth_fogmog": 2,
+        "overgrowth_fuzzy": 13,
+        "overgrowth_inklets": 6,
+        "overgrowth_jaxfruit": 5,
+        "overgrowth_mawler": 4,
+        "overgrowth_nibbit": 12,
+        "overgrowth_nibbits": 3,
+        "overgrowth_phrog_parasite": 11,
+        "overgrowth_ruby_raiders": 5,
+        "overgrowth_shrinker": 10,
+        "overgrowth_slimes": 12,
+        "overgrowth_slimes_normal": 7,
+        "overgrowth_strangler": 5,
+        "overgrowth_the_kin": 2,
+        "overgrowth_vantom": 4,
+        "overgrowth_vine_shambler": 5,
+        "underdocks_corpse_slugs": 4,
+        "underdocks_corpse_slugs_weak": 12,
+        "underdocks_cultists": 5,
+        "underdocks_fossil_stalker": 5,
+        "underdocks_gremlin_merc": 6,
+        "underdocks_haunted_ship": 6,
+        "underdocks_lagavulin_matriarch": 3,
+        "underdocks_living_fog": 6,
+        "underdocks_phantasmal_gardeners": 9,
+        "underdocks_punch_construct": 5,
+        "underdocks_seapunk": 5,
+        "underdocks_seapunk_weak": 12,
+        "underdocks_sewer_clam": 5,
+        "underdocks_skulking_colony": 6,
+        "underdocks_sludge_spinner": 13,
+        "underdocks_soul_fysh": 3,
+        "underdocks_terror_eel": 8,
+        "underdocks_toadpoles": 10,
+        "underdocks_two_tailed_rats": 4,
+        "underdocks_waterfall_giant": 3
+      },
+      "by_enemy_power": {
+        "artifact": 19,
+        "asleep": 4,
+        "demise": 16,
+        "hardened_shell_remaining": 22,
+        "illusion": 4,
+        "infested": 36,
+        "intangible": 3,
+        "minion": 18,
+        "plating": 20,
+        "plow": 14,
+        "ritual": 20,
+        "shriek": 25,
+        "shrink": 4,
+        "slippery": 22,
+        "slow": 26,
+        "steam": 18,
+        "stolen_gold": 10,
+        "territorial": 28,
+        "thorns": 17,
+        "vulnerable": 247,
+        "weak": 9
+      },
+      "by_hp_band": {
+        "critical": 122,
+        "damaged": 184,
+        "healthy": 689
+      },
+      "by_potion": {
+        "ashwater": 15,
+        "attack_potion": 6,
+        "beetle_juice": 2,
+        "blessing_of_the_forge": 2,
+        "block_potion": 10,
+        "clarity": 2,
+        "colorless_potion": 4,
+        "cure_all": 7,
+        "dexterity_potion": 3,
+        "distilled_chaos": 1,
+        "droplet_of_precognition": 7,
+        "duplicator": 1,
+        "energy_potion": 2,
+        "entropic_brew": 1,
+        "explosive_ampoule": 7,
+        "fairy_in_a_bottle": 22,
+        "fire_potion": 8,
+        "flex_potion": 3,
+        "fortifier": 4,
+        "fysh_oil": 2,
+        "gamblers_brew": 1,
+        "heart_of_iron": 3,
+        "liquid_bronze": 1,
+        "mazaleths_gift": 4,
+        "orobic_acid": 1,
+        "potion_of_binding": 1,
+        "potion_shaped_rock": 5,
+        "powdered_demise": 7,
+        "power_potion": 5,
+        "radiant_tincture": 2,
+        "regen_potion": 1,
+        "shackling_potion": 3,
+        "ship_in_a_bottle": 2,
+        "skill_potion": 5,
+        "speed_potion": 5,
+        "strength_potion": 7,
+        "swift_potion": 2,
+        "vulnerable_potion": 6,
+        "weak_potion": 6
+      },
+      "by_region": {
+        "overgrowth": 141,
+        "underdocks": 130
+      },
+      "by_room_kind": {
+        "boss": 20,
+        "combat": 201,
+        "elite": 50
+      },
+      "by_start_kind": {
+        "continuation": 724,
+        "opening": 271
+      },
+      "by_threat": {
+        "covered": 9,
+        "lethal": 56,
+        "none": 204,
+        "unblocked": 726
+      },
+      "combats": 271,
+      "deck_size_range": [
+        10,
+        24
+      ],
+      "distinct_inventories": 375,
+      "hp_range": [
+        1,
+        85
+      ],
+      "missing_elites_bosses": [],
+      "missing_encounters": [],
+      "missing_region_kinds": [],
+      "openings": 271,
+      "source_campaigns": 32,
+      "starts": 995,
+      "starts_by_encounter": {
+        "dense_vegetation_event": 16,
+        "overgrowth_bygone_effigy": 26,
+        "overgrowth_byrdonis": 28,
+        "overgrowth_ceremonial_beast": 36,
+        "overgrowth_crawlers": 6,
+        "overgrowth_cubex": 21,
+        "overgrowth_flyconid": 7,
+        "overgrowth_fogmog": 6,
+        "overgrowth_fuzzy": 41,
+        "overgrowth_inklets": 17,
+        "overgrowth_jaxfruit": 19,
+        "overgrowth_mawler": 12,
+        "overgrowth_nibbit": 28,
+        "overgrowth_nibbits": 14,
+        "overgrowth_phrog_parasite": 69,
+        "overgrowth_ruby_raiders": 16,
+        "overgrowth_shrinker": 26,
+        "overgrowth_slimes": 46,
+        "overgrowth_slimes_normal": 23,
+        "overgrowth_strangler": 18,
+        "overgrowth_the_kin": 11,
+        "overgrowth_vantom": 23,
+        "overgrowth_vine_shambler": 17,
+        "underdocks_corpse_slugs": 14,
+        "underdocks_corpse_slugs_weak": 42,
+        "underdocks_cultists": 21,
+        "underdocks_fossil_stalker": 10,
+        "underdocks_gremlin_merc": 19,
+        "underdocks_haunted_ship": 14,
+        "underdocks_lagavulin_matriarch": 21,
+        "underdocks_living_fog": 21,
+        "underdocks_phantasmal_gardeners": 39,
+        "underdocks_punch_construct": 15,
+        "underdocks_seapunk": 14,
+        "underdocks_seapunk_weak": 35,
+        "underdocks_sewer_clam": 16,
+        "underdocks_skulking_colony": 22,
+        "underdocks_sludge_spinner": 36,
+        "underdocks_soul_fysh": 23,
+        "underdocks_terror_eel": 39,
+        "underdocks_toadpoles": 30,
+        "underdocks_two_tailed_rats": 17,
+        "underdocks_waterfall_giant": 21
+      },
+      "starts_with_potions": 158
+    },
+    "corpus_sha256": "14cb472c73c6bf60ccfbeb17d1cd0688a5eb3f036d4ba855f9917df1d4dc2b33",
+    "decisions": 8192,
+    "epochs": 2,
+    "experiment": {
+      "encounters": [
+        "combat",
+        "elite",
+        "boss"
+      ],
+      "ppo": {
+        "batch_size": 16,
+        "clip_ratio": 0.2,
+        "entropy_weight": 0.01,
+        "episode_decisions": 512,
+        "episode_seconds": 120.0,
+        "epochs": 2,
+        "gae_lambda": 0.95,
+        "gamma": 1.0,
+        "gradient_clip": 0.5,
+        "learning_rate": 0.0003,
+        "normalize_advantages": true,
+        "rollout_steps": 4096,
+        "target_kl": 0.03,
+        "value_weight": 0.5
+      },
+      "schema": "sts_ppo_experiment_v2",
+      "source": "act1_combat_corpus_v2:14cb472c73c6bf60ccfbeb17d1cd0688a5eb3f036d4ba855f9917df1d4dc2b33",
+      "training": {
+        "action_policy": "commit_decisions_v1",
+        "mode": "combat",
+        "reward": {
+          "schema": "sts_training_reward_v1",
+          "weights": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 0.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.1
+          }
+        },
+        "scenario_set": "ironclad_a0_overgrowth_v1"
+      }
+    },
+    "focused_tests_sha256": "867589ad6e1020aeff1d3ac67b69ce5e6706ae5da44d85632291a31765fa75bc",
+    "host": {
+      "logical_cpus": 18,
+      "machine": "arm64",
+      "platform": "macOS-26.6.2-arm64-arm-64bit"
+    },
+    "implementation": {
+      "build": "28f9f8afaf8da88edd24a3cb64f665700f64e9d822e6c10c5691a9f86dc3c6f2",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "cb4110d297799c139c5912c30a0e0903630c1c8ab2141eded608b90a7b1e0926",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "initialization": "Identical frozen 500k actor/critic; fresh Adam, action/shuffle RNG and cursor for every repetition.",
+    "jobs": [
+      {
+        "decisions": 8192,
+        "label": "workers-8-repeat-1",
+        "repetition": 1,
+        "workers": 8
+      },
+      {
+        "decisions": 8192,
+        "label": "workers-12-repeat-1",
+        "repetition": 1,
+        "workers": 12
+      },
+      {
+        "decisions": 8192,
+        "label": "workers-16-repeat-1",
+        "repetition": 1,
+        "workers": 16
+      },
+      {
+        "decisions": 8192,
+        "label": "workers-12-repeat-2",
+        "repetition": 2,
+        "workers": 12
+      },
+      {
+        "decisions": 8192,
+        "label": "workers-16-repeat-2",
+        "repetition": 2,
+        "workers": 16
+      },
+      {
+        "decisions": 8192,
+        "label": "workers-8-repeat-2",
+        "repetition": 2,
+        "workers": 8
+      },
+      {
+        "decisions": 8192,
+        "label": "workers-16-repeat-3",
+        "repetition": 3,
+        "workers": 16
+      },
+      {
+        "decisions": 8192,
+        "label": "workers-8-repeat-3",
+        "repetition": 3,
+        "workers": 8
+      },
+      {
+        "decisions": 8192,
+        "label": "workers-12-repeat-3",
+        "repetition": 3,
+        "workers": 12
+      }
+    ],
+    "limitations": [
+      "Cross-count RNG streams and trajectories differ; workload-level scaling only.",
+      "Total rollout and minibatch settings stay fixed; per-worker quotas shrink.",
+      "Three repeats reuse the same seed per worker count; these are timing repeats, not learner seeds.",
+      "Background activity and temperature uncontrolled; each count occupies every order position.",
+      "Controller wall includes up to 0.25s polling delay and reading the child timing report.",
+      "Spawn seconds measure process-start dispatch; first collection includes full worker initialization.",
+      "No evaluation, corpus construction or inspector export inside training timing.",
+      "Peak memory is parent RSS only; it is not total pool RAM."
+    ],
+    "limits": {
+      "child_seconds": 900,
+      "parent_seconds": 960
+    },
+    "measurements": [
+      "whole invocation/controller wall seconds",
+      "first and warm collection seconds",
+      "PPO update seconds",
+      "spawn seconds",
+      "episode cutoff counts",
+      "parent peak RSS, excluding worker memory"
+    ],
+    "model": "runs/combat-fresh-500k-20260930/chunk-15/final.sts-model",
+    "model_sha256": "e87849e68757f03ea2b073f5d5c9410a04bbf183a4b7b8edc5177eb300a70f2d",
+    "order": [
+      [
+        8,
+        12,
+        16
+      ],
+      [
+        12,
+        16,
+        8
+      ],
+      [
+        16,
+        8,
+        12
+      ]
+    ],
+    "parameters": 80738,
+    "private_plan_sha256": "8da43e78916e7912c4215ad5321b5da318c7ef0c4424e2e933653d739d6400c5",
+    "rollout_steps": 4096,
+    "runtime": {
+      "device": "cpu",
+      "python": "3.11.15",
+      "threads": 1,
+      "torch": "2.13.0"
+    },
+    "schema": "sts_worker_scaling_intent_v1",
+    "scope": "CPU throughput and cutoff measurement only; no research model extension or playing-strength claim.",
+    "scripts": {
+      "benchmark.py": "fc295cc4c289344e0e176d0b1f999e74fcd10d6d25deed369c320d81df351586",
+      "prepare.py": "acc4c7635ec2652f2270b994fc9167d65732610106a27c6d1863be741ceb1e9c"
+    },
+    "source_change": "PPO collector maximum raised from 8 to 16; default, state guard, allocation algorithm, updates and same-count exact resume unchanged.",
+    "source_files": {
+      "game/__init__.py": "f7418cbfa30373d46342a37b0dfe633d3f8871848fd93ddd2d23a33a6977989f",
+      "game/agent/__init__.py": "975d0e6e9b2ad48807c669f14aed2c1f38433d175ff20802f4f42bec94f1b92d",
+      "game/agent/action_policy.py": "191e0d8cc6f7ac1dac535178f7df8cb84f4ac3b33044c94559412777cf9bb957",
+      "game/agent/analysis/__init__.py": "0a645588a9d4540792f29fee9a255efa810c17a328265f0219dc2a96357e32e2",
+      "game/agent/analysis/decisions.py": "6be1cd3c2910a099b09de5c3b495c77dd744e90deb0a25bb8eda4057cacf5d1c",
+      "game/agent/analysis/parallel.py": "f7915e79005c3faef013b7e971e505ec9baf897902aa689bf1a46596d14cb6ae",
+      "game/agent/analysis/report.py": "63fac125839121bae33e1503e8043352088881ac19cb802ac98be555e523bb9e",
+      "game/agent/analysis/server.py": "1d0a11c19984af78add2dc01e6af5b87da90a9fa32a960253846e6bf3c9fdb51",
+      "game/agent/analysis/sources.py": "476c9211630495e5cf0425d75b11c99d630c2dd6cb7707cb7cf870acb5ac196a",
+      "game/agent/analysis/summary.py": "b14bba9f239019a5da5ea668569dd7054bccf3c97fec0a1693cea7b716f9ab7e",
+      "game/agent/contracts/__init__.py": "84f6067fd5eff73e2d6a636441e4769babcc3dec573407c09d9fe5e5ab0b9ff1",
+      "game/agent/contracts/codec.py": "e9acc0f398de7083aebdccdff5e9966858a450eed05c39951ca15af005590abf",
+      "game/agent/contracts/full.py": "aff5e562dbc1c2ebea4c3d2d92e8baa9f75780e3eb0528339aa31c42c40cd8c1",
+      "game/agent/contracts/models.py": "f79cfb6ea29956fd2afcc75281595aa940a7fb472b7db57c53906a2eb3e22833",
+      "game/agent/contracts/validation.py": "c1dc28b09dd046d8538ee4f6a5e01c6cf250359352a26d5515004cbef2246fd5",
+      "game/agent/dataset.py": "f6c6ec85b5926b7671988b4df4e6a757342584dcbce0ed6b817230a697b3714f",
+      "game/agent/encoding/__init__.py": "610c596808c5815647a622498984752d2c1c00b7a4de87c32a05f10a32ddbc9e",
+      "game/agent/encoding/codec.py": "3a4d711dae736230409d9222eaaf6a4b240f339adf4324ccc4bd0a8e5c03d1ee",
+      "game/agent/encoding/full.py": "c3c8895299726548b452124081d261ed9cf71c7bada40d5227302f6820f5b65a",
+      "game/agent/encoding/full_records.py": "92e64123ca371ff3fafa74cc1e6d74b34f9266551a9d7683f4691d5831d175e9",
+      "game/agent/encoding/schema.py": "eb3584ed7b10ca427b187911091484899489483cd85263ec6cd76192095f83ce",
+      "game/agent/full_policy.py": "901246c542280ec3d6c0edcebe970be5a7d4b59e68409369297845a0249a182e",
+      "game/agent/gym_env.py": "fd66b0c44a0736efb8a3a53af7dd4263495c636ae36ac42196ef0746e0a894c2",
+      "game/agent/headless/__init__.py": "6d5e99e1ca1311a6cf43a935af887af909fe9232a415a57a86a4830212df71ab",
+      "game/agent/headless/adapter.py": "3b787430d8417d5d20aa1ff6a169d24cf6df5b04754677fadf3034b654f46edf",
+      "game/agent/headless/cards.py": "e7a1d5af38feb4b4bda2492a3186f35dff856e469b5b7984984b4b4eae9888d0",
+      "game/agent/headless/combat_summary.py": "d6e1d65cfd6a0a691f31ecd9378184c9ac4e3f9959fcac3bbf2e85dfc95ecfaa",
+      "game/agent/headless/errors.py": "e4b0b44f0bca827df52e07284380ffc9151a0b6feebdc0ae0c6244ae6d120686",
+      "game/agent/headless/full_cards.py": "83d8a680e32d79778887e955296a4b55b433ac2f3db209e5308084669604ad9b",
+      "game/agent/headless/full_events.py": "573d67af599874535d5dcb4ff31ef09c9c6e96e6d29fed11688218878651487c",
+      "game/agent/headless/full_projection.py": "f1952e65d114ac53d6abd5ebd31c3d19605e20b5f44b560676693a6e399d4532",
+      "game/agent/headless/full_relics.py": "b9f5d251a384bd253472b4487286ed0899c589b0d28104bccd6e4b02ebb042b1",
+      "game/agent/headless/identity.py": "d58c28d3ccdb369ba806e325c7ba445da74e3ca04c46baecd9e10467b461291b",
+      "game/agent/headless/projection.py": "0b68a3adbe1a1d735e3c113cce2051c382fb7849f6d50dc7991c872360f50425",
+      "game/agent/live_recording.py": "8f9809eb48e1ba01065a5d4ffd7c9991983b765974eaaa6750be581725445221",
+      "game/agent/policy.py": "b09b052d9df94d9300dd35c679e487c6ad9b8aea5114e0f86dc0c8e014066148",
+      "game/agent/progress.py": "5482fd6392a8a3248d5e7b2642dd215157d6c8677fb67d99318bd33691ed60ec",
+      "game/agent/provenance.py": "a910b27c7b61d5e2f00c1451e82f2979c05d32d42fa5190f28dacc7da250d4ee",
+      "game/agent/recording.py": "deb89a52a7b927c6e05f2c612da6ad8b77945e2dcb412891751813a2c9e94784",
+      "game/agent/runner.py": "73137a388908a204b13514ac4cad2d7d64538cd70fb96a8c8d811559ede5b930",
+      "game/agent/trace_compression.py": "eb3ce0d4b1cb1711087e06a2913590371e99224cc861b8ac68fa1313b2e06cd4",
+      "game/agent/trace_storage.py": "153f898eb7d4f0b209cc1c98f80ace41383bb797789da212f1106992cb8aa4fa",
+      "game/agent/tracking/__init__.py": "59f56947f24681f9c5e9b7e3c26d965a9b2694c19f2a7e5b377eb5ff699efac4",
+      "game/agent/tracking/models.py": "d800a7201be0e17ae82bf597e54bdb6cd42f14637d9be861b1083925a5b91736",
+      "game/agent/tracking/records.py": "8b1875b25f457ce7a4fb4afee5f9272f66030a5a1f3efee550d6476b2541f54e",
+      "game/agent/tracking/reporting.py": "5109e9ccb66c23e6dfd60dc9a0a8b9e7bb6516fd9f8e9612dc45020630d60d3d",
+      "game/agent/tracking/store.py": "f44dcbdd032b53276dffebeaad97ab049093eb24ec8cf7de19c376bbac04f5b5",
+      "game/agent/training/__init__.py": "5869d0a1b0218a2d151a67343532395b3ed382db489ca92e3e92a737e48ac13a",
+      "game/agent/training/benchmark.py": "de6f69fcc926ac8e2b42784e23c1c12fa68d3fce715dc091dc4289b4515c7b3e",
+      "game/agent/training/benchmark_suite.py": "42d1eabd5ad9e8c66ce7681857bd840b474c3b4acba4b05f0f85845dc36f4095",
+      "game/agent/training/checkpoint.py": "2c62443f7244a87a99e18353e29e8d323664c2f31dce7ca0e203081cc2cffc3e",
+      "game/agent/training/combat_benchmark.py": "dd7b25c30127c5f5788b243edb4c9bc0c823f939e351e86036782aca8e80199f",
+      "game/agent/training/combat_corpus.py": "9c81d3a7c6eb814fb4b58d5ab01f53196307e79647563b0815fce8d812ba7719",
+      "game/agent/training/comparison.py": "8c83e5716d43fda8fc077e30b4630ee294299e9dd2847ae2373f5e4410529f79",
+      "game/agent/training/config.py": "5f52ee8062d8a354bb84e8378d2bf77dba016146c21044fd8fad087b4ffb6113",
+      "game/agent/training/curriculum.py": "487a5fb1ecbdbc453b86cd7d57073ab78e033ca0fd29956472330b905c65619f",
+      "game/agent/training/curriculum_run.py": "e8e30c0375d6d76c0324ece47a37bd7cd1e8575c7c15ca855c5666ee340583d7",
+      "game/agent/training/dataset.py": "14099ace01863f75b6cd5b7790b2d021ba5badfdd34a2cf52ff4b1ba1979a04b",
+      "game/agent/training/demonstrations.py": "7f88cf83cbd06579cf14d18e2c2cb4aec5080f28fbe0e4c321465ca9a6bfa275",
+      "game/agent/training/env.py": "5caf50233cf10e05624af35df3249c0e6931e3f5997d6e843b7d0699409f5134",
+      "game/agent/training/evaluation.py": "7f6fcb6f3b247b94b1c95b391240ea148a373a5a432aa1623650737baae745c9",
+      "game/agent/training/evaluation_workers.py": "f92c869f9b0c27831ffc231f90160075ee4848763952d3acaebda04681f9067f",
+      "game/agent/training/features.py": "b6bcaee5068c51e674435f140e57e0a2d010a368a5549917957a59388c3b376a",
+      "game/agent/training/hybrid.py": "27bfa646797272531b2c05dfd79fe8c401eea7eceea30aaec93dde1215bf232d",
+      "game/agent/training/learner.py": "5359fc7fec2e741432b5cce34e7c47bae7f38cf6e7554b079738d03cd8e399a5",
+      "game/agent/training/model.py": "86ae52e8de67dda771c24500a994cd4d89d44b3485f54c1b146f3cef95cdf159",
+      "game/agent/training/parallel.py": "b4c1736f5fd42310d3b3f69286f6011514a6fba54feb11f523b539ffd8396323",
+      "game/agent/training/ppo.py": "60fa44afe3b9c3011608c019814fe0465087584dcf4b01c00a6f5e9da2588289",
+      "game/agent/training/ppo_config.py": "78d94adf80db9f884a131fb4419d2980b4943833bd57213d46addde17147db12",
+      "game/agent/training/ppo_run.py": "2132fa670e1dd28ab78f89b28796911459c9ba1082ad86404390de87fd8e5686",
+      "game/agent/training/records.py": "3701c62182cfe159d5c4bc329e3d01b110fdc02c0256bde9bcbab2834706342f",
+      "game/agent/training/rewards.py": "f32b6e237827a3539304db903e5291ddacdccd79fd85cb286472bc8c2c0e4125",
+      "game/agent/training/rollout.py": "9a26d9da531d91099e13b1943f6eb9e3a82a72b9d3aee87fa31d2f51f4255b4f",
+      "game/agent/training/run_corpus.py": "519b17cb678b8c8f81e422c9f693587d6c10b65313172abcee270d240b464a3e",
+      "game/agent/training/run_demonstrations.py": "468e83f2bb3f66f0addf05bdabc8a88f4c831de2ff58c8fba3319d919e06fdac",
+      "game/agent/training/run_evaluation.py": "5daf9cc49a5553fd9ec4ad887ec22fb9b442d91680d743a5a4cfd106720f6110",
+      "game/agent/training/run_task.py": "9d9f695db190273ab0d049a02dd1dff713466e6c023bef193a8dd25fa37e2584",
+      "game/agent/training/scenarios.py": "db3e34fa89a8807bc403910af8dfe2fbe0cee76deb1609f2d8e37376caf171f3",
+      "game/agent/workers.py": "002a8be4774435c2e166a025a254315860e40046244ecc264be9049c5afefcd3",
+      "game/backends/live/r0i_wire.py": "3733748ed4cd1a328c519c2aebed0e646cad35792d1cd18b28fd7c21e4e58fb8",
+      "game/cli/__init__.py": "141235bf90e18699c530b556eab0e515ea247c7e5a9887b9b4e0f9e842aaf498",
+      "game/cli/agent_analyze.py": "760ca41571859c5a468547f38dbca84ff71e32f0b371498dae49505236fdf1fe",
+      "game/cli/agent_evaluate.py": "6dc8482b37e70bab7b7165b5434129eccd172776c8c4587e99a16e8ca4e3b041",
+      "game/cli/agent_play.py": "9f65ff75c128c81ebcaa4947842f7ce2726adf0d100284222589c8fa8c9ef910",
+      "game/cli/agent_track.py": "e40e15c1fdf421143ba556abe57563e02b757343e4ee6d191c885a1916a8f6d1",
+      "game/cli/agent_train.py": "33443e8640fed11fc7f26dd2d1b0f9313c3709e362fc4beb340103fd3584c7d2",
+      "game/cli/headless_play.py": "0f889e18ea486f09f6efe6dd76e1b7ffef448a533f268a9bf7b26768ded82c73",
+      "game/headless/__init__.py": "2addd6413cb786f0d549743e7164cbb92d378a611b8fe6b724ca2af6cf434e2d",
+      "game/headless/cards/__init__.py": "2addd6413cb786f0d549743e7164cbb92d378a611b8fe6b724ca2af6cf434e2d",
+      "game/headless/cards/ancient.py": "ce3136417b636273bb9e4cd3e3ed006d9951b29408f7cc1eea23c80b76b9b1e2",
+      "game/headless/cards/base.py": "30c8adc60da542a0a1c379c58b808c7e58106edafddb795b04ba27fbe6c6b986",
+      "game/headless/cards/builders.py": "0da4bc3bbd22d8e56b5f155becc7e19456aae96b89b7c674208af7a4ae183dee",
+      "game/headless/cards/catalog.py": "65e766f0ef0fd6deadbc04f69cd201581352a147633c6a960fc4f4dbe2f30bfd",
+      "game/headless/cards/colorless.py": "e126643bb18e35dc9071b51ea227ba89ff252edff43b0d3e946d943f0e27a0fc",
+      "game/headless/cards/colorless_effects.py": "2b88d653df3a7d152f11df6895ff34ccc48a7934ee881269c22e394ee9776eb8",
+      "game/headless/cards/curses.py": "a1697d6b3812f371653c7ebf19a0e6f0c2a0c9dbcbe2d6e9e04576508fada65a",
+      "game/headless/cards/defect.py": "daad225dc87b1a9d95870abde21aae5b314c39541d2daf12c3b59728017fbcdc",
+      "game/headless/cards/defect_effects.py": "ce4a0ab00106ca188392ad2da9b13db0caa75053784508138769bc1570eb09f3",
+      "game/headless/cards/effects.py": "1b5740855ab03a2552791eee5a2996be0d3551e7b4a1829df238ac49a77652ee",
+      "game/headless/cards/event_cards.py": "b56ea4d11a603d9dc327f1b90c08e931d0c0c65dc4b8d4327812244fada26b00",
+      "game/headless/cards/event_effects.py": "4a267152c19170c7a8e158778aefdba666d789ea58c681a261c516291ca06733",
+      "game/headless/cards/extended_events.py": "f39227d3c6235c7e84d901279ba97e6059f95c0bee5d7a4a3875636ee3d48311",
+      "game/headless/cards/hive.py": "45bff59e3d7c6434189cdae23a988ff4faf587e67f10e019f72b2721844ccbb5",
+      "game/headless/cards/ironclad.py": "05e0cab0ad207c7d5a606e16f99bb5055f5d28ff7ae4594c8cffbdfc032792b6",
+      "game/headless/cards/ironclad_extended.py": "eb7a7a0292836a484817a2a314f7a1cf858ead1da3927d7a63aaefd2e88c89bc",
+      "game/headless/cards/ironclad_rare.py": "ba0c053654b135c6175360509aea352e1b509354c4979fddcf4e9c6f48977d27",
+      "game/headless/cards/necrobinder.py": "498497d4686497fd53781ab3868550ccafe56c058ce70e50dff34987cf5e0e08",
+      "game/headless/cards/necrobinder_effects.py": "11b6be00f9b0e5e40cd894f0567d98a285f588d92c8a862fab281fcbc4893f6d",
+      "game/headless/cards/operations.py": "60bead5b4087d985dd31972f9410ace9050c30043627f83c6ea1dfb75baf11fb",
+      "game/headless/cards/orb_effects.py": "ae438c3645e565fbe37f1a34be973c06cec0b201fd61ecee66568e2cd8c89899",
+      "game/headless/cards/osty_effects.py": "333e752252fea5aac9a73e92f9555dbb5d8acbc7309fedb203b2780eb9760bdb",
+      "game/headless/cards/pools.py": "c54cd9dcddb9c31a2ebce8185e877b04485677d62866ca1b3a7d63e6ad66a40e",
+      "game/headless/cards/regent.py": "4275f5d415d1252249c529dcf45ac6a0c0546fad54b3b8993dccc5c1ee228fce",
+      "game/headless/cards/regent_effects.py": "c7ebcdad6c8bc10ca6f5f2c7037d8b91a638d4af3fc015a73b39465fef281afa",
+      "game/headless/cards/silent.py": "4823d090f4e6c6af382605d56fa4f7e52b731cc758319e299c6e658231b0d7f3",
+      "game/headless/cards/silent_effects.py": "094bcbd68334e0181b87dd068e0b498ecdc6f2b8d63b8e97517934fad34d01cb",
+      "game/headless/cards/special.py": "721ead6675228adb40d3b5789ad1d3a10f4c8c6fb1b152703f38e4063613557f",
+      "game/headless/cards/status.py": "a08599756e4f04a431c0cd6c9823117de869178806900fb86d5130b78d933382",
+      "game/headless/characters.py": "e2a928fc06e301a9b2c4021813f52acd36fd966c9043cbacf085868b17a626f8",
+      "game/headless/core/__init__.py": "2addd6413cb786f0d549743e7164cbb92d378a611b8fe6b724ca2af6cf434e2d",
+      "game/headless/core/actions.py": "b3832cae51e021c4941d4a5d6c965f6b6d081526505f4fbd05ed32d6716f6ef9",
+      "game/headless/core/afflictions.py": "ed3b9aa43268ccb920b64726ec7f49e9a203796be77111d21c882bae4119926a",
+      "game/headless/core/ascension.py": "1556d8ff2e5ab6a851c247c6ec1483d0abb2ed53490d2ce02f331cda7bae4313",
+      "game/headless/core/autoplay.py": "9dc77c6a0f44c34d0bedb184bba962398fcab03b7448fce743a53c5dd23c4aee",
+      "game/headless/core/card_costs.py": "43e291e8053e47e9774576ce2ec916573ebca2ba635d759294ad6c01a8725e9a",
+      "game/headless/core/card_state.py": "119885c89bbfc2b35bb3cd528a0c9cfecb28509893ed312eafc38234e48c4b01",
+      "game/headless/core/choice_snapshots.py": "0e6c6823d3ec9d8d6bf8a10d1c7bd5711315b1127a931763a7aaca5d2168486d",
+      "game/headless/core/choices.py": "748a1e1f9f1009e8438921d744176e7ec2b02315e13754490390ee2a70ba79f6",
+      "game/headless/core/combat.py": "58f662671ce55b951d04c599730a2b734ec725ecbff01e98577caeda01054562",
+      "game/headless/core/content_order.py": "6cb5f6a2146e50f91de0060f67c7ae966767ada7d971bfaf5b3517df0189c2b2",
+      "game/headless/core/content_snapshots.py": "f7b8548ade930e3b88f1f798e6bc796c94dd2278409b6b05d850c63c9bba7f5c",
+      "game/headless/core/deck.py": "9dae39dcc12ba7ed4a5b5a1b0d7d2d240d1b7fe388a6ceeaa0d9d96c008b5fb1",
+      "game/headless/core/defect_snapshots.py": "a19fafcf9e4c3df8092acd794ec992f34fb0d295b7065366223639c3be0cf3e1",
+      "game/headless/core/discard.py": "d65d405d0d2bfd2d5e7fde6fdeb4fcb05c8b277acebfdddeea6e987ea859b356",
+      "game/headless/core/draw_hooks.py": "df0785837b144efadeac14111737d5e8ea6fbbfef010b49a595b7810329157cb",
+      "game/headless/core/enemy_lifecycle.py": "c3bda9df97d9f46d7ba724d24f0c6566f5f6153ed832821ba62a3adfa6689af4",
+      "game/headless/core/enemy_turn.py": "2a4964b9fd0087d9bf5fc29c83a55c19924772900930894dbd0c7b1e3bf1703f",
+      "game/headless/core/hook_scheduler.py": "7dc38ef90c7c979367f71b49f88543f9a4547ee714e8b805a4ac5c09de772553",
+      "game/headless/core/hook_snapshots.py": "9e40187c561bf5a7d56a9c4ba900a2386e5ff160394c7f0bae76cfbea16a789e",
+      "game/headless/core/native_rng.py": "83376811d1f52e630928086417ded7d8f31dfb512bc968e7257d7c8aa7e8a6a8",
+      "game/headless/core/native_service.py": "485fc79827033c001fd7d05a62a6e479d739a96b494c318bb16bb492271b9e69",
+      "game/headless/core/native_shuffle.py": "5a23f95f4b97d0cb207a00a17ac330b509193037897ce01287b9882d551ad024",
+      "game/headless/core/necrobinder_snapshots.py": "445ec6b89a407b98c06adae6d80c2668fb574ee0eaa2eeefe743491c81408b59",
+      "game/headless/core/orbs.py": "7c3d748e5eab58a50493579aca3070600f3ce96724dc9d8dbcab3df34b9b4681",
+      "game/headless/core/osty.py": "213406e60b92aa3d4916607ff1f642c32c3499eaa7ebe10ae8f7eae4f069370f",
+      "game/headless/core/piles.py": "e2af1d8128e6da151ffe3570b3a5289e5bde2741c5344c1f8cb7770e4347b795",
+      "game/headless/core/player.py": "9837de702b0da6b359fe8c890e4d0ebc42bd6fb7ecbca55868b2c5fdca2094e7",
+      "game/headless/core/regent_snapshots.py": "bc38bf786b65923858865ecfb6cd99605a1fa23512b651d0714d1d5c17637e67",
+      "game/headless/core/resolution.py": "a51a17ac870efc119f1bfd523bb2d591346b87b8de51cc71d7b6df79761348db",
+      "game/headless/core/rng.py": "cd7ed6c55854240660ddf100b28d3ae96b44e126b63d8be7e08a36ee1af365f4",
+      "game/headless/core/rule_snapshots.py": "e83a34113a904c89de66020878a69a86307e1ed5e2030a27d530ac15ddb02369",
+      "game/headless/core/selection.py": "a8ea9b8716b2e033c75c733152cbcaedc3a37807f5c4602b7884b46e060be07a",
+      "game/headless/core/silent_snapshots.py": "d3f365eae18940db725f90e547d5880b6aa3ce30ad83313be0b339b410fa6244",
+      "game/headless/core/snapshots.py": "af0c8256e7479d35aca8372b62a667f3f73f165578f183bcdd24d7ac1ce830ae",
+      "game/headless/core/state_records.py": "08bccd4250835aa09da1e0af286411e00464ec807c1367316995e8d7095dc1d7",
+      "game/headless/core/utils.py": "b3e6b9a1067d4427ec19d9c9ab8879fdc6375bb718b8948f0a33f5b84d433ee6",
+      "game/headless/enchantments/__init__.py": "159356b9c06fe83dc9deb1f890706351b6ab7d4af7dc6e0a172048b3b1ae23b8",
+      "game/headless/enchantments/base.py": "04bb1d0684298637862eeff90814d7f9d623bb09d71d315987f1d6d70f213428",
+      "game/headless/encounters/__init__.py": "2addd6413cb786f0d549743e7164cbb92d378a611b8fe6b724ca2af6cf434e2d",
+      "game/headless/encounters/base.py": "9ef11102dccf0525c119b8a28daffdd13665fecf6a30d924dccb67306acfcd04",
+      "game/headless/encounters/catalog.py": "b63749811fbe1fc326580e5d359b4bfef8e3d4ab33855c155c49928c3bfedb20",
+      "game/headless/encounters/events.py": "fd20c2e0a96c711479a2c5ca6c3a98730e4b6f4179f07b42bb40df25c9f7acd9",
+      "game/headless/encounters/extended_events.py": "47a6d0a39f804706b4daa8d9c2e177fea7d2fb273e70547e3d9f9d6b70d58751",
+      "game/headless/encounters/glory.py": "f2c2cf9dd9496c6b5254c4f6116ae2939767252309a75a2ae558859265197657",
+      "game/headless/encounters/hive.py": "f3cd58e20869e4e009ad008dab160a661757069675d101ec306d43828765f173",
+      "game/headless/encounters/loot.py": "33740b20ac51dde3184db5e9ce02278f44b6bb0c94a3abe1b767fcd019289d57",
+      "game/headless/encounters/overgrowth.py": "19c722501cdf5071c67cd6b201139c71936ffbeb4f398cfb5c0f1afbf74cf4d5",
+      "game/headless/encounters/progression.py": "fd2c155ff4f3f621de41e7c5c706f0f001f05bc90a58eb9ec76935b9f97f5805",
+      "game/headless/encounters/randomness.py": "73cc51acac209f8b9b2cfb637302a407c5b9a8b8828a9723c88ba409e95e15c2",
+      "game/headless/encounters/theft.py": "61ac01caae4a70a5a6959d291676b5a7bae03576bfb3601f80af9576002bb289",
+      "game/headless/encounters/underdocks.py": "710d4406dc6dcfb186378badea59ef4b42c2188f3ebb8e3380d8ce967f41cd4b",
+      "game/headless/events/__init__.py": "2e9bb682da793cb482bc48b26a716a26251f7ebb555898bff1378ea81e9c95a9",
+      "game/headless/events/act1_content.py": "2cbbda68e2b73b98a863f0c1852f5df27fe4465549a8dcdb584b2a976bcf5abc",
+      "game/headless/events/ancients.py": "6d46a106ea199cf2bd084f4325f05abdd0321c244a7b288eadc514d3d304d56e",
+      "game/headless/events/aroma_of_chaos.py": "deb5758b44a5ef07ad5ec1963f1b43211b6065d038075232a92912c89fec3ad1",
+      "game/headless/events/byrdonis_nest.py": "550a8b597a62102c90dc36a60480fd10aaa213f67b88000f331eebff99c21a9d",
+      "game/headless/events/catalog.py": "6e4ab4b22c4b6a0cdbc34b7d8e973d0c19817d3eec267b5ad4cc01d1e7aaf871",
+      "game/headless/events/checkpoint.py": "78ac411f1bed0558d04a2042567f58d822aab993e8af2c69b8b54b965d77c595",
+      "game/headless/events/combat.py": "d2fd119a3d0451f4d95eed4df470655b0c30547df52a261eb57a3c9ffd0d4ddb",
+      "game/headless/events/combat_layout.py": "9d7cd3315098dce17cc96161f76ceae0a29889d59f2ee65a16e09a8115a272ac",
+      "game/headless/events/crystal_validation.py": "0967f5be25c9129ce4cb91e07a2089d8fd63a06c61240ba510f354bb84413ba8",
+      "game/headless/events/deck_choice.py": "74012e5d5909a8d9e242d7f61e2da05fcc9fe3dbae06243fea3c8b93103ad73e",
+      "game/headless/events/dense_vegetation.py": "25568ae517e22ed0e05d929ebaf33723bd3f1bdea1e36725da7b74b29cbce843",
+      "game/headless/events/eligibility.py": "c7a279c5a00da1af250680c673ef8abd048611043efdfd1d490292844d99b409",
+      "game/headless/events/fights.py": "2927db99e91d8444c836406554af28f28752093d0a88e8a1263ecec8e4b11876",
+      "game/headless/events/flow.py": "f175cf886a675d57fcf8b047d2f6cc517de40881141a3bfe71d90393591158a5",
+      "game/headless/events/jungle_maze.py": "7c4448ae5dbbc7d597a3e79e46b9c9871b569ea955ac69dd2cd43626a9d345ca",
+      "game/headless/events/minigames.py": "144c4e9697214be8318785ce935d614e3d70e49df87c8119fab6de1f903509e8",
+      "game/headless/events/morphic_grove.py": "da17570768c9ce81dd50b9c2675eecc9637cf7bab682ba67a773c1a553bb5088",
+      "game/headless/events/operations.py": "2ed7f64b284b777b1478cce971dc79bb0e50ce253f82cc99f65d21df69ad952e",
+      "game/headless/events/potion_context.py": "393585a4ea1183bfdc25131b5ac575aa87e44c368076118fd2afd9e3cc7eb64e",
+      "game/headless/events/potion_rewards.py": "5ca84c1f365bd4140d0cb2feaafbee1232ae5885776833de2e22d7e5b4432569",
+      "game/headless/events/progression.py": "b2db1e467f7441c36f982cebbd49970b57e9a821931ac96f73adb3de628a190b",
+      "game/headless/events/resources.py": "2ee27f4cd7cf4ff2b6339ee0d5224320615cb4ea34331aa5c560dcb8dd8a3194",
+      "game/headless/events/reward_batch.py": "05f060ce3822171dfa1822c719826027172b72a2a6cba9169cc2e090829551ce",
+      "game/headless/events/roster.py": "548c1d42eff06b19f90da12f410511409f0e44b4a2b4ed70e1710becddb97b8c",
+      "game/headless/events/safe.py": "a62e67f5eca49637ff0f33fbde566416eb38bdaff2177d7e412fb729934fbe93",
+      "game/headless/events/sapphire_seed.py": "af2342736d127cdfd06cd70144a5cd45e1608f8e4e5e2c60bd0a95e79f44ccc9",
+      "game/headless/events/slippery_bridge.py": "87b18b022704cf7c1982c3e46f66e58a867936bcc939e1f248f01244f2541dc0",
+      "game/headless/events/social.py": "d07794be2d7f71771b761cdb0f39107f08528aad0e85a92776e7b1a08a78fb93",
+      "game/headless/events/special.py": "15fc130632ec8534700574988d2d949810ffea6cc8c15877a0dddd451f5dab54",
+      "game/headless/events/step_snapshots.py": "ad7c7a244ee7326b84c91ec6bc072e14ae3a3b2e85c7c764f73a908b88c6bbf2",
+      "game/headless/events/steps.py": "643697d320e48787e85fc6dbf97275df34b385437a68a8984603210b07963aea",
+      "game/headless/events/sunken_statue.py": "3548faedfbbeb2ca6532e857747bbfbd27a53f4bd4d61bf03b08166052b47aea",
+      "game/headless/events/tablet_of_truth.py": "411ba616d5690be915023f7088db47d2d1b10ad3df7fb072dccfc85efb13dcd7",
+      "game/headless/events/transformation.py": "3e6da5ef9dc65d1b7dd81dfb142c26acff22167f844be141f1fe024b44f8a974",
+      "game/headless/events/wellspring.py": "06b69853e0a1c166af4f455af3d1931ec09b7ac13bd1b0c1f2ed377690539cbf",
+      "game/headless/events/whispering_hollow.py": "56f386e9a090e3e267e172cd07554a596b07b7f25a48fc9fa80bef0492af2c21",
+      "game/headless/generation/__init__.py": "b9aa4d8171db0387d03b5246da87e9d883b2f54aa2f16ad7a9b20b4ef38f0d95",
+      "game/headless/generation/combat.py": "5c524d2210440c586f8e0369b60e738496a9b8c178f03c359e4d789e69a071b4",
+      "game/headless/generation/foreign.py": "6613be20467bb5e4e51509af4995007fabf04b8653bd9baea7136cfcfb562216",
+      "game/headless/generation/initialization.py": "b5e90a2f8648f4e385b3b02c7c52fd2dd3bbbf15a0451985330906529e7d8d9a",
+      "game/headless/generation/merchant.py": "ac97281c14339e4d039256467e9adcaccc42476fe60d46c89a6e81aa9f76fe26",
+      "game/headless/generation/odds.py": "fbf31166e00ab7d4e2e853cc6132bc5378c44967902711b63e39bdf3ea8ed64c",
+      "game/headless/generation/relics.py": "bc1e26596dd6088eb8b013de5c14683c89b5480b215c058cfda68b004d0a84b0",
+      "game/headless/generation/room_pools.py": "304f73a3b587b6902e0daa914e5658171194359f82d13e67e21519c5399b52ac",
+      "game/headless/generation/transforms.py": "18e96bd60aba695237ee00e5645480fce4343428cd20bbb0b4d1126f6bf7a441",
+      "game/headless/map/__init__.py": "2addd6413cb786f0d549743e7164cbb92d378a611b8fe6b724ca2af6cf434e2d",
+      "game/headless/map/act1.py": "22a1a81a2030c6f69c543c689fff21f2a2c1f317f8368a1f3134b830ee9546da",
+      "game/headless/map/golden_path.py": "2f74a17b65cf5292ac48ef0e2c1c751a47c2838483a1369328fb59828cd8df3e",
+      "game/headless/map/graph.py": "da3a1687d4598bd48c696769d45a4cf6d638d7e2154266d167a313c7dd2990ea",
+      "game/headless/map/overgrowth.py": "ac176be2c4f298c1944582a7bc89b29de0260dc7f8ae9c4b4cbf53a35cd5ea75",
+      "game/headless/map/postprocessing.py": "bea819d78cafb28f4768ad92b5efd3959d04908901ea288a38727c251a5997c1",
+      "game/headless/map/pruning.py": "75b4ecc93ca2981224a49fa2f58b6516891226b13a9cf0c72398fedc079007c8",
+      "game/headless/map/spoils.py": "af34f49c3cec16329537aca29c5ab2765d47d3373555a8434da56e2a3eb8aa62",
+      "game/headless/map/standard.py": "199816ef1bf4e4dfdaa0f41b5c85ce74dee5f08400c74c6a05251301e6f57415",
+      "game/headless/monsters/__init__.py": "2addd6413cb786f0d549743e7164cbb92d378a611b8fe6b724ca2af6cf434e2d",
+      "game/headless/monsters/ascension.py": "f0ae43c5daa34b78519a484d5fd1a8ca3f12530d33de0a96375730b65cf40d7e",
+      "game/headless/monsters/ascension_moves.py": "a13e748ff6b7731cf21ed94ff98aa045b8e1ac97d49ce7e3fd742fa4b242be75",
+      "game/headless/monsters/ascension_values.py": "d20ceb0a816af564bb03e9fd3269249f58d7a1e7b24ca77180c365766dd16ec8",
+      "game/headless/monsters/base.py": "80915cc9b2d25bf51fbdac2a88d0c3cbb3e39547451b153eed37a93af0a942a4",
+      "game/headless/monsters/bygone_effigy.py": "e46386f0d9e209ac5fac7acfbef14d17660602bc4e0b7d9edd664b00940d6d01",
+      "game/headless/monsters/byrdonis.py": "f4bdac191b01047a5492a421b41ce7d0a7d367b7d6e020a9990f083213edbbd6",
+      "game/headless/monsters/catalog.py": "4eee5bb8f3ef42815546e65e6dbc19f85e8f3caba8f5ba59936fbfeeea02648c",
+      "game/headless/monsters/ceremonial_beast.py": "18a92127d1d84b2d18692f97f62a9a0c5fefd31f1dfaa86220e4a3b641c02809",
+      "game/headless/monsters/event_monsters.py": "6aa04b3daecf812c3f4b627d98316332f1da9b5ea368fdf27fdf257a3e197ed9",
+      "game/headless/monsters/fogmog.py": "dba2c55d18f7e89696416d896a2793de142a737368133c596a5f6552043e80b6",
+      "game/headless/monsters/glory_bosses.py": "abbacb8664959f2875957089afc7340ef9e6a987e13a2298f88371a170aac129",
+      "game/headless/monsters/glory_elites.py": "8e124b38d452ed8d8879bba7a48f1ba30a4db543dc78eb8ea2c18fe256132c25",
+      "game/headless/monsters/glory_normal.py": "40c6c71a8b4b84b5ba91de8b12354e83c1b2bdcdb15fb0562dda381201af83c5",
+      "game/headless/monsters/glory_summons.py": "b179db52cf33b70a1c0738aafac070a77ee6a40dd423f95b85b9005ebeca0dce",
+      "game/headless/monsters/hive_bosses.py": "517527d6c929c7c2fe2e956f6b6fda60f6e55308345e4f515ff99cd293f43713",
+      "game/headless/monsters/hive_elites.py": "c1ec3f183ac3d296f11aba9397bfbe98b2f824c39e8bcadf82b3722420c60f08",
+      "game/headless/monsters/hive_hopper.py": "5ba0401ce90b2cdb9fc70a71e0735c37f0054c516d7c00c023879edfaba97998",
+      "game/headless/monsters/hive_normal.py": "fca48db019a6c61565961c15d0e70fda918a490eb2e0c7a3a86a5e3bb6dbcfa4",
+      "game/headless/monsters/hive_summons.py": "2b67a88f33cd03c5bac432fee3f77be820012a8c7cd60dff3c41d243a0795c7c",
+      "game/headless/monsters/interrupts.py": "4e5ef2b8f02338e4e7bfac88076612cfdf145c510595c8887befde14791474a0",
+      "game/headless/monsters/kin.py": "2fcb2bff0c0d902570d091b9887db3126b4baa7a117214f45d5a71e0309b6d42",
+      "game/headless/monsters/overgrowth.py": "90ac63bb963ab81240eab9defa243ee1f3ca307ca8c750dde4fdde25329651f4",
+      "game/headless/monsters/overgrowth_normal.py": "ccfe800723041755065fc508ef1cff841e65150b224de205dc253524ca47b906",
+      "game/headless/monsters/phrog_parasite.py": "08b9dea16246dbbde3a5f47b25f3ca904d08747acb12770b15fe6a3960c2f7b7",
+      "game/headless/monsters/ruby_raiders.py": "d688e7d8fb936c8b34accc956d78f5d402d73f0931120ddbfa2c9195a9b3bf18",
+      "game/headless/monsters/scripted.py": "e0b8d54a454956a7012a5735d7b876267deb1762558ddb84ee1e13f058e789aa",
+      "game/headless/monsters/underdocks_bosses.py": "ca4fc32169b8d5ac62bc8311785066f91be68e232ee1b309a03575eaa74a3a0f",
+      "game/headless/monsters/underdocks_elites.py": "92040a2e9cdcc84211d494532c7030679d95349497a354e1201cdd99c502f69a",
+      "game/headless/monsters/underdocks_normal.py": "b0e267619c7a2aa936410907c57529f48068a76d0f4c691330559c7cbaddaa5e",
+      "game/headless/monsters/underdocks_summons.py": "43b639f63a0d8f83eb26b8e1bb1786124cffa2f93c45257073734ab5c339b454",
+      "game/headless/monsters/vantom.py": "a564d66424ec69443addf89952edc3b66b9c5290432cb16c386120a5e5e177f5",
+      "game/headless/potions/__init__.py": "b605fe51f6fe49d5a53b5611ac1ad7f7ad43ab4de8cb1aec2d035f4202dc8ce2",
+      "game/headless/potions/base.py": "0c7fbe1f45edac1bc7f3f248cab5a4b7aed928b58682031a9990f3327edab150",
+      "game/headless/potions/character_effects.py": "8598f08811d1bec5d8292fecf76d86e4a5aac8da244d75d7c2c40ce827f3f435",
+      "game/headless/potions/combat.py": "dfa8d0cc636bf3f178389c5a7189684cfda8f4778549fd10f3ad359821a9ef47",
+      "game/headless/potions/pools.py": "ff97c3df44017f63738b7e31173068accc752c81e79cf1673edd90a2ae3f15ef",
+      "game/headless/potions/powers.py": "b8ab69df1039b011c9fdd3a9f7924680b9f9dc0dcd8c1727dca1af7ac3a17d24",
+      "game/headless/potions/selections.py": "274daa1dbdae39d2701d7cd1905a7b6c95786f450b99bf19836a988c0df5d77c",
+      "game/headless/potions/snapshots.py": "716593ea82a693cb704dda8b2049fbc9316fd06941065e63376be10bc31c8e10",
+      "game/headless/potions/use.py": "4e1c636a10b5522e5edd3d18641a996b9410daf48660d3149c51798a225c70ac",
+      "game/headless/powers/__init__.py": "2addd6413cb786f0d549743e7164cbb92d378a611b8fe6b724ca2af6cf434e2d",
+      "game/headless/powers/colorless.py": "d725604f3747ea0895a2d391f2ebeeae2ae629203be4597980640b077864e245",
+      "game/headless/powers/damage.py": "3819f2f92cc9f071af397a860b0d2ee8f537d6ad63a8e9c43161169308ff1b89",
+      "game/headless/powers/defect.py": "26322977752b6beac80b1c018911cdb8b25ad3385e53456e59e88773409c34ee",
+      "game/headless/powers/glory.py": "a2a4bfd0709c361fb435a76ed80ca0557776b7ccb897c8baec233b8440b5a62c",
+      "game/headless/powers/hive.py": "fa7d8d6c4b1bbd9289b0760927b6a361fc7ad882145b34faf8033f56743e0414",
+      "game/headless/powers/ironclad.py": "b5d97531f0a97b7a35846de5847e7f0651076c9e5d549130b96fc9ee11c493ca",
+      "game/headless/powers/lifecycle.py": "eabc2f81ed2a67b7ace4c27ca6b80fca3b832ffd19da110bc21b8d1d2a52215e",
+      "game/headless/powers/necrobinder.py": "e516b60bebc0c72859ad287999be3e88b1c207bdc8b88e1f035449dad4a86167",
+      "game/headless/powers/necrobinder_damage.py": "2ca89fd4f4aa97fccc5b286131a4b4fc45da3df8db50edff8a022fc8b8155418",
+      "game/headless/powers/regent.py": "a48f2d34fc1930129d38d29f1d3b22b4f90a9ef39f6900cc1a9069573bd6f832",
+      "game/headless/powers/silent.py": "413d3ce92b99bbec62d57df87f83dde7cc82856b3909874079b428e557166164",
+      "game/headless/powers/status.py": "8077aa32fd64796f741ba5d629d4ae6ad72ad0f274375e1ce859043e11e85a45",
+      "game/headless/powers/turns.py": "c9093c0548a83b12fbacce5509e2ba703723e202f764460b9e6b69a7b1b767a8",
+      "game/headless/powers/underdocks.py": "40a612b7b1f6afa35e6444bebfb963850e96880c3f18667c1e744e7d605cb642",
+      "game/headless/relics/__init__.py": "d796c39efea01c1ec6dac7421de55c5aefbd1fa1a4de668956383ceba32dbaec",
+      "game/headless/relics/ancient_combat.py": "8d76e7d27db758a0e1e47f7f51caa83a0ca8082dc747738b505142aa34ff57e0",
+      "game/headless/relics/ancient_content.py": "f7173359a1b6a793fd758ead01540e98d950f24cd1e0b37ee00bb2488bc0e769",
+      "game/headless/relics/ancient_map.py": "0b3aca3a736ec557b7f7bbd2a62fd99ae0914edcc7060ec3a63f450b57bdc38b",
+      "game/headless/relics/ancient_pickups.py": "15578a72bf7a5404f439ae5c584b12eeb1dc88a82daa7266b2602d58786cfdf0",
+      "game/headless/relics/ancient_state.py": "474c5482f3b0320069f2a5101ad86ea4fc6eac466dac7bf5e47cfee74ac716ea",
+      "game/headless/relics/base.py": "6367ee10a68c4d45e9175ebc519d56c96bd413456f20d81b81d7fd74897fe293",
+      "game/headless/relics/character_content.py": "47b6112591d68d44eeaad31e5a04e1b77de1ee9bb23b12f3e4a94ae0e25c7182",
+      "game/headless/relics/character_hooks.py": "28e62aad79bc3e3f325c31e8421d84213cf4a49ac1e25726483571720ea0d1f6",
+      "game/headless/relics/choices.py": "501532407ad7761b95d8b8dec9d10228e3d1f3d6784c17ff312458650dd49ab2",
+      "game/headless/relics/combat.py": "76ed7478e217516a38a179d90d5ff4b3b2d272871418ff751cbe9d2b34c9e2c0",
+      "game/headless/relics/damage.py": "9a239f3ce9b9863a5ea9285791daafcfd9ac8e133016f2358a365cabd43c6aaf",
+      "game/headless/relics/eligibility.py": "bd27b91ab80019786367b6c1899ecc197ffe575e97fb5f08a888ff64f5c752fd",
+      "game/headless/relics/event_content.py": "c3904b640f2e16af12a10870df7747350b12a8186b553640b979252ea468e564",
+      "game/headless/relics/neow.py": "33e22b0e438dd32665177e508d2ec9a350145ae47cf73061934f5b6953473c8b",
+      "game/headless/relics/pickup.py": "b629926ab32dad0ef0fc1baea081e92eddd3b1f20e6f71ecd4a39756e12c1959",
+      "game/headless/relics/plays.py": "c5672985143c73eaf4f89d0c4bc6cb5dac3c6f55e593f8aa3fc40016d90bd2b6",
+      "game/headless/relics/pools.py": "6da7ee6a51a1941613d9b24d2905e396be49f739a868d9ab894aed5f52f2acf7",
+      "game/headless/relics/reward_alternatives.py": "abd8ac968892c888940fff887b44b951eef9f92b62c726241cebda1ff7380eb9",
+      "game/headless/relics/rewards.py": "4bcd56fdff64d2e723d2a05e5e9f894b78cdc38e550a3276efa73d91ef776477",
+      "game/headless/relics/run_rules.py": "b6483a7d735e7578cebaf6948f0f1b94f917bb0fb29e75481b69b01ee30db2de",
+      "game/headless/relics/turns.py": "bb0449ef0296ed774d81bf35b9c54182b516e89ee2397b8d5f8f8a49fc14fafe",
+      "game/headless/run/__init__.py": "2addd6413cb786f0d549743e7164cbb92d378a611b8fe6b724ca2af6cf434e2d",
+      "game/headless/run/actions.py": "147b57789e165836b11a73ec7896be1c82e746f67afb666b7ea935dd8143d6dc",
+      "game/headless/run/ancient.py": "5b1046aa4b75989f3970a2dd45610b0b1acaca3efdc78f9d8281f5a49ece7dc2",
+      "game/headless/run/campaign.py": "4320a3995a06e5edf4d3c112f0581524d65d82e6413ef0b70d6b3c9c50fae657",
+      "game/headless/run/config.py": "0539cd1644e54c8b7b8d4ab5dfcb02ec6df4fbfce9528aec6c1a722f72a40ebb",
+      "game/headless/run/deck.py": "18219a5047562e42fb3fd4fe5e38a9ac04fc31abbe0dc477461906e969ae9586",
+      "game/headless/run/engine.py": "cdc5671acb072b92500597d557cecd2be1ae537b3eed8fcd0542af789ef9254c",
+      "game/headless/run/epilogue.py": "e348e9a97349c67fb0669025e12e55643969275a8284c0e44ab0908e5b5a2aa0",
+      "game/headless/run/event_combat.py": "4b69803c1126b4ebf0a788fac1aa8191ac4b9de0965ab26a79908b60e559c6e9",
+      "game/headless/run/events.py": "19939be97e2ce01de729bf4c864161d99fb37e10f06bb05ae0dea02535ebd2bb",
+      "game/headless/run/flow.py": "86debf1a9b0ed8e98a700f8d31320e97481352e06a218550613fe1cd55874d22",
+      "game/headless/run/hatching.py": "797915d26e2d4fe7e8afe7e6ddf2427e90b068f9797d0b8489c10155696cd35d",
+      "game/headless/run/inventory.py": "353abb21fa24314107e27136736002233e63bf4dab8cc1b29a2d0ffb0e244752",
+      "game/headless/run/lifecycle.py": "53da249e9ff95642da6b3c076fb9b9af00c2dd6145fbe8e0f44eec921b76538a",
+      "game/headless/run/map_travel.py": "f7a12a34904c0caf0317d918286fc66a6018d1a81b24ff4cd3acd57f6e1afec6",
+      "game/headless/run/removal_rewards.py": "4fd9b56c49bc149e735be6e8749f01561e0a1f740dcf1c75a8bb442380bdf673",
+      "game/headless/run/rest_site.py": "be4f09d3def47aa288ba0d22a0c6706d645736dd98df32a67b3a0c2bdb457ca1",
+      "game/headless/run/rewards.py": "d9e2dd9a4972f0b616c0f4914a20db428afd1b16c2803de07f13536a8a582cce",
+      "game/headless/run/rooms.py": "48aa77045152fdf7b9b1bd15bcee63d817b6eab1bd314a9faed1452bcffba492",
+      "game/headless/run/scenarios.py": "447db9884ef13b67525ea9f436db2582474da73469902bfd91a84cec03466e75",
+      "game/headless/run/shop.py": "ea74da749a41e91d4a598c203525ddfcbae5625b2f3a119b5d475a5d2bca27f8",
+      "game/headless/run/shop_validation.py": "708ad19b1b142620e027a7711f6f64438e4c3f8944a6f518b4f9b32f8210c4f3",
+      "game/headless/run/snapshots.py": "2241c849b178daf18f28a541debcd1f26ace4b015afb62326d55ba95bb6d5d07",
+      "game/headless/run/spoils_map.py": "d75f76d52f7bc04288dd930d06c29e872ab12bd732e881467f8ac5c2658eb5ae",
+      "game/headless/run/state.py": "8799d1f84de234c014bbbecb89e4a33b615e27f1e687cb1a534edd35f0b602ed",
+      "game/headless/run/treasure.py": "e138a2a4d5f0b028d20867455bbf209139fbad09d65bbe0a63ba5f6812a91d66",
+      "game/headless/run/treasure_validation.py": "a73121b62c8bb2f570cb255756ed90371ce5f6b249cde36c7249ea3852ea6099",
+      "game/headless/run/unknown_rooms.py": "e8ac15a5ed200facaf043571e7c9f0204ec0724860067eebfa45bd46c0877bc7",
+      "game/headless/shops/__init__.py": "2b7a842b6f0b4a626cd023d1b142681ca4638e92e7f6811ab5c1ae488a362ca5",
+      "game/headless/shops/catalog.py": "0802b1c4929e9b424a7b3a8d6efb3f7b88a742927ed4981d293600a8072fb39b",
+      "game/headless/treasure/__init__.py": "6d66f2b05a9c7c3cebcd87ac9a0c2963a9907030607b570d8bc40877f52cbfcd",
+      "game/headless/treasure/catalog.py": "e7b4860e87794da96b2c0c63e07f984e12117a7b9026238d8ffa83d07fec19e1"
+    },
+    "started_unix": 1790878496.4337258,
+    "torch_threads": 1,
+    "validation": "Compare repeated trajectories/weights within each worker count; validate all checkpoint bindings and exact resume in focused tests."
+  },
+  "publication": {
+    "experiment_id": "4",
+    "figure": "runs/worker-scaling-20261001/worker-scaling.png",
+    "figure_sha256": "b06dc0deeb552489bec48b39b9964c246308eb1f2efa99a671b442d3f701e155",
+    "runs": [
+      {
+        "label": "workers-8-repeat-1",
+        "metrics_verified": true,
+        "run_id": "ae8574f8d166408f9f19873b48c21ede"
+      },
+      {
+        "label": "workers-12-repeat-1",
+        "metrics_verified": true,
+        "run_id": "e711122634794efb934220ef88f38ade"
+      },
+      {
+        "label": "workers-16-repeat-1",
+        "metrics_verified": true,
+        "run_id": "96f510bf2f474359ba59f36140e67e26"
+      },
+      {
+        "label": "workers-12-repeat-2",
+        "metrics_verified": true,
+        "run_id": "cc111c4428af47709642750da1350151"
+      },
+      {
+        "label": "workers-16-repeat-2",
+        "metrics_verified": true,
+        "run_id": "4a8b272bf2084ae199386f3c2e8ac2af"
+      },
+      {
+        "label": "workers-8-repeat-2",
+        "metrics_verified": true,
+        "run_id": "431e88247dc14792976393a56f06683f"
+      },
+      {
+        "label": "workers-16-repeat-3",
+        "metrics_verified": true,
+        "run_id": "03f9fde9e0434969bdbee6715edfa84d"
+      },
+      {
+        "label": "workers-8-repeat-3",
+        "metrics_verified": true,
+        "run_id": "05dbc364792942c7890e53093e787a11"
+      },
+      {
+        "label": "workers-12-repeat-3",
+        "metrics_verified": true,
+        "run_id": "f07057b04fd4428f99d2c0b1a0c36d24"
+      }
+    ],
+    "status": "complete",
+    "url": "http://127.0.0.1:5050/#/experiments/4/runs?searchFilter=tags.sts.benchmark+%3D+%27worker_scaling_20261001%27"
+  },
+  "rollout_signatures": {
+    "workers-12-repeat-1": [
+      "b9db1cdb904ea1524abd8502e734a27201c3a439ba4b74e644ae38fb9c7e39d2",
+      "aa7624369da214496199197e9b89ff04b1c2c5c991db4b0f63189f303fa2646e"
+    ],
+    "workers-12-repeat-2": [
+      "b9db1cdb904ea1524abd8502e734a27201c3a439ba4b74e644ae38fb9c7e39d2",
+      "aa7624369da214496199197e9b89ff04b1c2c5c991db4b0f63189f303fa2646e"
+    ],
+    "workers-12-repeat-3": [
+      "b9db1cdb904ea1524abd8502e734a27201c3a439ba4b74e644ae38fb9c7e39d2",
+      "aa7624369da214496199197e9b89ff04b1c2c5c991db4b0f63189f303fa2646e"
+    ],
+    "workers-16-repeat-1": [
+      "b2e80c16802626f9222b151856a7edab47d1d19e01f496655f0e609c0399d9b4",
+      "3cf9a4dda0a450ed2762f586e9a3eb064500c0d5b7b70d2dc0460ea7024e16e4"
+    ],
+    "workers-16-repeat-2": [
+      "b2e80c16802626f9222b151856a7edab47d1d19e01f496655f0e609c0399d9b4",
+      "3cf9a4dda0a450ed2762f586e9a3eb064500c0d5b7b70d2dc0460ea7024e16e4"
+    ],
+    "workers-16-repeat-3": [
+      "b2e80c16802626f9222b151856a7edab47d1d19e01f496655f0e609c0399d9b4",
+      "3cf9a4dda0a450ed2762f586e9a3eb064500c0d5b7b70d2dc0460ea7024e16e4"
+    ],
+    "workers-8-repeat-1": [
+      "8b4115f13869a192d7a202699504c6801768bb3fb544f1c2cd4143c47cb6cc48",
+      "b0e4ebe54a94de079094f58af1f8cc1741f135377e8ed784755aa294502e7301"
+    ],
+    "workers-8-repeat-2": [
+      "8b4115f13869a192d7a202699504c6801768bb3fb544f1c2cd4143c47cb6cc48",
+      "b0e4ebe54a94de079094f58af1f8cc1741f135377e8ed784755aa294502e7301"
+    ],
+    "workers-8-repeat-3": [
+      "8b4115f13869a192d7a202699504c6801768bb3fb544f1c2cd4143c47cb6cc48",
+      "b0e4ebe54a94de079094f58af1f8cc1741f135377e8ed784755aa294502e7301"
+    ]
+  },
+  "runs": [
+    {
+      "collection_round_seconds": [
+        18.725903375074267,
+        14.116043583024293
+      ],
+      "collection_seconds": 32.84194695809856,
+      "cutoff_fraction": 0.029906542056074768,
+      "decisions": 8192,
+      "decisions_per_second": 141.8308514568871,
+      "epochs": [
+        2,
+        2
+      ],
+      "final_fingerprint": "sts_policy_state_v2:a1ffd935080297dc61bf25f81885d1daffa1b163d06369c060749fd1a3bf82c6",
+      "invocation_seconds": 56.52965558413416,
+      "kl_early_stops": [
+        false,
+        false
+      ],
+      "label": "workers-8-repeat-1",
+      "optimizer_steps": 1024,
+      "packed_rollout_bytes": [
+        292029524,
+        291434532
+      ],
+      "parent_peak_rss_bytes": 1449410560,
+      "process_seconds": 57.75894254213199,
+      "repetition": 1,
+      "report_seconds": 55.11224458296783,
+      "room_kinds": {
+        "boss": 180,
+        "combat": 177,
+        "elite": 178
+      },
+      "spawn_seconds": [
+        4.3803212500642985,
+        7.499475032091141e-07
+      ],
+      "summary": {
+        "accepted_decisions": 8192,
+        "components": {
+          "combat_loss": 173.0,
+          "combat_win": 346.0,
+          "end_turn_action": 1847.0,
+          "potion_use_action": 165.0,
+          "win_hp_fraction": 178.37949615512701
+        },
+        "cutoffs": 16,
+        "decisions_per_second": 148.64210416375778,
+        "episode_attempts": 535,
+        "failed_episodes": 0,
+        "losses": 173,
+        "mean_hp_on_win": 41.320809248554916,
+        "potion_use_actions": 165,
+        "processed_decisions": 8192,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task_return": 363.83794961551285,
+        "trained_decisions": 8192,
+        "wins": 346
+      },
+      "update_round_seconds": [
+        10.899796582991257,
+        10.65705766598694
+      ],
+      "update_seconds": 21.556854248978198,
+      "worker_batches": [
+        [
+          {
+            "quota": 512,
+            "seconds": 14.073735042009503,
+            "status": "complete",
+            "steps": 512,
+            "worker": 0
+          },
+          {
+            "quota": 512,
+            "seconds": 13.76718316692859,
+            "status": "complete",
+            "steps": 512,
+            "worker": 1
+          },
+          {
+            "quota": 512,
+            "seconds": 14.005201666150242,
+            "status": "complete",
+            "steps": 512,
+            "worker": 2
+          },
+          {
+            "quota": 512,
+            "seconds": 13.676096874987707,
+            "status": "complete",
+            "steps": 512,
+            "worker": 3
+          },
+          {
+            "quota": 512,
+            "seconds": 13.89686012500897,
+            "status": "complete",
+            "steps": 512,
+            "worker": 4
+          },
+          {
+            "quota": 512,
+            "seconds": 13.595190708059818,
+            "status": "complete",
+            "steps": 512,
+            "worker": 5
+          },
+          {
+            "quota": 512,
+            "seconds": 13.499217124888673,
+            "status": "complete",
+            "steps": 512,
+            "worker": 6
+          },
+          {
+            "quota": 512,
+            "seconds": 14.241711625130847,
+            "status": "complete",
+            "steps": 512,
+            "worker": 7
+          }
+        ],
+        [
+          {
+            "quota": 512,
+            "seconds": 13.931831666035578,
+            "status": "complete",
+            "steps": 512,
+            "worker": 0
+          },
+          {
+            "quota": 512,
+            "seconds": 13.584233917063102,
+            "status": "complete",
+            "steps": 512,
+            "worker": 1
+          },
+          {
+            "quota": 512,
+            "seconds": 13.571357541019097,
+            "status": "complete",
+            "steps": 512,
+            "worker": 2
+          },
+          {
+            "quota": 512,
+            "seconds": 13.722532624844462,
+            "status": "complete",
+            "steps": 512,
+            "worker": 3
+          },
+          {
+            "quota": 512,
+            "seconds": 13.765427249949425,
+            "status": "complete",
+            "steps": 512,
+            "worker": 4
+          },
+          {
+            "quota": 512,
+            "seconds": 13.883891041856259,
+            "status": "complete",
+            "steps": 512,
+            "worker": 5
+          },
+          {
+            "quota": 512,
+            "seconds": 13.614235500106588,
+            "status": "complete",
+            "steps": 512,
+            "worker": 6
+          },
+          {
+            "quota": 512,
+            "seconds": 13.988628041930497,
+            "status": "complete",
+            "steps": 512,
+            "worker": 7
+          }
+        ]
+      ],
+      "workers": 8
+    },
+    {
+      "collection_round_seconds": [
+        16.996943542035297,
+        10.96283720806241
+      ],
+      "collection_seconds": 27.959780750097707,
+      "cutoff_fraction": 0.03594771241830065,
+      "decisions": 8192,
+      "decisions_per_second": 156.6092479243052,
+      "epochs": [
+        2,
+        2
+      ],
+      "final_fingerprint": "sts_policy_state_v2:efdd484b46046fa7bd479b14010997553758c397dcb2e8dface76de8550df654",
+      "invocation_seconds": 51.08684116601944,
+      "kl_early_stops": [
+        false,
+        false
+      ],
+      "label": "workers-12-repeat-1",
+      "optimizer_steps": 1024,
+      "packed_rollout_bytes": [
+        283569612,
+        280856332
+      ],
+      "parent_peak_rss_bytes": 1387249664,
+      "process_seconds": 52.308532916009426,
+      "repetition": 1,
+      "report_seconds": 49.649687625002116,
+      "room_kinds": {
+        "boss": 123,
+        "combat": 266,
+        "elite": 223
+      },
+      "spawn_seconds": [
+        6.319965832866728,
+        5.830079317092896e-07
+      ],
+      "summary": {
+        "accepted_decisions": 8192,
+        "components": {
+          "combat_loss": 161.0,
+          "combat_win": 429.0,
+          "end_turn_action": 1828.0,
+          "potion_use_action": 176.0,
+          "win_hp_fraction": 227.68284208605382
+        },
+        "cutoffs": 22,
+        "decisions_per_second": 164.99600283234713,
+        "episode_attempts": 612,
+        "failed_episodes": 0,
+        "losses": 161,
+        "mean_hp_on_win": 42.52447552447553,
+        "potion_use_actions": 176,
+        "processed_decisions": 8192,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task_return": 451.7682842086052,
+        "trained_decisions": 8192,
+        "wins": 429
+      },
+      "update_round_seconds": [
+        10.474289332982153,
+        10.439582708990201
+      ],
+      "update_seconds": 20.913872041972354,
+      "worker_batches": [
+        [
+          {
+            "quota": 342,
+            "seconds": 9.39759145793505,
+            "status": "complete",
+            "steps": 342,
+            "worker": 0
+          },
+          {
+            "quota": 342,
+            "seconds": 9.636135999811813,
+            "status": "complete",
+            "steps": 342,
+            "worker": 1
+          },
+          {
+            "quota": 342,
+            "seconds": 10.466447375016287,
+            "status": "complete",
+            "steps": 342,
+            "worker": 2
+          },
+          {
+            "quota": 342,
+            "seconds": 9.020841333083808,
+            "status": "complete",
+            "steps": 342,
+            "worker": 3
+          },
+          {
+            "quota": 341,
+            "seconds": 9.813984332839027,
+            "status": "complete",
+            "steps": 341,
+            "worker": 4
+          },
+          {
+            "quota": 341,
+            "seconds": 10.351801499957219,
+            "status": "complete",
+            "steps": 341,
+            "worker": 5
+          },
+          {
+            "quota": 341,
+            "seconds": 9.408457624958828,
+            "status": "complete",
+            "steps": 341,
+            "worker": 6
+          },
+          {
+            "quota": 341,
+            "seconds": 9.875107666943222,
+            "status": "complete",
+            "steps": 341,
+            "worker": 7
+          },
+          {
+            "quota": 341,
+            "seconds": 10.560651208972558,
+            "status": "complete",
+            "steps": 341,
+            "worker": 8
+          },
+          {
+            "quota": 341,
+            "seconds": 8.861734499922022,
+            "status": "complete",
+            "steps": 341,
+            "worker": 9
+          },
+          {
+            "quota": 341,
+            "seconds": 9.95857649995014,
+            "status": "complete",
+            "steps": 341,
+            "worker": 10
+          },
+          {
+            "quota": 341,
+            "seconds": 10.370658291038126,
+            "status": "complete",
+            "steps": 341,
+            "worker": 11
+          }
+        ],
+        [
+          {
+            "quota": 342,
+            "seconds": 9.154173541115597,
+            "status": "complete",
+            "steps": 342,
+            "worker": 0
+          },
+          {
+            "quota": 342,
+            "seconds": 9.833934959024191,
+            "status": "complete",
+            "steps": 342,
+            "worker": 1
+          },
+          {
+            "quota": 342,
+            "seconds": 10.480982499895617,
+            "status": "complete",
+            "steps": 342,
+            "worker": 2
+          },
+          {
+            "quota": 342,
+            "seconds": 9.484963416820392,
+            "status": "complete",
+            "steps": 342,
+            "worker": 3
+          },
+          {
+            "quota": 341,
+            "seconds": 9.874653999926522,
+            "status": "complete",
+            "steps": 341,
+            "worker": 4
+          },
+          {
+            "quota": 341,
+            "seconds": 10.447255000006407,
+            "status": "complete",
+            "steps": 341,
+            "worker": 5
+          },
+          {
+            "quota": 341,
+            "seconds": 9.00721591617912,
+            "status": "complete",
+            "steps": 341,
+            "worker": 6
+          },
+          {
+            "quota": 341,
+            "seconds": 9.909030207898468,
+            "status": "complete",
+            "steps": 341,
+            "worker": 7
+          },
+          {
+            "quota": 341,
+            "seconds": 10.85272983298637,
+            "status": "complete",
+            "steps": 341,
+            "worker": 8
+          },
+          {
+            "quota": 341,
+            "seconds": 8.85036729206331,
+            "status": "complete",
+            "steps": 341,
+            "worker": 9
+          },
+          {
+            "quota": 341,
+            "seconds": 9.970783458091319,
+            "status": "complete",
+            "steps": 341,
+            "worker": 10
+          },
+          {
+            "quota": 341,
+            "seconds": 10.681931999977678,
+            "status": "complete",
+            "steps": 341,
+            "worker": 11
+          }
+        ]
+      ],
+      "workers": 12
+    },
+    {
+      "collection_round_seconds": [
+        16.91284199990332,
+        8.505699333036318
+      ],
+      "collection_seconds": 25.41854133293964,
+      "cutoff_fraction": 0.054003724394785846,
+      "decisions": 8192,
+      "decisions_per_second": 160.49858071532674,
+      "epochs": [
+        2,
+        2
+      ],
+      "final_fingerprint": "sts_policy_state_v2:fda43a1d94875e7a69d82c06160f20fb61a9fe0d38baee3cf46f624c1c3a4300",
+      "invocation_seconds": 49.738213083008304,
+      "kl_early_stops": [
+        false,
+        false
+      ],
+      "label": "workers-16-repeat-1",
+      "optimizer_steps": 1024,
+      "packed_rollout_bytes": [
+        291308188,
+        285494076
+      ],
+      "parent_peak_rss_bytes": 1400799232,
+      "process_seconds": 51.04094979213551,
+      "repetition": 1,
+      "report_seconds": 48.24338066694327,
+      "room_kinds": {
+        "boss": 181,
+        "combat": 176,
+        "elite": 180
+      },
+      "spawn_seconds": [
+        8.505350291030481,
+        6.249174475669861e-07
+      ],
+      "summary": {
+        "accepted_decisions": 8192,
+        "components": {
+          "combat_loss": 184.0,
+          "combat_win": 324.0,
+          "end_turn_action": 1877.0,
+          "potion_use_action": 165.0,
+          "win_hp_fraction": 166.51047841421695
+        },
+        "cutoffs": 29,
+        "decisions_per_second": 169.80567876357847,
+        "episode_attempts": 537,
+        "failed_episodes": 0,
+        "losses": 184,
+        "mean_hp_on_win": 41.20679012345679,
+        "potion_use_actions": 165,
+        "processed_decisions": 8192,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task_return": 340.6510478414217,
+        "trained_decisions": 8192,
+        "wins": 324
+      },
+      "update_round_seconds": [
+        11.007199167041108,
+        10.88116933312267
+      ],
+      "update_seconds": 21.88836850016378,
+      "worker_batches": [
+        [
+          {
+            "quota": 256,
+            "seconds": 8.139988000039011,
+            "status": "complete",
+            "steps": 256,
+            "worker": 0
+          },
+          {
+            "quota": 256,
+            "seconds": 7.935565625084564,
+            "status": "complete",
+            "steps": 256,
+            "worker": 1
+          },
+          {
+            "quota": 256,
+            "seconds": 8.0590643750038,
+            "status": "complete",
+            "steps": 256,
+            "worker": 2
+          },
+          {
+            "quota": 256,
+            "seconds": 8.218644458102062,
+            "status": "complete",
+            "steps": 256,
+            "worker": 3
+          },
+          {
+            "quota": 256,
+            "seconds": 7.94868233287707,
+            "status": "complete",
+            "steps": 256,
+            "worker": 4
+          },
+          {
+            "quota": 256,
+            "seconds": 7.946061666123569,
+            "status": "complete",
+            "steps": 256,
+            "worker": 5
+          },
+          {
+            "quota": 256,
+            "seconds": 8.134013875154778,
+            "status": "complete",
+            "steps": 256,
+            "worker": 6
+          },
+          {
+            "quota": 256,
+            "seconds": 7.986523000057787,
+            "status": "complete",
+            "steps": 256,
+            "worker": 7
+          },
+          {
+            "quota": 256,
+            "seconds": 7.988045749953017,
+            "status": "complete",
+            "steps": 256,
+            "worker": 8
+          },
+          {
+            "quota": 256,
+            "seconds": 8.064445374999195,
+            "status": "complete",
+            "steps": 256,
+            "worker": 9
+          },
+          {
+            "quota": 256,
+            "seconds": 8.045123958960176,
+            "status": "complete",
+            "steps": 256,
+            "worker": 10
+          },
+          {
+            "quota": 256,
+            "seconds": 7.923147665802389,
+            "status": "complete",
+            "steps": 256,
+            "worker": 11
+          },
+          {
+            "quota": 256,
+            "seconds": 7.965212124865502,
+            "status": "complete",
+            "steps": 256,
+            "worker": 12
+          },
+          {
+            "quota": 256,
+            "seconds": 8.006175790913403,
+            "status": "complete",
+            "steps": 256,
+            "worker": 13
+          },
+          {
+            "quota": 256,
+            "seconds": 7.899730499833822,
+            "status": "complete",
+            "steps": 256,
+            "worker": 14
+          },
+          {
+            "quota": 256,
+            "seconds": 8.006231958046556,
+            "status": "complete",
+            "steps": 256,
+            "worker": 15
+          }
+        ],
+        [
+          {
+            "quota": 256,
+            "seconds": 8.086514083202928,
+            "status": "complete",
+            "steps": 256,
+            "worker": 0
+          },
+          {
+            "quota": 256,
+            "seconds": 8.093753957888111,
+            "status": "complete",
+            "steps": 256,
+            "worker": 1
+          },
+          {
+            "quota": 256,
+            "seconds": 8.351092624943703,
+            "status": "complete",
+            "steps": 256,
+            "worker": 2
+          },
+          {
+            "quota": 256,
+            "seconds": 8.14421720802784,
+            "status": "complete",
+            "steps": 256,
+            "worker": 3
+          },
+          {
+            "quota": 256,
+            "seconds": 8.020247416105121,
+            "status": "complete",
+            "steps": 256,
+            "worker": 4
+          },
+          {
+            "quota": 256,
+            "seconds": 8.260486582992598,
+            "status": "complete",
+            "steps": 256,
+            "worker": 5
+          },
+          {
+            "quota": 256,
+            "seconds": 7.825156374834478,
+            "status": "complete",
+            "steps": 256,
+            "worker": 6
+          },
+          {
+            "quota": 256,
+            "seconds": 7.895497542107478,
+            "status": "complete",
+            "steps": 256,
+            "worker": 7
+          },
+          {
+            "quota": 256,
+            "seconds": 7.716755749890581,
+            "status": "complete",
+            "steps": 256,
+            "worker": 8
+          },
+          {
+            "quota": 256,
+            "seconds": 8.217475000070408,
+            "status": "complete",
+            "steps": 256,
+            "worker": 9
+          },
+          {
+            "quota": 256,
+            "seconds": 8.275576541898772,
+            "status": "complete",
+            "steps": 256,
+            "worker": 10
+          },
+          {
+            "quota": 256,
+            "seconds": 7.874937624903396,
+            "status": "complete",
+            "steps": 256,
+            "worker": 11
+          },
+          {
+            "quota": 256,
+            "seconds": 8.031925958115608,
+            "status": "complete",
+            "steps": 256,
+            "worker": 12
+          },
+          {
+            "quota": 256,
+            "seconds": 8.328035874990746,
+            "status": "complete",
+            "steps": 256,
+            "worker": 13
+          },
+          {
+            "quota": 256,
+            "seconds": 8.369047291809693,
+            "status": "complete",
+            "steps": 256,
+            "worker": 14
+          },
+          {
+            "quota": 256,
+            "seconds": 8.205356375081465,
+            "status": "complete",
+            "steps": 256,
+            "worker": 15
+          }
+        ]
+      ],
+      "workers": 16
+    },
+    {
+      "collection_round_seconds": [
+        17.51273495797068,
+        11.200897042173892
+      ],
+      "collection_seconds": 28.71363200014457,
+      "cutoff_fraction": 0.03594771241830065,
+      "decisions": 8192,
+      "decisions_per_second": 152.2120592139248,
+      "epochs": [
+        2,
+        2
+      ],
+      "final_fingerprint": "sts_policy_state_v2:efdd484b46046fa7bd479b14010997553758c397dcb2e8dface76de8550df654",
+      "invocation_seconds": 52.435287582920864,
+      "kl_early_stops": [
+        false,
+        false
+      ],
+      "label": "workers-12-repeat-2",
+      "optimizer_steps": 1024,
+      "packed_rollout_bytes": [
+        283569612,
+        280856332
+      ],
+      "parent_peak_rss_bytes": 1405009920,
+      "process_seconds": 53.81965162488632,
+      "repetition": 2,
+      "report_seconds": 50.92975795804523,
+      "room_kinds": {
+        "boss": 123,
+        "combat": 266,
+        "elite": 223
+      },
+      "spawn_seconds": [
+        6.451785707846284,
+        7.909256964921951e-07
+      ],
+      "summary": {
+        "accepted_decisions": 8192,
+        "components": {
+          "combat_loss": 161.0,
+          "combat_win": 429.0,
+          "end_turn_action": 1828.0,
+          "potion_use_action": 176.0,
+          "win_hp_fraction": 227.68284208605382
+        },
+        "cutoffs": 22,
+        "decisions_per_second": 160.84898747699492,
+        "episode_attempts": 612,
+        "failed_episodes": 0,
+        "losses": 161,
+        "mean_hp_on_win": 42.52447552447553,
+        "potion_use_actions": 176,
+        "processed_decisions": 8192,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task_return": 451.7682842086052,
+        "trained_decisions": 8192,
+        "wins": 429
+      },
+      "update_round_seconds": [
+        10.587288375012577,
+        10.822688290849328
+      ],
+      "update_seconds": 21.409976665861905,
+      "worker_batches": [
+        [
+          {
+            "quota": 342,
+            "seconds": 9.724805291974917,
+            "status": "complete",
+            "steps": 342,
+            "worker": 0
+          },
+          {
+            "quota": 342,
+            "seconds": 9.905686917016283,
+            "status": "complete",
+            "steps": 342,
+            "worker": 1
+          },
+          {
+            "quota": 342,
+            "seconds": 10.868074791971594,
+            "status": "complete",
+            "steps": 342,
+            "worker": 2
+          },
+          {
+            "quota": 342,
+            "seconds": 9.381380166858435,
+            "status": "complete",
+            "steps": 342,
+            "worker": 3
+          },
+          {
+            "quota": 341,
+            "seconds": 10.159741458017379,
+            "status": "complete",
+            "steps": 341,
+            "worker": 4
+          },
+          {
+            "quota": 341,
+            "seconds": 10.704729459015653,
+            "status": "complete",
+            "steps": 341,
+            "worker": 5
+          },
+          {
+            "quota": 341,
+            "seconds": 9.745550208026543,
+            "status": "complete",
+            "steps": 341,
+            "worker": 6
+          },
+          {
+            "quota": 341,
+            "seconds": 10.225357792107388,
+            "status": "complete",
+            "steps": 341,
+            "worker": 7
+          },
+          {
+            "quota": 341,
+            "seconds": 10.945435833185911,
+            "status": "complete",
+            "steps": 341,
+            "worker": 8
+          },
+          {
+            "quota": 341,
+            "seconds": 9.154190584085882,
+            "status": "complete",
+            "steps": 341,
+            "worker": 9
+          },
+          {
+            "quota": 341,
+            "seconds": 10.311050958000124,
+            "status": "complete",
+            "steps": 341,
+            "worker": 10
+          },
+          {
+            "quota": 341,
+            "seconds": 10.753092500148341,
+            "status": "complete",
+            "steps": 341,
+            "worker": 11
+          }
+        ],
+        [
+          {
+            "quota": 342,
+            "seconds": 9.370757583063096,
+            "status": "complete",
+            "steps": 342,
+            "worker": 0
+          },
+          {
+            "quota": 342,
+            "seconds": 9.984398999949917,
+            "status": "complete",
+            "steps": 342,
+            "worker": 1
+          },
+          {
+            "quota": 342,
+            "seconds": 10.685703333001584,
+            "status": "complete",
+            "steps": 342,
+            "worker": 2
+          },
+          {
+            "quota": 342,
+            "seconds": 9.638811666984111,
+            "status": "complete",
+            "steps": 342,
+            "worker": 3
+          },
+          {
+            "quota": 341,
+            "seconds": 9.948346249992028,
+            "status": "complete",
+            "steps": 341,
+            "worker": 4
+          },
+          {
+            "quota": 341,
+            "seconds": 10.65509512485005,
+            "status": "complete",
+            "steps": 341,
+            "worker": 5
+          },
+          {
+            "quota": 341,
+            "seconds": 9.157389791915193,
+            "status": "complete",
+            "steps": 341,
+            "worker": 6
+          },
+          {
+            "quota": 341,
+            "seconds": 10.030227541923523,
+            "status": "complete",
+            "steps": 341,
+            "worker": 7
+          },
+          {
+            "quota": 341,
+            "seconds": 11.088187583023682,
+            "status": "complete",
+            "steps": 341,
+            "worker": 8
+          },
+          {
+            "quota": 341,
+            "seconds": 9.026231124997139,
+            "status": "complete",
+            "steps": 341,
+            "worker": 9
+          },
+          {
+            "quota": 341,
+            "seconds": 10.157251292141154,
+            "status": "complete",
+            "steps": 341,
+            "worker": 10
+          },
+          {
+            "quota": 341,
+            "seconds": 10.85984329204075,
+            "status": "complete",
+            "steps": 341,
+            "worker": 11
+          }
+        ]
+      ],
+      "workers": 12
+    },
+    {
+      "collection_round_seconds": [
+        17.159830834018067,
+        8.951078874990344
+      ],
+      "collection_seconds": 26.11090970900841,
+      "cutoff_fraction": 0.054003724394785846,
+      "decisions": 8192,
+      "decisions_per_second": 158.04429293517998,
+      "epochs": [
+        2,
+        2
+      ],
+      "final_fingerprint": "sts_policy_state_v2:fda43a1d94875e7a69d82c06160f20fb61a9fe0d38baee3cf46f624c1c3a4300",
+      "invocation_seconds": 50.53379520890303,
+      "kl_early_stops": [
+        false,
+        false
+      ],
+      "label": "workers-16-repeat-2",
+      "optimizer_steps": 1024,
+      "packed_rollout_bytes": [
+        291308188,
+        285494076
+      ],
+      "parent_peak_rss_bytes": 1398669312,
+      "process_seconds": 51.833570500137284,
+      "repetition": 2,
+      "report_seconds": 49.109429416945204,
+      "room_kinds": {
+        "boss": 181,
+        "combat": 176,
+        "elite": 180
+      },
+      "spawn_seconds": [
+        8.541057624854147,
+        6.249174475669861e-07
+      ],
+      "summary": {
+        "accepted_decisions": 8192,
+        "components": {
+          "combat_loss": 184.0,
+          "combat_win": 324.0,
+          "end_turn_action": 1877.0,
+          "potion_use_action": 165.0,
+          "win_hp_fraction": 166.51047841421695
+        },
+        "cutoffs": 29,
+        "decisions_per_second": 166.8111419183655,
+        "episode_attempts": 537,
+        "failed_episodes": 0,
+        "losses": 184,
+        "mean_hp_on_win": 41.20679012345679,
+        "potion_use_actions": 165,
+        "processed_decisions": 8192,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task_return": 340.6510478414217,
+        "trained_decisions": 8192,
+        "wins": 324
+      },
+      "update_round_seconds": [
+        10.892323917010799,
+        11.202215624973178
+      ],
+      "update_seconds": 22.094539541983977,
+      "worker_batches": [
+        [
+          {
+            "quota": 256,
+            "seconds": 8.337876999983564,
+            "status": "complete",
+            "steps": 256,
+            "worker": 0
+          },
+          {
+            "quota": 256,
+            "seconds": 8.210968332830817,
+            "status": "complete",
+            "steps": 256,
+            "worker": 1
+          },
+          {
+            "quota": 256,
+            "seconds": 8.182706250110641,
+            "status": "complete",
+            "steps": 256,
+            "worker": 2
+          },
+          {
+            "quota": 256,
+            "seconds": 8.486151415854692,
+            "status": "complete",
+            "steps": 256,
+            "worker": 3
+          },
+          {
+            "quota": 256,
+            "seconds": 8.173361834138632,
+            "status": "complete",
+            "steps": 256,
+            "worker": 4
+          },
+          {
+            "quota": 256,
+            "seconds": 8.118562458083034,
+            "status": "complete",
+            "steps": 256,
+            "worker": 5
+          },
+          {
+            "quota": 256,
+            "seconds": 8.302466458873823,
+            "status": "complete",
+            "steps": 256,
+            "worker": 6
+          },
+          {
+            "quota": 256,
+            "seconds": 8.143154582940042,
+            "status": "complete",
+            "steps": 256,
+            "worker": 7
+          },
+          {
+            "quota": 256,
+            "seconds": 8.242752583930269,
+            "status": "complete",
+            "steps": 256,
+            "worker": 8
+          },
+          {
+            "quota": 256,
+            "seconds": 8.241740708006546,
+            "status": "complete",
+            "steps": 256,
+            "worker": 9
+          },
+          {
+            "quota": 256,
+            "seconds": 8.22228345903568,
+            "status": "complete",
+            "steps": 256,
+            "worker": 10
+          },
+          {
+            "quota": 256,
+            "seconds": 8.082633208017796,
+            "status": "complete",
+            "steps": 256,
+            "worker": 11
+          },
+          {
+            "quota": 256,
+            "seconds": 8.142918874975294,
+            "status": "complete",
+            "steps": 256,
+            "worker": 12
+          },
+          {
+            "quota": 256,
+            "seconds": 8.175486500142142,
+            "status": "complete",
+            "steps": 256,
+            "worker": 13
+          },
+          {
+            "quota": 256,
+            "seconds": 8.076283333124593,
+            "status": "complete",
+            "steps": 256,
+            "worker": 14
+          },
+          {
+            "quota": 256,
+            "seconds": 8.1936836251989,
+            "status": "complete",
+            "steps": 256,
+            "worker": 15
+          }
+        ],
+        [
+          {
+            "quota": 256,
+            "seconds": 8.518681375076994,
+            "status": "complete",
+            "steps": 256,
+            "worker": 0
+          },
+          {
+            "quota": 256,
+            "seconds": 8.477698874892667,
+            "status": "complete",
+            "steps": 256,
+            "worker": 1
+          },
+          {
+            "quota": 256,
+            "seconds": 8.687451125122607,
+            "status": "complete",
+            "steps": 256,
+            "worker": 2
+          },
+          {
+            "quota": 256,
+            "seconds": 8.560856082942337,
+            "status": "complete",
+            "steps": 256,
+            "worker": 3
+          },
+          {
+            "quota": 256,
+            "seconds": 8.413616249803454,
+            "status": "complete",
+            "steps": 256,
+            "worker": 4
+          },
+          {
+            "quota": 256,
+            "seconds": 8.719832916045561,
+            "status": "complete",
+            "steps": 256,
+            "worker": 5
+          },
+          {
+            "quota": 256,
+            "seconds": 8.177837082883343,
+            "status": "complete",
+            "steps": 256,
+            "worker": 6
+          },
+          {
+            "quota": 256,
+            "seconds": 8.32001950009726,
+            "status": "complete",
+            "steps": 256,
+            "worker": 7
+          },
+          {
+            "quota": 256,
+            "seconds": 8.107895999914035,
+            "status": "complete",
+            "steps": 256,
+            "worker": 8
+          },
+          {
+            "quota": 256,
+            "seconds": 8.616282208124176,
+            "status": "complete",
+            "steps": 256,
+            "worker": 9
+          },
+          {
+            "quota": 256,
+            "seconds": 8.655884499894455,
+            "status": "complete",
+            "steps": 256,
+            "worker": 10
+          },
+          {
+            "quota": 256,
+            "seconds": 8.27176195802167,
+            "status": "complete",
+            "steps": 256,
+            "worker": 11
+          },
+          {
+            "quota": 256,
+            "seconds": 8.464303374988958,
+            "status": "complete",
+            "steps": 256,
+            "worker": 12
+          },
+          {
+            "quota": 256,
+            "seconds": 8.733069957932457,
+            "status": "complete",
+            "steps": 256,
+            "worker": 13
+          },
+          {
+            "quota": 256,
+            "seconds": 8.817002791911364,
+            "status": "complete",
+            "steps": 256,
+            "worker": 14
+          },
+          {
+            "quota": 256,
+            "seconds": 8.658359583001584,
+            "status": "complete",
+            "steps": 256,
+            "worker": 15
+          }
+        ]
+      ],
+      "workers": 16
+    },
+    {
+      "collection_round_seconds": [
+        19.67406466603279,
+        14.994309291010723
+      ],
+      "collection_seconds": 34.668373957043514,
+      "cutoff_fraction": 0.029906542056074768,
+      "decisions": 8192,
+      "decisions_per_second": 136.7187557713102,
+      "epochs": [
+        2,
+        2
+      ],
+      "final_fingerprint": "sts_policy_state_v2:a1ffd935080297dc61bf25f81885d1daffa1b163d06369c060749fd1a3bf82c6",
+      "invocation_seconds": 58.84329270804301,
+      "kl_early_stops": [
+        false,
+        false
+      ],
+      "label": "workers-8-repeat-2",
+      "optimizer_steps": 1024,
+      "packed_rollout_bytes": [
+        292029524,
+        291434532
+      ],
+      "parent_peak_rss_bytes": 1452376064,
+      "process_seconds": 59.918626042082906,
+      "repetition": 2,
+      "report_seconds": 57.33764441590756,
+      "room_kinds": {
+        "boss": 180,
+        "combat": 177,
+        "elite": 178
+      },
+      "spawn_seconds": [
+        4.464087374974042,
+        6.249174475669861e-07
+      ],
+      "summary": {
+        "accepted_decisions": 8192,
+        "components": {
+          "combat_loss": 173.0,
+          "combat_win": 346.0,
+          "end_turn_action": 1847.0,
+          "potion_use_action": 165.0,
+          "win_hp_fraction": 178.37949615512701
+        },
+        "cutoffs": 16,
+        "decisions_per_second": 142.87297783944607,
+        "episode_attempts": 535,
+        "failed_episodes": 0,
+        "losses": 173,
+        "mean_hp_on_win": 41.320809248554916,
+        "potion_use_actions": 165,
+        "processed_decisions": 8192,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task_return": 363.83794961551285,
+        "trained_decisions": 8192,
+        "wins": 346
+      },
+      "update_round_seconds": [
+        11.063338082982227,
+        10.842964958865196
+      ],
+      "update_seconds": 21.906303041847423,
+      "worker_batches": [
+        [
+          {
+            "quota": 512,
+            "seconds": 14.90929100010544,
+            "status": "complete",
+            "steps": 512,
+            "worker": 0
+          },
+          {
+            "quota": 512,
+            "seconds": 14.558519792044535,
+            "status": "complete",
+            "steps": 512,
+            "worker": 1
+          },
+          {
+            "quota": 512,
+            "seconds": 14.934469792060554,
+            "status": "complete",
+            "steps": 512,
+            "worker": 2
+          },
+          {
+            "quota": 512,
+            "seconds": 14.530973916873336,
+            "status": "complete",
+            "steps": 512,
+            "worker": 3
+          },
+          {
+            "quota": 512,
+            "seconds": 14.745795666938648,
+            "status": "complete",
+            "steps": 512,
+            "worker": 4
+          },
+          {
+            "quota": 512,
+            "seconds": 14.34044791618362,
+            "status": "complete",
+            "steps": 512,
+            "worker": 5
+          },
+          {
+            "quota": 512,
+            "seconds": 14.300998124992475,
+            "status": "complete",
+            "steps": 512,
+            "worker": 6
+          },
+          {
+            "quota": 512,
+            "seconds": 15.103592250030488,
+            "status": "complete",
+            "steps": 512,
+            "worker": 7
+          }
+        ],
+        [
+          {
+            "quota": 512,
+            "seconds": 14.712808666052297,
+            "status": "complete",
+            "steps": 512,
+            "worker": 0
+          },
+          {
+            "quota": 512,
+            "seconds": 14.413792333099991,
+            "status": "complete",
+            "steps": 512,
+            "worker": 1
+          },
+          {
+            "quota": 512,
+            "seconds": 14.422962584067136,
+            "status": "complete",
+            "steps": 512,
+            "worker": 2
+          },
+          {
+            "quota": 512,
+            "seconds": 14.542873832862824,
+            "status": "complete",
+            "steps": 512,
+            "worker": 3
+          },
+          {
+            "quota": 512,
+            "seconds": 14.519284667214379,
+            "status": "complete",
+            "steps": 512,
+            "worker": 4
+          },
+          {
+            "quota": 512,
+            "seconds": 14.700933167012408,
+            "status": "complete",
+            "steps": 512,
+            "worker": 5
+          },
+          {
+            "quota": 512,
+            "seconds": 14.430351041955873,
+            "status": "complete",
+            "steps": 512,
+            "worker": 6
+          },
+          {
+            "quota": 512,
+            "seconds": 14.866218709154055,
+            "status": "complete",
+            "steps": 512,
+            "worker": 7
+          }
+        ]
+      ],
+      "workers": 8
+    },
+    {
+      "collection_round_seconds": [
+        16.993123583029956,
+        8.61979250004515
+      ],
+      "collection_seconds": 25.612916083075106,
+      "cutoff_fraction": 0.054003724394785846,
+      "decisions": 8192,
+      "decisions_per_second": 160.15837836218842,
+      "epochs": [
+        2,
+        2
+      ],
+      "final_fingerprint": "sts_policy_state_v2:fda43a1d94875e7a69d82c06160f20fb61a9fe0d38baee3cf46f624c1c3a4300",
+      "invocation_seconds": 49.97558937477879,
+      "kl_early_stops": [
+        false,
+        false
+      ],
+      "label": "workers-16-repeat-3",
+      "optimizer_steps": 1024,
+      "packed_rollout_bytes": [
+        291308188,
+        285494076
+      ],
+      "parent_peak_rss_bytes": 1397161984,
+      "process_seconds": 51.14936904190108,
+      "repetition": 3,
+      "report_seconds": 48.45262241689488,
+      "room_kinds": {
+        "boss": 181,
+        "combat": 176,
+        "elite": 180
+      },
+      "spawn_seconds": [
+        8.49418129096739,
+        7.080379873514175e-07
+      ],
+      "summary": {
+        "accepted_decisions": 8192,
+        "components": {
+          "combat_loss": 184.0,
+          "combat_win": 324.0,
+          "end_turn_action": 1877.0,
+          "potion_use_action": 165.0,
+          "win_hp_fraction": 166.51047841421695
+        },
+        "cutoffs": 29,
+        "decisions_per_second": 169.07237609379717,
+        "episode_attempts": 537,
+        "failed_episodes": 0,
+        "losses": 184,
+        "mean_hp_on_win": 41.20679012345679,
+        "potion_use_actions": 165,
+        "processed_decisions": 8192,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task_return": 340.6510478414217,
+        "trained_decisions": 8192,
+        "wins": 324
+      },
+      "update_round_seconds": [
+        10.90430779196322,
+        11.006304667098448
+      ],
+      "update_seconds": 21.910612459061667,
+      "worker_batches": [
+        [
+          {
+            "quota": 256,
+            "seconds": 8.291921542026103,
+            "status": "complete",
+            "steps": 256,
+            "worker": 0
+          },
+          {
+            "quota": 256,
+            "seconds": 8.072373042115942,
+            "status": "complete",
+            "steps": 256,
+            "worker": 1
+          },
+          {
+            "quota": 256,
+            "seconds": 8.10071499994956,
+            "status": "complete",
+            "steps": 256,
+            "worker": 2
+          },
+          {
+            "quota": 256,
+            "seconds": 8.309900500113145,
+            "status": "complete",
+            "steps": 256,
+            "worker": 3
+          },
+          {
+            "quota": 256,
+            "seconds": 8.0475366669707,
+            "status": "complete",
+            "steps": 256,
+            "worker": 4
+          },
+          {
+            "quota": 256,
+            "seconds": 8.075574000133201,
+            "status": "complete",
+            "steps": 256,
+            "worker": 5
+          },
+          {
+            "quota": 256,
+            "seconds": 8.218026250135154,
+            "status": "complete",
+            "steps": 256,
+            "worker": 6
+          },
+          {
+            "quota": 256,
+            "seconds": 8.0849628332071,
+            "status": "complete",
+            "steps": 256,
+            "worker": 7
+          },
+          {
+            "quota": 256,
+            "seconds": 8.074473540997133,
+            "status": "complete",
+            "steps": 256,
+            "worker": 8
+          },
+          {
+            "quota": 256,
+            "seconds": 8.158254290930927,
+            "status": "complete",
+            "steps": 256,
+            "worker": 9
+          },
+          {
+            "quota": 256,
+            "seconds": 8.197326415916905,
+            "status": "complete",
+            "steps": 256,
+            "worker": 10
+          },
+          {
+            "quota": 256,
+            "seconds": 7.997395124984905,
+            "status": "complete",
+            "steps": 256,
+            "worker": 11
+          },
+          {
+            "quota": 256,
+            "seconds": 8.10768129187636,
+            "status": "complete",
+            "steps": 256,
+            "worker": 12
+          },
+          {
+            "quota": 256,
+            "seconds": 8.11360958404839,
+            "status": "complete",
+            "steps": 256,
+            "worker": 13
+          },
+          {
+            "quota": 256,
+            "seconds": 7.960224375128746,
+            "status": "complete",
+            "steps": 256,
+            "worker": 14
+          },
+          {
+            "quota": 256,
+            "seconds": 8.060328167164698,
+            "status": "complete",
+            "steps": 256,
+            "worker": 15
+          }
+        ],
+        [
+          {
+            "quota": 256,
+            "seconds": 8.224643625086173,
+            "status": "complete",
+            "steps": 256,
+            "worker": 0
+          },
+          {
+            "quota": 256,
+            "seconds": 8.13238741690293,
+            "status": "complete",
+            "steps": 256,
+            "worker": 1
+          },
+          {
+            "quota": 256,
+            "seconds": 8.450071583036333,
+            "status": "complete",
+            "steps": 256,
+            "worker": 2
+          },
+          {
+            "quota": 256,
+            "seconds": 8.198412334080786,
+            "status": "complete",
+            "steps": 256,
+            "worker": 3
+          },
+          {
+            "quota": 256,
+            "seconds": 8.058267374988645,
+            "status": "complete",
+            "steps": 256,
+            "worker": 4
+          },
+          {
+            "quota": 256,
+            "seconds": 8.388138249982148,
+            "status": "complete",
+            "steps": 256,
+            "worker": 5
+          },
+          {
+            "quota": 256,
+            "seconds": 7.914237624965608,
+            "status": "complete",
+            "steps": 256,
+            "worker": 6
+          },
+          {
+            "quota": 256,
+            "seconds": 8.021248458186164,
+            "status": "complete",
+            "steps": 256,
+            "worker": 7
+          },
+          {
+            "quota": 256,
+            "seconds": 7.824819915927947,
+            "status": "complete",
+            "steps": 256,
+            "worker": 8
+          },
+          {
+            "quota": 256,
+            "seconds": 8.29603424994275,
+            "status": "complete",
+            "steps": 256,
+            "worker": 9
+          },
+          {
+            "quota": 256,
+            "seconds": 8.373172499937937,
+            "status": "complete",
+            "steps": 256,
+            "worker": 10
+          },
+          {
+            "quota": 256,
+            "seconds": 7.9408265829551965,
+            "status": "complete",
+            "steps": 256,
+            "worker": 11
+          },
+          {
+            "quota": 256,
+            "seconds": 8.161594375036657,
+            "status": "complete",
+            "steps": 256,
+            "worker": 12
+          },
+          {
+            "quota": 256,
+            "seconds": 8.394285292131826,
+            "status": "complete",
+            "steps": 256,
+            "worker": 13
+          },
+          {
+            "quota": 256,
+            "seconds": 8.484563834033906,
+            "status": "complete",
+            "steps": 256,
+            "worker": 14
+          },
+          {
+            "quota": 256,
+            "seconds": 8.318145416909829,
+            "status": "complete",
+            "steps": 256,
+            "worker": 15
+          }
+        ]
+      ],
+      "workers": 16
+    },
+    {
+      "collection_round_seconds": [
+        19.104610624955967,
+        14.570167792029679
+      ],
+      "collection_seconds": 33.674778416985646,
+      "cutoff_fraction": 0.029906542056074768,
+      "decisions": 8192,
+      "decisions_per_second": 140.19390933749847,
+      "epochs": [
+        2,
+        2
+      ],
+      "final_fingerprint": "sts_policy_state_v2:a1ffd935080297dc61bf25f81885d1daffa1b163d06369c060749fd1a3bf82c6",
+      "invocation_seconds": 57.31996720912866,
+      "kl_early_stops": [
+        false,
+        false
+      ],
+      "label": "workers-8-repeat-3",
+      "optimizer_steps": 1024,
+      "packed_rollout_bytes": [
+        292029524,
+        291434532
+      ],
+      "parent_peak_rss_bytes": 1400422400,
+      "process_seconds": 58.43335162498988,
+      "repetition": 3,
+      "report_seconds": 55.89068979118019,
+      "room_kinds": {
+        "boss": 180,
+        "combat": 177,
+        "elite": 178
+      },
+      "spawn_seconds": [
+        4.294642083114013,
+        6.670597940683365e-07
+      ],
+      "summary": {
+        "accepted_decisions": 8192,
+        "components": {
+          "combat_loss": 173.0,
+          "combat_win": 346.0,
+          "end_turn_action": 1847.0,
+          "potion_use_action": 165.0,
+          "win_hp_fraction": 178.37949615512701
+        },
+        "cutoffs": 16,
+        "decisions_per_second": 146.5718177858799,
+        "episode_attempts": 535,
+        "failed_episodes": 0,
+        "losses": 173,
+        "mean_hp_on_win": 41.320809248554916,
+        "potion_use_actions": 165,
+        "processed_decisions": 8192,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task_return": 363.83794961551285,
+        "trained_decisions": 8192,
+        "wins": 346
+      },
+      "update_round_seconds": [
+        10.689931249944493,
+        10.78717212495394
+      ],
+      "update_seconds": 21.477103374898434,
+      "worker_batches": [
+        [
+          {
+            "quota": 512,
+            "seconds": 14.498811458935961,
+            "status": "complete",
+            "steps": 512,
+            "worker": 0
+          },
+          {
+            "quota": 512,
+            "seconds": 14.215443375054747,
+            "status": "complete",
+            "steps": 512,
+            "worker": 1
+          },
+          {
+            "quota": 512,
+            "seconds": 14.488261874997988,
+            "status": "complete",
+            "steps": 512,
+            "worker": 2
+          },
+          {
+            "quota": 512,
+            "seconds": 14.13215220789425,
+            "status": "complete",
+            "steps": 512,
+            "worker": 3
+          },
+          {
+            "quota": 512,
+            "seconds": 14.354290209012106,
+            "status": "complete",
+            "steps": 512,
+            "worker": 4
+          },
+          {
+            "quota": 512,
+            "seconds": 13.950742041924968,
+            "status": "complete",
+            "steps": 512,
+            "worker": 5
+          },
+          {
+            "quota": 512,
+            "seconds": 13.889559000032023,
+            "status": "complete",
+            "steps": 512,
+            "worker": 6
+          },
+          {
+            "quota": 512,
+            "seconds": 14.705710208043456,
+            "status": "complete",
+            "steps": 512,
+            "worker": 7
+          }
+        ],
+        [
+          {
+            "quota": 512,
+            "seconds": 14.295344332931563,
+            "status": "complete",
+            "steps": 512,
+            "worker": 0
+          },
+          {
+            "quota": 512,
+            "seconds": 13.99984045792371,
+            "status": "complete",
+            "steps": 512,
+            "worker": 1
+          },
+          {
+            "quota": 512,
+            "seconds": 13.954879541881382,
+            "status": "complete",
+            "steps": 512,
+            "worker": 2
+          },
+          {
+            "quota": 512,
+            "seconds": 14.092649874975905,
+            "status": "complete",
+            "steps": 512,
+            "worker": 3
+          },
+          {
+            "quota": 512,
+            "seconds": 14.121469875099137,
+            "status": "complete",
+            "steps": 512,
+            "worker": 4
+          },
+          {
+            "quota": 512,
+            "seconds": 14.225024875020608,
+            "status": "complete",
+            "steps": 512,
+            "worker": 5
+          },
+          {
+            "quota": 512,
+            "seconds": 13.982951499987394,
+            "status": "complete",
+            "steps": 512,
+            "worker": 6
+          },
+          {
+            "quota": 512,
+            "seconds": 14.444340291898698,
+            "status": "complete",
+            "steps": 512,
+            "worker": 7
+          }
+        ]
+      ],
+      "workers": 8
+    },
+    {
+      "collection_round_seconds": [
+        17.32864533411339,
+        11.31998383300379
+      ],
+      "collection_seconds": 28.64862916711718,
+      "cutoff_fraction": 0.03594771241830065,
+      "decisions": 8192,
+      "decisions_per_second": 152.4930004141949,
+      "epochs": [
+        2,
+        2
+      ],
+      "final_fingerprint": "sts_policy_state_v2:efdd484b46046fa7bd479b14010997553758c397dcb2e8dface76de8550df654",
+      "invocation_seconds": 52.386603750055656,
+      "kl_early_stops": [
+        false,
+        false
+      ],
+      "label": "workers-12-repeat-3",
+      "optimizer_steps": 1024,
+      "packed_rollout_bytes": [
+        283569612,
+        280856332
+      ],
+      "parent_peak_rss_bytes": 1380761600,
+      "process_seconds": 53.72049849992618,
+      "repetition": 3,
+      "report_seconds": 50.878029082901776,
+      "room_kinds": {
+        "boss": 123,
+        "combat": 266,
+        "elite": 223
+      },
+      "spawn_seconds": [
+        6.400822582887486,
+        5.83939254283905e-07
+      ],
+      "summary": {
+        "accepted_decisions": 8192,
+        "components": {
+          "combat_loss": 161.0,
+          "combat_win": 429.0,
+          "end_turn_action": 1828.0,
+          "potion_use_action": 176.0,
+          "win_hp_fraction": 227.68284208605382
+        },
+        "cutoffs": 22,
+        "decisions_per_second": 161.01252638249363,
+        "episode_attempts": 612,
+        "failed_episodes": 0,
+        "losses": 161,
+        "mean_hp_on_win": 42.52447552447553,
+        "potion_use_actions": 176,
+        "processed_decisions": 8192,
+        "skipped_decisions": 0,
+        "skipped_updates": 0,
+        "task_return": 451.7682842086052,
+        "trained_decisions": 8192,
+        "wins": 429
+      },
+      "update_round_seconds": [
+        10.595425208099186,
+        10.79327420797199
+      ],
+      "update_seconds": 21.388699416071177,
+      "worker_batches": [
+        [
+          {
+            "quota": 342,
+            "seconds": 9.599287500139326,
+            "status": "complete",
+            "steps": 342,
+            "worker": 0
+          },
+          {
+            "quota": 342,
+            "seconds": 9.828965042019263,
+            "status": "complete",
+            "steps": 342,
+            "worker": 1
+          },
+          {
+            "quota": 342,
+            "seconds": 10.706421000184491,
+            "status": "complete",
+            "steps": 342,
+            "worker": 2
+          },
+          {
+            "quota": 342,
+            "seconds": 9.26048708287999,
+            "status": "complete",
+            "steps": 342,
+            "worker": 3
+          },
+          {
+            "quota": 341,
+            "seconds": 10.051195499952883,
+            "status": "complete",
+            "steps": 341,
+            "worker": 4
+          },
+          {
+            "quota": 341,
+            "seconds": 10.583073124988005,
+            "status": "complete",
+            "steps": 341,
+            "worker": 5
+          },
+          {
+            "quota": 341,
+            "seconds": 9.638248458039016,
+            "status": "complete",
+            "steps": 341,
+            "worker": 6
+          },
+          {
+            "quota": 341,
+            "seconds": 10.125753707950935,
+            "status": "complete",
+            "steps": 341,
+            "worker": 7
+          },
+          {
+            "quota": 341,
+            "seconds": 10.80842062481679,
+            "status": "complete",
+            "steps": 341,
+            "worker": 8
+          },
+          {
+            "quota": 341,
+            "seconds": 9.064649540930986,
+            "status": "complete",
+            "steps": 341,
+            "worker": 9
+          },
+          {
+            "quota": 341,
+            "seconds": 10.183422041824088,
+            "status": "complete",
+            "steps": 341,
+            "worker": 10
+          },
+          {
+            "quota": 341,
+            "seconds": 10.611896292073652,
+            "status": "complete",
+            "steps": 341,
+            "worker": 11
+          }
+        ],
+        [
+          {
+            "quota": 342,
+            "seconds": 9.484398166881874,
+            "status": "complete",
+            "steps": 342,
+            "worker": 0
+          },
+          {
+            "quota": 342,
+            "seconds": 10.16476370790042,
+            "status": "complete",
+            "steps": 342,
+            "worker": 1
+          },
+          {
+            "quota": 342,
+            "seconds": 10.88908249977976,
+            "status": "complete",
+            "steps": 342,
+            "worker": 2
+          },
+          {
+            "quota": 342,
+            "seconds": 9.80795545806177,
+            "status": "complete",
+            "steps": 342,
+            "worker": 3
+          },
+          {
+            "quota": 341,
+            "seconds": 10.123809542041272,
+            "status": "complete",
+            "steps": 341,
+            "worker": 4
+          },
+          {
+            "quota": 341,
+            "seconds": 10.814829041948542,
+            "status": "complete",
+            "steps": 341,
+            "worker": 5
+          },
+          {
+            "quota": 341,
+            "seconds": 9.331575583899394,
+            "status": "complete",
+            "steps": 341,
+            "worker": 6
+          },
+          {
+            "quota": 341,
+            "seconds": 10.185023250058293,
+            "status": "complete",
+            "steps": 341,
+            "worker": 7
+          },
+          {
+            "quota": 341,
+            "seconds": 11.206369207939133,
+            "status": "complete",
+            "steps": 341,
+            "worker": 8
+          },
+          {
+            "quota": 341,
+            "seconds": 9.182713959133253,
+            "status": "complete",
+            "steps": 341,
+            "worker": 9
+          },
+          {
+            "quota": 341,
+            "seconds": 10.352494833059609,
+            "status": "complete",
+            "steps": 341,
+            "worker": 10
+          },
+          {
+            "quota": 341,
+            "seconds": 11.015605165855959,
+            "status": "complete",
+            "steps": 341,
+            "worker": 11
+          }
+        ]
+      ],
+      "workers": 12
+    }
+  ],
+  "schema": "sts_cpu_worker_scaling_comparison_v1",
+  "status": "complete",
+  "summary": {
+    "12": {
+      "cutoff_fraction": 0.03594771241830065,
+      "cutoffs": 22,
+      "episode_attempts": 612,
+      "final_fingerprint": "sts_policy_state_v2:efdd484b46046fa7bd479b14010997553758c397dcb2e8dface76de8550df654",
+      "metrics": {
+        "collection_seconds": {
+          "maximum": 28.71363200014457,
+          "median": 28.64862916711718,
+          "minimum": 27.959780750097707
+        },
+        "decisions_per_second": {
+          "maximum": 156.6092479243052,
+          "median": 152.4930004141949,
+          "minimum": 152.2120592139248
+        },
+        "first_collection_seconds": {
+          "median": 17.32864533411339
+        },
+        "parent_peak_rss_bytes": {
+          "maximum": 1405009920,
+          "median": 1387249664,
+          "minimum": 1380761600
+        },
+        "process_seconds": {
+          "maximum": 53.81965162488632,
+          "median": 53.72049849992618,
+          "minimum": 52.308532916009426
+        },
+        "update_seconds": {
+          "maximum": 21.409976665861905,
+          "median": 21.388699416071177,
+          "minimum": 20.913872041972354
+        },
+        "warm_collection_seconds": {
+          "maximum": 11.31998383300379,
+          "median": 11.200897042173892,
+          "minimum": 10.96283720806241
+        }
+      },
+      "optimizer_steps": 1024,
+      "process_speedup_vs_8": 1.087729139837937,
+      "process_time_reduction_vs_8": 0.08065347945997647,
+      "room_kinds": {
+        "boss": 123,
+        "combat": 266,
+        "elite": 223
+      },
+      "warm_collection_speedup_vs_8": 1.300803653240426
+    },
+    "16": {
+      "cutoff_fraction": 0.054003724394785846,
+      "cutoffs": 29,
+      "episode_attempts": 537,
+      "final_fingerprint": "sts_policy_state_v2:fda43a1d94875e7a69d82c06160f20fb61a9fe0d38baee3cf46f624c1c3a4300",
+      "metrics": {
+        "collection_seconds": {
+          "maximum": 26.11090970900841,
+          "median": 25.612916083075106,
+          "minimum": 25.41854133293964
+        },
+        "decisions_per_second": {
+          "maximum": 160.49858071532674,
+          "median": 160.15837836218842,
+          "minimum": 158.04429293517998
+        },
+        "first_collection_seconds": {
+          "median": 16.993123583029956
+        },
+        "parent_peak_rss_bytes": {
+          "maximum": 1400799232,
+          "median": 1398669312,
+          "minimum": 1397161984
+        },
+        "process_seconds": {
+          "maximum": 51.833570500137284,
+          "median": 51.14936904190108,
+          "minimum": 51.04094979213551
+        },
+        "update_seconds": {
+          "maximum": 22.094539541983977,
+          "median": 21.910612459061667,
+          "minimum": 21.88836850016378
+        },
+        "warm_collection_seconds": {
+          "maximum": 8.951078874990344,
+          "median": 8.61979250004515,
+          "minimum": 8.505699333036318
+        }
+      },
+      "optimizer_steps": 1024,
+      "process_speedup_vs_8": 1.1424061082184969,
+      "process_time_reduction_vs_8": 0.12465454026726919,
+      "room_kinds": {
+        "boss": 181,
+        "combat": 176,
+        "elite": 180
+      },
+      "warm_collection_speedup_vs_8": 1.6903153749876647
+    },
+    "8": {
+      "cutoff_fraction": 0.029906542056074768,
+      "cutoffs": 16,
+      "episode_attempts": 535,
+      "final_fingerprint": "sts_policy_state_v2:a1ffd935080297dc61bf25f81885d1daffa1b163d06369c060749fd1a3bf82c6",
+      "metrics": {
+        "collection_seconds": {
+          "maximum": 34.668373957043514,
+          "median": 33.674778416985646,
+          "minimum": 32.84194695809856
+        },
+        "decisions_per_second": {
+          "maximum": 141.8308514568871,
+          "median": 140.19390933749847,
+          "minimum": 136.7187557713102
+        },
+        "first_collection_seconds": {
+          "median": 19.104610624955967
+        },
+        "parent_peak_rss_bytes": {
+          "maximum": 1452376064,
+          "median": 1449410560,
+          "minimum": 1400422400
+        },
+        "process_seconds": {
+          "maximum": 59.918626042082906,
+          "median": 58.43335162498988,
+          "minimum": 57.75894254213199
+        },
+        "update_seconds": {
+          "maximum": 21.906303041847423,
+          "median": 21.556854248978198,
+          "minimum": 21.477103374898434
+        },
+        "warm_collection_seconds": {
+          "maximum": 14.994309291010723,
+          "median": 14.570167792029679,
+          "minimum": 14.116043583024293
+        }
+      },
+      "optimizer_steps": 1024,
+      "process_speedup_vs_8": 1.0,
+      "process_time_reduction_vs_8": 0.0,
+      "room_kinds": {
+        "boss": 180,
+        "combat": 177,
+        "elite": 178
+      },
+      "warm_collection_speedup_vs_8": 1.0
+    }
+  },
+  "timings": {
+    "analysis_verification_seconds": 1.907659208867699,
+    "elapsed_seconds": 694.7726640701294,
+    "focused_tests_seconds": 36.34,
+    "preparation_seconds": 141.30250491714105,
+    "training_controller_seconds": 489.9834925842006
+  }
+}

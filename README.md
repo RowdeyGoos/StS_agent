@@ -216,16 +216,20 @@ is exactly zero. Reports distinguish processed, trained and skipped decisions;
 collection still advances to fresh episodes. See the
 [signal guard and pilot](docs/AGENT_TRAINING.md#ppo-signal-guard-and-three-learner-pilot).
 
-Add `--workers 2` or `--workers 4` to `sts-agent-train ppo` for persistent parallel
+Add `--workers N` (1–16) to `sts-agent-train ppo` for persistent parallel
 collection in combat or full-run training. Rollout decisions remain a total
 budget across workers; exact resume restores the saved worker count. See
 [parallel collection and horizon choices](docs/AGENT_TRAINING.md#parallel-ppo-collection-2026-09-29).
+Use `--update-threads 4` to run the CPU learner with four compute threads and
+strict deterministic operations. Spawned collectors still use one thread each.
+The default is one learner thread; exact resume restores its saved CPU settings.
+See the [CPU update benchmark](docs/AGENT_TRAINING.md#cpu-ppo-update-threads-and-profiling-2026-10-01).
 
 For the current combat focus, use the
 [campaign-derived corpus workflow](docs/AGENT_TRAINING.md#campaign-derived-combat-training)
-to train and compare policies on frozen fights from both Act 1 regions. Both PPO
-and matched combat evaluation support eight workers. The earlier finite fixture
-curriculum remains available:
+to train and compare policies on frozen fights from both Act 1 regions. PPO
+supports up to 16 collectors; matched combat evaluation supports up to eight
+workers. The earlier finite fixture curriculum remains available:
 
 ```bash
 sts-agent-evaluate --freeze-suite configs/training/combat_benchmark.json \

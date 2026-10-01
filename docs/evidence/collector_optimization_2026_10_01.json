@@ -1,0 +1,2143 @@
+{
+  "artifacts": {
+    "runs/collector-optim-20261001/agent-tests.log": "82ee03c73c2633a7c121b09bf1c9ccd25a1afcd8415e4039544d032fe9332b96",
+    "runs/collector-optim-20261001/analyze.py": "952c14ec95e5c87c565cd0bb5dfd4ef9ad2b823e3d0e96f1a7ba85ce536034fc",
+    "runs/collector-optim-20261001/baseline/protocol.json": "52cb1ae1e5a499c2536add9be4f31a72d2bd0990f8f81dd2ab2c578b00f15aa0",
+    "runs/collector-optim-20261001/baseline/results.json": "05d9cf6b936127fa5984575d9be9f1e9c7a784451c1a8ed8e25074a78afe2db1",
+    "runs/collector-optim-20261001/baseline/workers-8-replica-1/ppo.json": "2dab74917531a8cf7b5797886b89368c094192becf590b731dcce5d8bbf704a5",
+    "runs/collector-optim-20261001/baseline/workers-8-replica-1/timings.json": "8839ccb844dca3070904cb54e3561973e3f8b9e42205ccdb79e1635138f23ff5",
+    "runs/collector-optim-20261001/baseline/workers-8-replica-2/ppo.json": "a1fc7d0bde1d35fda7e88e428649ff49d363a5e4dbc199093fdc4afb573b20f2",
+    "runs/collector-optim-20261001/baseline/workers-8-replica-2/timings.json": "3854ecfbd2652c2053d8aef8a4f0d462d4f6c7c244281da5d8d58bb117ef1d5c",
+    "runs/collector-optim-20261001/baseline/workers-8-replica-3/ppo.json": "78dff753f08e4adb91ec6909ca21bd6918ba608167192b774d6c4bd03df2adf4",
+    "runs/collector-optim-20261001/baseline/workers-8-replica-3/timings.json": "935047a950a98bf164ab5880e37674e4fb36b423c924c201739ec0f693ccadad",
+    "runs/collector-optim-20261001/benchmark.py": "217ce31a417371c7509c34085ed2cc48913d54fd3cc3674505bb588308ff9a66",
+    "runs/collector-optim-20261001/collector-breakdown.json": "e942ee54b343656e43ec7867d7bf1962a08d1724fd0bb50299604db8b607ea8c",
+    "runs/collector-optim-20261001/collector-breakdown.log": "0b2e2fc29c5aaebd26f3cf43409cc79c21786c55153c7210e54cbd3262500d5d",
+    "runs/collector-optim-20261001/collector_breakdown.py": "35f53ffaad097a82a14b0f5c07df410b669fd07de8ac86ac866b46e02f6d197a",
+    "runs/collector-optim-20261001/optimized-population/preparation.json": "6536557013c4b920059447cc2b215ca231b670ad70321455badd5c887d08008e",
+    "runs/collector-optim-20261001/optimized/profile-current/timings.json": "772846a2a1c9d882c0226acdd0b11bb3cd48f74b7f8b96d0f9aa7c25d57ae1d4",
+    "runs/collector-optim-20261001/optimized/profiles-current/collect-4231-2042965875481916.prof": "6036d262c5a8ab3b75403007e303adc245b551dbf649a52b09b3802e4fa04246",
+    "runs/collector-optim-20261001/optimized/profiles-current/collect-4232-2042967439765958.prof": "d6ec730159f98178011c155f9ea3e67d26555c4887b89bfdb0c143b1365c1a95",
+    "runs/collector-optim-20261001/optimized/profiles-current/collect-4233-2042967142955166.prof": "538fa16c665bf84098a74c37ebafa7253f90f88324fba9487ff1a8a10c9177e7",
+    "runs/collector-optim-20261001/optimized/profiles-current/collect-4235-2042966718503416.prof": "0c59f31b515468058c2e2c0af21c3dbc51f48f567253548c2b3895cb78036bdb",
+    "runs/collector-optim-20261001/optimized/profiles-current/collect-4236-2042966622683625.prof": "f78bcd87f8de11ac366eaa6bd2e4875d62cae2e7b5b963269015b3a4bce455f9",
+    "runs/collector-optim-20261001/optimized/profiles-current/collect-4237-2042966843594875.prof": "a76434f57564d3090f6a65492f74e42c4cbe7c6422f77eff1cea3813d0e47f42",
+    "runs/collector-optim-20261001/optimized/profiles-current/collect-4239-2042966576575375.prof": "13ec2843ff1445551914316ae82e271dc0f14b5c4d72a69b093eeb443ab90831",
+    "runs/collector-optim-20261001/optimized/profiles-current/collect-4240-2042966606207250.prof": "2a41cc85b71f4a078ec0fd74111a76c0891ca95beba0c7f160d918f2bdd8b98b",
+    "runs/collector-optim-20261001/optimized/protocol.json": "8aa4599b649b8d775b023a23d512aa8f1c1f4c172bd31cb7df68ff3d8be6886a",
+    "runs/collector-optim-20261001/optimized/results.json": "18774b27e9f97f8e18b3cd3f2717f41c03acff7a94dfd6db4b61a205a89a4290",
+    "runs/collector-optim-20261001/optimized/workers-8-replica-1/ppo.json": "ed96bc11a3207744e2b3e87feb534ab81ee7c9e59cb7f5d77c18cfdc688152fc",
+    "runs/collector-optim-20261001/optimized/workers-8-replica-1/timings.json": "86f14e445a76aa666d34bd268c1e84d3bdbfeb31df1410d94ff5627344a018a7",
+    "runs/collector-optim-20261001/optimized/workers-8-replica-2/ppo.json": "daad48eba561e49ac807e7c740d10954d408ed819d5eb422d85b928a2fb75e48",
+    "runs/collector-optim-20261001/optimized/workers-8-replica-2/timings.json": "0a457dc96721bde3ac6af29ef87a4483ded2433fbeed225428193d619585759a",
+    "runs/collector-optim-20261001/optimized/workers-8-replica-3/ppo.json": "4e46eccf417798907c101b331f752cbe767d58e5a1969f3c1dcce7f835512372",
+    "runs/collector-optim-20261001/optimized/workers-8-replica-3/timings.json": "69f16a7d4a7e70597cdf80cf19188c1894a49e6d1a6cb3faf219e24eb0a45042",
+    "runs/collector-optim-20261001/prepare.py": "d1a821a35cb29189c671effb11903935a0e607630524e0ce3615bbe23c05f799",
+    "runs/collector-optim-20261001/recording-final-tests.log": "01e756f32f6e083eeb73d1983af908d7c4f2950c685cc3b0836b02723872afcc",
+    "runs/collector-optim-20261001/validation.json": "24eafe638d55d707f8d70d2873e562258cb2271715fe3d164fbf48d8db12c430",
+    "runs/combat-speed-20261001/profile-8/timings.json": "13dbc1c3c333b349392505cb0d8a5a103a0b792f7af305a23763e3ec3d01312c",
+    "runs/combat-speed-20261001/profiles/collect-96310-2038204864280208.prof": "15713ab5bd4a9a3ddddf284ce311e9265a0b70aa36496721a4271ed925ed250d",
+    "runs/combat-speed-20261001/profiles/collect-96311-2038206649188458.prof": "247503fa1e63667baa1affad511139f39d598412d68da2fb412c62d48fb50c7c",
+    "runs/combat-speed-20261001/profiles/collect-96313-2038206001180083.prof": "61de0c254cdc6d90f8d0614f3c6a2822fbad2fb11f4a34e0c2cf4bdcab21537f",
+    "runs/combat-speed-20261001/profiles/collect-96314-2038205579114416.prof": "c36ef533fde20a1e5b79d4f8bdca73e53ba3960189924895b878cb3124c3a4ea",
+    "runs/combat-speed-20261001/profiles/collect-96320-2038205546386750.prof": "1a245e885e5589c9aebb508cc597b6221f7bd193c887cfa0c73a7c9afb7d527a",
+    "runs/combat-speed-20261001/profiles/collect-96323-2038205837896750.prof": "d37b53fec6f2765e245f4470245e82178639664c20259af6276ba231a12dd65b",
+    "runs/combat-speed-20261001/profiles/collect-96324-2038205612329333.prof": "56e2e3583eb12401cc13d6bd39350c80ca29daaa5e04d36221a0c31764d23f2e",
+    "runs/combat-speed-20261001/profiles/collect-96325-2038205662169000.prof": "dca711eb9b6d006b62cc658716989c3ea8645f0effaaa1e6546ef0c85523ff6f"
+  },
+  "checks": {
+    "all_public_states_actions_rewards_outcomes_identical": true,
+    "all_update_math_identical": true,
+    "compared_episode_metrics": 2862,
+    "compared_step_metrics": 49152,
+    "final_weights_identical": true,
+    "no_partial_artifacts": true,
+    "no_tracking_failures": true,
+    "original_initializer_unchanged": true,
+    "private_permissions": true,
+    "rules_identity_unchanged": true,
+    "state_guard_byte_identical": true,
+    "strict_canonical_trace_pairs": 477,
+    "strict_trace_decisions_per_variant": 8192
+  },
+  "collector_breakdown": {
+    "after": {
+      "aggregate_profiled_worker_seconds": 155.334180542,
+      "nested_diagnostics_not_additive": {
+        "_features": {
+          "calls": 2056,
+          "seconds": 8.22401059
+        },
+        "_guard": {
+          "calls": 4223,
+          "seconds": 37.409705169999995
+        },
+        "append": {
+          "calls": 2048,
+          "seconds": 14.848792985000001
+        },
+        "decision": {
+          "calls": 2175,
+          "seconds": 44.026829555999996
+        },
+        "encode_prepared": {
+          "calls": 2056,
+          "seconds": 27.846960836000004
+        },
+        "finish": {
+          "calls": 119,
+          "seconds": 0.596646546
+        },
+        "for_rollout": {
+          "calls": 2048,
+          "seconds": 0.044249884
+        },
+        "load_trajectory": {
+          "calls": 0,
+          "seconds": 0
+        },
+        "trajectory_digest": {
+          "calls": 119,
+          "seconds": 0.168777751
+        }
+      },
+      "parts": {
+        "encoding_and_features": {
+          "percent": 23.23427089779613,
+          "seconds": 36.090764304000004
+        },
+        "game_commands": {
+          "percent": 2.2261566558848997,
+          "seconds": 3.4579821990000004
+        },
+        "other": {
+          "percent": 8.740308831982459,
+          "seconds": 13.576687101000005
+        },
+        "policy_inference_and_sampling": {
+          "percent": 2.8058502892230757,
+          "seconds": 4.358444554000002
+        },
+        "public_observations_and_validation": {
+          "percent": 28.343297915744824,
+          "seconds": 44.026829555999996
+        },
+        "recording": {
+          "percent": 10.566745580868448,
+          "seconds": 16.413767658
+        },
+        "state_guard": {
+          "percent": 24.08336982850016,
+          "seconds": 37.409705169999995
+        }
+      }
+    },
+    "artifacts": {
+      "runs/collector-optim-20261001/collector_breakdown.py": "35f53ffaad097a82a14b0f5c07df410b669fd07de8ac86ac866b46e02f6d197a",
+      "runs/collector-optim-20261001/optimized/profile-current/timings.json": "772846a2a1c9d882c0226acdd0b11bb3cd48f74b7f8b96d0f9aa7c25d57ae1d4",
+      "runs/collector-optim-20261001/optimized/profiles-current/collect-4231-2042965875481916.prof": "6036d262c5a8ab3b75403007e303adc245b551dbf649a52b09b3802e4fa04246",
+      "runs/collector-optim-20261001/optimized/profiles-current/collect-4232-2042967439765958.prof": "d6ec730159f98178011c155f9ea3e67d26555c4887b89bfdb0c143b1365c1a95",
+      "runs/collector-optim-20261001/optimized/profiles-current/collect-4233-2042967142955166.prof": "538fa16c665bf84098a74c37ebafa7253f90f88324fba9487ff1a8a10c9177e7",
+      "runs/collector-optim-20261001/optimized/profiles-current/collect-4235-2042966718503416.prof": "0c59f31b515468058c2e2c0af21c3dbc51f48f567253548c2b3895cb78036bdb",
+      "runs/collector-optim-20261001/optimized/profiles-current/collect-4236-2042966622683625.prof": "f78bcd87f8de11ac366eaa6bd2e4875d62cae2e7b5b963269015b3a4bce455f9",
+      "runs/collector-optim-20261001/optimized/profiles-current/collect-4237-2042966843594875.prof": "a76434f57564d3090f6a65492f74e42c4cbe7c6422f77eff1cea3813d0e47f42",
+      "runs/collector-optim-20261001/optimized/profiles-current/collect-4239-2042966576575375.prof": "13ec2843ff1445551914316ae82e271dc0f14b5c4d72a69b093eeb443ab90831",
+      "runs/collector-optim-20261001/optimized/profiles-current/collect-4240-2042966606207250.prof": "2a41cc85b71f4a078ec0fd74111a76c0891ca95beba0c7f160d918f2bdd8b98b",
+      "runs/collector-optim-20261001/optimized/results.json": "18774b27e9f97f8e18b3cd3f2717f41c03acff7a94dfd6db4b61a205a89a4290",
+      "runs/combat-speed-20261001/profile-8/timings.json": "13dbc1c3c333b349392505cb0d8a5a103a0b792f7af305a23763e3ec3d01312c",
+      "runs/combat-speed-20261001/profiles/collect-96310-2038204864280208.prof": "15713ab5bd4a9a3ddddf284ce311e9265a0b70aa36496721a4271ed925ed250d",
+      "runs/combat-speed-20261001/profiles/collect-96311-2038206649188458.prof": "247503fa1e63667baa1affad511139f39d598412d68da2fb412c62d48fb50c7c",
+      "runs/combat-speed-20261001/profiles/collect-96313-2038206001180083.prof": "61de0c254cdc6d90f8d0614f3c6a2822fbad2fb11f4a34e0c2cf4bdcab21537f",
+      "runs/combat-speed-20261001/profiles/collect-96314-2038205579114416.prof": "c36ef533fde20a1e5b79d4f8bdca73e53ba3960189924895b878cb3124c3a4ea",
+      "runs/combat-speed-20261001/profiles/collect-96320-2038205546386750.prof": "1a245e885e5589c9aebb508cc597b6221f7bd193c887cfa0c73a7c9afb7d527a",
+      "runs/combat-speed-20261001/profiles/collect-96323-2038205837896750.prof": "d37b53fec6f2765e245f4470245e82178639664c20259af6276ba231a12dd65b",
+      "runs/combat-speed-20261001/profiles/collect-96324-2038205612329333.prof": "56e2e3583eb12401cc13d6bd39350c80ca29daaa5e04d36221a0c31764d23f2e",
+      "runs/combat-speed-20261001/profiles/collect-96325-2038205662169000.prof": "dca711eb9b6d006b62cc658716989c3ea8645f0effaaa1e6546ef0c85523ff6f"
+    },
+    "before": {
+      "aggregate_profiled_worker_seconds": 197.15740304200003,
+      "nested_diagnostics_not_additive": {
+        "_features": {
+          "calls": 2056,
+          "seconds": 8.213099091
+        },
+        "_guard": {
+          "calls": 4223,
+          "seconds": 37.272679307000004
+        },
+        "append": {
+          "calls": 2048,
+          "seconds": 10.073704481
+        },
+        "decision": {
+          "calls": 2175,
+          "seconds": 68.129618312
+        },
+        "encode_prepared": {
+          "calls": 2056,
+          "seconds": 28.778308527000004
+        },
+        "finish": {
+          "calls": 119,
+          "seconds": 22.358668041
+        },
+        "for_rollout": {
+          "calls": 0,
+          "seconds": 0
+        },
+        "load_trajectory": {
+          "calls": 119,
+          "seconds": 21.833868835000004
+        },
+        "trajectory_digest": {
+          "calls": 0,
+          "seconds": 0
+        }
+      },
+      "parts": {
+        "encoding_and_features": {
+          "percent": 18.77291202304758,
+          "seconds": 37.01218582
+        },
+        "game_commands": {
+          "percent": 1.7550914064651486,
+          "seconds": 3.4602926380000003
+        },
+        "other": {
+          "percent": 7.035368297098725,
+          "seconds": 13.870749429000028
+        },
+        "policy_inference_and_sampling": {
+          "percent": 2.2347665865031696,
+          "seconds": 4.406007766
+        },
+        "public_observations_and_validation": {
+          "percent": 34.555952381603696,
+          "seconds": 68.129618312
+        },
+        "recording": {
+          "percent": 16.740872653394014,
+          "seconds": 33.005869770000004
+        },
+        "state_guard": {
+          "percent": 18.90503665188767,
+          "seconds": 37.272679307000004
+        }
+      }
+    },
+    "checks": {
+      "current_source_matches_profile_source": true,
+      "matched_profile_summary_and_weights": true
+    },
+    "limitations": [
+      "Worker profiles measure elapsed call time including profiler overhead; they are not CPU-cycle measurements.",
+      "Collector categories are nonoverlapping call-root totals; nested feature extraction is subtracted from inference.",
+      "Worker profiles exclude parent-side startup and result transfer; their shares cannot exactly partition collection wall time.",
+      "Current profile is one diagnostic invocation. The unprofiled timings are from the prior three-repetition benchmark.",
+      "Before and after profiles ran at different times with uncontrolled background activity."
+    ],
+    "profile_decisions": 2048,
+    "profile_episodes": 119,
+    "profile_workers": 8,
+    "schema": "sts_collector_breakdown_v1",
+    "unprofiled_wall_time": {
+      "decisions": 8192,
+      "label": "workers-8-replica-3",
+      "parts": {
+        "collection": {
+          "percent": 62.862345743746914,
+          "seconds": 46.06356133404188
+        },
+        "other": {
+          "percent": 4.78642216758383,
+          "seconds": 3.507340498967096
+        },
+        "ppo_updates": {
+          "percent": 32.35123208866925,
+          "seconds": 23.705971291987225
+        }
+      },
+      "selection": "median-duration optimized repetition",
+      "total_seconds": 73.2768731249962,
+      "workers": 8
+    }
+  },
+  "gains": {
+    "collection_reduction": 0.24903385403434664,
+    "elapsed_reduction": 0.18847592219029607,
+    "rollout_array_reduction": 0.8102548080895803,
+    "throughput": 1.2322493285707443
+  },
+  "limitations": [
+    "Instrumented profiler percentages are not used as wall-time savings.",
+    "Three sequential repetitions per version; background load and OS caches uncontrolled.",
+    "Benchmark corpus regenerated normally with identical public-ID allocation for matched sampling.",
+    "Only training split used for PPO; no policy promotion or held-out evaluation.",
+    "Array counts exclude Python objects; peak RSS is the parent process, not all workers.",
+    "Preparation ran alongside integration tests and is outside the timed training invocations."
+  ],
+  "medians": {
+    "baseline": {
+      "collection_seconds": 61.33906512497924,
+      "decisions_per_second": 90.72446683248725,
+      "parent_peak_rss_bytes": 3790716928,
+      "process_seconds": 90.29537770804018,
+      "range_seconds": [
+        88.35092475009151,
+        90.50578354112804
+      ],
+      "rollout_bytes": [
+        1605623631,
+        1591640974
+      ],
+      "update_seconds": 24.183082832954824
+    },
+    "optimized": {
+      "collection_seconds": 46.06356133404188,
+      "decisions_per_second": 111.79516333927117,
+      "parent_peak_rss_bytes": 1473380352,
+      "process_seconds": 73.2768731249962,
+      "range_seconds": [
+        72.83083383296616,
+        74.15682208398357
+      ],
+      "rollout_bytes": [
+        304659364,
+        301467032
+      ],
+      "update_seconds": 23.67269195895642
+    }
+  },
+  "mlflow": {
+    "experiment_id": "4",
+    "name": "Performance benchmarks",
+    "url": "http://127.0.0.1:5050/#/experiments/4/runs"
+  },
+  "preparation": {
+    "architecture": {
+      "hidden_size": 48,
+      "message_layers": 2,
+      "schema": "sts_graph_actor_critic_v1"
+    },
+    "collector": "runs/act1-increased-500k-8workers-20260930/chunk-15/final.sts-model",
+    "collector_sha256": "fce362d2e0cc8f337cb06642c198ddc53c8a5e2b312f2e3596feac488a30352f",
+    "corpus": "runs/collector-optim-20261001/optimized-population/corpus/corpus.json",
+    "corpus_sha256": "cfdc5b0cfffb7dd96ffed9889c93d3566dfff6a593ed56315e6bc90b1745b36b",
+    "coverage": {
+      "by_encounter": {
+        "dense_vegetation_event": 3,
+        "overgrowth_bygone_effigy": 6,
+        "overgrowth_byrdonis": 3,
+        "overgrowth_crawlers": 6,
+        "overgrowth_cubex": 4,
+        "overgrowth_flyconid": 5,
+        "overgrowth_fogmog": 5,
+        "overgrowth_fuzzy": 15,
+        "overgrowth_inklets": 5,
+        "overgrowth_jaxfruit": 4,
+        "overgrowth_mawler": 3,
+        "overgrowth_nibbit": 13,
+        "overgrowth_nibbits": 5,
+        "overgrowth_phrog_parasite": 3,
+        "overgrowth_ruby_raiders": 9,
+        "overgrowth_shrinker": 11,
+        "overgrowth_slimes": 9,
+        "overgrowth_slimes_normal": 5,
+        "overgrowth_strangler": 5,
+        "overgrowth_the_kin": 5,
+        "overgrowth_vantom": 2,
+        "overgrowth_vine_shambler": 7,
+        "underdocks_corpse_slugs": 6,
+        "underdocks_corpse_slugs_weak": 6,
+        "underdocks_cultists": 10,
+        "underdocks_fossil_stalker": 6,
+        "underdocks_gremlin_merc": 2,
+        "underdocks_haunted_ship": 3,
+        "underdocks_lagavulin_matriarch": 1,
+        "underdocks_living_fog": 6,
+        "underdocks_phantasmal_gardeners": 7,
+        "underdocks_punch_construct": 4,
+        "underdocks_seapunk": 9,
+        "underdocks_seapunk_weak": 14,
+        "underdocks_sewer_clam": 4,
+        "underdocks_skulking_colony": 4,
+        "underdocks_sludge_spinner": 14,
+        "underdocks_soul_fysh": 3,
+        "underdocks_terror_eel": 4,
+        "underdocks_toadpoles": 14,
+        "underdocks_two_tailed_rats": 8,
+        "underdocks_waterfall_giant": 5
+      },
+      "by_enemy_power": {
+        "about_to_blow": 1,
+        "artifact": 11,
+        "asleep": 2,
+        "demise": 1,
+        "hardened_shell_remaining": 17,
+        "illusion": 12,
+        "infested": 9,
+        "intangible": 3,
+        "minion": 42,
+        "plating": 16,
+        "ritual": 42,
+        "shriek": 12,
+        "slippery": 13,
+        "slow": 28,
+        "steam": 29,
+        "stolen_gold": 5,
+        "territorial": 11,
+        "thorns": 21,
+        "vulnerable": 258,
+        "weak": 16
+      },
+      "by_hp_band": {
+        "critical": 110,
+        "damaged": 188,
+        "healthy": 665
+      },
+      "by_potion": {
+        "ashwater": 2,
+        "attack_potion": 6,
+        "blessing_of_the_forge": 1,
+        "block_potion": 3,
+        "bottled_potential": 1,
+        "clarity": 1,
+        "colorless_potion": 13,
+        "dexterity_potion": 4,
+        "duplicator": 8,
+        "energy_potion": 5,
+        "explosive_ampoule": 4,
+        "fire_potion": 13,
+        "flex_potion": 1,
+        "fortifier": 4,
+        "fysh_oil": 2,
+        "gamblers_brew": 2,
+        "heart_of_iron": 2,
+        "liquid_bronze": 1,
+        "orobic_acid": 2,
+        "potion_of_binding": 8,
+        "powdered_demise": 1,
+        "power_potion": 6,
+        "regen_potion": 4,
+        "skill_potion": 7,
+        "snecko_oil": 2,
+        "soldiers_stew": 2,
+        "speed_potion": 4,
+        "stable_serum": 31,
+        "strength_potion": 2,
+        "swift_potion": 5,
+        "touch_of_insanity": 1,
+        "vulnerable_potion": 6,
+        "weak_potion": 5
+      },
+      "by_region": {
+        "overgrowth": 133,
+        "underdocks": 130
+      },
+      "by_room_kind": {
+        "boss": 16,
+        "combat": 220,
+        "elite": 27
+      },
+      "by_start_kind": {
+        "continuation": 700,
+        "opening": 263
+      },
+      "by_threat": {
+        "covered": 1,
+        "lethal": 49,
+        "none": 191,
+        "unblocked": 722
+      },
+      "combats": 263,
+      "deck_size_range": [
+        10,
+        22
+      ],
+      "distinct_inventories": 331,
+      "hp_range": [
+        1,
+        87
+      ],
+      "missing_elites_bosses": [
+        "overgrowth_ceremonial_beast"
+      ],
+      "missing_encounters": [
+        "overgrowth_ceremonial_beast"
+      ],
+      "missing_region_kinds": [],
+      "openings": 263,
+      "source_campaigns": 32,
+      "starts": 963,
+      "starts_by_encounter": {
+        "dense_vegetation_event": 13,
+        "overgrowth_bygone_effigy": 28,
+        "overgrowth_byrdonis": 11,
+        "overgrowth_crawlers": 27,
+        "overgrowth_cubex": 12,
+        "overgrowth_flyconid": 19,
+        "overgrowth_fogmog": 17,
+        "overgrowth_fuzzy": 50,
+        "overgrowth_inklets": 13,
+        "overgrowth_jaxfruit": 11,
+        "overgrowth_mawler": 7,
+        "overgrowth_nibbit": 37,
+        "overgrowth_nibbits": 25,
+        "overgrowth_phrog_parasite": 17,
+        "overgrowth_ruby_raiders": 32,
+        "overgrowth_shrinker": 33,
+        "overgrowth_slimes": 32,
+        "overgrowth_slimes_normal": 17,
+        "overgrowth_strangler": 21,
+        "overgrowth_the_kin": 36,
+        "overgrowth_vantom": 15,
+        "overgrowth_vine_shambler": 25,
+        "underdocks_corpse_slugs": 20,
+        "underdocks_corpse_slugs_weak": 22,
+        "underdocks_cultists": 43,
+        "underdocks_fossil_stalker": 14,
+        "underdocks_gremlin_merc": 7,
+        "underdocks_haunted_ship": 9,
+        "underdocks_lagavulin_matriarch": 7,
+        "underdocks_living_fog": 24,
+        "underdocks_phantasmal_gardeners": 28,
+        "underdocks_punch_construct": 12,
+        "underdocks_seapunk": 37,
+        "underdocks_seapunk_weak": 36,
+        "underdocks_sewer_clam": 14,
+        "underdocks_skulking_colony": 17,
+        "underdocks_sludge_spinner": 33,
+        "underdocks_soul_fysh": 22,
+        "underdocks_terror_eel": 21,
+        "underdocks_toadpoles": 41,
+        "underdocks_two_tailed_rats": 23,
+        "underdocks_waterfall_giant": 35
+      },
+      "starts_with_potions": 153
+    },
+    "identifier_allocation": "Baseline public IDs repeated for matched sorted-ID sampling; all state freshly generated",
+    "initializer": "runs/combat-fresh-500k-20260930/chunk-15/final.sts-model",
+    "initializer_sha256": "e87849e68757f03ea2b073f5d5c9410a04bbf183a4b7b8edc5177eb300a70f2d",
+    "matched_regenerated_cases": 1116,
+    "note": "Only train starts are used for speed runs. Existing training and held-out artifacts stay unchanged.",
+    "parameters": 80738,
+    "room_kinds": {
+      "boss": 115,
+      "combat": 726,
+      "elite": 122
+    },
+    "schema": "sts_combat_speed_preparation_v1",
+    "seconds": 170.4592506249901,
+    "snapshot_bytes_identical": true,
+    "source_commit": "7d5d88431b3058be2fe789414989d48e9687a07b",
+    "train_campaigns": 32,
+    "train_fights": 263,
+    "train_starts": 963
+  },
+  "protocols": {
+    "baseline": {
+      "architecture": {
+        "hidden_size": 48,
+        "message_layers": 2,
+        "schema": "sts_graph_actor_critic_v1"
+      },
+      "checkpointing": "Every closed PPO update plus initial/final; private resume states included",
+      "config_sha256": "7fe4a9ea0b17535356075cdc060831542e6ec8ff924636a108469d19673728f9",
+      "corpus": "runs/combat-speed-20261001/corpus/corpus.json",
+      "corpus_sha256": "e9c83e0c88ccd334630398097c38b8ca7650318077536dbff2a9c379f0877eb4",
+      "created_at": "2026-10-01T15:18:54.982995+00:00",
+      "experiment": {
+        "encounters": [
+          "combat",
+          "elite",
+          "boss"
+        ],
+        "ppo": {
+          "batch_size": 16,
+          "clip_ratio": 0.2,
+          "entropy_weight": 0.01,
+          "episode_decisions": 512,
+          "episode_seconds": 120.0,
+          "epochs": 2,
+          "gae_lambda": 0.95,
+          "gamma": 1.0,
+          "gradient_clip": 0.5,
+          "learning_rate": 0.0003,
+          "normalize_advantages": true,
+          "rollout_steps": 4096,
+          "target_kl": 0.03,
+          "value_weight": 0.5
+        },
+        "schema": "sts_ppo_experiment_v2",
+        "source": "act1_combat_corpus_v2:e9c83e0c88ccd334630398097c38b8ca7650318077536dbff2a9c379f0877eb4",
+        "training": {
+          "action_policy": "commit_decisions_v1",
+          "mode": "combat",
+          "reward": {
+            "schema": "sts_training_reward_v1",
+            "weights": {
+              "combat_loss": 0.0,
+              "combat_win": 1.0,
+              "end_turn_action": 0.0,
+              "potion_use_action": 0.0,
+              "win_hp_fraction": 0.1
+            }
+          },
+          "scenario_set": "ironclad_a0_overgrowth_v1"
+        }
+      },
+      "host": {
+        "logical_cpus": 18,
+        "machine": "arm64",
+        "os": "macOS-26.6.2-arm64-arm-64bit"
+      },
+      "implementation": {
+        "build": "0882412647a727477fecf6932974045a732eb8465764e85bbc54a0f8a44ca2c8",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "cb4110d297799c139c5912c30a0e0903630c1c8ab2141eded608b90a7b1e0926",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "initialization": "Frozen 500k combat actor and critic; fresh optimizer/RNG/cursor per repetition",
+      "jobs": [
+        {
+          "decisions": 8192,
+          "label": "workers-8-replica-1",
+          "workers": 8
+        },
+        {
+          "decisions": 8192,
+          "label": "workers-8-replica-2",
+          "workers": 8
+        },
+        {
+          "decisions": 8192,
+          "label": "workers-8-replica-3",
+          "workers": 8
+        }
+      ],
+      "limitations": [
+        "New source-bound benchmark corpus; historical timings are different workloads.",
+        "Only the eight-worker repetitions share identical rollout allocation and policy updates.",
+        "Changing worker count changes RNG streams and sampled trajectories; scaling is workload-level.",
+        "No imitation, vocabulary fitting, validation or viewer export included in training throughput.",
+        "Profiler overhead excluded; background activity and OS caches uncontrolled.",
+        "Peak RSS is parent process only; no playing-strength or model-promotion claim."
+      ],
+      "model": "runs/combat-fresh-500k-20260930/chunk-15/final.sts-model",
+      "model_sha256": "e87849e68757f03ea2b073f5d5c9410a04bbf183a4b7b8edc5177eb300a70f2d",
+      "parameters": 80738,
+      "private_plan_sha256": "cf2a4d7d3399b50b18e3f9e9b668ebc5c44731c033155a8e5ce7b970ca8bf857",
+      "recording": "gzip level 6, every decision",
+      "runtime": {
+        "device": "cpu",
+        "python": "3.11.15",
+        "threads": 1,
+        "torch": "2.13.0"
+      },
+      "schema": "sts_combat_training_speed_v1",
+      "script_sha256": "217ce31a417371c7509c34085ed2cc48913d54fd3cc3674505bb588308ff9a66",
+      "source_commit": "7d5d88431b3058be2fe789414989d48e9687a07b",
+      "threads_per_process": 1,
+      "tracking": "Local MLflow Performance benchmarks experiment except explicit no-tracking/profile jobs"
+    },
+    "optimized": {
+      "architecture": {
+        "hidden_size": 48,
+        "message_layers": 2,
+        "schema": "sts_graph_actor_critic_v1"
+      },
+      "checkpointing": "Every closed PPO update plus initial/final; private resume states included",
+      "config_sha256": "8dbdd4c34632659c73340d991b7dac27990afccbd8ff7d50db461b9c94fc64ab",
+      "corpus": "runs/collector-optim-20261001/optimized-population/corpus/corpus.json",
+      "corpus_sha256": "cfdc5b0cfffb7dd96ffed9889c93d3566dfff6a593ed56315e6bc90b1745b36b",
+      "created_at": "2026-10-01T15:35:46.879533+00:00",
+      "experiment": {
+        "encounters": [
+          "combat",
+          "elite",
+          "boss"
+        ],
+        "ppo": {
+          "batch_size": 16,
+          "clip_ratio": 0.2,
+          "entropy_weight": 0.01,
+          "episode_decisions": 512,
+          "episode_seconds": 120.0,
+          "epochs": 2,
+          "gae_lambda": 0.95,
+          "gamma": 1.0,
+          "gradient_clip": 0.5,
+          "learning_rate": 0.0003,
+          "normalize_advantages": true,
+          "rollout_steps": 4096,
+          "target_kl": 0.03,
+          "value_weight": 0.5
+        },
+        "schema": "sts_ppo_experiment_v2",
+        "source": "act1_combat_corpus_v2:cfdc5b0cfffb7dd96ffed9889c93d3566dfff6a593ed56315e6bc90b1745b36b",
+        "training": {
+          "action_policy": "commit_decisions_v1",
+          "mode": "combat",
+          "reward": {
+            "schema": "sts_training_reward_v1",
+            "weights": {
+              "combat_loss": 0.0,
+              "combat_win": 1.0,
+              "end_turn_action": 0.0,
+              "potion_use_action": 0.0,
+              "win_hp_fraction": 0.1
+            }
+          },
+          "scenario_set": "ironclad_a0_overgrowth_v1"
+        }
+      },
+      "host": {
+        "logical_cpus": 18,
+        "machine": "arm64",
+        "os": "macOS-26.6.2-arm64-arm-64bit"
+      },
+      "implementation": {
+        "build": "82121ddd2c6fb8047bcec3221a8016fc7d06a512cda137dd93a19aef67b7c80f",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "cb4110d297799c139c5912c30a0e0903630c1c8ab2141eded608b90a7b1e0926",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "initialization": "Frozen 500k combat actor and critic; fresh optimizer/RNG/cursor per repetition",
+      "jobs": [
+        {
+          "decisions": 8192,
+          "label": "workers-8-replica-1",
+          "workers": 8
+        },
+        {
+          "decisions": 8192,
+          "label": "workers-8-replica-2",
+          "workers": 8
+        },
+        {
+          "decisions": 8192,
+          "label": "workers-8-replica-3",
+          "workers": 8
+        }
+      ],
+      "limitations": [
+        "New source-bound benchmark corpus; historical timings are different workloads.",
+        "Only the eight-worker repetitions share identical rollout allocation and policy updates.",
+        "Changing worker count changes RNG streams and sampled trajectories; scaling is workload-level.",
+        "No imitation, vocabulary fitting, validation or viewer export included in training throughput.",
+        "Profiler overhead excluded; background activity and OS caches uncontrolled.",
+        "Peak RSS is parent process only; no playing-strength or model-promotion claim."
+      ],
+      "model": "runs/combat-fresh-500k-20260930/chunk-15/final.sts-model",
+      "model_sha256": "e87849e68757f03ea2b073f5d5c9410a04bbf183a4b7b8edc5177eb300a70f2d",
+      "parameters": 80738,
+      "private_plan_sha256": "cf2a4d7d3399b50b18e3f9e9b668ebc5c44731c033155a8e5ce7b970ca8bf857",
+      "recording": "gzip level 6, every decision",
+      "runtime": {
+        "device": "cpu",
+        "python": "3.11.15",
+        "threads": 1,
+        "torch": "2.13.0"
+      },
+      "schema": "sts_combat_training_speed_v1",
+      "script_sha256": "217ce31a417371c7509c34085ed2cc48913d54fd3cc3674505bb588308ff9a66",
+      "source_commit": "7d5d88431b3058be2fe789414989d48e9687a07b",
+      "threads_per_process": 1,
+      "tracking": "Local MLflow Performance benchmarks experiment except explicit no-tracking/profile jobs"
+    }
+  },
+  "results": {
+    "baseline": {
+      "eight_worker_medians": {
+        "collection_seconds": 61.33906512497924,
+        "decisions_per_second": 90.72446683248725,
+        "process_seconds": 90.29537770804018,
+        "update_seconds": 24.183082832954824
+      },
+      "matched_eight_worker_weights": true,
+      "protocol_sha256": "52cb1ae1e5a499c2536add9be4f31a72d2bd0990f8f81dd2ab2c578b00f15aa0",
+      "runs": [
+        {
+          "collection_round_seconds": [
+            33.16225816705264,
+            28.38147212495096
+          ],
+          "collection_seconds": 61.5437302920036,
+          "decisions": 8192,
+          "decisions_per_second": 90.51355260934629,
+          "epochs": [
+            2,
+            2
+          ],
+          "factory_seconds": 0.07203570893034339,
+          "final_fingerprint": "sts_policy_state_v2:e513ab57ef4368aa2f5f7fcd36b959df4cf41a94124f619a633dd3578b41a452",
+          "invocation_seconds": 88.99970058305189,
+          "kl_early_stops": [
+            false,
+            false
+          ],
+          "label": "workers-8-replica-1",
+          "memory_breakdown": [
+            {
+              "candidates": 441072,
+              "fields": 205412160,
+              "link_positions": 4914564,
+              "links": 13105504,
+              "lossless.action_mask": 18378,
+              "lossless.candidates": 441072,
+              "lossless.layout": 196608,
+              "lossless.node_mask": 27145673,
+              "lossless.nodes": 1085826920,
+              "lossless.outcome": 65536,
+              "lossless.reference_mask": 426300,
+              "lossless.references": 6820800,
+              "lossless.string_lengths": 5434656,
+              "lossless.string_mask": 679332,
+              "lossless.strings": 173908992,
+              "nodes": 14716512,
+              "numbers": 51353040,
+              "parents": 7358256,
+              "positions": 7358256
+            },
+            {
+              "candidates": 450144,
+              "fields": 203111936,
+              "link_positions": 4883256,
+              "links": 13022016,
+              "lossless.action_mask": 18756,
+              "lossless.candidates": 450144,
+              "lossless.layout": 196608,
+              "lossless.node_mask": 26871408,
+              "lossless.nodes": 1074856320,
+              "lossless.outcome": 65536,
+              "lossless.reference_mask": 421430,
+              "lossless.references": 6742880,
+              "lossless.string_lengths": 5450592,
+              "lossless.string_mask": 681324,
+              "lossless.strings": 174418944,
+              "nodes": 14610848,
+              "numbers": 50777984,
+              "parents": 7305424,
+              "positions": 7305424
+            }
+          ],
+          "optimizer_steps": 1024,
+          "packed_rollout_bytes": [
+            1605623631,
+            1591640974
+          ],
+          "parent_peak_rss_bytes": 3643408384,
+          "phase_timings": {
+            "checkpoint_seconds": 0.1527087518479675,
+            "report_serialization_seconds": 0.14110970799811184,
+            "tracking_log_seconds": 0.3137505417689681
+          },
+          "process_seconds": 90.50578354112804,
+          "profile": false,
+          "report_seconds": 86.76944683399051,
+          "summary": {
+            "accepted_decisions": 8192,
+            "components": {
+              "combat_loss": 193.0,
+              "combat_win": 268.0,
+              "end_turn_action": 1825.0,
+              "potion_use_action": 129.0,
+              "win_hp_fraction": 132.03392759758628
+            },
+            "cutoffs": 16,
+            "decisions_per_second": 94.41111242385975,
+            "episode_attempts": 477,
+            "failed_episodes": 0,
+            "losses": 193,
+            "mean_hp_on_win": 39.67537313432836,
+            "potion_use_actions": 129,
+            "processed_decisions": 8192,
+            "skipped_decisions": 0,
+            "skipped_updates": 0,
+            "task_return": 281.2033927597586,
+            "trained_decisions": 8192,
+            "wins": 268
+          },
+          "tracking": true,
+          "update_round_seconds": [
+            12.12426762492396,
+            12.058815208030865
+          ],
+          "update_seconds": 24.183082832954824,
+          "variant": "baseline",
+          "worker_batches": [
+            [
+              {
+                "quota": 512,
+                "seconds": 25.646731291897595,
+                "status": "complete",
+                "steps": 512,
+                "worker": 0
+              },
+              {
+                "quota": 512,
+                "seconds": 27.011322791920975,
+                "status": "complete",
+                "steps": 512,
+                "worker": 1
+              },
+              {
+                "quota": 512,
+                "seconds": 26.83744874992408,
+                "status": "complete",
+                "steps": 512,
+                "worker": 2
+              },
+              {
+                "quota": 512,
+                "seconds": 26.897342208074406,
+                "status": "complete",
+                "steps": 512,
+                "worker": 3
+              },
+              {
+                "quota": 512,
+                "seconds": 26.453555792104453,
+                "status": "complete",
+                "steps": 512,
+                "worker": 4
+              },
+              {
+                "quota": 512,
+                "seconds": 27.02699829218909,
+                "status": "complete",
+                "steps": 512,
+                "worker": 5
+              },
+              {
+                "quota": 512,
+                "seconds": 26.01102116680704,
+                "status": "complete",
+                "steps": 512,
+                "worker": 6
+              },
+              {
+                "quota": 512,
+                "seconds": 25.789526792010292,
+                "status": "complete",
+                "steps": 512,
+                "worker": 7
+              }
+            ],
+            [
+              {
+                "quota": 512,
+                "seconds": 25.712760334135965,
+                "status": "complete",
+                "steps": 512,
+                "worker": 0
+              },
+              {
+                "quota": 512,
+                "seconds": 26.915470959153026,
+                "status": "complete",
+                "steps": 512,
+                "worker": 1
+              },
+              {
+                "quota": 512,
+                "seconds": 26.078567708842456,
+                "status": "complete",
+                "steps": 512,
+                "worker": 2
+              },
+              {
+                "quota": 512,
+                "seconds": 26.26451416593045,
+                "status": "complete",
+                "steps": 512,
+                "worker": 3
+              },
+              {
+                "quota": 512,
+                "seconds": 25.84478662488982,
+                "status": "complete",
+                "steps": 512,
+                "worker": 4
+              },
+              {
+                "quota": 512,
+                "seconds": 27.042997125070542,
+                "status": "complete",
+                "steps": 512,
+                "worker": 5
+              },
+              {
+                "quota": 512,
+                "seconds": 26.349724458064884,
+                "status": "complete",
+                "steps": 512,
+                "worker": 6
+              },
+              {
+                "quota": 512,
+                "seconds": 26.335948541993275,
+                "status": "complete",
+                "steps": 512,
+                "worker": 7
+              }
+            ]
+          ],
+          "workers": 8
+        },
+        {
+          "collection_round_seconds": [
+            32.12320783408359,
+            27.73316154186614
+          ],
+          "collection_seconds": 59.856369375949726,
+          "decisions": 8192,
+          "decisions_per_second": 92.72115739786318,
+          "epochs": [
+            2,
+            2
+          ],
+          "factory_seconds": 0.056070208083838224,
+          "final_fingerprint": "sts_policy_state_v2:e513ab57ef4368aa2f5f7fcd36b959df4cf41a94124f619a633dd3578b41a452",
+          "invocation_seconds": 86.82764800009318,
+          "kl_early_stops": [
+            false,
+            false
+          ],
+          "label": "workers-8-replica-2",
+          "memory_breakdown": [
+            {
+              "candidates": 441072,
+              "fields": 205412160,
+              "link_positions": 4914564,
+              "links": 13105504,
+              "lossless.action_mask": 18378,
+              "lossless.candidates": 441072,
+              "lossless.layout": 196608,
+              "lossless.node_mask": 27145673,
+              "lossless.nodes": 1085826920,
+              "lossless.outcome": 65536,
+              "lossless.reference_mask": 426300,
+              "lossless.references": 6820800,
+              "lossless.string_lengths": 5434656,
+              "lossless.string_mask": 679332,
+              "lossless.strings": 173908992,
+              "nodes": 14716512,
+              "numbers": 51353040,
+              "parents": 7358256,
+              "positions": 7358256
+            },
+            {
+              "candidates": 450144,
+              "fields": 203111936,
+              "link_positions": 4883256,
+              "links": 13022016,
+              "lossless.action_mask": 18756,
+              "lossless.candidates": 450144,
+              "lossless.layout": 196608,
+              "lossless.node_mask": 26871408,
+              "lossless.nodes": 1074856320,
+              "lossless.outcome": 65536,
+              "lossless.reference_mask": 421430,
+              "lossless.references": 6742880,
+              "lossless.string_lengths": 5450592,
+              "lossless.string_mask": 681324,
+              "lossless.strings": 174418944,
+              "nodes": 14610848,
+              "numbers": 50777984,
+              "parents": 7305424,
+              "positions": 7305424
+            }
+          ],
+          "optimizer_steps": 1024,
+          "packed_rollout_bytes": [
+            1605623631,
+            1591640974
+          ],
+          "parent_peak_rss_bytes": 3790716928,
+          "phase_timings": {
+            "checkpoint_seconds": 0.1195913755800575,
+            "report_serialization_seconds": 0.13514895900152624,
+            "tracking_log_seconds": 0.29763170797377825
+          },
+          "process_seconds": 88.35092475009151,
+          "profile": false,
+          "report_seconds": 84.85273062484339,
+          "summary": {
+            "accepted_decisions": 8192,
+            "components": {
+              "combat_loss": 193.0,
+              "combat_win": 268.0,
+              "end_turn_action": 1825.0,
+              "potion_use_action": 129.0,
+              "win_hp_fraction": 132.03392759758628
+            },
+            "cutoffs": 16,
+            "decisions_per_second": 96.54374042738851,
+            "episode_attempts": 477,
+            "failed_episodes": 0,
+            "losses": 193,
+            "mean_hp_on_win": 39.67537313432836,
+            "potion_use_actions": 129,
+            "processed_decisions": 8192,
+            "skipped_decisions": 0,
+            "skipped_updates": 0,
+            "task_return": 281.2033927597586,
+            "trained_decisions": 8192,
+            "wins": 268
+          },
+          "tracking": true,
+          "update_round_seconds": [
+            11.95801904099062,
+            12.027821915922686
+          ],
+          "update_seconds": 23.985840956913307,
+          "variant": "baseline",
+          "worker_batches": [
+            [
+              {
+                "quota": 512,
+                "seconds": 24.90818624990061,
+                "status": "complete",
+                "steps": 512,
+                "worker": 0
+              },
+              {
+                "quota": 512,
+                "seconds": 26.416758459061384,
+                "status": "complete",
+                "steps": 512,
+                "worker": 1
+              },
+              {
+                "quota": 512,
+                "seconds": 26.197625583969057,
+                "status": "complete",
+                "steps": 512,
+                "worker": 2
+              },
+              {
+                "quota": 512,
+                "seconds": 26.296969457995147,
+                "status": "complete",
+                "steps": 512,
+                "worker": 3
+              },
+              {
+                "quota": 512,
+                "seconds": 25.898474500048906,
+                "status": "complete",
+                "steps": 512,
+                "worker": 4
+              },
+              {
+                "quota": 512,
+                "seconds": 26.59311066614464,
+                "status": "complete",
+                "steps": 512,
+                "worker": 5
+              },
+              {
+                "quota": 512,
+                "seconds": 25.53688562498428,
+                "status": "complete",
+                "steps": 512,
+                "worker": 6
+              },
+              {
+                "quota": 512,
+                "seconds": 25.3610287909396,
+                "status": "complete",
+                "steps": 512,
+                "worker": 7
+              }
+            ],
+            [
+              {
+                "quota": 512,
+                "seconds": 25.13189937500283,
+                "status": "complete",
+                "steps": 512,
+                "worker": 0
+              },
+              {
+                "quota": 512,
+                "seconds": 26.427258541807532,
+                "status": "complete",
+                "steps": 512,
+                "worker": 1
+              },
+              {
+                "quota": 512,
+                "seconds": 25.702513667056337,
+                "status": "complete",
+                "steps": 512,
+                "worker": 2
+              },
+              {
+                "quota": 512,
+                "seconds": 25.75558862485923,
+                "status": "complete",
+                "steps": 512,
+                "worker": 3
+              },
+              {
+                "quota": 512,
+                "seconds": 25.380459459032863,
+                "status": "complete",
+                "steps": 512,
+                "worker": 4
+              },
+              {
+                "quota": 512,
+                "seconds": 26.871312249917537,
+                "status": "complete",
+                "steps": 512,
+                "worker": 5
+              },
+              {
+                "quota": 512,
+                "seconds": 26.104511208133772,
+                "status": "complete",
+                "steps": 512,
+                "worker": 6
+              },
+              {
+                "quota": 512,
+                "seconds": 25.958574749995023,
+                "status": "complete",
+                "steps": 512,
+                "worker": 7
+              }
+            ]
+          ],
+          "workers": 8
+        },
+        {
+          "collection_round_seconds": [
+            33.50179870799184,
+            27.837266416987404
+          ],
+          "collection_seconds": 61.33906512497924,
+          "decisions": 8192,
+          "decisions_per_second": 90.72446683248725,
+          "epochs": [
+            2,
+            2
+          ],
+          "factory_seconds": 0.06017662491649389,
+          "final_fingerprint": "sts_policy_state_v2:e513ab57ef4368aa2f5f7fcd36b959df4cf41a94124f619a633dd3578b41a452",
+          "invocation_seconds": 88.84806962497532,
+          "kl_early_stops": [
+            false,
+            false
+          ],
+          "label": "workers-8-replica-3",
+          "memory_breakdown": [
+            {
+              "candidates": 441072,
+              "fields": 205412160,
+              "link_positions": 4914564,
+              "links": 13105504,
+              "lossless.action_mask": 18378,
+              "lossless.candidates": 441072,
+              "lossless.layout": 196608,
+              "lossless.node_mask": 27145673,
+              "lossless.nodes": 1085826920,
+              "lossless.outcome": 65536,
+              "lossless.reference_mask": 426300,
+              "lossless.references": 6820800,
+              "lossless.string_lengths": 5434656,
+              "lossless.string_mask": 679332,
+              "lossless.strings": 173908992,
+              "nodes": 14716512,
+              "numbers": 51353040,
+              "parents": 7358256,
+              "positions": 7358256
+            },
+            {
+              "candidates": 450144,
+              "fields": 203111936,
+              "link_positions": 4883256,
+              "links": 13022016,
+              "lossless.action_mask": 18756,
+              "lossless.candidates": 450144,
+              "lossless.layout": 196608,
+              "lossless.node_mask": 26871408,
+              "lossless.nodes": 1074856320,
+              "lossless.outcome": 65536,
+              "lossless.reference_mask": 421430,
+              "lossless.references": 6742880,
+              "lossless.string_lengths": 5450592,
+              "lossless.string_mask": 681324,
+              "lossless.strings": 174418944,
+              "nodes": 14610848,
+              "numbers": 50777984,
+              "parents": 7305424,
+              "positions": 7305424
+            }
+          ],
+          "optimizer_steps": 1024,
+          "packed_rollout_bytes": [
+            1605623631,
+            1591640974
+          ],
+          "parent_peak_rss_bytes": 4410523648,
+          "phase_timings": {
+            "checkpoint_seconds": 0.11468433286063373,
+            "report_serialization_seconds": 0.13772508432157338,
+            "tracking_log_seconds": 0.2834530412219465
+          },
+          "process_seconds": 90.29537770804018,
+          "profile": false,
+          "report_seconds": 86.90073933405802,
+          "summary": {
+            "accepted_decisions": 8192,
+            "components": {
+              "combat_loss": 193.0,
+              "combat_win": 268.0,
+              "end_turn_action": 1825.0,
+              "potion_use_action": 129.0,
+              "win_hp_fraction": 132.03392759758628
+            },
+            "cutoffs": 16,
+            "decisions_per_second": 94.26847300468711,
+            "episode_attempts": 477,
+            "failed_episodes": 0,
+            "losses": 193,
+            "mean_hp_on_win": 39.67537313432836,
+            "potion_use_actions": 129,
+            "processed_decisions": 8192,
+            "skipped_decisions": 0,
+            "skipped_updates": 0,
+            "task_return": 281.2033927597586,
+            "trained_decisions": 8192,
+            "wins": 268
+          },
+          "tracking": true,
+          "update_round_seconds": [
+            12.454854583833367,
+            12.153097750153393
+          ],
+          "update_seconds": 24.60795233398676,
+          "variant": "baseline",
+          "worker_batches": [
+            [
+              {
+                "quota": 512,
+                "seconds": 26.093473750166595,
+                "status": "complete",
+                "steps": 512,
+                "worker": 0
+              },
+              {
+                "quota": 512,
+                "seconds": 27.42583066597581,
+                "status": "complete",
+                "steps": 512,
+                "worker": 1
+              },
+              {
+                "quota": 512,
+                "seconds": 27.064142999937758,
+                "status": "complete",
+                "steps": 512,
+                "worker": 2
+              },
+              {
+                "quota": 512,
+                "seconds": 27.244572709081694,
+                "status": "complete",
+                "steps": 512,
+                "worker": 3
+              },
+              {
+                "quota": 512,
+                "seconds": 26.943047707900405,
+                "status": "complete",
+                "steps": 512,
+                "worker": 4
+              },
+              {
+                "quota": 512,
+                "seconds": 27.590286207851022,
+                "status": "complete",
+                "steps": 512,
+                "worker": 5
+              },
+              {
+                "quota": 512,
+                "seconds": 26.677606750046834,
+                "status": "complete",
+                "steps": 512,
+                "worker": 6
+              },
+              {
+                "quota": 512,
+                "seconds": 26.46051299991086,
+                "status": "complete",
+                "steps": 512,
+                "worker": 7
+              }
+            ],
+            [
+              {
+                "quota": 512,
+                "seconds": 25.390117374947295,
+                "status": "complete",
+                "steps": 512,
+                "worker": 0
+              },
+              {
+                "quota": 512,
+                "seconds": 26.751599750015885,
+                "status": "complete",
+                "steps": 512,
+                "worker": 1
+              },
+              {
+                "quota": 512,
+                "seconds": 25.75412299996242,
+                "status": "complete",
+                "steps": 512,
+                "worker": 2
+              },
+              {
+                "quota": 512,
+                "seconds": 26.14118874981068,
+                "status": "complete",
+                "steps": 512,
+                "worker": 3
+              },
+              {
+                "quota": 512,
+                "seconds": 25.492393875028938,
+                "status": "complete",
+                "steps": 512,
+                "worker": 4
+              },
+              {
+                "quota": 512,
+                "seconds": 26.95388154196553,
+                "status": "complete",
+                "steps": 512,
+                "worker": 5
+              },
+              {
+                "quota": 512,
+                "seconds": 26.22984974994324,
+                "status": "complete",
+                "steps": 512,
+                "worker": 6
+              },
+              {
+                "quota": 512,
+                "seconds": 26.250470124883577,
+                "status": "complete",
+                "steps": 512,
+                "worker": 7
+              }
+            ]
+          ],
+          "workers": 8
+        }
+      ],
+      "schema": "sts_combat_training_speed_results_v1",
+      "status": "complete"
+    },
+    "optimized": {
+      "eight_worker_medians": {
+        "collection_seconds": 46.06356133404188,
+        "decisions_per_second": 111.79516333927117,
+        "process_seconds": 73.2768731249962,
+        "update_seconds": 23.67269195895642
+      },
+      "matched_eight_worker_weights": true,
+      "protocol_sha256": "8aa4599b649b8d775b023a23d512aa8f1c1f4c172bd31cb7df68ff3d8be6886a",
+      "runs": [
+        {
+          "collection_round_seconds": [
+            25.894529832992703,
+            20.851666916860268
+          ],
+          "collection_seconds": 46.74619674985297,
+          "decisions": 8192,
+          "decisions_per_second": 110.46859573786014,
+          "epochs": [
+            2,
+            2
+          ],
+          "factory_seconds": 0.059561416041105986,
+          "final_fingerprint": "sts_policy_state_v2:e513ab57ef4368aa2f5f7fcd36b959df4cf41a94124f619a633dd3578b41a452",
+          "invocation_seconds": 72.84614954097196,
+          "kl_early_stops": [
+            false,
+            false
+          ],
+          "label": "workers-8-replica-1",
+          "memory_breakdown": [
+            {
+              "candidates": 441072,
+              "fields": 205412160,
+              "link_positions": 4914564,
+              "links": 13105504,
+              "nodes": 14716512,
+              "numbers": 51353040,
+              "parents": 7358256,
+              "positions": 7358256
+            },
+            {
+              "candidates": 450144,
+              "fields": 203111936,
+              "link_positions": 4883256,
+              "links": 13022016,
+              "nodes": 14610848,
+              "numbers": 50777984,
+              "parents": 7305424,
+              "positions": 7305424
+            }
+          ],
+          "optimizer_steps": 1024,
+          "packed_rollout_bytes": [
+            304659364,
+            301467032
+          ],
+          "parent_peak_rss_bytes": 1473380352,
+          "phase_timings": {
+            "checkpoint_seconds": 0.08412316697649658,
+            "report_serialization_seconds": 0.13472004234790802,
+            "tracking_log_seconds": 0.2788464168552309
+          },
+          "process_seconds": 74.15682208398357,
+          "profile": false,
+          "report_seconds": 71.22109524998814,
+          "summary": {
+            "accepted_decisions": 8192,
+            "components": {
+              "combat_loss": 193.0,
+              "combat_win": 268.0,
+              "end_turn_action": 1825.0,
+              "potion_use_action": 129.0,
+              "win_hp_fraction": 132.03392759758628
+            },
+            "cutoffs": 16,
+            "decisions_per_second": 115.02210084309766,
+            "episode_attempts": 477,
+            "failed_episodes": 0,
+            "losses": 193,
+            "mean_hp_on_win": 39.67537313432836,
+            "potion_use_actions": 129,
+            "processed_decisions": 8192,
+            "skipped_decisions": 0,
+            "skipped_updates": 0,
+            "task_return": 281.2033927597586,
+            "trained_decisions": 8192,
+            "wins": 268
+          },
+          "tracking": true,
+          "update_round_seconds": [
+            11.878341167001054,
+            11.794350791955367
+          ],
+          "update_seconds": 23.67269195895642,
+          "variant": "optimized",
+          "worker_batches": [
+            [
+              {
+                "quota": 512,
+                "seconds": 19.885286750039086,
+                "status": "complete",
+                "steps": 512,
+                "worker": 0
+              },
+              {
+                "quota": 512,
+                "seconds": 20.99593637511134,
+                "status": "complete",
+                "steps": 512,
+                "worker": 1
+              },
+              {
+                "quota": 512,
+                "seconds": 20.904715874930844,
+                "status": "complete",
+                "steps": 512,
+                "worker": 2
+              },
+              {
+                "quota": 512,
+                "seconds": 20.876110791927204,
+                "status": "complete",
+                "steps": 512,
+                "worker": 3
+              },
+              {
+                "quota": 512,
+                "seconds": 20.79578808415681,
+                "status": "complete",
+                "steps": 512,
+                "worker": 4
+              },
+              {
+                "quota": 512,
+                "seconds": 21.01270941598341,
+                "status": "complete",
+                "steps": 512,
+                "worker": 5
+              },
+              {
+                "quota": 512,
+                "seconds": 20.685359583003446,
+                "status": "complete",
+                "steps": 512,
+                "worker": 6
+              },
+              {
+                "quota": 512,
+                "seconds": 20.242624041158706,
+                "status": "complete",
+                "steps": 512,
+                "worker": 7
+              }
+            ],
+            [
+              {
+                "quota": 512,
+                "seconds": 19.551265249960124,
+                "status": "complete",
+                "steps": 512,
+                "worker": 0
+              },
+              {
+                "quota": 512,
+                "seconds": 20.562554833944887,
+                "status": "complete",
+                "steps": 512,
+                "worker": 1
+              },
+              {
+                "quota": 512,
+                "seconds": 20.060077290982008,
+                "status": "complete",
+                "steps": 512,
+                "worker": 2
+              },
+              {
+                "quota": 512,
+                "seconds": 20.03095758287236,
+                "status": "complete",
+                "steps": 512,
+                "worker": 3
+              },
+              {
+                "quota": 512,
+                "seconds": 19.775095083052292,
+                "status": "complete",
+                "steps": 512,
+                "worker": 4
+              },
+              {
+                "quota": 512,
+                "seconds": 20.69205449987203,
+                "status": "complete",
+                "steps": 512,
+                "worker": 5
+              },
+              {
+                "quota": 512,
+                "seconds": 20.200349166989326,
+                "status": "complete",
+                "steps": 512,
+                "worker": 6
+              },
+              {
+                "quota": 512,
+                "seconds": 20.198963375063613,
+                "status": "complete",
+                "steps": 512,
+                "worker": 7
+              }
+            ]
+          ],
+          "workers": 8
+        },
+        {
+          "collection_round_seconds": [
+            25.148275875020772,
+            20.61625516600907
+          ],
+          "collection_seconds": 45.76453104102984,
+          "decisions": 8192,
+          "decisions_per_second": 112.47983263226037,
+          "epochs": [
+            2,
+            2
+          ],
+          "factory_seconds": 0.05240941606462002,
+          "final_fingerprint": "sts_policy_state_v2:e513ab57ef4368aa2f5f7fcd36b959df4cf41a94124f619a633dd3578b41a452",
+          "invocation_seconds": 71.65206766687334,
+          "kl_early_stops": [
+            false,
+            false
+          ],
+          "label": "workers-8-replica-2",
+          "memory_breakdown": [
+            {
+              "candidates": 441072,
+              "fields": 205412160,
+              "link_positions": 4914564,
+              "links": 13105504,
+              "nodes": 14716512,
+              "numbers": 51353040,
+              "parents": 7358256,
+              "positions": 7358256
+            },
+            {
+              "candidates": 450144,
+              "fields": 203111936,
+              "link_positions": 4883256,
+              "links": 13022016,
+              "nodes": 14610848,
+              "numbers": 50777984,
+              "parents": 7305424,
+              "positions": 7305424
+            }
+          ],
+          "optimizer_steps": 1024,
+          "packed_rollout_bytes": [
+            304659364,
+            301467032
+          ],
+          "parent_peak_rss_bytes": 1484898304,
+          "phase_timings": {
+            "checkpoint_seconds": 0.08390574809163809,
+            "report_serialization_seconds": 0.14050912391394377,
+            "tracking_log_seconds": 0.2840540420729667
+          },
+          "process_seconds": 72.83083383296616,
+          "profile": false,
+          "report_seconds": 70.18402937497012,
+          "summary": {
+            "accepted_decisions": 8192,
+            "components": {
+              "combat_loss": 193.0,
+              "combat_win": 268.0,
+              "end_turn_action": 1825.0,
+              "potion_use_action": 129.0,
+              "win_hp_fraction": 132.03392759758628
+            },
+            "cutoffs": 16,
+            "decisions_per_second": 116.72171109231768,
+            "episode_attempts": 477,
+            "failed_episodes": 0,
+            "losses": 193,
+            "mean_hp_on_win": 39.67537313432836,
+            "potion_use_actions": 129,
+            "processed_decisions": 8192,
+            "skipped_decisions": 0,
+            "skipped_updates": 0,
+            "task_return": 281.2033927597586,
+            "trained_decisions": 8192,
+            "wins": 268
+          },
+          "tracking": true,
+          "update_round_seconds": [
+            11.841534791048616,
+            11.748602875042707
+          ],
+          "update_seconds": 23.590137666091323,
+          "variant": "optimized",
+          "worker_batches": [
+            [
+              {
+                "quota": 512,
+                "seconds": 19.035188084002584,
+                "status": "complete",
+                "steps": 512,
+                "worker": 0
+              },
+              {
+                "quota": 512,
+                "seconds": 20.210377667099237,
+                "status": "complete",
+                "steps": 512,
+                "worker": 1
+              },
+              {
+                "quota": 512,
+                "seconds": 20.139519541990012,
+                "status": "complete",
+                "steps": 512,
+                "worker": 2
+              },
+              {
+                "quota": 512,
+                "seconds": 20.232393083162606,
+                "status": "complete",
+                "steps": 512,
+                "worker": 3
+              },
+              {
+                "quota": 512,
+                "seconds": 20.042155416915193,
+                "status": "complete",
+                "steps": 512,
+                "worker": 4
+              },
+              {
+                "quota": 512,
+                "seconds": 20.378345290897414,
+                "status": "complete",
+                "steps": 512,
+                "worker": 5
+              },
+              {
+                "quota": 512,
+                "seconds": 19.817069415934384,
+                "status": "complete",
+                "steps": 512,
+                "worker": 6
+              },
+              {
+                "quota": 512,
+                "seconds": 19.530086083104834,
+                "status": "complete",
+                "steps": 512,
+                "worker": 7
+              }
+            ],
+            [
+              {
+                "quota": 512,
+                "seconds": 19.405134750064462,
+                "status": "complete",
+                "steps": 512,
+                "worker": 0
+              },
+              {
+                "quota": 512,
+                "seconds": 20.42490924987942,
+                "status": "complete",
+                "steps": 512,
+                "worker": 1
+              },
+              {
+                "quota": 512,
+                "seconds": 19.84704991686158,
+                "status": "complete",
+                "steps": 512,
+                "worker": 2
+              },
+              {
+                "quota": 512,
+                "seconds": 19.935616041067988,
+                "status": "complete",
+                "steps": 512,
+                "worker": 3
+              },
+              {
+                "quota": 512,
+                "seconds": 19.334916583960876,
+                "status": "complete",
+                "steps": 512,
+                "worker": 4
+              },
+              {
+                "quota": 512,
+                "seconds": 20.416279499884695,
+                "status": "complete",
+                "steps": 512,
+                "worker": 5
+              },
+              {
+                "quota": 512,
+                "seconds": 20.005643791984767,
+                "status": "complete",
+                "steps": 512,
+                "worker": 6
+              },
+              {
+                "quota": 512,
+                "seconds": 20.045585334068164,
+                "status": "complete",
+                "steps": 512,
+                "worker": 7
+              }
+            ]
+          ],
+          "workers": 8
+        },
+        {
+          "collection_round_seconds": [
+            25.306950333993882,
+            20.756611000047997
+          ],
+          "collection_seconds": 46.06356133404188,
+          "decisions": 8192,
+          "decisions_per_second": 111.79516333927117,
+          "epochs": [
+            2,
+            2
+          ],
+          "factory_seconds": 0.05366095877252519,
+          "final_fingerprint": "sts_policy_state_v2:e513ab57ef4368aa2f5f7fcd36b959df4cf41a94124f619a633dd3578b41a452",
+          "invocation_seconds": 72.09605858288705,
+          "kl_early_stops": [
+            false,
+            false
+          ],
+          "label": "workers-8-replica-3",
+          "memory_breakdown": [
+            {
+              "candidates": 441072,
+              "fields": 205412160,
+              "link_positions": 4914564,
+              "links": 13105504,
+              "nodes": 14716512,
+              "numbers": 51353040,
+              "parents": 7358256,
+              "positions": 7358256
+            },
+            {
+              "candidates": 450144,
+              "fields": 203111936,
+              "link_positions": 4883256,
+              "links": 13022016,
+              "nodes": 14610848,
+              "numbers": 50777984,
+              "parents": 7305424,
+              "positions": 7305424
+            }
+          ],
+          "optimizer_steps": 1024,
+          "packed_rollout_bytes": [
+            304659364,
+            301467032
+          ],
+          "parent_peak_rss_bytes": 1472856064,
+          "phase_timings": {
+            "checkpoint_seconds": 0.08156891586259007,
+            "report_serialization_seconds": 0.13716191821731627,
+            "tracking_log_seconds": 0.2747390428557992
+          },
+          "process_seconds": 73.2768731249962,
+          "profile": false,
+          "report_seconds": 70.56158533319831,
+          "summary": {
+            "accepted_decisions": 8192,
+            "components": {
+              "combat_loss": 193.0,
+              "combat_win": 268.0,
+              "end_turn_action": 1825.0,
+              "potion_use_action": 129.0,
+              "win_hp_fraction": 132.03392759758628
+            },
+            "cutoffs": 16,
+            "decisions_per_second": 116.09716478614563,
+            "episode_attempts": 477,
+            "failed_episodes": 0,
+            "losses": 193,
+            "mean_hp_on_win": 39.67537313432836,
+            "potion_use_actions": 129,
+            "processed_decisions": 8192,
+            "skipped_decisions": 0,
+            "skipped_updates": 0,
+            "task_return": 281.2033927597586,
+            "trained_decisions": 8192,
+            "wins": 268
+          },
+          "tracking": true,
+          "update_round_seconds": [
+            11.911296708043665,
+            11.79467458394356
+          ],
+          "update_seconds": 23.705971291987225,
+          "variant": "optimized",
+          "worker_batches": [
+            [
+              {
+                "quota": 512,
+                "seconds": 19.296545417048037,
+                "status": "complete",
+                "steps": 512,
+                "worker": 0
+              },
+              {
+                "quota": 512,
+                "seconds": 20.308483167085797,
+                "status": "complete",
+                "steps": 512,
+                "worker": 1
+              },
+              {
+                "quota": 512,
+                "seconds": 20.259968041907996,
+                "status": "complete",
+                "steps": 512,
+                "worker": 2
+              },
+              {
+                "quota": 512,
+                "seconds": 20.336050041019917,
+                "status": "complete",
+                "steps": 512,
+                "worker": 3
+              },
+              {
+                "quota": 512,
+                "seconds": 20.190782208926976,
+                "status": "complete",
+                "steps": 512,
+                "worker": 4
+              },
+              {
+                "quota": 512,
+                "seconds": 20.550211291993037,
+                "status": "complete",
+                "steps": 512,
+                "worker": 5
+              },
+              {
+                "quota": 512,
+                "seconds": 19.9691904168576,
+                "status": "complete",
+                "steps": 512,
+                "worker": 6
+              },
+              {
+                "quota": 512,
+                "seconds": 19.618701125029474,
+                "status": "complete",
+                "steps": 512,
+                "worker": 7
+              }
+            ],
+            [
+              {
+                "quota": 512,
+                "seconds": 19.5127405829262,
+                "status": "complete",
+                "steps": 512,
+                "worker": 0
+              },
+              {
+                "quota": 512,
+                "seconds": 20.43149866699241,
+                "status": "complete",
+                "steps": 512,
+                "worker": 1
+              },
+              {
+                "quota": 512,
+                "seconds": 19.799737124936655,
+                "status": "complete",
+                "steps": 512,
+                "worker": 2
+              },
+              {
+                "quota": 512,
+                "seconds": 19.962404124904424,
+                "status": "complete",
+                "steps": 512,
+                "worker": 3
+              },
+              {
+                "quota": 512,
+                "seconds": 19.778773499885574,
+                "status": "complete",
+                "steps": 512,
+                "worker": 4
+              },
+              {
+                "quota": 512,
+                "seconds": 20.601039541885257,
+                "status": "complete",
+                "steps": 512,
+                "worker": 5
+              },
+              {
+                "quota": 512,
+                "seconds": 20.177071375073865,
+                "status": "complete",
+                "steps": 512,
+                "worker": 6
+              },
+              {
+                "quota": 512,
+                "seconds": 20.17820804216899,
+                "status": "complete",
+                "steps": 512,
+                "worker": 7
+              }
+            ]
+          ],
+          "workers": 8
+        }
+      ],
+      "schema": "sts_combat_training_speed_results_v1",
+      "status": "complete"
+    }
+  },
+  "schema": "sts_collector_optimization_evidence_v1",
+  "source_files": {
+    "game/agent/contracts/codec.py": "e9acc0f398de7083aebdccdff5e9966858a450eed05c39951ca15af005590abf",
+    "game/agent/contracts/full.py": "aff5e562dbc1c2ebea4c3d2d92e8baa9f75780e3eb0528339aa31c42c40cd8c1",
+    "game/agent/recording.py": "deb89a52a7b927c6e05f2c612da6ad8b77945e2dcb412891751813a2c9e94784",
+    "game/agent/training/features.py": "b6bcaee5068c51e674435f140e57e0a2d010a368a5549917957a59388c3b376a",
+    "game/agent/training/ppo.py": "60fa44afe3b9c3011608c019814fe0465087584dcf4b01c00a6f5e9da2588289",
+    "game/agent/training/ppo_run.py": "2132fa670e1dd28ab78f89b28796911459c9ba1082ad86404390de87fd8e5686",
+    "game/agent/training/records.py": "3701c62182cfe159d5c4bc329e3d01b110fdc02c0256bde9bcbab2834706342f",
+    "game/agent/training/rollout.py": "9a26d9da531d91099e13b1943f6eb9e3a82a72b9d3aee87fa31d2f51f4255b4f"
+  },
+  "timings": {
+    "baseline_invocations_seconds": 269.1520859992597,
+    "elapsed_since_benchmark_setup_seconds": 1332.7253370285034,
+    "implementation_seconds": null,
+    "note": "Preparation, implementation, review and tests overlap; no summed overall estimate.",
+    "optimized_invocations_seconds": 220.26452904194593
+  },
+  "validation": {
+    "implementation": {
+      "build": "82121ddd2c6fb8047bcec3221a8016fc7d06a512cda137dd93a19aef67b7c80f",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "cb4110d297799c139c5912c30a0e0903630c1c8ab2141eded608b90a7b1e0926",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "production_matches_timed_source": true,
+    "review": {
+      "agent": "combat_corpus_review",
+      "approximate_seconds": 240,
+      "status": "accepted_after_canonical_HUD_fix"
+    },
+    "state_guard_sha256": "3b787430d8417d5d20aa1ff6a169d24cf6df5b04754677fadf3034b654f46edf",
+    "tests": {
+      "broad_agent": {
+        "failed": 1,
+        "failure": "Loopback bind prohibited by sandbox; exact test passed outside sandbox",
+        "passed": 993,
+        "seconds": 470.04,
+        "skip": "Node.js absent from PATH for unchanged JavaScript client suite",
+        "skipped": 1
+      },
+      "compileall": true,
+      "diff_check": true,
+      "final_recording": {
+        "passed": 57,
+        "seconds": 1.0
+      },
+      "http_regression": {
+        "passed": 1,
+        "seconds": 0.61
+      },
+      "initial_focused": {
+        "passed": 205,
+        "seconds": 41.33
+      },
+      "recording_and_policy_followup": {
+        "passed": 86,
+        "seconds": 15.34
+      }
+    }
+  },
+  "validation_seconds": 11.746712957974523
+}

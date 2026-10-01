@@ -1,0 +1,2528 @@
+{
+  "artifacts": {
+    "runs/combat-speed-20261001/analyze.py": "3a3be4de31da44c3b68ca193f3f744b51b444a0e73efe25decaa86edc3b09e8b",
+    "runs/combat-speed-20261001/benchmark.py": "81d36b38d286302116b5f6265da38e7512512c43ed6d6f26edb5801426be7dfe",
+    "runs/combat-speed-20261001/preparation.json": "015b9a2824d7ca2a479b4f4055276d87d2d90d75236f7dd989fe22e83c62f1a9",
+    "runs/combat-speed-20261001/profile-8/ppo.json": "ddd6bb0d55573d8e2bc04d6c9cc54ba3f0fde8302ecb3ee51bdac3b12fc8e2d8",
+    "runs/combat-speed-20261001/protocol.json": "48c5232d43e06272e23d758acff037b59ca5368d896765fb7eaa52608b5af859",
+    "runs/combat-speed-20261001/results.json": "06c10590f10655ae9a647e7798829ddf3930fa9cf4af9455a5614fd1ac794060",
+    "runs/combat-speed-20261001/workers-1/ppo.json": "6a2e8bb681419f39e01f0083f0c84340ead1af5dc6c44f242985b510d429bb57",
+    "runs/combat-speed-20261001/workers-4/ppo.json": "0b0dddea8e59d73b45b0156bc8be7f8bbc4778ec210d79cc574e5abb6c6018c8",
+    "runs/combat-speed-20261001/workers-8-no-tracking/ppo.json": "26f5995ec972e9d9f67bf213de6b4925ad257aa75eba4230fc8f13f920ecfef0",
+    "runs/combat-speed-20261001/workers-8-replica-1/ppo.json": "645538e8c3c897c892bf6dbe8937463accf59cdbae7175d8abf67068d860fae2",
+    "runs/combat-speed-20261001/workers-8-replica-2/ppo.json": "a02b949cf91f998de4ece37d8a82990e232911a4224505d7c097df89476e5fcf",
+    "runs/combat-speed-20261001/workers-8-replica-3/ppo.json": "dd6d3925000f47e9379e62a2b549d7398ee516852367261dd79ea17a13b7e90d"
+  },
+  "checks": {
+    "all_decisions_trained": true,
+    "canonical_training_pairs": [
+      {
+        "episode": "d08bd2c6798c418191e679639bbf1ffb",
+        "run": "workers-8-replica-1",
+        "steps": 8
+      },
+      {
+        "episode": "a4eec5e3609146ff8ab3ac09d2bdb022",
+        "run": "workers-8-replica-1",
+        "steps": 25
+      },
+      {
+        "episode": "c021057c442d473db346482ae34102d3",
+        "run": "workers-8-replica-1",
+        "steps": 20
+      },
+      {
+        "episode": "6aa6b1f6a74d484c8588b0294a04a638",
+        "run": "workers-4",
+        "steps": 8
+      },
+      {
+        "episode": "a655cf332cff48799b2814487ce751f6",
+        "run": "workers-4",
+        "steps": 22
+      },
+      {
+        "episode": "c2a220e8d56447a2a8439dc71d119535",
+        "run": "workers-4",
+        "steps": 26
+      },
+      {
+        "episode": "966a60caa59c4db59991e22b8ff9ca50",
+        "run": "workers-8-replica-2",
+        "steps": 8
+      },
+      {
+        "episode": "105f33c611264b6b84858935ba8d3642",
+        "run": "workers-8-replica-2",
+        "steps": 25
+      },
+      {
+        "episode": "de13ec6403174c5b99975d4f7beb6005",
+        "run": "workers-8-replica-2",
+        "steps": 20
+      },
+      {
+        "episode": "ce21420055974242ac980e2bd472407e",
+        "run": "workers-1",
+        "steps": 17
+      },
+      {
+        "episode": "007c6433c06349c990fa788c0f3f30be",
+        "run": "workers-1",
+        "steps": 12
+      },
+      {
+        "episode": "58adccf999bd4ed5a1fbbf0c84e271fd",
+        "run": "workers-1",
+        "steps": 16
+      },
+      {
+        "episode": "df716fd943cf40c08b51db24dbbdcc0f",
+        "run": "workers-8-no-tracking",
+        "steps": 8
+      },
+      {
+        "episode": "d9338a2393d5478386dbf812ade8784b",
+        "run": "workers-8-no-tracking",
+        "steps": 25
+      },
+      {
+        "episode": "6ed8647c663d45ad83bc8452c13f5813",
+        "run": "workers-8-no-tracking",
+        "steps": 20
+      },
+      {
+        "episode": "3df06b1c49194c688c4c65d2551df387",
+        "run": "workers-8-replica-3",
+        "steps": 8
+      },
+      {
+        "episode": "79e7c261665e4a79b77fd0751b1bbf28",
+        "run": "workers-8-replica-3",
+        "steps": 25
+      },
+      {
+        "episode": "7c4ec671166f44ca8e654a29bcd6af20",
+        "run": "workers-8-replica-3",
+        "steps": 20
+      },
+      {
+        "episode": "809cc741bd114e89adbb803cbb46b11c",
+        "run": "profile-8",
+        "steps": 8
+      },
+      {
+        "episode": "b7f675dcd4fe45929b7113fbf0db9bff",
+        "run": "profile-8",
+        "steps": 25
+      },
+      {
+        "episode": "0717a1d60fec4752bdd750a728c33e96",
+        "run": "profile-8",
+        "steps": 20
+      }
+    ],
+    "input_checkpoint_unchanged": true,
+    "matched_weights_and_update_metrics": true,
+    "no_partial_artifacts": true,
+    "no_tracking_failures": true,
+    "private_permissions": true
+  },
+  "extrapolated_training_seconds": {
+    "250000": 2303.765750887976,
+    "50000": 460.7531501775952,
+    "500000": 4607.531501775952
+  },
+  "historical": [
+    {
+      "comparison": "Different corpus/learner phase; plain recording and tracking disabled at measurement time.",
+      "decisions": 250000,
+      "decisions_per_second": 120.8562711575508,
+      "experiment": "combat-fresh-250k-20260930",
+      "training_seconds": 2068.5728395020124
+    },
+    {
+      "comparison": "Different corpus/learner phase; plain recording and tracking disabled at measurement time.",
+      "decisions": 250000,
+      "decisions_per_second": 122.43240629435822,
+      "experiment": "combat-fresh-500k-20260930",
+      "training_seconds": 2041.943040790502
+    }
+  ],
+  "median": {
+    "collection_seconds": 48.99945287592709,
+    "decisions_per_second": 108.51797753466846,
+    "parent_peak_rss_bytes": 4033757184,
+    "phase_timings": {
+      "checkpoint_seconds": 0.1287544178776443,
+      "report_serialization_seconds": 0.13157624984160066,
+      "tracking_log_seconds": 0.2727283341810107
+    },
+    "process_range_seconds": [
+      72.43299116706476,
+      90.57650583283976
+    ],
+    "process_seconds": 75.4897961250972,
+    "update_seconds": 22.452937749912962
+  },
+  "mlflow": {
+    "experiment": "Performance benchmarks",
+    "experiment_id": "4",
+    "local_url": "http://127.0.0.1:5050/#/experiments/4/runs"
+  },
+  "observed_hardware": {
+    "cpu": "Apple M5 Pro",
+    "logical_cpus": 18,
+    "memory_bytes": 51539607552,
+    "model": "Mac17,8",
+    "source": "Read-only sysctl hw.model, hw.ncpu, hw.memsize, machdep.cpu.brand_string"
+  },
+  "preparation": {
+    "architecture": {
+      "hidden_size": 48,
+      "message_layers": 2,
+      "schema": "sts_graph_actor_critic_v1"
+    },
+    "collector": "runs/act1-increased-500k-8workers-20260930/chunk-15/final.sts-model",
+    "collector_sha256": "fce362d2e0cc8f337cb06642c198ddc53c8a5e2b312f2e3596feac488a30352f",
+    "corpus": "runs/combat-speed-20261001/corpus/corpus.json",
+    "corpus_sha256": "e9c83e0c88ccd334630398097c38b8ca7650318077536dbff2a9c379f0877eb4",
+    "coverage": {
+      "by_encounter": {
+        "dense_vegetation_event": 3,
+        "overgrowth_bygone_effigy": 6,
+        "overgrowth_byrdonis": 3,
+        "overgrowth_crawlers": 6,
+        "overgrowth_cubex": 4,
+        "overgrowth_flyconid": 5,
+        "overgrowth_fogmog": 5,
+        "overgrowth_fuzzy": 15,
+        "overgrowth_inklets": 5,
+        "overgrowth_jaxfruit": 4,
+        "overgrowth_mawler": 3,
+        "overgrowth_nibbit": 13,
+        "overgrowth_nibbits": 5,
+        "overgrowth_phrog_parasite": 3,
+        "overgrowth_ruby_raiders": 9,
+        "overgrowth_shrinker": 11,
+        "overgrowth_slimes": 9,
+        "overgrowth_slimes_normal": 5,
+        "overgrowth_strangler": 5,
+        "overgrowth_the_kin": 5,
+        "overgrowth_vantom": 2,
+        "overgrowth_vine_shambler": 7,
+        "underdocks_corpse_slugs": 6,
+        "underdocks_corpse_slugs_weak": 6,
+        "underdocks_cultists": 10,
+        "underdocks_fossil_stalker": 6,
+        "underdocks_gremlin_merc": 2,
+        "underdocks_haunted_ship": 3,
+        "underdocks_lagavulin_matriarch": 1,
+        "underdocks_living_fog": 6,
+        "underdocks_phantasmal_gardeners": 7,
+        "underdocks_punch_construct": 4,
+        "underdocks_seapunk": 9,
+        "underdocks_seapunk_weak": 14,
+        "underdocks_sewer_clam": 4,
+        "underdocks_skulking_colony": 4,
+        "underdocks_sludge_spinner": 14,
+        "underdocks_soul_fysh": 3,
+        "underdocks_terror_eel": 4,
+        "underdocks_toadpoles": 14,
+        "underdocks_two_tailed_rats": 8,
+        "underdocks_waterfall_giant": 5
+      },
+      "by_enemy_power": {
+        "about_to_blow": 1,
+        "artifact": 11,
+        "asleep": 2,
+        "demise": 1,
+        "hardened_shell_remaining": 17,
+        "illusion": 12,
+        "infested": 9,
+        "intangible": 3,
+        "minion": 42,
+        "plating": 16,
+        "ritual": 42,
+        "shriek": 12,
+        "slippery": 13,
+        "slow": 28,
+        "steam": 29,
+        "stolen_gold": 5,
+        "territorial": 11,
+        "thorns": 21,
+        "vulnerable": 258,
+        "weak": 16
+      },
+      "by_hp_band": {
+        "critical": 110,
+        "damaged": 188,
+        "healthy": 665
+      },
+      "by_potion": {
+        "ashwater": 2,
+        "attack_potion": 6,
+        "blessing_of_the_forge": 1,
+        "block_potion": 3,
+        "bottled_potential": 1,
+        "clarity": 1,
+        "colorless_potion": 13,
+        "dexterity_potion": 4,
+        "duplicator": 8,
+        "energy_potion": 5,
+        "explosive_ampoule": 4,
+        "fire_potion": 13,
+        "flex_potion": 1,
+        "fortifier": 4,
+        "fysh_oil": 2,
+        "gamblers_brew": 2,
+        "heart_of_iron": 2,
+        "liquid_bronze": 1,
+        "orobic_acid": 2,
+        "potion_of_binding": 8,
+        "powdered_demise": 1,
+        "power_potion": 6,
+        "regen_potion": 4,
+        "skill_potion": 7,
+        "snecko_oil": 2,
+        "soldiers_stew": 2,
+        "speed_potion": 4,
+        "stable_serum": 31,
+        "strength_potion": 2,
+        "swift_potion": 5,
+        "touch_of_insanity": 1,
+        "vulnerable_potion": 6,
+        "weak_potion": 5
+      },
+      "by_region": {
+        "overgrowth": 133,
+        "underdocks": 130
+      },
+      "by_room_kind": {
+        "boss": 16,
+        "combat": 220,
+        "elite": 27
+      },
+      "by_start_kind": {
+        "continuation": 700,
+        "opening": 263
+      },
+      "by_threat": {
+        "covered": 1,
+        "lethal": 49,
+        "none": 191,
+        "unblocked": 722
+      },
+      "combats": 263,
+      "deck_size_range": [
+        10,
+        22
+      ],
+      "distinct_inventories": 331,
+      "hp_range": [
+        1,
+        87
+      ],
+      "missing_elites_bosses": [
+        "overgrowth_ceremonial_beast"
+      ],
+      "missing_encounters": [
+        "overgrowth_ceremonial_beast"
+      ],
+      "missing_region_kinds": [],
+      "openings": 263,
+      "source_campaigns": 32,
+      "starts": 963,
+      "starts_by_encounter": {
+        "dense_vegetation_event": 13,
+        "overgrowth_bygone_effigy": 28,
+        "overgrowth_byrdonis": 11,
+        "overgrowth_crawlers": 27,
+        "overgrowth_cubex": 12,
+        "overgrowth_flyconid": 19,
+        "overgrowth_fogmog": 17,
+        "overgrowth_fuzzy": 50,
+        "overgrowth_inklets": 13,
+        "overgrowth_jaxfruit": 11,
+        "overgrowth_mawler": 7,
+        "overgrowth_nibbit": 37,
+        "overgrowth_nibbits": 25,
+        "overgrowth_phrog_parasite": 17,
+        "overgrowth_ruby_raiders": 32,
+        "overgrowth_shrinker": 33,
+        "overgrowth_slimes": 32,
+        "overgrowth_slimes_normal": 17,
+        "overgrowth_strangler": 21,
+        "overgrowth_the_kin": 36,
+        "overgrowth_vantom": 15,
+        "overgrowth_vine_shambler": 25,
+        "underdocks_corpse_slugs": 20,
+        "underdocks_corpse_slugs_weak": 22,
+        "underdocks_cultists": 43,
+        "underdocks_fossil_stalker": 14,
+        "underdocks_gremlin_merc": 7,
+        "underdocks_haunted_ship": 9,
+        "underdocks_lagavulin_matriarch": 7,
+        "underdocks_living_fog": 24,
+        "underdocks_phantasmal_gardeners": 28,
+        "underdocks_punch_construct": 12,
+        "underdocks_seapunk": 37,
+        "underdocks_seapunk_weak": 36,
+        "underdocks_sewer_clam": 14,
+        "underdocks_skulking_colony": 17,
+        "underdocks_sludge_spinner": 33,
+        "underdocks_soul_fysh": 22,
+        "underdocks_terror_eel": 21,
+        "underdocks_toadpoles": 41,
+        "underdocks_two_tailed_rats": 23,
+        "underdocks_waterfall_giant": 35
+      },
+      "starts_with_potions": 153
+    },
+    "initializer": "runs/combat-fresh-500k-20260930/chunk-15/final.sts-model",
+    "initializer_sha256": "e87849e68757f03ea2b073f5d5c9410a04bbf183a4b7b8edc5177eb300a70f2d",
+    "note": "Only train starts are used for speed runs. Existing training and held-out artifacts stay unchanged.",
+    "parameters": 80738,
+    "room_kinds": {
+      "boss": 115,
+      "combat": 726,
+      "elite": 122
+    },
+    "schema": "sts_combat_speed_preparation_v1",
+    "seconds": 166.3345154998824,
+    "source_commit": "7d5d88431b3058be2fe789414989d48e9687a07b",
+    "train_campaigns": 32,
+    "train_fights": 263,
+    "train_starts": 963
+  },
+  "profile": {
+    "collect": {
+      "calls": 555846935,
+      "files": 8,
+      "interpretation": "Diagnostic timings include profiler overhead; cumulative call rows overlap. Collection sums worker time.",
+      "profiled_seconds": 193.296990837,
+      "selected": [
+        {
+          "calls": 8,
+          "cumulative_seconds": 197.15740304200003,
+          "file": "game/agent/training/rollout.py",
+          "function": "collect",
+          "line": 104,
+          "self_seconds": 0.5498200890000001
+        },
+        {
+          "calls": 2175,
+          "cumulative_seconds": 68.129618312,
+          "file": "game/agent/headless/full_projection.py",
+          "function": "decision",
+          "line": 468,
+          "self_seconds": 0.35151828199999996
+        },
+        {
+          "calls": 4223,
+          "cumulative_seconds": 37.272679307000004,
+          "file": "game/agent/headless/adapter.py",
+          "function": "_guard",
+          "line": 101,
+          "self_seconds": 0.37554431
+        },
+        {
+          "calls": 2056,
+          "cumulative_seconds": 28.778308527000004,
+          "file": "game/agent/training/features.py",
+          "function": "encode_prepared",
+          "line": 183,
+          "self_seconds": 0.011358732
+        },
+        {
+          "calls": 119,
+          "cumulative_seconds": 12.962397251999999,
+          "file": "game/agent/training/combat_corpus.py",
+          "function": "restore",
+          "line": 368,
+          "self_seconds": 0.004592622000000001
+        },
+        {
+          "calls": 2056,
+          "cumulative_seconds": 12.148648121,
+          "file": "game/agent/training/rollout.py",
+          "function": "infer",
+          "line": 145,
+          "self_seconds": 0.045524181000000004
+        },
+        {
+          "calls": 2048,
+          "cumulative_seconds": 9.525247804,
+          "file": "game/agent/recording.py",
+          "function": "append",
+          "line": 197,
+          "self_seconds": 0.02836439
+        },
+        {
+          "calls": 2056,
+          "cumulative_seconds": 8.213099091,
+          "file": "game/agent/training/features.py",
+          "function": "_features",
+          "line": 111,
+          "self_seconds": 2.6672764000000004
+        },
+        {
+          "calls": 2048,
+          "cumulative_seconds": 3.4602926380000003,
+          "file": "game/headless/run/engine.py",
+          "function": "apply",
+          "line": 157,
+          "self_seconds": 0.033663425
+        },
+        {
+          "calls": 2056,
+          "cumulative_seconds": 3.343796021,
+          "file": "game/agent/training/model.py",
+          "function": "forward",
+          "line": 104,
+          "self_seconds": 0.5785596030000001
+        },
+        {
+          "calls": 2286,
+          "cumulative_seconds": 3.10085671,
+          "file": "game/agent/recording.py",
+          "function": "_write",
+          "line": 190,
+          "self_seconds": 0.016920479000000002
+        },
+        {
+          "calls": 2286,
+          "cumulative_seconds": 0.8174622890000001,
+          "file": "~",
+          "function": "<method 'compress' of 'zlib.Compress' objects>",
+          "line": 0,
+          "self_seconds": 0.8174622890000001
+        },
+        {
+          "calls": 2056,
+          "cumulative_seconds": 0.292917089,
+          "file": "game/agent/training/model.py",
+          "function": "collate",
+          "line": 26,
+          "self_seconds": 0.144795689
+        },
+        {
+          "calls": 119,
+          "cumulative_seconds": 0.10661974799999999,
+          "file": "game/agent/recording.py",
+          "function": "finish",
+          "line": 215,
+          "self_seconds": 0.0023349449999999997
+        },
+        {
+          "calls": 19398,
+          "cumulative_seconds": 0.07716835100000001,
+          "file": "~",
+          "function": "<method 'decompress' of 'zlib.Decompress' objects>",
+          "line": 0,
+          "self_seconds": 0.07716835100000001
+        },
+        {
+          "calls": 111,
+          "cumulative_seconds": 0.020778202000000003,
+          "file": "game/agent/training/features.py",
+          "function": "encode",
+          "line": 179,
+          "self_seconds": 0.000383528
+        },
+        {
+          "calls": 8,
+          "cumulative_seconds": 0.003273916,
+          "file": "game/agent/training/combat_corpus.py",
+          "function": "validate_factory",
+          "line": 441,
+          "self_seconds": 0.000104375
+        },
+        {
+          "calls": 238,
+          "cumulative_seconds": 0.0007938649999999999,
+          "file": "~",
+          "function": "<built-in method zlib.decompressobj>",
+          "line": 0,
+          "self_seconds": 0.0007938649999999999
+        },
+        {
+          "calls": 119,
+          "cumulative_seconds": 0.0005650750000000001,
+          "file": "~",
+          "function": "<built-in method zlib.compressobj>",
+          "line": 0,
+          "self_seconds": 0.0005650750000000001
+        }
+      ],
+      "top_cumulative": [
+        {
+          "calls": 8,
+          "cumulative_seconds": 197.15740304200003,
+          "file": "game/agent/training/rollout.py",
+          "function": "collect",
+          "line": 104,
+          "self_seconds": 0.5498200890000001
+        },
+        {
+          "calls": 6390,
+          "cumulative_seconds": 148.278308893,
+          "file": "game/agent/training/env.py",
+          "function": "_measure",
+          "line": 66,
+          "self_seconds": 0.031583122000000005
+        },
+        {
+          "calls": 2048,
+          "cumulative_seconds": 130.44454698500002,
+          "file": "game/agent/training/env.py",
+          "function": "step",
+          "line": 53,
+          "self_seconds": 0.00799686
+        },
+        {
+          "calls": 2048,
+          "cumulative_seconds": 130.436550125,
+          "file": "game/agent/gym_env.py",
+          "function": "step",
+          "line": 204,
+          "self_seconds": 0.027544663
+        },
+        {
+          "calls": 2167,
+          "cumulative_seconds": 113.51046823700001,
+          "file": "game/agent/training/env.py",
+          "function": "_refresh",
+          "line": 86,
+          "self_seconds": 0.011503052000000001
+        },
+        {
+          "calls": 2056,
+          "cumulative_seconds": 113.47412301300002,
+          "file": "game/agent/gym_env.py",
+          "function": "_refresh",
+          "line": 181,
+          "self_seconds": 0.024242699
+        },
+        {
+          "calls": 2175,
+          "cumulative_seconds": 89.10957379300001,
+          "file": "game/agent/headless/adapter.py",
+          "function": "observe",
+          "line": 117,
+          "self_seconds": 0.16280163500000003
+        },
+        {
+          "calls": 2056,
+          "cumulative_seconds": 84.640895351,
+          "file": "game/agent/training/env.py",
+          "function": "_observe",
+          "line": 73,
+          "self_seconds": 0.0036163899999999997
+        },
+        {
+          "calls": 2056,
+          "cumulative_seconds": 84.627019368,
+          "file": "game/agent/gym_env.py",
+          "function": "_observe",
+          "line": 152,
+          "self_seconds": 0.008243535
+        },
+        {
+          "calls": 2175,
+          "cumulative_seconds": 68.129618312,
+          "file": "game/agent/headless/full_projection.py",
+          "function": "decision",
+          "line": 468,
+          "self_seconds": 0.35151828199999996
+        },
+        {
+          "calls": 2175,
+          "cumulative_seconds": 41.490146954000004,
+          "file": "game/agent/contracts/full.py",
+          "function": "__init__",
+          "line": 174,
+          "self_seconds": 0.014710680000000002
+        },
+        {
+          "calls": 4223,
+          "cumulative_seconds": 37.272679307000004,
+          "file": "game/agent/headless/adapter.py",
+          "function": "_guard",
+          "line": 101,
+          "self_seconds": 0.37554431
+        },
+        {
+          "calls": 4810,
+          "cumulative_seconds": 33.636996025,
+          "file": "game/agent/contracts/full.py",
+          "function": "from_dict",
+          "line": 127,
+          "self_seconds": 0.022817794000000002
+        },
+        {
+          "calls": 40071153,
+          "cumulative_seconds": 32.757408155,
+          "file": "game/agent/contracts/codec.py",
+          "function": "_wire",
+          "line": 128,
+          "self_seconds": 14.090620533000001
+        },
+        {
+          "calls": 11487726,
+          "cumulative_seconds": 32.55875679099999,
+          "file": "game/agent/contracts/codec.py",
+          "function": "<dictcomp>",
+          "line": 136,
+          "self_seconds": 10.299412138000001
+        },
+        {
+          "calls": 4249711,
+          "cumulative_seconds": 32.13026369,
+          "file": "game/agent/contracts/codec.py",
+          "function": "<listcomp>",
+          "line": 134,
+          "self_seconds": 2.551192383
+        },
+        {
+          "calls": 4223,
+          "cumulative_seconds": 30.312510466000003,
+          "file": "game/headless/run/engine.py",
+          "function": "snapshot",
+          "line": 387,
+          "self_seconds": 0.016400031000000002
+        },
+        {
+          "calls": 4223,
+          "cumulative_seconds": 30.296110435000003,
+          "file": "game/headless/run/snapshots.py",
+          "function": "capture_run",
+          "line": 79,
+          "self_seconds": 0.14487238600000002
+        },
+        {
+          "calls": 2167,
+          "cumulative_seconds": 28.827511252000004,
+          "file": "game/agent/training/env.py",
+          "function": "_encode",
+          "line": 76,
+          "self_seconds": 0.005038449
+        },
+        {
+          "calls": 2167,
+          "cumulative_seconds": 28.809446112000003,
+          "file": "game/agent/gym_env.py",
+          "function": "_encode",
+          "line": 155,
+          "self_seconds": 0.008921638
+        },
+        {
+          "calls": 2056,
+          "cumulative_seconds": 28.778308527000004,
+          "file": "game/agent/training/features.py",
+          "function": "encode_prepared",
+          "line": 183,
+          "self_seconds": 0.011358732
+        },
+        {
+          "calls": 2056,
+          "cumulative_seconds": 28.539995044000005,
+          "file": "game/agent/encoding/full.py",
+          "function": "_pack_prepared",
+          "line": 52,
+          "self_seconds": 0.012189331
+        },
+        {
+          "calls": 2167,
+          "cumulative_seconds": 28.529867441000004,
+          "file": "game/agent/encoding/codec.py",
+          "function": "_pack",
+          "line": 115,
+          "self_seconds": 2.8329875860000002
+        },
+        {
+          "calls": 17796,
+          "cumulative_seconds": 27.999962058,
+          "file": "game/agent/contracts/codec.py",
+          "function": "_read",
+          "line": 33,
+          "self_seconds": 0.03617091
+        },
+        {
+          "calls": 8090788,
+          "cumulative_seconds": 27.959688496000002,
+          "file": "game/agent/contracts/codec.py",
+          "function": "record",
+          "line": 101,
+          "self_seconds": 6.318990288
+        }
+      ],
+      "top_self": [
+        {
+          "calls": 13498100,
+          "cumulative_seconds": 25.400883743,
+          "file": "game/agent/encoding/codec.py",
+          "function": "visit",
+          "line": 154,
+          "self_seconds": 21.2610482
+        },
+        {
+          "calls": 40071153,
+          "cumulative_seconds": 32.757408155,
+          "file": "game/agent/contracts/codec.py",
+          "function": "_wire",
+          "line": 128,
+          "self_seconds": 14.090620533000001
+        },
+        {
+          "calls": 11487726,
+          "cumulative_seconds": 32.55875679099999,
+          "file": "game/agent/contracts/codec.py",
+          "function": "<dictcomp>",
+          "line": 136,
+          "self_seconds": 10.299412138000001
+        },
+        {
+          "calls": 110248,
+          "cumulative_seconds": 10.215532555000001,
+          "file": "/opt/homebrew/Cellar/python@3.11/3.11.15_3/Frameworks/Python.framework/Versions/3.11/lib/python3.11/json/encoder.py",
+          "function": "iterencode",
+          "line": 205,
+          "self_seconds": 10.214729888
+        },
+        {
+          "calls": 8090788,
+          "cumulative_seconds": 27.959688496000002,
+          "file": "game/agent/contracts/codec.py",
+          "function": "record",
+          "line": 101,
+          "self_seconds": 6.318990288
+        },
+        {
+          "calls": 8090788,
+          "cumulative_seconds": 27.870317231,
+          "file": "game/agent/contracts/codec.py",
+          "function": "<dictcomp>",
+          "line": 105,
+          "self_seconds": 5.964954419
+        },
+        {
+          "calls": 7719798,
+          "cumulative_seconds": 5.8703849030000015,
+          "file": "game/agent/contracts/codec.py",
+          "function": "union",
+          "line": 78,
+          "self_seconds": 5.8703849030000015
+        },
+        {
+          "calls": 15566,
+          "cumulative_seconds": 8.459946948,
+          "file": "/opt/homebrew/Cellar/python@3.11/3.11.15_3/Frameworks/Python.framework/Versions/3.11/lib/python3.11/json/decoder.py",
+          "function": "raw_decode",
+          "line": 343,
+          "self_seconds": 5.027724411
+        },
+        {
+          "calls": 11725016,
+          "cumulative_seconds": 27.652484845,
+          "file": "game/agent/contracts/codec.py",
+          "function": "<genexpr>",
+          "line": 95,
+          "self_seconds": 3.689178149
+        },
+        {
+          "calls": 60099273,
+          "cumulative_seconds": 3.503121375,
+          "file": "~",
+          "function": "<built-in method builtins.getattr>",
+          "line": 0,
+          "self_seconds": 3.503097249
+        },
+        {
+          "calls": 3923440,
+          "cumulative_seconds": 3.432222537,
+          "file": "game/agent/contracts/codec.py",
+          "function": "_unique_object",
+          "line": 152,
+          "self_seconds": 3.432222537
+        },
+        {
+          "calls": 12610472,
+          "cumulative_seconds": 4.455106160000001,
+          "file": "/opt/homebrew/Cellar/python@3.11/3.11.15_3/Frameworks/Python.framework/Versions/3.11/lib/python3.11/dataclasses.py",
+          "function": "is_dataclass",
+          "line": 1258,
+          "self_seconds": 3.1689959009999997
+        },
+        {
+          "calls": 3273790,
+          "cumulative_seconds": 27.685277129000003,
+          "file": "game/agent/contracts/codec.py",
+          "function": "sequence",
+          "line": 93,
+          "self_seconds": 3.094181905
+        },
+        {
+          "calls": 390491,
+          "cumulative_seconds": 6.647167395,
+          "file": "game/agent/headless/full_cards.py",
+          "function": "public_static",
+          "line": 18,
+          "self_seconds": 3.049070402000001
+        },
+        {
+          "calls": 965334,
+          "cumulative_seconds": 5.250583551000001,
+          "file": "game/agent/contracts/full.py",
+          "function": "visit",
+          "line": 87,
+          "self_seconds": 2.9886443610000004
+        },
+        {
+          "calls": 2167,
+          "cumulative_seconds": 28.529867441000004,
+          "file": "game/agent/encoding/codec.py",
+          "function": "_pack",
+          "line": 115,
+          "self_seconds": 2.8329875860000002
+        },
+        {
+          "calls": 3836399,
+          "cumulative_seconds": 6.568488784,
+          "file": "game/agent/contracts/full.py",
+          "function": "<dictcomp>",
+          "line": 157,
+          "self_seconds": 2.8198675929999997
+        },
+        {
+          "calls": 11657345,
+          "cumulative_seconds": 7.35337901,
+          "file": "game/headless/core/state_records.py",
+          "function": "_copy_value",
+          "line": 16,
+          "self_seconds": 2.815690192
+        },
+        {
+          "calls": 13550183,
+          "cumulative_seconds": 6.57096202,
+          "file": "game/agent/contracts/full.py",
+          "function": "_copy_public_wire",
+          "line": 153,
+          "self_seconds": 2.702155129
+        },
+        {
+          "calls": 2056,
+          "cumulative_seconds": 8.213099091,
+          "file": "game/agent/training/features.py",
+          "function": "_features",
+          "line": 111,
+          "self_seconds": 2.6672764000000004
+        }
+      ]
+    },
+    "update": {
+      "calls": 1607207,
+      "files": 1,
+      "interpretation": "Diagnostic timings include profiler overhead; cumulative call rows overlap. Collection sums worker time.",
+      "profiled_seconds": 6.280080723000003,
+      "selected": [
+        {
+          "calls": 1,
+          "cumulative_seconds": 6.281239708,
+          "file": "game/agent/training/ppo.py",
+          "function": "update",
+          "line": 146,
+          "self_seconds": 0.01618659
+        },
+        {
+          "calls": 512,
+          "cumulative_seconds": 4.29557779,
+          "file": "game/agent/training/model.py",
+          "function": "forward",
+          "line": 104,
+          "self_seconds": 0.422478968
+        },
+        {
+          "calls": 2,
+          "cumulative_seconds": 2.307212208,
+          "file": "game/agent/training/ppo.py",
+          "function": "_measure",
+          "line": 221,
+          "self_seconds": 0.005460209000000001
+        },
+        {
+          "calls": 512,
+          "cumulative_seconds": 0.273073452,
+          "file": "game/agent/training/ppo.py",
+          "function": "replay_batch",
+          "line": 46,
+          "self_seconds": 0.030197888000000003
+        },
+        {
+          "calls": 512,
+          "cumulative_seconds": 0.21661570200000002,
+          "file": "game/agent/training/model.py",
+          "function": "collate",
+          "line": 26,
+          "self_seconds": 0.11815476700000001
+        }
+      ],
+      "top_cumulative": [
+        {
+          "calls": 1,
+          "cumulative_seconds": 6.281239708,
+          "file": "game/agent/training/ppo.py",
+          "function": "update",
+          "line": 146,
+          "self_seconds": 0.01618659
+        },
+        {
+          "calls": 20992,
+          "cumulative_seconds": 4.298358923,
+          "file": ".venv/lib/python3.11/site-packages/torch/nn/modules/module.py",
+          "function": "_wrapped_call_impl",
+          "line": 1774,
+          "self_seconds": 0.010326233
+        },
+        {
+          "calls": 20992,
+          "cumulative_seconds": 4.297815247,
+          "file": ".venv/lib/python3.11/site-packages/torch/nn/modules/module.py",
+          "function": "_call_impl",
+          "line": 1782,
+          "self_seconds": 0.020785652
+        },
+        {
+          "calls": 512,
+          "cumulative_seconds": 4.29557779,
+          "file": "game/agent/training/model.py",
+          "function": "forward",
+          "line": 104,
+          "self_seconds": 0.422478968
+        },
+        {
+          "calls": 2,
+          "cumulative_seconds": 2.307212208,
+          "file": "game/agent/training/ppo.py",
+          "function": "_measure",
+          "line": 221,
+          "self_seconds": 0.005460209000000001
+        },
+        {
+          "calls": 3584,
+          "cumulative_seconds": 2.144174536,
+          "file": ".venv/lib/python3.11/site-packages/torch/nn/modules/container.py",
+          "function": "forward",
+          "line": 248,
+          "self_seconds": 0.005942046
+        },
+        {
+          "calls": 4608,
+          "cumulative_seconds": 1.9478401790000002,
+          "file": "~",
+          "function": "<built-in method torch.tanh>",
+          "line": 0,
+          "self_seconds": 1.9478401790000002
+        },
+        {
+          "calls": 3584,
+          "cumulative_seconds": 1.7897132100000002,
+          "file": ".venv/lib/python3.11/site-packages/torch/nn/modules/activation.py",
+          "function": "forward",
+          "line": 428,
+          "self_seconds": 0.001543866
+        },
+        {
+          "calls": 256,
+          "cumulative_seconds": 1.262839252,
+          "file": ".venv/lib/python3.11/site-packages/torch/_tensor.py",
+          "function": "backward",
+          "line": 566,
+          "self_seconds": 0.000543218
+        },
+        {
+          "calls": 256,
+          "cumulative_seconds": 1.262281288,
+          "file": ".venv/lib/python3.11/site-packages/torch/autograd/__init__.py",
+          "function": "backward",
+          "line": 255,
+          "self_seconds": 0.002362143
+        },
+        {
+          "calls": 256,
+          "cumulative_seconds": 1.2565816630000002,
+          "file": ".venv/lib/python3.11/site-packages/torch/autograd/graph.py",
+          "function": "_engine_run_backward",
+          "line": 966,
+          "self_seconds": 0.001829967
+        },
+        {
+          "calls": 256,
+          "cumulative_seconds": 1.253503582,
+          "file": "~",
+          "function": "<method 'run_backward' of 'torch._C._EngineBase' objects>",
+          "line": 0,
+          "self_seconds": 1.253503582
+        },
+        {
+          "calls": 3072,
+          "cumulative_seconds": 1.023736626,
+          "file": "game/agent/training/model.py",
+          "function": "_pool",
+          "line": 67,
+          "self_seconds": 0.045704913
+        },
+        {
+          "calls": 6144,
+          "cumulative_seconds": 0.935542842,
+          "file": "~",
+          "function": "<method 'index_add' of 'torch._C.TensorBase' objects>",
+          "line": 0,
+          "self_seconds": 0.935542842
+        },
+        {
+          "calls": 7168,
+          "cumulative_seconds": 0.35568389,
+          "file": ".venv/lib/python3.11/site-packages/torch/nn/modules/linear.py",
+          "function": "forward",
+          "line": 130,
+          "self_seconds": 0.006598418
+        },
+        {
+          "calls": 7168,
+          "cumulative_seconds": 0.34669529000000004,
+          "file": "~",
+          "function": "<built-in method torch._C._nn.linear>",
+          "line": 0,
+          "self_seconds": 0.34669529000000004
+        },
+        {
+          "calls": 512,
+          "cumulative_seconds": 0.273073452,
+          "file": "game/agent/training/ppo.py",
+          "function": "replay_batch",
+          "line": 46,
+          "self_seconds": 0.030197888000000003
+        },
+        {
+          "calls": 512,
+          "cumulative_seconds": 0.21661570200000002,
+          "file": "game/agent/training/model.py",
+          "function": "collate",
+          "line": 26,
+          "self_seconds": 0.11815476700000001
+        },
+        {
+          "calls": 5120,
+          "cumulative_seconds": 0.15375355000000002,
+          "file": ".venv/lib/python3.11/site-packages/torch/nn/modules/sparse.py",
+          "function": "forward",
+          "line": 188,
+          "self_seconds": 0.005145613
+        },
+        {
+          "calls": 5120,
+          "cumulative_seconds": 0.147529285,
+          "file": ".venv/lib/python3.11/site-packages/torch/nn/functional.py",
+          "function": "embedding",
+          "line": 2503,
+          "self_seconds": 0.002616822
+        },
+        {
+          "calls": 5120,
+          "cumulative_seconds": 0.144608908,
+          "file": "~",
+          "function": "<built-in method torch.embedding>",
+          "line": 0,
+          "self_seconds": 0.144608908
+        },
+        {
+          "calls": 256,
+          "cumulative_seconds": 0.129390915,
+          "file": ".venv/lib/python3.11/site-packages/torch/optim/optimizer.py",
+          "function": "wrapper",
+          "line": 509,
+          "self_seconds": 0.0022601360000000003
+        },
+        {
+          "calls": 3072,
+          "cumulative_seconds": 0.12363541800000001,
+          "file": "game/agent/training/model.py",
+          "function": "_linked",
+          "line": 73,
+          "self_seconds": 0.117333639
+        },
+        {
+          "calls": 256,
+          "cumulative_seconds": 0.11958745700000001,
+          "file": ".venv/lib/python3.11/site-packages/torch/optim/optimizer.py",
+          "function": "_use_grad",
+          "line": 60,
+          "self_seconds": 0.0012899060000000002
+        },
+        {
+          "calls": 256,
+          "cumulative_seconds": 0.117911081,
+          "file": ".venv/lib/python3.11/site-packages/torch/optim/adam.py",
+          "function": "step",
+          "line": 214,
+          "self_seconds": 0.001314211
+        }
+      ],
+      "top_self": [
+        {
+          "calls": 4608,
+          "cumulative_seconds": 1.9478401790000002,
+          "file": "~",
+          "function": "<built-in method torch.tanh>",
+          "line": 0,
+          "self_seconds": 1.9478401790000002
+        },
+        {
+          "calls": 256,
+          "cumulative_seconds": 1.253503582,
+          "file": "~",
+          "function": "<method 'run_backward' of 'torch._C._EngineBase' objects>",
+          "line": 0,
+          "self_seconds": 1.253503582
+        },
+        {
+          "calls": 6144,
+          "cumulative_seconds": 0.935542842,
+          "file": "~",
+          "function": "<method 'index_add' of 'torch._C.TensorBase' objects>",
+          "line": 0,
+          "self_seconds": 0.935542842
+        },
+        {
+          "calls": 512,
+          "cumulative_seconds": 4.29557779,
+          "file": "game/agent/training/model.py",
+          "function": "forward",
+          "line": 104,
+          "self_seconds": 0.422478968
+        },
+        {
+          "calls": 7168,
+          "cumulative_seconds": 0.34669529000000004,
+          "file": "~",
+          "function": "<built-in method torch._C._nn.linear>",
+          "line": 0,
+          "self_seconds": 0.34669529000000004
+        },
+        {
+          "calls": 5120,
+          "cumulative_seconds": 0.144608908,
+          "file": "~",
+          "function": "<built-in method torch.embedding>",
+          "line": 0,
+          "self_seconds": 0.144608908
+        },
+        {
+          "calls": 512,
+          "cumulative_seconds": 0.21661570200000002,
+          "file": "game/agent/training/model.py",
+          "function": "collate",
+          "line": 26,
+          "self_seconds": 0.11815476700000001
+        },
+        {
+          "calls": 3072,
+          "cumulative_seconds": 0.12363541800000001,
+          "file": "game/agent/training/model.py",
+          "function": "_linked",
+          "line": 73,
+          "self_seconds": 0.117333639
+        },
+        {
+          "calls": 2560,
+          "cumulative_seconds": 0.10971670600000001,
+          "file": "~",
+          "function": "<built-in method torch.cat>",
+          "line": 0,
+          "self_seconds": 0.10971670600000001
+        },
+        {
+          "calls": 1024,
+          "cumulative_seconds": 0.071274457,
+          "file": "~",
+          "function": "<built-in method torch.layer_norm>",
+          "line": 0,
+          "self_seconds": 0.071274457
+        },
+        {
+          "calls": 15363,
+          "cumulative_seconds": 0.049660986000000004,
+          "file": "~",
+          "function": "<built-in method torch.isfinite>",
+          "line": 0,
+          "self_seconds": 0.049660986000000004
+        },
+        {
+          "calls": 3072,
+          "cumulative_seconds": 1.023736626,
+          "file": "game/agent/training/model.py",
+          "function": "_pool",
+          "line": 67,
+          "self_seconds": 0.045704913
+        },
+        {
+          "calls": 256,
+          "cumulative_seconds": 0.098658491,
+          "file": ".venv/lib/python3.11/site-packages/torch/optim/adam.py",
+          "function": "_single_tensor_adam",
+          "line": 347,
+          "self_seconds": 0.034832031
+        },
+        {
+          "calls": 32768,
+          "cumulative_seconds": 0.031615791000000004,
+          "file": "~",
+          "function": "<method 'copy' of 'numpy.ndarray' objects>",
+          "line": 0,
+          "self_seconds": 0.031615791000000004
+        },
+        {
+          "calls": 512,
+          "cumulative_seconds": 0.273073452,
+          "file": "game/agent/training/ppo.py",
+          "function": "replay_batch",
+          "line": 46,
+          "self_seconds": 0.030197888000000003
+        },
+        {
+          "calls": 512,
+          "cumulative_seconds": 0.031088593,
+          "file": "game/agent/training/model.py",
+          "function": "<dictcomp>",
+          "line": 62,
+          "self_seconds": 0.028201501
+        },
+        {
+          "calls": 6144,
+          "cumulative_seconds": 0.025936046,
+          "file": "~",
+          "function": "<method 'new_zeros' of 'torch._C.TensorBase' objects>",
+          "line": 0,
+          "self_seconds": 0.025936046
+        },
+        {
+          "calls": 20992,
+          "cumulative_seconds": 4.297815247,
+          "file": ".venv/lib/python3.11/site-packages/torch/nn/modules/module.py",
+          "function": "_call_impl",
+          "line": 1782,
+          "self_seconds": 0.020785652
+        },
+        {
+          "calls": 9252,
+          "cumulative_seconds": 0.017373582000000002,
+          "file": "~",
+          "function": "<built-in method torch.tensor>",
+          "line": 0,
+          "self_seconds": 0.017373582000000002
+        },
+        {
+          "calls": 1,
+          "cumulative_seconds": 6.281239708,
+          "file": "game/agent/training/ppo.py",
+          "function": "update",
+          "line": 146,
+          "self_seconds": 0.01618659
+        }
+      ]
+    }
+  },
+  "protocol": {
+    "architecture": {
+      "hidden_size": 48,
+      "message_layers": 2,
+      "schema": "sts_graph_actor_critic_v1"
+    },
+    "checkpointing": "Every closed PPO update plus initial/final; private resume states included",
+    "config_sha256": "7fe4a9ea0b17535356075cdc060831542e6ec8ff924636a108469d19673728f9",
+    "corpus": "runs/combat-speed-20261001/corpus/corpus.json",
+    "corpus_sha256": "e9c83e0c88ccd334630398097c38b8ca7650318077536dbff2a9c379f0877eb4",
+    "created_at": "2026-10-01T14:16:47.851058+00:00",
+    "experiment": {
+      "encounters": [
+        "combat",
+        "elite",
+        "boss"
+      ],
+      "ppo": {
+        "batch_size": 16,
+        "clip_ratio": 0.2,
+        "entropy_weight": 0.01,
+        "episode_decisions": 512,
+        "episode_seconds": 120.0,
+        "epochs": 2,
+        "gae_lambda": 0.95,
+        "gamma": 1.0,
+        "gradient_clip": 0.5,
+        "learning_rate": 0.0003,
+        "normalize_advantages": true,
+        "rollout_steps": 4096,
+        "target_kl": 0.03,
+        "value_weight": 0.5
+      },
+      "schema": "sts_ppo_experiment_v2",
+      "source": "act1_combat_corpus_v2:e9c83e0c88ccd334630398097c38b8ca7650318077536dbff2a9c379f0877eb4",
+      "training": {
+        "action_policy": "commit_decisions_v1",
+        "mode": "combat",
+        "reward": {
+          "schema": "sts_training_reward_v1",
+          "weights": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 0.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.1
+          }
+        },
+        "scenario_set": "ironclad_a0_overgrowth_v1"
+      }
+    },
+    "host": {
+      "logical_cpus": 18,
+      "machine": "arm64",
+      "os": "macOS-26.6.2-arm64-arm-64bit"
+    },
+    "implementation": {
+      "build": "0882412647a727477fecf6932974045a732eb8465764e85bbc54a0f8a44ca2c8",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "cb4110d297799c139c5912c30a0e0903630c1c8ab2141eded608b90a7b1e0926",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "initialization": "Frozen 500k combat actor and critic; fresh optimizer/RNG/cursor per repetition",
+    "jobs": [
+      {
+        "decisions": 8192,
+        "label": "workers-8-replica-1",
+        "workers": 8
+      },
+      {
+        "decisions": 8192,
+        "label": "workers-4",
+        "workers": 4
+      },
+      {
+        "decisions": 8192,
+        "label": "workers-8-replica-2",
+        "workers": 8
+      },
+      {
+        "decisions": 8192,
+        "label": "workers-1",
+        "workers": 1
+      },
+      {
+        "decisions": 8192,
+        "label": "workers-8-no-tracking",
+        "no_tracking": true,
+        "workers": 8
+      },
+      {
+        "decisions": 8192,
+        "label": "workers-8-replica-3",
+        "workers": 8
+      },
+      {
+        "decisions": 2048,
+        "label": "profile-8",
+        "no_tracking": true,
+        "profile": true,
+        "workers": 8
+      }
+    ],
+    "limitations": [
+      "New source-bound benchmark corpus; historical timings are different workloads.",
+      "Only the eight-worker repetitions share identical rollout allocation and policy updates.",
+      "Changing worker count changes RNG streams and sampled trajectories; scaling is workload-level.",
+      "No imitation, vocabulary fitting, validation or viewer export included in training throughput.",
+      "Profiler overhead excluded; background activity and OS caches uncontrolled.",
+      "Peak RSS is parent process only; no playing-strength or model-promotion claim."
+    ],
+    "model": "runs/combat-fresh-500k-20260930/chunk-15/final.sts-model",
+    "model_sha256": "e87849e68757f03ea2b073f5d5c9410a04bbf183a4b7b8edc5177eb300a70f2d",
+    "parameters": 80738,
+    "private_plan_sha256": "cf2a4d7d3399b50b18e3f9e9b668ebc5c44731c033155a8e5ce7b970ca8bf857",
+    "recording": "gzip level 6, every decision",
+    "runtime": {
+      "device": "cpu",
+      "python": "3.11.15",
+      "threads": 1,
+      "torch": "2.13.0"
+    },
+    "schema": "sts_combat_training_speed_v1",
+    "script_sha256": "81d36b38d286302116b5f6265da38e7512512c43ed6d6f26edb5801426be7dfe",
+    "source_commit": "7d5d88431b3058be2fe789414989d48e9687a07b",
+    "threads_per_process": 1,
+    "tracking": "Local MLflow Performance benchmarks experiment except explicit no-tracking/profile jobs"
+  },
+  "results": {
+    "eight_worker_medians": {
+      "collection_seconds": 48.99945287592709,
+      "decisions_per_second": 108.51797753466846,
+      "process_seconds": 75.4897961250972,
+      "update_seconds": 22.452937749912962
+    },
+    "matched_eight_worker_weights": true,
+    "protocol_sha256": "48c5232d43e06272e23d758acff037b59ca5368d896765fb7eaa52608b5af859",
+    "runs": [
+      {
+        "collection_round_seconds": [
+          25.29214991698973,
+          21.369135041022673
+        ],
+        "collection_seconds": 46.6612849580124,
+        "decisions": 8192,
+        "decisions_per_second": 113.09763504181915,
+        "epochs": [
+          2,
+          2
+        ],
+        "factory_seconds": 0.054395874962210655,
+        "final_fingerprint": "sts_policy_state_v2:e513ab57ef4368aa2f5f7fcd36b959df4cf41a94124f619a633dd3578b41a452",
+        "invocation_seconds": 71.22885654098354,
+        "kl_early_stops": [
+          false,
+          false
+        ],
+        "label": "workers-8-replica-1",
+        "optimizer_steps": 1024,
+        "packed_rollout_bytes": [
+          1605623631,
+          1591640974
+        ],
+        "parent_peak_rss_bytes": 4033757184,
+        "phase_timings": {
+          "checkpoint_seconds": 0.13959129224531353,
+          "report_serialization_seconds": 0.1301906257867813,
+          "tracking_log_seconds": 0.2727283341810107
+        },
+        "process_seconds": 72.43299116706476,
+        "profile": false,
+        "report_seconds": 69.6052461671643,
+        "summary": {
+          "accepted_decisions": 8192,
+          "components": {
+            "combat_loss": 193.0,
+            "combat_win": 268.0,
+            "end_turn_action": 1825.0,
+            "potion_use_action": 129.0,
+            "win_hp_fraction": 132.03392759758628
+          },
+          "cutoffs": 16,
+          "decisions_per_second": 117.69227825624024,
+          "episode_attempts": 477,
+          "failed_episodes": 0,
+          "losses": 193,
+          "mean_hp_on_win": 39.67537313432836,
+          "potion_use_actions": 129,
+          "processed_decisions": 8192,
+          "skipped_decisions": 0,
+          "skipped_updates": 0,
+          "task_return": 281.2033927597586,
+          "trained_decisions": 8192,
+          "wins": 268
+        },
+        "tracking": true,
+        "update_round_seconds": [
+          11.066223416943103,
+          10.971736417151988
+        ],
+        "update_seconds": 22.03795983409509,
+        "worker_batches": [
+          [
+            {
+              "quota": 512,
+              "seconds": 18.75224950001575,
+              "status": "complete",
+              "steps": 512,
+              "worker": 0
+            },
+            {
+              "quota": 512,
+              "seconds": 19.935916041955352,
+              "status": "complete",
+              "steps": 512,
+              "worker": 1
+            },
+            {
+              "quota": 512,
+              "seconds": 19.93503625015728,
+              "status": "complete",
+              "steps": 512,
+              "worker": 2
+            },
+            {
+              "quota": 512,
+              "seconds": 19.81413233303465,
+              "status": "complete",
+              "steps": 512,
+              "worker": 3
+            },
+            {
+              "quota": 512,
+              "seconds": 19.540920540923253,
+              "status": "complete",
+              "steps": 512,
+              "worker": 4
+            },
+            {
+              "quota": 512,
+              "seconds": 20.04178791702725,
+              "status": "complete",
+              "steps": 512,
+              "worker": 5
+            },
+            {
+              "quota": 512,
+              "seconds": 19.233617708086967,
+              "status": "complete",
+              "steps": 512,
+              "worker": 6
+            },
+            {
+              "quota": 512,
+              "seconds": 19.057967416010797,
+              "status": "complete",
+              "steps": 512,
+              "worker": 7
+            }
+          ],
+          [
+            {
+              "quota": 512,
+              "seconds": 19.388850916875526,
+              "status": "complete",
+              "steps": 512,
+              "worker": 0
+            },
+            {
+              "quota": 512,
+              "seconds": 20.319935749983415,
+              "status": "complete",
+              "steps": 512,
+              "worker": 1
+            },
+            {
+              "quota": 512,
+              "seconds": 19.812024249928072,
+              "status": "complete",
+              "steps": 512,
+              "worker": 2
+            },
+            {
+              "quota": 512,
+              "seconds": 19.731780959060416,
+              "status": "complete",
+              "steps": 512,
+              "worker": 3
+            },
+            {
+              "quota": 512,
+              "seconds": 19.435264750150964,
+              "status": "complete",
+              "steps": 512,
+              "worker": 4
+            },
+            {
+              "quota": 512,
+              "seconds": 20.50516879092902,
+              "status": "complete",
+              "steps": 512,
+              "worker": 5
+            },
+            {
+              "quota": 512,
+              "seconds": 19.943657291820273,
+              "status": "complete",
+              "steps": 512,
+              "worker": 6
+            },
+            {
+              "quota": 512,
+              "seconds": 19.78912366600707,
+              "status": "complete",
+              "steps": 512,
+              "worker": 7
+            }
+          ]
+        ],
+        "workers": 8
+      },
+      {
+        "collection_round_seconds": [
+          39.76907908311114,
+          36.43189616687596
+        ],
+        "collection_seconds": 76.2009752499871,
+        "decisions": 8192,
+        "decisions_per_second": 80.21667609182558,
+        "epochs": [
+          2,
+          2
+        ],
+        "factory_seconds": 0.05186962499283254,
+        "final_fingerprint": "sts_policy_state_v2:00a34264b2f3493a365b34cc5b060ae3b6ed7eabbb329ea3c4765653529a6a02",
+        "invocation_seconds": 100.77755833300762,
+        "kl_early_stops": [
+          false,
+          false
+        ],
+        "label": "workers-4",
+        "optimizer_steps": 1024,
+        "packed_rollout_bytes": [
+          1597351090,
+          1592247450
+        ],
+        "parent_peak_rss_bytes": 5208768512,
+        "phase_timings": {
+          "checkpoint_seconds": 0.11212450009770691,
+          "report_serialization_seconds": 0.12975141708739102,
+          "tracking_log_seconds": 0.25921704317443073
+        },
+        "process_seconds": 102.12340374989435,
+        "profile": false,
+        "report_seconds": 98.97345462511294,
+        "summary": {
+          "accepted_decisions": 8192,
+          "components": {
+            "combat_loss": 201.0,
+            "combat_win": 260.0,
+            "end_turn_action": 1843.0,
+            "potion_use_action": 124.0,
+            "win_hp_fraction": 129.85174779578082
+          },
+          "cutoffs": 8,
+          "decisions_per_second": 82.7696682007239,
+          "episode_attempts": 469,
+          "failed_episodes": 0,
+          "losses": 201,
+          "mean_hp_on_win": 40.15384615384615,
+          "potion_use_actions": 124,
+          "processed_decisions": 8192,
+          "skipped_decisions": 0,
+          "skipped_updates": 0,
+          "task_return": 272.98517477957813,
+          "trained_decisions": 8192,
+          "wins": 260
+        },
+        "tracking": true,
+        "update_round_seconds": [
+          10.978483208920807,
+          10.9814269579947
+        ],
+        "update_seconds": 21.959910166915506,
+        "worker_batches": [
+          [
+            {
+              "quota": 1024,
+              "seconds": 36.4893840001896,
+              "status": "complete",
+              "steps": 1024,
+              "worker": 0
+            },
+            {
+              "quota": 1024,
+              "seconds": 36.15712395799346,
+              "status": "complete",
+              "steps": 1024,
+              "worker": 1
+            },
+            {
+              "quota": 1024,
+              "seconds": 36.599315125029534,
+              "status": "complete",
+              "steps": 1024,
+              "worker": 2
+            },
+            {
+              "quota": 1024,
+              "seconds": 35.92600320791826,
+              "status": "complete",
+              "steps": 1024,
+              "worker": 3
+            }
+          ],
+          [
+            {
+              "quota": 1024,
+              "seconds": 34.59899712493643,
+              "status": "complete",
+              "steps": 1024,
+              "worker": 0
+            },
+            {
+              "quota": 1024,
+              "seconds": 35.01040858402848,
+              "status": "complete",
+              "steps": 1024,
+              "worker": 1
+            },
+            {
+              "quota": 1024,
+              "seconds": 35.67216750001535,
+              "status": "complete",
+              "steps": 1024,
+              "worker": 2
+            },
+            {
+              "quota": 1024,
+              "seconds": 34.999155417084694,
+              "status": "complete",
+              "steps": 1024,
+              "worker": 3
+            }
+          ]
+        ],
+        "workers": 4
+      },
+      {
+        "collection_round_seconds": [
+          25.736086333869025,
+          23.263366542058066
+        ],
+        "collection_seconds": 48.99945287592709,
+        "decisions": 8192,
+        "decisions_per_second": 108.51797753466846,
+        "epochs": [
+          2,
+          2
+        ],
+        "factory_seconds": 0.056522500002756715,
+        "final_fingerprint": "sts_policy_state_v2:e513ab57ef4368aa2f5f7fcd36b959df4cf41a94124f619a633dd3578b41a452",
+        "invocation_seconds": 74.18084116606042,
+        "kl_early_stops": [
+          false,
+          false
+        ],
+        "label": "workers-8-replica-2",
+        "optimizer_steps": 1024,
+        "packed_rollout_bytes": [
+          1605623631,
+          1591640974
+        ],
+        "parent_peak_rss_bytes": 3979870208,
+        "phase_timings": {
+          "checkpoint_seconds": 0.10751795931719244,
+          "report_serialization_seconds": 0.13157624984160066,
+          "tracking_log_seconds": 0.2637958761770278
+        },
+        "process_seconds": 75.4897961250972,
+        "profile": false,
+        "report_seconds": 72.33177975006402,
+        "summary": {
+          "accepted_decisions": 8192,
+          "components": {
+            "combat_loss": 193.0,
+            "combat_win": 268.0,
+            "end_turn_action": 1825.0,
+            "potion_use_action": 129.0,
+            "win_hp_fraction": 132.03392759758628
+          },
+          "cutoffs": 16,
+          "decisions_per_second": 113.25588874360236,
+          "episode_attempts": 477,
+          "failed_episodes": 0,
+          "losses": 193,
+          "mean_hp_on_win": 39.67537313432836,
+          "potion_use_actions": 129,
+          "processed_decisions": 8192,
+          "skipped_decisions": 0,
+          "skipped_updates": 0,
+          "task_return": 281.2033927597586,
+          "trained_decisions": 8192,
+          "wins": 268
+        },
+        "tracking": true,
+        "update_round_seconds": [
+          11.485838749911636,
+          10.967099000001326
+        ],
+        "update_seconds": 22.452937749912962,
+        "worker_batches": [
+          [
+            {
+              "quota": 512,
+              "seconds": 19.433052625041455,
+              "status": "complete",
+              "steps": 512,
+              "worker": 0
+            },
+            {
+              "quota": 512,
+              "seconds": 20.46228608302772,
+              "status": "complete",
+              "steps": 512,
+              "worker": 1
+            },
+            {
+              "quota": 512,
+              "seconds": 20.418244417058304,
+              "status": "complete",
+              "steps": 512,
+              "worker": 2
+            },
+            {
+              "quota": 512,
+              "seconds": 20.470559208188206,
+              "status": "complete",
+              "steps": 512,
+              "worker": 3
+            },
+            {
+              "quota": 512,
+              "seconds": 20.20345920906402,
+              "status": "complete",
+              "steps": 512,
+              "worker": 4
+            },
+            {
+              "quota": 512,
+              "seconds": 20.74462129198946,
+              "status": "complete",
+              "steps": 512,
+              "worker": 5
+            },
+            {
+              "quota": 512,
+              "seconds": 19.9584177499637,
+              "status": "complete",
+              "steps": 512,
+              "worker": 6
+            },
+            {
+              "quota": 512,
+              "seconds": 19.837730666156858,
+              "status": "complete",
+              "steps": 512,
+              "worker": 7
+            }
+          ],
+          [
+            {
+              "quota": 512,
+              "seconds": 21.25190566596575,
+              "status": "complete",
+              "steps": 512,
+              "worker": 0
+            },
+            {
+              "quota": 512,
+              "seconds": 22.08178387512453,
+              "status": "complete",
+              "steps": 512,
+              "worker": 1
+            },
+            {
+              "quota": 512,
+              "seconds": 21.37877795798704,
+              "status": "complete",
+              "steps": 512,
+              "worker": 2
+            },
+            {
+              "quota": 512,
+              "seconds": 21.474568750010803,
+              "status": "complete",
+              "steps": 512,
+              "worker": 3
+            },
+            {
+              "quota": 512,
+              "seconds": 21.17767300014384,
+              "status": "complete",
+              "steps": 512,
+              "worker": 4
+            },
+            {
+              "quota": 512,
+              "seconds": 22.326967791887,
+              "status": "complete",
+              "steps": 512,
+              "worker": 5
+            },
+            {
+              "quota": 512,
+              "seconds": 21.74229195783846,
+              "status": "complete",
+              "steps": 512,
+              "worker": 6
+            },
+            {
+              "quota": 512,
+              "seconds": 21.694454999873415,
+              "status": "complete",
+              "steps": 512,
+              "worker": 7
+            }
+          ]
+        ],
+        "workers": 8
+      },
+      {
+        "collection_round_seconds": [
+          137.03132795891725,
+          146.01934804208577
+        ],
+        "collection_seconds": 283.050676001003,
+        "decisions": 8192,
+        "decisions_per_second": 26.39008914726186,
+        "epochs": [
+          2,
+          2
+        ],
+        "factory_seconds": 0.05077291699126363,
+        "final_fingerprint": "sts_policy_state_v2:92b9c728e06174421eb34c39dc6530290be4ed57cf1c7d37728806b9b2f4a311",
+        "invocation_seconds": 309.07530841603875,
+        "kl_early_stops": [
+          false,
+          false
+        ],
+        "label": "workers-1",
+        "optimizer_steps": 1024,
+        "packed_rollout_bytes": [
+          1603699811,
+          1604224203
+        ],
+        "parent_peak_rss_bytes": 4370399232,
+        "phase_timings": {
+          "checkpoint_seconds": 0.08127299998886883,
+          "report_serialization_seconds": 0.14683575090020895,
+          "tracking_log_seconds": 0.2746059999335557
+        },
+        "process_seconds": 310.41956524993293,
+        "profile": false,
+        "report_seconds": 307.1927745838184,
+        "summary": {
+          "accepted_decisions": 8192,
+          "components": {
+            "combat_loss": 196.0,
+            "combat_win": 281.0,
+            "end_turn_action": 1821.0,
+            "potion_use_action": 138.0,
+            "win_hp_fraction": 138.7037238368067
+          },
+          "cutoffs": 1,
+          "decisions_per_second": 26.667293887684817,
+          "episode_attempts": 478,
+          "failed_episodes": 0,
+          "losses": 196,
+          "mean_hp_on_win": 39.637010676156585,
+          "potion_use_actions": 138,
+          "processed_decisions": 8192,
+          "skipped_decisions": 0,
+          "skipped_updates": 0,
+          "task_return": 294.8703723836808,
+          "trained_decisions": 8192,
+          "wins": 281
+        },
+        "tracking": true,
+        "update_round_seconds": [
+          11.980773249873891,
+          11.665053833043203
+        ],
+        "update_seconds": 23.645827082917094,
+        "worker_batches": [
+          [],
+          []
+        ],
+        "workers": 1
+      },
+      {
+        "collection_round_seconds": [
+          32.67718408303335,
+          27.90413083299063
+        ],
+        "collection_seconds": 60.581314916023985,
+        "decisions": 8192,
+        "decisions_per_second": 94.23281443903018,
+        "epochs": [
+          2,
+          2
+        ],
+        "factory_seconds": 0.06144687486812472,
+        "final_fingerprint": "sts_policy_state_v2:e513ab57ef4368aa2f5f7fcd36b959df4cf41a94124f619a633dd3578b41a452",
+        "invocation_seconds": 85.86815187521279,
+        "kl_early_stops": [
+          false,
+          false
+        ],
+        "label": "workers-8-no-tracking",
+        "optimizer_steps": 1024,
+        "packed_rollout_bytes": [
+          1605623631,
+          1591640974
+        ],
+        "parent_peak_rss_bytes": 3806625792,
+        "phase_timings": {
+          "checkpoint_seconds": 0.1283884581644088,
+          "report_serialization_seconds": 0.14205104229040444,
+          "tracking_log_seconds": 7.4587296694517136e-06
+        },
+        "process_seconds": 86.93362337490544,
+        "profile": false,
+        "report_seconds": 85.42562870890833,
+        "summary": {
+          "accepted_decisions": 8192,
+          "components": {
+            "combat_loss": 193.0,
+            "combat_win": 268.0,
+            "end_turn_action": 1825.0,
+            "potion_use_action": 129.0,
+            "win_hp_fraction": 132.03392759758628
+          },
+          "cutoffs": 16,
+          "decisions_per_second": 95.89627988474756,
+          "episode_attempts": 477,
+          "failed_episodes": 0,
+          "losses": 193,
+          "mean_hp_on_win": 39.67537313432836,
+          "potion_use_actions": 129,
+          "processed_decisions": 8192,
+          "skipped_decisions": 0,
+          "skipped_updates": 0,
+          "task_return": 281.2033927597586,
+          "trained_decisions": 8192,
+          "wins": 268
+        },
+        "tracking": false,
+        "update_round_seconds": [
+          12.022923832992092,
+          12.02755929203704
+        ],
+        "update_seconds": 24.05048312502913,
+        "worker_batches": [
+          [
+            {
+              "quota": 512,
+              "seconds": 25.27093204203993,
+              "status": "complete",
+              "steps": 512,
+              "worker": 0
+            },
+            {
+              "quota": 512,
+              "seconds": 26.776330708060414,
+              "status": "complete",
+              "steps": 512,
+              "worker": 1
+            },
+            {
+              "quota": 512,
+              "seconds": 26.73762420914136,
+              "status": "complete",
+              "steps": 512,
+              "worker": 2
+            },
+            {
+              "quota": 512,
+              "seconds": 26.561968416906893,
+              "status": "complete",
+              "steps": 512,
+              "worker": 3
+            },
+            {
+              "quota": 512,
+              "seconds": 26.289701625006273,
+              "status": "complete",
+              "steps": 512,
+              "worker": 4
+            },
+            {
+              "quota": 512,
+              "seconds": 26.866433291928843,
+              "status": "complete",
+              "steps": 512,
+              "worker": 5
+            },
+            {
+              "quota": 512,
+              "seconds": 26.042611500015482,
+              "status": "complete",
+              "steps": 512,
+              "worker": 6
+            },
+            {
+              "quota": 512,
+              "seconds": 25.771788917016238,
+              "status": "complete",
+              "steps": 512,
+              "worker": 7
+            }
+          ],
+          [
+            {
+              "quota": 512,
+              "seconds": 25.387037875130773,
+              "status": "complete",
+              "steps": 512,
+              "worker": 0
+            },
+            {
+              "quota": 512,
+              "seconds": 26.52643679198809,
+              "status": "complete",
+              "steps": 512,
+              "worker": 1
+            },
+            {
+              "quota": 512,
+              "seconds": 25.75292762508616,
+              "status": "complete",
+              "steps": 512,
+              "worker": 2
+            },
+            {
+              "quota": 512,
+              "seconds": 25.7629439169541,
+              "status": "complete",
+              "steps": 512,
+              "worker": 3
+            },
+            {
+              "quota": 512,
+              "seconds": 25.393633291125298,
+              "status": "complete",
+              "steps": 512,
+              "worker": 4
+            },
+            {
+              "quota": 512,
+              "seconds": 26.850175083149225,
+              "status": "complete",
+              "steps": 512,
+              "worker": 5
+            },
+            {
+              "quota": 512,
+              "seconds": 26.02032795897685,
+              "status": "complete",
+              "steps": 512,
+              "worker": 6
+            },
+            {
+              "quota": 512,
+              "seconds": 25.985964457970113,
+              "status": "complete",
+              "steps": 512,
+              "worker": 7
+            }
+          ]
+        ],
+        "workers": 8
+      },
+      {
+        "collection_round_seconds": [
+          33.06889325007796,
+          28.303952292073518
+        ],
+        "collection_seconds": 61.37284554215148,
+        "decisions": 8192,
+        "decisions_per_second": 90.44287947161986,
+        "epochs": [
+          2,
+          2
+        ],
+        "factory_seconds": 0.05727074993774295,
+        "final_fingerprint": "sts_policy_state_v2:e513ab57ef4368aa2f5f7fcd36b959df4cf41a94124f619a633dd3578b41a452",
+        "invocation_seconds": 88.97857029107399,
+        "kl_early_stops": [
+          false,
+          false
+        ],
+        "label": "workers-8-replica-3",
+        "optimizer_steps": 1024,
+        "packed_rollout_bytes": [
+          1605623631,
+          1591640974
+        ],
+        "parent_peak_rss_bytes": 4101881856,
+        "phase_timings": {
+          "checkpoint_seconds": 0.1287544178776443,
+          "report_serialization_seconds": 0.1413647080771625,
+          "tracking_log_seconds": 0.3329760432243347
+        },
+        "process_seconds": 90.57650583283976,
+        "profile": false,
+        "report_seconds": 86.6381612077821,
+        "summary": {
+          "accepted_decisions": 8192,
+          "components": {
+            "combat_loss": 193.0,
+            "combat_win": 268.0,
+            "end_turn_action": 1825.0,
+            "potion_use_action": 129.0,
+            "win_hp_fraction": 132.03392759758628
+          },
+          "cutoffs": 16,
+          "decisions_per_second": 94.55417665609654,
+          "episode_attempts": 477,
+          "failed_episodes": 0,
+          "losses": 193,
+          "mean_hp_on_win": 39.67537313432836,
+          "potion_use_actions": 129,
+          "processed_decisions": 8192,
+          "skipped_decisions": 0,
+          "skipped_updates": 0,
+          "task_return": 281.2033927597586,
+          "trained_decisions": 8192,
+          "wins": 268
+        },
+        "tracking": true,
+        "update_round_seconds": [
+          12.180711708031595,
+          12.028655624948442
+        ],
+        "update_seconds": 24.209367332980037,
+        "worker_batches": [
+          [
+            {
+              "quota": 512,
+              "seconds": 25.407443666132167,
+              "status": "complete",
+              "steps": 512,
+              "worker": 0
+            },
+            {
+              "quota": 512,
+              "seconds": 26.93552037491463,
+              "status": "complete",
+              "steps": 512,
+              "worker": 1
+            },
+            {
+              "quota": 512,
+              "seconds": 26.811123374849558,
+              "status": "complete",
+              "steps": 512,
+              "worker": 2
+            },
+            {
+              "quota": 512,
+              "seconds": 26.750885999994352,
+              "status": "complete",
+              "steps": 512,
+              "worker": 3
+            },
+            {
+              "quota": 512,
+              "seconds": 26.43387125013396,
+              "status": "complete",
+              "steps": 512,
+              "worker": 4
+            },
+            {
+              "quota": 512,
+              "seconds": 27.234953583218157,
+              "status": "complete",
+              "steps": 512,
+              "worker": 5
+            },
+            {
+              "quota": 512,
+              "seconds": 26.23219412495382,
+              "status": "complete",
+              "steps": 512,
+              "worker": 6
+            },
+            {
+              "quota": 512,
+              "seconds": 25.840773666044697,
+              "status": "complete",
+              "steps": 512,
+              "worker": 7
+            }
+          ],
+          [
+            {
+              "quota": 512,
+              "seconds": 25.63967362511903,
+              "status": "complete",
+              "steps": 512,
+              "worker": 0
+            },
+            {
+              "quota": 512,
+              "seconds": 26.899435417028144,
+              "status": "complete",
+              "steps": 512,
+              "worker": 1
+            },
+            {
+              "quota": 512,
+              "seconds": 26.197924583917484,
+              "status": "complete",
+              "steps": 512,
+              "worker": 2
+            },
+            {
+              "quota": 512,
+              "seconds": 26.13959849998355,
+              "status": "complete",
+              "steps": 512,
+              "worker": 3
+            },
+            {
+              "quota": 512,
+              "seconds": 25.896123165963218,
+              "status": "complete",
+              "steps": 512,
+              "worker": 4
+            },
+            {
+              "quota": 512,
+              "seconds": 27.420809084083885,
+              "status": "complete",
+              "steps": 512,
+              "worker": 5
+            },
+            {
+              "quota": 512,
+              "seconds": 26.4905584580265,
+              "status": "complete",
+              "steps": 512,
+              "worker": 6
+            },
+            {
+              "quota": 512,
+              "seconds": 26.319162040948868,
+              "status": "complete",
+              "steps": 512,
+              "worker": 7
+            }
+          ]
+        ],
+        "workers": 8
+      },
+      {
+        "collection_round_seconds": [
+          30.73326308396645
+        ],
+        "collection_seconds": 30.73326308396645,
+        "decisions": 2048,
+        "decisions_per_second": 52.05591005091142,
+        "epochs": [
+          2
+        ],
+        "factory_seconds": 0.061136791948229074,
+        "final_fingerprint": "sts_policy_state_v2:496b17f715fb59d8a080596442666c1e0e1cb0bfdd7cec4715c70bf450f63da1",
+        "invocation_seconds": 38.12269612494856,
+        "kl_early_stops": [
+          false
+        ],
+        "label": "profile-8",
+        "optimizer_steps": 256,
+        "packed_rollout_bytes": [
+          795781734
+        ],
+        "parent_peak_rss_bytes": 1657454592,
+        "phase_timings": {
+          "checkpoint_seconds": 0.05993153993040323,
+          "report_serialization_seconds": 0.03474512486718595,
+          "tracking_log_seconds": 5.999114364385605e-06
+        },
+        "process_seconds": 39.34231479186565,
+        "profile": true,
+        "report_seconds": 37.48312800005078,
+        "summary": {
+          "accepted_decisions": 2048,
+          "components": {
+            "combat_loss": 43.0,
+            "combat_win": 68.0,
+            "end_turn_action": 454.0,
+            "potion_use_action": 29.0,
+            "win_hp_fraction": 34.38534482758621
+          },
+          "cutoffs": 8,
+          "decisions_per_second": 54.637916024437054,
+          "episode_attempts": 119,
+          "failed_episodes": 0,
+          "losses": 43,
+          "mean_hp_on_win": 40.588235294117645,
+          "potion_use_actions": 29,
+          "processed_decisions": 2048,
+          "skipped_decisions": 0,
+          "skipped_updates": 0,
+          "task_return": 71.43853448275863,
+          "trained_decisions": 2048,
+          "wins": 68
+        },
+        "tracking": false,
+        "update_round_seconds": [
+          6.280797499930486
+        ],
+        "update_seconds": 6.280797499930486,
+        "worker_batches": [
+          [
+            {
+              "quota": 256,
+              "seconds": 23.734579166863114,
+              "status": "complete",
+              "steps": 256,
+              "worker": 0
+            },
+            {
+              "quota": 256,
+              "seconds": 25.52089629205875,
+              "status": "complete",
+              "steps": 256,
+              "worker": 1
+            },
+            {
+              "quota": 256,
+              "seconds": 24.86916166683659,
+              "status": "complete",
+              "steps": 256,
+              "worker": 2
+            },
+            {
+              "quota": 256,
+              "seconds": 24.44690137496218,
+              "status": "complete",
+              "steps": 256,
+              "worker": 3
+            },
+            {
+              "quota": 256,
+              "seconds": 24.41681716707535,
+              "status": "complete",
+              "steps": 256,
+              "worker": 4
+            },
+            {
+              "quota": 256,
+              "seconds": 24.705051166005433,
+              "status": "complete",
+              "steps": 256,
+              "worker": 5
+            },
+            {
+              "quota": 256,
+              "seconds": 24.480167583096772,
+              "status": "complete",
+              "steps": 256,
+              "worker": 6
+            },
+            {
+              "quota": 256,
+              "seconds": 24.530833458993584,
+              "status": "complete",
+              "steps": 256,
+              "worker": 7
+            }
+          ]
+        ],
+        "workers": 8
+      }
+    ],
+    "schema": "sts_combat_training_speed_results_v1",
+    "status": "complete"
+  },
+  "schema": "sts_combat_training_speed_evidence_v1",
+  "source_commit": "7d5d88431b3058be2fe789414989d48e9687a07b"
+}

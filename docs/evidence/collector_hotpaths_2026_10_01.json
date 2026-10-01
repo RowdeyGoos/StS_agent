@@ -1,0 +1,3004 @@
+{
+  "artifacts": {
+    "runs/collector-hotpaths-20261001/agent-tests.log": "4d4a675625c938f138fc1b7ea27c842cab3c61960e85badea982e8dfa8cdebad",
+    "runs/collector-hotpaths-20261001/analysis.log": "83dd234ab8be01fb4b902e8078943adcaa80d968ef92aace491278775feba3db",
+    "runs/collector-hotpaths-20261001/analyze.py": "c4593ecab4c55a8c625d5a342452f29010b2662eb7f0236be3f0ce491efbf9b1",
+    "runs/collector-hotpaths-20261001/baseline/protocol.json": "b22c386899b5e32447c1a30a95f911f5992b0b7fa96cbffa84b3566d04dc9ff7",
+    "runs/collector-hotpaths-20261001/baseline/workers-8-replica-1/ppo.json": "6f4f5aac66a128e63eba40b741ba9b34d70033bcb6126883c34460bb70774e5f",
+    "runs/collector-hotpaths-20261001/baseline/workers-8-replica-1/timings.json": "6408ea7911536b751ba35b132b8f16339bfba8aca9788c2f366d202fd5958b02",
+    "runs/collector-hotpaths-20261001/baseline/workers-8-replica-2/ppo.json": "30a3890e64720d894cff1a66a271bb6e5e6b7b9414d113bce88918e27b7111f2",
+    "runs/collector-hotpaths-20261001/baseline/workers-8-replica-2/timings.json": "df85ea5dc5d11c33139662e0ef7ec8f857900476f37a4744a3a0ba428008c230",
+    "runs/collector-hotpaths-20261001/baseline/workers-8-replica-3/ppo.json": "22b570ba399253a269319f59a0e0fbd5443822714e42a8af0d78b583b8aca169",
+    "runs/collector-hotpaths-20261001/baseline/workers-8-replica-3/timings.json": "493bbba99c32c612e5c1c0200e4e769453c89d3136941cbbf4f49b5ed4ef768a",
+    "runs/collector-hotpaths-20261001/benchmark.py": "4dc5712f140d1679178f742f58f06ba40a1db1a237308882389eb9a7f80c066a",
+    "runs/collector-hotpaths-20261001/cards-population/preparation.json": "5dd5af2615544f55c76b77d203cf6310942445756522fbc4e6394d7a777f9411",
+    "runs/collector-hotpaths-20261001/cards/protocol.json": "d3eeed843f82657fb61d84cee97bd9d7bba956233c4e7e521fa978c6be44eca8",
+    "runs/collector-hotpaths-20261001/cards/workers-8-replica-1/ppo.json": "74d6a4a441b4ce6c8b7ada911aed73b5352e05656a722d9064106964fd546756",
+    "runs/collector-hotpaths-20261001/cards/workers-8-replica-1/timings.json": "3edb29c3daf70781a94b71c96ec302ccbfc069029244cb93d8fbcd51bc5e3143",
+    "runs/collector-hotpaths-20261001/cards/workers-8-replica-2/ppo.json": "3f4e559c6b7f2410e1b2a6ed5638f8da8e41fd76916c74e6505bad5c424c37ee",
+    "runs/collector-hotpaths-20261001/cards/workers-8-replica-2/timings.json": "63b4eb21d839f269a0152ecf2c0ed66293977f4ef2c1e8a7359590a7562553a1",
+    "runs/collector-hotpaths-20261001/cards/workers-8-replica-3/ppo.json": "a9e71db21e9675c15a6fad9c8680e569f2a4962ba0ff9b86914bb5d8f4078ed1",
+    "runs/collector-hotpaths-20261001/cards/workers-8-replica-3/timings.json": "d34a40451ceb2c45593e53fe7ce3932cc54c9ce841900ae3f2fecdf6f5ae31ea",
+    "runs/collector-hotpaths-20261001/collector-breakdown.json": "7a67a196612e6a5a6f9da42be81a813de0cab570ead68d783e72ad11732937ff",
+    "runs/collector-hotpaths-20261001/collector_breakdown.py": "6e25501cbf6751178cee13ab5622fd4da0c3d54d44f32bf268efd0fb1cc1ce25",
+    "runs/collector-hotpaths-20261001/combined-population/preparation.json": "76a3458d499ff2d6e57485f09aa50b4d394d681f9270b8466dce74cc50fd3217",
+    "runs/collector-hotpaths-20261001/combined/profile-current/timings.json": "6c8214a7db98aa349cf56cf4fbcdd7374dbab50b4f13dae7e69f060a5bf79a75",
+    "runs/collector-hotpaths-20261001/combined/profiles-current/collect-8440-2045502993740541.prof": "9629e536cc9d750f99419cbc9d644e4ae237e65d909fd4a412d52ecfe3501f98",
+    "runs/collector-hotpaths-20261001/combined/profiles-current/collect-8441-2045504230868833.prof": "54841876bec6b8beb322d15bfa80f3e4fa04f331cc690d6fab541ca0e71a7474",
+    "runs/collector-hotpaths-20261001/combined/profiles-current/collect-8442-2045503900318666.prof": "4e6aa129992a90b8a71beffe8e9a3a686899db9d1eae3860aae3383d3f637ba0",
+    "runs/collector-hotpaths-20261001/combined/profiles-current/collect-8444-2045503595953125.prof": "b6e43be9a24a798eb5a0ed09f4eb319e7a36c2f58a33cc56e9bc554ed56c54e8",
+    "runs/collector-hotpaths-20261001/combined/profiles-current/collect-8445-2045503538507791.prof": "d6a1013072a001f661ee4562aa8cea4e9d4d0525205a77e37ed293415f7e2693",
+    "runs/collector-hotpaths-20261001/combined/profiles-current/collect-8446-2045503598448250.prof": "2adf5410b35d0eaa263d1eabc2de73a1e8b555046c934fbf75e72c4954631893",
+    "runs/collector-hotpaths-20261001/combined/profiles-current/collect-8447-2045503421159708.prof": "61e3a6b3984f5860ce5427dd327962559d20a3ba7a7b0604d43b7d3375f8c5fd",
+    "runs/collector-hotpaths-20261001/combined/profiles-current/collect-8449-2045503327590583.prof": "336bab94fb33a9e80daf90bce15f887a502c4cf586433243179d6cc877315968",
+    "runs/collector-hotpaths-20261001/combined/protocol.json": "cc14475aa66726bdea063d29ae02ffc74d4fe2176eddc11f7ee1267bd7a60e76",
+    "runs/collector-hotpaths-20261001/combined/workers-8-replica-1/ppo.json": "184dfb0f81abef06309eaf9e601eb68e4da9634ea28badfa649dd7a8aee571cf",
+    "runs/collector-hotpaths-20261001/combined/workers-8-replica-1/timings.json": "253989dc02680678bab5edaa7a4694c8570664bbb7d29a53266013e4a19ca36c",
+    "runs/collector-hotpaths-20261001/combined/workers-8-replica-2/ppo.json": "d7d33b5975a058799f50d90fc5d1d7cfeb665f62e1394dc2515bd61331532ffd",
+    "runs/collector-hotpaths-20261001/combined/workers-8-replica-2/timings.json": "e50243b2c4c3331b3a36b431708a42aa6950f065dd2409f9822815408b529a12",
+    "runs/collector-hotpaths-20261001/combined/workers-8-replica-3/ppo.json": "be78c8f2d3653fd94287733e8883cd3b22afeef22b8f5f9789cfb4ca0c3e0cb3",
+    "runs/collector-hotpaths-20261001/combined/workers-8-replica-3/timings.json": "f2ed698c80e43bb4baa63124e7c1850610e004d9a56bd29e929d021628461226",
+    "runs/collector-hotpaths-20261001/compare.py": "6a747d935a454a39a3067450870856b48784b7d506e2c9bf62dda46414e9b480",
+    "runs/collector-hotpaths-20261001/comparison.log": "3a3fca92afcbd6c3612fd4f76eb2f6ac4e0a453300fde41a5e60c3dc782cdc49",
+    "runs/collector-hotpaths-20261001/http-test.log": "730410d23add507d10274b5400f29dd16f80db2f65bf9ef1c50a875848f3486b",
+    "runs/collector-hotpaths-20261001/prepare.py": "c920214538ca59e9594cdede4ef530317ba39a80a13be61c9c274ef089c60d56",
+    "runs/collector-hotpaths-20261001/results.json": "8ef0e9ec308e95ec563bed4dab5b590763a969714010ab56941ce91d4dacba5e",
+    "runs/collector-optim-20261001/optimized/profile-current/timings.json": "772846a2a1c9d882c0226acdd0b11bb3cd48f74b7f8b96d0f9aa7c25d57ae1d4",
+    "runs/collector-optim-20261001/optimized/profiles-current/collect-4231-2042965875481916.prof": "6036d262c5a8ab3b75403007e303adc245b551dbf649a52b09b3802e4fa04246",
+    "runs/collector-optim-20261001/optimized/profiles-current/collect-4232-2042967439765958.prof": "d6ec730159f98178011c155f9ea3e67d26555c4887b89bfdb0c143b1365c1a95",
+    "runs/collector-optim-20261001/optimized/profiles-current/collect-4233-2042967142955166.prof": "538fa16c665bf84098a74c37ebafa7253f90f88324fba9487ff1a8a10c9177e7",
+    "runs/collector-optim-20261001/optimized/profiles-current/collect-4235-2042966718503416.prof": "0c59f31b515468058c2e2c0af21c3dbc51f48f567253548c2b3895cb78036bdb",
+    "runs/collector-optim-20261001/optimized/profiles-current/collect-4236-2042966622683625.prof": "f78bcd87f8de11ac366eaa6bd2e4875d62cae2e7b5b963269015b3a4bce455f9",
+    "runs/collector-optim-20261001/optimized/profiles-current/collect-4237-2042966843594875.prof": "a76434f57564d3090f6a65492f74e42c4cbe7c6422f77eff1cea3813d0e47f42",
+    "runs/collector-optim-20261001/optimized/profiles-current/collect-4239-2042966576575375.prof": "13ec2843ff1445551914316ae82e271dc0f14b5c4d72a69b093eeb443ab90831",
+    "runs/collector-optim-20261001/optimized/profiles-current/collect-4240-2042966606207250.prof": "2a41cc85b71f4a078ec0fd74111a76c0891ca95beba0c7f160d918f2bdd8b98b"
+  },
+  "checks": {
+    "final_weights_identical": true,
+    "initializer_unchanged": true,
+    "matched_episode_metrics": 4293,
+    "matched_step_metrics": 73728,
+    "no_partials": true,
+    "no_tracking_failures": true,
+    "private_permissions": true,
+    "public_states_actions_rewards_outcomes_identical": true,
+    "rules_byte_identical": true,
+    "state_guard_byte_identical": true,
+    "strict_trace_decisions": 16384,
+    "strict_trace_pairs": 954,
+    "unchanged_rule_and_adapter_files": 250,
+    "update_math_identical": true
+  },
+  "collector_breakdown": {
+    "after": {
+      "aggregate_profiled_worker_seconds": 136.97481354200002,
+      "nested_diagnostics_not_additive": {
+        "_features": {
+          "calls": 2056,
+          "seconds": 8.283277618000001
+        },
+        "_guard": {
+          "calls": 4223,
+          "seconds": 36.496611919
+        },
+        "append": {
+          "calls": 2048,
+          "seconds": 14.439626746
+        },
+        "decision": {
+          "calls": 2175,
+          "seconds": 32.242527549
+        },
+        "encode_prepared": {
+          "calls": 2056,
+          "seconds": 22.453248349
+        },
+        "finish": {
+          "calls": 119,
+          "seconds": 0.61384005
+        },
+        "for_rollout": {
+          "calls": 2048,
+          "seconds": 0.044651061000000006
+        },
+        "load_trajectory": {
+          "calls": 0,
+          "seconds": 0
+        },
+        "trajectory_digest": {
+          "calls": 119,
+          "seconds": 0.17786337800000002
+        }
+      },
+      "parts": {
+        "encoding_and_features": {
+          "percent": 22.4551524288579,
+          "seconds": 30.75790317
+        },
+        "game_commands": {
+          "percent": 2.543834823276901,
+          "seconds": 3.4844130060000005
+        },
+        "other": {
+          "percent": 9.993533128484767,
+          "seconds": 13.688623369000013
+        },
+        "policy_inference_and_sampling": {
+          "percent": 3.1703127850350876,
+          "seconds": 4.3425300259999995
+        },
+        "public_observations_and_validation": {
+          "percent": 23.539019119827902,
+          "seconds": 32.242527549
+        },
+        "recording": {
+          "percent": 11.653386553510858,
+          "seconds": 15.962204503
+        },
+        "state_guard": {
+          "percent": 26.64476116100658,
+          "seconds": 36.496611919
+        }
+      }
+    },
+    "artifacts": {
+      "runs/collector-hotpaths-20261001/collector_breakdown.py": "6e25501cbf6751178cee13ab5622fd4da0c3d54d44f32bf268efd0fb1cc1ce25",
+      "runs/collector-hotpaths-20261001/combined/profile-current/timings.json": "6c8214a7db98aa349cf56cf4fbcdd7374dbab50b4f13dae7e69f060a5bf79a75",
+      "runs/collector-hotpaths-20261001/combined/profiles-current/collect-8440-2045502993740541.prof": "9629e536cc9d750f99419cbc9d644e4ae237e65d909fd4a412d52ecfe3501f98",
+      "runs/collector-hotpaths-20261001/combined/profiles-current/collect-8441-2045504230868833.prof": "54841876bec6b8beb322d15bfa80f3e4fa04f331cc690d6fab541ca0e71a7474",
+      "runs/collector-hotpaths-20261001/combined/profiles-current/collect-8442-2045503900318666.prof": "4e6aa129992a90b8a71beffe8e9a3a686899db9d1eae3860aae3383d3f637ba0",
+      "runs/collector-hotpaths-20261001/combined/profiles-current/collect-8444-2045503595953125.prof": "b6e43be9a24a798eb5a0ed09f4eb319e7a36c2f58a33cc56e9bc554ed56c54e8",
+      "runs/collector-hotpaths-20261001/combined/profiles-current/collect-8445-2045503538507791.prof": "d6a1013072a001f661ee4562aa8cea4e9d4d0525205a77e37ed293415f7e2693",
+      "runs/collector-hotpaths-20261001/combined/profiles-current/collect-8446-2045503598448250.prof": "2adf5410b35d0eaa263d1eabc2de73a1e8b555046c934fbf75e72c4954631893",
+      "runs/collector-hotpaths-20261001/combined/profiles-current/collect-8447-2045503421159708.prof": "61e3a6b3984f5860ce5427dd327962559d20a3ba7a7b0604d43b7d3375f8c5fd",
+      "runs/collector-hotpaths-20261001/combined/profiles-current/collect-8449-2045503327590583.prof": "336bab94fb33a9e80daf90bce15f887a502c4cf586433243179d6cc877315968",
+      "runs/collector-hotpaths-20261001/results.json": "8ef0e9ec308e95ec563bed4dab5b590763a969714010ab56941ce91d4dacba5e",
+      "runs/collector-optim-20261001/optimized/profile-current/timings.json": "772846a2a1c9d882c0226acdd0b11bb3cd48f74b7f8b96d0f9aa7c25d57ae1d4",
+      "runs/collector-optim-20261001/optimized/profiles-current/collect-4231-2042965875481916.prof": "6036d262c5a8ab3b75403007e303adc245b551dbf649a52b09b3802e4fa04246",
+      "runs/collector-optim-20261001/optimized/profiles-current/collect-4232-2042967439765958.prof": "d6ec730159f98178011c155f9ea3e67d26555c4887b89bfdb0c143b1365c1a95",
+      "runs/collector-optim-20261001/optimized/profiles-current/collect-4233-2042967142955166.prof": "538fa16c665bf84098a74c37ebafa7253f90f88324fba9487ff1a8a10c9177e7",
+      "runs/collector-optim-20261001/optimized/profiles-current/collect-4235-2042966718503416.prof": "0c59f31b515468058c2e2c0af21c3dbc51f48f567253548c2b3895cb78036bdb",
+      "runs/collector-optim-20261001/optimized/profiles-current/collect-4236-2042966622683625.prof": "f78bcd87f8de11ac366eaa6bd2e4875d62cae2e7b5b963269015b3a4bce455f9",
+      "runs/collector-optim-20261001/optimized/profiles-current/collect-4237-2042966843594875.prof": "a76434f57564d3090f6a65492f74e42c4cbe7c6422f77eff1cea3813d0e47f42",
+      "runs/collector-optim-20261001/optimized/profiles-current/collect-4239-2042966576575375.prof": "13ec2843ff1445551914316ae82e271dc0f14b5c4d72a69b093eeb443ab90831",
+      "runs/collector-optim-20261001/optimized/profiles-current/collect-4240-2042966606207250.prof": "2a41cc85b71f4a078ec0fd74111a76c0891ca95beba0c7f160d918f2bdd8b98b"
+    },
+    "before": {
+      "aggregate_profiled_worker_seconds": 155.334180542,
+      "nested_diagnostics_not_additive": {
+        "_features": {
+          "calls": 2056,
+          "seconds": 8.22401059
+        },
+        "_guard": {
+          "calls": 4223,
+          "seconds": 37.409705169999995
+        },
+        "append": {
+          "calls": 2048,
+          "seconds": 14.848792985000001
+        },
+        "decision": {
+          "calls": 2175,
+          "seconds": 44.026829555999996
+        },
+        "encode_prepared": {
+          "calls": 2056,
+          "seconds": 27.846960836000004
+        },
+        "finish": {
+          "calls": 119,
+          "seconds": 0.596646546
+        },
+        "for_rollout": {
+          "calls": 2048,
+          "seconds": 0.044249884
+        },
+        "load_trajectory": {
+          "calls": 0,
+          "seconds": 0
+        },
+        "trajectory_digest": {
+          "calls": 119,
+          "seconds": 0.168777751
+        }
+      },
+      "parts": {
+        "encoding_and_features": {
+          "percent": 23.23427089779613,
+          "seconds": 36.090764304000004
+        },
+        "game_commands": {
+          "percent": 2.2261566558848997,
+          "seconds": 3.4579821990000004
+        },
+        "other": {
+          "percent": 8.740308831982459,
+          "seconds": 13.576687101000005
+        },
+        "policy_inference_and_sampling": {
+          "percent": 2.8058502892230757,
+          "seconds": 4.358444554000002
+        },
+        "public_observations_and_validation": {
+          "percent": 28.343297915744824,
+          "seconds": 44.026829555999996
+        },
+        "recording": {
+          "percent": 10.566745580868448,
+          "seconds": 16.413767658
+        },
+        "state_guard": {
+          "percent": 24.08336982850016,
+          "seconds": 37.409705169999995
+        }
+      }
+    },
+    "checks": {
+      "current_source_matches_profile_source": true,
+      "matched_profile_summary_and_weights": true
+    },
+    "limitations": [
+      "Worker profiles measure elapsed call time including profiler overhead; they are not CPU-cycle measurements.",
+      "Collector categories are nonoverlapping call-root totals; nested feature extraction is subtracted from inference.",
+      "Worker profiles exclude parent-side startup and result transfer; their shares cannot exactly partition collection wall time.",
+      "Current profile is one diagnostic invocation. The unprofiled timings are from the prior three-repetition benchmark.",
+      "Before and after profiles ran at different times with uncontrolled background activity."
+    ],
+    "profile_decisions": 2048,
+    "profile_episodes": 119,
+    "profile_workers": 8,
+    "schema": "sts_collector_breakdown_v1",
+    "unprofiled_wall_time": {
+      "decisions": 8192,
+      "label": "workers-8-replica-3",
+      "parts": {
+        "collection": {
+          "percent": 60.99857520154919,
+          "seconds": 42.66026170901023
+        },
+        "other": {
+          "percent": 5.195016963929558,
+          "seconds": 3.6332124567124993
+        },
+        "ppo_updates": {
+          "percent": 33.80640783452125,
+          "seconds": 23.643014626111835
+        }
+      },
+      "selection": "median-duration optimized repetition",
+      "total_seconds": 69.93648879183456,
+      "workers": 8
+    }
+  },
+  "gains": {
+    "collection_time_reduction": 0.07570165574960641,
+    "process_time_reduction": 0.054117859968751625,
+    "throughput_multiplier": 1.0572141683180145
+  },
+  "preparation": {
+    "cards": {
+      "architecture": {
+        "hidden_size": 48,
+        "message_layers": 2,
+        "schema": "sts_graph_actor_critic_v1"
+      },
+      "collector": "runs/act1-increased-500k-8workers-20260930/chunk-15/final.sts-model",
+      "collector_sha256": "fce362d2e0cc8f337cb06642c198ddc53c8a5e2b312f2e3596feac488a30352f",
+      "corpus": "runs/collector-hotpaths-20261001/cards-population/corpus/corpus.json",
+      "corpus_sha256": "fcc030f4e6adc74e89ee6dcd8df4bf0ae416d0a1eac640ac9e16e514637942a2",
+      "coverage": {
+        "by_encounter": {
+          "dense_vegetation_event": 3,
+          "overgrowth_bygone_effigy": 6,
+          "overgrowth_byrdonis": 3,
+          "overgrowth_crawlers": 6,
+          "overgrowth_cubex": 4,
+          "overgrowth_flyconid": 5,
+          "overgrowth_fogmog": 5,
+          "overgrowth_fuzzy": 15,
+          "overgrowth_inklets": 5,
+          "overgrowth_jaxfruit": 4,
+          "overgrowth_mawler": 3,
+          "overgrowth_nibbit": 13,
+          "overgrowth_nibbits": 5,
+          "overgrowth_phrog_parasite": 3,
+          "overgrowth_ruby_raiders": 9,
+          "overgrowth_shrinker": 11,
+          "overgrowth_slimes": 9,
+          "overgrowth_slimes_normal": 5,
+          "overgrowth_strangler": 5,
+          "overgrowth_the_kin": 5,
+          "overgrowth_vantom": 2,
+          "overgrowth_vine_shambler": 7,
+          "underdocks_corpse_slugs": 6,
+          "underdocks_corpse_slugs_weak": 6,
+          "underdocks_cultists": 10,
+          "underdocks_fossil_stalker": 6,
+          "underdocks_gremlin_merc": 2,
+          "underdocks_haunted_ship": 3,
+          "underdocks_lagavulin_matriarch": 1,
+          "underdocks_living_fog": 6,
+          "underdocks_phantasmal_gardeners": 7,
+          "underdocks_punch_construct": 4,
+          "underdocks_seapunk": 9,
+          "underdocks_seapunk_weak": 14,
+          "underdocks_sewer_clam": 4,
+          "underdocks_skulking_colony": 4,
+          "underdocks_sludge_spinner": 14,
+          "underdocks_soul_fysh": 3,
+          "underdocks_terror_eel": 4,
+          "underdocks_toadpoles": 14,
+          "underdocks_two_tailed_rats": 8,
+          "underdocks_waterfall_giant": 5
+        },
+        "by_enemy_power": {
+          "about_to_blow": 1,
+          "artifact": 11,
+          "asleep": 2,
+          "demise": 1,
+          "hardened_shell_remaining": 17,
+          "illusion": 12,
+          "infested": 9,
+          "intangible": 3,
+          "minion": 42,
+          "plating": 16,
+          "ritual": 42,
+          "shriek": 12,
+          "slippery": 13,
+          "slow": 28,
+          "steam": 29,
+          "stolen_gold": 5,
+          "territorial": 11,
+          "thorns": 21,
+          "vulnerable": 258,
+          "weak": 16
+        },
+        "by_hp_band": {
+          "critical": 110,
+          "damaged": 188,
+          "healthy": 665
+        },
+        "by_potion": {
+          "ashwater": 2,
+          "attack_potion": 6,
+          "blessing_of_the_forge": 1,
+          "block_potion": 3,
+          "bottled_potential": 1,
+          "clarity": 1,
+          "colorless_potion": 13,
+          "dexterity_potion": 4,
+          "duplicator": 8,
+          "energy_potion": 5,
+          "explosive_ampoule": 4,
+          "fire_potion": 13,
+          "flex_potion": 1,
+          "fortifier": 4,
+          "fysh_oil": 2,
+          "gamblers_brew": 2,
+          "heart_of_iron": 2,
+          "liquid_bronze": 1,
+          "orobic_acid": 2,
+          "potion_of_binding": 8,
+          "powdered_demise": 1,
+          "power_potion": 6,
+          "regen_potion": 4,
+          "skill_potion": 7,
+          "snecko_oil": 2,
+          "soldiers_stew": 2,
+          "speed_potion": 4,
+          "stable_serum": 31,
+          "strength_potion": 2,
+          "swift_potion": 5,
+          "touch_of_insanity": 1,
+          "vulnerable_potion": 6,
+          "weak_potion": 5
+        },
+        "by_region": {
+          "overgrowth": 133,
+          "underdocks": 130
+        },
+        "by_room_kind": {
+          "boss": 16,
+          "combat": 220,
+          "elite": 27
+        },
+        "by_start_kind": {
+          "continuation": 700,
+          "opening": 263
+        },
+        "by_threat": {
+          "covered": 1,
+          "lethal": 49,
+          "none": 191,
+          "unblocked": 722
+        },
+        "combats": 263,
+        "deck_size_range": [
+          10,
+          22
+        ],
+        "distinct_inventories": 331,
+        "hp_range": [
+          1,
+          87
+        ],
+        "missing_elites_bosses": [
+          "overgrowth_ceremonial_beast"
+        ],
+        "missing_encounters": [
+          "overgrowth_ceremonial_beast"
+        ],
+        "missing_region_kinds": [],
+        "openings": 263,
+        "source_campaigns": 32,
+        "starts": 963,
+        "starts_by_encounter": {
+          "dense_vegetation_event": 13,
+          "overgrowth_bygone_effigy": 28,
+          "overgrowth_byrdonis": 11,
+          "overgrowth_crawlers": 27,
+          "overgrowth_cubex": 12,
+          "overgrowth_flyconid": 19,
+          "overgrowth_fogmog": 17,
+          "overgrowth_fuzzy": 50,
+          "overgrowth_inklets": 13,
+          "overgrowth_jaxfruit": 11,
+          "overgrowth_mawler": 7,
+          "overgrowth_nibbit": 37,
+          "overgrowth_nibbits": 25,
+          "overgrowth_phrog_parasite": 17,
+          "overgrowth_ruby_raiders": 32,
+          "overgrowth_shrinker": 33,
+          "overgrowth_slimes": 32,
+          "overgrowth_slimes_normal": 17,
+          "overgrowth_strangler": 21,
+          "overgrowth_the_kin": 36,
+          "overgrowth_vantom": 15,
+          "overgrowth_vine_shambler": 25,
+          "underdocks_corpse_slugs": 20,
+          "underdocks_corpse_slugs_weak": 22,
+          "underdocks_cultists": 43,
+          "underdocks_fossil_stalker": 14,
+          "underdocks_gremlin_merc": 7,
+          "underdocks_haunted_ship": 9,
+          "underdocks_lagavulin_matriarch": 7,
+          "underdocks_living_fog": 24,
+          "underdocks_phantasmal_gardeners": 28,
+          "underdocks_punch_construct": 12,
+          "underdocks_seapunk": 37,
+          "underdocks_seapunk_weak": 36,
+          "underdocks_sewer_clam": 14,
+          "underdocks_skulking_colony": 17,
+          "underdocks_sludge_spinner": 33,
+          "underdocks_soul_fysh": 22,
+          "underdocks_terror_eel": 21,
+          "underdocks_toadpoles": 41,
+          "underdocks_two_tailed_rats": 23,
+          "underdocks_waterfall_giant": 35
+        },
+        "starts_with_potions": 153
+      },
+      "identifier_allocation": "Baseline public IDs repeated for matched sorted-ID sampling; all state freshly generated",
+      "initializer": "runs/combat-fresh-500k-20260930/chunk-15/final.sts-model",
+      "initializer_sha256": "e87849e68757f03ea2b073f5d5c9410a04bbf183a4b7b8edc5177eb300a70f2d",
+      "matched_regenerated_cases": 1116,
+      "note": "Only train starts are used for speed runs. Existing training and held-out artifacts stay unchanged.",
+      "parameters": 80738,
+      "room_kinds": {
+        "boss": 115,
+        "combat": 726,
+        "elite": 122
+      },
+      "schema": "sts_combat_speed_preparation_v1",
+      "seconds": 191.3290793329943,
+      "snapshot_bytes_identical": true,
+      "source_commit": "7d5d88431b3058be2fe789414989d48e9687a07b",
+      "train_campaigns": 32,
+      "train_fights": 263,
+      "train_starts": 963
+    },
+    "combined": {
+      "architecture": {
+        "hidden_size": 48,
+        "message_layers": 2,
+        "schema": "sts_graph_actor_critic_v1"
+      },
+      "collector": "runs/act1-increased-500k-8workers-20260930/chunk-15/final.sts-model",
+      "collector_sha256": "fce362d2e0cc8f337cb06642c198ddc53c8a5e2b312f2e3596feac488a30352f",
+      "corpus": "runs/collector-hotpaths-20261001/combined-population/corpus/corpus.json",
+      "corpus_sha256": "eb95bc66a0955669d7d2249ea7444f962ea309b647d020d58795251c6345d37c",
+      "coverage": {
+        "by_encounter": {
+          "dense_vegetation_event": 3,
+          "overgrowth_bygone_effigy": 6,
+          "overgrowth_byrdonis": 3,
+          "overgrowth_crawlers": 6,
+          "overgrowth_cubex": 4,
+          "overgrowth_flyconid": 5,
+          "overgrowth_fogmog": 5,
+          "overgrowth_fuzzy": 15,
+          "overgrowth_inklets": 5,
+          "overgrowth_jaxfruit": 4,
+          "overgrowth_mawler": 3,
+          "overgrowth_nibbit": 13,
+          "overgrowth_nibbits": 5,
+          "overgrowth_phrog_parasite": 3,
+          "overgrowth_ruby_raiders": 9,
+          "overgrowth_shrinker": 11,
+          "overgrowth_slimes": 9,
+          "overgrowth_slimes_normal": 5,
+          "overgrowth_strangler": 5,
+          "overgrowth_the_kin": 5,
+          "overgrowth_vantom": 2,
+          "overgrowth_vine_shambler": 7,
+          "underdocks_corpse_slugs": 6,
+          "underdocks_corpse_slugs_weak": 6,
+          "underdocks_cultists": 10,
+          "underdocks_fossil_stalker": 6,
+          "underdocks_gremlin_merc": 2,
+          "underdocks_haunted_ship": 3,
+          "underdocks_lagavulin_matriarch": 1,
+          "underdocks_living_fog": 6,
+          "underdocks_phantasmal_gardeners": 7,
+          "underdocks_punch_construct": 4,
+          "underdocks_seapunk": 9,
+          "underdocks_seapunk_weak": 14,
+          "underdocks_sewer_clam": 4,
+          "underdocks_skulking_colony": 4,
+          "underdocks_sludge_spinner": 14,
+          "underdocks_soul_fysh": 3,
+          "underdocks_terror_eel": 4,
+          "underdocks_toadpoles": 14,
+          "underdocks_two_tailed_rats": 8,
+          "underdocks_waterfall_giant": 5
+        },
+        "by_enemy_power": {
+          "about_to_blow": 1,
+          "artifact": 11,
+          "asleep": 2,
+          "demise": 1,
+          "hardened_shell_remaining": 17,
+          "illusion": 12,
+          "infested": 9,
+          "intangible": 3,
+          "minion": 42,
+          "plating": 16,
+          "ritual": 42,
+          "shriek": 12,
+          "slippery": 13,
+          "slow": 28,
+          "steam": 29,
+          "stolen_gold": 5,
+          "territorial": 11,
+          "thorns": 21,
+          "vulnerable": 258,
+          "weak": 16
+        },
+        "by_hp_band": {
+          "critical": 110,
+          "damaged": 188,
+          "healthy": 665
+        },
+        "by_potion": {
+          "ashwater": 2,
+          "attack_potion": 6,
+          "blessing_of_the_forge": 1,
+          "block_potion": 3,
+          "bottled_potential": 1,
+          "clarity": 1,
+          "colorless_potion": 13,
+          "dexterity_potion": 4,
+          "duplicator": 8,
+          "energy_potion": 5,
+          "explosive_ampoule": 4,
+          "fire_potion": 13,
+          "flex_potion": 1,
+          "fortifier": 4,
+          "fysh_oil": 2,
+          "gamblers_brew": 2,
+          "heart_of_iron": 2,
+          "liquid_bronze": 1,
+          "orobic_acid": 2,
+          "potion_of_binding": 8,
+          "powdered_demise": 1,
+          "power_potion": 6,
+          "regen_potion": 4,
+          "skill_potion": 7,
+          "snecko_oil": 2,
+          "soldiers_stew": 2,
+          "speed_potion": 4,
+          "stable_serum": 31,
+          "strength_potion": 2,
+          "swift_potion": 5,
+          "touch_of_insanity": 1,
+          "vulnerable_potion": 6,
+          "weak_potion": 5
+        },
+        "by_region": {
+          "overgrowth": 133,
+          "underdocks": 130
+        },
+        "by_room_kind": {
+          "boss": 16,
+          "combat": 220,
+          "elite": 27
+        },
+        "by_start_kind": {
+          "continuation": 700,
+          "opening": 263
+        },
+        "by_threat": {
+          "covered": 1,
+          "lethal": 49,
+          "none": 191,
+          "unblocked": 722
+        },
+        "combats": 263,
+        "deck_size_range": [
+          10,
+          22
+        ],
+        "distinct_inventories": 331,
+        "hp_range": [
+          1,
+          87
+        ],
+        "missing_elites_bosses": [
+          "overgrowth_ceremonial_beast"
+        ],
+        "missing_encounters": [
+          "overgrowth_ceremonial_beast"
+        ],
+        "missing_region_kinds": [],
+        "openings": 263,
+        "source_campaigns": 32,
+        "starts": 963,
+        "starts_by_encounter": {
+          "dense_vegetation_event": 13,
+          "overgrowth_bygone_effigy": 28,
+          "overgrowth_byrdonis": 11,
+          "overgrowth_crawlers": 27,
+          "overgrowth_cubex": 12,
+          "overgrowth_flyconid": 19,
+          "overgrowth_fogmog": 17,
+          "overgrowth_fuzzy": 50,
+          "overgrowth_inklets": 13,
+          "overgrowth_jaxfruit": 11,
+          "overgrowth_mawler": 7,
+          "overgrowth_nibbit": 37,
+          "overgrowth_nibbits": 25,
+          "overgrowth_phrog_parasite": 17,
+          "overgrowth_ruby_raiders": 32,
+          "overgrowth_shrinker": 33,
+          "overgrowth_slimes": 32,
+          "overgrowth_slimes_normal": 17,
+          "overgrowth_strangler": 21,
+          "overgrowth_the_kin": 36,
+          "overgrowth_vantom": 15,
+          "overgrowth_vine_shambler": 25,
+          "underdocks_corpse_slugs": 20,
+          "underdocks_corpse_slugs_weak": 22,
+          "underdocks_cultists": 43,
+          "underdocks_fossil_stalker": 14,
+          "underdocks_gremlin_merc": 7,
+          "underdocks_haunted_ship": 9,
+          "underdocks_lagavulin_matriarch": 7,
+          "underdocks_living_fog": 24,
+          "underdocks_phantasmal_gardeners": 28,
+          "underdocks_punch_construct": 12,
+          "underdocks_seapunk": 37,
+          "underdocks_seapunk_weak": 36,
+          "underdocks_sewer_clam": 14,
+          "underdocks_skulking_colony": 17,
+          "underdocks_sludge_spinner": 33,
+          "underdocks_soul_fysh": 22,
+          "underdocks_terror_eel": 21,
+          "underdocks_toadpoles": 41,
+          "underdocks_two_tailed_rats": 23,
+          "underdocks_waterfall_giant": 35
+        },
+        "starts_with_potions": 153
+      },
+      "identifier_allocation": "Baseline public IDs repeated for matched sorted-ID sampling; all state freshly generated",
+      "initializer": "runs/combat-fresh-500k-20260930/chunk-15/final.sts-model",
+      "initializer_sha256": "e87849e68757f03ea2b073f5d5c9410a04bbf183a4b7b8edc5177eb300a70f2d",
+      "matched_regenerated_cases": 1116,
+      "note": "Only train starts are used for speed runs. Existing training and held-out artifacts stay unchanged.",
+      "parameters": 80738,
+      "room_kinds": {
+        "boss": 115,
+        "combat": 726,
+        "elite": 122
+      },
+      "schema": "sts_combat_speed_preparation_v1",
+      "seconds": 191.33032099995762,
+      "snapshot_bytes_identical": true,
+      "source_commit": "7d5d88431b3058be2fe789414989d48e9687a07b",
+      "train_campaigns": 32,
+      "train_fights": 263,
+      "train_starts": 963
+    }
+  },
+  "protocols": {
+    "baseline": {
+      "architecture": {
+        "hidden_size": 48,
+        "message_layers": 2,
+        "schema": "sts_graph_actor_critic_v1"
+      },
+      "checkpointing": "Every closed PPO update plus initial/final; private resume states included",
+      "config_sha256": "8dbdd4c34632659c73340d991b7dac27990afccbd8ff7d50db461b9c94fc64ab",
+      "corpus": "runs/collector-optim-20261001/optimized-population/corpus/corpus.json",
+      "corpus_sha256": "cfdc5b0cfffb7dd96ffed9889c93d3566dfff6a593ed56315e6bc90b1745b36b",
+      "created_at": "2026-10-01T16:15:47.770156+00:00",
+      "experiment": {
+        "encounters": [
+          "combat",
+          "elite",
+          "boss"
+        ],
+        "ppo": {
+          "batch_size": 16,
+          "clip_ratio": 0.2,
+          "entropy_weight": 0.01,
+          "episode_decisions": 512,
+          "episode_seconds": 120.0,
+          "epochs": 2,
+          "gae_lambda": 0.95,
+          "gamma": 1.0,
+          "gradient_clip": 0.5,
+          "learning_rate": 0.0003,
+          "normalize_advantages": true,
+          "rollout_steps": 4096,
+          "target_kl": 0.03,
+          "value_weight": 0.5
+        },
+        "schema": "sts_ppo_experiment_v2",
+        "source": "act1_combat_corpus_v2:cfdc5b0cfffb7dd96ffed9889c93d3566dfff6a593ed56315e6bc90b1745b36b",
+        "training": {
+          "action_policy": "commit_decisions_v1",
+          "mode": "combat",
+          "reward": {
+            "schema": "sts_training_reward_v1",
+            "weights": {
+              "combat_loss": 0.0,
+              "combat_win": 1.0,
+              "end_turn_action": 0.0,
+              "potion_use_action": 0.0,
+              "win_hp_fraction": 0.1
+            }
+          },
+          "scenario_set": "ironclad_a0_overgrowth_v1"
+        }
+      },
+      "host": {
+        "logical_cpus": 18,
+        "machine": "arm64",
+        "os": "macOS-26.6.2-arm64-arm-64bit"
+      },
+      "implementation": {
+        "build": "82121ddd2c6fb8047bcec3221a8016fc7d06a512cda137dd93a19aef67b7c80f",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "cb4110d297799c139c5912c30a0e0903630c1c8ab2141eded608b90a7b1e0926",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "initialization": "Frozen 500k combat actor and critic; fresh optimizer/RNG/cursor per repetition",
+      "jobs": [
+        {
+          "decisions": 8192,
+          "label": "workers-8-replica-1",
+          "workers": 8
+        },
+        {
+          "decisions": 8192,
+          "label": "workers-8-replica-2",
+          "workers": 8
+        },
+        {
+          "decisions": 8192,
+          "label": "workers-8-replica-3",
+          "workers": 8
+        }
+      ],
+      "limitations": [
+        "New source-bound benchmark corpus; historical timings are different workloads.",
+        "Only the eight-worker repetitions share identical rollout allocation and policy updates.",
+        "Changing worker count changes RNG streams and sampled trajectories; scaling is workload-level.",
+        "No imitation, vocabulary fitting, validation or viewer export included in training throughput.",
+        "Profiler overhead excluded; background activity and OS caches uncontrolled.",
+        "Peak RSS is parent process only; no playing-strength or model-promotion claim."
+      ],
+      "model": "runs/combat-fresh-500k-20260930/chunk-15/final.sts-model",
+      "model_sha256": "e87849e68757f03ea2b073f5d5c9410a04bbf183a4b7b8edc5177eb300a70f2d",
+      "parameters": 80738,
+      "private_plan_sha256": "cf2a4d7d3399b50b18e3f9e9b668ebc5c44731c033155a8e5ce7b970ca8bf857",
+      "recording": "gzip level 6, every decision",
+      "runtime": {
+        "device": "cpu",
+        "python": "3.11.15",
+        "threads": 1,
+        "torch": "2.13.0"
+      },
+      "schema": "sts_combat_training_speed_v1",
+      "script_sha256": "4dc5712f140d1679178f742f58f06ba40a1db1a237308882389eb9a7f80c066a",
+      "source_commit": "7d5d88431b3058be2fe789414989d48e9687a07b",
+      "threads_per_process": 1,
+      "tracking": "Local MLflow Performance benchmarks experiment except explicit no-tracking/profile jobs"
+    },
+    "cards": {
+      "architecture": {
+        "hidden_size": 48,
+        "message_layers": 2,
+        "schema": "sts_graph_actor_critic_v1"
+      },
+      "checkpointing": "Every closed PPO update plus initial/final; private resume states included",
+      "config_sha256": "b55b07154060428871103730e79ace6e67af86e411081237fc0085286fc5a51e",
+      "corpus": "runs/collector-hotpaths-20261001/cards-population/corpus/corpus.json",
+      "corpus_sha256": "fcc030f4e6adc74e89ee6dcd8df4bf0ae416d0a1eac640ac9e16e514637942a2",
+      "created_at": "2026-10-01T16:15:48.681090+00:00",
+      "experiment": {
+        "encounters": [
+          "combat",
+          "elite",
+          "boss"
+        ],
+        "ppo": {
+          "batch_size": 16,
+          "clip_ratio": 0.2,
+          "entropy_weight": 0.01,
+          "episode_decisions": 512,
+          "episode_seconds": 120.0,
+          "epochs": 2,
+          "gae_lambda": 0.95,
+          "gamma": 1.0,
+          "gradient_clip": 0.5,
+          "learning_rate": 0.0003,
+          "normalize_advantages": true,
+          "rollout_steps": 4096,
+          "target_kl": 0.03,
+          "value_weight": 0.5
+        },
+        "schema": "sts_ppo_experiment_v2",
+        "source": "act1_combat_corpus_v2:fcc030f4e6adc74e89ee6dcd8df4bf0ae416d0a1eac640ac9e16e514637942a2",
+        "training": {
+          "action_policy": "commit_decisions_v1",
+          "mode": "combat",
+          "reward": {
+            "schema": "sts_training_reward_v1",
+            "weights": {
+              "combat_loss": 0.0,
+              "combat_win": 1.0,
+              "end_turn_action": 0.0,
+              "potion_use_action": 0.0,
+              "win_hp_fraction": 0.1
+            }
+          },
+          "scenario_set": "ironclad_a0_overgrowth_v1"
+        }
+      },
+      "host": {
+        "logical_cpus": 18,
+        "machine": "arm64",
+        "os": "macOS-26.6.2-arm64-arm-64bit"
+      },
+      "implementation": {
+        "build": "03506ad5d5c41a8b23d3e302472ba8613cec3f5d43c3af858d7247ee849caa34",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "cb4110d297799c139c5912c30a0e0903630c1c8ab2141eded608b90a7b1e0926",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "initialization": "Frozen 500k combat actor and critic; fresh optimizer/RNG/cursor per repetition",
+      "jobs": [
+        {
+          "decisions": 8192,
+          "label": "workers-8-replica-1",
+          "workers": 8
+        },
+        {
+          "decisions": 8192,
+          "label": "workers-8-replica-2",
+          "workers": 8
+        },
+        {
+          "decisions": 8192,
+          "label": "workers-8-replica-3",
+          "workers": 8
+        }
+      ],
+      "limitations": [
+        "New source-bound benchmark corpus; historical timings are different workloads.",
+        "Only the eight-worker repetitions share identical rollout allocation and policy updates.",
+        "Changing worker count changes RNG streams and sampled trajectories; scaling is workload-level.",
+        "No imitation, vocabulary fitting, validation or viewer export included in training throughput.",
+        "Profiler overhead excluded; background activity and OS caches uncontrolled.",
+        "Peak RSS is parent process only; no playing-strength or model-promotion claim."
+      ],
+      "model": "runs/combat-fresh-500k-20260930/chunk-15/final.sts-model",
+      "model_sha256": "e87849e68757f03ea2b073f5d5c9410a04bbf183a4b7b8edc5177eb300a70f2d",
+      "parameters": 80738,
+      "private_plan_sha256": "cf2a4d7d3399b50b18e3f9e9b668ebc5c44731c033155a8e5ce7b970ca8bf857",
+      "recording": "gzip level 6, every decision",
+      "runtime": {
+        "device": "cpu",
+        "python": "3.11.15",
+        "threads": 1,
+        "torch": "2.13.0"
+      },
+      "schema": "sts_combat_training_speed_v1",
+      "script_sha256": "4dc5712f140d1679178f742f58f06ba40a1db1a237308882389eb9a7f80c066a",
+      "source_commit": "7d5d88431b3058be2fe789414989d48e9687a07b",
+      "threads_per_process": 1,
+      "tracking": "Local MLflow Performance benchmarks experiment except explicit no-tracking/profile jobs"
+    },
+    "combined": {
+      "architecture": {
+        "hidden_size": 48,
+        "message_layers": 2,
+        "schema": "sts_graph_actor_critic_v1"
+      },
+      "checkpointing": "Every closed PPO update plus initial/final; private resume states included",
+      "config_sha256": "322145a2eff2adf6ee951ceccc5cc0e817fd0a0cd7769fdc2c0bce500523568a",
+      "corpus": "runs/collector-hotpaths-20261001/combined-population/corpus/corpus.json",
+      "corpus_sha256": "eb95bc66a0955669d7d2249ea7444f962ea309b647d020d58795251c6345d37c",
+      "created_at": "2026-10-01T16:15:49.469529+00:00",
+      "experiment": {
+        "encounters": [
+          "combat",
+          "elite",
+          "boss"
+        ],
+        "ppo": {
+          "batch_size": 16,
+          "clip_ratio": 0.2,
+          "entropy_weight": 0.01,
+          "episode_decisions": 512,
+          "episode_seconds": 120.0,
+          "epochs": 2,
+          "gae_lambda": 0.95,
+          "gamma": 1.0,
+          "gradient_clip": 0.5,
+          "learning_rate": 0.0003,
+          "normalize_advantages": true,
+          "rollout_steps": 4096,
+          "target_kl": 0.03,
+          "value_weight": 0.5
+        },
+        "schema": "sts_ppo_experiment_v2",
+        "source": "act1_combat_corpus_v2:eb95bc66a0955669d7d2249ea7444f962ea309b647d020d58795251c6345d37c",
+        "training": {
+          "action_policy": "commit_decisions_v1",
+          "mode": "combat",
+          "reward": {
+            "schema": "sts_training_reward_v1",
+            "weights": {
+              "combat_loss": 0.0,
+              "combat_win": 1.0,
+              "end_turn_action": 0.0,
+              "potion_use_action": 0.0,
+              "win_hp_fraction": 0.1
+            }
+          },
+          "scenario_set": "ironclad_a0_overgrowth_v1"
+        }
+      },
+      "host": {
+        "logical_cpus": 18,
+        "machine": "arm64",
+        "os": "macOS-26.6.2-arm64-arm-64bit"
+      },
+      "implementation": {
+        "build": "adf19a56ffbaabaaa0086f0508515831aec275d415b397f6e523bd958d091a10",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "cb4110d297799c139c5912c30a0e0903630c1c8ab2141eded608b90a7b1e0926",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "initialization": "Frozen 500k combat actor and critic; fresh optimizer/RNG/cursor per repetition",
+      "jobs": [
+        {
+          "decisions": 8192,
+          "label": "workers-8-replica-1",
+          "workers": 8
+        },
+        {
+          "decisions": 8192,
+          "label": "workers-8-replica-2",
+          "workers": 8
+        },
+        {
+          "decisions": 8192,
+          "label": "workers-8-replica-3",
+          "workers": 8
+        }
+      ],
+      "limitations": [
+        "New source-bound benchmark corpus; historical timings are different workloads.",
+        "Only the eight-worker repetitions share identical rollout allocation and policy updates.",
+        "Changing worker count changes RNG streams and sampled trajectories; scaling is workload-level.",
+        "No imitation, vocabulary fitting, validation or viewer export included in training throughput.",
+        "Profiler overhead excluded; background activity and OS caches uncontrolled.",
+        "Peak RSS is parent process only; no playing-strength or model-promotion claim."
+      ],
+      "model": "runs/combat-fresh-500k-20260930/chunk-15/final.sts-model",
+      "model_sha256": "e87849e68757f03ea2b073f5d5c9410a04bbf183a4b7b8edc5177eb300a70f2d",
+      "parameters": 80738,
+      "private_plan_sha256": "cf2a4d7d3399b50b18e3f9e9b668ebc5c44731c033155a8e5ce7b970ca8bf857",
+      "recording": "gzip level 6, every decision",
+      "runtime": {
+        "device": "cpu",
+        "python": "3.11.15",
+        "threads": 1,
+        "torch": "2.13.0"
+      },
+      "schema": "sts_combat_training_speed_v1",
+      "script_sha256": "4dc5712f140d1679178f742f58f06ba40a1db1a237308882389eb9a7f80c066a",
+      "source_commit": "7d5d88431b3058be2fe789414989d48e9687a07b",
+      "threads_per_process": 1,
+      "tracking": "Local MLflow Performance benchmarks experiment except explicit no-tracking/profile jobs"
+    }
+  },
+  "results": {
+    "benchmark_script_sha256": "4dc5712f140d1679178f742f58f06ba40a1db1a237308882389eb9a7f80c066a",
+    "interleaved_orders": [
+      [
+        "baseline",
+        "cards",
+        "combined"
+      ],
+      [
+        "cards",
+        "combined",
+        "baseline"
+      ],
+      [
+        "combined",
+        "baseline",
+        "cards"
+      ]
+    ],
+    "limitations": [
+      "Three repetitions per variant, uncontrolled background activity and machine temperature.",
+      "Freshly regenerated identical population for each implementation; no research-model continuation.",
+      "Only training split used. Corpus generation, evaluation and inspector export excluded."
+    ],
+    "matched_final_weights": true,
+    "medians": {
+      "baseline": {
+        "collection_seconds": 46.05077170790173,
+        "decisions_per_second": 110.79576091101507,
+        "process_seconds": 73.93784683314152,
+        "update_seconds": 23.714386833831668
+      },
+      "cards": {
+        "collection_seconds": 43.99337429110892,
+        "decisions_per_second": 114.69297294390738,
+        "process_seconds": 71.42547437502071,
+        "update_seconds": 23.73385575111024
+      },
+      "combined": {
+        "collection_seconds": 42.56465204106644,
+        "decisions_per_second": 117.13484822470036,
+        "process_seconds": 69.93648879183456,
+        "update_seconds": 23.682175541995093
+      }
+    },
+    "runs": [
+      {
+        "collection_round_seconds": [
+          25.590352792060003,
+          20.806695124832913
+        ],
+        "collection_seconds": 46.397047916892916,
+        "decisions": 8192,
+        "decisions_per_second": 110.53092320902928,
+        "epochs": [
+          2,
+          2
+        ],
+        "factory_seconds": 0.06462075002491474,
+        "final_fingerprint": "sts_policy_state_v2:e513ab57ef4368aa2f5f7fcd36b959df4cf41a94124f619a633dd3578b41a452",
+        "invocation_seconds": 72.78570366697386,
+        "kl_early_stops": [
+          false,
+          false
+        ],
+        "label": "workers-8-replica-1",
+        "memory_breakdown": [
+          {
+            "candidates": 441072,
+            "fields": 205412160,
+            "link_positions": 4914564,
+            "links": 13105504,
+            "nodes": 14716512,
+            "numbers": 51353040,
+            "parents": 7358256,
+            "positions": 7358256
+          },
+          {
+            "candidates": 450144,
+            "fields": 203111936,
+            "link_positions": 4883256,
+            "links": 13022016,
+            "nodes": 14610848,
+            "numbers": 50777984,
+            "parents": 7305424,
+            "positions": 7305424
+          }
+        ],
+        "optimizer_steps": 1024,
+        "packed_rollout_bytes": [
+          304659364,
+          301467032
+        ],
+        "parent_peak_rss_bytes": 1470808064,
+        "phase_timings": {
+          "checkpoint_seconds": 0.087376959156245,
+          "report_serialization_seconds": 0.13513429183512926,
+          "tracking_log_seconds": 0.29880541609600186
+        },
+        "process_seconds": 74.11500566685572,
+        "profile": false,
+        "repetition": 1,
+        "report_seconds": 70.9686595001258,
+        "sequence": 0,
+        "summary": {
+          "accepted_decisions": 8192,
+          "components": {
+            "combat_loss": 193.0,
+            "combat_win": 268.0,
+            "end_turn_action": 1825.0,
+            "potion_use_action": 129.0,
+            "win_hp_fraction": 132.03392759758628
+          },
+          "cutoffs": 16,
+          "decisions_per_second": 115.43123482535948,
+          "episode_attempts": 477,
+          "failed_episodes": 0,
+          "losses": 193,
+          "mean_hp_on_win": 39.67537313432836,
+          "potion_use_actions": 129,
+          "processed_decisions": 8192,
+          "skipped_decisions": 0,
+          "skipped_updates": 0,
+          "task_return": 281.2033927597586,
+          "trained_decisions": 8192,
+          "wins": 268
+        },
+        "tracking": true,
+        "update_round_seconds": [
+          11.852056917035952,
+          11.862329916795716
+        ],
+        "update_seconds": 23.714386833831668,
+        "variant": "baseline",
+        "worker_batches": [
+          [
+            {
+              "quota": 512,
+              "seconds": 19.42005795892328,
+              "status": "complete",
+              "steps": 512,
+              "worker": 0
+            },
+            {
+              "quota": 512,
+              "seconds": 20.450229542097077,
+              "status": "complete",
+              "steps": 512,
+              "worker": 1
+            },
+            {
+              "quota": 512,
+              "seconds": 20.334316625026986,
+              "status": "complete",
+              "steps": 512,
+              "worker": 2
+            },
+            {
+              "quota": 512,
+              "seconds": 20.355471290880814,
+              "status": "complete",
+              "steps": 512,
+              "worker": 3
+            },
+            {
+              "quota": 512,
+              "seconds": 20.19448229088448,
+              "status": "complete",
+              "steps": 512,
+              "worker": 4
+            },
+            {
+              "quota": 512,
+              "seconds": 20.66470674984157,
+              "status": "complete",
+              "steps": 512,
+              "worker": 5
+            },
+            {
+              "quota": 512,
+              "seconds": 20.00778629188426,
+              "status": "complete",
+              "steps": 512,
+              "worker": 6
+            },
+            {
+              "quota": 512,
+              "seconds": 19.813129582908005,
+              "status": "complete",
+              "steps": 512,
+              "worker": 7
+            }
+          ],
+          [
+            {
+              "quota": 512,
+              "seconds": 19.528997874818742,
+              "status": "complete",
+              "steps": 512,
+              "worker": 0
+            },
+            {
+              "quota": 512,
+              "seconds": 20.43933116691187,
+              "status": "complete",
+              "steps": 512,
+              "worker": 1
+            },
+            {
+              "quota": 512,
+              "seconds": 19.996308083180338,
+              "status": "complete",
+              "steps": 512,
+              "worker": 2
+            },
+            {
+              "quota": 512,
+              "seconds": 20.038691125111654,
+              "status": "complete",
+              "steps": 512,
+              "worker": 3
+            },
+            {
+              "quota": 512,
+              "seconds": 19.599796375026926,
+              "status": "complete",
+              "steps": 512,
+              "worker": 4
+            },
+            {
+              "quota": 512,
+              "seconds": 20.643946334021166,
+              "status": "complete",
+              "steps": 512,
+              "worker": 5
+            },
+            {
+              "quota": 512,
+              "seconds": 20.070050499867648,
+              "status": "complete",
+              "steps": 512,
+              "worker": 6
+            },
+            {
+              "quota": 512,
+              "seconds": 20.095709457993507,
+              "status": "complete",
+              "steps": 512,
+              "worker": 7
+            }
+          ]
+        ],
+        "workers": 8
+      },
+      {
+        "collection_round_seconds": [
+          24.498406916856766,
+          20.04445150005631
+        ],
+        "collection_seconds": 44.54285841691308,
+        "decisions": 8192,
+        "decisions_per_second": 114.00307404263867,
+        "epochs": [
+          2,
+          2
+        ],
+        "factory_seconds": 0.05336433299817145,
+        "final_fingerprint": "sts_policy_state_v2:e513ab57ef4368aa2f5f7fcd36b959df4cf41a94124f619a633dd3578b41a452",
+        "invocation_seconds": 70.66435466706753,
+        "kl_early_stops": [
+          false,
+          false
+        ],
+        "label": "workers-8-replica-1",
+        "memory_breakdown": [
+          {
+            "candidates": 441072,
+            "fields": 205412160,
+            "link_positions": 4914564,
+            "links": 13105504,
+            "nodes": 14716512,
+            "numbers": 51353040,
+            "parents": 7358256,
+            "positions": 7358256
+          },
+          {
+            "candidates": 450144,
+            "fields": 203111936,
+            "link_positions": 4883256,
+            "links": 13022016,
+            "nodes": 14610848,
+            "numbers": 50777984,
+            "parents": 7305424,
+            "positions": 7305424
+          }
+        ],
+        "optimizer_steps": 1024,
+        "packed_rollout_bytes": [
+          304659364,
+          301467032
+        ],
+        "parent_peak_rss_bytes": 1464893440,
+        "phase_timings": {
+          "checkpoint_seconds": 0.09448354225605726,
+          "report_serialization_seconds": 0.13803641707636416,
+          "tracking_log_seconds": 0.2960289167240262
+        },
+        "process_seconds": 71.85771145904437,
+        "profile": false,
+        "repetition": 1,
+        "report_seconds": 69.11019479203969,
+        "sequence": 1,
+        "summary": {
+          "accepted_decisions": 8192,
+          "components": {
+            "combat_loss": 193.0,
+            "combat_win": 268.0,
+            "end_turn_action": 1825.0,
+            "potion_use_action": 129.0,
+            "win_hp_fraction": 132.03392759758628
+          },
+          "cutoffs": 16,
+          "decisions_per_second": 118.53533367472983,
+          "episode_attempts": 477,
+          "failed_episodes": 0,
+          "losses": 193,
+          "mean_hp_on_win": 39.67537313432836,
+          "potion_use_actions": 129,
+          "processed_decisions": 8192,
+          "skipped_decisions": 0,
+          "skipped_updates": 0,
+          "task_return": 281.2033927597586,
+          "trained_decisions": 8192,
+          "wins": 268
+        },
+        "tracking": true,
+        "update_round_seconds": [
+          12.043620709097013,
+          11.690235042013228
+        ],
+        "update_seconds": 23.73385575111024,
+        "variant": "cards",
+        "worker_batches": [
+          [
+            {
+              "quota": 512,
+              "seconds": 18.558255624957383,
+              "status": "complete",
+              "steps": 512,
+              "worker": 0
+            },
+            {
+              "quota": 512,
+              "seconds": 19.407876665936783,
+              "status": "complete",
+              "steps": 512,
+              "worker": 1
+            },
+            {
+              "quota": 512,
+              "seconds": 19.503765667090192,
+              "status": "complete",
+              "steps": 512,
+              "worker": 2
+            },
+            {
+              "quota": 512,
+              "seconds": 19.294794833054766,
+              "status": "complete",
+              "steps": 512,
+              "worker": 3
+            },
+            {
+              "quota": 512,
+              "seconds": 19.132401667069644,
+              "status": "complete",
+              "steps": 512,
+              "worker": 4
+            },
+            {
+              "quota": 512,
+              "seconds": 19.491123124957085,
+              "status": "complete",
+              "steps": 512,
+              "worker": 5
+            },
+            {
+              "quota": 512,
+              "seconds": 19.1979940419551,
+              "status": "complete",
+              "steps": 512,
+              "worker": 6
+            },
+            {
+              "quota": 512,
+              "seconds": 18.87562916590832,
+              "status": "complete",
+              "steps": 512,
+              "worker": 7
+            }
+          ],
+          [
+            {
+              "quota": 512,
+              "seconds": 18.875556458020583,
+              "status": "complete",
+              "steps": 512,
+              "worker": 0
+            },
+            {
+              "quota": 512,
+              "seconds": 19.747043292038143,
+              "status": "complete",
+              "steps": 512,
+              "worker": 1
+            },
+            {
+              "quota": 512,
+              "seconds": 19.249188458081335,
+              "status": "complete",
+              "steps": 512,
+              "worker": 2
+            },
+            {
+              "quota": 512,
+              "seconds": 19.45909025007859,
+              "status": "complete",
+              "steps": 512,
+              "worker": 3
+            },
+            {
+              "quota": 512,
+              "seconds": 18.931818082928658,
+              "status": "complete",
+              "steps": 512,
+              "worker": 4
+            },
+            {
+              "quota": 512,
+              "seconds": 19.91277779196389,
+              "status": "complete",
+              "steps": 512,
+              "worker": 5
+            },
+            {
+              "quota": 512,
+              "seconds": 19.485709415981546,
+              "status": "complete",
+              "steps": 512,
+              "worker": 6
+            },
+            {
+              "quota": 512,
+              "seconds": 19.63991054194048,
+              "status": "complete",
+              "steps": 512,
+              "worker": 7
+            }
+          ]
+        ],
+        "workers": 8
+      },
+      {
+        "collection_round_seconds": [
+          23.390160833019763,
+          18.903045624960214
+        ],
+        "collection_seconds": 42.29320645797998,
+        "decisions": 8192,
+        "decisions_per_second": 116.87200676630236,
+        "epochs": [
+          2,
+          2
+        ],
+        "factory_seconds": 0.05150524992495775,
+        "final_fingerprint": "sts_policy_state_v2:e513ab57ef4368aa2f5f7fcd36b959df4cf41a94124f619a633dd3578b41a452",
+        "invocation_seconds": 68.89197091711685,
+        "kl_early_stops": [
+          false,
+          false
+        ],
+        "label": "workers-8-replica-1",
+        "memory_breakdown": [
+          {
+            "candidates": 441072,
+            "fields": 205412160,
+            "link_positions": 4914564,
+            "links": 13105504,
+            "nodes": 14716512,
+            "numbers": 51353040,
+            "parents": 7358256,
+            "positions": 7358256
+          },
+          {
+            "candidates": 450144,
+            "fields": 203111936,
+            "link_positions": 4883256,
+            "links": 13022016,
+            "nodes": 14610848,
+            "numbers": 50777984,
+            "parents": 7305424,
+            "positions": 7305424
+          }
+        ],
+        "optimizer_steps": 1024,
+        "packed_rollout_bytes": [
+          304659364,
+          301467032
+        ],
+        "parent_peak_rss_bytes": 1466040320,
+        "phase_timings": {
+          "checkpoint_seconds": 0.08751875022426248,
+          "report_serialization_seconds": 0.1385681238025427,
+          "tracking_log_seconds": 0.29700037371367216
+        },
+        "process_seconds": 70.09377375012264,
+        "profile": false,
+        "repetition": 1,
+        "report_seconds": 67.42164800013416,
+        "sequence": 2,
+        "summary": {
+          "accepted_decisions": 8192,
+          "components": {
+            "combat_loss": 193.0,
+            "combat_win": 268.0,
+            "end_turn_action": 1825.0,
+            "potion_use_action": 129.0,
+            "win_hp_fraction": 132.03392759758628
+          },
+          "cutoffs": 16,
+          "decisions_per_second": 121.50400120720424,
+          "episode_attempts": 477,
+          "failed_episodes": 0,
+          "losses": 193,
+          "mean_hp_on_win": 39.67537313432836,
+          "potion_use_actions": 129,
+          "processed_decisions": 8192,
+          "skipped_decisions": 0,
+          "skipped_updates": 0,
+          "task_return": 281.2033927597586,
+          "trained_decisions": 8192,
+          "wins": 268
+        },
+        "tracking": true,
+        "update_round_seconds": [
+          11.795729041099548,
+          12.523918709019199
+        ],
+        "update_seconds": 24.319647750118747,
+        "variant": "combined",
+        "worker_batches": [
+          [
+            {
+              "quota": 512,
+              "seconds": 17.644324915949255,
+              "status": "complete",
+              "steps": 512,
+              "worker": 0
+            },
+            {
+              "quota": 512,
+              "seconds": 18.576260624919087,
+              "status": "complete",
+              "steps": 512,
+              "worker": 1
+            },
+            {
+              "quota": 512,
+              "seconds": 18.429297290975228,
+              "status": "complete",
+              "steps": 512,
+              "worker": 2
+            },
+            {
+              "quota": 512,
+              "seconds": 18.50747154210694,
+              "status": "complete",
+              "steps": 512,
+              "worker": 3
+            },
+            {
+              "quota": 512,
+              "seconds": 18.220079082995653,
+              "status": "complete",
+              "steps": 512,
+              "worker": 4
+            },
+            {
+              "quota": 512,
+              "seconds": 18.70088629098609,
+              "status": "complete",
+              "steps": 512,
+              "worker": 5
+            },
+            {
+              "quota": 512,
+              "seconds": 18.409024042077363,
+              "status": "complete",
+              "steps": 512,
+              "worker": 6
+            },
+            {
+              "quota": 512,
+              "seconds": 17.875228666933253,
+              "status": "complete",
+              "steps": 512,
+              "worker": 7
+            }
+          ],
+          [
+            {
+              "quota": 512,
+              "seconds": 17.787015791982412,
+              "status": "complete",
+              "steps": 512,
+              "worker": 0
+            },
+            {
+              "quota": 512,
+              "seconds": 18.780588542111218,
+              "status": "complete",
+              "steps": 512,
+              "worker": 1
+            },
+            {
+              "quota": 512,
+              "seconds": 18.299937166972086,
+              "status": "complete",
+              "steps": 512,
+              "worker": 2
+            },
+            {
+              "quota": 512,
+              "seconds": 18.27294237515889,
+              "status": "complete",
+              "steps": 512,
+              "worker": 3
+            },
+            {
+              "quota": 512,
+              "seconds": 18.03191445907578,
+              "status": "complete",
+              "steps": 512,
+              "worker": 4
+            },
+            {
+              "quota": 512,
+              "seconds": 18.686738749966025,
+              "status": "complete",
+              "steps": 512,
+              "worker": 5
+            },
+            {
+              "quota": 512,
+              "seconds": 18.36897254199721,
+              "status": "complete",
+              "steps": 512,
+              "worker": 6
+            },
+            {
+              "quota": 512,
+              "seconds": 18.40619416697882,
+              "status": "complete",
+              "steps": 512,
+              "worker": 7
+            }
+          ]
+        ],
+        "workers": 8
+      },
+      {
+        "collection_round_seconds": [
+          24.510485083097592,
+          19.48288920801133
+        ],
+        "collection_seconds": 43.99337429110892,
+        "decisions": 8192,
+        "decisions_per_second": 114.69297294390738,
+        "epochs": [
+          2,
+          2
+        ],
+        "factory_seconds": 0.05347170797176659,
+        "final_fingerprint": "sts_policy_state_v2:e513ab57ef4368aa2f5f7fcd36b959df4cf41a94124f619a633dd3578b41a452",
+        "invocation_seconds": 70.22299100016244,
+        "kl_early_stops": [
+          false,
+          false
+        ],
+        "label": "workers-8-replica-2",
+        "memory_breakdown": [
+          {
+            "candidates": 441072,
+            "fields": 205412160,
+            "link_positions": 4914564,
+            "links": 13105504,
+            "nodes": 14716512,
+            "numbers": 51353040,
+            "parents": 7358256,
+            "positions": 7358256
+          },
+          {
+            "candidates": 450144,
+            "fields": 203111936,
+            "link_positions": 4883256,
+            "links": 13022016,
+            "nodes": 14610848,
+            "numbers": 50777984,
+            "parents": 7305424,
+            "positions": 7305424
+          }
+        ],
+        "optimizer_steps": 1024,
+        "packed_rollout_bytes": [
+          304659364,
+          301467032
+        ],
+        "parent_peak_rss_bytes": 1468497920,
+        "phase_timings": {
+          "checkpoint_seconds": 0.08510995772667229,
+          "report_serialization_seconds": 0.1368297920562327,
+          "tracking_log_seconds": 0.286666665924713
+        },
+        "process_seconds": 71.42547437502071,
+        "profile": false,
+        "repetition": 2,
+        "report_seconds": 68.57455566711724,
+        "sequence": 3,
+        "summary": {
+          "accepted_decisions": 8192,
+          "components": {
+            "combat_loss": 193.0,
+            "combat_win": 268.0,
+            "end_turn_action": 1825.0,
+            "potion_use_action": 129.0,
+            "win_hp_fraction": 132.03392759758628
+          },
+          "cutoffs": 16,
+          "decisions_per_second": 119.46121881950764,
+          "episode_attempts": 477,
+          "failed_episodes": 0,
+          "losses": 193,
+          "mean_hp_on_win": 39.67537313432836,
+          "potion_use_actions": 129,
+          "processed_decisions": 8192,
+          "skipped_decisions": 0,
+          "skipped_updates": 0,
+          "task_return": 281.2033927597586,
+          "trained_decisions": 8192,
+          "wins": 268
+        },
+        "tracking": true,
+        "update_round_seconds": [
+          11.853867459110916,
+          11.896203707903624
+        ],
+        "update_seconds": 23.75007116701454,
+        "variant": "cards",
+        "worker_batches": [
+          [
+            {
+              "quota": 512,
+              "seconds": 18.34197233314626,
+              "status": "complete",
+              "steps": 512,
+              "worker": 0
+            },
+            {
+              "quota": 512,
+              "seconds": 19.333730374928564,
+              "status": "complete",
+              "steps": 512,
+              "worker": 1
+            },
+            {
+              "quota": 512,
+              "seconds": 19.08276362484321,
+              "status": "complete",
+              "steps": 512,
+              "worker": 2
+            },
+            {
+              "quota": 512,
+              "seconds": 19.148981207981706,
+              "status": "complete",
+              "steps": 512,
+              "worker": 3
+            },
+            {
+              "quota": 512,
+              "seconds": 18.892599791055545,
+              "status": "complete",
+              "steps": 512,
+              "worker": 4
+            },
+            {
+              "quota": 512,
+              "seconds": 19.32627654192038,
+              "status": "complete",
+              "steps": 512,
+              "worker": 5
+            },
+            {
+              "quota": 512,
+              "seconds": 19.041778958868235,
+              "status": "complete",
+              "steps": 512,
+              "worker": 6
+            },
+            {
+              "quota": 512,
+              "seconds": 18.655707374913618,
+              "status": "complete",
+              "steps": 512,
+              "worker": 7
+            }
+          ],
+          [
+            {
+              "quota": 512,
+              "seconds": 18.289923875126988,
+              "status": "complete",
+              "steps": 512,
+              "worker": 0
+            },
+            {
+              "quota": 512,
+              "seconds": 19.297398124821484,
+              "status": "complete",
+              "steps": 512,
+              "worker": 1
+            },
+            {
+              "quota": 512,
+              "seconds": 18.721928959013894,
+              "status": "complete",
+              "steps": 512,
+              "worker": 2
+            },
+            {
+              "quota": 512,
+              "seconds": 18.910043832845986,
+              "status": "complete",
+              "steps": 512,
+              "worker": 3
+            },
+            {
+              "quota": 512,
+              "seconds": 18.585425208089873,
+              "status": "complete",
+              "steps": 512,
+              "worker": 4
+            },
+            {
+              "quota": 512,
+              "seconds": 19.36028241692111,
+              "status": "complete",
+              "steps": 512,
+              "worker": 5
+            },
+            {
+              "quota": 512,
+              "seconds": 18.819211083929986,
+              "status": "complete",
+              "steps": 512,
+              "worker": 6
+            },
+            {
+              "quota": 512,
+              "seconds": 19.07456299988553,
+              "status": "complete",
+              "steps": 512,
+              "worker": 7
+            }
+          ]
+        ],
+        "workers": 8
+      },
+      {
+        "collection_round_seconds": [
+          23.53566962503828,
+          19.028982416028157
+        ],
+        "collection_seconds": 42.56465204106644,
+        "decisions": 8192,
+        "decisions_per_second": 117.63277277009749,
+        "epochs": [
+          2,
+          2
+        ],
+        "factory_seconds": 0.05070366687141359,
+        "final_fingerprint": "sts_policy_state_v2:e513ab57ef4368aa2f5f7fcd36b959df4cf41a94124f619a633dd3578b41a452",
+        "invocation_seconds": 68.49532879097387,
+        "kl_early_stops": [
+          false,
+          false
+        ],
+        "label": "workers-8-replica-2",
+        "memory_breakdown": [
+          {
+            "candidates": 441072,
+            "fields": 205412160,
+            "link_positions": 4914564,
+            "links": 13105504,
+            "nodes": 14716512,
+            "numbers": 51353040,
+            "parents": 7358256,
+            "positions": 7358256
+          },
+          {
+            "candidates": 450144,
+            "fields": 203111936,
+            "link_positions": 4883256,
+            "links": 13022016,
+            "nodes": 14610848,
+            "numbers": 50777984,
+            "parents": 7305424,
+            "positions": 7305424
+          }
+        ],
+        "optimizer_steps": 1024,
+        "packed_rollout_bytes": [
+          304659364,
+          301467032
+        ],
+        "parent_peak_rss_bytes": 1480245248,
+        "phase_timings": {
+          "checkpoint_seconds": 0.08321670931763947,
+          "report_serialization_seconds": 0.13780187512747943,
+          "tracking_log_seconds": 0.2764988332055509
+        },
+        "process_seconds": 69.64045654190704,
+        "profile": false,
+        "repetition": 2,
+        "report_seconds": 67.03944820910692,
+        "sequence": 4,
+        "summary": {
+          "accepted_decisions": 8192,
+          "components": {
+            "combat_loss": 193.0,
+            "combat_win": 268.0,
+            "end_turn_action": 1825.0,
+            "potion_use_action": 129.0,
+            "win_hp_fraction": 132.03392759758628
+          },
+          "cutoffs": 16,
+          "decisions_per_second": 122.19670983042435,
+          "episode_attempts": 477,
+          "failed_episodes": 0,
+          "losses": 193,
+          "mean_hp_on_win": 39.67537313432836,
+          "potion_use_actions": 129,
+          "processed_decisions": 8192,
+          "skipped_decisions": 0,
+          "skipped_updates": 0,
+          "task_return": 281.2033927597586,
+          "trained_decisions": 8192,
+          "wins": 268
+        },
+        "tracking": true,
+        "update_round_seconds": [
+          11.866372625110671,
+          11.815802916884422
+        ],
+        "update_seconds": 23.682175541995093,
+        "variant": "combined",
+        "worker_batches": [
+          [
+            {
+              "quota": 512,
+              "seconds": 17.688663040986285,
+              "status": "complete",
+              "steps": 512,
+              "worker": 0
+            },
+            {
+              "quota": 512,
+              "seconds": 18.68500354210846,
+              "status": "complete",
+              "steps": 512,
+              "worker": 1
+            },
+            {
+              "quota": 512,
+              "seconds": 18.589893124997616,
+              "status": "complete",
+              "steps": 512,
+              "worker": 2
+            },
+            {
+              "quota": 512,
+              "seconds": 18.456667582970113,
+              "status": "complete",
+              "steps": 512,
+              "worker": 3
+            },
+            {
+              "quota": 512,
+              "seconds": 18.22887025005184,
+              "status": "complete",
+              "steps": 512,
+              "worker": 4
+            },
+            {
+              "quota": 512,
+              "seconds": 18.75453995820135,
+              "status": "complete",
+              "steps": 512,
+              "worker": 5
+            },
+            {
+              "quota": 512,
+              "seconds": 18.47428858280182,
+              "status": "complete",
+              "steps": 512,
+              "worker": 6
+            },
+            {
+              "quota": 512,
+              "seconds": 17.9725379999727,
+              "status": "complete",
+              "steps": 512,
+              "worker": 7
+            }
+          ],
+          [
+            {
+              "quota": 512,
+              "seconds": 17.96007583406754,
+              "status": "complete",
+              "steps": 512,
+              "worker": 0
+            },
+            {
+              "quota": 512,
+              "seconds": 18.793469665804878,
+              "status": "complete",
+              "steps": 512,
+              "worker": 1
+            },
+            {
+              "quota": 512,
+              "seconds": 18.262378124985844,
+              "status": "complete",
+              "steps": 512,
+              "worker": 2
+            },
+            {
+              "quota": 512,
+              "seconds": 18.34311924991198,
+              "status": "complete",
+              "steps": 512,
+              "worker": 3
+            },
+            {
+              "quota": 512,
+              "seconds": 18.324588374933228,
+              "status": "complete",
+              "steps": 512,
+              "worker": 4
+            },
+            {
+              "quota": 512,
+              "seconds": 18.89740191702731,
+              "status": "complete",
+              "steps": 512,
+              "worker": 5
+            },
+            {
+              "quota": 512,
+              "seconds": 18.262144458014518,
+              "status": "complete",
+              "steps": 512,
+              "worker": 6
+            },
+            {
+              "quota": 512,
+              "seconds": 18.612401207908988,
+              "status": "complete",
+              "steps": 512,
+              "worker": 7
+            }
+          ]
+        ],
+        "workers": 8
+      },
+      {
+        "collection_round_seconds": [
+          25.274329124949872,
+          20.77644258295186
+        ],
+        "collection_seconds": 46.05077170790173,
+        "decisions": 8192,
+        "decisions_per_second": 110.79576091101507,
+        "epochs": [
+          2,
+          2
+        ],
+        "factory_seconds": 0.053100291173905134,
+        "final_fingerprint": "sts_policy_state_v2:e513ab57ef4368aa2f5f7fcd36b959df4cf41a94124f619a633dd3578b41a452",
+        "invocation_seconds": 72.72836258308962,
+        "kl_early_stops": [
+          false,
+          false
+        ],
+        "label": "workers-8-replica-2",
+        "memory_breakdown": [
+          {
+            "candidates": 441072,
+            "fields": 205412160,
+            "link_positions": 4914564,
+            "links": 13105504,
+            "nodes": 14716512,
+            "numbers": 51353040,
+            "parents": 7358256,
+            "positions": 7358256
+          },
+          {
+            "candidates": 450144,
+            "fields": 203111936,
+            "link_positions": 4883256,
+            "links": 13022016,
+            "nodes": 14610848,
+            "numbers": 50777984,
+            "parents": 7305424,
+            "positions": 7305424
+          }
+        ],
+        "optimizer_steps": 1024,
+        "packed_rollout_bytes": [
+          304659364,
+          301467032
+        ],
+        "parent_peak_rss_bytes": 1474101248,
+        "phase_timings": {
+          "checkpoint_seconds": 0.08252095826901495,
+          "report_serialization_seconds": 0.14560649986378849,
+          "tracking_log_seconds": 0.2828613731544465
+        },
+        "process_seconds": 73.93784683314152,
+        "profile": false,
+        "repetition": 2,
+        "report_seconds": 71.24340858403593,
+        "sequence": 5,
+        "summary": {
+          "accepted_decisions": 8192,
+          "components": {
+            "combat_loss": 193.0,
+            "combat_win": 268.0,
+            "end_turn_action": 1825.0,
+            "potion_use_action": 129.0,
+            "win_hp_fraction": 132.03392759758628
+          },
+          "cutoffs": 16,
+          "decisions_per_second": 114.98607608501828,
+          "episode_attempts": 477,
+          "failed_episodes": 0,
+          "losses": 193,
+          "mean_hp_on_win": 39.67537313432836,
+          "potion_use_actions": 129,
+          "processed_decisions": 8192,
+          "skipped_decisions": 0,
+          "skipped_updates": 0,
+          "task_return": 281.2033927597586,
+          "trained_decisions": 8192,
+          "wins": 268
+        },
+        "tracking": true,
+        "update_round_seconds": [
+          11.877330749994144,
+          12.491828250000253
+        ],
+        "update_seconds": 24.369158999994397,
+        "variant": "baseline",
+        "worker_batches": [
+          [
+            {
+              "quota": 512,
+              "seconds": 19.110829666955397,
+              "status": "complete",
+              "steps": 512,
+              "worker": 0
+            },
+            {
+              "quota": 512,
+              "seconds": 20.243662958033383,
+              "status": "complete",
+              "steps": 512,
+              "worker": 1
+            },
+            {
+              "quota": 512,
+              "seconds": 20.106616790872067,
+              "status": "complete",
+              "steps": 512,
+              "worker": 2
+            },
+            {
+              "quota": 512,
+              "seconds": 20.204657540889457,
+              "status": "complete",
+              "steps": 512,
+              "worker": 3
+            },
+            {
+              "quota": 512,
+              "seconds": 20.017897666897625,
+              "status": "complete",
+              "steps": 512,
+              "worker": 4
+            },
+            {
+              "quota": 512,
+              "seconds": 20.43647695798427,
+              "status": "complete",
+              "steps": 512,
+              "worker": 5
+            },
+            {
+              "quota": 512,
+              "seconds": 19.75711758318357,
+              "status": "complete",
+              "steps": 512,
+              "worker": 6
+            },
+            {
+              "quota": 512,
+              "seconds": 19.412265167105943,
+              "status": "complete",
+              "steps": 512,
+              "worker": 7
+            }
+          ],
+          [
+            {
+              "quota": 512,
+              "seconds": 19.449908667011186,
+              "status": "complete",
+              "steps": 512,
+              "worker": 0
+            },
+            {
+              "quota": 512,
+              "seconds": 20.48835741588846,
+              "status": "complete",
+              "steps": 512,
+              "worker": 1
+            },
+            {
+              "quota": 512,
+              "seconds": 19.804818791802973,
+              "status": "complete",
+              "steps": 512,
+              "worker": 2
+            },
+            {
+              "quota": 512,
+              "seconds": 19.975570334121585,
+              "status": "complete",
+              "steps": 512,
+              "worker": 3
+            },
+            {
+              "quota": 512,
+              "seconds": 19.489413667004555,
+              "status": "complete",
+              "steps": 512,
+              "worker": 4
+            },
+            {
+              "quota": 512,
+              "seconds": 20.61474212491885,
+              "status": "complete",
+              "steps": 512,
+              "worker": 5
+            },
+            {
+              "quota": 512,
+              "seconds": 19.997712249867618,
+              "status": "complete",
+              "steps": 512,
+              "worker": 6
+            },
+            {
+              "quota": 512,
+              "seconds": 20.00779754202813,
+              "status": "complete",
+              "steps": 512,
+              "worker": 7
+            }
+          ]
+        ],
+        "workers": 8
+      },
+      {
+        "collection_round_seconds": [
+          23.6576724590268,
+          19.00258924998343
+        ],
+        "collection_seconds": 42.66026170901023,
+        "decisions": 8192,
+        "decisions_per_second": 117.13484822470036,
+        "epochs": [
+          2,
+          2
+        ],
+        "factory_seconds": 0.05267487489618361,
+        "final_fingerprint": "sts_policy_state_v2:e513ab57ef4368aa2f5f7fcd36b959df4cf41a94124f619a633dd3578b41a452",
+        "invocation_seconds": 68.73882895917632,
+        "kl_early_stops": [
+          false,
+          false
+        ],
+        "label": "workers-8-replica-3",
+        "memory_breakdown": [
+          {
+            "candidates": 441072,
+            "fields": 205412160,
+            "link_positions": 4914564,
+            "links": 13105504,
+            "nodes": 14716512,
+            "numbers": 51353040,
+            "parents": 7358256,
+            "positions": 7358256
+          },
+          {
+            "candidates": 450144,
+            "fields": 203111936,
+            "link_positions": 4883256,
+            "links": 13022016,
+            "nodes": 14610848,
+            "numbers": 50777984,
+            "parents": 7305424,
+            "positions": 7305424
+          }
+        ],
+        "optimizer_steps": 1024,
+        "packed_rollout_bytes": [
+          304659364,
+          301467032
+        ],
+        "parent_peak_rss_bytes": 1474969600,
+        "phase_timings": {
+          "checkpoint_seconds": 0.09032708313316107,
+          "report_serialization_seconds": 0.13869400089606643,
+          "tracking_log_seconds": 0.3006614581681788
+        },
+        "process_seconds": 69.93648879183456,
+        "profile": false,
+        "repetition": 3,
+        "report_seconds": 67.1614352921024,
+        "sequence": 6,
+        "summary": {
+          "accepted_decisions": 8192,
+          "components": {
+            "combat_loss": 193.0,
+            "combat_win": 268.0,
+            "end_turn_action": 1825.0,
+            "potion_use_action": 129.0,
+            "win_hp_fraction": 132.03392759758628
+          },
+          "cutoffs": 16,
+          "decisions_per_second": 121.97476072944063,
+          "episode_attempts": 477,
+          "failed_episodes": 0,
+          "losses": 193,
+          "mean_hp_on_win": 39.67537313432836,
+          "potion_use_actions": 129,
+          "processed_decisions": 8192,
+          "skipped_decisions": 0,
+          "skipped_updates": 0,
+          "task_return": 281.2033927597586,
+          "trained_decisions": 8192,
+          "wins": 268
+        },
+        "tracking": true,
+        "update_round_seconds": [
+          11.885411667171866,
+          11.75760295893997
+        ],
+        "update_seconds": 23.643014626111835,
+        "variant": "combined",
+        "worker_batches": [
+          [
+            {
+              "quota": 512,
+              "seconds": 17.76934133307077,
+              "status": "complete",
+              "steps": 512,
+              "worker": 0
+            },
+            {
+              "quota": 512,
+              "seconds": 18.580115416785702,
+              "status": "complete",
+              "steps": 512,
+              "worker": 1
+            },
+            {
+              "quota": 512,
+              "seconds": 18.478111625183374,
+              "status": "complete",
+              "steps": 512,
+              "worker": 2
+            },
+            {
+              "quota": 512,
+              "seconds": 18.457034167135134,
+              "status": "complete",
+              "steps": 512,
+              "worker": 3
+            },
+            {
+              "quota": 512,
+              "seconds": 18.0439753329847,
+              "status": "complete",
+              "steps": 512,
+              "worker": 4
+            },
+            {
+              "quota": 512,
+              "seconds": 18.664586749859154,
+              "status": "complete",
+              "steps": 512,
+              "worker": 5
+            },
+            {
+              "quota": 512,
+              "seconds": 18.27157637500204,
+              "status": "complete",
+              "steps": 512,
+              "worker": 6
+            },
+            {
+              "quota": 512,
+              "seconds": 17.897632041946054,
+              "status": "complete",
+              "steps": 512,
+              "worker": 7
+            }
+          ],
+          [
+            {
+              "quota": 512,
+              "seconds": 18.100294792093337,
+              "status": "complete",
+              "steps": 512,
+              "worker": 0
+            },
+            {
+              "quota": 512,
+              "seconds": 18.80649850005284,
+              "status": "complete",
+              "steps": 512,
+              "worker": 1
+            },
+            {
+              "quota": 512,
+              "seconds": 18.194503375096247,
+              "status": "complete",
+              "steps": 512,
+              "worker": 2
+            },
+            {
+              "quota": 512,
+              "seconds": 18.28694524988532,
+              "status": "complete",
+              "steps": 512,
+              "worker": 3
+            },
+            {
+              "quota": 512,
+              "seconds": 18.00385595811531,
+              "status": "complete",
+              "steps": 512,
+              "worker": 4
+            },
+            {
+              "quota": 512,
+              "seconds": 18.868872500024736,
+              "status": "complete",
+              "steps": 512,
+              "worker": 5
+            },
+            {
+              "quota": 512,
+              "seconds": 18.336915750056505,
+              "status": "complete",
+              "steps": 512,
+              "worker": 6
+            },
+            {
+              "quota": 512,
+              "seconds": 18.558746333932504,
+              "status": "complete",
+              "steps": 512,
+              "worker": 7
+            }
+          ]
+        ],
+        "workers": 8
+      },
+      {
+        "collection_round_seconds": [
+          25.066138041904196,
+          20.625811208039522
+        ],
+        "collection_seconds": 45.69194924994372,
+        "decisions": 8192,
+        "decisions_per_second": 112.50861696749824,
+        "epochs": [
+          2,
+          2
+        ],
+        "factory_seconds": 0.05043216701596975,
+        "final_fingerprint": "sts_policy_state_v2:e513ab57ef4368aa2f5f7fcd36b959df4cf41a94124f619a633dd3578b41a452",
+        "invocation_seconds": 71.64432608312927,
+        "kl_early_stops": [
+          false,
+          false
+        ],
+        "label": "workers-8-replica-3",
+        "memory_breakdown": [
+          {
+            "candidates": 441072,
+            "fields": 205412160,
+            "link_positions": 4914564,
+            "links": 13105504,
+            "nodes": 14716512,
+            "numbers": 51353040,
+            "parents": 7358256,
+            "positions": 7358256
+          },
+          {
+            "candidates": 450144,
+            "fields": 203111936,
+            "link_positions": 4883256,
+            "links": 13022016,
+            "nodes": 14610848,
+            "numbers": 50777984,
+            "parents": 7305424,
+            "positions": 7305424
+          }
+        ],
+        "optimizer_steps": 1024,
+        "packed_rollout_bytes": [
+          304659364,
+          301467032
+        ],
+        "parent_peak_rss_bytes": 1512882176,
+        "phase_timings": {
+          "checkpoint_seconds": 0.0807500418741256,
+          "report_serialization_seconds": 0.14056545845232904,
+          "tracking_log_seconds": 0.26385458186268806
+        },
+        "process_seconds": 72.81220070784912,
+        "profile": false,
+        "repetition": 3,
+        "report_seconds": 70.19324212498032,
+        "sequence": 7,
+        "summary": {
+          "accepted_decisions": 8192,
+          "components": {
+            "combat_loss": 193.0,
+            "combat_win": 268.0,
+            "end_turn_action": 1825.0,
+            "potion_use_action": 129.0,
+            "win_hp_fraction": 132.03392759758628
+          },
+          "cutoffs": 16,
+          "decisions_per_second": 116.70639155567139,
+          "episode_attempts": 477,
+          "failed_episodes": 0,
+          "losses": 193,
+          "mean_hp_on_win": 39.67537313432836,
+          "potion_use_actions": 129,
+          "processed_decisions": 8192,
+          "skipped_decisions": 0,
+          "skipped_updates": 0,
+          "task_return": 281.2033927597586,
+          "trained_decisions": 8192,
+          "wins": 268
+        },
+        "tracking": true,
+        "update_round_seconds": [
+          11.883883292088285,
+          11.824260083027184
+        ],
+        "update_seconds": 23.70814337511547,
+        "variant": "baseline",
+        "worker_batches": [
+          [
+            {
+              "quota": 512,
+              "seconds": 19.224603458074853,
+              "status": "complete",
+              "steps": 512,
+              "worker": 0
+            },
+            {
+              "quota": 512,
+              "seconds": 20.157151208026335,
+              "status": "complete",
+              "steps": 512,
+              "worker": 1
+            },
+            {
+              "quota": 512,
+              "seconds": 20.088369499891996,
+              "status": "complete",
+              "steps": 512,
+              "worker": 2
+            },
+            {
+              "quota": 512,
+              "seconds": 20.153032124973834,
+              "status": "complete",
+              "steps": 512,
+              "worker": 3
+            },
+            {
+              "quota": 512,
+              "seconds": 19.967914666980505,
+              "status": "complete",
+              "steps": 512,
+              "worker": 4
+            },
+            {
+              "quota": 512,
+              "seconds": 20.28976579196751,
+              "status": "complete",
+              "steps": 512,
+              "worker": 5
+            },
+            {
+              "quota": 512,
+              "seconds": 19.709797542076558,
+              "status": "complete",
+              "steps": 512,
+              "worker": 6
+            },
+            {
+              "quota": 512,
+              "seconds": 19.53392916591838,
+              "status": "complete",
+              "steps": 512,
+              "worker": 7
+            }
+          ],
+          [
+            {
+              "quota": 512,
+              "seconds": 19.45400279201567,
+              "status": "complete",
+              "steps": 512,
+              "worker": 0
+            },
+            {
+              "quota": 512,
+              "seconds": 20.384739957982674,
+              "status": "complete",
+              "steps": 512,
+              "worker": 1
+            },
+            {
+              "quota": 512,
+              "seconds": 19.822233166079968,
+              "status": "complete",
+              "steps": 512,
+              "worker": 2
+            },
+            {
+              "quota": 512,
+              "seconds": 19.845439874799922,
+              "status": "complete",
+              "steps": 512,
+              "worker": 3
+            },
+            {
+              "quota": 512,
+              "seconds": 19.460164916934446,
+              "status": "complete",
+              "steps": 512,
+              "worker": 4
+            },
+            {
+              "quota": 512,
+              "seconds": 20.454829458147287,
+              "status": "complete",
+              "steps": 512,
+              "worker": 5
+            },
+            {
+              "quota": 512,
+              "seconds": 19.990687750047073,
+              "status": "complete",
+              "steps": 512,
+              "worker": 6
+            },
+            {
+              "quota": 512,
+              "seconds": 19.837431624997407,
+              "status": "complete",
+              "steps": 512,
+              "worker": 7
+            }
+          ]
+        ],
+        "workers": 8
+      },
+      {
+        "collection_round_seconds": [
+          24.02259945916012,
+          19.64917454100214
+        ],
+        "collection_seconds": 43.67177400016226,
+        "decisions": 8192,
+        "decisions_per_second": 115.59098506319734,
+        "epochs": [
+          2,
+          2
+        ],
+        "factory_seconds": 0.05107454187236726,
+        "final_fingerprint": "sts_policy_state_v2:e513ab57ef4368aa2f5f7fcd36b959df4cf41a94124f619a633dd3578b41a452",
+        "invocation_seconds": 69.73112658294849,
+        "kl_early_stops": [
+          false,
+          false
+        ],
+        "label": "workers-8-replica-3",
+        "memory_breakdown": [
+          {
+            "candidates": 441072,
+            "fields": 205412160,
+            "link_positions": 4914564,
+            "links": 13105504,
+            "nodes": 14716512,
+            "numbers": 51353040,
+            "parents": 7358256,
+            "positions": 7358256
+          },
+          {
+            "candidates": 450144,
+            "fields": 203111936,
+            "link_positions": 4883256,
+            "links": 13022016,
+            "nodes": 14610848,
+            "numbers": 50777984,
+            "parents": 7305424,
+            "positions": 7305424
+          }
+        ],
+        "optimizer_steps": 1024,
+        "packed_rollout_bytes": [
+          304659364,
+          301467032
+        ],
+        "parent_peak_rss_bytes": 1513521152,
+        "phase_timings": {
+          "checkpoint_seconds": 0.08312075096182525,
+          "report_serialization_seconds": 0.1414577078539878,
+          "tracking_log_seconds": 0.27217141701839864
+        },
+        "process_seconds": 70.8705786659848,
+        "profile": false,
+        "repetition": 3,
+        "report_seconds": 68.16090724989772,
+        "sequence": 8,
+        "summary": {
+          "accepted_decisions": 8192,
+          "components": {
+            "combat_loss": 193.0,
+            "combat_win": 268.0,
+            "end_turn_action": 1825.0,
+            "potion_use_action": 129.0,
+            "win_hp_fraction": 132.03392759758628
+          },
+          "cutoffs": 16,
+          "decisions_per_second": 120.18619367793542,
+          "episode_attempts": 477,
+          "failed_episodes": 0,
+          "losses": 193,
+          "mean_hp_on_win": 39.67537313432836,
+          "potion_use_actions": 129,
+          "processed_decisions": 8192,
+          "skipped_decisions": 0,
+          "skipped_updates": 0,
+          "task_return": 281.2033927597586,
+          "trained_decisions": 8192,
+          "wins": 268
+        },
+        "tracking": true,
+        "update_round_seconds": [
+          11.924503167159855,
+          11.759598582983017
+        ],
+        "update_seconds": 23.684101750142872,
+        "variant": "cards",
+        "worker_batches": [
+          [
+            {
+              "quota": 512,
+              "seconds": 18.268468792084605,
+              "status": "complete",
+              "steps": 512,
+              "worker": 0
+            },
+            {
+              "quota": 512,
+              "seconds": 19.162395416991785,
+              "status": "complete",
+              "steps": 512,
+              "worker": 1
+            },
+            {
+              "quota": 512,
+              "seconds": 19.03267224994488,
+              "status": "complete",
+              "steps": 512,
+              "worker": 2
+            },
+            {
+              "quota": 512,
+              "seconds": 18.899937875103205,
+              "status": "complete",
+              "steps": 512,
+              "worker": 3
+            },
+            {
+              "quota": 512,
+              "seconds": 18.775818000081927,
+              "status": "complete",
+              "steps": 512,
+              "worker": 4
+            },
+            {
+              "quota": 512,
+              "seconds": 19.29230891703628,
+              "status": "complete",
+              "steps": 512,
+              "worker": 5
+            },
+            {
+              "quota": 512,
+              "seconds": 18.8323957498651,
+              "status": "complete",
+              "steps": 512,
+              "worker": 6
+            },
+            {
+              "quota": 512,
+              "seconds": 18.379981165984645,
+              "status": "complete",
+              "steps": 512,
+              "worker": 7
+            }
+          ],
+          [
+            {
+              "quota": 512,
+              "seconds": 18.570370082976297,
+              "status": "complete",
+              "steps": 512,
+              "worker": 0
+            },
+            {
+              "quota": 512,
+              "seconds": 19.46809733309783,
+              "status": "complete",
+              "steps": 512,
+              "worker": 1
+            },
+            {
+              "quota": 512,
+              "seconds": 18.818484124960378,
+              "status": "complete",
+              "steps": 512,
+              "worker": 2
+            },
+            {
+              "quota": 512,
+              "seconds": 18.989776582922786,
+              "status": "complete",
+              "steps": 512,
+              "worker": 3
+            },
+            {
+              "quota": 512,
+              "seconds": 18.604866500012577,
+              "status": "complete",
+              "steps": 512,
+              "worker": 4
+            },
+            {
+              "quota": 512,
+              "seconds": 19.49385412503034,
+              "status": "complete",
+              "steps": 512,
+              "worker": 5
+            },
+            {
+              "quota": 512,
+              "seconds": 19.1904388749972,
+              "status": "complete",
+              "steps": 512,
+              "worker": 6
+            },
+            {
+              "quota": 512,
+              "seconds": 19.181813292205334,
+              "status": "complete",
+              "steps": 512,
+              "worker": 7
+            }
+          ]
+        ],
+        "workers": 8
+      }
+    ],
+    "schema": "sts_collector_hotpaths_timings_v1"
+  },
+  "schema": "sts_collector_hotpaths_evidence_v1",
+  "source_files": {
+    "game/agent/encoding/codec.py": "3a4d711dae736230409d9222eaaf6a4b240f339adf4324ccc4bd0a8e5c03d1ee",
+    "game/agent/encoding/full.py": "c3c8895299726548b452124081d261ed9cf71c7bada40d5227302f6820f5b65a",
+    "game/agent/encoding/full_records.py": "92e64123ca371ff3fafa74cc1e6d74b34f9266551a9d7683f4691d5831d175e9",
+    "game/agent/headless/full_cards.py": "83d8a680e32d79778887e955296a4b55b433ac2f3db209e5308084669604ad9b",
+    "game/agent/headless/full_projection.py": "f1952e65d114ac53d6abd5ebd31c3d19605e20b5f44b560676693a6e399d4532",
+    "tests/agent/test_prepared_public.py": "ce8d4f2711eeba9a95c8e6db4f527dc575a72d0e5420245c60abf689bafdc69d",
+    "tests/agent/test_projection_reuse.py": "28cb9ffa2f4366be7aed4e1c434e30ae59ff6da7e86d7bb25f5441a6dd87677e"
+  },
+  "timings": {
+    "benchmark_seconds": 644.6895367917605,
+    "elapsed_until_evidence_seconds": 1578.5591480731964,
+    "implementation_seconds": null,
+    "note": "Corpus preparations and broad integration tests overlap; benchmark invocations run sequentially afterwards.",
+    "review_seconds": null
+  },
+  "validation": {
+    "agent_suite": {
+      "failed": 1,
+      "failure": "Sandbox denied the temporary loopback HTTP server; exact test passed separately.",
+      "passed": 1001,
+      "seconds": 480.66,
+      "skipped": 1
+    },
+    "compilation": true,
+    "diff_check": true,
+    "focused_new_regressions": {
+      "passed": 47,
+      "seconds": 1.28
+    },
+    "http_rerun": {
+      "passed": 1,
+      "seconds": 0.6
+    },
+    "independent_review": {
+      "focused_checks_passed": 47,
+      "generated_graph_capacity_cases": 600,
+      "read_only": true,
+      "result": "No blockers"
+    }
+  },
+  "validation_seconds": 22.68707750015892
+}
