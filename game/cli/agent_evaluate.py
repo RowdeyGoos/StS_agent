@@ -30,7 +30,14 @@ def main(argv=None):
     parser.add_argument('--candidate', action='append', default=[], help='Named inference bundle: imitation=PATH or ppo_NAME=PATH')
     parser.add_argument('--select-development', help='Complete benchmark.json from development; write selection.json')
     parser.add_argument('--selection', help='Locked selection.json required for --suite with --split test')
+    from game.cli.agent_track import add_tracking_arguments, cli_session
+    add_tracking_arguments(parser)
     args = parser.parse_args(argv)
+    with cli_session(args, parser):
+        return _run(args, parser)
+
+
+def _run(args, parser):
     if args.combat_starts != 'opening' and not args.combat_corpus:
         parser.error('--combat-starts requires --combat-corpus')
     if not 1 <= args.workers <= 8 or args.workers != 1 and not (args.act1 or args.full_run or args.combat_corpus):

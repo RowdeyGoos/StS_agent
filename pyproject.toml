@@ -18,6 +18,9 @@ gym = [
 dev = [
     "pytest>=8.0,<9.0",
 ]
+tracking = [
+    "mlflow>=3.16,<3.17",
+]
 train = [
     "gymnasium>=1.0,<2.0",
     "numpy>=1.24,<3.0",
@@ -30,6 +33,7 @@ sts-agent-play = "game.cli.agent_play:main"
 sts-agent-evaluate = "game.cli.agent_evaluate:main"
 sts-agent-train = "game.cli.agent_train:main"
 sts-agent-analyze = "game.cli.agent_analyze:main"
+sts-agent-track = "game.cli.agent_track:main"
 
 [tool.setuptools.package-data]
 "game.agent.analysis" = ["assets/*.html", "assets/*.js", "assets/*.css"]

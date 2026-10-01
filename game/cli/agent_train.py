@@ -76,7 +76,15 @@ def main(argv=None):
     curriculum.add_argument('--config', required=True)
     curriculum.add_argument('--output-dir', required=True)
     curriculum.add_argument('--seeds', nargs='+', type=int, default=[17,23,41], help='Three to five private learner seeds')
+    from game.cli.agent_track import add_tracking_arguments, cli_session
+    for command in (imitate, ppo, curriculum):
+        add_tracking_arguments(command)
     args = parser.parse_args(argv)
+    with cli_session(args, parser):
+        return _run(args, parser)
+
+
+def _run(args, parser):
     try:
         import torch
         from game.agent.training.config import TrainingConfig
@@ -220,13 +228,18 @@ def main(argv=None):
                   'packed_corpus_bytes': train.nbytes, 'corpus_encoding_seconds': train.encoding_seconds,
                   'start_update': learner.updates, 'updates': [], 'task':task, 'transfer':lineage}
         report['action_policy'] = action_policy
+        report['initialization'] = {'resumed': resumed is not None,
+                                    'checkpoint': resumed.identity if resumed else None}
         report['before'] = {'train': evaluate_imitation(learner.model, train),
                             'validation': evaluate_imitation(learner.model, validation)}
         report['initial_sha256'] = save_checkpoint(output/'initial.sts-model', learner,
                                                    resume_path=private/'initial.resume.pt')
+        from game.agent.tracking import report_progress
+        report_progress(report_path, report)
         try:
             for _ in range(args.updates):
                 report['updates'].append(learner.step())
+                report_progress(report_path, report)
             report['after'] = {'train': evaluate_imitation(learner.model, train),
                                'validation': evaluate_imitation(learner.model, validation)}
             report['final_sha256'] = save_checkpoint(output/'final.sts-model', learner,
@@ -236,6 +249,7 @@ def main(argv=None):
             report['status'], report['failure'] = 'failed', type(error).__name__
         report['total_seconds'] = time.perf_counter()-started
         publish(report_path, (json.dumps(report, indent=2, sort_keys=True, allow_nan=False)+'\n').encode())
+        report_progress(report_path, report)
         print(json.dumps({'report': str(report_path), 'status': report['status'],
                           'before': report['before'], 'after': report.get('after')}, indent=2))
         return 0 if report['status'] == 'complete' else 1

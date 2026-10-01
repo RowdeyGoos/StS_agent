@@ -186,4 +186,6 @@ def evaluate_benchmark(*, suite_path, output_dir, checkpoints=None, split='valid
         os.fsync(source.fileno())
     os.link(reservation,report_path)
     reservation.unlink()
+    from game.agent.tracking import report_progress
+    report_progress(report_path, report)
     return report_path,report

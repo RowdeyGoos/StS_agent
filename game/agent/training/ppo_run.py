@@ -9,6 +9,7 @@ import time
 from game.agent.provenance import implementation
 from game.agent.action_policy import ALL_LEGAL
 from game.agent.runner import RunCancelled, prepare_directories
+from game.agent.tracking import report_progress
 from .checkpoint import load_policy, publish, restore_ppo, runtime, save_ppo_checkpoint
 from .ppo import PPOLearner, UPDATE_POLICY
 from .rollout import advantages, check_cancel
@@ -105,6 +106,7 @@ def run_ppo(*, checkpoint, experiment, output_dir, decisions=256, time_limit_sec
     report['initial_sha256'] = save_ppo_checkpoint(output/'initial.sts-model', learner,
                                                   resume_path=private/'initial.resume.pt')
     report['last_complete_checkpoint'] = 'initial.sts-model'
+    report_progress(report_path, report)
     consumed = 0
     entry = None
     try:
@@ -130,6 +132,7 @@ def run_ppo(*, checkpoint, experiment, output_dir, decisions=256, time_limit_sec
             entry['checkpoint_sha256'] = save_ppo_checkpoint(output/filename, learner,
                 resume_path=private/f'update-{learner.iterations:05}.resume.pt')
             report['last_complete_checkpoint'] = filename
+            report_progress(report_path, report)
             if rollout.progress['stop_reason'] is not None:
                 report.update(status='budget_reached', stop_reason=rollout.progress['stop_reason'])
                 break
@@ -187,4 +190,5 @@ def run_ppo(*, checkpoint, experiment, output_dir, decisions=256, time_limit_sec
                 act1_clear_rate=clears/len(episodes) if episodes else None)
     report['summary']['decisions_per_second'] = report['summary']['accepted_decisions']/report['total_seconds']
     _publish_json(report_path, report)
+    report_progress(report_path, report)
     return report_path, report

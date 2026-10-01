@@ -64,4 +64,6 @@ def evaluate_hybrid(*, checkpoint, output_dir, cases=2, split='validation', star
     report['unattempted_episodes'] = report['requested_episodes']-len(report['episodes'])
     report['total_seconds'] = time.perf_counter()-started
     publish(path, (json.dumps(report, indent=2, sort_keys=True, allow_nan=False)+'\n').encode())
+    from game.agent.tracking import report_progress
+    report_progress(path, report)
     return path, report

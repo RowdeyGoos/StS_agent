@@ -254,4 +254,6 @@ def evaluate_baselines(*, output_dir, audit_dir=None, cases_per_scenario=4,
         os.fsync(target.fileno())
     os.link(partial, path)
     partial.unlink()
+    from game.agent.tracking import report_progress
+    report_progress(path, report)
     return path, report

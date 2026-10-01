@@ -22,6 +22,7 @@ The top level contains current guidance. Completed Phase 0/1 work lives in the
 | Shared public contract, bridge adapter and Gymnasium delivery | [V1/full-run v2 contracts and producer mapping](AGENT_CONTRACT.md), [encoding and Gymnasium](AGENT_ENCODING.md), [delivery plan](AGENT_ENVIRONMENT.md) |
 | Public trajectories, agent command, workers and training data | [Execution and data loading](AGENT_EXECUTION.md) |
 | Combat/full-run objectives, imitation/PPO, transfer, curriculum, paired evaluation and delivery checks | [Training guide](AGENT_TRAINING.md) |
+| Local experiment dashboard, learning curves, historical imports and checkpoint lineage | [Experiment tracking](EXPERIMENT_TRACKING.md) |
 | Headless game logic and architecture | [Game engine](HEADLESS_ENGINE.md) |
 | Agent-evaluation scope and information boundary | [Target](TARGET.md) |
 | Delegated work, when needed | [Multi-agent guide](MULTI_AGENT_EXECUTION.md) |

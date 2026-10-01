@@ -163,4 +163,6 @@ def evaluate_corpus(*, corpus_path, output_dir, checkpoints=None, split='validat
         baseline_name=base) for base in checkpoints if base != name} for name in checkpoints}
     report['total_seconds'] = time.perf_counter() - started
     publish(path, data(report))
+    from game.agent.tracking import report_progress
+    report_progress(path, report)
     return path, report

@@ -154,4 +154,6 @@ def evaluate_full_run(*, checkpoint, combat_checkpoint=None, reference_checkpoin
         report['paired_vs_reference'] = compare([r for r in rows if r['policy']=='learned'],
             [r for r in rows if r['policy']=='reference'], goal=goal, baseline_name='reference')
     publish(path, (json.dumps(report,indent=2,sort_keys=True,allow_nan=False)+'\n').encode())
+    from game.agent.tracking import report_progress
+    report_progress(path, report)
     return path, report
