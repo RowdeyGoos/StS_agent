@@ -10,6 +10,7 @@ import tempfile
 import time
 
 from .trace_storage import SUFFIX
+from .performance import ARTIFACT_WORKER_LIMIT
 
 
 def _fingerprint(value):
@@ -160,8 +161,8 @@ def compress_group(paths):
 
 def compress_traces(inputs, *, apply=False, workers=1, report=None, progress=None):
     """Default preview; apply uses bounded workers and an append-only result log."""
-    if type(workers) is not int or not 1 <= workers <= 8:
-        raise ValueError('Choose 1–8 compression workers')
+    if type(workers) is not int or not 1 <= workers <= ARTIFACT_WORKER_LIMIT:
+        raise ValueError(f'Choose 1–{ARTIFACT_WORKER_LIMIT} compression workers')
     if apply and report is None:
         raise ValueError('Compression requires a new report path')
     groups = compression_groups(inputs)

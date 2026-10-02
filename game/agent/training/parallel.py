@@ -13,14 +13,15 @@ import torch
 
 from game.agent.runner import RunCancelled, RunFailure, prepare_directories
 from game.agent.workers import _cleanup, _defer_start_signals
+from game.agent.performance import GAME_WORKER_LIMIT
 from .model import ActorCritic
 from .rollout import Rollout, advantages, check_cancel, collect, fingerprint
 from .scenarios import episode_seed
 
 
 def collection_settings(workers):
-    if type(workers) is not int or not 1 <= workers <= 16:
-        raise ValueError('PPO workers must be between 1 and 16')
+    if type(workers) is not int or not 1 <= workers <= GAME_WORKER_LIMIT:
+        raise ValueError(f'PPO workers must be between 1 and {GAME_WORKER_LIMIT}')
     return {'workers': workers, 'schedule': 'serial_v1' if workers == 1 else 'parallel_quota_ranges_v1'}
 
 

@@ -9,6 +9,7 @@ import threading
 
 from game.agent.runner import RunCancelled, RunConfig, RunFailure
 from game.agent.workers import run_batch
+from game.agent import performance
 
 
 def main(argv=None):
@@ -21,7 +22,8 @@ def main(argv=None):
     parser.add_argument('--ascension', type=int, choices=range(11), default=0)
     parser.add_argument('--seed', type=int, default=0, help='Private base seed; episode i uses seed+i regardless of worker count.')
     parser.add_argument('--episodes', type=int, default=1)
-    parser.add_argument('--workers', type=int, default=1)
+    parser.add_argument('--workers', type=int, default=performance.game_workers(),
+        help=f'1–32 game workers; defaults to min(16, CPUs), currently {performance.game_workers()}, limited by episode count')
     parser.add_argument('--max-decisions', type=int, default=4096)
     parser.add_argument('--time-limit', type=float, default=300.0, help='Seconds per episode; expiration is an explicit cutoff.')
     parser.add_argument('--scenario', default='generated_campaign_all_unlocked_v1', help='Public scenario reference, without private replay data.')

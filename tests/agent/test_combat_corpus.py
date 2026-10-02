@@ -197,11 +197,12 @@ def test_corpus_demonstrations_and_parallel_ppo_resume(tactical_corpus, tmp_path
     assert not [p for p in multiprocessing.active_children() if p.name.startswith('sts-')]
 
 
-def test_matched_benchmark_parallel_parity_and_test_lock(corpus, tmp_path):
+@pytest.mark.parametrize('workers', [2, 16])
+def test_matched_benchmark_parallel_parity_and_test_lock(corpus, tmp_path, workers):
     bundle = make_model(corpus, tmp_path)
     arguments = dict(corpus_path=corpus.path, checkpoints={'combat':bundle}, max_decisions=2)
     _, serial = evaluate_corpus(output_dir=tmp_path/'serial', **arguments)
-    _, parallel = evaluate_corpus(output_dir=tmp_path/'parallel', workers=2, **arguments)
+    _, parallel = evaluate_corpus(output_dir=tmp_path/'parallel', workers=workers, **arguments)
     assert serial['status'] == parallel['status'] == 'complete'
     assert serial['summary'] == parallel['summary']
     for left, right in zip(serial['episodes'], parallel['episodes']):

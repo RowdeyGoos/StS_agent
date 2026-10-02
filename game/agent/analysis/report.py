@@ -13,6 +13,7 @@ from game.agent import contracts as c
 from game.agent.contracts import full as f
 from game.agent.contracts.codec import _wire
 from game.agent.progress import completed_act
+from game.agent.performance import ARTIFACT_WORKER_LIMIT
 from game.agent.recording import SUFFIX, load_trajectory
 from game.agent.trace_storage import open_trajectory
 from game.agent.training.rewards import strict_json
@@ -100,8 +101,8 @@ def _export_episode(job):
 def build_report(inputs, output_dir, *, title='Act 1 · Decision lab', goal=None, progress=None, workers=1):
     if goal not in (None, 'act1', 'full_run'):
         raise ValueError('Choose act1 or full_run; omit the goal for unlabelled recordings')
-    if type(workers) is not int or not 1 <= workers <= 8:
-        raise ValueError('Analysis workers must be between 1 and 8')
+    if type(workers) is not int or not 1 <= workers <= ARTIFACT_WORKER_LIMIT:
+        raise ValueError(f'Analysis workers must be between 1 and {ARTIFACT_WORKER_LIMIT}')
     started = time.perf_counter()
     paths = discover(inputs)
     trajectories = [p for p in paths if p.name.endswith(SUFFIX)]

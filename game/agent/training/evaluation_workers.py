@@ -5,6 +5,7 @@ import signal
 import time
 
 from game.agent.provenance import implementation
+from game.agent.performance import GAME_WORKER_LIMIT
 from game.agent.runner import RunCancelled, run_episode
 from game.agent.workers import _cleanup, _defer_start_signals
 from .checkpoint import load_policy
@@ -15,8 +16,8 @@ REPORT_GRACE_SECONDS = 30.
 
 
 def settings(workers):
-    if type(workers) is not int or not 1 <= workers <= 8:
-        raise ValueError('Evaluation workers must be between 1 and 8')
+    if type(workers) is not int or not 1 <= workers <= GAME_WORKER_LIMIT:
+        raise ValueError(f'Evaluation workers must be between 1 and {GAME_WORKER_LIMIT}')
     return {'workers': workers, 'schedule': 'serial_v1' if workers == 1 else 'parallel_episodes_v1'}
 
 

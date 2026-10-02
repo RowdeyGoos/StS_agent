@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import time
 from game.agent.action_policy import ALL_LEGAL, POLICIES
+from game.agent import performance
 
 
 def main(argv=None):
@@ -69,9 +70,10 @@ def main(argv=None):
         help='Start a different full-run reward objective: keep actor, reset critic/optimizer; incompatible with resume')
     ppo.add_argument('--reset-action-policy', action='store_true',
         help='Adopt the config action policy in a new experiment; keep weights, start a fresh optimizer')
-    ppo.add_argument('--workers', type=int, help='1–16 persistent collectors; defaults to 1, or saved count on resume')
+    ppo.add_argument('--workers', type=int,
+        help=f'1–16 persistent collectors; defaults to min(16, CPUs), currently {performance.game_workers()}, or saved count on resume')
     ppo.add_argument('--update-threads', type=int, choices=(1, 2, 4, 8),
-        help='Learner CPU threads; >1 uses deterministic operations. Defaults to 1, or saved runtime on resume; spawned collectors use 1')
+        help=f'Learner CPU threads; >1 uses deterministic operations. Defaults to up to 4, currently {performance.ppo_update_threads()}, or saved runtime on resume; spawned collectors use 1')
     ppo.add_argument('--combat-corpus', help='Frozen corpus.json bound by the PPO config source identity')
     curriculum = sub.add_parser('curriculum', help='Run three or more learners through five fixed combat stages')
     curriculum.add_argument('--checkpoint', required=True)
@@ -105,6 +107,8 @@ def _run(args, parser):
         torch.set_num_threads(1)
         if args.command == 'ppo':
             _configure_ppo_cpu(args, load_policy)
+            if args.workers is None and not args.resume_state:
+                args.workers = performance.game_workers()
         if (args.command in ('ppo','curriculum','collect-run','build-combat-corpus') or
                 args.command == 'collect' and args.combat_corpus):
             import signal
@@ -269,7 +273,7 @@ def _run(args, parser):
 def _configure_ppo_cpu(args, load_policy):
     """Configure this CLI owner; the bound private runtime is still checked on resume."""
     import torch
-    threads = args.update_threads if args.update_threads is not None else 1
+    threads = args.update_threads if args.update_threads is not None else performance.ppo_update_threads()
     deterministic, warn_only = threads > 1, False
     if args.resume_state:
         saved = load_policy(args.checkpoint).manifest['runtime']

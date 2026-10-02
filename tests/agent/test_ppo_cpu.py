@@ -87,7 +87,9 @@ def test_resume_rejects_invalid_or_nondeterministic_saved_execution(change):
     assert runtime() == before
 
 
-def test_cli_training_restores_global_settings_and_auto_resumes_saved_threads(tmp_path):
+def test_cli_training_restores_global_settings_and_auto_resumes_saved_threads(tmp_path, monkeypatch):
+    from game.agent import performance
+    monkeypatch.setattr(performance, 'available_cpus', lambda:18)
     initial = tmp_path/'input/initial.sts-model'
     with owner() as source:
         save_ppo_checkpoint(initial, source, resume_path=tmp_path/'input-private/initial.resume.pt')
@@ -98,8 +100,7 @@ def test_cli_training_restores_global_settings_and_auto_resumes_saved_threads(tm
     before = runtime()
     first = tmp_path/'first'
     common = ['ppo', '--config', str(config), '--decisions', '8', '--time-limit', '60']
-    assert main([*common, '--checkpoint', str(initial), '--output-dir', str(first),
-                 '--update-threads', '4', '--workers', '2']) == 0
+    assert main([*common, '--checkpoint', str(initial), '--output-dir', str(first), '--workers', '2']) == 0
     assert runtime() == before
     report = json.loads((first/'ppo.json').read_text())
     assert report['runtime']['threads'] == 4 and report['runtime']['deterministic_algorithms'] is True
@@ -111,6 +112,7 @@ def test_cli_training_restores_global_settings_and_auto_resumes_saved_threads(tm
     assert runtime() == before
     later = json.loads((resumed/'ppo.json').read_text())
     assert later['runtime'] == report['runtime'] and later['start_decisions'] == 8
+    assert later['collection']['workers'] == report['collection']['workers'] == 2
     with pytest.raises(SystemExit):
         main([*common, '--checkpoint', str(bundle), '--resume-state', str(state),
               '--output-dir', str(tmp_path/'mismatch'), '--update-threads', '1'])

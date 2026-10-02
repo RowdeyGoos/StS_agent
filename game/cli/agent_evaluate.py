@@ -1,6 +1,7 @@
 """Installed entry point for bounded reference-policy combat evaluation."""
 import argparse
 import json
+from game.agent import performance
 
 
 def main(argv=None):
@@ -21,7 +22,8 @@ def main(argv=None):
     parser.add_argument('--combat-checkpoint', help='Frozen combat comparison bundle for --full-run')
     parser.add_argument('--reference-checkpoint', help='Frozen campaign initializer to compare with --checkpoint')
     parser.add_argument('--campaign-cases', type=int, default=2)
-    parser.add_argument('--workers', type=int, default=1, help='1–8 game workers for campaign or combat-corpus evaluation')
+    parser.add_argument('--workers', type=int,
+        help=f'1–16 game workers for campaign or combat-corpus evaluation; defaults to min(16, CPUs), currently {performance.game_workers()}; other modes use 1')
     parser.add_argument('--combat-corpus', help='Matched genuine Act 1 combat starts in corpus.json')
     parser.add_argument('--combat-starts', choices=('opening', 'continuation', 'all'), default='opening',
                         help='Whole fights by default; continuations are separate tactical diagnostics')
@@ -40,8 +42,11 @@ def main(argv=None):
 def _run(args, parser):
     if args.combat_starts != 'opening' and not args.combat_corpus:
         parser.error('--combat-starts requires --combat-corpus')
-    if not 1 <= args.workers <= 8 or args.workers != 1 and not (args.act1 or args.full_run or args.combat_corpus):
-        parser.error('--workers accepts 1–8 and parallel workers require --act1, --full-run or --combat-corpus')
+    parallel = bool(args.act1 or args.full_run or args.combat_corpus)
+    if args.workers is None:
+        args.workers = performance.game_workers() if parallel else 1
+    if not 1 <= args.workers <= performance.GAME_WORKER_LIMIT or args.workers != 1 and not parallel:
+        parser.error('--workers accepts 1–16 and parallel workers require --act1, --full-run or --combat-corpus')
     try:
         from game.agent.training.evaluation import evaluate_baselines
     except ModuleNotFoundError as error:

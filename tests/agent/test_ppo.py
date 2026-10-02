@@ -445,7 +445,20 @@ def test_cli_sigterm_publishes_cancelled_report_and_retains_resume(tmp_path, wor
         report = json.loads((output/'ppo.json').read_text())
         assert report['status']=='cancelled' and report['last_complete_checkpoint']=='initial.sts-model'
         assert report['summary']['trained_decisions']==0
-        assert restore_ppo(output/'initial.sts-model', tmp_path/'experiment-private/initial.resume.pt').updates==0
+        # Direct library restores require the runtime saved by the CLI, whose
+        # default update thread count may differ from this test process.
+        previous_cpu = (torch.get_num_threads(), torch.are_deterministic_algorithms_enabled(),
+                        torch.is_deterministic_algorithms_warn_only_enabled())
+        saved = report['runtime']
+        try:
+            torch.set_num_threads(saved['threads'])
+            torch.use_deterministic_algorithms(saved['deterministic_algorithms'],
+                                              warn_only=saved['deterministic_warn_only'])
+            with restore_ppo(output/'initial.sts-model', tmp_path/'experiment-private/initial.resume.pt') as restored:
+                assert restored.updates == 0
+        finally:
+            torch.set_num_threads(previous_cpu[0])
+            torch.use_deterministic_algorithms(previous_cpu[1], warn_only=previous_cpu[2])
     finally:
         if process.poll() is None:
             process.kill()

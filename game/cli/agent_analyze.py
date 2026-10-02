@@ -3,6 +3,7 @@ import argparse
 import json
 import sys
 import time
+from game.agent import performance
 
 
 def main(argv=None):
@@ -11,7 +12,8 @@ def main(argv=None):
     compress = commands.add_parser('compress', help='Preview or verify lossless compression of public trajectories')
     compress.add_argument('--input', action='append', required=True, help='Public roots; private trees and partials are excluded')
     compress.add_argument('--apply', action='store_true', help='Replace verified plain copies with gzip containers')
-    compress.add_argument('--workers', type=int, default=1)
+    compress.add_argument('--workers', type=int, default=performance.artifact_workers(),
+        help=f'1–8 compression workers; defaults to min(8, CPUs), currently {performance.artifact_workers()}')
     compress.add_argument('--report', help='New JSONL migration report, required with --apply')
     summary = commands.add_parser('summary', help='Quick reported metrics; no canonical recording validation or viewer export')
     summary.add_argument('--input', action='append', required=True, help='Public experiment directory; repeat to combine roots')
@@ -20,7 +22,8 @@ def main(argv=None):
     build.add_argument('--output-dir', required=True, help='New analysis directory (never overwritten)')
     build.add_argument('--goal', choices=('act1', 'full_run'), help='Goal for unlabelled recordings; checks existing goal labels')
     build.add_argument('--title', default='Act 1 · Decision lab')
-    build.add_argument('--workers', type=int, default=1, help='Parallel episode exporters, 1–8 (default: 1)')
+    build.add_argument('--workers', type=int, default=performance.artifact_workers(),
+        help=f'1–8 parallel episode exporters; defaults to min(8, CPUs), currently {performance.artifact_workers()}')
     serve = commands.add_parser('serve', help='Open a read-only viewer on 127.0.0.1; Ctrl-C stops it')
     serve.add_argument('report_dir')
     serve.add_argument('--port', type=int, default=8765)

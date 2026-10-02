@@ -180,7 +180,7 @@ def test_dead_or_stuck_worker_stops_without_retry_or_orphans(bundles, tmp_path, 
     assert _children() == before
 
 
-@pytest.mark.parametrize('workers', [0, 9, True, 1.5])
+@pytest.mark.parametrize('workers', [0, 17, True, 1.5])
 def test_invalid_worker_setting_is_rejected_before_model_or_output_access(tmp_path, workers):
     with pytest.raises(ValueError, match='workers'):
         run_evaluation.evaluate_full_run(checkpoint='missing', reference_checkpoint='missing',
@@ -193,3 +193,26 @@ def test_cli_does_not_silently_ignore_workers_for_unsupported_evaluators(tmp_pat
                              '--output-dir', str(tmp_path/'output')], capture_output=True, text=True, timeout=30)
     assert result.returncode == 2 and 'require --act1, --full-run or --combat-corpus' in result.stderr
     assert not (tmp_path/'output').exists()
+
+
+def test_sixteen_worker_evaluation_preserves_cases_actions_and_cleanup(bundles, tmp_path):
+    before = _children()
+    arguments = dict(checkpoint=bundles[1], reference_checkpoint=bundles[1], goal='act1',
+                     cases=6, split='validation', start_index=100, max_decisions=2)
+    panels = []
+    for workers in (1, 16):
+        output = tmp_path/f'workers-{workers}'
+        _, report = run_evaluation.evaluate_full_run(output_dir=output, workers=workers, **arguments)
+        assert report['status'] == 'complete', report
+        assert report['execution']['workers'] == workers
+        assert report['execution']['worker_threads'] == 1
+        assert len(report['episodes']) == 18
+        episodes = [load_trajectory(output/r['trajectory'], split='validation') for r in report['episodes']]
+        seeds = json.loads((output.with_name(output.name+'-private')/'cases.json').read_text())
+        panels.append((report, episodes, [(seeds[r['case_id']], r['policy'], r['status'], r['steps'])
+                                         for r in report['episodes']]))
+        assert _children() == before
+        assert not list(output.glob('*.partial'))
+    assert panels[0][2] == panels[1][2]
+    for left, right in zip(panels[0][1], panels[1][1]):
+        assert (left.initial, left.transitions, left.outcome) == (right.initial, right.transitions, right.outcome)
