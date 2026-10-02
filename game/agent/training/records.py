@@ -15,9 +15,11 @@ from game.agent.headless.combat_summary import CombatSummary
 from game.agent.trace_storage import is_trajectory, logical_path, trajectory_digest
 from game.agent.recording import (SUFFIX as TRAJECTORY_SUFFIX, Trajectory, TrajectoryError,
                                   TrajectoryWriter, Transition, load_trajectory)
-from .rewards import RewardComponents, RewardSpec, finite, measure, public_summary, strict_json
+from .rewards import (POTENTIAL_SCHEMA, PotentialRewardComponents, RewardComponents, RewardSpec,
+                      finite, measure_combat, public_summary, strict_json)
 
 SCHEMA = 'sts_combat_training_v1'
+POTENTIAL_RECORD_SCHEMA = 'sts_combat_training_v2'
 SUFFIX = '.training.json'
 
 
@@ -106,9 +108,11 @@ def _read(path):
     value = strict_json(path.read_text(encoding='utf-8'))
     _keys(value, ('schema', 'task', 'trajectory_sha256', 'episode_id', 'reward_spec',
                   'reward_spec_id', 'initial_combat', 'transitions', 'ending'))
-    _require(value['schema'] == SCHEMA and value['task'] == 'combat', 'Unsupported training sidecar')
+    _require(value['schema'] in (SCHEMA, POTENTIAL_RECORD_SCHEMA) and value['task'] == 'combat', 'Unsupported training sidecar')
     spec = RewardSpec.from_dict(value['reward_spec'])
     _require(spec.task == 'combat', 'Combat sidecars require a combat objective')
+    _require((value['schema'] == POTENTIAL_RECORD_SCHEMA) == (spec.schema == POTENTIAL_SCHEMA),
+             'Combat sidecar schema disagrees with its reward specification')
     _require(value['reward_spec_id'] == spec.identity, 'Reward specification identity mismatch')
     return value, spec
 
@@ -129,15 +133,18 @@ def _validate(value, spec, trajectory, reward_spec=None):
         _keys(row, ('index', 'components', 'reward', 'terminated', 'truncated', 'combat'))
         _require(type(row['index']) is int and row['index'] == index, 'Invalid training transition sequence')
         after = public_summary(row['combat'])
-        components = RewardComponents.from_dict(row['components'])
-        _require(components == measure(transition.action, transition.execution, before, after),
+        kind = PotentialRewardComponents if spec.schema == POTENTIAL_SCHEMA else RewardComponents
+        components = kind.from_dict(row['components'])
+        inputs = (transition.action, transition.execution, before, after, transition.observation, transition.successor)
+        _require(components == measure_combat(spec, *inputs),
                  'Reward components disagree with the public transition')
         _require(finite(row['reward']) == spec.evaluate(components), 'Recorded training reward mismatch')
         _flags(after, row['terminated'], row['truncated'])
         _state(after, transition.successor)
         last = index == len(rows) - 1
         _require(last or not (row['terminated'] or row['truncated']), 'Action after task boundary')
-        result.append(TrainingTransition(index, transition, components, effective.evaluate(components),
+        converted = components if effective == spec else measure_combat(effective, *inputs)
+        result.append(TrainingTransition(index, transition, converted, effective.evaluate(converted),
                                          row['terminated'], row['truncated'], after))
         before = after
     ending = value['ending']
@@ -208,7 +215,8 @@ class CombatTrainingRecorder:
                  'Action after task boundary')
         successor, prepared = _owned_public(successor, prepared)
         after = public_summary(combat_summary)
-        components = measure(action, execution, self.current, after)
+        components = measure_combat(self.spec, action, execution, self.current, after,
+                                    self.writer.current, successor)
         _require(finite(reward) == self.spec.evaluate(components), 'Environment reward disagrees with recorder')
         _flags(after, terminated, truncated)
         _state(after, successor)
@@ -247,7 +255,8 @@ class CombatTrainingRecorder:
             # gzip CRC/footer), without rebuilding every public observation.
             _require(trajectory_digest(self.writer.path) == completion.sha256,
                      'Published training trajectory digest mismatch')
-            value = {'schema': SCHEMA, 'task': 'combat', 'trajectory_sha256': completion.sha256,
+            value = {'schema': POTENTIAL_RECORD_SCHEMA if self.spec.schema == POTENTIAL_SCHEMA else SCHEMA,
+                     'task': 'combat', 'trajectory_sha256': completion.sha256,
                      'episode_id': completion.metadata.episode_id, 'reward_spec': self.spec.to_dict(),
                      'reward_spec_id': self.spec.identity, 'initial_combat': asdict(self.initial),
                      'transitions': [asdict(row) for row in self._rows],

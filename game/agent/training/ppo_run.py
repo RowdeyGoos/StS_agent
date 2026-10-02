@@ -13,7 +13,7 @@ from game.agent.tracking import report_progress
 from .checkpoint import load_policy, publish, restore_ppo, runtime, save_ppo_checkpoint
 from .ppo import PPOLearner, UPDATE_POLICY
 from .rollout import advantages, check_cancel
-from .rewards import ACT_RUN_SCHEMA, SHAPED_RUN_SCHEMAS
+from .rewards import ACT_RUN_SCHEMA, POTENTIAL_SCHEMA, SHAPED_RUN_SCHEMAS
 
 
 def _publish_json(path, value):
@@ -23,10 +23,12 @@ def _publish_json(path, value):
 def _rollout_record(rollout, experiment):
     adv, returns = advantages(rollout.steps, gamma=experiment.ppo.gamma, gae_lambda=experiment.ppo.gae_lambda)
     shaped = experiment.training.reward.schema in SHAPED_RUN_SCHEMAS
+    potential = experiment.training.reward.schema == POTENTIAL_SCHEMA
     restricted = experiment.training.action_policy != ALL_LEGAL
-    return {'schema':'sts_ppo_rollout_v4' if experiment.training.reward.schema == ACT_RUN_SCHEMA else
+    return {'schema':'sts_ppo_rollout_v5' if potential else
+                    'sts_ppo_rollout_v4' if experiment.training.reward.schema == ACT_RUN_SCHEMA else
                     'sts_ppo_rollout_v3' if restricted else 'sts_ppo_rollout_v2' if shaped else 'sts_ppo_rollout_v1',
-            **({'reward_spec':experiment.training.reward.to_dict()} if shaped else {}),
+            **({'reward_spec':experiment.training.reward.to_dict()} if shaped or potential else {}),
             **({'action_policy':experiment.training.action_policy} if restricted else {}),
             'behavior':rollout.behavior, 'iteration':rollout.iteration,
             'experiment':experiment.identity, 'episodes':rollout.progress['episodes'],

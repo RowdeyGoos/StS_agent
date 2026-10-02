@@ -10,12 +10,13 @@ from game.agent.recording import load_trajectory
 from game.agent.action_policy import ALL_LEGAL, validate_policy
 from .config import RUN_SCENARIO_SET
 from .features import FeatureEncoder, Vocabulary
+from .combat_features import GRAPH, feature_identity
 from .learner import Corpus, Example
 from .model import ActorCritic
 from .rewards import RewardSpec, measure_run
 
 
-def load_run_corpus(paths, *, split, vocabulary=None, base_vocabulary=None, action_policy=ALL_LEGAL):
+def load_run_corpus(paths, *, split, vocabulary=None, base_vocabulary=None, action_policy=ALL_LEGAL, representation=GRAPH):
     validate_policy(action_policy)
     from .run_demonstrations import _LoadedRunPaths
     if vocabulary is None and split != 'train' or base_vocabulary is not None and (split != 'train' or vocabulary is not None):
@@ -36,7 +37,8 @@ def load_run_corpus(paths, *, split, vocabulary=None, base_vocabulary=None, acti
         vocabulary = Vocabulary.fit((s.observation for e in episodes for s in e.transitions), split='train')
         if base_vocabulary is not None:
             vocabulary = Vocabulary(tuple(sorted(set(vocabulary.names) | set(base_vocabulary.names))))
-    encoder, objective = FeatureEncoder(vocabulary, action_policy=action_policy), RewardSpec.full_run()
+    encoder = FeatureEncoder(vocabulary, action_policy=action_policy, representation=representation)
+    objective = RewardSpec.full_run()
     examples, hashes, seconds = [], [], 0.0
     while episodes:
         # Release parsed observations as compact examples take their place.
@@ -62,7 +64,7 @@ def load_run_corpus(paths, *, split, vocabulary=None, base_vocabulary=None, acti
         seconds += time.perf_counter()-before
     if not examples:
         raise ValueError('Full-run corpus has no reconciled decisions')
-    bindings = [vocabulary.identity, objective.identity, hashes]
+    bindings = [feature_identity(vocabulary, representation), objective.identity, hashes]
     if action_policy != ALL_LEGAL:
         bindings.append(action_policy)
     identity = 'sts_full_run_corpus_v1:'+hashlib.sha256(json.dumps(bindings, separators=(',', ':')).encode()).hexdigest()
@@ -99,10 +101,10 @@ def transfer_combat(policy, vocabulary, *, seed=0, action_policy=None):
 
 
 def transfer_run_objective(policy, reward_spec, *, seed=0):
-    """Explicit new full-run experiment: retain actor, reset changed critic."""
-    if (type(reward_spec) is not RewardSpec or reward_spec.task != 'full_run' or
-            policy.reward_spec.task != 'full_run' or policy.reward_spec == reward_spec):
-        raise ValueError('Objective reset requires different full-run reward specifications')
+    """Explicit same-task reward experiment: retain actor, reset changed critic."""
+    if (type(reward_spec) is not RewardSpec or reward_spec.task != policy.reward_spec.task or
+            policy.reward_spec == reward_spec):
+        raise ValueError('Objective reset requires different same-task reward specifications')
     old = policy.model
     model = ActorCritic(old.vocabulary, old.architecture, seed=seed, action_policy=old.action_policy)
     state = model.state_dict()
@@ -113,7 +115,7 @@ def transfer_run_objective(policy, reward_spec, *, seed=0):
     with torch.no_grad():
         model.value[-1].weight.zero_()
         model.value[-1].bias.zero_()
-    return model, {'kind':'full_run_objective_transfer_v1', 'source_checkpoint':policy.identity,
+    return model, {'kind':reward_spec.task+'_objective_transfer_v1', 'source_checkpoint':policy.identity,
         'source_objective':policy.reward_spec.to_dict(), 'target_objective':reward_spec.to_dict(),
         'actor_vocabulary':'retained_exactly', 'value_head':'fresh_hidden_zero_output',
         'optimizer_rng_cursor':'fresh'}

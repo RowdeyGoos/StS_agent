@@ -24,7 +24,8 @@ from .env import CombatTrainingEnv
 from .features import FeatureEncoder, _RolloutEncoder
 from .model import collate, policy_statistics, sample_actions
 from .records import CombatTrainingRecorder
-from .rewards import ACT_RUN_SCHEMA, SHAPED_RUN_SCHEMAS, measure_act_run, measure_full_run, measure_run
+from .rewards import (ACT_RUN_SCHEMA, POTENTIAL_SCHEMA, SHAPED_RUN_SCHEMAS,
+                      measure_act_run, measure_combat, measure_full_run, measure_run)
 from .run_task import FullRunTrainingEnv
 from .scenarios import SCENARIO_SET, episode_seed
 
@@ -132,7 +133,8 @@ def collect(model, experiment, generator, *, cursor, iteration, decisions=None,
         output = audit = None
     identity, behavior = implementation(), fingerprint(model)
     identity = replace(identity, policy='ppo_v1:' + behavior.split(':')[-1])
-    encoder = FeatureEncoder(model.vocabulary, action_policy=model.action_policy)
+    encoder = FeatureEncoder(model.vocabulary, action_policy=model.action_policy,
+                             representation=model.architecture.schema)
     prepared = None
     model.eval()
     steps, episodes = [], []
@@ -231,6 +233,7 @@ def collect(model, experiment, generator, *, cursor, iteration, decisions=None,
                     chosen = next(a for a in public.candidates if a.ref == state.graph.candidate_refs[index])
                     context = public.context.kind
                     prior_act = completed_act(public)
+                    prior_public, prior_summary = public, summary
                     observation, reward, terminated, truncated, info = env.step(index)
                     execution = info['execution']
                     if execution is None:
@@ -248,6 +251,11 @@ def collect(model, experiment, generator, *, cursor, iteration, decisions=None,
                                    if full_run and objective.schema not in SHAPED_RUN_SCHEMAS else info.get('training_reward'))
                     if measurement is None or measurement['spec_id'] != objective.identity:
                         raise ValueError('Missing/mixed rollout reward objective')
+                    if objective.schema == POTENTIAL_SCHEMA:
+                        measured = measure_combat(objective, chosen, c.from_dict(execution), prior_summary,
+                                                  summary, prior_public, public)
+                        if asdict(measured) != measurement['components']:
+                            raise ValueError('Potential reward disagrees with its public transition')
                     if objective.schema in SHAPED_RUN_SCHEMAS:
                         reward_context = measurement.get('context')
                         act_rewards = objective.schema == ACT_RUN_SCHEMA

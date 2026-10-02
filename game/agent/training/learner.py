@@ -10,6 +10,7 @@ from game.agent.action_policy import ALL_LEGAL, validate_policy
 
 from .dataset import load_training_dataset
 from .features import FeatureEncoder, Vocabulary
+from .combat_features import GRAPH, COMBAT_REPRESENTATIONS, feature_identity
 from .model import collate, policy_statistics
 
 
@@ -36,7 +37,7 @@ class Corpus:
         return sum(e.state.nbytes for e in self.examples)
 
 
-def load_corpus(pairs, *, split, vocabulary=None, reward_spec=None, action_policy=ALL_LEGAL):
+def load_corpus(pairs, *, split, vocabulary=None, reward_spec=None, action_policy=ALL_LEGAL, representation=GRAPH):
     validate_policy(action_policy)
     pairs = tuple(pairs)
     if vocabulary is None:
@@ -45,15 +46,16 @@ def load_corpus(pairs, *, split, vocabulary=None, reward_spec=None, action_polic
         decisions = (step.transition.observation for episode in load_training_dataset(
             pairs, split=split, reward_spec=reward_spec) for step in episode.transitions)
         vocabulary = Vocabulary.fit(decisions, split='train')
-    encoder = FeatureEncoder(vocabulary, action_policy=action_policy)
+    encoder = FeatureEncoder(vocabulary, action_policy=action_policy, representation=representation)
     examples, bindings, objective, seconds = [], [], None, 0.0
     for episode in load_training_dataset(pairs, split=split, reward_spec=reward_spec):
         objective = episode.reward_spec
         # A cutoff is not a terminal Monte Carlo value label. PPO will introduce
         # explicit value bootstrapping in milestone 4, rather than invent it here.
         returns, total = [], 0.0
+        discount = objective.discount if objective.discount is not None else 1.0
         for step in reversed(episode.transitions):
-            total += step.reward
+            total = step.reward + discount * total
             if not math.isfinite(total):
                 raise ValueError('Nonfinite demonstration return')
             returns.append(total if episode.ending.terminated else None)
@@ -70,7 +72,7 @@ def load_corpus(pairs, *, split, vocabulary=None, reward_spec=None, action_polic
                           for s in episode.transitions]))
     if not examples:
         raise ValueError('Imitation corpus has no reconciled decisions')
-    payload = [vocabulary.identity, bindings] + ([action_policy] if action_policy != ALL_LEGAL else [])
+    payload = [feature_identity(vocabulary, representation), bindings] + ([action_policy] if action_policy != ALL_LEGAL else [])
     data = json.dumps(payload, sort_keys=True, separators=(',', ':'), allow_nan=False)
     identity = 'sts_imitation_corpus_v1:' + hashlib.sha256(data.encode()).hexdigest()
     return Corpus(tuple(examples), vocabulary, objective, identity, split, len(bindings), seconds, action_policy)
@@ -106,6 +108,11 @@ class ImitationLearner:
         if (corpus.action_policy != model.action_policy or
                 any(e.state.action_policy != model.action_policy for e in corpus.examples)):
             raise ValueError('Imitation requires one matching policy-action version')
+        if any((e.state.combat is not None) != (model.architecture.schema in COMBAT_REPRESENTATIONS) for e in corpus.examples):
+            raise ValueError('Imitation feature representation differs from model')
+        from .action_features import mode
+        if any(e.state.preview_mode != mode(model.architecture.schema) for e in corpus.examples):
+            raise ValueError('Imitation action preview representation differs from model')
         if type(seed) is not int or not 0 <= seed < 2**63:
             raise ValueError('Learner seed must be a nonnegative int64')
         if next(model.parameters()).device.type != 'cpu':

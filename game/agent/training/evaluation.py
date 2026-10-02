@@ -56,7 +56,7 @@ def _episode(case, policy, identity, output, audit, config, *, chooser=None,
               'status': 'failed', 'trajectory': None, 'training': None, 'combat': None,
               'steps': 0, 'end_turn_actions': 0, 'potion_use_actions': 0,
               'task_return': 0.0, 'run_outcome': None, 'failure': None,
-              'reward_spec_id': config.reward.identity, 'components': dict.fromkeys(COMPONENTS, 0.0)}
+              'reward_spec_id': config.reward.identity, 'components': dict.fromkeys(config.reward.components, 0.0)}
     recording = policy_seconds = 0.0
     started = time.perf_counter()
     env = CombatTrainingEnv(encounter=case.encounter, max_decisions=case.max_decisions,
@@ -160,7 +160,8 @@ def _summary(rows):
             'win_rate': rate, 'win_rate_wilson_95': interval,
             'mean_hp_on_win': sum(r['combat']['hp'] for r in wins)/len(wins) if wins else None,
             'mean_task_return': sum(r['task_return'] for r in rows)/count if count else None,
-            'component_totals': {name: sum(r['components'][name] for r in rows) for name in COMPONENTS},
+            'component_totals': {name: sum(r['components'].get(name, 0.0) for r in rows)
+                                 for name in sorted(set(COMPONENTS).union(*(r['components'] for r in rows)))},
             'steps': steps, 'timings': timings,
             'decisions_per_second': steps/timings['total_seconds'] if timings['total_seconds'] else None}
 

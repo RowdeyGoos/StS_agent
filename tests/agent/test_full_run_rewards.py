@@ -275,7 +275,7 @@ def test_explicit_objective_change_records_rewards_and_keeps_canonical_trajector
     with pytest.raises(ValueError,match='resume'):
         run_ppo(checkpoint=source,experiment=settings,output_dir=tmp_path/'reject',decisions=4,
                 reset_objective=True,resume_state='unused.resume.pt')
-    with pytest.raises(ValueError,match='full-run'):
+    with pytest.raises(ValueError,match='same-task'):
         run_ppo(checkpoint=bundles[0],experiment=settings,output_dir=tmp_path/'reject',decisions=4,reset_objective=True)
     assert not (tmp_path/'reject').exists()
     path,report=run_ppo(checkpoint=source,experiment=settings,output_dir=tmp_path/'ppo',decisions=4,

@@ -8,16 +8,18 @@ from torch import nn
 from game.agent.contracts import full as f
 from game.agent.action_policy import ALL_LEGAL, validate_policy
 from .features import Vocabulary
+from .action_features import WIDTH as ACTION_WIDTH, mode as preview_mode
+from .combat_features import GRAPH, COMBAT_REPRESENTATIONS, REPRESENTATIONS, WIDTH, ROLES, feature_identity
 
 
 @dataclass(frozen=True, slots=True)
 class Architecture:
     hidden_size: int = 48
     message_layers: int = 2
-    schema: str = 'sts_graph_actor_critic_v1'
+    schema: str = GRAPH
 
     def __post_init__(self):
-        if (self.schema != 'sts_graph_actor_critic_v1' or type(self.hidden_size) is not int or
+        if (self.schema not in REPRESENTATIONS or type(self.hidden_size) is not int or
                 not 8 <= self.hidden_size <= 128 or type(self.message_layers) is not int or
                 not 1 <= self.message_layers <= 4):
             raise ValueError('Unsupported model architecture')
@@ -28,6 +30,10 @@ def collate(states, *, vocabulary):
         raise ValueError('Expected nonempty batch with one frozen vocabulary')
     if len({s.action_policy for s in states}) != 1:
         raise ValueError('Mixed policy-action versions in one batch')
+    if len({s.combat is not None for s in states}) != 1:
+        raise ValueError('Mixed feature representations in one batch')
+    if len({s.preview_mode for s in states}) != 1:
+        raise ValueError('Mixed action preview representations in one batch')
     rows = {key: [] for key in ('nodes', 'parents', 'positions', 'fields', 'numbers', 'links',
                                 'link_positions', 'owners', 'roots')}
     counts = [len(s.candidates) for s in states]
@@ -61,6 +67,31 @@ def collate(states, *, vocabulary):
         offset += n
     batch = {key: torch.from_numpy(np.concatenate(value, axis=0)) for key, value in rows.items()}
     batch.update(candidates=torch.from_numpy(candidates), mask=torch.from_numpy(mask))
+    if states[0].combat is not None:
+        for state in states:
+            if (state.combat.shape != (len(state.nodes), WIDTH) or state.combat.dtype != np.float32 or
+                    state.roles is None or state.roles.shape != (len(state.nodes),) or
+                    state.roles.dtype != np.int64 or not np.isfinite(state.combat).all() or
+                    ((state.roles < -1) | (state.roles >= len(ROLES))).any()):
+                raise ValueError('Invalid combat feature channels')
+        batch['combat'] = torch.from_numpy(np.concatenate([s.combat for s in states]))
+        batch['roles'] = torch.from_numpy(np.concatenate([s.roles for s in states]))
+    mode = states[0].preview_mode
+    if mode:
+        if type(mode) is not int or mode not in (1, 2, 3):
+            raise ValueError('Invalid action preview representation')
+        previews = np.zeros((len(states), max(counts), ACTION_WIDTH), dtype=np.float32)
+        for i, state in enumerate(states):
+            a = state.action_previews
+            withheld = 0 if mode == 1 else 6 if mode == 2 else ACTION_WIDTH
+            if (a is None or a.shape != (counts[i], ACTION_WIDTH) or a.dtype != np.float32 or
+                    not np.isfinite(a).all() or np.any(a[:, withheld:] != 0)):
+                raise ValueError('Invalid or unmasked action preview features')
+            previews[i, :counts[i]] = a
+        batch['action_previews'] = torch.from_numpy(previews)
+        batch['preview_mode'] = torch.tensor(mode, dtype=torch.int64)
+    elif any(s.action_previews is not None for s in states):
+        raise ValueError('Action previews require a versioned representation')
     return batch
 
 
@@ -80,6 +111,7 @@ class ActorCritic(nn.Module):
         if type(seed) is not int or not 0 <= seed < 2**63:
             raise ValueError('Model seed must be a nonnegative int64')
         self.vocabulary, self.architecture = vocabulary, architecture
+        self.feature_identity = feature_identity(vocabulary, architecture.schema)
         self.action_policy = validate_policy(action_policy)
         d = architecture.hidden_size
         # Initialization must not alter the caller's global torch RNG.
@@ -100,8 +132,22 @@ class ActorCritic(nn.Module):
             self.state = nn.Sequential(nn.Linear(d * 3, d), nn.Tanh())
             self.scorer = nn.Sequential(nn.Linear(d * 4 + 2, d), nn.Tanh(), nn.Linear(d, 1))
             self.value = nn.Sequential(nn.Linear(d, d), nn.Tanh(), nn.Linear(d, 1))
+            if architecture.schema in COMBAT_REPRESENTATIONS:
+                self.combat_node = nn.Sequential(nn.Linear(WIDTH, d), nn.Tanh())
+                self.combat_state = nn.Sequential(nn.Linear(len(ROLES) * (d + 1), d), nn.Tanh())
+
+            if preview_mode(architecture.schema):
+                self.action_preview = nn.Sequential(nn.Linear(ACTION_WIDTH, d), nn.Tanh(), nn.Linear(d, 1, bias=False))
+                # Preserve the inherited policy exactly; the earlier layer must
+                # remain nonzero so this branch can learn on its first update.
+                nn.init.zeros_(self.action_preview[-1].weight)
 
     def forward(self, batch):
+        if ('combat' in batch) != (self.architecture.schema in COMBAT_REPRESENTATIONS):
+            raise ValueError('Model and feature representation differ')
+        mode = preview_mode(self.architecture.schema)
+        if int(batch.get('preview_mode', 0)) != mode or ('action_previews' in batch) != bool(mode):
+            raise ValueError('Model and action preview representation differ')
         nodes, fields, links = batch['nodes'], batch['fields'], batch['links']
         n = len(nodes)
         field_values = self.field(self.name(fields[:, 1]) + self.field_type(fields[:, 2]) +
@@ -114,6 +160,8 @@ class ActorCritic(nn.Module):
         h = self.base(torch.cat((self.name(nodes[:, 0]), self.name(nodes[:, 1]), attributes), -1))
         h = h + self.position(batch['positions']) + self.counts(torch.stack(
             (torch.log1p(field_counts), torch.log1p(child_counts)), -1))
+        if self.architecture.schema in COMBAT_REPRESENTATIONS:
+            h = h + self.combat_node(batch['combat'])
         for layer in self.messages:
             children, _ = _pool(h[child_indexes], parent[child_indexes], n)
             linked = _linked(h, links[:, 2]) + self.name(links[:, 1]) + self.namespace(links[:, 3])
@@ -122,10 +170,18 @@ class ActorCritic(nn.Module):
             h = h + layer(torch.cat((h, children, _linked(h, parent), linked), -1))
         pooled, _ = _pool(h, batch['owners'], len(batch['roots']))
         state = self.state(torch.cat((pooled, h[batch['roots'][:, 0]], h[batch['roots'][:, 1]]), -1))
+        if self.architecture.schema in COMBAT_REPRESENTATIONS:
+            active = batch['roles'] >= 0
+            owners = batch['owners'][active] * len(ROLES) + batch['roles'][active]
+            typed, counts = _pool(h[active], owners, len(state) * len(ROLES))
+            typed = torch.cat((typed, torch.log1p(counts)[:, None]), -1).reshape(len(state), -1)
+            state = state + self.combat_state(typed)
         a = batch['candidates']
         state_actions = state[:, None, :].expand(-1, a.shape[1], -1)
         logits = self.scorer(torch.cat((state_actions, self.action(a[:, :, 0]),
             _linked(h, a[:, :, 1]), _linked(h, a[:, :, 2]), (a[:, :, 1:] >= 0).to(h.dtype)), -1)).squeeze(-1)
+        if mode:
+            logits = logits + self.action_preview(batch['action_previews']).squeeze(-1)
         return logits, self.value(state).squeeze(-1)
 
 

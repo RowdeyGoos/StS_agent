@@ -50,6 +50,8 @@ def main(argv=None):
     imitate.add_argument('--learning-rate', type=float, help='Defaults to .003; resume preserves the saved setting')
     imitate.add_argument('--hidden-size', type=int, help='Defaults to 48')
     imitate.add_argument('--message-layers', type=int, help='Defaults to 2')
+    imitate.add_argument('--representation', choices=('graph', 'combat', 'action-control', 'action-damage', 'action-stacks'),
+                         help='New learners default to graph; combat adds public numeric channels and typed combat pooling')
     imitate.add_argument('--seed', type=int, help='Private learner RNG seed; defaults to 0 for a new learner')
     imitate.add_argument('--resume-bundle')
     imitate.add_argument('--resume-state')
@@ -67,7 +69,7 @@ def main(argv=None):
     ppo.add_argument('--start-index', type=int, help='Private training episode cursor; defaults to 0')
     ppo.add_argument('--resume-state', help='Owner-only PPO state matching --checkpoint')
     ppo.add_argument('--reset-objective', action='store_true',
-        help='Start a different full-run reward objective: keep actor, reset critic/optimizer; incompatible with resume')
+        help='Start a different reward objective within the same task: keep actor, reset critic/optimizer; incompatible with resume')
     ppo.add_argument('--reset-action-policy', action='store_true',
         help='Adopt the config action policy in a new experiment; keep weights, start a fresh optimizer')
     ppo.add_argument('--workers', type=int,
@@ -96,6 +98,8 @@ def _run(args, parser):
         from game.agent.training.checkpoint import publish, save_checkpoint, restore_learner, load_policy, runtime
         from game.agent.training.learner import load_corpus, ImitationLearner, LearnerConfig, evaluate_imitation
         from game.agent.training.model import ActorCritic, Architecture
+        from game.agent.training.combat_features import GRAPH, COMBAT
+        from game.agent.training.action_features import CONTROL, DAMAGE, STACKS
         from game.agent.runner import prepare_directories
     except ModuleNotFoundError as error:
         if error.name not in ('torch', 'numpy', 'gymnasium'):
@@ -191,19 +195,25 @@ def _run(args, parser):
         if resumed and action_policy != resumed.model.action_policy:
             raise ValueError('Exact resume cannot change its policy-action version')
         source = load_policy(args.initialize_combat, task='combat') if args.initialize_combat else None
+        inherited = (resumed or source).model.architecture.schema if resumed or source else GRAPH
+        representation = {'graph': GRAPH, 'combat': COMBAT, 'action-control': CONTROL,
+                          'action-damage': DAMAGE, 'action-stacks': STACKS}.get(args.representation, inherited)
+        if (resumed or source) and representation != inherited:
+            raise ValueError('Resume/actor transfer cannot change representation')
         lineage = None
         if args.full_run:
             from game.agent.training.run_corpus import load_run_corpus, transfer_combat
             from game.agent.training.run_demonstrations import corpus_paths
             train = load_run_corpus(corpus_paths(args.train_dir, split='train', retain=True), split='train', vocabulary=frozen,
-                base_vocabulary=source.model.vocabulary if source else None, action_policy=action_policy)
+                base_vocabulary=source.model.vocabulary if source else None, action_policy=action_policy,
+                representation=representation)
             validation = load_run_corpus(corpus_paths(args.validation_dir, split='validation', retain=True),
-                split='validation', vocabulary=train.vocabulary, action_policy=action_policy)
+                split='validation', vocabulary=train.vocabulary, action_policy=action_policy, representation=representation)
         else:
             train = load_corpus(corpus_pairs(args.train_dir, split='train'), split='train', vocabulary=frozen,
-                                action_policy=action_policy)
+                                action_policy=action_policy, representation=representation)
             validation = load_corpus(corpus_pairs(args.validation_dir, split='validation'), split='validation',
-                                     vocabulary=train.vocabulary, action_policy=action_policy)
+                                     vocabulary=train.vocabulary, action_policy=action_policy, representation=representation)
         if train.reward_spec != validation.reward_spec:
             raise ValueError('Training and validation objectives differ')
         if args.resume_bundle:
@@ -219,7 +229,7 @@ def _run(args, parser):
         else:
             seed = args.seed if args.seed is not None else 0
             architecture = Architecture(args.hidden_size if args.hidden_size is not None else 48,
-                                        args.message_layers if args.message_layers is not None else 2)
+                                        args.message_layers if args.message_layers is not None else 2, representation)
             settings = LearnerConfig(args.batch_size if args.batch_size is not None else 8,
                                      args.learning_rate if args.learning_rate is not None else .003)
             if source:
@@ -232,7 +242,7 @@ def _run(args, parser):
             learner = ImitationLearner(model, train, settings, seed=seed)
         report = {'schema': 'sts_imitation_report_v1', 'status': 'running', 'runtime': runtime(),
                   'architecture': asdict(learner.model.architecture), 'learner_config': asdict(learner.config),
-                  'reward_spec': train.reward_spec.to_dict(), 'feature_identity': train.vocabulary.identity,
+                  'reward_spec': train.reward_spec.to_dict(), 'feature_identity': learner.model.feature_identity,
                   'corpus_identity': train.identity, 'validation_identity': validation.identity,
                   'train_decisions': len(train.examples), 'validation_decisions': len(validation.examples),
                   'packed_corpus_bytes': train.nbytes, 'corpus_encoding_seconds': train.encoding_seconds,

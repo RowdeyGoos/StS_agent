@@ -16,6 +16,7 @@ from game.agent.encoding.full import FULL_RUN_PROFILE
 from game.agent.provenance import implementation
 from game.agent.runner import prepare_directories
 from .features import FeatureEncoder, Vocabulary
+from .combat_features import feature_identity
 from .model import ActorCritic, Architecture, collate, log_probabilities
 from .rewards import RewardSpec, strict_json
 
@@ -86,7 +87,7 @@ def _save_inference(path, model, reward_spec, updates, settings, *, algorithm=No
     manifest = {'schema': ACTION_SCHEMA if restricted else SCHEMA if algorithm is None else PPO_SCHEMA,
                 'contract': f.PROFILE, 'encoding': FULL_RUN_PROFILE.identity,
                 'architecture': asdict(model.architecture), 'vocabulary': model.vocabulary.to_dict(),
-                'feature_identity': model.vocabulary.identity, 'reward_spec': reward_spec.to_dict(),
+                'feature_identity': model.feature_identity, 'reward_spec': reward_spec.to_dict(),
                 'reward_identity': reward_spec.identity, 'implementation': asdict(implementation()),
                 'runtime': runtime(), 'updates': updates, 'learner_config': settings,
                 'weights_sha256': hashlib.sha256(weights).hexdigest()}
@@ -106,7 +107,8 @@ class CheckpointPolicy:
     def __init__(self, model, reward_spec, identity, manifest):
         self.model, self.reward_spec, self.identity, self.manifest = model, reward_spec, identity, manifest
         self.algorithm = manifest.get('algorithm', 'imitation')
-        self.encoder = FeatureEncoder(model.vocabulary, action_policy=model.action_policy)
+        self.encoder = FeatureEncoder(model.vocabulary, action_policy=model.action_policy,
+                                      representation=model.architecture.schema)
         self.model.eval().requires_grad_(False)
 
     def probabilities(self, decision):
@@ -168,12 +170,13 @@ def load_policy(path, *, expected_sha256=None, reward_spec=None, task=None):
                 any(ch not in '0123456789abcdef' for ch in manifest['resume_state_sha256']) or
                 experiment.training.reward != objective or experiment.training.action_policy != action_policy):
             raise ValueError('Invalid PPO inference configuration')
-    if (vocabulary.identity != manifest['feature_identity'] or objective.identity != manifest['reward_identity'] or
-            reward_spec is not None and reward_spec != objective):
-        raise ValueError('Feature or objective identity mismatch')
     if type(manifest['architecture']) is not dict or set(manifest['architecture']) != set(Architecture.__dataclass_fields__):
         raise ValueError('Unsupported architecture fields')
-    model = ActorCritic(vocabulary, Architecture(**manifest['architecture']), action_policy=action_policy)
+    architecture = Architecture(**manifest['architecture'])
+    if (feature_identity(vocabulary, architecture.schema) != manifest['feature_identity'] or
+            objective.identity != manifest['reward_identity'] or reward_spec is not None and reward_spec != objective):
+        raise ValueError('Feature or objective identity mismatch')
+    model = ActorCritic(vocabulary, architecture, action_policy=action_policy)
     state = torch.load(io.BytesIO(weights), map_location='cpu', weights_only=True)
     expected = model.state_dict()
     if (type(state) is not dict or state.keys() != expected.keys() or any(

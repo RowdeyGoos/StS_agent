@@ -7,7 +7,7 @@ from pathlib import Path
 from game.agent.action_policy import ALL_LEGAL
 
 from .config import TrainingConfig, RUN_SCENARIO_SET
-from .rewards import strict_json
+from .rewards import POTENTIAL_SCHEMA, strict_json
 from .scenarios import SCENARIO_SET, scenario
 
 
@@ -63,6 +63,8 @@ class PPOExperiment:
             raise ValueError('Invalid PPO experiment')
         if (self.schema == 'sts_ppo_experiment_v1') != (self.training.action_policy == ALL_LEGAL):
             raise ValueError('Policy-action restrictions require PPO experiment v2')
+        if self.training.reward.schema == POTENTIAL_SCHEMA and self.training.reward.discount != self.ppo.gamma:
+            raise ValueError('Potential reward discount must equal PPO gamma')
         if self.training.mode == 'full_run':
             if (self.source != RUN_SCENARIO_SET or self.ppo.gamma != 1 or
                     not set(self.encounters) <= {'overgrowth', 'underdocks'}):

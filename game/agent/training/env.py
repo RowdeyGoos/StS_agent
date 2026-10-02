@@ -6,7 +6,7 @@ from game.agent import contracts as c
 from game.agent.encoding.full import FULL_RUN_PROFILE
 from game.agent.gym_env import EnvironmentFailure, StsEnv
 from .scenarios import scenario
-from .rewards import RewardSpec, measure
+from .rewards import RewardSpec, measure_combat
 
 
 class CombatTrainingEnv(StsEnv):
@@ -79,8 +79,9 @@ class CombatTrainingEnv(StsEnv):
     def _dispatch(self, candidate_ref):
         action = next(a for a in self._frame.decision.candidates if a.ref == candidate_ref)
         before = self._combat
+        public = self._frame.decision
         report = self._measure('simulation_dispatch_seconds', super()._dispatch, candidate_ref)
-        self._reward_input = action, report, before
+        self._reward_input = action, report, before, public
         return report
 
     def _refresh(self, *, initial=False):
@@ -100,7 +101,9 @@ class CombatTrainingEnv(StsEnv):
             super()._refresh(initial=initial)
 
     def _task_result(self):
-        components = measure(*self._reward_input, self._combat)
+        action, execution, before, public = self._reward_input
+        components = measure_combat(self.reward_spec, action, execution, before, self._combat,
+                                    public, self.public_state)
         reward = self.reward_spec.evaluate(components)
         self._reward_measurement = {'spec_id': self.reward_spec.identity,
                                     'components': asdict(components), 'total': reward}

@@ -13,6 +13,7 @@ import numpy as np
 from game.agent.contracts import full as f
 from game.agent.action_policy import ALL_LEGAL, action_mask, validate_policy
 from game.agent.encoding.full import FullRunEncoder
+from .combat_features import GRAPH, COMBAT_REPRESENTATIONS, feature_identity
 
 SCHEMA = 'sts_learned_public_graph_v1'
 _FEATURE_ARRAYS = ('nodes', 'parents', 'positions', 'fields', 'numbers', 'links',
@@ -93,10 +94,16 @@ class RolloutFeatures:
     policy_mask: tuple[bool, ...]
     candidate_refs: tuple[str, ...]
     legal_mask: tuple[bool, ...]
+    combat: np.ndarray | None = None
+    roles: np.ndarray | None = None
+    action_previews: np.ndarray | None = None
+    preview_mode: int = 0
 
     @property
     def nbytes(self):
-        return sum(getattr(self, key).nbytes for key in _FEATURE_ARRAYS)
+        return sum(getattr(self, key).nbytes for key in _FEATURE_ARRAYS) + (
+            self.combat.nbytes + self.roles.nbytes if self.combat is not None else 0) + (
+            self.action_previews.nbytes if self.action_previews is not None else 0)
 
 
 @dataclass(frozen=True, slots=True)
@@ -114,24 +121,33 @@ class GraphFeatures:
     roots: tuple[int, int]
     action_policy: str
     policy_mask: tuple[bool, ...]
+    combat: np.ndarray | None = None
+    roles: np.ndarray | None = None
+    action_previews: np.ndarray | None = None
+    preview_mode: int = 0
 
     @property
     def nbytes(self):
         return (sum(getattr(self, key).nbytes for key in _FEATURE_ARRAYS) +
-                sum(a.nbytes for a in self.graph.observation.values()))
+                sum(a.nbytes for a in self.graph.observation.values()) +
+                (self.combat.nbytes + self.roles.nbytes if self.combat is not None else 0) +
+                (self.action_previews.nbytes if self.action_previews is not None else 0))
 
     def for_rollout(self):
         return RolloutFeatures(self.vocabulary,
             *(getattr(self, key) for key in _FEATURE_ARRAYS),
             self.roots, self.action_policy, self.policy_mask, self.graph.candidate_refs,
-            tuple(bool(v) for v in self.graph.observation['action_mask']))
+            tuple(bool(v) for v in self.graph.observation['action_mask']), self.combat, self.roles,
+            self.action_previews, self.preview_mode)
 
 
 class FeatureEncoder:
-    def __init__(self, vocabulary, *, action_policy=ALL_LEGAL):
+    def __init__(self, vocabulary, *, action_policy=ALL_LEGAL, representation=GRAPH):
         if type(vocabulary) is not Vocabulary:
             raise ValueError('Expected frozen Vocabulary')
         self.vocabulary = vocabulary
+        self.identity = feature_identity(vocabulary, representation)
+        self.representation = representation
         self.action_policy = validate_policy(action_policy)
         self.names = {name: i + 1 for i, name in enumerate(vocabulary.names)}
         self.public = FullRunEncoder()
@@ -187,12 +203,17 @@ class FeatureEncoder:
             result = np.array(rows, dtype=dtype).reshape(-1, width)
             result.flags.writeable = False
             return result
+        from .combat_features import channels
+        combat, roles = channels(nodes, parents) if self.representation in COMBAT_REPRESENTATIONS else (None, None)
+        from .action_features import channels as action_channels, mode
+        preview_mode = mode(self.representation)
+        previews = action_channels(decision, graph.candidate_refs, self.representation) if preview_mode else None
         return GraphFeatures(self.vocabulary.identity, graph,
             array([(token(n.kind), token(n.definition_id)) for n in nodes], 2),
             array(parents, 1), array(positions, 2, np.float32), array(fields, 4),
             array(numbers, 2, np.float32), array(links, 4), array(link_positions, 3, np.float32),
             array(candidates, 3), roots, self.action_policy,
-            tuple(permissions[ref] for ref in graph.candidate_refs))
+            tuple(permissions[ref] for ref in graph.candidate_refs), combat, roles, previews, preview_mode)
 
 
 class _RolloutEncoder(FullRunEncoder):
