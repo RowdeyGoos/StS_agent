@@ -1,0 +1,1013 @@
+{
+  "baseline": {
+    "train": {
+      "greedy": {
+        "cutoffs": 0,
+        "games": 101,
+        "losses": 38,
+        "mean_boss_hp_fraction_on_loss": 0.33221782780651055,
+        "mean_boss_hp_on_loss": 57.473684210526315,
+        "mean_player_hp_fraction_on_win": 0.18827441676943132,
+        "mean_player_hp_on_win": 15.365079365079366,
+        "mean_return": 0.6400978959518915,
+        "win_rate": 0.6237623762376238,
+        "wins": 63
+      },
+      "sampled": {
+        "cutoffs": 0,
+        "games": 202,
+        "losses": 93,
+        "mean_boss_hp_fraction_on_loss": 0.3065448443035615,
+        "mean_boss_hp_on_loss": 53.03225806451613,
+        "mean_player_hp_fraction_on_win": 0.21248135877401206,
+        "mean_player_hp_on_win": 17.357798165137616,
+        "mean_return": 0.5550270331353867,
+        "win_rate": 0.5396039603960396,
+        "wins": 109
+      }
+    },
+    "validation": {
+      "greedy": {
+        "cutoffs": 0,
+        "games": 42,
+        "losses": 16,
+        "mean_boss_hp_fraction_on_loss": 0.3110549132947977,
+        "mean_boss_hp_on_loss": 53.8125,
+        "mean_player_hp_fraction_on_win": 0.18496071063261732,
+        "mean_player_hp_on_win": 15.576923076923077,
+        "mean_return": 0.6352970623115146,
+        "win_rate": 0.6190476190476191,
+        "wins": 26
+      },
+      "sampled": {
+        "cutoffs": 0,
+        "games": 84,
+        "losses": 38,
+        "mean_boss_hp_fraction_on_loss": 0.30316397931244293,
+        "mean_boss_hp_on_loss": 52.44736842105263,
+        "mean_player_hp_fraction_on_win": 0.18000093090709543,
+        "mean_player_hp_on_win": 15.065217391304348,
+        "mean_return": 0.5614450588664583,
+        "win_rate": 0.5476190476190477,
+        "wins": 46
+      }
+    }
+  },
+  "bindings": {
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-continuation-diagnostic-20261002/analysis.json": "1522c2aff07ff995313bfbc7f0153d5a71d153a087e820feb669fef85fa15037",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-continuation-diagnostic-20261002/analyze.py": "aec695101f0e5d8dce5facb740e4aad9377d5efc8244f8eee7b99847198ae97e",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-continuation-diagnostic-20261002/complete.json": "d9cd517e80d7b95f35b3e9c1e49e5fd522087c0611e9d2e10d0c8f7dea904649",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-continuation-diagnostic-20261002/conclusion.json": "1fdec575a5cef4f885521fa644afb5c76896fc52f8cad6f7379085894893ded6",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-continuation-diagnostic-20261002/drift.py": "fcf76f1da2ad5677b775afdb72847fa9cff8cd0f46951e78900400ce7870e451",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-continuation-diagnostic-20261002/evaluate.py": "689d722d065d9c3a5434795cd4bf7fadf53ab9ede7283b59be1836c7b8ddfc42",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-continuation-diagnostic-20261002/first-rollout-matching.json": "c0082fd634f7d19bc83776064b23991fcd08fb4a38cdb80aca656309274f3917",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-continuation-diagnostic-20261002/initialization.json": "d8613d12f55c13ff95f6860bb89b0ce64de0c95d5bbb7e0fa28be546cb60ecbf",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-continuation-diagnostic-20261002/initialize.py": "c42a9650b06fe0f368970589e7fb78ca952d28109e8d5e33f1dd8e70703c0c40",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-continuation-diagnostic-20261002/parent-equivalence.json": "cd1917f053820c97810b2ae9c5b7600fc4e992f0312fe7f49b8e80e4a56d37b5",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-continuation-diagnostic-20261002/plan-preflight-v1.json": "e73ca438201febc646c12726616d1379609d4d0e4596c9521268cb548897cbb7",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-continuation-diagnostic-20261002/plan.json": "7192e56e36bbac3cf78f4a9646b84c3b3e4deb5ace1128fbfe112590d70ee541",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-continuation-diagnostic-20261002/plot_results.py": "3af891aa5756d072d2c97a227fbe9159c1e70cb5dfe7b6ca4e95b9bc5a7c2fc4",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-continuation-diagnostic-20261002/policy-drift.json": "3369f134d5f9e32ebc2092cadec15d1e668f4cd8bfb4c7afaee4cafc6d4b252b",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-continuation-diagnostic-20261002/publication.json": "231b2ce309f272e1a52a7c974d9bb91eb4b4c97f9bca9c1143e667c0c2822bed",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-continuation-diagnostic-20261002/publish_results.py": "02f56a716dedfed53e9b5a293e1e756b1fb7dfb22d743fa16d8587bcaae24a49",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-continuation-diagnostic-20261002/result-review.json": "67a2fa435c6dae1f9eb86c33cfa5a298188c05b37d895af09779264744fca48a",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-continuation-diagnostic-20261002/run.py": "6eca1ab48b70eb3e58bc45250df80122dc2354fa253480af252ae6a696bf26f2",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-continuation-diagnostic-20261002/semantic-review.json": "33fc02d212543e828e99bc4d61fb794dc7245f3ae835fa9e4d3ed4efaf4d4027",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-continuation-diagnostic-20261002/source-verification.json": "46b8c5a3b74aadf2cf2fe68a4f6f1fef1caf3ad41a4ff5778e3ec0cc75607081",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-continuation-diagnostic-20261002/study.py": "19d34288b8930447a023aef94c3de6f2cb2a9f4a310a0ea5e6639be48a0f9cca",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-continuation-diagnostic-20261002/verification.json": "c7850a29bd5ec2fa122650153fdb3c3ea57e7929a5f480b57570fb8729b20c9b",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-continuation-diagnostic-20261002/verify_results.py": "2c581e9c77514048164e01235df32c382b1a78cb5002253dfe0fef9ffb1187d1",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-continuation-diagnostic-20261002/write_evidence.py": "1ab906d27eb9f6ae94c661522e4f886da05f94e2211c89335137bad3ca4d2b3b"
+  },
+  "budget": {
+    "additional_decisions_per_run": 50000,
+    "total": 300000,
+    "update_threads": 4,
+    "workers": 16
+  },
+  "conclusion": {
+    "analysis_sha256": "1522c2aff07ff995313bfbc7f0153d5a71d153a087e820feb669fef85fa15037",
+    "finding": "The experiment does not support optimizer reset as the primary explanation. Continuing PPO on the same corpus also lowers this validation score with original optimizer and critic preserved.",
+    "interpretation": "Results are compatible with limited generalization during continued optimization and regression from a validation-selected high point. They do not isolate the share due to each, nor establish a population-level performance loss. Sampled validation decline shows the pattern is not limited to greedy argmax flips.",
+    "model_promotion": false,
+    "observations": [
+      "All six +50k endpoints are below the selected parent on both greedy and sampled validation. Retain-Adam greedy 21/23, reset-Adam 24/22, reset-Adam-and-critic 21/23 out of 42; parent 26.",
+      "Retained-Adam and Adam-reset arms improve TRAIN greedy and sampled wins in both schedules, while validation wins decline. Critic-reset TRAIN greedy changes are mixed.",
+      "Retaining Adam does not consistently improve either validation mode relative to resetting Adam; critic-reset sampled scores are lower in both schedules, but greedy differences have no consistent direction.",
+      "Calibrated critic MC error is near the original in schedule a (.1215 versus .1230) and worse in b (.1362 versus .1175), not a uniform calibration failure.",
+      "Final policy agreement is89.7\u201393.3 percent on 808 fixed public TRAIN states. Exact original continuation in schedule a loses 7 prior greedy validation wins and gains 2.",
+      "Original parent was selected among six historical specialist checkpoints; new endpoints are fixed. Repeated evaluation of the same 42 cases does not create fresh evidence.",
+      "All 7,293 evaluationgames and 220,113 actions passed exact headless replay; all 36 checkpoints strictly restored; all 300,000 decisions trained, zero skipped or failed episodes."
+    ],
+    "policy_drift_sha256": "3369f134d5f9e32ebc2092cadec15d1e668f4cd8bfb4c7afaee4cafc6d4b252b",
+    "recommendation": "Retain the 250k parent. Prioritize more independent Vantom training fights and a frozen development panel; measure new representation/reward treatments from a common earlier initializer at fixed budgets/checkpoints. A conservative continuation learning-rate comparison is a separate targeted follow-up if preserving this exact actor is the objective. Do not attribute earlier feature/shaping results solely to reset handling.",
+    "status": "complete",
+    "uncertainty": "Two continuation schedules of one preselected parent, not independent pretrained models; same 101 TRAIN and 42 reused validation campaigns. All six greedy endpoint-versus-parent bootstrap intervals include or touch zero. No correction for all repeated comparisons. Reserved 57 test openings remain unopened.",
+    "verification_sha256": "c7850a29bd5ec2fa122650153fdb3c3ea57e7929a5f480b57570fb8729b20c9b"
+  },
+  "corpus": {
+    "identity": "act1_combat_corpus_v2:0b9f7cd09f6d63aa47f3110b3e7faca63039ea37e6b392e4ed0db5ebd63a9a9f",
+    "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-20261002/corpus/corpus.json",
+    "sha256": "0b9f7cd09f6d63aa47f3110b3e7faca63039ea37e6b392e4ed0db5ebd63a9a9f"
+  },
+  "endpoints": [
+    {
+      "arm": "retain",
+      "cutoffs": 0,
+      "games": 101,
+      "label": "retain-a",
+      "losses": 35,
+      "mean_boss_hp_fraction_on_loss": 0.3433526011560693,
+      "mean_boss_hp_on_loss": 59.4,
+      "mean_player_hp_fraction_on_win": 0.19097833953581464,
+      "mean_player_hp_on_win": 15.636363636363637,
+      "mean_return": 0.670732321701298,
+      "mode": "greedy",
+      "replicate": "a",
+      "split": "train",
+      "step": 50000,
+      "versus_parent": {
+        "both_lost_games": 32,
+        "both_won_games": 60,
+        "campaign_bootstrap_95_percent_interval": [
+          -0.0297029702970297,
+          0.0891089108910891
+        ],
+        "gained_wins": 6,
+        "games": 101,
+        "lost_wins": 3,
+        "mean_boss_hp_change_both_lost": 2.8125,
+        "mean_player_hp_change_both_won": 0.5333333333333333,
+        "source_groups": 101,
+        "win_rate_difference": 0.0297029702970297
+      },
+      "win_rate": 0.6534653465346535,
+      "wins": 66
+    },
+    {
+      "arm": "retain",
+      "cutoffs": 0,
+      "games": 202,
+      "label": "retain-a",
+      "losses": 90,
+      "mean_boss_hp_fraction_on_loss": 0.28882466281310215,
+      "mean_boss_hp_on_loss": 49.96666666666667,
+      "mean_player_hp_fraction_on_win": 0.19870120073716666,
+      "mean_player_hp_on_win": 16.294642857142858,
+      "mean_return": 0.569524486786806,
+      "mode": "sampled",
+      "replicate": "a",
+      "split": "train",
+      "step": 50000,
+      "versus_parent": {
+        "both_lost_games": 76,
+        "both_won_games": 95,
+        "campaign_bootstrap_95_percent_interval": [
+          -0.04455445544554455,
+          0.07425742574257425
+        ],
+        "gained_wins": 17,
+        "games": 202,
+        "lost_wins": 14,
+        "mean_boss_hp_change_both_lost": -0.9078947368421053,
+        "mean_player_hp_change_both_won": -0.8736842105263158,
+        "source_groups": 101,
+        "win_rate_difference": 0.01485148514851485
+      },
+      "win_rate": 0.5544554455445545,
+      "wins": 112
+    },
+    {
+      "arm": "retain",
+      "cutoffs": 0,
+      "games": 42,
+      "label": "retain-a",
+      "losses": 21,
+      "mean_boss_hp_fraction_on_loss": 0.23864574731626753,
+      "mean_boss_hp_on_loss": 41.285714285714285,
+      "mean_player_hp_fraction_on_win": 0.19119230067505932,
+      "mean_player_hp_on_win": 16.0,
+      "mean_return": 0.5131693577814268,
+      "mode": "greedy",
+      "replicate": "a",
+      "split": "validation",
+      "step": 50000,
+      "versus_parent": {
+        "both_lost_games": 14,
+        "both_won_games": 19,
+        "campaign_bootstrap_95_percent_interval": [
+          -0.2619047619047619,
+          0.023809523809523808
+        ],
+        "gained_wins": 2,
+        "games": 42,
+        "lost_wins": 7,
+        "mean_boss_hp_change_both_lost": 0.07142857142857142,
+        "mean_player_hp_change_both_won": 0.0,
+        "source_groups": 42,
+        "win_rate_difference": -0.11904761904761904
+      },
+      "win_rate": 0.5,
+      "wins": 21
+    },
+    {
+      "arm": "retain",
+      "cutoffs": 0,
+      "games": 84,
+      "label": "retain-a",
+      "losses": 45,
+      "mean_boss_hp_fraction_on_loss": 0.29621066152858055,
+      "mean_boss_hp_on_loss": 51.24444444444445,
+      "mean_player_hp_fraction_on_win": 0.18107414053154416,
+      "mean_player_hp_on_win": 15.205128205128204,
+      "mean_return": 0.4760420188190218,
+      "mode": "sampled",
+      "replicate": "a",
+      "split": "validation",
+      "step": 50000,
+      "versus_parent": {
+        "both_lost_games": 35,
+        "both_won_games": 36,
+        "campaign_bootstrap_95_percent_interval": [
+          -0.19047619047619047,
+          0.011904761904761904
+        ],
+        "gained_wins": 3,
+        "games": 84,
+        "lost_wins": 10,
+        "mean_boss_hp_change_both_lost": 7.0285714285714285,
+        "mean_player_hp_change_both_won": 0.19444444444444445,
+        "source_groups": 42,
+        "win_rate_difference": -0.08333333333333333
+      },
+      "win_rate": 0.4642857142857143,
+      "wins": 39
+    },
+    {
+      "arm": "adam",
+      "cutoffs": 0,
+      "games": 101,
+      "label": "adam-a",
+      "losses": 34,
+      "mean_boss_hp_fraction_on_loss": 0.3165589935396124,
+      "mean_boss_hp_on_loss": 54.76470588235294,
+      "mean_player_hp_fraction_on_win": 0.18417312997671226,
+      "mean_player_hp_on_win": 15.044776119402986,
+      "mean_return": 0.6804452219974129,
+      "mode": "greedy",
+      "replicate": "a",
+      "split": "train",
+      "step": 50000,
+      "versus_parent": {
+        "both_lost_games": 30,
+        "both_won_games": 59,
+        "campaign_bootstrap_95_percent_interval": [
+          -0.0297029702970297,
+          0.10891089108910891
+        ],
+        "gained_wins": 8,
+        "games": 101,
+        "lost_wins": 4,
+        "mean_boss_hp_change_both_lost": -2.1333333333333333,
+        "mean_player_hp_change_both_won": 0.3559322033898305,
+        "source_groups": 101,
+        "win_rate_difference": 0.039603960396039604
+      },
+      "win_rate": 0.6633663366336634,
+      "wins": 67
+    },
+    {
+      "arm": "adam",
+      "cutoffs": 0,
+      "games": 202,
+      "label": "adam-a",
+      "losses": 80,
+      "mean_boss_hp_fraction_on_loss": 0.2994219653179191,
+      "mean_boss_hp_on_loss": 51.8,
+      "mean_player_hp_fraction_on_win": 0.1936820697245649,
+      "mean_player_hp_on_win": 15.827868852459016,
+      "mean_return": 0.6200883708659773,
+      "mode": "sampled",
+      "replicate": "a",
+      "split": "train",
+      "step": 50000,
+      "versus_parent": {
+        "both_lost_games": 72,
+        "both_won_games": 101,
+        "campaign_bootstrap_95_percent_interval": [
+          0.009900990099009901,
+          0.12376237623762376
+        ],
+        "gained_wins": 21,
+        "games": 202,
+        "lost_wins": 8,
+        "mean_boss_hp_change_both_lost": -3.0,
+        "mean_player_hp_change_both_won": -0.1485148514851485,
+        "source_groups": 101,
+        "win_rate_difference": 0.06435643564356436
+      },
+      "win_rate": 0.6039603960396039,
+      "wins": 122
+    },
+    {
+      "arm": "adam",
+      "cutoffs": 0,
+      "games": 42,
+      "label": "adam-a",
+      "losses": 18,
+      "mean_boss_hp_fraction_on_loss": 0.2829158638407193,
+      "mean_boss_hp_on_loss": 48.94444444444444,
+      "mean_player_hp_fraction_on_win": 0.1976222672977237,
+      "mean_player_hp_on_win": 16.666666666666668,
+      "mean_return": 0.5871779918864096,
+      "mode": "greedy",
+      "replicate": "a",
+      "split": "validation",
+      "step": 50000,
+      "versus_parent": {
+        "both_lost_games": 15,
+        "both_won_games": 23,
+        "campaign_bootstrap_95_percent_interval": [
+          -0.14285714285714285,
+          0.047619047619047616
+        ],
+        "gained_wins": 1,
+        "games": 42,
+        "lost_wins": 3,
+        "mean_boss_hp_change_both_lost": -0.2,
+        "mean_player_hp_change_both_won": 0.5652173913043478,
+        "source_groups": 42,
+        "win_rate_difference": -0.047619047619047616
+      },
+      "win_rate": 0.5714285714285714,
+      "wins": 24
+    },
+    {
+      "arm": "adam",
+      "cutoffs": 0,
+      "games": 84,
+      "label": "adam-a",
+      "losses": 45,
+      "mean_boss_hp_fraction_on_loss": 0.2592164418754014,
+      "mean_boss_hp_on_loss": 44.84444444444444,
+      "mean_player_hp_fraction_on_win": 0.19517265939679734,
+      "mean_player_hp_on_win": 16.435897435897434,
+      "mean_return": 0.47670355546433135,
+      "mode": "sampled",
+      "replicate": "a",
+      "split": "validation",
+      "step": 50000,
+      "versus_parent": {
+        "both_lost_games": 37,
+        "both_won_games": 38,
+        "campaign_bootstrap_95_percent_interval": [
+          -0.15476190476190477,
+          -0.011904761904761904
+        ],
+        "gained_wins": 1,
+        "games": 84,
+        "lost_wins": 8,
+        "mean_boss_hp_change_both_lost": -0.8648648648648649,
+        "mean_player_hp_change_both_won": 0.5526315789473685,
+        "source_groups": 42,
+        "win_rate_difference": -0.08333333333333333
+      },
+      "win_rate": 0.4642857142857143,
+      "wins": 39
+    },
+    {
+      "arm": "critic",
+      "cutoffs": 0,
+      "games": 101,
+      "label": "critic-a",
+      "losses": 37,
+      "mean_boss_hp_fraction_on_loss": 0.33526011560693636,
+      "mean_boss_hp_on_loss": 58.0,
+      "mean_player_hp_fraction_on_win": 0.20117592702110765,
+      "mean_player_hp_on_win": 16.484375,
+      "mean_return": 0.6510525194868036,
+      "mode": "greedy",
+      "replicate": "a",
+      "split": "train",
+      "step": 50000,
+      "versus_parent": {
+        "both_lost_games": 31,
+        "both_won_games": 57,
+        "campaign_bootstrap_95_percent_interval": [
+          -0.0594059405940594,
+          0.07920792079207921
+        ],
+        "gained_wins": 7,
+        "games": 101,
+        "lost_wins": 6,
+        "mean_boss_hp_change_both_lost": 4.354838709677419,
+        "mean_player_hp_change_both_won": 1.0526315789473684,
+        "source_groups": 101,
+        "win_rate_difference": 0.009900990099009901
+      },
+      "win_rate": 0.6336633663366337,
+      "wins": 64
+    },
+    {
+      "arm": "critic",
+      "cutoffs": 0,
+      "games": 202,
+      "label": "critic-a",
+      "losses": 88,
+      "mean_boss_hp_fraction_on_loss": 0.3003809774040988,
+      "mean_boss_hp_on_loss": 51.96590909090909,
+      "mean_player_hp_fraction_on_win": 0.21146770083138708,
+      "mean_player_hp_on_win": 17.32456140350877,
+      "mean_return": 0.5804210792350974,
+      "mode": "sampled",
+      "replicate": "a",
+      "split": "train",
+      "step": 50000,
+      "versus_parent": {
+        "both_lost_games": 79,
+        "both_won_games": 100,
+        "campaign_bootstrap_95_percent_interval": [
+          -0.019801980198019802,
+          0.07425742574257425
+        ],
+        "gained_wins": 14,
+        "games": 202,
+        "lost_wins": 9,
+        "mean_boss_hp_change_both_lost": -0.6329113924050633,
+        "mean_player_hp_change_both_won": 0.35,
+        "source_groups": 101,
+        "win_rate_difference": 0.024752475247524754
+      },
+      "win_rate": 0.5643564356435643,
+      "wins": 114
+    },
+    {
+      "arm": "critic",
+      "cutoffs": 0,
+      "games": 42,
+      "label": "critic-a",
+      "losses": 21,
+      "mean_boss_hp_fraction_on_loss": 0.288466831819433,
+      "mean_boss_hp_on_loss": 49.904761904761905,
+      "mean_player_hp_fraction_on_win": 0.23934957124612297,
+      "mean_player_hp_on_win": 20.0,
+      "mean_return": 0.5155915891260718,
+      "mode": "greedy",
+      "replicate": "a",
+      "split": "validation",
+      "step": 50000,
+      "versus_parent": {
+        "both_lost_games": 15,
+        "both_won_games": 20,
+        "campaign_bootstrap_95_percent_interval": [
+          -0.23809523809523808,
+          0.0
+        ],
+        "gained_wins": 1,
+        "games": 42,
+        "lost_wins": 6,
+        "mean_boss_hp_change_both_lost": 5.2,
+        "mean_player_hp_change_both_won": 2.6,
+        "source_groups": 42,
+        "win_rate_difference": -0.11904761904761904
+      },
+      "win_rate": 0.5,
+      "wins": 21
+    },
+    {
+      "arm": "critic",
+      "cutoffs": 0,
+      "games": 84,
+      "label": "critic-a",
+      "losses": 46,
+      "mean_boss_hp_fraction_on_loss": 0.28512188992209103,
+      "mean_boss_hp_on_loss": 49.32608695652174,
+      "mean_player_hp_fraction_on_win": 0.2066801448347034,
+      "mean_player_hp_on_win": 17.289473684210527,
+      "mean_return": 0.4650095886055571,
+      "mode": "sampled",
+      "replicate": "a",
+      "split": "validation",
+      "step": 50000,
+      "versus_parent": {
+        "both_lost_games": 36,
+        "both_won_games": 36,
+        "campaign_bootstrap_95_percent_interval": [
+          -0.17857142857142858,
+          -0.023809523809523808
+        ],
+        "gained_wins": 2,
+        "games": 84,
+        "lost_wins": 10,
+        "mean_boss_hp_change_both_lost": 6.666666666666667,
+        "mean_player_hp_change_both_won": 2.2222222222222223,
+        "source_groups": 42,
+        "win_rate_difference": -0.09523809523809523
+      },
+      "win_rate": 0.4523809523809524,
+      "wins": 38
+    },
+    {
+      "arm": "critic",
+      "cutoffs": 0,
+      "games": 101,
+      "label": "critic-b",
+      "losses": 39,
+      "mean_boss_hp_fraction_on_loss": 0.31880835927078705,
+      "mean_boss_hp_on_loss": 55.15384615384615,
+      "mean_player_hp_fraction_on_win": 0.19694422086259936,
+      "mean_player_hp_on_win": 16.080645161290324,
+      "mean_return": 0.6304684439093241,
+      "mode": "greedy",
+      "replicate": "b",
+      "split": "train",
+      "step": 50000,
+      "versus_parent": {
+        "both_lost_games": 36,
+        "both_won_games": 60,
+        "campaign_bootstrap_95_percent_interval": [
+          -0.0594059405940594,
+          0.0297029702970297
+        ],
+        "gained_wins": 2,
+        "games": 101,
+        "lost_wins": 3,
+        "mean_boss_hp_change_both_lost": -3.6666666666666665,
+        "mean_player_hp_change_both_won": 0.5666666666666667,
+        "source_groups": 101,
+        "win_rate_difference": -0.009900990099009901
+      },
+      "win_rate": 0.6138613861386139,
+      "wins": 62
+    },
+    {
+      "arm": "critic",
+      "cutoffs": 0,
+      "games": 202,
+      "label": "critic-b",
+      "losses": 83,
+      "mean_boss_hp_fraction_on_loss": 0.3021798175360401,
+      "mean_boss_hp_on_loss": 52.27710843373494,
+      "mean_player_hp_fraction_on_win": 0.20907136794289385,
+      "mean_player_hp_on_win": 17.016806722689076,
+      "mean_return": 0.6057542730754051,
+      "mode": "sampled",
+      "replicate": "b",
+      "split": "train",
+      "step": 50000,
+      "versus_parent": {
+        "both_lost_games": 80,
+        "both_won_games": 106,
+        "campaign_bootstrap_95_percent_interval": [
+          0.009900990099009901,
+          0.09405940594059406
+        ],
+        "gained_wins": 13,
+        "games": 202,
+        "lost_wins": 3,
+        "mean_boss_hp_change_both_lost": -3.2375,
+        "mean_player_hp_change_both_won": 0.330188679245283,
+        "source_groups": 101,
+        "win_rate_difference": 0.04950495049504951
+      },
+      "win_rate": 0.5891089108910891,
+      "wins": 119
+    },
+    {
+      "arm": "critic",
+      "cutoffs": 0,
+      "games": 42,
+      "label": "critic-b",
+      "losses": 19,
+      "mean_boss_hp_fraction_on_loss": 0.28506236689990877,
+      "mean_boss_hp_on_loss": 49.31578947368421,
+      "mean_player_hp_fraction_on_win": 0.2272498554644246,
+      "mean_player_hp_on_win": 19.17391304347826,
+      "mean_return": 0.5643418306019725,
+      "mode": "greedy",
+      "replicate": "b",
+      "split": "validation",
+      "step": 50000,
+      "versus_parent": {
+        "both_lost_games": 15,
+        "both_won_games": 22,
+        "campaign_bootstrap_95_percent_interval": [
+          -0.16666666666666666,
+          0.023809523809523808
+        ],
+        "gained_wins": 1,
+        "games": 42,
+        "lost_wins": 4,
+        "mean_boss_hp_change_both_lost": -4.466666666666667,
+        "mean_player_hp_change_both_won": 0.9545454545454546,
+        "source_groups": 42,
+        "win_rate_difference": -0.07142857142857142
+      },
+      "win_rate": 0.5476190476190477,
+      "wins": 23
+    },
+    {
+      "arm": "critic",
+      "cutoffs": 0,
+      "games": 84,
+      "label": "critic-b",
+      "losses": 48,
+      "mean_boss_hp_fraction_on_loss": 0.2761319845857418,
+      "mean_boss_hp_on_loss": 47.770833333333336,
+      "mean_player_hp_fraction_on_win": 0.20534802043422734,
+      "mean_player_hp_on_win": 17.194444444444443,
+      "mean_return": 0.44047482211275313,
+      "mode": "sampled",
+      "replicate": "b",
+      "split": "validation",
+      "step": 50000,
+      "versus_parent": {
+        "both_lost_games": 37,
+        "both_won_games": 35,
+        "campaign_bootstrap_95_percent_interval": [
+          -0.21428571428571427,
+          -0.03571428571428571
+        ],
+        "gained_wins": 1,
+        "games": 84,
+        "lost_wins": 11,
+        "mean_boss_hp_change_both_lost": 2.135135135135135,
+        "mean_player_hp_change_both_won": -0.2857142857142857,
+        "source_groups": 42,
+        "win_rate_difference": -0.11904761904761904
+      },
+      "win_rate": 0.42857142857142855,
+      "wins": 36
+    },
+    {
+      "arm": "adam",
+      "cutoffs": 0,
+      "games": 101,
+      "label": "adam-b",
+      "losses": 35,
+      "mean_boss_hp_fraction_on_loss": 0.35920726672171754,
+      "mean_boss_hp_on_loss": 62.142857142857146,
+      "mean_player_hp_fraction_on_win": 0.19544036884728253,
+      "mean_player_hp_on_win": 15.954545454545455,
+      "mean_return": 0.6710369140423413,
+      "mode": "greedy",
+      "replicate": "b",
+      "split": "train",
+      "step": 50000,
+      "versus_parent": {
+        "both_lost_games": 33,
+        "both_won_games": 61,
+        "campaign_bootstrap_95_percent_interval": [
+          -0.019801980198019802,
+          0.07920792079207921
+        ],
+        "gained_wins": 5,
+        "games": 101,
+        "lost_wins": 2,
+        "mean_boss_hp_change_both_lost": 0.6363636363636364,
+        "mean_player_hp_change_both_won": 0.9180327868852459,
+        "source_groups": 101,
+        "win_rate_difference": 0.0297029702970297
+      },
+      "win_rate": 0.6534653465346535,
+      "wins": 66
+    },
+    {
+      "arm": "adam",
+      "cutoffs": 0,
+      "games": 202,
+      "label": "adam-b",
+      "losses": 84,
+      "mean_boss_hp_fraction_on_loss": 0.3453069088907239,
+      "mean_boss_hp_on_loss": 59.73809523809524,
+      "mean_player_hp_fraction_on_win": 0.20021972599465346,
+      "mean_player_hp_on_win": 16.3135593220339,
+      "mean_return": 0.6001425527957152,
+      "mode": "sampled",
+      "replicate": "b",
+      "split": "train",
+      "step": 50000,
+      "versus_parent": {
+        "both_lost_games": 78,
+        "both_won_games": 103,
+        "campaign_bootstrap_95_percent_interval": [
+          -0.005074257425742462,
+          0.09900990099009901
+        ],
+        "gained_wins": 15,
+        "games": 202,
+        "lost_wins": 6,
+        "mean_boss_hp_change_both_lost": 5.166666666666667,
+        "mean_player_hp_change_both_won": -0.2621359223300971,
+        "source_groups": 101,
+        "win_rate_difference": 0.04455445544554455
+      },
+      "win_rate": 0.5841584158415841,
+      "wins": 118
+    },
+    {
+      "arm": "adam",
+      "cutoffs": 0,
+      "games": 42,
+      "label": "adam-b",
+      "losses": 20,
+      "mean_boss_hp_fraction_on_loss": 0.2708092485549133,
+      "mean_boss_hp_on_loss": 46.85,
+      "mean_player_hp_fraction_on_win": 0.21769418321142456,
+      "mean_player_hp_on_win": 18.318181818181817,
+      "mean_return": 0.539015234446269,
+      "mode": "greedy",
+      "replicate": "b",
+      "split": "validation",
+      "step": 50000,
+      "versus_parent": {
+        "both_lost_games": 15,
+        "both_won_games": 21,
+        "campaign_bootstrap_95_percent_interval": [
+          -0.21428571428571427,
+          0.0
+        ],
+        "gained_wins": 1,
+        "games": 42,
+        "lost_wins": 5,
+        "mean_boss_hp_change_both_lost": 2.4,
+        "mean_player_hp_change_both_won": 0.9047619047619048,
+        "source_groups": 42,
+        "win_rate_difference": -0.09523809523809523
+      },
+      "win_rate": 0.5238095238095238,
+      "wins": 22
+    },
+    {
+      "arm": "adam",
+      "cutoffs": 0,
+      "games": 84,
+      "label": "adam-b",
+      "losses": 42,
+      "mean_boss_hp_fraction_on_loss": 0.2972749793559042,
+      "mean_boss_hp_on_loss": 51.42857142857143,
+      "mean_player_hp_fraction_on_win": 0.18294220945083012,
+      "mean_player_hp_on_win": 15.285714285714286,
+      "mean_return": 0.5127811416712278,
+      "mode": "sampled",
+      "replicate": "b",
+      "split": "validation",
+      "step": 50000,
+      "versus_parent": {
+        "both_lost_games": 35,
+        "both_won_games": 39,
+        "campaign_bootstrap_95_percent_interval": [
+          -0.11904761904761904,
+          0.023809523809523808
+        ],
+        "gained_wins": 3,
+        "games": 84,
+        "lost_wins": 7,
+        "mean_boss_hp_change_both_lost": 4.4,
+        "mean_player_hp_change_both_won": 0.15384615384615385,
+        "source_groups": 42,
+        "win_rate_difference": -0.047619047619047616
+      },
+      "win_rate": 0.5,
+      "wins": 42
+    },
+    {
+      "arm": "retain",
+      "cutoffs": 0,
+      "games": 101,
+      "label": "retain-b",
+      "losses": 36,
+      "mean_boss_hp_fraction_on_loss": 0.3206486833654464,
+      "mean_boss_hp_on_loss": 55.47222222222222,
+      "mean_player_hp_fraction_on_win": 0.20079302543298486,
+      "mean_player_hp_on_win": 16.323076923076922,
+      "mean_return": 0.6612235739294009,
+      "mode": "greedy",
+      "replicate": "b",
+      "split": "train",
+      "step": 50000,
+      "versus_parent": {
+        "both_lost_games": 33,
+        "both_won_games": 60,
+        "campaign_bootstrap_95_percent_interval": [
+          -0.0297029702970297,
+          0.07920792079207921
+        ],
+        "gained_wins": 5,
+        "games": 101,
+        "lost_wins": 3,
+        "mean_boss_hp_change_both_lost": -5.636363636363637,
+        "mean_player_hp_change_both_won": 1.3833333333333333,
+        "source_groups": 101,
+        "win_rate_difference": 0.019801980198019802
+      },
+      "win_rate": 0.6435643564356436,
+      "wins": 65
+    },
+    {
+      "arm": "retain",
+      "cutoffs": 0,
+      "games": 202,
+      "label": "retain-b",
+      "losses": 86,
+      "mean_boss_hp_fraction_on_loss": 0.3025272214007259,
+      "mean_boss_hp_on_loss": 52.33720930232558,
+      "mean_player_hp_fraction_on_win": 0.21832294262967325,
+      "mean_player_hp_on_win": 17.775862068965516,
+      "mean_return": 0.5910121783030474,
+      "mode": "sampled",
+      "replicate": "b",
+      "split": "train",
+      "step": 50000,
+      "versus_parent": {
+        "both_lost_games": 81,
+        "both_won_games": 104,
+        "campaign_bootstrap_95_percent_interval": [
+          -0.009900990099009901,
+          0.08415841584158416
+        ],
+        "gained_wins": 12,
+        "games": 202,
+        "lost_wins": 5,
+        "mean_boss_hp_change_both_lost": -2.802469135802469,
+        "mean_player_hp_change_both_won": 0.9903846153846154,
+        "source_groups": 101,
+        "win_rate_difference": 0.034653465346534656
+      },
+      "win_rate": 0.5742574257425742,
+      "wins": 116
+    },
+    {
+      "arm": "retain",
+      "cutoffs": 0,
+      "games": 42,
+      "label": "retain-b",
+      "losses": 19,
+      "mean_boss_hp_fraction_on_loss": 0.24277456647398843,
+      "mean_boss_hp_on_loss": 42.0,
+      "mean_player_hp_fraction_on_win": 0.21853240046643344,
+      "mean_player_hp_on_win": 18.391304347826086,
+      "mean_return": 0.5635388159095055,
+      "mode": "greedy",
+      "replicate": "b",
+      "split": "validation",
+      "step": 50000,
+      "versus_parent": {
+        "both_lost_games": 15,
+        "both_won_games": 22,
+        "campaign_bootstrap_95_percent_interval": [
+          -0.16666666666666666,
+          0.023809523809523808
+        ],
+        "gained_wins": 1,
+        "games": 42,
+        "lost_wins": 4,
+        "mean_boss_hp_change_both_lost": -6.6,
+        "mean_player_hp_change_both_won": 2.0,
+        "source_groups": 42,
+        "win_rate_difference": -0.07142857142857142
+      },
+      "win_rate": 0.5476190476190477,
+      "wins": 23
+    },
+    {
+      "arm": "retain",
+      "cutoffs": 0,
+      "games": 84,
+      "label": "retain-b",
+      "losses": 41,
+      "mean_boss_hp_fraction_on_loss": 0.2771746792612435,
+      "mean_boss_hp_on_loss": 47.951219512195124,
+      "mean_player_hp_fraction_on_win": 0.21475207163859927,
+      "mean_player_hp_on_win": 17.976744186046513,
+      "mean_return": 0.5266042350848384,
+      "mode": "sampled",
+      "replicate": "b",
+      "split": "validation",
+      "step": 50000,
+      "versus_parent": {
+        "both_lost_games": 35,
+        "both_won_games": 40,
+        "campaign_bootstrap_95_percent_interval": [
+          -0.10714285714285714,
+          0.023809523809523808
+        ],
+        "gained_wins": 3,
+        "games": 84,
+        "lost_wins": 6,
+        "mean_boss_hp_change_both_lost": -3.057142857142857,
+        "mean_player_hp_change_both_won": 1.425,
+        "source_groups": 42,
+        "win_rate_difference": -0.03571428571428571
+      },
+      "win_rate": 0.5119047619047619,
+      "wins": 43
+    }
+  ],
+  "first_rollout_matching": {
+    "replicates": {
+      "a": {
+        "identical_first_rollout_decisions": 4096,
+        "labels": [
+          "retain-a",
+          "adam-a",
+          "critic-a"
+        ],
+        "reference": "retain-a"
+      },
+      "b": {
+        "identical_first_rollout_decisions": 4096,
+        "labels": [
+          "critic-b",
+          "adam-b",
+          "retain-b"
+        ],
+        "reference": "critic-b"
+      }
+    },
+    "status": "complete"
+  },
+  "implementation": {
+    "build": "2732749399bd21dadf25e7c7199fe3894b84e76e15504664203080ee51bbc130",
+    "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+    "rules": "cb4110d297799c139c5912c30a0e0903630c1c8ab2141eded608b90a7b1e0926",
+    "target": "sts2-v0.107.1-steam-23811903"
+  },
+  "limitations": [
+    "Two continuation schedules from one selected parent; not two independently pretrained models.",
+    "Repeatedly used validation panel; bootstrap intervals are exploratory and do not correct all repeated comparisons.",
+    "TRAIN opening panels measure fitted-population behavior, while native fitting also uses later-turn starts.",
+    "Critic MC errors describe a fixed common first on-policy rollout; a sampled return is noisy, not an exact value target.",
+    "No reserved test gameplay or automatic model promotion."
+  ],
+  "mlflow": {
+    "experiment_id": "11",
+    "overview_run": "973b03842a4642998965368f709764ff"
+  },
+  "parent": {
+    "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-training-20261002/ppo/chunk-20/final.sts-model",
+    "resume": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-training-20261002/ppo/chunk-20-private/final.resume.pt",
+    "resume_sha256": "7443b1abd85458ef6ad78d56a9f5ce2aa7f54deb2349cc8a2d7d128af8874ecf",
+    "sha256": "4da8789591fc9379522b3b30745bb6b6615ee53bb4bfc21215affecf28dfae6a"
+  },
+  "plots": {
+    "learning-curves.png": {
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-continuation-diagnostic-20261002/learning-curves.png",
+      "sha256": "9e9023d5023d4b71bed5ad7f5fc217f4e567d53a0358e2645592b78622c41d23"
+    },
+    "policy-drift.png": {
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-continuation-diagnostic-20261002/policy-drift.png",
+      "sha256": "2a668c3b3a47292274aeb21c7a540f5ed934f0f30ea4b82fea83374b556e3ba6"
+    }
+  },
+  "runtime": {
+    "deterministic_algorithms": true,
+    "deterministic_warn_only": false,
+    "device": "cpu",
+    "python": "3.11.15",
+    "threads": 4,
+    "torch": "2.13.0"
+  },
+  "schema": "sts_vantom_continuation_diagnostic_evidence_v1",
+  "scope": "Headless controlled continuation diagnosis. Original source archive used without replacing current production sources or editing old checkpoint manifests. TRAIN101 and reusedVAL42 openings; latest reservedtest authority remains sealed.",
+  "script_bundle": {
+    "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-continuation-diagnostic-20261002/diagnostic-scripts.zip",
+    "sha256": "63b4dac3c6849891a17fb43d77d3ef1c335c12354c7fb17a29a2c07f43a79aa4"
+  },
+  "source_archive": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-research-7h-20261002/research-sources.zip",
+  "source_archive_sha256": "a5c34b7fec8c86413718940ce01e3e726f5984e58ca6c190f46d5ef79e7d576f",
+  "status": "complete",
+  "stochastic_schedules": "a preserves original parent action RNG, update RNG and episode cursor; b is an explicitly reseeded fork. Within each replicate all three arms share initial action RNG, update RNG, episode cursor and actor. One encounter, so resetting reporting iteration does not change encounter cycling.",
+  "timings": {
+    "evaluation_seconds": 1377.5705360812135,
+    "experiment_seconds": 3216.7714607911184,
+    "initialization_seconds": 1.964436249807477,
+    "policy_drift_seconds": 43.40553249977529,
+    "training_seconds": 1667.566714371089,
+    "verification_seconds": 629.99283229094
+  },
+  "treatments": {
+    "adam": "Fresh Adam, original critic; all reporting counters restart at zero, same stochastic schedule as retain.",
+    "critic": "Fresh Adam and previously calibrated control critic from PBRS, actor/encoder unchanged; same stochastic schedule.",
+    "retain": "Original Adam moments and critic; a is an exact original continuation, b is a fork retaining Adam with new sampling schedule."
+  },
+  "validation": {
+    "completion_sha256": "d9cd517e80d7b95f35b3e9c1e49e5fd522087c0611e9d2e10d0c8f7dea904649",
+    "evaluation_episodes": 7293,
+    "failed_training_episodes": 0,
+    "implementation": {
+      "build": "2732749399bd21dadf25e7c7199fe3894b84e76e15504664203080ee51bbc130",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "cb4110d297799c139c5912c30a0e0903630c1c8ab2141eded608b90a7b1e0926",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "replayed_decisions": 220113,
+    "script_sha256": "2c581e9c77514048164e01235df32c382b1a78cb5002253dfe0fef9ffb1187d1",
+    "seconds": 629.99283229094,
+    "skipped_decisions": 0,
+    "status": "complete",
+    "strict_checkpoint_restores": 36,
+    "test_opened": false,
+    "trained_decisions": 300000
+  }
+}

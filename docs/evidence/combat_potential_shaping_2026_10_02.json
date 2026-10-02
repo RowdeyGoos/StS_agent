@@ -1,0 +1,2321 @@
+{
+  "bindings": {
+    "README.md": "a54b8d4c988000a09f59590fefc3ad7e674a2764a5b0164e98b96087bbe9a7f8",
+    "docs/AGENT_TRAINING.md": "0b0d66a688655229c26065a1d79ca083e7adfe7e158a163f44ee5bc288eea370",
+    "runs/combat-potential-shaping-20261002/agent-tests.log": "a6845a07cbda9317386ac756ba444b4c0fe7a306236d0f6a8dc0a334fe11cf14",
+    "runs/combat-potential-shaping-20261002/analysis.json": "8724f4881033f6c08d414d2b7446c128f876987e13f6da4c273305e3587e6f32",
+    "runs/combat-potential-shaping-20261002/analyze.py": "92ece9e4dfb863c66f7edac3eb3abdc59a43d9b2efb0c98fec50d251302a1aa8",
+    "runs/combat-potential-shaping-20261002/audit_training.py": "d7fc72bb21acfbb69ec048a0ba15f4adbede2747cfc9bcf973f932e133abf39e",
+    "runs/combat-potential-shaping-20261002/calibration-signals.json": "d8400b4ed2f4d578150dc455fadf3e35e756ce73d0b27f1baaf08d91ea7015db",
+    "runs/combat-potential-shaping-20261002/calibration_signals.py": "20f368ea592acea682c329567912acbb2c5375c78b4375503d96d4e97aa790f3",
+    "runs/combat-potential-shaping-20261002/complete.json": "6b6b83d093a194013d1938637f2857f2d962aaabbd3c75467e65adf8470733ba",
+    "runs/combat-potential-shaping-20261002/conclusion.json": "c73fcaf7ca39ca4530992a350877730a6cda995cf69106f62b6f44c9e4337598",
+    "runs/combat-potential-shaping-20261002/corpus-complete.json": "a0eee92c948c41075bdc0a13ca9afadacfa8140d35ba86b209f4a884eba2f212",
+    "runs/combat-potential-shaping-20261002/corpus-validation.json": "b6509e85c4d52e5b852aecc050c9557b3f0d70b350c747e7f89c541330c56e14",
+    "runs/combat-potential-shaping-20261002/corpus/corpus.json": "c817e01031d3abcd0668ea68401c7a80ddff093a5cb114bf4d9697595c96a7c9",
+    "runs/combat-potential-shaping-20261002/evaluate.py": "41529a3160f0c12ba230242bc28cf2be8bd81c811f7b25921e5e297c6cc77aa8",
+    "runs/combat-potential-shaping-20261002/evaluation/control-a/evaluation.json": "393f32b8e275e2a2772888d762c76bbd21b5dc0d03456968838e7b442b343778",
+    "runs/combat-potential-shaping-20261002/evaluation/control-a/plan.json": "0f39c3f053f737dba6f8e3c64b87de065ae5258a8fdc95db2c6310181ae97932",
+    "runs/combat-potential-shaping-20261002/evaluation/control-b/evaluation.json": "cddeca657e8bc920bd748b13b34b1ae5f440f75ffa1c80590cf6e7a5aac5b778",
+    "runs/combat-potential-shaping-20261002/evaluation/control-b/plan.json": "be1e02042516607d03c809d4691f4911b5c56f00d78651df0e4ac15045906d4f",
+    "runs/combat-potential-shaping-20261002/evaluation/enemy-a/evaluation.json": "bd63f4493a2348f0c1231fd6ff644271bdefece318d221d258f923061ffacd17",
+    "runs/combat-potential-shaping-20261002/evaluation/enemy-a/plan.json": "054d2e72cc60167af3159d00c6725af67e295d704644b3d528fc528f751c38f2",
+    "runs/combat-potential-shaping-20261002/evaluation/enemy-b/evaluation.json": "d4e29853e8a169c5e2278b68f392dd885575d2b2bc1d7b2f69221421769ac4a2",
+    "runs/combat-potential-shaping-20261002/evaluation/enemy-b/plan.json": "facecb6b9179e1f8fa3cbd5bae086372fe53d3ee180f5abe406f2f25e62f1c99",
+    "runs/combat-potential-shaping-20261002/evaluation/health-a/evaluation.json": "f42015f80200810438fa962f07c7f0842addd8ea5582a0f4b5dbb079ba9aeece",
+    "runs/combat-potential-shaping-20261002/evaluation/health-a/plan.json": "549ace39e11268f086c0f3afaf7e985fe1a13f291d5867d975795286ca369a9d",
+    "runs/combat-potential-shaping-20261002/evaluation/health-b/evaluation.json": "25cd10c2df1aed143d0bf373a97ca5ea2d60304201809ae42e7278530c7e1a3e",
+    "runs/combat-potential-shaping-20261002/evaluation/health-b/plan.json": "e8c9e8fc8762ea96954f40ea610a1a04469634287fe72dd60a8d861f10cacce3",
+    "runs/combat-potential-shaping-20261002/evaluation/parent/evaluation.json": "39d7d7676b8af73c09eabb9e4e0082149f4faf715e064a14f1c32b259aba07b5",
+    "runs/combat-potential-shaping-20261002/evaluation/parent/parent-equivalence.json": "75a34a1a7e3114116067c787b58f75a57a9e985654285c52606b9c267cf1cb83",
+    "runs/combat-potential-shaping-20261002/evaluation/parent/plan.json": "463bbfec699d672f2ee6a581d32d659455183d900609aba2cb5d9b095dfc52fd",
+    "runs/combat-potential-shaping-20261002/experiment-review.json": "d64328741140125f67adbd8d48b164ea11d85db325bf613bcaf079a42bf2c3cf",
+    "runs/combat-potential-shaping-20261002/export_inspection.py": "6f0a0c6211aeef90caeb257b0c1c5ff482b14d390ef2c9757da05dc42bb1b18d",
+    "runs/combat-potential-shaping-20261002/first-rollout-matching.json": "de26c183c5ca635693bd29128dded7df0b64d18290101708eb27222e1beea2ef",
+    "runs/combat-potential-shaping-20261002/initialization.json": "a98669b980c1a03fde9f2c704978574dec8be82c9224bde80a157c5eddb8a012",
+    "runs/combat-potential-shaping-20261002/initialize.py": "13f098e167512ea7ca5b56d6b7db659112972b33920e78d79f2ee708c69ac0da",
+    "runs/combat-potential-shaping-20261002/inspect_http.py": "522fd8b2d0e5c8e3f342f85311ca193fa55bc7ae36a5b6a32ad882ac93c40d9f",
+    "runs/combat-potential-shaping-20261002/inspection.json": "9c0e99e1c981ab4cc6902b475016c2e4ddfeac7dd9868f1989ce4d1b3ffad6a8",
+    "runs/combat-potential-shaping-20261002/inspector-http.json": "fb2ad18832a9284a1c43da0d2dce463ad431161fd7437f4c67dd41b62d6ebe23",
+    "runs/combat-potential-shaping-20261002/integration-validation.json": "c06dace994a6702faca1e45c4ea2b287f08a5ab027d3187361dad88b92720436",
+    "runs/combat-potential-shaping-20261002/plan.json": "4036a27d5bc89f2ca35163629bc7e3ebf718d63f6349edd4a173494083d975d3",
+    "runs/combat-potential-shaping-20261002/plot_results.py": "59b27323d9a24bbe8da3b1630cc8fa2b2129ad3913c6b03aad4db7b9eae99d8d",
+    "runs/combat-potential-shaping-20261002/plot_signals.py": "3c8408321b7f55cc658c52fa499a625110d7e4eeec363b499908ba8495656239",
+    "runs/combat-potential-shaping-20261002/potential-shaping-sources.zip": "4bd502faff111b4cb19c424911783dd0f2234a73bd5939d2c24ecd883530669d",
+    "runs/combat-potential-shaping-20261002/potential-tests.log": "9a57bf9b7c266968d157d574a6ca6e4cb176007c424c0db90dea3d0477adf95c",
+    "runs/combat-potential-shaping-20261002/prechange-AGENT_TRAINING.md": "b6c74fa38d8ae7a61b3aac11d5414bb4b6c2d22325f85f2283088f95aea2cb9f",
+    "runs/combat-potential-shaping-20261002/prechange-archive-verification.json": "60798d9a1b0acb5e28e42e1d851410576ec6f6fb2d8c629be3bbd2ca1454539a",
+    "runs/combat-potential-shaping-20261002/prechange.json": "22004c24966c5cea83e82f558cd1b083f867ffb920135f04a788966d988e00a9",
+    "runs/combat-potential-shaping-20261002/publication.json": "00e4f662834dc13c0138a7e509f3699ac74a7498be22d5148942c7aa167077f9",
+    "runs/combat-potential-shaping-20261002/publish_results.py": "ab68a548a9f97f584bdabf4cc359936db1cf381bb6b60b43e9a035f083e7d361",
+    "runs/combat-potential-shaping-20261002/result-review.json": "12329798683f344769fb9902609fd5f9366ec2790ae1cadc07b133cd6077a40c",
+    "runs/combat-potential-shaping-20261002/results.png": "b4aecb8e5b5537646d6bd4b146586add88362d3c293363b7e6cee5ef9aaf40b5",
+    "runs/combat-potential-shaping-20261002/revalidate_corpus.py": "afe1c25961fcbba870561366cb5c404bd2a931c144770c3cd77260bd8207399c",
+    "runs/combat-potential-shaping-20261002/reward-conformance.json": "9e108c60d6377b40f776788bbbfcb504e61b15b82e891e88baf418af3a0e236b",
+    "runs/combat-potential-shaping-20261002/reward-signals.png": "cbc90c3ef4519424285bdfb35c5adaecf9e4fa42cc65a8156932c87eba2a5ecb",
+    "runs/combat-potential-shaping-20261002/run.py": "02e0383eb380bfe50508d4401112dde532c874e802909c5e3bd871a0d0a33f2f",
+    "runs/combat-potential-shaping-20261002/semantic-review.json": "22a9995d3eb36d6e31cd666cf5500bb05c0664445e2469f764223b0dac4f79b1",
+    "runs/combat-potential-shaping-20261002/source-archive.json": "e03bee3843e2e19b7f165465c241b44720bc079418504ef8ec59bf6baf876964",
+    "runs/combat-potential-shaping-20261002/study.py": "5949c8a7294bd0f2e440183e8eea613ac248edb9ebe88eaf0694e583c6828261",
+    "runs/combat-potential-shaping-20261002/training-audit.json": "36268811a1fc7c7e30845a56611209bea46ef4c2e563c396f79a4a421aa212a5",
+    "runs/combat-potential-shaping-20261002/verification.json": "d3cb53bca02bf3741af6cb11257dcdf55c215b6ffb9d6ed527d4bf67e54e2937",
+    "runs/combat-potential-shaping-20261002/verify_results.py": "fd0ca8a0affee6dbc1b29d470fe04fcc822cb883d9197379cbe60984c9e0d61d",
+    "runs/combat-potential-shaping-20261002/write_evidence.py": "503de44e06d72001d0ee31949c2a65366186cca90988adbdb1a6ae9195a6d0b0"
+  },
+  "date": "2026-10-02",
+  "decision": "Retain the existing 250k rich-combat specialist. Combined enemy/player HP potential is a tentative lead versus the matched fresh-critic control, but its greedy gain is driven by one seed and no new endpoint beats the parent. Enemy-only shaping is inconsistent. Keep PBRS opt-in.",
+  "density_on_shared_training_sample": {
+    "control": {
+      "decisions": 3872,
+      "nonterminal": 3687,
+      "nonterminal_negative": 0,
+      "nonterminal_nonzero": 0,
+      "nonterminal_positive": 0,
+      "nonterminal_signal_fraction": 0.0,
+      "terminal": 185
+    },
+    "enemy": {
+      "decisions": 3872,
+      "nonterminal": 3687,
+      "nonterminal_negative": 0,
+      "nonterminal_nonzero": 2224,
+      "nonterminal_positive": 2224,
+      "nonterminal_signal_fraction": 0.6032004339571467,
+      "terminal": 185
+    },
+    "health": {
+      "decisions": 3872,
+      "nonterminal": 3687,
+      "nonterminal_negative": 606,
+      "nonterminal_nonzero": 2708,
+      "nonterminal_positive": 2102,
+      "nonterminal_signal_fraction": 0.7344724708435042,
+      "terminal": 185
+    }
+  },
+  "elapsed_seconds": {
+    "exact_evaluation_replay": 73.51825874997303,
+    "implementation": null,
+    "independent_review": null,
+    "inspection": 13.084101667162031,
+    "release_preparation": null,
+    "shared_calibration": 50.16289670905098,
+    "training_and_endpoint_evaluation": 1918.7897956250235,
+    "training_per_arm": {
+      "control-a": 307.64835095824674,
+      "control-b": 270.75598141597584,
+      "enemy-a": 271.3620753749274,
+      "enemy-b": 275.4362915828824,
+      "health-a": 275.86949416575953,
+      "health-b": 280.42988800024614
+    },
+    "training_reward_audit": 13.21818770794198,
+    "user_wait": null
+  },
+  "historical_sources": {
+    "game_source_archive": "runs/combat-action-preview-20261002/action-preview-sources.zip",
+    "guide": "runs/combat-potential-shaping-20261002/prechange-AGENT_TRAINING.md",
+    "guide_sha256": "b6c74fa38d8ae7a61b3aac11d5414bb4b6c2d22325f85f2283088f95aea2cb9f",
+    "verification": "runs/combat-potential-shaping-20261002/prechange-archive-verification.json"
+  },
+  "implementation": {
+    "build": "9ac3f6b412ae208bc3eeac8fe8fc54d088f70e6c926c17ccb284ad4770aa9a6d",
+    "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+    "rules": "1774c49c412fc7fae7c0d0f642927e6d91075c8d73268315baf9f9ef19f5b12b",
+    "target": "sts2-v0.107.1-steam-23811903"
+  },
+  "inspection": {
+    "comparison_checks": 24,
+    "episodes": 294,
+    "report": "runs/combat-potential-shaping-20261002/inspection/report.json",
+    "url": "http://127.0.0.1:60361"
+  },
+  "mlflow": {
+    "experiment_id": "10",
+    "overview_run": "b6f1266e759c4060b17e7ed51debf3b2"
+  },
+  "next_useful_step": "Compare combined HP shaping with terminal rewards earlier in learning from the same imitation initialization, with more learner seeds and fixed evaluation checkpoints; measure learning speed. Do not extend these endpoints or open the reserved test solely on this pilot.",
+  "protocol": {
+    "ablation": "Same architecture and base terminal weights. Control zero potential; enemy=-0.5*enemyHPfraction; health=enemy+0.25*playerHPfraction. Each adds gamma*Phi(successor)-Phi(before); gamma=1. Real combat terminalPhi=0; genuine cutoffs bootstrap. No analytic critic wrapper.",
+    "bindings": {
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-action-preview-20261002/corpus/test-opened.json": "d828d0d66afa9422da386323f1f59103543ad1c150f1dd8bbe3c5d38695d0108",
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002-private/settings.json": "352419c17f18db7f8b9576ce4b3dce90ce415bec344a201a51c9bca9033b76bb",
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/corpus-complete.json": "a0eee92c948c41075bdc0a13ca9afadacfa8140d35ba86b209f4a884eba2f212",
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/corpus-validation.json": "b6509e85c4d52e5b852aecc050c9557b3f0d70b350c747e7f89c541330c56e14",
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/evaluate.py": "41529a3160f0c12ba230242bc28cf2be8bd81c811f7b25921e5e297c6cc77aa8",
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/experiment-review.json": "d64328741140125f67adbd8d48b164ea11d85db325bf613bcaf079a42bf2c3cf",
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/initialize.py": "13f098e167512ea7ca5b56d6b7db659112972b33920e78d79f2ee708c69ac0da",
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo-config.json": "64a3b6817e8f02323729833d576b5f41bd2f88db957e79f1ea3caceeb81e6ae5",
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo-control.json": "05dd8efbd81f0d8f93b75c6eaf1e0ae825420723b807053639e219cdd6247227",
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo-enemy.json": "55b0bd1ed76ed36030fb24df68a9d6f619d16b4f28f8c99eeab857982d2fc559",
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo-health.json": "18a5caf42785ccde723654e49c1d98a6b2d10001c4a2d0d75935bdbad62f3fb4",
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/reward-conformance.json": "9e108c60d6377b40f776788bbbfcb504e61b15b82e891e88baf418af3a0e236b",
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/run.py": "02e0383eb380bfe50508d4401112dde532c874e802909c5e3bd871a0d0a33f2f",
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/semantic-review.json": "22a9995d3eb36d6e31cd666cf5500bb05c0664445e2469f764223b0dac4f79b1",
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/study.py": "5949c8a7294bd0f2e440183e8eea613ac248edb9ebe88eaf0694e583c6828261",
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-training-20261002/ppo/chunk-20/final.sts-model": "4da8789591fc9379522b3b30745bb6b6615ee53bb4bfc21215affecf28dfae6a"
+    },
+    "budget": {
+      "additional_decisions_per_run": 50000,
+      "total": 300000,
+      "update_threads": 4,
+      "workers": 16
+    },
+    "calibration": {
+      "batch_size": 64,
+      "environment_decisions": 4096,
+      "learning_rate": 0.001,
+      "source": "One shared frozen parent-policy sample; complete episodes only for Monte Carlo targets; discarded rollout is never a PPO update.",
+      "split": "train",
+      "target": "Discounted base Monte Carlo return minus current weighted potential; same rows/order/count per matched seed. Fixed train-only monitor, no adaptive selection.",
+      "value_only_updates_per_model": 400
+    },
+    "configs": {
+      "control": {
+        "encounters": [
+          "boss"
+        ],
+        "ppo": {
+          "batch_size": 16,
+          "clip_ratio": 0.2,
+          "entropy_weight": 0.001,
+          "episode_decisions": 512,
+          "episode_seconds": 120.0,
+          "epochs": 2,
+          "gae_lambda": 0.95,
+          "gamma": 1.0,
+          "gradient_clip": 0.5,
+          "learning_rate": 0.0001,
+          "normalize_advantages": true,
+          "rollout_steps": 4096,
+          "target_kl": 0.03,
+          "value_weight": 0.5
+        },
+        "schema": "sts_ppo_experiment_v2",
+        "source": "act1_combat_corpus_v2:c817e01031d3abcd0668ea68401c7a80ddff093a5cb114bf4d9697595c96a7c9",
+        "training": {
+          "action_policy": "commit_decisions_v1",
+          "mode": "combat",
+          "reward": {
+            "discount": 1.0,
+            "schema": "sts_training_reward_v2",
+            "weights": {
+              "combat_loss": 0.0,
+              "combat_win": 1.0,
+              "end_turn_action": 0.0,
+              "enemy_hp_potential": 0.0,
+              "player_hp_potential": 0.0,
+              "potion_use_action": 0.0,
+              "win_hp_fraction": 0.1
+            }
+          },
+          "scenario_set": "ironclad_a0_overgrowth_v1"
+        }
+      },
+      "enemy": {
+        "encounters": [
+          "boss"
+        ],
+        "ppo": {
+          "batch_size": 16,
+          "clip_ratio": 0.2,
+          "entropy_weight": 0.001,
+          "episode_decisions": 512,
+          "episode_seconds": 120.0,
+          "epochs": 2,
+          "gae_lambda": 0.95,
+          "gamma": 1.0,
+          "gradient_clip": 0.5,
+          "learning_rate": 0.0001,
+          "normalize_advantages": true,
+          "rollout_steps": 4096,
+          "target_kl": 0.03,
+          "value_weight": 0.5
+        },
+        "schema": "sts_ppo_experiment_v2",
+        "source": "act1_combat_corpus_v2:c817e01031d3abcd0668ea68401c7a80ddff093a5cb114bf4d9697595c96a7c9",
+        "training": {
+          "action_policy": "commit_decisions_v1",
+          "mode": "combat",
+          "reward": {
+            "discount": 1.0,
+            "schema": "sts_training_reward_v2",
+            "weights": {
+              "combat_loss": 0.0,
+              "combat_win": 1.0,
+              "end_turn_action": 0.0,
+              "enemy_hp_potential": 0.5,
+              "player_hp_potential": 0.0,
+              "potion_use_action": 0.0,
+              "win_hp_fraction": 0.1
+            }
+          },
+          "scenario_set": "ironclad_a0_overgrowth_v1"
+        }
+      },
+      "health": {
+        "encounters": [
+          "boss"
+        ],
+        "ppo": {
+          "batch_size": 16,
+          "clip_ratio": 0.2,
+          "entropy_weight": 0.001,
+          "episode_decisions": 512,
+          "episode_seconds": 120.0,
+          "epochs": 2,
+          "gae_lambda": 0.95,
+          "gamma": 1.0,
+          "gradient_clip": 0.5,
+          "learning_rate": 0.0001,
+          "normalize_advantages": true,
+          "rollout_steps": 4096,
+          "target_kl": 0.03,
+          "value_weight": 0.5
+        },
+        "schema": "sts_ppo_experiment_v2",
+        "source": "act1_combat_corpus_v2:c817e01031d3abcd0668ea68401c7a80ddff093a5cb114bf4d9697595c96a7c9",
+        "training": {
+          "action_policy": "commit_decisions_v1",
+          "mode": "combat",
+          "reward": {
+            "discount": 1.0,
+            "schema": "sts_training_reward_v2",
+            "weights": {
+              "combat_loss": 0.0,
+              "combat_win": 1.0,
+              "end_turn_action": 0.0,
+              "enemy_hp_potential": 0.5,
+              "player_hp_potential": 0.25,
+              "potion_use_action": 0.0,
+              "win_hp_fraction": 0.1
+            }
+          },
+          "scenario_set": "ironclad_a0_overgrowth_v1"
+        }
+      }
+    },
+    "corpus": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/corpus/corpus.json",
+    "corpus_identity": "act1_combat_corpus_v2:c817e01031d3abcd0668ea68401c7a80ddff093a5cb114bf4d9697595c96a7c9",
+    "corpus_sha256": "c817e01031d3abcd0668ea68401c7a80ddff093a5cb114bf4d9697595c96a7c9",
+    "created_unix": 1790947767.817151,
+    "deadline_unix": 1790953167.817151,
+    "evaluation": {
+      "cases": {
+        "validation": 42
+      },
+      "modes": {
+        "greedy": 1,
+        "sampled": 2
+      },
+      "primary": "Mean greedy wins over two matched learner seeds; per-seed paired differences. Sampled wins and same-case loss/win HP are secondary.",
+      "reward": "Every actor evaluated with the same unshaped +1 victory +0.1 winning post-cleanup HP fraction. Shaped training returns are not cross-arm performance metrics.",
+      "selection": "Final50k only; no intermediate selection or early stopping. Parent retained as reference. No test access.",
+      "splits": [
+        "validation"
+      ],
+      "start_kind": "opening",
+      "steps": [
+        0,
+        50000
+      ],
+      "uncertainty": "Exploratory two-seed fine-tuning on previously used42-case validation; no fresh-test or from-scratch claim.",
+      "workers": 8
+    },
+    "evaluation_config": {
+      "encounters": [
+        "boss"
+      ],
+      "ppo": {
+        "batch_size": 16,
+        "clip_ratio": 0.2,
+        "entropy_weight": 0.001,
+        "episode_decisions": 512,
+        "episode_seconds": 120.0,
+        "epochs": 2,
+        "gae_lambda": 0.95,
+        "gamma": 1.0,
+        "gradient_clip": 0.5,
+        "learning_rate": 0.0001,
+        "normalize_advantages": true,
+        "rollout_steps": 4096,
+        "target_kl": 0.03,
+        "value_weight": 0.5
+      },
+      "schema": "sts_ppo_experiment_v2",
+      "source": "act1_combat_corpus_v2:c817e01031d3abcd0668ea68401c7a80ddff093a5cb114bf4d9697595c96a7c9",
+      "training": {
+        "action_policy": "commit_decisions_v1",
+        "mode": "combat",
+        "reward": {
+          "schema": "sts_training_reward_v1",
+          "weights": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 0.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.1
+          }
+        },
+        "scenario_set": "ironclad_a0_overgrowth_v1"
+      }
+    },
+    "execution_order": [
+      "control-a",
+      "enemy-a",
+      "health-a",
+      "health-b",
+      "enemy-b",
+      "control-b"
+    ],
+    "implementation": {
+      "build": "9ac3f6b412ae208bc3eeac8fe8fc54d088f70e6c926c17ccb284ad4770aa9a6d",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "1774c49c412fc7fae7c0d0f642927e6d91075c8d73268315baf9f9ef19f5b12b",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "initialization": "Same250k rich-combat actor and vocabulary in every arm. Identical freshly seeded value heads per learner seed, calibrated per reward using shared TRAIN data. Fresh PPO optimizer/action/shuffle RNG and disjoint continuation cursors.",
+    "parent": {
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-training-20261002/ppo/chunk-20/final.sts-model",
+      "sha256": "4da8789591fc9379522b3b30745bb6b6615ee53bb4bfc21215affecf28dfae6a",
+      "specialist_ppo_decisions": 250000
+    },
+    "schema": "sts_potential_shaping_pilot_v1",
+    "seeds": [
+      "a",
+      "b"
+    ],
+    "status": "frozen",
+    "variants": {
+      "control": [
+        0.0,
+        0.0
+      ],
+      "enemy": [
+        0.5,
+        0.0
+      ],
+      "health": [
+        0.5,
+        0.25
+      ]
+    }
+  },
+  "results": {
+    "aggregate": {
+      "control": {
+        "greedy": {
+          "mean_win_rate": 0.47619047619047616,
+          "wins": [
+            20,
+            20
+          ]
+        },
+        "mean_training_seconds": 289.2021661871113,
+        "sampled": {
+          "mean_win_rate": 0.47619047619047616,
+          "wins": [
+            39,
+            41
+          ]
+        }
+      },
+      "enemy": {
+        "greedy": {
+          "mean_win_rate": 0.48809523809523814,
+          "wins": [
+            23,
+            18
+          ]
+        },
+        "mean_training_seconds": 273.3991834789049,
+        "sampled": {
+          "mean_win_rate": 0.47619047619047616,
+          "wins": [
+            38,
+            42
+          ]
+        }
+      },
+      "health": {
+        "greedy": {
+          "mean_win_rate": 0.5357142857142857,
+          "wins": [
+            20,
+            25
+          ]
+        },
+        "mean_training_seconds": 278.14969108300284,
+        "sampled": {
+          "mean_win_rate": 0.5297619047619048,
+          "wins": [
+            43,
+            46
+          ]
+        }
+      }
+    },
+    "checkpoints": {
+      "control-a": {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/control-a/chunk-04/final.sts-model",
+        "sha256": "c32c7cd56370f6acd0b72cb3a24d733d456087c2b438a5b9ba369ee39bb25f81"
+      },
+      "control-b": {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/control-b/chunk-04/final.sts-model",
+        "sha256": "385c39ad8cf36447d52969215b8efffc4c77e7a12c6c72d450901f8e8a68a203"
+      },
+      "enemy-a": {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/enemy-a/chunk-04/final.sts-model",
+        "sha256": "0c1d7371f7766c34a342eef2aeca73a66d197ec3c442b08c2638f1acc0f6f999"
+      },
+      "enemy-b": {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/enemy-b/chunk-04/final.sts-model",
+        "sha256": "5be827aa0ca888d1fbf1b827965569f8c6c25d886bad23908d448c409d3ea2e2"
+      },
+      "health-a": {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/health-a/chunk-04/final.sts-model",
+        "sha256": "6615988c02efd3b62a51de2017226fb81187a0be09f4134b6c0d1cac9d0c3239"
+      },
+      "health-b": {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/health-b/chunk-04/final.sts-model",
+        "sha256": "9e5c01e859ddf584214f76afb071fdfb2ac7271d83aadc2c421b44fd6cb7e0b7"
+      },
+      "parent": {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-training-20261002/ppo/chunk-20/final.sts-model",
+        "sha256": "4da8789591fc9379522b3b30745bb6b6615ee53bb4bfc21215affecf28dfae6a"
+      }
+    },
+    "comparisons": {
+      "control-a__enemy-a": {
+        "greedy": {
+          "conditional_case_bootstrap_95ci_pp": [
+            0.0,
+            16.666666666666664
+          ],
+          "discordant_exact_two_sided_p": 0.25,
+          "gained": 3,
+          "gained_case_ids": [
+            "08614fe513b64d5fa89bd6b34554e573",
+            "b37cb8e717be4f22af788e348909f5ee",
+            "043779d998864771869ab4ff5ed06b78"
+          ],
+          "games": 42,
+          "left_wins": 20,
+          "lost": 0,
+          "lost_case_ids": [],
+          "paired_boss_hp_on_same_losses": {
+            "delta": 0.8421052631578947,
+            "left": 47.31578947368421,
+            "right": 48.1578947368421
+          },
+          "paired_player_hp_on_same_wins": {
+            "delta": 1.55,
+            "left": 16.2,
+            "right": 17.75
+          },
+          "right_wins": 23,
+          "same_losses": 19,
+          "same_wins": 20,
+          "win_difference_pp": 7.142857142857142
+        },
+        "sampled": {
+          "conditional_case_bootstrap_95ci_pp": [
+            -9.523809523809524,
+            5.952380952380952
+          ],
+          "discordant_exact_two_sided_p": null,
+          "gained": 4,
+          "gained_case_ids": [
+            "9ddbb23578eb471eae71883d5802390c",
+            "3b4a4afe7fdb4d11943985fe7003a3b1",
+            "ab31fd57f873423e8b0fa13b632bd1fc",
+            "72276542fdd245abba9ec500f8bee715"
+          ],
+          "games": 84,
+          "left_wins": 39,
+          "lost": 5,
+          "lost_case_ids": [
+            "b468623b22004f9982c848792b3c26bb",
+            "0572e38510d6477685a18f94b4eceec8",
+            "4e702dc470aa485b93fd5f186b4f118a",
+            "4e702dc470aa485b93fd5f186b4f118a",
+            "f18f0c4656934ef1a60d3a1987dc2b32"
+          ],
+          "paired_boss_hp_on_same_losses": {
+            "delta": -0.5121951219512195,
+            "left": 52.26829268292683,
+            "right": 51.75609756097561
+          },
+          "paired_player_hp_on_same_wins": {
+            "delta": -2.764705882352941,
+            "left": 18.941176470588236,
+            "right": 16.176470588235293
+          },
+          "right_wins": 38,
+          "same_losses": 41,
+          "same_wins": 34,
+          "win_difference_pp": -1.1904761904761905
+        }
+      },
+      "control-a__health-a": {
+        "greedy": {
+          "conditional_case_bootstrap_95ci_pp": [
+            -9.523809523809524,
+            9.523809523809524
+          ],
+          "discordant_exact_two_sided_p": 1.0,
+          "gained": 2,
+          "gained_case_ids": [
+            "08614fe513b64d5fa89bd6b34554e573",
+            "4e702dc470aa485b93fd5f186b4f118a"
+          ],
+          "games": 42,
+          "left_wins": 20,
+          "lost": 2,
+          "lost_case_ids": [
+            "75e0e5f70c97408eba56af27da767037",
+            "3b4a4afe7fdb4d11943985fe7003a3b1"
+          ],
+          "paired_boss_hp_on_same_losses": {
+            "delta": 6.8,
+            "left": 45.55,
+            "right": 52.35
+          },
+          "paired_player_hp_on_same_wins": {
+            "delta": 2.2777777777777777,
+            "left": 17.333333333333332,
+            "right": 19.61111111111111
+          },
+          "right_wins": 20,
+          "same_losses": 20,
+          "same_wins": 18,
+          "win_difference_pp": 0.0
+        },
+        "sampled": {
+          "conditional_case_bootstrap_95ci_pp": [
+            -2.380952380952381,
+            11.904761904761903
+          ],
+          "discordant_exact_two_sided_p": null,
+          "gained": 8,
+          "gained_case_ids": [
+            "043779d998864771869ab4ff5ed06b78",
+            "3b3fb152b42e456287d4f6080adfaaec",
+            "625168dd95ee489894cebc584179f76c",
+            "9ddbb23578eb471eae71883d5802390c",
+            "3b4a4afe7fdb4d11943985fe7003a3b1",
+            "ab31fd57f873423e8b0fa13b632bd1fc",
+            "72276542fdd245abba9ec500f8bee715",
+            "a203df19890248698b0de938b3092464"
+          ],
+          "games": 84,
+          "left_wins": 39,
+          "lost": 4,
+          "lost_case_ids": [
+            "75e0e5f70c97408eba56af27da767037",
+            "0572e38510d6477685a18f94b4eceec8",
+            "3b4a4afe7fdb4d11943985fe7003a3b1",
+            "b37cb8e717be4f22af788e348909f5ee"
+          ],
+          "paired_boss_hp_on_same_losses": {
+            "delta": 5.756756756756757,
+            "left": 57.189189189189186,
+            "right": 62.945945945945944
+          },
+          "paired_player_hp_on_same_wins": {
+            "delta": -0.05714285714285714,
+            "left": 18.34285714285714,
+            "right": 18.285714285714285
+          },
+          "right_wins": 43,
+          "same_losses": 37,
+          "same_wins": 35,
+          "win_difference_pp": 4.761904761904762
+        }
+      },
+      "control-b__enemy-b": {
+        "greedy": {
+          "conditional_case_bootstrap_95ci_pp": [
+            -19.047619047619047,
+            7.202380952380086
+          ],
+          "discordant_exact_two_sided_p": 0.7265625,
+          "gained": 3,
+          "gained_case_ids": [
+            "ab31fd57f873423e8b0fa13b632bd1fc",
+            "0dfac130ccc745c79d2005721a8a7414",
+            "d4bd413b6a4342f7a89c72d87331f007"
+          ],
+          "games": 42,
+          "left_wins": 20,
+          "lost": 5,
+          "lost_case_ids": [
+            "08614fe513b64d5fa89bd6b34554e573",
+            "4e702dc470aa485b93fd5f186b4f118a",
+            "a203df19890248698b0de938b3092464",
+            "4ce1bcd016c34a18a5e5b10545adf245",
+            "ac77d9b1cde74c6495fadca8067c9e2b"
+          ],
+          "paired_boss_hp_on_same_losses": {
+            "delta": 3.210526315789474,
+            "left": 45.73684210526316,
+            "right": 48.94736842105263
+          },
+          "paired_player_hp_on_same_wins": {
+            "delta": 0.8,
+            "left": 18.133333333333333,
+            "right": 18.933333333333334
+          },
+          "right_wins": 18,
+          "same_losses": 19,
+          "same_wins": 15,
+          "win_difference_pp": -4.761904761904762
+        },
+        "sampled": {
+          "conditional_case_bootstrap_95ci_pp": [
+            -5.952380952380952,
+            9.523809523809524
+          ],
+          "discordant_exact_two_sided_p": null,
+          "gained": 5,
+          "gained_case_ids": [
+            "3b4a4afe7fdb4d11943985fe7003a3b1",
+            "abf54cdcb60b48f7b16433b4faec73b7",
+            "3b3fb152b42e456287d4f6080adfaaec",
+            "3b3fb152b42e456287d4f6080adfaaec",
+            "75e0e5f70c97408eba56af27da767037"
+          ],
+          "games": 84,
+          "left_wins": 41,
+          "lost": 4,
+          "lost_case_ids": [
+            "ac77d9b1cde74c6495fadca8067c9e2b",
+            "08614fe513b64d5fa89bd6b34554e573",
+            "a203df19890248698b0de938b3092464",
+            "83d033c4b46b4c35b879e042e0a5d79b"
+          ],
+          "paired_boss_hp_on_same_losses": {
+            "delta": 0.7894736842105263,
+            "left": 53.578947368421055,
+            "right": 54.36842105263158
+          },
+          "paired_player_hp_on_same_wins": {
+            "delta": -0.7027027027027027,
+            "left": 17.10810810810811,
+            "right": 16.405405405405407
+          },
+          "right_wins": 42,
+          "same_losses": 38,
+          "same_wins": 37,
+          "win_difference_pp": 1.1904761904761905
+        }
+      },
+      "control-b__health-b": {
+        "greedy": {
+          "conditional_case_bootstrap_95ci_pp": [
+            0.0,
+            26.190476190476193
+          ],
+          "discordant_exact_two_sided_p": 0.1796875,
+          "gained": 7,
+          "gained_case_ids": [
+            "3b4a4afe7fdb4d11943985fe7003a3b1",
+            "ab31fd57f873423e8b0fa13b632bd1fc",
+            "e8173ef4120c434eb5568d9dce1efd16",
+            "0dfac130ccc745c79d2005721a8a7414",
+            "d4bd413b6a4342f7a89c72d87331f007",
+            "043779d998864771869ab4ff5ed06b78",
+            "625168dd95ee489894cebc584179f76c"
+          ],
+          "games": 42,
+          "left_wins": 20,
+          "lost": 2,
+          "lost_case_ids": [
+            "08614fe513b64d5fa89bd6b34554e573",
+            "4ce1bcd016c34a18a5e5b10545adf245"
+          ],
+          "paired_boss_hp_on_same_losses": {
+            "delta": -2.933333333333333,
+            "left": 54.266666666666666,
+            "right": 51.333333333333336
+          },
+          "paired_player_hp_on_same_wins": {
+            "delta": 0.8888888888888888,
+            "left": 17.0,
+            "right": 17.88888888888889
+          },
+          "right_wins": 25,
+          "same_losses": 15,
+          "same_wins": 18,
+          "win_difference_pp": 11.904761904761903
+        },
+        "sampled": {
+          "conditional_case_bootstrap_95ci_pp": [
+            -2.380952380952381,
+            14.285714285714285
+          ],
+          "discordant_exact_two_sided_p": null,
+          "gained": 8,
+          "gained_case_ids": [
+            "3b4a4afe7fdb4d11943985fe7003a3b1",
+            "ab31fd57f873423e8b0fa13b632bd1fc",
+            "043779d998864771869ab4ff5ed06b78",
+            "043779d998864771869ab4ff5ed06b78",
+            "3b3fb152b42e456287d4f6080adfaaec",
+            "f18f0c4656934ef1a60d3a1987dc2b32",
+            "3b3fb152b42e456287d4f6080adfaaec",
+            "75e0e5f70c97408eba56af27da767037"
+          ],
+          "games": 84,
+          "left_wins": 41,
+          "lost": 3,
+          "lost_case_ids": [
+            "ac77d9b1cde74c6495fadca8067c9e2b",
+            "ab31fd57f873423e8b0fa13b632bd1fc",
+            "08614fe513b64d5fa89bd6b34554e573"
+          ],
+          "paired_boss_hp_on_same_losses": {
+            "delta": -6.857142857142857,
+            "left": 55.77142857142857,
+            "right": 48.91428571428571
+          },
+          "paired_player_hp_on_same_wins": {
+            "delta": 0.4473684210526316,
+            "left": 16.763157894736842,
+            "right": 17.210526315789473
+          },
+          "right_wins": 46,
+          "same_losses": 35,
+          "same_wins": 38,
+          "win_difference_pp": 5.952380952380952
+        }
+      },
+      "enemy-a__health-a": {
+        "greedy": {
+          "conditional_case_bootstrap_95ci_pp": [
+            -16.666666666666664,
+            2.380952380952381
+          ],
+          "discordant_exact_two_sided_p": 0.375,
+          "gained": 1,
+          "gained_case_ids": [
+            "4e702dc470aa485b93fd5f186b4f118a"
+          ],
+          "games": 42,
+          "left_wins": 23,
+          "lost": 4,
+          "lost_case_ids": [
+            "3b4a4afe7fdb4d11943985fe7003a3b1",
+            "b37cb8e717be4f22af788e348909f5ee",
+            "043779d998864771869ab4ff5ed06b78",
+            "75e0e5f70c97408eba56af27da767037"
+          ],
+          "paired_boss_hp_on_same_losses": {
+            "delta": 5.277777777777778,
+            "left": 50.5,
+            "right": 55.77777777777778
+          },
+          "paired_player_hp_on_same_wins": {
+            "delta": 0.5263157894736842,
+            "left": 18.57894736842105,
+            "right": 19.105263157894736
+          },
+          "right_wins": 20,
+          "same_losses": 18,
+          "same_wins": 19,
+          "win_difference_pp": -7.142857142857142
+        },
+        "sampled": {
+          "conditional_case_bootstrap_95ci_pp": [
+            -2.380952380952381,
+            14.285714285714285
+          ],
+          "discordant_exact_two_sided_p": null,
+          "gained": 8,
+          "gained_case_ids": [
+            "4e702dc470aa485b93fd5f186b4f118a",
+            "4e702dc470aa485b93fd5f186b4f118a",
+            "a203df19890248698b0de938b3092464",
+            "f18f0c4656934ef1a60d3a1987dc2b32",
+            "043779d998864771869ab4ff5ed06b78",
+            "b468623b22004f9982c848792b3c26bb",
+            "3b3fb152b42e456287d4f6080adfaaec",
+            "625168dd95ee489894cebc584179f76c"
+          ],
+          "games": 84,
+          "left_wins": 38,
+          "lost": 3,
+          "lost_case_ids": [
+            "75e0e5f70c97408eba56af27da767037",
+            "3b4a4afe7fdb4d11943985fe7003a3b1",
+            "b37cb8e717be4f22af788e348909f5ee"
+          ],
+          "paired_boss_hp_on_same_losses": {
+            "delta": 6.2368421052631575,
+            "left": 55.1578947368421,
+            "right": 61.39473684210526
+          },
+          "paired_player_hp_on_same_wins": {
+            "delta": 1.7428571428571429,
+            "left": 17.114285714285714,
+            "right": 18.857142857142858
+          },
+          "right_wins": 43,
+          "same_losses": 38,
+          "same_wins": 35,
+          "win_difference_pp": 5.952380952380952
+        }
+      },
+      "enemy-b__health-b": {
+        "greedy": {
+          "conditional_case_bootstrap_95ci_pp": [
+            7.142857142857142,
+            28.57142857142857
+          ],
+          "discordant_exact_two_sided_p": 0.015625,
+          "gained": 7,
+          "gained_case_ids": [
+            "ac77d9b1cde74c6495fadca8067c9e2b",
+            "3b4a4afe7fdb4d11943985fe7003a3b1",
+            "e8173ef4120c434eb5568d9dce1efd16",
+            "4e702dc470aa485b93fd5f186b4f118a",
+            "a203df19890248698b0de938b3092464",
+            "043779d998864771869ab4ff5ed06b78",
+            "625168dd95ee489894cebc584179f76c"
+          ],
+          "games": 42,
+          "left_wins": 18,
+          "lost": 0,
+          "lost_case_ids": [],
+          "paired_boss_hp_on_same_losses": {
+            "delta": -6.0588235294117645,
+            "left": 53.705882352941174,
+            "right": 47.64705882352941
+          },
+          "paired_player_hp_on_same_wins": {
+            "delta": -0.1111111111111111,
+            "left": 17.88888888888889,
+            "right": 17.77777777777778
+          },
+          "right_wins": 25,
+          "same_losses": 17,
+          "same_wins": 18,
+          "win_difference_pp": 16.666666666666664
+        },
+        "sampled": {
+          "conditional_case_bootstrap_95ci_pp": [
+            -1.1904761904761905,
+            11.904761904761903
+          ],
+          "discordant_exact_two_sided_p": null,
+          "gained": 7,
+          "gained_case_ids": [
+            "043779d998864771869ab4ff5ed06b78",
+            "83d033c4b46b4c35b879e042e0a5d79b",
+            "f18f0c4656934ef1a60d3a1987dc2b32",
+            "3b4a4afe7fdb4d11943985fe7003a3b1",
+            "ab31fd57f873423e8b0fa13b632bd1fc",
+            "043779d998864771869ab4ff5ed06b78",
+            "a203df19890248698b0de938b3092464"
+          ],
+          "games": 84,
+          "left_wins": 42,
+          "lost": 3,
+          "lost_case_ids": [
+            "3b4a4afe7fdb4d11943985fe7003a3b1",
+            "ab31fd57f873423e8b0fa13b632bd1fc",
+            "abf54cdcb60b48f7b16433b4faec73b7"
+          ],
+          "paired_boss_hp_on_same_losses": {
+            "delta": -9.0,
+            "left": 57.22857142857143,
+            "right": 48.22857142857143
+          },
+          "paired_player_hp_on_same_wins": {
+            "delta": 1.7435897435897436,
+            "left": 15.179487179487179,
+            "right": 16.923076923076923
+          },
+          "right_wins": 46,
+          "same_losses": 35,
+          "same_wins": 39,
+          "win_difference_pp": 4.761904761904762
+        }
+      },
+      "parent__control-a": {
+        "greedy": {
+          "conditional_case_bootstrap_95ci_pp": [
+            -26.190476190476193,
+            -2.380952380952381
+          ],
+          "discordant_exact_two_sided_p": 0.0703125,
+          "gained": 1,
+          "gained_case_ids": [
+            "0dfac130ccc745c79d2005721a8a7414"
+          ],
+          "games": 42,
+          "left_wins": 26,
+          "lost": 7,
+          "lost_case_ids": [
+            "043779d998864771869ab4ff5ed06b78",
+            "3b3fb152b42e456287d4f6080adfaaec",
+            "625168dd95ee489894cebc584179f76c",
+            "08614fe513b64d5fa89bd6b34554e573",
+            "4e702dc470aa485b93fd5f186b4f118a",
+            "b37cb8e717be4f22af788e348909f5ee",
+            "a203df19890248698b0de938b3092464"
+          ],
+          "paired_boss_hp_on_same_losses": {
+            "delta": -0.13333333333333333,
+            "left": 56.8,
+            "right": 56.666666666666664
+          },
+          "paired_player_hp_on_same_wins": {
+            "delta": -1.9473684210526316,
+            "left": 18.789473684210527,
+            "right": 16.842105263157894
+          },
+          "right_wins": 20,
+          "same_losses": 15,
+          "same_wins": 19,
+          "win_difference_pp": -14.285714285714285
+        },
+        "sampled": {
+          "conditional_case_bootstrap_95ci_pp": [
+            -15.476190476190476,
+            -2.380952380952381
+          ],
+          "discordant_exact_two_sided_p": null,
+          "gained": 1,
+          "gained_case_ids": [
+            "3b4a4afe7fdb4d11943985fe7003a3b1"
+          ],
+          "games": 84,
+          "left_wins": 46,
+          "lost": 8,
+          "lost_case_ids": [
+            "72276542fdd245abba9ec500f8bee715",
+            "043779d998864771869ab4ff5ed06b78",
+            "625168dd95ee489894cebc584179f76c",
+            "3b3fb152b42e456287d4f6080adfaaec",
+            "625168dd95ee489894cebc584179f76c",
+            "9ddbb23578eb471eae71883d5802390c",
+            "ac77d9b1cde74c6495fadca8067c9e2b",
+            "3b4a4afe7fdb4d11943985fe7003a3b1"
+          ],
+          "paired_boss_hp_on_same_losses": {
+            "delta": 5.621621621621622,
+            "left": 53.027027027027025,
+            "right": 58.648648648648646
+          },
+          "paired_player_hp_on_same_wins": {
+            "delta": 1.736842105263158,
+            "left": 15.789473684210526,
+            "right": 17.526315789473685
+          },
+          "right_wins": 39,
+          "same_losses": 37,
+          "same_wins": 38,
+          "win_difference_pp": -8.333333333333332
+        }
+      },
+      "parent__control-b": {
+        "greedy": {
+          "conditional_case_bootstrap_95ci_pp": [
+            -26.190476190476193,
+            -2.380952380952381
+          ],
+          "discordant_exact_two_sided_p": 0.0703125,
+          "gained": 1,
+          "gained_case_ids": [
+            "4ce1bcd016c34a18a5e5b10545adf245"
+          ],
+          "games": 42,
+          "left_wins": 26,
+          "lost": 7,
+          "lost_case_ids": [
+            "043779d998864771869ab4ff5ed06b78",
+            "3b3fb152b42e456287d4f6080adfaaec",
+            "625168dd95ee489894cebc584179f76c",
+            "3b4a4afe7fdb4d11943985fe7003a3b1",
+            "ab31fd57f873423e8b0fa13b632bd1fc",
+            "b37cb8e717be4f22af788e348909f5ee",
+            "d4bd413b6a4342f7a89c72d87331f007"
+          ],
+          "paired_boss_hp_on_same_losses": {
+            "delta": -2.6666666666666665,
+            "left": 54.86666666666667,
+            "right": 52.2
+          },
+          "paired_player_hp_on_same_wins": {
+            "delta": -1.5263157894736843,
+            "left": 18.157894736842106,
+            "right": 16.63157894736842
+          },
+          "right_wins": 20,
+          "same_losses": 15,
+          "same_wins": 19,
+          "win_difference_pp": -14.285714285714285
+        },
+        "sampled": {
+          "conditional_case_bootstrap_95ci_pp": [
+            -15.476190476190476,
+            2.380952380952381
+          ],
+          "discordant_exact_two_sided_p": null,
+          "gained": 4,
+          "gained_case_ids": [
+            "08614fe513b64d5fa89bd6b34554e573",
+            "72276542fdd245abba9ec500f8bee715",
+            "a203df19890248698b0de938b3092464",
+            "ab31fd57f873423e8b0fa13b632bd1fc"
+          ],
+          "games": 84,
+          "left_wins": 46,
+          "lost": 9,
+          "lost_case_ids": [
+            "043779d998864771869ab4ff5ed06b78",
+            "3b3fb152b42e456287d4f6080adfaaec",
+            "625168dd95ee489894cebc584179f76c",
+            "f18f0c4656934ef1a60d3a1987dc2b32",
+            "3b3fb152b42e456287d4f6080adfaaec",
+            "625168dd95ee489894cebc584179f76c",
+            "0572e38510d6477685a18f94b4eceec8",
+            "3b4a4afe7fdb4d11943985fe7003a3b1",
+            "ab31fd57f873423e8b0fa13b632bd1fc"
+          ],
+          "paired_boss_hp_on_same_losses": {
+            "delta": 2.588235294117647,
+            "left": 55.794117647058826,
+            "right": 58.38235294117647
+          },
+          "paired_player_hp_on_same_wins": {
+            "delta": 0.08108108108108109,
+            "left": 16.324324324324323,
+            "right": 16.405405405405407
+          },
+          "right_wins": 41,
+          "same_losses": 34,
+          "same_wins": 37,
+          "win_difference_pp": -5.952380952380952
+        }
+      },
+      "parent__enemy-a": {
+        "greedy": {
+          "conditional_case_bootstrap_95ci_pp": [
+            -16.666666666666664,
+            2.380952380952381
+          ],
+          "discordant_exact_two_sided_p": 0.375,
+          "gained": 1,
+          "gained_case_ids": [
+            "0dfac130ccc745c79d2005721a8a7414"
+          ],
+          "games": 42,
+          "left_wins": 26,
+          "lost": 4,
+          "lost_case_ids": [
+            "3b3fb152b42e456287d4f6080adfaaec",
+            "625168dd95ee489894cebc584179f76c",
+            "4e702dc470aa485b93fd5f186b4f118a",
+            "a203df19890248698b0de938b3092464"
+          ],
+          "paired_boss_hp_on_same_losses": {
+            "delta": -1.0666666666666667,
+            "left": 56.8,
+            "right": 55.733333333333334
+          },
+          "paired_player_hp_on_same_wins": {
+            "delta": 0.4090909090909091,
+            "left": 17.136363636363637,
+            "right": 17.545454545454547
+          },
+          "right_wins": 23,
+          "same_losses": 15,
+          "same_wins": 22,
+          "win_difference_pp": -7.142857142857142
+        },
+        "sampled": {
+          "conditional_case_bootstrap_95ci_pp": [
+            -19.047619047619047,
+            -1.1904761904761905
+          ],
+          "discordant_exact_two_sided_p": null,
+          "gained": 2,
+          "gained_case_ids": [
+            "3b4a4afe7fdb4d11943985fe7003a3b1",
+            "ab31fd57f873423e8b0fa13b632bd1fc"
+          ],
+          "games": 84,
+          "left_wins": 46,
+          "lost": 10,
+          "lost_case_ids": [
+            "4e702dc470aa485b93fd5f186b4f118a",
+            "f18f0c4656934ef1a60d3a1987dc2b32",
+            "043779d998864771869ab4ff5ed06b78",
+            "625168dd95ee489894cebc584179f76c",
+            "b468623b22004f9982c848792b3c26bb",
+            "3b3fb152b42e456287d4f6080adfaaec",
+            "625168dd95ee489894cebc584179f76c",
+            "ac77d9b1cde74c6495fadca8067c9e2b",
+            "0572e38510d6477685a18f94b4eceec8",
+            "4e702dc470aa485b93fd5f186b4f118a"
+          ],
+          "paired_boss_hp_on_same_losses": {
+            "delta": 4.083333333333333,
+            "left": 52.861111111111114,
+            "right": 56.94444444444444
+          },
+          "paired_player_hp_on_same_wins": {
+            "delta": -0.4166666666666667,
+            "left": 16.75,
+            "right": 16.333333333333332
+          },
+          "right_wins": 38,
+          "same_losses": 36,
+          "same_wins": 36,
+          "win_difference_pp": -9.523809523809524
+        }
+      },
+      "parent__enemy-b": {
+        "greedy": {
+          "conditional_case_bootstrap_95ci_pp": [
+            -33.33333333333333,
+            -7.142857142857142
+          ],
+          "discordant_exact_two_sided_p": 0.021484375,
+          "gained": 1,
+          "gained_case_ids": [
+            "0dfac130ccc745c79d2005721a8a7414"
+          ],
+          "games": 42,
+          "left_wins": 26,
+          "lost": 9,
+          "lost_case_ids": [
+            "043779d998864771869ab4ff5ed06b78",
+            "3b3fb152b42e456287d4f6080adfaaec",
+            "625168dd95ee489894cebc584179f76c",
+            "ac77d9b1cde74c6495fadca8067c9e2b",
+            "3b4a4afe7fdb4d11943985fe7003a3b1",
+            "08614fe513b64d5fa89bd6b34554e573",
+            "4e702dc470aa485b93fd5f186b4f118a",
+            "b37cb8e717be4f22af788e348909f5ee",
+            "a203df19890248698b0de938b3092464"
+          ],
+          "paired_boss_hp_on_same_losses": {
+            "delta": 3.8,
+            "left": 56.8,
+            "right": 60.6
+          },
+          "paired_player_hp_on_same_wins": {
+            "delta": -1.0588235294117647,
+            "left": 19.58823529411765,
+            "right": 18.529411764705884
+          },
+          "right_wins": 18,
+          "same_losses": 15,
+          "same_wins": 17,
+          "win_difference_pp": -19.047619047619047
+        },
+        "sampled": {
+          "conditional_case_bootstrap_95ci_pp": [
+            -13.095238095238097,
+            2.380952380952381
+          ],
+          "discordant_exact_two_sided_p": null,
+          "gained": 5,
+          "gained_case_ids": [
+            "72276542fdd245abba9ec500f8bee715",
+            "abf54cdcb60b48f7b16433b4faec73b7",
+            "75e0e5f70c97408eba56af27da767037",
+            "3b4a4afe7fdb4d11943985fe7003a3b1",
+            "ab31fd57f873423e8b0fa13b632bd1fc"
+          ],
+          "games": 84,
+          "left_wins": 46,
+          "lost": 9,
+          "lost_case_ids": [
+            "043779d998864771869ab4ff5ed06b78",
+            "625168dd95ee489894cebc584179f76c",
+            "83d033c4b46b4c35b879e042e0a5d79b",
+            "f18f0c4656934ef1a60d3a1987dc2b32",
+            "625168dd95ee489894cebc584179f76c",
+            "ac77d9b1cde74c6495fadca8067c9e2b",
+            "0572e38510d6477685a18f94b4eceec8",
+            "3b4a4afe7fdb4d11943985fe7003a3b1",
+            "ab31fd57f873423e8b0fa13b632bd1fc"
+          ],
+          "paired_boss_hp_on_same_losses": {
+            "delta": 4.151515151515151,
+            "left": 55.39393939393939,
+            "right": 59.54545454545455
+          },
+          "paired_player_hp_on_same_wins": {
+            "delta": -0.7297297297297297,
+            "left": 15.91891891891892,
+            "right": 15.18918918918919
+          },
+          "right_wins": 42,
+          "same_losses": 33,
+          "same_wins": 37,
+          "win_difference_pp": -4.761904761904762
+        }
+      },
+      "parent__health-a": {
+        "greedy": {
+          "conditional_case_bootstrap_95ci_pp": [
+            -26.190476190476193,
+            -2.380952380952381
+          ],
+          "discordant_exact_two_sided_p": 0.0703125,
+          "gained": 1,
+          "gained_case_ids": [
+            "0dfac130ccc745c79d2005721a8a7414"
+          ],
+          "games": 42,
+          "left_wins": 26,
+          "lost": 7,
+          "lost_case_ids": [
+            "043779d998864771869ab4ff5ed06b78",
+            "3b3fb152b42e456287d4f6080adfaaec",
+            "625168dd95ee489894cebc584179f76c",
+            "75e0e5f70c97408eba56af27da767037",
+            "3b4a4afe7fdb4d11943985fe7003a3b1",
+            "b37cb8e717be4f22af788e348909f5ee",
+            "a203df19890248698b0de938b3092464"
+          ],
+          "paired_boss_hp_on_same_losses": {
+            "delta": 8.0,
+            "left": 56.8,
+            "right": 64.8
+          },
+          "paired_player_hp_on_same_wins": {
+            "delta": 0.10526315789473684,
+            "left": 19.0,
+            "right": 19.105263157894736
+          },
+          "right_wins": 20,
+          "same_losses": 15,
+          "same_wins": 19,
+          "win_difference_pp": -14.285714285714285
+        },
+        "sampled": {
+          "conditional_case_bootstrap_95ci_pp": [
+            -9.523809523809524,
+            2.380952380952381
+          ],
+          "discordant_exact_two_sided_p": null,
+          "gained": 2,
+          "gained_case_ids": [
+            "a203df19890248698b0de938b3092464",
+            "ab31fd57f873423e8b0fa13b632bd1fc"
+          ],
+          "games": 84,
+          "left_wins": 46,
+          "lost": 5,
+          "lost_case_ids": [
+            "625168dd95ee489894cebc584179f76c",
+            "75e0e5f70c97408eba56af27da767037",
+            "ac77d9b1cde74c6495fadca8067c9e2b",
+            "0572e38510d6477685a18f94b4eceec8",
+            "b37cb8e717be4f22af788e348909f5ee"
+          ],
+          "paired_boss_hp_on_same_losses": {
+            "delta": 11.416666666666666,
+            "left": 53.52777777777778,
+            "right": 64.94444444444444
+          },
+          "paired_player_hp_on_same_wins": {
+            "delta": 1.4634146341463414,
+            "left": 15.731707317073171,
+            "right": 17.195121951219512
+          },
+          "right_wins": 43,
+          "same_losses": 36,
+          "same_wins": 41,
+          "win_difference_pp": -3.571428571428571
+        }
+      },
+      "parent__health-b": {
+        "greedy": {
+          "conditional_case_bootstrap_95ci_pp": [
+            -11.904761904761903,
+            7.142857142857142
+          ],
+          "discordant_exact_two_sided_p": 1.0,
+          "gained": 2,
+          "gained_case_ids": [
+            "e8173ef4120c434eb5568d9dce1efd16",
+            "0dfac130ccc745c79d2005721a8a7414"
+          ],
+          "games": 42,
+          "left_wins": 26,
+          "lost": 3,
+          "lost_case_ids": [
+            "3b3fb152b42e456287d4f6080adfaaec",
+            "08614fe513b64d5fa89bd6b34554e573",
+            "b37cb8e717be4f22af788e348909f5ee"
+          ],
+          "paired_boss_hp_on_same_losses": {
+            "delta": -7.071428571428571,
+            "left": 60.57142857142857,
+            "right": 53.5
+          },
+          "paired_player_hp_on_same_wins": {
+            "delta": 0.17391304347826086,
+            "left": 16.565217391304348,
+            "right": 16.73913043478261
+          },
+          "right_wins": 25,
+          "same_losses": 14,
+          "same_wins": 23,
+          "win_difference_pp": -2.380952380952381
+        },
+        "sampled": {
+          "conditional_case_bootstrap_95ci_pp": [
+            -7.142857142857142,
+            7.142857142857142
+          ],
+          "discordant_exact_two_sided_p": null,
+          "gained": 4,
+          "gained_case_ids": [
+            "72276542fdd245abba9ec500f8bee715",
+            "043779d998864771869ab4ff5ed06b78",
+            "a203df19890248698b0de938b3092464",
+            "75e0e5f70c97408eba56af27da767037"
+          ],
+          "games": 84,
+          "left_wins": 46,
+          "lost": 4,
+          "lost_case_ids": [
+            "625168dd95ee489894cebc584179f76c",
+            "625168dd95ee489894cebc584179f76c",
+            "ac77d9b1cde74c6495fadca8067c9e2b",
+            "0572e38510d6477685a18f94b4eceec8"
+          ],
+          "paired_boss_hp_on_same_losses": {
+            "delta": -4.147058823529412,
+            "left": 56.8235294117647,
+            "right": 52.6764705882353
+          },
+          "paired_player_hp_on_same_wins": {
+            "delta": 0.42857142857142855,
+            "left": 15.69047619047619,
+            "right": 16.11904761904762
+          },
+          "right_wins": 46,
+          "same_losses": 34,
+          "same_wins": 42,
+          "win_difference_pp": 0.0
+        }
+      }
+    },
+    "completion_sha256": "6b6b83d093a194013d1938637f2857f2d962aaabbd3c75467e65adf8470733ba",
+    "diagnostics": {
+      "control-a": {
+        "attack_candidates": 7220,
+        "decisions": 3783,
+        "expensive_low_damage_choices": 91,
+        "known_attack_candidates": 3932,
+        "preview_attack_coverage": 0.5445983379501385,
+        "slippery_decisions": 1488
+      },
+      "control-b": {
+        "attack_candidates": 6827,
+        "decisions": 3662,
+        "expensive_low_damage_choices": 89,
+        "known_attack_candidates": 3672,
+        "preview_attack_coverage": 0.5378643620916947,
+        "slippery_decisions": 1432
+      },
+      "enemy-a": {
+        "attack_candidates": 7195,
+        "decisions": 3745,
+        "expensive_low_damage_choices": 102,
+        "known_attack_candidates": 3837,
+        "preview_attack_coverage": 0.5332870048644892,
+        "slippery_decisions": 1495
+      },
+      "enemy-b": {
+        "attack_candidates": 7132,
+        "decisions": 3813,
+        "expensive_low_damage_choices": 98,
+        "known_attack_candidates": 3782,
+        "preview_attack_coverage": 0.5302860347728547,
+        "slippery_decisions": 1517
+      },
+      "health-a": {
+        "attack_candidates": 7079,
+        "decisions": 3723,
+        "expensive_low_damage_choices": 95,
+        "known_attack_candidates": 3845,
+        "preview_attack_coverage": 0.5431558129679334,
+        "slippery_decisions": 1529
+      },
+      "health-b": {
+        "attack_candidates": 7025,
+        "decisions": 3721,
+        "expensive_low_damage_choices": 86,
+        "known_attack_candidates": 3720,
+        "preview_attack_coverage": 0.5295373665480427,
+        "slippery_decisions": 1458
+      },
+      "parent": {
+        "attack_candidates": 7046,
+        "decisions": 3707,
+        "expensive_low_damage_choices": 95,
+        "known_attack_candidates": 3728,
+        "preview_attack_coverage": 0.5290945217144479,
+        "slippery_decisions": 1466
+      }
+    },
+    "limits": [
+      "Two fine-tuning seeds, one inherited actor, repeatedly used42-case validation panel. No fresh-test or from-scratch claim.",
+      "Bootstrap intervals resample cases for a fixed pair of trained policies; they do not quantify across-seed model uncertainty. Sampled games share cases.",
+      "Conditional HP metrics must be compared on the same lost/won cases; raw group averages have changing composition.",
+      "Expensive low-damage flags indicate review opportunities, not proven mistakes: cards may have other useful effects."
+    ],
+    "parent": {
+      "greedy": {
+        "attempted": 42,
+        "cutoffs": 0,
+        "failures": 0,
+        "hp_change_observations": 42,
+        "losses": 16,
+        "mean_boss_hp_on_loss": 53.8125,
+        "mean_final_turn_observed": 7.380952380952381,
+        "mean_hp_change_observed": -54.45238095238095,
+        "mean_hp_fraction_on_win": 0.2624910065706212,
+        "mean_hp_on_win": 22.03846153846154,
+        "mean_player_hp_on_win": 15.576923076923077,
+        "mean_task_return": 0.6352970623115145,
+        "planned": 42,
+        "potion_use_actions": 17,
+        "source_groups": 42,
+        "steps": 1236,
+        "unattempted": 0,
+        "win_rate": 0.6190476190476191,
+        "win_rate_group_hoeffding_95": [
+          0.4094880055802468,
+          0.8286072325149914
+        ],
+        "wins": 26
+      },
+      "sampled": {
+        "attempted": 84,
+        "cutoffs": 0,
+        "failures": 0,
+        "hp_change_observations": 84,
+        "losses": 38,
+        "mean_boss_hp_on_loss": 52.44736842105263,
+        "mean_final_turn_observed": 7.416666666666667,
+        "mean_hp_change_observed": -56.55952380952381,
+        "mean_hp_fraction_on_win": 0.25247498799619794,
+        "mean_hp_on_win": 21.065217391304348,
+        "mean_player_hp_on_win": 15.065217391304348,
+        "mean_task_return": 0.5614450588664583,
+        "planned": 84,
+        "potion_use_actions": 34,
+        "source_groups": 42,
+        "steps": 2471,
+        "unattempted": 0,
+        "win_rate": 0.5476190476190477,
+        "win_rate_group_hoeffding_95": [
+          0.3380594341516754,
+          0.75717866108642
+        ],
+        "wins": 46
+      }
+    },
+    "status": "complete",
+    "test_opened": false,
+    "verification_sha256": "d3cb53bca02bf3741af6cb11257dcdf55c215b6ffb9d6ed527d4bf67e54e2937"
+  },
+  "schema": "sts_combat_potential_shaping_evidence_v1",
+  "source_archive": {
+    "files": {
+      "README.md": "a54b8d4c988000a09f59590fefc3ad7e674a2764a5b0164e98b96087bbe9a7f8",
+      "docs/AGENT_TRAINING.md": "0b0d66a688655229c26065a1d79ca083e7adfe7e158a163f44ee5bc288eea370",
+      "game/__init__.py": "f7418cbfa30373d46342a37b0dfe633d3f8871848fd93ddd2d23a33a6977989f",
+      "game/agent/__init__.py": "975d0e6e9b2ad48807c669f14aed2c1f38433d175ff20802f4f42bec94f1b92d",
+      "game/agent/action_policy.py": "191e0d8cc6f7ac1dac535178f7df8cb84f4ac3b33044c94559412777cf9bb957",
+      "game/agent/analysis/__init__.py": "0a645588a9d4540792f29fee9a255efa810c17a328265f0219dc2a96357e32e2",
+      "game/agent/analysis/decisions.py": "6be1cd3c2910a099b09de5c3b495c77dd744e90deb0a25bb8eda4057cacf5d1c",
+      "game/agent/analysis/parallel.py": "f7915e79005c3faef013b7e971e505ec9baf897902aa689bf1a46596d14cb6ae",
+      "game/agent/analysis/report.py": "63fac125839121bae33e1503e8043352088881ac19cb802ac98be555e523bb9e",
+      "game/agent/analysis/server.py": "1d0a11c19984af78add2dc01e6af5b87da90a9fa32a960253846e6bf3c9fdb51",
+      "game/agent/analysis/sources.py": "476c9211630495e5cf0425d75b11c99d630c2dd6cb7707cb7cf870acb5ac196a",
+      "game/agent/analysis/summary.py": "b14bba9f239019a5da5ea668569dd7054bccf3c97fec0a1693cea7b716f9ab7e",
+      "game/agent/contracts/__init__.py": "84f6067fd5eff73e2d6a636441e4769babcc3dec573407c09d9fe5e5ab0b9ff1",
+      "game/agent/contracts/codec.py": "e9acc0f398de7083aebdccdff5e9966858a450eed05c39951ca15af005590abf",
+      "game/agent/contracts/full.py": "aff5e562dbc1c2ebea4c3d2d92e8baa9f75780e3eb0528339aa31c42c40cd8c1",
+      "game/agent/contracts/models.py": "f79cfb6ea29956fd2afcc75281595aa940a7fb472b7db57c53906a2eb3e22833",
+      "game/agent/contracts/validation.py": "c1dc28b09dd046d8538ee4f6a5e01c6cf250359352a26d5515004cbef2246fd5",
+      "game/agent/dataset.py": "f6c6ec85b5926b7671988b4df4e6a757342584dcbce0ed6b817230a697b3714f",
+      "game/agent/encoding/__init__.py": "610c596808c5815647a622498984752d2c1c00b7a4de87c32a05f10a32ddbc9e",
+      "game/agent/encoding/codec.py": "3a4d711dae736230409d9222eaaf6a4b240f339adf4324ccc4bd0a8e5c03d1ee",
+      "game/agent/encoding/full.py": "c3c8895299726548b452124081d261ed9cf71c7bada40d5227302f6820f5b65a",
+      "game/agent/encoding/full_records.py": "92e64123ca371ff3fafa74cc1e6d74b34f9266551a9d7683f4691d5831d175e9",
+      "game/agent/encoding/schema.py": "eb3584ed7b10ca427b187911091484899489483cd85263ec6cd76192095f83ce",
+      "game/agent/full_policy.py": "901246c542280ec3d6c0edcebe970be5a7d4b59e68409369297845a0249a182e",
+      "game/agent/gym_env.py": "fd66b0c44a0736efb8a3a53af7dd4263495c636ae36ac42196ef0746e0a894c2",
+      "game/agent/headless/__init__.py": "6d5e99e1ca1311a6cf43a935af887af909fe9232a415a57a86a4830212df71ab",
+      "game/agent/headless/adapter.py": "3b787430d8417d5d20aa1ff6a169d24cf6df5b04754677fadf3034b654f46edf",
+      "game/agent/headless/cards.py": "e7a1d5af38feb4b4bda2492a3186f35dff856e469b5b7984984b4b4eae9888d0",
+      "game/agent/headless/combat_summary.py": "d6e1d65cfd6a0a691f31ecd9378184c9ac4e3f9959fcac3bbf2e85dfc95ecfaa",
+      "game/agent/headless/errors.py": "e4b0b44f0bca827df52e07284380ffc9151a0b6feebdc0ae0c6244ae6d120686",
+      "game/agent/headless/full_cards.py": "83d8a680e32d79778887e955296a4b55b433ac2f3db209e5308084669604ad9b",
+      "game/agent/headless/full_events.py": "573d67af599874535d5dcb4ff31ef09c9c6e96e6d29fed11688218878651487c",
+      "game/agent/headless/full_projection.py": "f1952e65d114ac53d6abd5ebd31c3d19605e20b5f44b560676693a6e399d4532",
+      "game/agent/headless/full_relics.py": "b9f5d251a384bd253472b4487286ed0899c589b0d28104bccd6e4b02ebb042b1",
+      "game/agent/headless/identity.py": "d58c28d3ccdb369ba806e325c7ba445da74e3ca04c46baecd9e10467b461291b",
+      "game/agent/headless/projection.py": "0b68a3adbe1a1d735e3c113cce2051c382fb7849f6d50dc7991c872360f50425",
+      "game/agent/live_recording.py": "8f9809eb48e1ba01065a5d4ffd7c9991983b765974eaaa6750be581725445221",
+      "game/agent/policy.py": "b09b052d9df94d9300dd35c679e487c6ad9b8aea5114e0f86dc0c8e014066148",
+      "game/agent/progress.py": "5482fd6392a8a3248d5e7b2642dd215157d6c8677fb67d99318bd33691ed60ec",
+      "game/agent/provenance.py": "a910b27c7b61d5e2f00c1451e82f2979c05d32d42fa5190f28dacc7da250d4ee",
+      "game/agent/recording.py": "deb89a52a7b927c6e05f2c612da6ad8b77945e2dcb412891751813a2c9e94784",
+      "game/agent/runner.py": "73137a388908a204b13514ac4cad2d7d64538cd70fb96a8c8d811559ede5b930",
+      "game/agent/trace_compression.py": "eb3ce0d4b1cb1711087e06a2913590371e99224cc861b8ac68fa1313b2e06cd4",
+      "game/agent/trace_storage.py": "153f898eb7d4f0b209cc1c98f80ace41383bb797789da212f1106992cb8aa4fa",
+      "game/agent/tracking/__init__.py": "59f56947f24681f9c5e9b7e3c26d965a9b2694c19f2a7e5b377eb5ff699efac4",
+      "game/agent/tracking/models.py": "d800a7201be0e17ae82bf597e54bdb6cd42f14637d9be861b1083925a5b91736",
+      "game/agent/tracking/records.py": "8b1875b25f457ce7a4fb4afee5f9272f66030a5a1f3efee550d6476b2541f54e",
+      "game/agent/tracking/reporting.py": "5109e9ccb66c23e6dfd60dc9a0a8b9e7bb6516fd9f8e9612dc45020630d60d3d",
+      "game/agent/tracking/store.py": "f44dcbdd032b53276dffebeaad97ab049093eb24ec8cf7de19c376bbac04f5b5",
+      "game/agent/training/__init__.py": "5869d0a1b0218a2d151a67343532395b3ed382db489ca92e3e92a737e48ac13a",
+      "game/agent/training/action_features.py": "a20a3cc4b250d5c8efe7e0d5e8cb4c6b31b98c6e6c509614bfa51f75e886eb98",
+      "game/agent/training/benchmark.py": "de6f69fcc926ac8e2b42784e23c1c12fa68d3fce715dc091dc4289b4515c7b3e",
+      "game/agent/training/benchmark_suite.py": "42d1eabd5ad9e8c66ce7681857bd840b474c3b4acba4b05f0f85845dc36f4095",
+      "game/agent/training/checkpoint.py": "26c607f4beda3a5e3ec840d55435a6510b50986f1488807334854666f9a6be8d",
+      "game/agent/training/combat_benchmark.py": "dd7b25c30127c5f5788b243edb4c9bc0c823f939e351e86036782aca8e80199f",
+      "game/agent/training/combat_corpus.py": "9c81d3a7c6eb814fb4b58d5ab01f53196307e79647563b0815fce8d812ba7719",
+      "game/agent/training/combat_features.py": "2698b5f6e19482e21ddfca9f86c9f3cd586ae401886f2186e3f8e777e4405e99",
+      "game/agent/training/comparison.py": "8c83e5716d43fda8fc077e30b4630ee294299e9dd2847ae2373f5e4410529f79",
+      "game/agent/training/config.py": "5f52ee8062d8a354bb84e8378d2bf77dba016146c21044fd8fad087b4ffb6113",
+      "game/agent/training/curriculum.py": "487a5fb1ecbdbc453b86cd7d57073ab78e033ca0fd29956472330b905c65619f",
+      "game/agent/training/curriculum_run.py": "e8e30c0375d6d76c0324ece47a37bd7cd1e8575c7c15ca855c5666ee340583d7",
+      "game/agent/training/dataset.py": "14099ace01863f75b6cd5b7790b2d021ba5badfdd34a2cf52ff4b1ba1979a04b",
+      "game/agent/training/demonstrations.py": "7f88cf83cbd06579cf14d18e2c2cb4aec5080f28fbe0e4c321465ca9a6bfa275",
+      "game/agent/training/env.py": "78ead666c055e558ec55f94b4560002259dd129891ec40dd916cba2d9490792a",
+      "game/agent/training/evaluation.py": "59ceeebcb49b43a05c2f2160740ea21eb994f467502e74110a828d2d19d33918",
+      "game/agent/training/evaluation_workers.py": "f92c869f9b0c27831ffc231f90160075ee4848763952d3acaebda04681f9067f",
+      "game/agent/training/features.py": "5ab6529e3e38abe3a541326a259d46dc3dd47b57dcd507d01a88f98559461834",
+      "game/agent/training/hybrid.py": "27bfa646797272531b2c05dfd79fe8c401eea7eceea30aaec93dde1215bf232d",
+      "game/agent/training/learner.py": "c00032b05d3faff8cddb952b82f4a5c7d30f5848a3f47d81d1917d4f622224dd",
+      "game/agent/training/model.py": "a28925406122903a1d65b203fec1e97bc721efd9b8153877f71b140be6df428f",
+      "game/agent/training/parallel.py": "b4c1736f5fd42310d3b3f69286f6011514a6fba54feb11f523b539ffd8396323",
+      "game/agent/training/ppo.py": "60fa44afe3b9c3011608c019814fe0465087584dcf4b01c00a6f5e9da2588289",
+      "game/agent/training/ppo_config.py": "0a15dc9c1d855637a54eb8edb64fd7441407239d78984f939ccfc3c046987dff",
+      "game/agent/training/ppo_run.py": "d5b153025cda94ddfe48a4278427baee7ce7677e3f49b7e642efebfffa6a223a",
+      "game/agent/training/records.py": "801573fa88d535ce3b2087adc2887fd5522610d2c597cbcff3b7e63b7b91bf9d",
+      "game/agent/training/rewards.py": "669884b78ab97e4c41368b4fbde8bf5d96f31fe10f6a6498e74560ca598b5e6b",
+      "game/agent/training/rollout.py": "b16cbc6310ce2f06c2eb98759b74436d23d352a33f924baedec3fe77cc28b3ad",
+      "game/agent/training/run_corpus.py": "f12a924c9300a50a6748b39ac673865a6f12a1301b5f6a6d701b9719e0992816",
+      "game/agent/training/run_demonstrations.py": "468e83f2bb3f66f0addf05bdabc8a88f4c831de2ff58c8fba3319d919e06fdac",
+      "game/agent/training/run_evaluation.py": "5daf9cc49a5553fd9ec4ad887ec22fb9b442d91680d743a5a4cfd106720f6110",
+      "game/agent/training/run_task.py": "9d9f695db190273ab0d049a02dd1dff713466e6c023bef193a8dd25fa37e2584",
+      "game/agent/training/scenarios.py": "db3e34fa89a8807bc403910af8dfe2fbe0cee76deb1609f2d8e37376caf171f3",
+      "game/agent/workers.py": "002a8be4774435c2e166a025a254315860e40046244ecc264be9049c5afefcd3",
+      "game/backends/live/r0i_wire.py": "3733748ed4cd1a328c519c2aebed0e646cad35792d1cd18b28fd7c21e4e58fb8",
+      "game/cli/__init__.py": "141235bf90e18699c530b556eab0e515ea247c7e5a9887b9b4e0f9e842aaf498",
+      "game/cli/agent_analyze.py": "760ca41571859c5a468547f38dbca84ff71e32f0b371498dae49505236fdf1fe",
+      "game/cli/agent_evaluate.py": "6dc8482b37e70bab7b7165b5434129eccd172776c8c4587e99a16e8ca4e3b041",
+      "game/cli/agent_play.py": "9f65ff75c128c81ebcaa4947842f7ce2726adf0d100284222589c8fa8c9ef910",
+      "game/cli/agent_track.py": "e40e15c1fdf421143ba556abe57563e02b757343e4ee6d191c885a1916a8f6d1",
+      "game/cli/agent_train.py": "68d00f62d98b5880848e90eef6be8ba8308d5cf25c68d43ee268a59206176a22",
+      "game/cli/headless_play.py": "0f889e18ea486f09f6efe6dd76e1b7ffef448a533f268a9bf7b26768ded82c73",
+      "game/headless/__init__.py": "2addd6413cb786f0d549743e7164cbb92d378a611b8fe6b724ca2af6cf434e2d",
+      "game/headless/cards/__init__.py": "2addd6413cb786f0d549743e7164cbb92d378a611b8fe6b724ca2af6cf434e2d",
+      "game/headless/cards/ancient.py": "ce3136417b636273bb9e4cd3e3ed006d9951b29408f7cc1eea23c80b76b9b1e2",
+      "game/headless/cards/base.py": "30c8adc60da542a0a1c379c58b808c7e58106edafddb795b04ba27fbe6c6b986",
+      "game/headless/cards/builders.py": "0da4bc3bbd22d8e56b5f155becc7e19456aae96b89b7c674208af7a4ae183dee",
+      "game/headless/cards/catalog.py": "65e766f0ef0fd6deadbc04f69cd201581352a147633c6a960fc4f4dbe2f30bfd",
+      "game/headless/cards/colorless.py": "e126643bb18e35dc9071b51ea227ba89ff252edff43b0d3e946d943f0e27a0fc",
+      "game/headless/cards/colorless_effects.py": "2b88d653df3a7d152f11df6895ff34ccc48a7934ee881269c22e394ee9776eb8",
+      "game/headless/cards/curses.py": "a1697d6b3812f371653c7ebf19a0e6f0c2a0c9dbcbe2d6e9e04576508fada65a",
+      "game/headless/cards/defect.py": "daad225dc87b1a9d95870abde21aae5b314c39541d2daf12c3b59728017fbcdc",
+      "game/headless/cards/defect_effects.py": "ce4a0ab00106ca188392ad2da9b13db0caa75053784508138769bc1570eb09f3",
+      "game/headless/cards/effects.py": "1b5740855ab03a2552791eee5a2996be0d3551e7b4a1829df238ac49a77652ee",
+      "game/headless/cards/event_cards.py": "b56ea4d11a603d9dc327f1b90c08e931d0c0c65dc4b8d4327812244fada26b00",
+      "game/headless/cards/event_effects.py": "4a267152c19170c7a8e158778aefdba666d789ea58c681a261c516291ca06733",
+      "game/headless/cards/extended_events.py": "f39227d3c6235c7e84d901279ba97e6059f95c0bee5d7a4a3875636ee3d48311",
+      "game/headless/cards/hive.py": "45bff59e3d7c6434189cdae23a988ff4faf587e67f10e019f72b2721844ccbb5",
+      "game/headless/cards/ironclad.py": "05e0cab0ad207c7d5a606e16f99bb5055f5d28ff7ae4594c8cffbdfc032792b6",
+      "game/headless/cards/ironclad_extended.py": "eb7a7a0292836a484817a2a314f7a1cf858ead1da3927d7a63aaefd2e88c89bc",
+      "game/headless/cards/ironclad_rare.py": "ba0c053654b135c6175360509aea352e1b509354c4979fddcf4e9c6f48977d27",
+      "game/headless/cards/necrobinder.py": "498497d4686497fd53781ab3868550ccafe56c058ce70e50dff34987cf5e0e08",
+      "game/headless/cards/necrobinder_effects.py": "11b6be00f9b0e5e40cd894f0567d98a285f588d92c8a862fab281fcbc4893f6d",
+      "game/headless/cards/operations.py": "60bead5b4087d985dd31972f9410ace9050c30043627f83c6ea1dfb75baf11fb",
+      "game/headless/cards/orb_effects.py": "ae438c3645e565fbe37f1a34be973c06cec0b201fd61ecee66568e2cd8c89899",
+      "game/headless/cards/osty_effects.py": "333e752252fea5aac9a73e92f9555dbb5d8acbc7309fedb203b2780eb9760bdb",
+      "game/headless/cards/pools.py": "c54cd9dcddb9c31a2ebce8185e877b04485677d62866ca1b3a7d63e6ad66a40e",
+      "game/headless/cards/regent.py": "4275f5d415d1252249c529dcf45ac6a0c0546fad54b3b8993dccc5c1ee228fce",
+      "game/headless/cards/regent_effects.py": "c7ebcdad6c8bc10ca6f5f2c7037d8b91a638d4af3fc015a73b39465fef281afa",
+      "game/headless/cards/silent.py": "4823d090f4e6c6af382605d56fa4f7e52b731cc758319e299c6e658231b0d7f3",
+      "game/headless/cards/silent_effects.py": "094bcbd68334e0181b87dd068e0b498ecdc6f2b8d63b8e97517934fad34d01cb",
+      "game/headless/cards/special.py": "721ead6675228adb40d3b5789ad1d3a10f4c8c6fb1b152703f38e4063613557f",
+      "game/headless/cards/status.py": "a08599756e4f04a431c0cd6c9823117de869178806900fb86d5130b78d933382",
+      "game/headless/characters.py": "e2a928fc06e301a9b2c4021813f52acd36fd966c9043cbacf085868b17a626f8",
+      "game/headless/combat_preview.py": "efac40aa6a9e10f17749c934867be3b95b24beae5978f7686e21a6069833f8e4",
+      "game/headless/core/__init__.py": "2addd6413cb786f0d549743e7164cbb92d378a611b8fe6b724ca2af6cf434e2d",
+      "game/headless/core/actions.py": "b3832cae51e021c4941d4a5d6c965f6b6d081526505f4fbd05ed32d6716f6ef9",
+      "game/headless/core/afflictions.py": "ed3b9aa43268ccb920b64726ec7f49e9a203796be77111d21c882bae4119926a",
+      "game/headless/core/ascension.py": "1556d8ff2e5ab6a851c247c6ec1483d0abb2ed53490d2ce02f331cda7bae4313",
+      "game/headless/core/autoplay.py": "9dc77c6a0f44c34d0bedb184bba962398fcab03b7448fce743a53c5dd23c4aee",
+      "game/headless/core/card_costs.py": "43e291e8053e47e9774576ce2ec916573ebca2ba635d759294ad6c01a8725e9a",
+      "game/headless/core/card_state.py": "119885c89bbfc2b35bb3cd528a0c9cfecb28509893ed312eafc38234e48c4b01",
+      "game/headless/core/choice_snapshots.py": "0e6c6823d3ec9d8d6bf8a10d1c7bd5711315b1127a931763a7aaca5d2168486d",
+      "game/headless/core/choices.py": "748a1e1f9f1009e8438921d744176e7ec2b02315e13754490390ee2a70ba79f6",
+      "game/headless/core/combat.py": "58f662671ce55b951d04c599730a2b734ec725ecbff01e98577caeda01054562",
+      "game/headless/core/content_order.py": "6cb5f6a2146e50f91de0060f67c7ae966767ada7d971bfaf5b3517df0189c2b2",
+      "game/headless/core/content_snapshots.py": "f7b8548ade930e3b88f1f798e6bc796c94dd2278409b6b05d850c63c9bba7f5c",
+      "game/headless/core/deck.py": "9dae39dcc12ba7ed4a5b5a1b0d7d2d240d1b7fe388a6ceeaa0d9d96c008b5fb1",
+      "game/headless/core/defect_snapshots.py": "a19fafcf9e4c3df8092acd794ec992f34fb0d295b7065366223639c3be0cf3e1",
+      "game/headless/core/discard.py": "d65d405d0d2bfd2d5e7fde6fdeb4fcb05c8b277acebfdddeea6e987ea859b356",
+      "game/headless/core/draw_hooks.py": "df0785837b144efadeac14111737d5e8ea6fbbfef010b49a595b7810329157cb",
+      "game/headless/core/enemy_lifecycle.py": "c3bda9df97d9f46d7ba724d24f0c6566f5f6153ed832821ba62a3adfa6689af4",
+      "game/headless/core/enemy_turn.py": "2a4964b9fd0087d9bf5fc29c83a55c19924772900930894dbd0c7b1e3bf1703f",
+      "game/headless/core/hook_scheduler.py": "7dc38ef90c7c979367f71b49f88543f9a4547ee714e8b805a4ac5c09de772553",
+      "game/headless/core/hook_snapshots.py": "9e40187c561bf5a7d56a9c4ba900a2386e5ff160394c7f0bae76cfbea16a789e",
+      "game/headless/core/native_rng.py": "83376811d1f52e630928086417ded7d8f31dfb512bc968e7257d7c8aa7e8a6a8",
+      "game/headless/core/native_service.py": "485fc79827033c001fd7d05a62a6e479d739a96b494c318bb16bb492271b9e69",
+      "game/headless/core/native_shuffle.py": "5a23f95f4b97d0cb207a00a17ac330b509193037897ce01287b9882d551ad024",
+      "game/headless/core/necrobinder_snapshots.py": "445ec6b89a407b98c06adae6d80c2668fb574ee0eaa2eeefe743491c81408b59",
+      "game/headless/core/orbs.py": "7c3d748e5eab58a50493579aca3070600f3ce96724dc9d8dbcab3df34b9b4681",
+      "game/headless/core/osty.py": "213406e60b92aa3d4916607ff1f642c32c3499eaa7ebe10ae8f7eae4f069370f",
+      "game/headless/core/piles.py": "e2af1d8128e6da151ffe3570b3a5289e5bde2741c5344c1f8cb7770e4347b795",
+      "game/headless/core/player.py": "9837de702b0da6b359fe8c890e4d0ebc42bd6fb7ecbca55868b2c5fdca2094e7",
+      "game/headless/core/regent_snapshots.py": "bc38bf786b65923858865ecfb6cd99605a1fa23512b651d0714d1d5c17637e67",
+      "game/headless/core/resolution.py": "a51a17ac870efc119f1bfd523bb2d591346b87b8de51cc71d7b6df79761348db",
+      "game/headless/core/rng.py": "cd7ed6c55854240660ddf100b28d3ae96b44e126b63d8be7e08a36ee1af365f4",
+      "game/headless/core/rule_snapshots.py": "e83a34113a904c89de66020878a69a86307e1ed5e2030a27d530ac15ddb02369",
+      "game/headless/core/selection.py": "a8ea9b8716b2e033c75c733152cbcaedc3a37807f5c4602b7884b46e060be07a",
+      "game/headless/core/silent_snapshots.py": "d3f365eae18940db725f90e547d5880b6aa3ce30ad83313be0b339b410fa6244",
+      "game/headless/core/snapshots.py": "af0c8256e7479d35aca8372b62a667f3f73f165578f183bcdd24d7ac1ce830ae",
+      "game/headless/core/state_records.py": "08bccd4250835aa09da1e0af286411e00464ec807c1367316995e8d7095dc1d7",
+      "game/headless/core/utils.py": "b3e6b9a1067d4427ec19d9c9ab8879fdc6375bb718b8948f0a33f5b84d433ee6",
+      "game/headless/enchantments/__init__.py": "159356b9c06fe83dc9deb1f890706351b6ab7d4af7dc6e0a172048b3b1ae23b8",
+      "game/headless/enchantments/base.py": "04bb1d0684298637862eeff90814d7f9d623bb09d71d315987f1d6d70f213428",
+      "game/headless/encounters/__init__.py": "2addd6413cb786f0d549743e7164cbb92d378a611b8fe6b724ca2af6cf434e2d",
+      "game/headless/encounters/base.py": "9ef11102dccf0525c119b8a28daffdd13665fecf6a30d924dccb67306acfcd04",
+      "game/headless/encounters/catalog.py": "b63749811fbe1fc326580e5d359b4bfef8e3d4ab33855c155c49928c3bfedb20",
+      "game/headless/encounters/events.py": "fd20c2e0a96c711479a2c5ca6c3a98730e4b6f4179f07b42bb40df25c9f7acd9",
+      "game/headless/encounters/extended_events.py": "47a6d0a39f804706b4daa8d9c2e177fea7d2fb273e70547e3d9f9d6b70d58751",
+      "game/headless/encounters/glory.py": "f2c2cf9dd9496c6b5254c4f6116ae2939767252309a75a2ae558859265197657",
+      "game/headless/encounters/hive.py": "f3cd58e20869e4e009ad008dab160a661757069675d101ec306d43828765f173",
+      "game/headless/encounters/loot.py": "33740b20ac51dde3184db5e9ce02278f44b6bb0c94a3abe1b767fcd019289d57",
+      "game/headless/encounters/overgrowth.py": "19c722501cdf5071c67cd6b201139c71936ffbeb4f398cfb5c0f1afbf74cf4d5",
+      "game/headless/encounters/progression.py": "fd2c155ff4f3f621de41e7c5c706f0f001f05bc90a58eb9ec76935b9f97f5805",
+      "game/headless/encounters/randomness.py": "73cc51acac209f8b9b2cfb637302a407c5b9a8b8828a9723c88ba409e95e15c2",
+      "game/headless/encounters/theft.py": "61ac01caae4a70a5a6959d291676b5a7bae03576bfb3601f80af9576002bb289",
+      "game/headless/encounters/underdocks.py": "710d4406dc6dcfb186378badea59ef4b42c2188f3ebb8e3380d8ce967f41cd4b",
+      "game/headless/events/__init__.py": "2e9bb682da793cb482bc48b26a716a26251f7ebb555898bff1378ea81e9c95a9",
+      "game/headless/events/act1_content.py": "2cbbda68e2b73b98a863f0c1852f5df27fe4465549a8dcdb584b2a976bcf5abc",
+      "game/headless/events/ancients.py": "6d46a106ea199cf2bd084f4325f05abdd0321c244a7b288eadc514d3d304d56e",
+      "game/headless/events/aroma_of_chaos.py": "deb5758b44a5ef07ad5ec1963f1b43211b6065d038075232a92912c89fec3ad1",
+      "game/headless/events/byrdonis_nest.py": "550a8b597a62102c90dc36a60480fd10aaa213f67b88000f331eebff99c21a9d",
+      "game/headless/events/catalog.py": "6e4ab4b22c4b6a0cdbc34b7d8e973d0c19817d3eec267b5ad4cc01d1e7aaf871",
+      "game/headless/events/checkpoint.py": "78ac411f1bed0558d04a2042567f58d822aab993e8af2c69b8b54b965d77c595",
+      "game/headless/events/combat.py": "d2fd119a3d0451f4d95eed4df470655b0c30547df52a261eb57a3c9ffd0d4ddb",
+      "game/headless/events/combat_layout.py": "9d7cd3315098dce17cc96161f76ceae0a29889d59f2ee65a16e09a8115a272ac",
+      "game/headless/events/crystal_validation.py": "0967f5be25c9129ce4cb91e07a2089d8fd63a06c61240ba510f354bb84413ba8",
+      "game/headless/events/deck_choice.py": "74012e5d5909a8d9e242d7f61e2da05fcc9fe3dbae06243fea3c8b93103ad73e",
+      "game/headless/events/dense_vegetation.py": "25568ae517e22ed0e05d929ebaf33723bd3f1bdea1e36725da7b74b29cbce843",
+      "game/headless/events/eligibility.py": "c7a279c5a00da1af250680c673ef8abd048611043efdfd1d490292844d99b409",
+      "game/headless/events/fights.py": "2927db99e91d8444c836406554af28f28752093d0a88e8a1263ecec8e4b11876",
+      "game/headless/events/flow.py": "f175cf886a675d57fcf8b047d2f6cc517de40881141a3bfe71d90393591158a5",
+      "game/headless/events/jungle_maze.py": "7c4448ae5dbbc7d597a3e79e46b9c9871b569ea955ac69dd2cd43626a9d345ca",
+      "game/headless/events/minigames.py": "144c4e9697214be8318785ce935d614e3d70e49df87c8119fab6de1f903509e8",
+      "game/headless/events/morphic_grove.py": "da17570768c9ce81dd50b9c2675eecc9637cf7bab682ba67a773c1a553bb5088",
+      "game/headless/events/operations.py": "2ed7f64b284b777b1478cce971dc79bb0e50ce253f82cc99f65d21df69ad952e",
+      "game/headless/events/potion_context.py": "393585a4ea1183bfdc25131b5ac575aa87e44c368076118fd2afd9e3cc7eb64e",
+      "game/headless/events/potion_rewards.py": "5ca84c1f365bd4140d0cb2feaafbee1232ae5885776833de2e22d7e5b4432569",
+      "game/headless/events/progression.py": "b2db1e467f7441c36f982cebbd49970b57e9a821931ac96f73adb3de628a190b",
+      "game/headless/events/resources.py": "2ee27f4cd7cf4ff2b6339ee0d5224320615cb4ea34331aa5c560dcb8dd8a3194",
+      "game/headless/events/reward_batch.py": "05f060ce3822171dfa1822c719826027172b72a2a6cba9169cc2e090829551ce",
+      "game/headless/events/roster.py": "548c1d42eff06b19f90da12f410511409f0e44b4a2b4ed70e1710becddb97b8c",
+      "game/headless/events/safe.py": "a62e67f5eca49637ff0f33fbde566416eb38bdaff2177d7e412fb729934fbe93",
+      "game/headless/events/sapphire_seed.py": "af2342736d127cdfd06cd70144a5cd45e1608f8e4e5e2c60bd0a95e79f44ccc9",
+      "game/headless/events/slippery_bridge.py": "87b18b022704cf7c1982c3e46f66e58a867936bcc939e1f248f01244f2541dc0",
+      "game/headless/events/social.py": "d07794be2d7f71771b761cdb0f39107f08528aad0e85a92776e7b1a08a78fb93",
+      "game/headless/events/special.py": "15fc130632ec8534700574988d2d949810ffea6cc8c15877a0dddd451f5dab54",
+      "game/headless/events/step_snapshots.py": "ad7c7a244ee7326b84c91ec6bc072e14ae3a3b2e85c7c764f73a908b88c6bbf2",
+      "game/headless/events/steps.py": "643697d320e48787e85fc6dbf97275df34b385437a68a8984603210b07963aea",
+      "game/headless/events/sunken_statue.py": "3548faedfbbeb2ca6532e857747bbfbd27a53f4bd4d61bf03b08166052b47aea",
+      "game/headless/events/tablet_of_truth.py": "411ba616d5690be915023f7088db47d2d1b10ad3df7fb072dccfc85efb13dcd7",
+      "game/headless/events/transformation.py": "3e6da5ef9dc65d1b7dd81dfb142c26acff22167f844be141f1fe024b44f8a974",
+      "game/headless/events/wellspring.py": "06b69853e0a1c166af4f455af3d1931ec09b7ac13bd1b0c1f2ed377690539cbf",
+      "game/headless/events/whispering_hollow.py": "56f386e9a090e3e267e172cd07554a596b07b7f25a48fc9fa80bef0492af2c21",
+      "game/headless/generation/__init__.py": "b9aa4d8171db0387d03b5246da87e9d883b2f54aa2f16ad7a9b20b4ef38f0d95",
+      "game/headless/generation/combat.py": "5c524d2210440c586f8e0369b60e738496a9b8c178f03c359e4d789e69a071b4",
+      "game/headless/generation/foreign.py": "6613be20467bb5e4e51509af4995007fabf04b8653bd9baea7136cfcfb562216",
+      "game/headless/generation/initialization.py": "b5e90a2f8648f4e385b3b02c7c52fd2dd3bbbf15a0451985330906529e7d8d9a",
+      "game/headless/generation/merchant.py": "ac97281c14339e4d039256467e9adcaccc42476fe60d46c89a6e81aa9f76fe26",
+      "game/headless/generation/odds.py": "fbf31166e00ab7d4e2e853cc6132bc5378c44967902711b63e39bdf3ea8ed64c",
+      "game/headless/generation/relics.py": "bc1e26596dd6088eb8b013de5c14683c89b5480b215c058cfda68b004d0a84b0",
+      "game/headless/generation/room_pools.py": "304f73a3b587b6902e0daa914e5658171194359f82d13e67e21519c5399b52ac",
+      "game/headless/generation/transforms.py": "18e96bd60aba695237ee00e5645480fce4343428cd20bbb0b4d1126f6bf7a441",
+      "game/headless/map/__init__.py": "2addd6413cb786f0d549743e7164cbb92d378a611b8fe6b724ca2af6cf434e2d",
+      "game/headless/map/act1.py": "22a1a81a2030c6f69c543c689fff21f2a2c1f317f8368a1f3134b830ee9546da",
+      "game/headless/map/golden_path.py": "2f74a17b65cf5292ac48ef0e2c1c751a47c2838483a1369328fb59828cd8df3e",
+      "game/headless/map/graph.py": "da3a1687d4598bd48c696769d45a4cf6d638d7e2154266d167a313c7dd2990ea",
+      "game/headless/map/overgrowth.py": "ac176be2c4f298c1944582a7bc89b29de0260dc7f8ae9c4b4cbf53a35cd5ea75",
+      "game/headless/map/postprocessing.py": "bea819d78cafb28f4768ad92b5efd3959d04908901ea288a38727c251a5997c1",
+      "game/headless/map/pruning.py": "75b4ecc93ca2981224a49fa2f58b6516891226b13a9cf0c72398fedc079007c8",
+      "game/headless/map/spoils.py": "af34f49c3cec16329537aca29c5ab2765d47d3373555a8434da56e2a3eb8aa62",
+      "game/headless/map/standard.py": "199816ef1bf4e4dfdaa0f41b5c85ce74dee5f08400c74c6a05251301e6f57415",
+      "game/headless/monsters/__init__.py": "2addd6413cb786f0d549743e7164cbb92d378a611b8fe6b724ca2af6cf434e2d",
+      "game/headless/monsters/ascension.py": "f0ae43c5daa34b78519a484d5fd1a8ca3f12530d33de0a96375730b65cf40d7e",
+      "game/headless/monsters/ascension_moves.py": "a13e748ff6b7731cf21ed94ff98aa045b8e1ac97d49ce7e3fd742fa4b242be75",
+      "game/headless/monsters/ascension_values.py": "d20ceb0a816af564bb03e9fd3269249f58d7a1e7b24ca77180c365766dd16ec8",
+      "game/headless/monsters/base.py": "80915cc9b2d25bf51fbdac2a88d0c3cbb3e39547451b153eed37a93af0a942a4",
+      "game/headless/monsters/bygone_effigy.py": "e46386f0d9e209ac5fac7acfbef14d17660602bc4e0b7d9edd664b00940d6d01",
+      "game/headless/monsters/byrdonis.py": "f4bdac191b01047a5492a421b41ce7d0a7d367b7d6e020a9990f083213edbbd6",
+      "game/headless/monsters/catalog.py": "4eee5bb8f3ef42815546e65e6dbc19f85e8f3caba8f5ba59936fbfeeea02648c",
+      "game/headless/monsters/ceremonial_beast.py": "18a92127d1d84b2d18692f97f62a9a0c5fefd31f1dfaa86220e4a3b641c02809",
+      "game/headless/monsters/event_monsters.py": "6aa04b3daecf812c3f4b627d98316332f1da9b5ea368fdf27fdf257a3e197ed9",
+      "game/headless/monsters/fogmog.py": "dba2c55d18f7e89696416d896a2793de142a737368133c596a5f6552043e80b6",
+      "game/headless/monsters/glory_bosses.py": "abbacb8664959f2875957089afc7340ef9e6a987e13a2298f88371a170aac129",
+      "game/headless/monsters/glory_elites.py": "8e124b38d452ed8d8879bba7a48f1ba30a4db543dc78eb8ea2c18fe256132c25",
+      "game/headless/monsters/glory_normal.py": "40c6c71a8b4b84b5ba91de8b12354e83c1b2bdcdb15fb0562dda381201af83c5",
+      "game/headless/monsters/glory_summons.py": "b179db52cf33b70a1c0738aafac070a77ee6a40dd423f95b85b9005ebeca0dce",
+      "game/headless/monsters/hive_bosses.py": "517527d6c929c7c2fe2e956f6b6fda60f6e55308345e4f515ff99cd293f43713",
+      "game/headless/monsters/hive_elites.py": "c1ec3f183ac3d296f11aba9397bfbe98b2f824c39e8bcadf82b3722420c60f08",
+      "game/headless/monsters/hive_hopper.py": "5ba0401ce90b2cdb9fc70a71e0735c37f0054c516d7c00c023879edfaba97998",
+      "game/headless/monsters/hive_normal.py": "fca48db019a6c61565961c15d0e70fda918a490eb2e0c7a3a86a5e3bb6dbcfa4",
+      "game/headless/monsters/hive_summons.py": "2b67a88f33cd03c5bac432fee3f77be820012a8c7cd60dff3c41d243a0795c7c",
+      "game/headless/monsters/interrupts.py": "4e5ef2b8f02338e4e7bfac88076612cfdf145c510595c8887befde14791474a0",
+      "game/headless/monsters/kin.py": "2fcb2bff0c0d902570d091b9887db3126b4baa7a117214f45d5a71e0309b6d42",
+      "game/headless/monsters/overgrowth.py": "90ac63bb963ab81240eab9defa243ee1f3ca307ca8c750dde4fdde25329651f4",
+      "game/headless/monsters/overgrowth_normal.py": "ccfe800723041755065fc508ef1cff841e65150b224de205dc253524ca47b906",
+      "game/headless/monsters/phrog_parasite.py": "08b9dea16246dbbde3a5f47b25f3ca904d08747acb12770b15fe6a3960c2f7b7",
+      "game/headless/monsters/ruby_raiders.py": "d688e7d8fb936c8b34accc956d78f5d402d73f0931120ddbfa2c9195a9b3bf18",
+      "game/headless/monsters/scripted.py": "e0b8d54a454956a7012a5735d7b876267deb1762558ddb84ee1e13f058e789aa",
+      "game/headless/monsters/underdocks_bosses.py": "ca4fc32169b8d5ac62bc8311785066f91be68e232ee1b309a03575eaa74a3a0f",
+      "game/headless/monsters/underdocks_elites.py": "92040a2e9cdcc84211d494532c7030679d95349497a354e1201cdd99c502f69a",
+      "game/headless/monsters/underdocks_normal.py": "b0e267619c7a2aa936410907c57529f48068a76d0f4c691330559c7cbaddaa5e",
+      "game/headless/monsters/underdocks_summons.py": "43b639f63a0d8f83eb26b8e1bb1786124cffa2f93c45257073734ab5c339b454",
+      "game/headless/monsters/vantom.py": "a564d66424ec69443addf89952edc3b66b9c5290432cb16c386120a5e5e177f5",
+      "game/headless/potions/__init__.py": "b605fe51f6fe49d5a53b5611ac1ad7f7ad43ab4de8cb1aec2d035f4202dc8ce2",
+      "game/headless/potions/base.py": "0c7fbe1f45edac1bc7f3f248cab5a4b7aed928b58682031a9990f3327edab150",
+      "game/headless/potions/character_effects.py": "8598f08811d1bec5d8292fecf76d86e4a5aac8da244d75d7c2c40ce827f3f435",
+      "game/headless/potions/combat.py": "dfa8d0cc636bf3f178389c5a7189684cfda8f4778549fd10f3ad359821a9ef47",
+      "game/headless/potions/pools.py": "ff97c3df44017f63738b7e31173068accc752c81e79cf1673edd90a2ae3f15ef",
+      "game/headless/potions/powers.py": "b8ab69df1039b011c9fdd3a9f7924680b9f9dc0dcd8c1727dca1af7ac3a17d24",
+      "game/headless/potions/selections.py": "274daa1dbdae39d2701d7cd1905a7b6c95786f450b99bf19836a988c0df5d77c",
+      "game/headless/potions/snapshots.py": "716593ea82a693cb704dda8b2049fbc9316fd06941065e63376be10bc31c8e10",
+      "game/headless/potions/use.py": "4e1c636a10b5522e5edd3d18641a996b9410daf48660d3149c51798a225c70ac",
+      "game/headless/powers/__init__.py": "2addd6413cb786f0d549743e7164cbb92d378a611b8fe6b724ca2af6cf434e2d",
+      "game/headless/powers/colorless.py": "d725604f3747ea0895a2d391f2ebeeae2ae629203be4597980640b077864e245",
+      "game/headless/powers/damage.py": "3819f2f92cc9f071af397a860b0d2ee8f537d6ad63a8e9c43161169308ff1b89",
+      "game/headless/powers/defect.py": "26322977752b6beac80b1c018911cdb8b25ad3385e53456e59e88773409c34ee",
+      "game/headless/powers/glory.py": "a2a4bfd0709c361fb435a76ed80ca0557776b7ccb897c8baec233b8440b5a62c",
+      "game/headless/powers/hive.py": "fa7d8d6c4b1bbd9289b0760927b6a361fc7ad882145b34faf8033f56743e0414",
+      "game/headless/powers/ironclad.py": "b5d97531f0a97b7a35846de5847e7f0651076c9e5d549130b96fc9ee11c493ca",
+      "game/headless/powers/lifecycle.py": "eabc2f81ed2a67b7ace4c27ca6b80fca3b832ffd19da110bc21b8d1d2a52215e",
+      "game/headless/powers/necrobinder.py": "e516b60bebc0c72859ad287999be3e88b1c207bdc8b88e1f035449dad4a86167",
+      "game/headless/powers/necrobinder_damage.py": "2ca89fd4f4aa97fccc5b286131a4b4fc45da3df8db50edff8a022fc8b8155418",
+      "game/headless/powers/regent.py": "a48f2d34fc1930129d38d29f1d3b22b4f90a9ef39f6900cc1a9069573bd6f832",
+      "game/headless/powers/silent.py": "413d3ce92b99bbec62d57df87f83dde7cc82856b3909874079b428e557166164",
+      "game/headless/powers/status.py": "8077aa32fd64796f741ba5d629d4ae6ad72ad0f274375e1ce859043e11e85a45",
+      "game/headless/powers/turns.py": "c9093c0548a83b12fbacce5509e2ba703723e202f764460b9e6b69a7b1b767a8",
+      "game/headless/powers/underdocks.py": "40a612b7b1f6afa35e6444bebfb963850e96880c3f18667c1e744e7d605cb642",
+      "game/headless/relics/__init__.py": "d796c39efea01c1ec6dac7421de55c5aefbd1fa1a4de668956383ceba32dbaec",
+      "game/headless/relics/ancient_combat.py": "8d76e7d27db758a0e1e47f7f51caa83a0ca8082dc747738b505142aa34ff57e0",
+      "game/headless/relics/ancient_content.py": "f7173359a1b6a793fd758ead01540e98d950f24cd1e0b37ee00bb2488bc0e769",
+      "game/headless/relics/ancient_map.py": "0b3aca3a736ec557b7f7bbd2a62fd99ae0914edcc7060ec3a63f450b57bdc38b",
+      "game/headless/relics/ancient_pickups.py": "15578a72bf7a5404f439ae5c584b12eeb1dc88a82daa7266b2602d58786cfdf0",
+      "game/headless/relics/ancient_state.py": "474c5482f3b0320069f2a5101ad86ea4fc6eac466dac7bf5e47cfee74ac716ea",
+      "game/headless/relics/base.py": "6367ee10a68c4d45e9175ebc519d56c96bd413456f20d81b81d7fd74897fe293",
+      "game/headless/relics/character_content.py": "47b6112591d68d44eeaad31e5a04e1b77de1ee9bb23b12f3e4a94ae0e25c7182",
+      "game/headless/relics/character_hooks.py": "28e62aad79bc3e3f325c31e8421d84213cf4a49ac1e25726483571720ea0d1f6",
+      "game/headless/relics/choices.py": "501532407ad7761b95d8b8dec9d10228e3d1f3d6784c17ff312458650dd49ab2",
+      "game/headless/relics/combat.py": "76ed7478e217516a38a179d90d5ff4b3b2d272871418ff751cbe9d2b34c9e2c0",
+      "game/headless/relics/damage.py": "9a239f3ce9b9863a5ea9285791daafcfd9ac8e133016f2358a365cabd43c6aaf",
+      "game/headless/relics/eligibility.py": "bd27b91ab80019786367b6c1899ecc197ffe575e97fb5f08a888ff64f5c752fd",
+      "game/headless/relics/event_content.py": "c3904b640f2e16af12a10870df7747350b12a8186b553640b979252ea468e564",
+      "game/headless/relics/neow.py": "33e22b0e438dd32665177e508d2ec9a350145ae47cf73061934f5b6953473c8b",
+      "game/headless/relics/pickup.py": "b629926ab32dad0ef0fc1baea081e92eddd3b1f20e6f71ecd4a39756e12c1959",
+      "game/headless/relics/plays.py": "c5672985143c73eaf4f89d0c4bc6cb5dac3c6f55e593f8aa3fc40016d90bd2b6",
+      "game/headless/relics/pools.py": "6da7ee6a51a1941613d9b24d2905e396be49f739a868d9ab894aed5f52f2acf7",
+      "game/headless/relics/reward_alternatives.py": "abd8ac968892c888940fff887b44b951eef9f92b62c726241cebda1ff7380eb9",
+      "game/headless/relics/rewards.py": "4bcd56fdff64d2e723d2a05e5e9f894b78cdc38e550a3276efa73d91ef776477",
+      "game/headless/relics/run_rules.py": "b6483a7d735e7578cebaf6948f0f1b94f917bb0fb29e75481b69b01ee30db2de",
+      "game/headless/relics/turns.py": "bb0449ef0296ed774d81bf35b9c54182b516e89ee2397b8d5f8f8a49fc14fafe",
+      "game/headless/run/__init__.py": "2addd6413cb786f0d549743e7164cbb92d378a611b8fe6b724ca2af6cf434e2d",
+      "game/headless/run/actions.py": "147b57789e165836b11a73ec7896be1c82e746f67afb666b7ea935dd8143d6dc",
+      "game/headless/run/ancient.py": "5b1046aa4b75989f3970a2dd45610b0b1acaca3efdc78f9d8281f5a49ece7dc2",
+      "game/headless/run/campaign.py": "4320a3995a06e5edf4d3c112f0581524d65d82e6413ef0b70d6b3c9c50fae657",
+      "game/headless/run/config.py": "0539cd1644e54c8b7b8d4ab5dfcb02ec6df4fbfce9528aec6c1a722f72a40ebb",
+      "game/headless/run/deck.py": "18219a5047562e42fb3fd4fe5e38a9ac04fc31abbe0dc477461906e969ae9586",
+      "game/headless/run/engine.py": "cdc5671acb072b92500597d557cecd2be1ae537b3eed8fcd0542af789ef9254c",
+      "game/headless/run/epilogue.py": "e348e9a97349c67fb0669025e12e55643969275a8284c0e44ab0908e5b5a2aa0",
+      "game/headless/run/event_combat.py": "4b69803c1126b4ebf0a788fac1aa8191ac4b9de0965ab26a79908b60e559c6e9",
+      "game/headless/run/events.py": "19939be97e2ce01de729bf4c864161d99fb37e10f06bb05ae0dea02535ebd2bb",
+      "game/headless/run/flow.py": "86debf1a9b0ed8e98a700f8d31320e97481352e06a218550613fe1cd55874d22",
+      "game/headless/run/hatching.py": "797915d26e2d4fe7e8afe7e6ddf2427e90b068f9797d0b8489c10155696cd35d",
+      "game/headless/run/inventory.py": "353abb21fa24314107e27136736002233e63bf4dab8cc1b29a2d0ffb0e244752",
+      "game/headless/run/lifecycle.py": "53da249e9ff95642da6b3c076fb9b9af00c2dd6145fbe8e0f44eec921b76538a",
+      "game/headless/run/map_travel.py": "f7a12a34904c0caf0317d918286fc66a6018d1a81b24ff4cd3acd57f6e1afec6",
+      "game/headless/run/removal_rewards.py": "4fd9b56c49bc149e735be6e8749f01561e0a1f740dcf1c75a8bb442380bdf673",
+      "game/headless/run/rest_site.py": "be4f09d3def47aa288ba0d22a0c6706d645736dd98df32a67b3a0c2bdb457ca1",
+      "game/headless/run/rewards.py": "d9e2dd9a4972f0b616c0f4914a20db428afd1b16c2803de07f13536a8a582cce",
+      "game/headless/run/rooms.py": "48aa77045152fdf7b9b1bd15bcee63d817b6eab1bd314a9faed1452bcffba492",
+      "game/headless/run/scenarios.py": "447db9884ef13b67525ea9f436db2582474da73469902bfd91a84cec03466e75",
+      "game/headless/run/shop.py": "ea74da749a41e91d4a598c203525ddfcbae5625b2f3a119b5d475a5d2bca27f8",
+      "game/headless/run/shop_validation.py": "708ad19b1b142620e027a7711f6f64438e4c3f8944a6f518b4f9b32f8210c4f3",
+      "game/headless/run/snapshots.py": "2241c849b178daf18f28a541debcd1f26ace4b015afb62326d55ba95bb6d5d07",
+      "game/headless/run/spoils_map.py": "d75f76d52f7bc04288dd930d06c29e872ab12bd732e881467f8ac5c2658eb5ae",
+      "game/headless/run/state.py": "8799d1f84de234c014bbbecb89e4a33b615e27f1e687cb1a534edd35f0b602ed",
+      "game/headless/run/treasure.py": "e138a2a4d5f0b028d20867455bbf209139fbad09d65bbe0a63ba5f6812a91d66",
+      "game/headless/run/treasure_validation.py": "a73121b62c8bb2f570cb255756ed90371ce5f6b249cde36c7249ea3852ea6099",
+      "game/headless/run/unknown_rooms.py": "e8ac15a5ed200facaf043571e7c9f0204ec0724860067eebfa45bd46c0877bc7",
+      "game/headless/shops/__init__.py": "2b7a842b6f0b4a626cd023d1b142681ca4638e92e7f6811ab5c1ae488a362ca5",
+      "game/headless/shops/catalog.py": "0802b1c4929e9b424a7b3a8d6efb3f7b88a742927ed4981d293600a8072fb39b",
+      "game/headless/treasure/__init__.py": "6d66f2b05a9c7c3cebcd87ac9a0c2963a9907030607b570d8bc40877f52cbfcd",
+      "game/headless/treasure/catalog.py": "e7b4860e87794da96b2c0c63e07f984e12117a7b9026238d8ffa83d07fec19e1",
+      "runs/combat-potential-shaping-20261002/analyze.py": "92ece9e4dfb863c66f7edac3eb3abdc59a43d9b2efb0c98fec50d251302a1aa8",
+      "runs/combat-potential-shaping-20261002/audit_training.py": "d7fc72bb21acfbb69ec048a0ba15f4adbede2747cfc9bcf973f932e133abf39e",
+      "runs/combat-potential-shaping-20261002/calibration_signals.py": "20f368ea592acea682c329567912acbb2c5375c78b4375503d96d4e97aa790f3",
+      "runs/combat-potential-shaping-20261002/evaluate.py": "41529a3160f0c12ba230242bc28cf2be8bd81c811f7b25921e5e297c6cc77aa8",
+      "runs/combat-potential-shaping-20261002/export_inspection.py": "6f0a0c6211aeef90caeb257b0c1c5ff482b14d390ef2c9757da05dc42bb1b18d",
+      "runs/combat-potential-shaping-20261002/initialize.py": "13f098e167512ea7ca5b56d6b7db659112972b33920e78d79f2ee708c69ac0da",
+      "runs/combat-potential-shaping-20261002/inspect_http.py": "522fd8b2d0e5c8e3f342f85311ca193fa55bc7ae36a5b6a32ad882ac93c40d9f",
+      "runs/combat-potential-shaping-20261002/plan.json": "4036a27d5bc89f2ca35163629bc7e3ebf718d63f6349edd4a173494083d975d3",
+      "runs/combat-potential-shaping-20261002/plot_results.py": "59b27323d9a24bbe8da3b1630cc8fa2b2129ad3913c6b03aad4db7b9eae99d8d",
+      "runs/combat-potential-shaping-20261002/plot_signals.py": "3c8408321b7f55cc658c52fa499a625110d7e4eeec363b499908ba8495656239",
+      "runs/combat-potential-shaping-20261002/ppo-config.json": "64a3b6817e8f02323729833d576b5f41bd2f88db957e79f1ea3caceeb81e6ae5",
+      "runs/combat-potential-shaping-20261002/ppo-control.json": "05dd8efbd81f0d8f93b75c6eaf1e0ae825420723b807053639e219cdd6247227",
+      "runs/combat-potential-shaping-20261002/ppo-enemy.json": "55b0bd1ed76ed36030fb24df68a9d6f619d16b4f28f8c99eeab857982d2fc559",
+      "runs/combat-potential-shaping-20261002/ppo-health.json": "18a5caf42785ccde723654e49c1d98a6b2d10001c4a2d0d75935bdbad62f3fb4",
+      "runs/combat-potential-shaping-20261002/prechange-AGENT_TRAINING.md": "b6c74fa38d8ae7a61b3aac11d5414bb4b6c2d22325f85f2283088f95aea2cb9f",
+      "runs/combat-potential-shaping-20261002/publish_results.py": "ab68a548a9f97f584bdabf4cc359936db1cf381bb6b60b43e9a035f083e7d361",
+      "runs/combat-potential-shaping-20261002/revalidate_corpus.py": "afe1c25961fcbba870561366cb5c404bd2a931c144770c3cd77260bd8207399c",
+      "runs/combat-potential-shaping-20261002/run.py": "02e0383eb380bfe50508d4401112dde532c874e802909c5e3bd871a0d0a33f2f",
+      "runs/combat-potential-shaping-20261002/study.py": "5949c8a7294bd0f2e440183e8eea613ac248edb9ebe88eaf0694e583c6828261",
+      "runs/combat-potential-shaping-20261002/verify_results.py": "fd0ca8a0affee6dbc1b29d470fe04fcc822cb883d9197379cbe60984c9e0d61d",
+      "runs/combat-potential-shaping-20261002/write_evidence.py": "503de44e06d72001d0ee31949c2a65366186cca90988adbdb1a6ae9195a6d0b0",
+      "tests/agent/test_action_previews.py": "40047ead0849014a6030ae669415760362867231ca4761d1efe69d4970419b11",
+      "tests/agent/test_combat_representation.py": "a64d70e3f624147a48b269eb72a9c83d7619400c99a33fe5041fcb5110530599",
+      "tests/agent/test_full_run_rewards.py": "4029e2a8553196a07bf96fcc0f09dfd48b513a7f7b376b235382bbcde0d32abd",
+      "tests/agent/test_potential_rewards.py": "faa8737abc7975a8dfccb2d564bb7dbf37473a44f86296972c244cbaf9c653e1"
+    },
+    "path": "runs/combat-potential-shaping-20261002/potential-shaping-sources.zip",
+    "sha256": "4bd502faff111b4cb19c424911783dd0f2234a73bd5939d2c24ecd883530669d"
+  },
+  "status": "verified_exploratory_pilot",
+  "test": {
+    "active_owner": "runs/combat-potential-shaping-20261002/corpus/corpus.json",
+    "bytes_verified_only": true,
+    "gameplay_opened": false,
+    "reserved_openings": 57,
+    "reserved_starts": 362
+  },
+  "training": {
+    "calibration_supervised_presentations": 153600,
+    "calibration_value_updates": 2400,
+    "evaluation_games": 882,
+    "mlflow": {
+      "experiment_id": "10",
+      "overview_run": "b6f1266e759c4060b17e7ed51debf3b2"
+    },
+    "new_training_decisions": 300000,
+    "plan_sha256": "4036a27d5bc89f2ca35163629bc7e3ebf718d63f6349edd4a173494083d975d3",
+    "runs": [
+      {
+        "arm": "control",
+        "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/control-a/chunk-04/final.sts-model",
+        "checkpoint_sha256": "c32c7cd56370f6acd0b72cb3a24d733d456087c2b438a5b9ba369ee39bb25f81",
+        "evaluation": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/evaluation/control-a/evaluation.json",
+        "evaluation_sha256": "393f32b8e275e2a2772888d762c76bbd21b5dc0d03456968838e7b442b343778",
+        "label": "control-a",
+        "mlflow_run": "f2890209527b46e38525a90f561f9760",
+        "new_decisions": 50000,
+        "reports": [
+          {
+            "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/control-a/chunk-01/ppo.json",
+            "seconds": 102.23609904106706,
+            "sha256": "85c6ffe9c686e46c5bc350a1c4e05c5fbc9f4ede0f44f0e0ecead0da469a0061",
+            "wall_seconds": 105.63675929093733
+          },
+          {
+            "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/control-a/chunk-02/ppo.json",
+            "seconds": 93.94332650024444,
+            "sha256": "7f69243ca6df3f3fedf722dbe49284ea810e1c1ca98fd87ad0fa9f77cda84977",
+            "wall_seconds": 98.15726675000042
+          },
+          {
+            "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/control-a/chunk-03/ppo.json",
+            "seconds": 83.97198120784014,
+            "sha256": "f34c2c7386a75d74dc655d1abf30ffce2b2cc75b2fc0a4e289236971ef074359",
+            "wall_seconds": 87.44984933314845
+          },
+          {
+            "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/control-a/chunk-04/ppo.json",
+            "seconds": 12.335923000238836,
+            "sha256": "b4f89be5abf1c66084889dbbccb73f1e2821eba9eabe2d594cafa99af46d175e",
+            "wall_seconds": 15.53197683300823
+          }
+        ],
+        "resume_sha256": "28dd73d16aa1b258c512b7090a44da1eefe68bf067710dd3fe618ca365d13242",
+        "seed": "a",
+        "strict_restore": true,
+        "training_seconds": 307.64835095824674
+      },
+      {
+        "arm": "enemy",
+        "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/enemy-a/chunk-04/final.sts-model",
+        "checkpoint_sha256": "0c1d7371f7766c34a342eef2aeca73a66d197ec3c442b08c2638f1acc0f6f999",
+        "evaluation": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/evaluation/enemy-a/evaluation.json",
+        "evaluation_sha256": "bd63f4493a2348f0c1231fd6ff644271bdefece318d221d258f923061ffacd17",
+        "label": "enemy-a",
+        "mlflow_run": "80661c5a63cb4a94aafd9f5b687fc055",
+        "new_decisions": 50000,
+        "reports": [
+          {
+            "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/enemy-a/chunk-01/ppo.json",
+            "seconds": 82.08457374991849,
+            "sha256": "fb0a76a028ae95946a34aae6285e957326184c50e155a3c13652ca26a3b7b816",
+            "wall_seconds": 84.91325674997643
+          },
+          {
+            "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/enemy-a/chunk-02/ppo.json",
+            "seconds": 82.0603030002676,
+            "sha256": "ea79c64df14c2a412145598a9ca96102b6c92d3d6ab1bc99d877f44176d65dc2",
+            "wall_seconds": 85.32997116679326
+          },
+          {
+            "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/enemy-a/chunk-03/ppo.json",
+            "seconds": 81.3900570422411,
+            "sha256": "a42f49cc13182c0c1b07c1e3c3f471e5e9485e2b08a901030e3d746f2346b049",
+            "wall_seconds": 84.86270237481222
+          },
+          {
+            "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/enemy-a/chunk-04/ppo.json",
+            "seconds": 12.28651670878753,
+            "sha256": "eed2a33cb57b8ac50fb5d499bb1a996f2bc0fba06d1d05bc90694494b0ab5892",
+            "wall_seconds": 15.453719791956246
+          }
+        ],
+        "resume_sha256": "6014bdb6f2c54b7f209f8a9da04bfcc25187c03adc14869a34241685dee049ef",
+        "seed": "a",
+        "strict_restore": true,
+        "training_seconds": 271.3620753749274
+      },
+      {
+        "arm": "health",
+        "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/health-a/chunk-04/final.sts-model",
+        "checkpoint_sha256": "6615988c02efd3b62a51de2017226fb81187a0be09f4134b6c0d1cac9d0c3239",
+        "evaluation": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/evaluation/health-a/evaluation.json",
+        "evaluation_sha256": "f42015f80200810438fa962f07c7f0842addd8ea5582a0f4b5dbb079ba9aeece",
+        "label": "health-a",
+        "mlflow_run": "4bb79985742e489a972c9401e777544b",
+        "new_decisions": 50000,
+        "reports": [
+          {
+            "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/health-a/chunk-01/ppo.json",
+            "seconds": 81.34112037532032,
+            "sha256": "78e7ce7f4f9749effc6a54acbfbe3a49361625b8f6b31cdac9ecfe53fca2603b",
+            "wall_seconds": 84.16576900007203
+          },
+          {
+            "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/health-a/chunk-02/ppo.json",
+            "seconds": 84.25902308290824,
+            "sha256": "1b9e6fa34a1af68f3ea73058c2b9cf76c7397fab94494d33f55d3ab07671efe1",
+            "wall_seconds": 87.57812145818025
+          },
+          {
+            "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/health-a/chunk-03/ppo.json",
+            "seconds": 83.81028558313847,
+            "sha256": "0fc39c451b47e6e5431ef79a16dc661baecdc11a431e296c8a3be292cc7c4d97",
+            "wall_seconds": 87.36969862505794
+          },
+          {
+            "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/health-a/chunk-04/ppo.json",
+            "seconds": 12.738036832772195,
+            "sha256": "dbde871da8e5b564978e9f691406b2fcbda14c687b896ca48f6f5b2e7215ba36",
+            "wall_seconds": 16.01674212515354
+          }
+        ],
+        "resume_sha256": "c15bb37b710ce47e2640a20a47ee9f35f15399643bc986b064c630ba4faaba81",
+        "seed": "a",
+        "strict_restore": true,
+        "training_seconds": 275.86949416575953
+      },
+      {
+        "arm": "health",
+        "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/health-b/chunk-04/final.sts-model",
+        "checkpoint_sha256": "9e5c01e859ddf584214f76afb071fdfb2ac7271d83aadc2c421b44fd6cb7e0b7",
+        "evaluation": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/evaluation/health-b/evaluation.json",
+        "evaluation_sha256": "25cd10c2df1aed143d0bf373a97ca5ea2d60304201809ae42e7278530c7e1a3e",
+        "label": "health-b",
+        "mlflow_run": "f4249d22d30a4fd5955713cb0253c8cf",
+        "new_decisions": 50000,
+        "reports": [
+          {
+            "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/health-b/chunk-01/ppo.json",
+            "seconds": 84.18966437503695,
+            "sha256": "0ac48567c7220d77a4d2f1ced5631aabf04a09de316a104c87fb688744979cfb",
+            "wall_seconds": 87.13808037526906
+          },
+          {
+            "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/health-b/chunk-02/ppo.json",
+            "seconds": 84.996231416706,
+            "sha256": "9fbb065036dc8762ccfafc8f15193869cc29d5b234892b80efe1863e8e4d2d10",
+            "wall_seconds": 88.58387087471783
+          },
+          {
+            "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/health-b/chunk-03/ppo.json",
+            "seconds": 83.82893029227853,
+            "sha256": "e0ff8add2d871c26ac1f1385d1419dcc4bcb32ebb19aa377181af8a966347211",
+            "wall_seconds": 87.6585750002414
+          },
+          {
+            "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/health-b/chunk-04/ppo.json",
+            "seconds": 12.774490332696587,
+            "sha256": "8c0227c5243818bd6e2ac40521360a48b52d42e67eb14753146561ba07bce0dd",
+            "wall_seconds": 16.226564208045602
+          }
+        ],
+        "resume_sha256": "c80931271495f7da738f1b546d0dee7a337cc72584cb3c103aa20248ee59b8d9",
+        "seed": "b",
+        "strict_restore": true,
+        "training_seconds": 280.42988800024614
+      },
+      {
+        "arm": "enemy",
+        "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/enemy-b/chunk-04/final.sts-model",
+        "checkpoint_sha256": "5be827aa0ca888d1fbf1b827965569f8c6c25d886bad23908d448c409d3ea2e2",
+        "evaluation": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/evaluation/enemy-b/evaluation.json",
+        "evaluation_sha256": "d4e29853e8a169c5e2278b68f392dd885575d2b2bc1d7b2f69221421769ac4a2",
+        "label": "enemy-b",
+        "mlflow_run": "cd15547f387c489b9e8a0f6862119618",
+        "new_decisions": 50000,
+        "reports": [
+          {
+            "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/enemy-b/chunk-01/ppo.json",
+            "seconds": 84.06529570836574,
+            "sha256": "04e80c27c5beaa396f4c2225ef6b4f7181dbecb1897432d6004e59e259241b54",
+            "wall_seconds": 86.9900794159621
+          },
+          {
+            "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/enemy-b/chunk-02/ppo.json",
+            "seconds": 83.79895112477243,
+            "sha256": "b52687dea2ed65dbc77144f917288417b03f244062d47a1da28eadea9ee45c8c",
+            "wall_seconds": 87.28248495887965
+          },
+          {
+            "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/enemy-b/chunk-03/ppo.json",
+            "seconds": 81.4677689159289,
+            "sha256": "be2f4209ab67f5c2a5eb1bec74c701a58adf11a9e041cf0158097111de3b6e4d",
+            "wall_seconds": 84.95563150011003
+          },
+          {
+            "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/enemy-b/chunk-04/ppo.json",
+            "seconds": 12.327849749941379,
+            "sha256": "233f906af4a2f7136f2d9a37931e7a4a8e608bac1e8362f04e20fb74e27d451b",
+            "wall_seconds": 15.44841304095462
+          }
+        ],
+        "resume_sha256": "96018ed9f40b47306a71f47363a6791af8d00484760e57ce65331efd817859eb",
+        "seed": "b",
+        "strict_restore": true,
+        "training_seconds": 275.4362915828824
+      },
+      {
+        "arm": "control",
+        "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/control-b/chunk-04/final.sts-model",
+        "checkpoint_sha256": "385c39ad8cf36447d52969215b8efffc4c77e7a12c6c72d450901f8e8a68a203",
+        "evaluation": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/evaluation/control-b/evaluation.json",
+        "evaluation_sha256": "cddeca657e8bc920bd748b13b34b1ae5f440f75ffa1c80590cf6e7a5aac5b778",
+        "label": "control-b",
+        "mlflow_run": "6f22a63af1aa44ad871d07ba04758aa4",
+        "new_decisions": 50000,
+        "reports": [
+          {
+            "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/control-b/chunk-01/ppo.json",
+            "seconds": 81.89032487478107,
+            "sha256": "d0afd3c729f28d9307dddd2f56d3abf34882d0903eba9abf46cf777d766143fe",
+            "wall_seconds": 84.85326795792207
+          },
+          {
+            "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/control-b/chunk-02/ppo.json",
+            "seconds": 81.92772883363068,
+            "sha256": "f825c63a0e8526bf4c943d31b64f2db78ccefe3bdfd2353d364ff48d0a0fcc24",
+            "wall_seconds": 85.21724662510678
+          },
+          {
+            "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/control-b/chunk-03/ppo.json",
+            "seconds": 81.15377674996853,
+            "sha256": "201c7f8a0ef4c02de511d2a2ab925536d5385cae04c7377f0037462c74698949",
+            "wall_seconds": 84.41603466589004
+          },
+          {
+            "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/ppo/control-b/chunk-04/ppo.json",
+            "seconds": 12.335018625017256,
+            "sha256": "509964ff741485c8ed68fb849253be1a60c61ea1a349caef1de9c57fbf96c5dc",
+            "wall_seconds": 15.465385499875993
+          }
+        ],
+        "resume_sha256": "c3bf4ce82168cfe9e5001e7db1d0857eaa0df5d2884767f5adbbdbfe6ec310fc",
+        "seed": "b",
+        "strict_restore": true,
+        "training_seconds": 270.75598141597584
+      }
+    ],
+    "seconds": 1918.7897956250235,
+    "shared_calibration_decisions": 4096,
+    "status": "complete",
+    "test_opened": false,
+    "total_fitting_environment_decisions": 304096
+  },
+  "training_audit": {
+    "arms": {
+      "control-a": {
+        "base_return": 1136.8339234701346,
+        "decisions": 50000,
+        "episodes_cutoff": 199,
+        "episodes_defeat": 1039,
+        "episodes_victory": 1108,
+        "mean_abs_nonterminal_signal": 0.0,
+        "negative_nonterminal_shaping": 0,
+        "nonterminal_decisions": 47853,
+        "nonterminal_nonzero_shaping": 0,
+        "nonterminal_signal_fraction": 0.0,
+        "nonzero_shaping": 0,
+        "positive_nonterminal_shaping": 0,
+        "shaping_return": 0.0
+      },
+      "control-b": {
+        "base_return": 1171.2387937987762,
+        "decisions": 50000,
+        "episodes_cutoff": 198,
+        "episodes_defeat": 1073,
+        "episodes_victory": 1142,
+        "mean_abs_nonterminal_signal": 0.0,
+        "negative_nonterminal_shaping": 0,
+        "nonterminal_decisions": 47785,
+        "nonterminal_nonzero_shaping": 0,
+        "nonterminal_signal_fraction": 0.0,
+        "nonzero_shaping": 0,
+        "positive_nonterminal_shaping": 0,
+        "shaping_return": 0.0
+      },
+      "enemy-a": {
+        "base_return": 1155.9991542645676,
+        "decisions": 50000,
+        "episodes_cutoff": 199,
+        "episodes_defeat": 1055,
+        "episodes_victory": 1127,
+        "mean_abs_nonterminal_signal": 0.015837204989922048,
+        "negative_nonterminal_shaping": 0,
+        "nonterminal_decisions": 47818,
+        "nonterminal_nonzero_shaping": 28364,
+        "nonterminal_signal_fraction": 0.5931657534819524,
+        "nonzero_shaping": 30546,
+        "positive_nonterminal_shaping": 28364,
+        "shaping_return": 966.6907514448734
+      },
+      "enemy-b": {
+        "base_return": 1150.8760815750677,
+        "decisions": 50000,
+        "episodes_cutoff": 198,
+        "episodes_defeat": 1040,
+        "episodes_victory": 1122,
+        "mean_abs_nonterminal_signal": 0.015715129119545323,
+        "negative_nonterminal_shaping": 0,
+        "nonterminal_decisions": 47838,
+        "nonterminal_nonzero_shaping": 28197,
+        "nonterminal_signal_fraction": 0.5894268155023203,
+        "nonzero_shaping": 30359,
+        "positive_nonterminal_shaping": 28197,
+        "shaping_return": 959.167630057591
+      },
+      "health-a": {
+        "base_return": 1147.6064324300166,
+        "decisions": 50000,
+        "episodes_cutoff": 202,
+        "episodes_defeat": 1019,
+        "episodes_victory": 1119,
+        "mean_abs_nonterminal_signal": 0.02065687549113846,
+        "negative_nonterminal_shaping": 7666,
+        "nonterminal_decisions": 47862,
+        "nonterminal_nonzero_shaping": 34366,
+        "nonterminal_signal_fraction": 0.7180226484476202,
+        "nonzero_shaping": 36504,
+        "positive_nonterminal_shaping": 26700,
+        "shaping_return": 589.4470994817092
+      },
+      "health-b": {
+        "base_return": 1172.776948799254,
+        "decisions": 50000,
+        "episodes_cutoff": 199,
+        "episodes_defeat": 1052,
+        "episodes_victory": 1143,
+        "mean_abs_nonterminal_signal": 0.0211073311581938,
+        "negative_nonterminal_shaping": 7761,
+        "nonterminal_decisions": 47805,
+        "nonterminal_nonzero_shaping": 34972,
+        "nonterminal_signal_fraction": 0.7315552766447024,
+        "nonzero_shaping": 37167,
+        "positive_nonterminal_shaping": 27211,
+        "shaping_return": 605.9658894703949
+      }
+    },
+    "checked_decisions": 1510,
+    "completion_sha256": "6b6b83d093a194013d1938637f2857f2d962aaabbd3c75467e65adf8470733ba",
+    "public_pairs": 72,
+    "scalar_decisions": 300000,
+    "scope": "All scalar journals checked; first victory, defeat and cutoff per chunk checked against canonical public pairs. Native recording already validated every pair during collection. No extra gameplay.",
+    "script_sha256": "d7fc72bb21acfbb69ec048a0ba15f4adbede2747cfc9bcf973f932e133abf39e",
+    "seconds": 13.21818770794198,
+    "status": "complete",
+    "test_opened": false
+  },
+  "validation": {
+    "broad": "1098 passed, 1 skipped in 492.61s",
+    "compileall": "passed",
+    "focused": "27 passed in 4.28s",
+    "recipe_review": "approved",
+    "result_review": "approved",
+    "semantic_review": "approved"
+  },
+  "verification": {
+    "completion_sha256": "6b6b83d093a194013d1938637f2857f2d962aaabbd3c75467e65adf8470733ba",
+    "evaluation_episodes": 882,
+    "failed_training_episodes": 0,
+    "implementation": {
+      "build": "9ac3f6b412ae208bc3eeac8fe8fc54d088f70e6c926c17ccb284ad4770aa9a6d",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "1774c49c412fc7fae7c0d0f642927e6d91075c8d73268315baf9f9ef19f5b12b",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "panel_bindings": {
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/evaluation/control-a/evaluation.json": "393f32b8e275e2a2772888d762c76bbd21b5dc0d03456968838e7b442b343778",
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/evaluation/control-a/plan.json": "0f39c3f053f737dba6f8e3c64b87de065ae5258a8fdc95db2c6310181ae97932",
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/evaluation/control-b/evaluation.json": "cddeca657e8bc920bd748b13b34b1ae5f440f75ffa1c80590cf6e7a5aac5b778",
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/evaluation/control-b/plan.json": "be1e02042516607d03c809d4691f4911b5c56f00d78651df0e4ac15045906d4f",
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/evaluation/enemy-a/evaluation.json": "bd63f4493a2348f0c1231fd6ff644271bdefece318d221d258f923061ffacd17",
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/evaluation/enemy-a/plan.json": "054d2e72cc60167af3159d00c6725af67e295d704644b3d528fc528f751c38f2",
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/evaluation/enemy-b/evaluation.json": "d4e29853e8a169c5e2278b68f392dd885575d2b2bc1d7b2f69221421769ac4a2",
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/evaluation/enemy-b/plan.json": "facecb6b9179e1f8fa3cbd5bae086372fe53d3ee180f5abe406f2f25e62f1c99",
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/evaluation/health-a/evaluation.json": "f42015f80200810438fa962f07c7f0842addd8ea5582a0f4b5dbb079ba9aeece",
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/evaluation/health-a/plan.json": "549ace39e11268f086c0f3afaf7e985fe1a13f291d5867d975795286ca369a9d",
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/evaluation/health-b/evaluation.json": "25cd10c2df1aed143d0bf373a97ca5ea2d60304201809ae42e7278530c7e1a3e",
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/evaluation/health-b/plan.json": "e8c9e8fc8762ea96954f40ea610a1a04469634287fe72dd60a8d861f10cacce3",
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/evaluation/parent/evaluation.json": "39d7d7676b8af73c09eabb9e4e0082149f4faf715e064a14f1c32b259aba07b5",
+      "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/evaluation/parent/plan.json": "463bbfec699d672f2ee6a581d32d659455183d900609aba2cb5d9b095dfc52fd"
+    },
+    "processed_training_decisions": 300000,
+    "replay_checker": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-training-20261002/hp_metrics.py",
+    "replay_checker_sha256": "c5d4af71bfa8dff9234f2a37de437bd85ef78238ff27b608027829c7f9302ebc",
+    "replayed_decisions": 26154,
+    "script_sha256": "fd0ca8a0affee6dbc1b29d470fe04fcc822cb883d9197379cbe60984c9e0d61d",
+    "seconds": 73.51825874997303,
+    "skipped_decisions": 0,
+    "status": "complete",
+    "test_opened": false,
+    "trained_decisions": 300000
+  }
+}

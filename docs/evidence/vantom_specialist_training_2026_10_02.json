@@ -1,0 +1,1883 @@
+{
+  "bindings": {
+    "docs/AGENT_TRAINING.md": "306668e17e0502987740ceab22a7301783ee6eb4cc6903c9993201d1fb4fe560",
+    "docs/evidence/vantom_specialist_dataset_2026_10_02.json": "43b1e77a19bc61e8736d82b52cd54004ebf91aff23519203b3e26b6dcdc5ac47",
+    "runs/vantom-specialist-20261002/corpus/corpus.json": "0b9f7cd09f6d63aa47f3110b3e7faca63039ea37e6b392e4ed0db5ebd63a9a9f",
+    "runs/vantom-specialist-20261002/dataset-review.json": "38e92094f2bf596e9ca3fc3442c3ba63b5f8ca3526e1d6173db8a5fd35f6766a",
+    "runs/vantom-specialist-training-20261002/analysis.json": "39cba7a9a33a225b59bff849dbed180c7295090a6a980094ffd1dba66540140e",
+    "runs/vantom-specialist-training-20261002/analyze.py": "5064fc56acc0ca2d5829f98b6fe2e2a1abc1237b642b37069c3bd116c9e04b09",
+    "runs/vantom-specialist-training-20261002/calibrate.py": "988ab50c961ee4889b8e2c10f513fedaf877099ef9fd8e1cfdae3c48f9558a31",
+    "runs/vantom-specialist-training-20261002/calibration.json": "09f6c26baf5791fe2e7b3487c300356bb48cb8d9c797dfee51c2a7a2704fa8e2",
+    "runs/vantom-specialist-training-20261002/checkpoint-050000.json": "83430c2195c4eca629e0e9c17dd06706d4803c73d2b0e31f91a931380cc460c6",
+    "runs/vantom-specialist-training-20261002/checkpoint-100000.json": "fcc7bac23d85c2b0bef99834c5331a2ab273a77fe03c88f82e247f50b9d73b7a",
+    "runs/vantom-specialist-training-20261002/checkpoint-150000.json": "5533882ca95064183f27fd25944b90bdb663e62f5961ab4592311a8d6934443d",
+    "runs/vantom-specialist-training-20261002/checkpoint-200000.json": "9fda30cf02690d53363a0a57d00eb74120bd64126c5dd9e3222c44d67e0c7d6a",
+    "runs/vantom-specialist-training-20261002/checkpoint-250000.json": "cb258736bbc78501ed52a05080db4e9f5c5b46027149f7054a3eff8e3b0f1004",
+    "runs/vantom-specialist-training-20261002/cleanup-preflight.json": "e93d2dce1f85960c167b235ae1205db63878be964cb2e0501cea0cb36be57565",
+    "runs/vantom-specialist-training-20261002/evaluate.py": "68cb16144c88eced54a3d42293f5d0f8b01bf83d1529256dfa357c5cc4d3940c",
+    "runs/vantom-specialist-training-20261002/evaluation/000000/evaluation.json": "a8132c40ed2fb0b8b313563bbb3b05f4710f479b1cfcae4c65a1ceb454b4760e",
+    "runs/vantom-specialist-training-20261002/evaluation/050000/evaluation.json": "7f5606eba04520798f3a651f690e634dcc5183928dc8e7a30197f1177cf4f044",
+    "runs/vantom-specialist-training-20261002/evaluation/100000/evaluation.json": "2d0f063d960377d801f07f56af324618a020443c428e375091a898189e8189af",
+    "runs/vantom-specialist-training-20261002/evaluation/150000/evaluation.json": "b0ddc7ee45ff14e3e05aae8055186bbbab6ebf3f7c87a2adeca7cdce94880f15",
+    "runs/vantom-specialist-training-20261002/evaluation/200000/evaluation.json": "168dbe56b077c833771b4a262d424b2f088058281ad678960cefc2f27d4e704e",
+    "runs/vantom-specialist-training-20261002/evaluation/250000/evaluation.json": "633ff3b19a8142a72f5b096ec35ebf3d412c400cb0d19496b6a4b301357983e6",
+    "runs/vantom-specialist-training-20261002/export_inspection.py": "90199146675c312b41175e3794d404a6ce83b39ff385e260ccd61c70664a090d",
+    "runs/vantom-specialist-training-20261002/health-curves.png": "99688182b574e191f4256a3627dd1c0ae4999cb3b71cab72ae67b35b2c8898d3",
+    "runs/vantom-specialist-training-20261002/hp-metrics.json": "ce04b8cc975f2bc8368a38cafb74f14d7bb05de94d89c49091cb58ca2c37c156",
+    "runs/vantom-specialist-training-20261002/hp_metrics.py": "c5d4af71bfa8dff9234f2a37de437bd85ef78238ff27b608027829c7f9302ebc",
+    "runs/vantom-specialist-training-20261002/inspection.json": "493e40332cc514dd886bbfae1404c0b1953149fe2bb3b43f2d1e70981b0d36b4",
+    "runs/vantom-specialist-training-20261002/inspection/report.json": "e3383b9897b2acdfc207d587e4b7bbfe588cda84bfae69b68b49f56e9390b883",
+    "runs/vantom-specialist-training-20261002/inspector-http.json": "d7620dbc488d4822fa987d952ac3d00e9a85f303749d9a80d402212c92652c08",
+    "runs/vantom-specialist-training-20261002/learning-curves.png": "21a56ec38c12c6c6f3fb7e880e1b441f49ca77f165844061fd743ca96584ed7c",
+    "runs/vantom-specialist-training-20261002/plan.json": "c14a749614a56844e929accfb1fdc450f192cb29ca39b6ebe5d7e7ab33dec0d2",
+    "runs/vantom-specialist-training-20261002/plot_hp.py": "cde0ba89dd2848362fe63e9e3ba73f57ffb366480779d3d9f0e9371a16315c74",
+    "runs/vantom-specialist-training-20261002/policy-drift.json": "a23e2f7784044766a2c7d5000a74a8b4b2a10f09e7202cdb93538613b5c5aa29",
+    "runs/vantom-specialist-training-20261002/policy_drift.py": "196346904d3206916de2504ff052c455cd374ea073dec5242379671bd1f0d2aa",
+    "runs/vantom-specialist-training-20261002/ppo-config.json": "9147ce9e39af0f354f2e6a3b9a72b4c85398374a356385c3bc3692b04a6d274d",
+    "runs/vantom-specialist-training-20261002/pretraining-AGENT_TRAINING.md": "ec8fcfd9478b3ccebb62a5acf31eceaa32f2b5df1d7f2356a8064ba0b203b7c9",
+    "runs/vantom-specialist-training-20261002/publish_results.py": "01b26eefd82076fbffaa7131785e364c35f9a1a60f9fcbede01d0fd49b290eef",
+    "runs/vantom-specialist-training-20261002/run.py": "3d3cc639c44d2e7738e2c62e2b7736e3087b85d4f7005d4b5f6257c088d09388",
+    "runs/vantom-specialist-training-20261002/study.py": "5fd2cd6eb6c8bc6f28a9ea160df8a893220b60a344828a663d1acf179d593f9d",
+    "runs/vantom-specialist-training-20261002/training-complete.json": "b0aef6ccc302249dd2234aca2eb7409b2f7b086d86bde60628e92905496fec20",
+    "runs/vantom-specialist-training-20261002/training-review.json": "9038c9da574b02c567e201a1515f1cc5e060918a1df40fb91fa701ab75fd5959",
+    "runs/vantom-specialist-training-20261002/write_evidence.py": "0595a786ad4b11297ccce1ad8213d02a4ea597f93350003c4275becad4633ac2"
+  },
+  "corpus": "act1_combat_corpus_v2:0b9f7cd09f6d63aa47f3110b3e7faca63039ea37e6b392e4ed0db5ebd63a9a9f",
+  "date": "2026-10-02",
+  "evaluation": {
+    "checkpoints": [
+      0,
+      50000,
+      100000,
+      150000,
+      200000,
+      250000
+    ],
+    "curve": [
+      {
+        "hp_scores": {
+          "train": {
+            "greedy": {
+              "completed": 101,
+              "cutoffs": 0,
+              "losses": 51,
+              "mean_boss_health_removed_fraction_completed": 0.8496510895880556,
+              "mean_boss_health_removed_fraction_on_loss": 0.7022501970273257,
+              "mean_boss_hp_at_cutoff": null,
+              "mean_boss_hp_completed": 26.00990099009901,
+              "mean_boss_hp_fraction_at_cutoff": null,
+              "mean_boss_hp_fraction_completed": 0.15034624849768213,
+              "mean_boss_hp_fraction_on_loss": 0.297744531338547,
+              "mean_boss_hp_on_loss": 51.509803921568626,
+              "mean_player_hp_fraction_on_win": 0.1867598039215686,
+              "mean_player_hp_on_win": 15.24,
+              "mean_player_post_cleanup_hp_fraction_on_win": 0.26039536849222444,
+              "mean_player_post_cleanup_hp_on_win": 21.24,
+              "planned": 101,
+              "wins": 50
+            },
+            "sampled": {
+              "completed": 202,
+              "cutoffs": 0,
+              "losses": 101,
+              "mean_boss_health_removed_fraction_completed": 0.8515378876911753,
+              "mean_boss_health_removed_fraction_on_loss": 0.7030757753823508,
+              "mean_boss_hp_at_cutoff": null,
+              "mean_boss_hp_completed": 25.683168316831683,
+              "mean_boss_hp_fraction_at_cutoff": null,
+              "mean_boss_hp_fraction_completed": 0.14845762032850685,
+              "mean_boss_hp_fraction_on_loss": 0.2969152406570137,
+              "mean_boss_hp_on_loss": 51.366336633663366,
+              "mean_player_hp_fraction_on_win": 0.19379168680694164,
+              "mean_player_hp_on_win": 15.762376237623762,
+              "mean_player_post_cleanup_hp_fraction_on_win": 0.26728365237975443,
+              "mean_player_post_cleanup_hp_on_win": 21.762376237623762,
+              "planned": 202,
+              "wins": 101
+            }
+          },
+          "validation": {
+            "greedy": {
+              "completed": 42,
+              "cutoffs": 0,
+              "losses": 20,
+              "mean_boss_health_removed_fraction_completed": 0.8569868261863155,
+              "mean_boss_health_removed_fraction_on_loss": 0.6996723349912624,
+              "mean_boss_hp_at_cutoff": null,
+              "mean_boss_hp_completed": 24.738095238095237,
+              "mean_boss_hp_fraction_at_cutoff": null,
+              "mean_boss_hp_fraction_completed": 0.14299477016240023,
+              "mean_boss_hp_fraction_on_loss": 0.3002890173410404,
+              "mean_boss_hp_on_loss": 51.95,
+              "mean_player_hp_fraction_on_win": 0.20189393939393938,
+              "mean_player_hp_on_win": 16.90909090909091,
+              "mean_player_post_cleanup_hp_fraction_on_win": 0.27394200626959253,
+              "mean_player_post_cleanup_hp_on_win": 22.90909090909091,
+              "planned": 42,
+              "wins": 22
+            },
+            "sampled": {
+              "completed": 84,
+              "cutoffs": 0,
+              "losses": 53,
+              "mean_boss_health_removed_fraction_completed": 0.826982473322707,
+              "mean_boss_health_removed_fraction_on_loss": 0.7257835426246679,
+              "mean_boss_hp_at_cutoff": null,
+              "mean_boss_hp_completed": 29.928571428571427,
+              "mean_boss_hp_fraction_at_cutoff": null,
+              "mean_boss_hp_fraction_completed": 0.17299752270850535,
+              "mean_boss_hp_fraction_on_loss": 0.27418475297197076,
+              "mean_boss_hp_on_loss": 47.43396226415094,
+              "mean_player_hp_fraction_on_win": 0.2203389568656532,
+              "mean_player_hp_on_win": 18.516129032258064,
+              "mean_player_post_cleanup_hp_fraction_on_win": 0.29231708070695833,
+              "mean_player_post_cleanup_hp_on_win": 24.516129032258064,
+              "planned": 84,
+              "wins": 31
+            }
+          }
+        },
+        "scores": {
+          "train": {
+            "greedy": {
+              "planned": 101,
+              "win_rate": 0.49504950495049505,
+              "wins": 50
+            },
+            "sampled": {
+              "planned": 202,
+              "win_rate": 0.5,
+              "wins": 101
+            }
+          },
+          "validation": {
+            "greedy": {
+              "planned": 42,
+              "win_rate": 0.5238095238095238,
+              "wins": 22
+            },
+            "sampled": {
+              "planned": 84,
+              "win_rate": 0.36904761904761907,
+              "wins": 31
+            }
+          }
+        },
+        "specialist_ppo_decisions": 0
+      },
+      {
+        "hp_scores": {
+          "train": {
+            "greedy": {
+              "completed": 101,
+              "cutoffs": 0,
+              "losses": 38,
+              "mean_boss_health_removed_fraction_completed": 0.8872539559373334,
+              "mean_boss_health_removed_fraction_on_loss": 0.7003328828860699,
+              "mean_boss_hp_at_cutoff": null,
+              "mean_boss_hp_completed": 19.504950495049506,
+              "mean_boss_hp_fraction_at_cutoff": null,
+              "mean_boss_hp_fraction_completed": 0.1127453785841012,
+              "mean_boss_hp_fraction_on_loss": 0.2996653483419532,
+              "mean_boss_hp_on_loss": 51.8421052631579,
+              "mean_player_hp_fraction_on_win": 0.18199792149699281,
+              "mean_player_hp_on_win": 14.857142857142858,
+              "mean_player_post_cleanup_hp_fraction_on_win": 0.2555146226426683,
+              "mean_player_post_cleanup_hp_on_win": 20.857142857142858,
+              "planned": 101,
+              "wins": 63
+            },
+            "sampled": {
+              "completed": 202,
+              "cutoffs": 0,
+              "losses": 93,
+              "mean_boss_health_removed_fraction_completed": 0.8577784129400977,
+              "mean_boss_health_removed_fraction_on_loss": 0.6910885958483841,
+              "mean_boss_hp_at_cutoff": null,
+              "mean_boss_hp_completed": 24.603960396039604,
+              "mean_boss_hp_fraction_at_cutoff": null,
+              "mean_boss_hp_fraction_completed": 0.14221942425456416,
+              "mean_boss_hp_fraction_on_loss": 0.30890670644539747,
+              "mean_boss_hp_on_loss": 53.44086021505376,
+              "mean_player_hp_fraction_on_win": 0.20348488382570482,
+              "mean_player_hp_on_win": 16.59633027522936,
+              "mean_player_post_cleanup_hp_fraction_on_win": 0.2769916936916643,
+              "mean_player_post_cleanup_hp_on_win": 22.59633027522936,
+              "planned": 202,
+              "wins": 109
+            }
+          },
+          "validation": {
+            "greedy": {
+              "completed": 42,
+              "cutoffs": 0,
+              "losses": 23,
+              "mean_boss_health_removed_fraction_completed": 0.8682722652174191,
+              "mean_boss_health_removed_fraction_on_loss": 0.7594537017013743,
+              "mean_boss_hp_at_cutoff": null,
+              "mean_boss_hp_completed": 22.785714285714285,
+              "mean_boss_hp_fraction_at_cutoff": null,
+              "mean_boss_hp_fraction_completed": 0.1317093311312964,
+              "mean_boss_hp_fraction_on_loss": 0.2405126916310631,
+              "mean_boss_hp_on_loss": 41.608695652173914,
+              "mean_player_hp_fraction_on_win": 0.21606170598911065,
+              "mean_player_hp_on_win": 18.157894736842106,
+              "mean_player_post_cleanup_hp_fraction_on_win": 0.28796128251663644,
+              "mean_player_post_cleanup_hp_on_win": 24.157894736842106,
+              "planned": 42,
+              "wins": 19
+            },
+            "sampled": {
+              "completed": 84,
+              "cutoffs": 0,
+              "losses": 44,
+              "mean_boss_health_removed_fraction_completed": 0.8522446853455725,
+              "mean_boss_health_removed_fraction_on_loss": 0.7179216720233659,
+              "mean_boss_hp_at_cutoff": null,
+              "mean_boss_hp_completed": 25.55952380952381,
+              "mean_boss_hp_fraction_at_cutoff": null,
+              "mean_boss_hp_fraction_completed": 0.14774291219377922,
+              "mean_boss_hp_fraction_on_loss": 0.2820546505517603,
+              "mean_boss_hp_on_loss": 48.79545454545455,
+              "mean_player_hp_fraction_on_win": 0.214371408045977,
+              "mean_player_hp_on_win": 17.975,
+              "mean_player_post_cleanup_hp_fraction_on_win": 0.28657686781609193,
+              "mean_player_post_cleanup_hp_on_win": 23.975,
+              "planned": 84,
+              "wins": 40
+            }
+          }
+        },
+        "scores": {
+          "train": {
+            "greedy": {
+              "planned": 101,
+              "win_rate": 0.6237623762376238,
+              "wins": 63
+            },
+            "sampled": {
+              "planned": 202,
+              "win_rate": 0.5396039603960396,
+              "wins": 109
+            }
+          },
+          "validation": {
+            "greedy": {
+              "planned": 42,
+              "win_rate": 0.4523809523809524,
+              "wins": 19
+            },
+            "sampled": {
+              "planned": 84,
+              "win_rate": 0.47619047619047616,
+              "wins": 40
+            }
+          }
+        },
+        "specialist_ppo_decisions": 50000
+      },
+      {
+        "hp_scores": {
+          "train": {
+            "greedy": {
+              "completed": 101,
+              "cutoffs": 0,
+              "losses": 39,
+              "mean_boss_health_removed_fraction_completed": 0.8844502947404568,
+              "mean_boss_health_removed_fraction_on_loss": 0.7007558915073365,
+              "mean_boss_hp_at_cutoff": null,
+              "mean_boss_hp_completed": 19.99009900990099,
+              "mean_boss_hp_fraction_at_cutoff": null,
+              "mean_boss_hp_fraction_completed": 0.11554970525954328,
+              "mean_boss_hp_fraction_on_loss": 0.29924410849266336,
+              "mean_boss_hp_on_loss": 51.76923076923077,
+              "mean_player_hp_fraction_on_win": 0.179278852458817,
+              "mean_player_hp_on_win": 14.64516129032258,
+              "mean_player_post_cleanup_hp_fraction_on_win": 0.2527542848426539,
+              "mean_player_post_cleanup_hp_on_win": 20.64516129032258,
+              "planned": 101,
+              "wins": 62
+            },
+            "sampled": {
+              "completed": 202,
+              "cutoffs": 0,
+              "losses": 95,
+              "mean_boss_health_removed_fraction_completed": 0.8529726594786109,
+              "mean_boss_health_removed_fraction_on_loss": 0.6873734443650462,
+              "mean_boss_hp_at_cutoff": null,
+              "mean_boss_hp_completed": 25.435643564356436,
+              "mean_boss_hp_fraction_at_cutoff": null,
+              "mean_boss_hp_fraction_completed": 0.14702684141246494,
+              "mean_boss_hp_fraction_on_loss": 0.31262549437176756,
+              "mean_boss_hp_on_loss": 54.084210526315786,
+              "mean_player_hp_fraction_on_win": 0.20716133762172342,
+              "mean_player_hp_on_win": 16.85981308411215,
+              "mean_player_post_cleanup_hp_fraction_on_win": 0.28079426290782356,
+              "mean_player_post_cleanup_hp_on_win": 22.85981308411215,
+              "planned": 202,
+              "wins": 107
+            }
+          },
+          "validation": {
+            "greedy": {
+              "completed": 42,
+              "cutoffs": 0,
+              "losses": 23,
+              "mean_boss_health_removed_fraction_completed": 0.864418700670213,
+              "mean_boss_health_removed_fraction_on_loss": 0.7524167577456065,
+              "mean_boss_hp_at_cutoff": null,
+              "mean_boss_hp_completed": 23.452380952380953,
+              "mean_boss_hp_fraction_at_cutoff": null,
+              "mean_boss_hp_fraction_completed": 0.1355628956785026,
+              "mean_boss_hp_fraction_on_loss": 0.24754963558683088,
+              "mean_boss_hp_on_loss": 42.82608695652174,
+              "mean_player_hp_fraction_on_win": 0.1994605767291793,
+              "mean_player_hp_on_win": 16.68421052631579,
+              "mean_player_post_cleanup_hp_fraction_on_win": 0.27167775761242186,
+              "mean_player_post_cleanup_hp_on_win": 22.68421052631579,
+              "planned": 42,
+              "wins": 19
+            },
+            "sampled": {
+              "completed": 84,
+              "cutoffs": 0,
+              "losses": 47,
+              "mean_boss_health_removed_fraction_completed": 0.8376237845588563,
+              "mean_boss_health_removed_fraction_on_loss": 0.7097957000626368,
+              "mean_boss_hp_at_cutoff": null,
+              "mean_boss_hp_completed": 28.083333333333332,
+              "mean_boss_hp_fraction_at_cutoff": null,
+              "mean_boss_hp_fraction_completed": 0.1623314065510597,
+              "mean_boss_hp_fraction_on_loss": 0.290124215963596,
+              "mean_boss_hp_on_loss": 50.191489361702125,
+              "mean_player_hp_fraction_on_win": 0.2066149821220815,
+              "mean_player_hp_on_win": 17.2972972972973,
+              "mean_player_post_cleanup_hp_fraction_on_win": 0.2826163892086813,
+              "mean_player_post_cleanup_hp_on_win": 23.62162162162162,
+              "planned": 84,
+              "wins": 37
+            }
+          }
+        },
+        "scores": {
+          "train": {
+            "greedy": {
+              "planned": 101,
+              "win_rate": 0.6138613861386139,
+              "wins": 62
+            },
+            "sampled": {
+              "planned": 202,
+              "win_rate": 0.5297029702970297,
+              "wins": 107
+            }
+          },
+          "validation": {
+            "greedy": {
+              "planned": 42,
+              "win_rate": 0.4523809523809524,
+              "wins": 19
+            },
+            "sampled": {
+              "planned": 84,
+              "win_rate": 0.44047619047619047,
+              "wins": 37
+            }
+          }
+        },
+        "specialist_ppo_decisions": 100000
+      },
+      {
+        "hp_scores": {
+          "train": {
+            "greedy": {
+              "completed": 101,
+              "cutoffs": 0,
+              "losses": 37,
+              "mean_boss_health_removed_fraction_completed": 0.8926909158182924,
+              "mean_boss_health_removed_fraction_on_loss": 0.7070752026391226,
+              "mean_boss_hp_at_cutoff": null,
+              "mean_boss_hp_completed": 18.564356435643564,
+              "mean_boss_hp_fraction_at_cutoff": null,
+              "mean_boss_hp_fraction_completed": 0.107308418703142,
+              "mean_boss_hp_fraction_on_loss": 0.29292298078425244,
+              "mean_boss_hp_on_loss": 50.67567567567568,
+              "mean_player_hp_fraction_on_win": 0.18418307393194233,
+              "mean_player_hp_on_win": 15.046875,
+              "mean_player_post_cleanup_hp_fraction_on_win": 0.257575940720451,
+              "mean_player_post_cleanup_hp_on_win": 21.046875,
+              "planned": 101,
+              "wins": 64
+            },
+            "sampled": {
+              "completed": 202,
+              "cutoffs": 0,
+              "losses": 85,
+              "mean_boss_health_removed_fraction_completed": 0.8562528033284577,
+              "mean_boss_health_removed_fraction_on_loss": 0.6583890149688051,
+              "mean_boss_hp_at_cutoff": null,
+              "mean_boss_hp_completed": 24.866336633663366,
+              "mean_boss_hp_fraction_at_cutoff": null,
+              "mean_boss_hp_fraction_completed": 0.14373604990556857,
+              "mean_boss_hp_fraction_on_loss": 0.3415844950697042,
+              "mean_boss_hp_on_loss": 59.09411764705882,
+              "mean_player_hp_fraction_on_win": 0.19722712849398089,
+              "mean_player_hp_on_win": 16.068376068376068,
+              "mean_player_post_cleanup_hp_fraction_on_win": 0.27076481175941897,
+              "mean_player_post_cleanup_hp_on_win": 22.068376068376068,
+              "planned": 202,
+              "wins": 117
+            }
+          },
+          "validation": {
+            "greedy": {
+              "completed": 42,
+              "cutoffs": 0,
+              "losses": 20,
+              "mean_boss_health_removed_fraction_completed": 0.8830055883087204,
+              "mean_boss_health_removed_fraction_on_loss": 0.754311735448313,
+              "mean_boss_hp_at_cutoff": null,
+              "mean_boss_hp_completed": 20.238095238095237,
+              "mean_boss_hp_fraction_at_cutoff": null,
+              "mean_boss_hp_fraction_completed": 0.11698320946875862,
+              "mean_boss_hp_fraction_on_loss": 0.24566473988439305,
+              "mean_boss_hp_on_loss": 42.5,
+              "mean_player_hp_fraction_on_win": 0.18253004179728316,
+              "mean_player_hp_on_win": 15.363636363636363,
+              "mean_player_post_cleanup_hp_fraction_on_win": 0.2548524033437827,
+              "mean_player_post_cleanup_hp_on_win": 21.363636363636363,
+              "planned": 42,
+              "wins": 22
+            },
+            "sampled": {
+              "completed": 84,
+              "cutoffs": 0,
+              "losses": 43,
+              "mean_boss_health_removed_fraction_completed": 0.8705787228186072,
+              "mean_boss_health_removed_fraction_on_loss": 0.7471770399247212,
+              "mean_boss_hp_at_cutoff": null,
+              "mean_boss_hp_completed": 22.38095238095238,
+              "mean_boss_hp_fraction_at_cutoff": null,
+              "mean_boss_hp_fraction_completed": 0.12936966694192129,
+              "mean_boss_hp_fraction_on_loss": 0.2527221400725904,
+              "mean_boss_hp_on_loss": 43.72093023255814,
+              "mean_player_hp_fraction_on_win": 0.2063913075743333,
+              "mean_player_hp_on_win": 17.317073170731707,
+              "mean_player_post_cleanup_hp_fraction_on_win": 0.2821478339022741,
+              "mean_player_post_cleanup_hp_on_win": 23.609756097560975,
+              "planned": 84,
+              "wins": 41
+            }
+          }
+        },
+        "scores": {
+          "train": {
+            "greedy": {
+              "planned": 101,
+              "win_rate": 0.6336633663366337,
+              "wins": 64
+            },
+            "sampled": {
+              "planned": 202,
+              "win_rate": 0.5792079207920792,
+              "wins": 117
+            }
+          },
+          "validation": {
+            "greedy": {
+              "planned": 42,
+              "win_rate": 0.5238095238095238,
+              "wins": 22
+            },
+            "sampled": {
+              "planned": 84,
+              "win_rate": 0.4880952380952381,
+              "wins": 41
+            }
+          }
+        },
+        "specialist_ppo_decisions": 150000
+      },
+      {
+        "hp_scores": {
+          "train": {
+            "greedy": {
+              "completed": 101,
+              "cutoffs": 0,
+              "losses": 37,
+              "mean_boss_health_removed_fraction_completed": 0.8776970182567391,
+              "mean_boss_health_removed_fraction_on_loss": 0.666145914700828,
+              "mean_boss_hp_at_cutoff": null,
+              "mean_boss_hp_completed": 21.15841584158416,
+              "mean_boss_hp_fraction_at_cutoff": null,
+              "mean_boss_hp_fraction_completed": 0.12230298174326103,
+              "mean_boss_hp_fraction_on_loss": 0.33385408529917204,
+              "mean_boss_hp_on_loss": 57.75675675675676,
+              "mean_player_hp_fraction_on_win": 0.1861660166157702,
+              "mean_player_hp_on_win": 15.21875,
+              "mean_player_post_cleanup_hp_fraction_on_win": 0.2595588834042789,
+              "mean_player_post_cleanup_hp_on_win": 21.21875,
+              "planned": 101,
+              "wins": 64
+            },
+            "sampled": {
+              "completed": 202,
+              "cutoffs": 0,
+              "losses": 89,
+              "mean_boss_health_removed_fraction_completed": 0.8514265864010786,
+              "mean_boss_health_removed_fraction_on_loss": 0.6627884320563807,
+              "mean_boss_hp_at_cutoff": null,
+              "mean_boss_hp_completed": 25.702970297029704,
+              "mean_boss_hp_fraction_at_cutoff": null,
+              "mean_boss_hp_fraction_completed": 0.14857208264179017,
+              "mean_boss_hp_fraction_on_loss": 0.33720854711956877,
+              "mean_boss_hp_on_loss": 58.337078651685395,
+              "mean_player_hp_fraction_on_win": 0.21125176659656394,
+              "mean_player_hp_on_win": 17.24778761061947,
+              "mean_player_post_cleanup_hp_fraction_on_win": 0.28470462774587674,
+              "mean_player_post_cleanup_hp_on_win": 23.24778761061947,
+              "planned": 202,
+              "wins": 113
+            }
+          },
+          "validation": {
+            "greedy": {
+              "completed": 42,
+              "cutoffs": 0,
+              "losses": 20,
+              "mean_boss_health_removed_fraction_completed": 0.8736269275824325,
+              "mean_boss_health_removed_fraction_on_loss": 0.7346165479231079,
+              "mean_boss_hp_at_cutoff": null,
+              "mean_boss_hp_completed": 21.857142857142858,
+              "mean_boss_hp_fraction_at_cutoff": null,
+              "mean_boss_hp_fraction_completed": 0.12634186622625931,
+              "mean_boss_hp_fraction_on_loss": 0.26531791907514457,
+              "mean_boss_hp_on_loss": 45.9,
+              "mean_player_hp_fraction_on_win": 0.2075532198250251,
+              "mean_player_hp_on_win": 17.454545454545453,
+              "mean_player_post_cleanup_hp_fraction_on_win": 0.2794007519413199,
+              "mean_player_post_cleanup_hp_on_win": 23.454545454545453,
+              "planned": 42,
+              "wins": 22
+            },
+            "sampled": {
+              "completed": 84,
+              "cutoffs": 0,
+              "losses": 41,
+              "mean_boss_health_removed_fraction_completed": 0.861518125196039,
+              "mean_boss_health_removed_fraction_on_loss": 0.7162810369870065,
+              "mean_boss_hp_at_cutoff": null,
+              "mean_boss_hp_completed": 23.952380952380953,
+              "mean_boss_hp_fraction_at_cutoff": null,
+              "mean_boss_hp_fraction_completed": 0.13845306908890723,
+              "mean_boss_hp_fraction_on_loss": 0.2836599464260538,
+              "mean_boss_hp_on_loss": 49.073170731707314,
+              "mean_player_hp_fraction_on_win": 0.18818235661011262,
+              "mean_player_hp_on_win": 15.767441860465116,
+              "mean_player_post_cleanup_hp_fraction_on_win": 0.2604801851240363,
+              "mean_player_post_cleanup_hp_on_win": 21.767441860465116,
+              "planned": 84,
+              "wins": 43
+            }
+          }
+        },
+        "scores": {
+          "train": {
+            "greedy": {
+              "planned": 101,
+              "win_rate": 0.6336633663366337,
+              "wins": 64
+            },
+            "sampled": {
+              "planned": 202,
+              "win_rate": 0.5594059405940595,
+              "wins": 113
+            }
+          },
+          "validation": {
+            "greedy": {
+              "planned": 42,
+              "win_rate": 0.5238095238095238,
+              "wins": 22
+            },
+            "sampled": {
+              "planned": 84,
+              "win_rate": 0.5119047619047619,
+              "wins": 43
+            }
+          }
+        },
+        "specialist_ppo_decisions": 200000
+      },
+      {
+        "hp_scores": {
+          "train": {
+            "greedy": {
+              "completed": 101,
+              "cutoffs": 0,
+              "losses": 38,
+              "mean_boss_health_removed_fraction_completed": 0.8750071538945802,
+              "mean_boss_health_removed_fraction_on_loss": 0.6677821721934895,
+              "mean_boss_hp_at_cutoff": null,
+              "mean_boss_hp_completed": 21.623762376237625,
+              "mean_boss_hp_fraction_at_cutoff": null,
+              "mean_boss_hp_fraction_completed": 0.12499284610541976,
+              "mean_boss_hp_fraction_on_loss": 0.33221782780651055,
+              "mean_boss_hp_on_loss": 57.473684210526315,
+              "mean_player_hp_fraction_on_win": 0.18827441676943132,
+              "mean_player_hp_on_win": 15.365079365079366,
+              "mean_player_post_cleanup_hp_fraction_on_win": 0.2618869033557198,
+              "mean_player_post_cleanup_hp_on_win": 21.365079365079364,
+              "planned": 101,
+              "wins": 63
+            },
+            "sampled": {
+              "completed": 202,
+              "cutoffs": 0,
+              "losses": 93,
+              "mean_boss_health_removed_fraction_completed": 0.8588649730680825,
+              "mean_boss_health_removed_fraction_on_loss": 0.693448651180136,
+              "mean_boss_hp_at_cutoff": null,
+              "mean_boss_hp_completed": 24.415841584158414,
+              "mean_boss_hp_fraction_at_cutoff": null,
+              "mean_boss_hp_fraction_completed": 0.14113203227837234,
+              "mean_boss_hp_fraction_on_loss": 0.3065448443035615,
+              "mean_boss_hp_on_loss": 53.03225806451613,
+              "mean_player_hp_fraction_on_win": 0.21248135877401206,
+              "mean_player_hp_on_win": 17.357798165137616,
+              "mean_player_post_cleanup_hp_fraction_on_win": 0.28582208195854175,
+              "mean_player_post_cleanup_hp_on_win": 23.357798165137616,
+              "planned": 202,
+              "wins": 109
+            }
+          },
+          "validation": {
+            "greedy": {
+              "completed": 42,
+              "cutoffs": 0,
+              "losses": 16,
+              "mean_boss_health_removed_fraction_completed": 0.8814956887446469,
+              "mean_boss_health_removed_fraction_on_loss": 0.6889261829546982,
+              "mean_boss_hp_at_cutoff": null,
+              "mean_boss_hp_completed": 20.5,
+              "mean_boss_hp_fraction_at_cutoff": null,
+              "mean_boss_hp_fraction_completed": 0.1184971098265896,
+              "mean_boss_hp_fraction_on_loss": 0.3110549132947977,
+              "mean_boss_hp_on_loss": 53.8125,
+              "mean_player_hp_fraction_on_win": 0.18496071063261732,
+              "mean_player_hp_on_win": 15.576923076923077,
+              "mean_player_post_cleanup_hp_fraction_on_win": 0.26249100657062113,
+              "mean_player_post_cleanup_hp_on_win": 22.03846153846154,
+              "planned": 42,
+              "wins": 26
+            },
+            "sampled": {
+              "completed": 84,
+              "cutoffs": 0,
+              "losses": 38,
+              "mean_boss_health_removed_fraction_completed": 0.8627887772934151,
+              "mean_boss_health_removed_fraction_on_loss": 0.6966909813854438,
+              "mean_boss_hp_at_cutoff": null,
+              "mean_boss_hp_completed": 23.726190476190474,
+              "mean_boss_hp_fraction_at_cutoff": null,
+              "mean_boss_hp_fraction_completed": 0.13714560968896228,
+              "mean_boss_hp_fraction_on_loss": 0.30316397931244293,
+              "mean_boss_hp_on_loss": 52.44736842105263,
+              "mean_player_hp_fraction_on_win": 0.18000093090709543,
+              "mean_player_hp_on_win": 15.065217391304348,
+              "mean_player_post_cleanup_hp_fraction_on_win": 0.252474987996198,
+              "mean_player_post_cleanup_hp_on_win": 21.065217391304348,
+              "planned": 84,
+              "wins": 46
+            }
+          }
+        },
+        "scores": {
+          "train": {
+            "greedy": {
+              "planned": 101,
+              "win_rate": 0.6237623762376238,
+              "wins": 63
+            },
+            "sampled": {
+              "planned": 202,
+              "win_rate": 0.5396039603960396,
+              "wins": 109
+            }
+          },
+          "validation": {
+            "greedy": {
+              "planned": 42,
+              "win_rate": 0.6190476190476191,
+              "wins": 26
+            },
+            "sampled": {
+              "planned": 84,
+              "win_rate": 0.5476190476190477,
+              "wins": 46
+            }
+          }
+        },
+        "specialist_ppo_decisions": 250000
+      }
+    ],
+    "cutoffs": 0,
+    "episode_limits": {
+      "decisions": 512,
+      "seconds": 120
+    },
+    "evaluation_environment_decisions": 76078,
+    "evaluation_workers": 8,
+    "failures": 0,
+    "fixed_panel_games": 2574,
+    "greedy_repeats": 1,
+    "paired_comparisons": {
+      "final_vs_initial": {
+        "train": {
+          "greedy": {
+            "campaigns": 101,
+            "difference": 0.12871287128712872,
+            "games": 101,
+            "interpretation": "Conditional on one fixed learner and the sampled-action repeats. Repeated validation selection is exploratory; this is not a fresh-test claim.",
+            "paired_campaign_bootstrap_95": [
+              0.04950495049504951,
+              0.21782178217821782
+            ],
+            "wins_only_baseline": 3,
+            "wins_only_candidate": 16
+          },
+          "sampled": {
+            "campaigns": 101,
+            "difference": 0.039603960396039604,
+            "games": 202,
+            "interpretation": "Conditional on one fixed learner and the sampled-action repeats. Repeated validation selection is exploratory; this is not a fresh-test claim.",
+            "paired_campaign_bootstrap_95": [
+              -0.019801980198019802,
+              0.10396039603960396
+            ],
+            "wins_only_baseline": 12,
+            "wins_only_candidate": 20
+          }
+        },
+        "validation": {
+          "greedy": {
+            "campaigns": 42,
+            "difference": 0.09523809523809523,
+            "games": 42,
+            "interpretation": "Conditional on one fixed learner and the sampled-action repeats. Repeated validation selection is exploratory; this is not a fresh-test claim.",
+            "paired_campaign_bootstrap_95": [
+              -0.023809523809523808,
+              0.23809523809523808
+            ],
+            "wins_only_baseline": 2,
+            "wins_only_candidate": 6
+          },
+          "sampled": {
+            "campaigns": 42,
+            "difference": 0.17857142857142858,
+            "games": 84,
+            "interpretation": "Conditional on one fixed learner and the sampled-action repeats. Repeated validation selection is exploratory; this is not a fresh-test claim.",
+            "paired_campaign_bootstrap_95": [
+              0.059226190476190745,
+              0.30952380952380953
+            ],
+            "wins_only_baseline": 4,
+            "wins_only_candidate": 19
+          }
+        }
+      },
+      "selected_vs_initial": {
+        "train": {
+          "greedy": {
+            "campaigns": 101,
+            "difference": 0.12871287128712872,
+            "games": 101,
+            "interpretation": "Conditional on one fixed learner and the sampled-action repeats. Repeated validation selection is exploratory; this is not a fresh-test claim.",
+            "paired_campaign_bootstrap_95": [
+              0.04950495049504951,
+              0.21782178217821782
+            ],
+            "wins_only_baseline": 3,
+            "wins_only_candidate": 16
+          },
+          "sampled": {
+            "campaigns": 101,
+            "difference": 0.039603960396039604,
+            "games": 202,
+            "interpretation": "Conditional on one fixed learner and the sampled-action repeats. Repeated validation selection is exploratory; this is not a fresh-test claim.",
+            "paired_campaign_bootstrap_95": [
+              -0.019801980198019802,
+              0.10396039603960396
+            ],
+            "wins_only_baseline": 12,
+            "wins_only_candidate": 20
+          }
+        },
+        "validation": {
+          "greedy": {
+            "campaigns": 42,
+            "difference": 0.09523809523809523,
+            "games": 42,
+            "interpretation": "Conditional on one fixed learner and the sampled-action repeats. Repeated validation selection is exploratory; this is not a fresh-test claim.",
+            "paired_campaign_bootstrap_95": [
+              -0.023809523809523808,
+              0.23809523809523808
+            ],
+            "wins_only_baseline": 2,
+            "wins_only_candidate": 6
+          },
+          "sampled": {
+            "campaigns": 42,
+            "difference": 0.17857142857142858,
+            "games": 84,
+            "interpretation": "Conditional on one fixed learner and the sampled-action repeats. Repeated validation selection is exploratory; this is not a fresh-test claim.",
+            "paired_campaign_bootstrap_95": [
+              0.059226190476190745,
+              0.30952380952380953
+            ],
+            "wins_only_baseline": 4,
+            "wins_only_candidate": 19
+          }
+        }
+      }
+    },
+    "preflight_games": 12,
+    "sampled_repeats": 2,
+    "selected": {
+      "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-training-20261002/ppo/chunk-20/final.sts-model",
+      "scores": {
+        "train": {
+          "greedy": {
+            "attempted": 101,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 101,
+            "losses": 38,
+            "mean_final_turn_observed": 7.524752475247524,
+            "mean_hp_change_observed": -57.603960396039604,
+            "mean_hp_fraction_on_win": 0.26188690335571985,
+            "mean_hp_on_win": 21.365079365079364,
+            "mean_task_return": 0.6400978959518915,
+            "planned": 101,
+            "potion_use_actions": 58,
+            "source_groups": 101,
+            "steps": 3050,
+            "unattempted": 0,
+            "win_rate": 0.6237623762376238,
+            "win_rate_group_hoeffding_95": [
+              0.48862622461337646,
+              0.7588985278618711
+            ],
+            "wins": 63
+          },
+          "sampled": {
+            "attempted": 202,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 202,
+            "losses": 93,
+            "mean_final_turn_observed": 7.4950495049504955,
+            "mean_hp_change_observed": -58.32673267326733,
+            "mean_hp_fraction_on_win": 0.28582208195854164,
+            "mean_hp_on_win": 23.357798165137616,
+            "mean_task_return": 0.5550270331353868,
+            "planned": 202,
+            "potion_use_actions": 116,
+            "source_groups": 101,
+            "steps": 6052,
+            "unattempted": 0,
+            "win_rate": 0.5396039603960396,
+            "win_rate_group_hoeffding_95": [
+              0.40446780877179234,
+              0.6747401120202869
+            ],
+            "wins": 109
+          }
+        },
+        "validation": {
+          "greedy": {
+            "attempted": 42,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 42,
+            "losses": 16,
+            "mean_final_turn_observed": 7.380952380952381,
+            "mean_hp_change_observed": -54.45238095238095,
+            "mean_hp_fraction_on_win": 0.2624910065706212,
+            "mean_hp_on_win": 22.03846153846154,
+            "mean_task_return": 0.6352970623115145,
+            "planned": 42,
+            "potion_use_actions": 17,
+            "source_groups": 42,
+            "steps": 1236,
+            "unattempted": 0,
+            "win_rate": 0.6190476190476191,
+            "win_rate_group_hoeffding_95": [
+              0.4094880055802468,
+              0.8286072325149914
+            ],
+            "wins": 26
+          },
+          "sampled": {
+            "attempted": 84,
+            "cutoffs": 0,
+            "failures": 0,
+            "hp_change_observations": 84,
+            "losses": 38,
+            "mean_final_turn_observed": 7.416666666666667,
+            "mean_hp_change_observed": -56.55952380952381,
+            "mean_hp_fraction_on_win": 0.25247498799619794,
+            "mean_hp_on_win": 21.065217391304348,
+            "mean_task_return": 0.5614450588664583,
+            "planned": 84,
+            "potion_use_actions": 34,
+            "source_groups": 42,
+            "steps": 2471,
+            "unattempted": 0,
+            "win_rate": 0.5476190476190477,
+            "win_rate_group_hoeffding_95": [
+              0.3380594341516754,
+              0.75717866108642
+            ],
+            "wins": 46
+          }
+        }
+      },
+      "sha256": "4da8789591fc9379522b3b30745bb6b6615ee53bb4bfc21215affecf28dfae6a",
+      "step": 250000
+    },
+    "selection": "More validation greedy wins, then sampled wins, then higher mean winning HP fraction, then earlier checkpoint; keep the unchanged initializer eligible.",
+    "training_and_evaluation_environment_decisions": 330174
+  },
+  "historical_guide_archive": {
+    "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-training-20261002/pretraining-AGENT_TRAINING.md",
+    "preserves": "Training guide bytes bound by the original specialist dataset evidence; that historical evidence was not repinned.",
+    "sha256": "ec8fcfd9478b3ccebb62a5acf31eceaa32f2b5df1d7f2356a8064ba0b203b7c9"
+  },
+  "hp": {
+    "accounting": "Exact-action verification replays are additional engine work, not new training data or independent policy evaluation samples.",
+    "comparisons": {
+      "final_vs_initial": {
+        "train": {
+          "greedy": {
+            "both_completed": {
+              "campaigns": 101,
+              "games": 101,
+              "metrics": {
+                "boss_hp": {
+                  "candidate_mean": 21.623762376237625,
+                  "initial_mean": 26.00990099009901,
+                  "mean_change": -4.3861386138613865,
+                  "paired_campaign_bootstrap_95": [
+                    -8.178217821782178,
+                    -0.7920792079207921
+                  ]
+                },
+                "boss_hp_fraction": {
+                  "candidate_mean": 0.12499284610541976,
+                  "initial_mean": 0.15034624849768213,
+                  "mean_change": -0.025353402392262348,
+                  "paired_campaign_bootstrap_95": [
+                    -0.04727293538602414,
+                    -0.00457849253133406
+                  ]
+                }
+              }
+            },
+            "both_lost": {
+              "campaigns": 35,
+              "games": 35,
+              "metrics": {
+                "boss_hp": {
+                  "candidate_mean": 59.371428571428574,
+                  "initial_mean": 63.05714285714286,
+                  "mean_change": -3.6857142857142855,
+                  "paired_campaign_bootstrap_95": [
+                    -10.457142857142857,
+                    2.914285714285714
+                  ]
+                },
+                "boss_hp_fraction": {
+                  "candidate_mean": 0.3431874483897605,
+                  "initial_mean": 0.36449215524360035,
+                  "mean_change": -0.021304706853839804,
+                  "paired_campaign_bootstrap_95": [
+                    -0.06044591246903386,
+                    0.01684558216350123
+                  ]
+                }
+              }
+            },
+            "both_won": {
+              "campaigns": 47,
+              "games": 47,
+              "metrics": {
+                "player_hp": {
+                  "candidate_mean": 17.04255319148936,
+                  "initial_mean": 15.72340425531915,
+                  "mean_change": 1.3191489361702127,
+                  "paired_campaign_bootstrap_95": [
+                    -0.8723404255319149,
+                    3.6382978723404253
+                  ]
+                },
+                "player_hp_fraction": {
+                  "candidate_mean": 0.20850362522118163,
+                  "initial_mean": 0.1925636211931581,
+                  "mean_change": 0.015940004028023532,
+                  "paired_campaign_bootstrap_95": [
+                    -0.011250737272164925,
+                    0.04489628288953145
+                  ]
+                },
+                "player_post_cleanup_hp": {
+                  "candidate_mean": 23.04255319148936,
+                  "initial_mean": 21.72340425531915,
+                  "mean_change": 1.3191489361702127,
+                  "paired_campaign_bootstrap_95": [
+                    -0.8723404255319149,
+                    3.6382978723404253
+                  ]
+                },
+                "player_post_cleanup_hp_fraction": {
+                  "candidate_mean": 0.28205209816868787,
+                  "initial_mean": 0.26611209414066433,
+                  "mean_change": 0.01594000402802354,
+                  "paired_campaign_bootstrap_95": [
+                    -0.011250737272164916,
+                    0.04489628288953146
+                  ]
+                }
+              }
+            }
+          },
+          "sampled": {
+            "both_completed": {
+              "campaigns": 101,
+              "games": 202,
+              "metrics": {
+                "boss_hp": {
+                  "candidate_mean": 24.415841584158414,
+                  "initial_mean": 25.683168316831683,
+                  "mean_change": -1.2673267326732673,
+                  "paired_campaign_bootstrap_95": [
+                    -5.1634900990099,
+                    2.9506188118811862
+                  ]
+                },
+                "boss_hp_fraction": {
+                  "candidate_mean": 0.14113203227837234,
+                  "initial_mean": 0.14845762032850685,
+                  "mean_change": -0.007325588050134495,
+                  "paired_campaign_bootstrap_95": [
+                    -0.029846763578091913,
+                    0.017055600068677377
+                  ]
+                }
+              }
+            },
+            "both_lost": {
+              "campaigns": 45,
+              "games": 81,
+              "metrics": {
+                "boss_hp": {
+                  "candidate_mean": 56.49382716049383,
+                  "initial_mean": 58.71604938271605,
+                  "mean_change": -2.2222222222222223,
+                  "paired_campaign_bootstrap_95": [
+                    -10.540746539222148,
+                    6.619196428571426
+                  ]
+                },
+                "boss_hp_fraction": {
+                  "candidate_mean": 0.3265539142225077,
+                  "initial_mean": 0.3393991293798615,
+                  "mean_change": -0.01284521515735389,
+                  "paired_campaign_bootstrap_95": [
+                    -0.060929170746948855,
+                    0.038261251032204784
+                  ]
+                }
+              }
+            },
+            "both_won": {
+              "campaigns": 49,
+              "games": 89,
+              "metrics": {
+                "player_hp": {
+                  "candidate_mean": 17.93258426966292,
+                  "initial_mean": 16.53932584269663,
+                  "mean_change": 1.3932584269662922,
+                  "paired_campaign_bootstrap_95": [
+                    -0.7272727272727273,
+                    3.75
+                  ]
+                },
+                "player_hp_fraction": {
+                  "candidate_mean": 0.2194793196839443,
+                  "initial_mean": 0.20307827095087125,
+                  "mean_change": 0.016401048733073,
+                  "paired_campaign_bootstrap_95": [
+                    -0.00928274374175335,
+                    0.04459822045269187
+                  ]
+                },
+                "player_post_cleanup_hp": {
+                  "candidate_mean": 23.93258426966292,
+                  "initial_mean": 22.53932584269663,
+                  "mean_change": 1.3932584269662922,
+                  "paired_campaign_bootstrap_95": [
+                    -0.7272727272727273,
+                    3.75
+                  ]
+                },
+                "player_post_cleanup_hp_fraction": {
+                  "candidate_mean": 0.2928357579492556,
+                  "initial_mean": 0.2764347092161827,
+                  "mean_change": 0.016401048733073003,
+                  "paired_campaign_bootstrap_95": [
+                    -0.009282743741753344,
+                    0.04459822045269188
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "validation": {
+          "greedy": {
+            "both_completed": {
+              "campaigns": 42,
+              "games": 42,
+              "metrics": {
+                "boss_hp": {
+                  "candidate_mean": 20.5,
+                  "initial_mean": 24.738095238095237,
+                  "mean_change": -4.238095238095238,
+                  "paired_campaign_bootstrap_95": [
+                    -8.952380952380953,
+                    0.11904761904761904
+                  ]
+                },
+                "boss_hp_fraction": {
+                  "candidate_mean": 0.1184971098265896,
+                  "initial_mean": 0.14299477016240023,
+                  "mean_change": -0.02449766033581062,
+                  "paired_campaign_bootstrap_95": [
+                    -0.05174786677676851,
+                    0.0006881365262868183
+                  ]
+                }
+              }
+            },
+            "both_lost": {
+              "campaigns": 14,
+              "games": 14,
+              "metrics": {
+                "boss_hp": {
+                  "candidate_mean": 59.142857142857146,
+                  "initial_mean": 68.92857142857143,
+                  "mean_change": -9.785714285714286,
+                  "paired_campaign_bootstrap_95": [
+                    -21.644642857142856,
+                    1.5714285714285714
+                  ]
+                },
+                "boss_hp_fraction": {
+                  "candidate_mean": 0.34186622625928986,
+                  "initial_mean": 0.39843104872006607,
+                  "mean_change": -0.056564822460776196,
+                  "paired_campaign_bootstrap_95": [
+                    -0.1251135425268373,
+                    0.009083402146985957
+                  ]
+                }
+              }
+            },
+            "both_won": {
+              "campaigns": 20,
+              "games": 20,
+              "metrics": {
+                "player_hp": {
+                  "candidate_mean": 18.05,
+                  "initial_mean": 16.9,
+                  "mean_change": 1.15,
+                  "paired_campaign_bootstrap_95": [
+                    -2.35,
+                    4.7
+                  ]
+                },
+                "player_hp_fraction": {
+                  "candidate_mean": 0.2134674329501916,
+                  "initial_mean": 0.20083333333333334,
+                  "mean_change": 0.012634099616858241,
+                  "paired_campaign_bootstrap_95": [
+                    -0.027766522988505748,
+                    0.05399191810344828
+                  ]
+                },
+                "player_post_cleanup_hp": {
+                  "candidate_mean": 24.05,
+                  "initial_mean": 22.9,
+                  "mean_change": 1.15,
+                  "paired_campaign_bootstrap_95": [
+                    -2.35,
+                    4.7
+                  ]
+                },
+                "player_post_cleanup_hp_fraction": {
+                  "candidate_mean": 0.28522030651340996,
+                  "initial_mean": 0.2725862068965518,
+                  "mean_change": 0.012634099616858237,
+                  "paired_campaign_bootstrap_95": [
+                    -0.027766522988505748,
+                    0.05399191810344829
+                  ]
+                }
+              }
+            }
+          },
+          "sampled": {
+            "both_completed": {
+              "campaigns": 42,
+              "games": 84,
+              "metrics": {
+                "boss_hp": {
+                  "candidate_mean": 23.726190476190474,
+                  "initial_mean": 29.928571428571427,
+                  "mean_change": -6.2023809523809526,
+                  "paired_campaign_bootstrap_95": [
+                    -13.548214285714286,
+                    0.10744047619047185
+                  ]
+                },
+                "boss_hp_fraction": {
+                  "candidate_mean": 0.13714560968896228,
+                  "initial_mean": 0.17299752270850535,
+                  "mean_change": -0.035851913019543075,
+                  "paired_campaign_bootstrap_95": [
+                    -0.07831337737407103,
+                    0.0006210432149738272
+                  ]
+                }
+              }
+            },
+            "both_lost": {
+              "campaigns": 19,
+              "games": 34,
+              "metrics": {
+                "boss_hp": {
+                  "candidate_mean": 52.76470588235294,
+                  "initial_mean": 58.3235294117647,
+                  "mean_change": -5.5588235294117645,
+                  "paired_campaign_bootstrap_95": [
+                    -13.48556511056511,
+                    2.4687959558823525
+                  ]
+                },
+                "boss_hp_fraction": {
+                  "candidate_mean": 0.3049982998979939,
+                  "initial_mean": 0.33713022781366886,
+                  "mean_change": -0.03213192791567495,
+                  "paired_campaign_bootstrap_95": [
+                    -0.07795124341367116,
+                    0.014270496854811287
+                  ]
+                }
+              }
+            },
+            "both_won": {
+              "campaigns": 18,
+              "games": 27,
+              "metrics": {
+                "player_hp": {
+                  "candidate_mean": 19.40740740740741,
+                  "initial_mean": 19.25925925925926,
+                  "mean_change": 0.14814814814814814,
+                  "paired_campaign_bootstrap_95": [
+                    -3.433333333333333,
+                    4.0
+                  ]
+                },
+                "player_hp_fraction": {
+                  "candidate_mean": 0.22982297431531148,
+                  "initial_mean": 0.22947176103306374,
+                  "mean_change": 0.00035121328224776776,
+                  "paired_campaign_bootstrap_95": [
+                    -0.0414914990421456,
+                    0.04494141456470839
+                  ]
+                },
+                "player_post_cleanup_hp": {
+                  "candidate_mean": 25.40740740740741,
+                  "initial_mean": 25.25925925925926,
+                  "mean_change": 0.14814814814814814,
+                  "paired_campaign_bootstrap_95": [
+                    -3.433333333333333,
+                    4.0
+                  ]
+                },
+                "player_post_cleanup_hp_fraction": {
+                  "candidate_mean": 0.30202391088406416,
+                  "initial_mean": 0.30167269760181636,
+                  "mean_change": 0.00035121328224777497,
+                  "paired_campaign_bootstrap_95": [
+                    -0.04149149904214557,
+                    0.044941414564708404
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "selected_vs_initial": {
+        "train": {
+          "greedy": {
+            "both_completed": {
+              "campaigns": 101,
+              "games": 101,
+              "metrics": {
+                "boss_hp": {
+                  "candidate_mean": 21.623762376237625,
+                  "initial_mean": 26.00990099009901,
+                  "mean_change": -4.3861386138613865,
+                  "paired_campaign_bootstrap_95": [
+                    -8.178217821782178,
+                    -0.7920792079207921
+                  ]
+                },
+                "boss_hp_fraction": {
+                  "candidate_mean": 0.12499284610541976,
+                  "initial_mean": 0.15034624849768213,
+                  "mean_change": -0.025353402392262348,
+                  "paired_campaign_bootstrap_95": [
+                    -0.04727293538602414,
+                    -0.00457849253133406
+                  ]
+                }
+              }
+            },
+            "both_lost": {
+              "campaigns": 35,
+              "games": 35,
+              "metrics": {
+                "boss_hp": {
+                  "candidate_mean": 59.371428571428574,
+                  "initial_mean": 63.05714285714286,
+                  "mean_change": -3.6857142857142855,
+                  "paired_campaign_bootstrap_95": [
+                    -10.457142857142857,
+                    2.914285714285714
+                  ]
+                },
+                "boss_hp_fraction": {
+                  "candidate_mean": 0.3431874483897605,
+                  "initial_mean": 0.36449215524360035,
+                  "mean_change": -0.021304706853839804,
+                  "paired_campaign_bootstrap_95": [
+                    -0.06044591246903386,
+                    0.01684558216350123
+                  ]
+                }
+              }
+            },
+            "both_won": {
+              "campaigns": 47,
+              "games": 47,
+              "metrics": {
+                "player_hp": {
+                  "candidate_mean": 17.04255319148936,
+                  "initial_mean": 15.72340425531915,
+                  "mean_change": 1.3191489361702127,
+                  "paired_campaign_bootstrap_95": [
+                    -0.8723404255319149,
+                    3.6382978723404253
+                  ]
+                },
+                "player_hp_fraction": {
+                  "candidate_mean": 0.20850362522118163,
+                  "initial_mean": 0.1925636211931581,
+                  "mean_change": 0.015940004028023532,
+                  "paired_campaign_bootstrap_95": [
+                    -0.011250737272164925,
+                    0.04489628288953145
+                  ]
+                },
+                "player_post_cleanup_hp": {
+                  "candidate_mean": 23.04255319148936,
+                  "initial_mean": 21.72340425531915,
+                  "mean_change": 1.3191489361702127,
+                  "paired_campaign_bootstrap_95": [
+                    -0.8723404255319149,
+                    3.6382978723404253
+                  ]
+                },
+                "player_post_cleanup_hp_fraction": {
+                  "candidate_mean": 0.28205209816868787,
+                  "initial_mean": 0.26611209414066433,
+                  "mean_change": 0.01594000402802354,
+                  "paired_campaign_bootstrap_95": [
+                    -0.011250737272164916,
+                    0.04489628288953146
+                  ]
+                }
+              }
+            }
+          },
+          "sampled": {
+            "both_completed": {
+              "campaigns": 101,
+              "games": 202,
+              "metrics": {
+                "boss_hp": {
+                  "candidate_mean": 24.415841584158414,
+                  "initial_mean": 25.683168316831683,
+                  "mean_change": -1.2673267326732673,
+                  "paired_campaign_bootstrap_95": [
+                    -5.1634900990099,
+                    2.9506188118811862
+                  ]
+                },
+                "boss_hp_fraction": {
+                  "candidate_mean": 0.14113203227837234,
+                  "initial_mean": 0.14845762032850685,
+                  "mean_change": -0.007325588050134495,
+                  "paired_campaign_bootstrap_95": [
+                    -0.029846763578091913,
+                    0.017055600068677377
+                  ]
+                }
+              }
+            },
+            "both_lost": {
+              "campaigns": 45,
+              "games": 81,
+              "metrics": {
+                "boss_hp": {
+                  "candidate_mean": 56.49382716049383,
+                  "initial_mean": 58.71604938271605,
+                  "mean_change": -2.2222222222222223,
+                  "paired_campaign_bootstrap_95": [
+                    -10.540746539222148,
+                    6.619196428571426
+                  ]
+                },
+                "boss_hp_fraction": {
+                  "candidate_mean": 0.3265539142225077,
+                  "initial_mean": 0.3393991293798615,
+                  "mean_change": -0.01284521515735389,
+                  "paired_campaign_bootstrap_95": [
+                    -0.060929170746948855,
+                    0.038261251032204784
+                  ]
+                }
+              }
+            },
+            "both_won": {
+              "campaigns": 49,
+              "games": 89,
+              "metrics": {
+                "player_hp": {
+                  "candidate_mean": 17.93258426966292,
+                  "initial_mean": 16.53932584269663,
+                  "mean_change": 1.3932584269662922,
+                  "paired_campaign_bootstrap_95": [
+                    -0.7272727272727273,
+                    3.75
+                  ]
+                },
+                "player_hp_fraction": {
+                  "candidate_mean": 0.2194793196839443,
+                  "initial_mean": 0.20307827095087125,
+                  "mean_change": 0.016401048733073,
+                  "paired_campaign_bootstrap_95": [
+                    -0.00928274374175335,
+                    0.04459822045269187
+                  ]
+                },
+                "player_post_cleanup_hp": {
+                  "candidate_mean": 23.93258426966292,
+                  "initial_mean": 22.53932584269663,
+                  "mean_change": 1.3932584269662922,
+                  "paired_campaign_bootstrap_95": [
+                    -0.7272727272727273,
+                    3.75
+                  ]
+                },
+                "player_post_cleanup_hp_fraction": {
+                  "candidate_mean": 0.2928357579492556,
+                  "initial_mean": 0.2764347092161827,
+                  "mean_change": 0.016401048733073003,
+                  "paired_campaign_bootstrap_95": [
+                    -0.009282743741753344,
+                    0.04459822045269188
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "validation": {
+          "greedy": {
+            "both_completed": {
+              "campaigns": 42,
+              "games": 42,
+              "metrics": {
+                "boss_hp": {
+                  "candidate_mean": 20.5,
+                  "initial_mean": 24.738095238095237,
+                  "mean_change": -4.238095238095238,
+                  "paired_campaign_bootstrap_95": [
+                    -8.952380952380953,
+                    0.11904761904761904
+                  ]
+                },
+                "boss_hp_fraction": {
+                  "candidate_mean": 0.1184971098265896,
+                  "initial_mean": 0.14299477016240023,
+                  "mean_change": -0.02449766033581062,
+                  "paired_campaign_bootstrap_95": [
+                    -0.05174786677676851,
+                    0.0006881365262868183
+                  ]
+                }
+              }
+            },
+            "both_lost": {
+              "campaigns": 14,
+              "games": 14,
+              "metrics": {
+                "boss_hp": {
+                  "candidate_mean": 59.142857142857146,
+                  "initial_mean": 68.92857142857143,
+                  "mean_change": -9.785714285714286,
+                  "paired_campaign_bootstrap_95": [
+                    -21.644642857142856,
+                    1.5714285714285714
+                  ]
+                },
+                "boss_hp_fraction": {
+                  "candidate_mean": 0.34186622625928986,
+                  "initial_mean": 0.39843104872006607,
+                  "mean_change": -0.056564822460776196,
+                  "paired_campaign_bootstrap_95": [
+                    -0.1251135425268373,
+                    0.009083402146985957
+                  ]
+                }
+              }
+            },
+            "both_won": {
+              "campaigns": 20,
+              "games": 20,
+              "metrics": {
+                "player_hp": {
+                  "candidate_mean": 18.05,
+                  "initial_mean": 16.9,
+                  "mean_change": 1.15,
+                  "paired_campaign_bootstrap_95": [
+                    -2.35,
+                    4.7
+                  ]
+                },
+                "player_hp_fraction": {
+                  "candidate_mean": 0.2134674329501916,
+                  "initial_mean": 0.20083333333333334,
+                  "mean_change": 0.012634099616858241,
+                  "paired_campaign_bootstrap_95": [
+                    -0.027766522988505748,
+                    0.05399191810344828
+                  ]
+                },
+                "player_post_cleanup_hp": {
+                  "candidate_mean": 24.05,
+                  "initial_mean": 22.9,
+                  "mean_change": 1.15,
+                  "paired_campaign_bootstrap_95": [
+                    -2.35,
+                    4.7
+                  ]
+                },
+                "player_post_cleanup_hp_fraction": {
+                  "candidate_mean": 0.28522030651340996,
+                  "initial_mean": 0.2725862068965518,
+                  "mean_change": 0.012634099616858237,
+                  "paired_campaign_bootstrap_95": [
+                    -0.027766522988505748,
+                    0.05399191810344829
+                  ]
+                }
+              }
+            }
+          },
+          "sampled": {
+            "both_completed": {
+              "campaigns": 42,
+              "games": 84,
+              "metrics": {
+                "boss_hp": {
+                  "candidate_mean": 23.726190476190474,
+                  "initial_mean": 29.928571428571427,
+                  "mean_change": -6.2023809523809526,
+                  "paired_campaign_bootstrap_95": [
+                    -13.548214285714286,
+                    0.10744047619047185
+                  ]
+                },
+                "boss_hp_fraction": {
+                  "candidate_mean": 0.13714560968896228,
+                  "initial_mean": 0.17299752270850535,
+                  "mean_change": -0.035851913019543075,
+                  "paired_campaign_bootstrap_95": [
+                    -0.07831337737407103,
+                    0.0006210432149738272
+                  ]
+                }
+              }
+            },
+            "both_lost": {
+              "campaigns": 19,
+              "games": 34,
+              "metrics": {
+                "boss_hp": {
+                  "candidate_mean": 52.76470588235294,
+                  "initial_mean": 58.3235294117647,
+                  "mean_change": -5.5588235294117645,
+                  "paired_campaign_bootstrap_95": [
+                    -13.48556511056511,
+                    2.4687959558823525
+                  ]
+                },
+                "boss_hp_fraction": {
+                  "candidate_mean": 0.3049982998979939,
+                  "initial_mean": 0.33713022781366886,
+                  "mean_change": -0.03213192791567495,
+                  "paired_campaign_bootstrap_95": [
+                    -0.07795124341367116,
+                    0.014270496854811287
+                  ]
+                }
+              }
+            },
+            "both_won": {
+              "campaigns": 18,
+              "games": 27,
+              "metrics": {
+                "player_hp": {
+                  "candidate_mean": 19.40740740740741,
+                  "initial_mean": 19.25925925925926,
+                  "mean_change": 0.14814814814814814,
+                  "paired_campaign_bootstrap_95": [
+                    -3.433333333333333,
+                    4.0
+                  ]
+                },
+                "player_hp_fraction": {
+                  "candidate_mean": 0.22982297431531148,
+                  "initial_mean": 0.22947176103306374,
+                  "mean_change": 0.00035121328224776776,
+                  "paired_campaign_bootstrap_95": [
+                    -0.0414914990421456,
+                    0.04494141456470839
+                  ]
+                },
+                "player_post_cleanup_hp": {
+                  "candidate_mean": 25.40740740740741,
+                  "initial_mean": 25.25925925925926,
+                  "mean_change": 0.14814814814814814,
+                  "paired_campaign_bootstrap_95": [
+                    -3.433333333333333,
+                    4.0
+                  ]
+                },
+                "player_post_cleanup_hp_fraction": {
+                  "candidate_mean": 0.30202391088406416,
+                  "initial_mean": 0.30167269760181636,
+                  "mean_change": 0.00035121328224777497,
+                  "paired_campaign_bootstrap_95": [
+                    -0.04149149904214557,
+                    0.044941414564708404
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "semantics": {
+      "boss_hp": "Retained Vantom combat owner at the recorded endpoint. Loss includes simultaneous lethal cases even if boss HP is zero. Cutoffs are separate.",
+      "conditional": "Loss-only and win-only means change population between checkpoints. Paired both-lost/both-won comparisons hold case and sampled-action repeat fixed; these are outcome-conditioned descriptive diagnostics.",
+      "player_hp": "Retained combat.player at combat end, before run victory cleanup; fraction uses its own terminal max_hp.",
+      "player_post_cleanup_hp": "Existing native terminal CombatSummary after victory hooks; fraction uses its own max_hp.",
+      "selection": "HP diagnostics do not change the frozen checkpoint-selection rule, rewards, or training.",
+      "source": "Exact recorded actions replayed through unchanged native adapter with every public state, execution, combat summary and reward checked. No new policy decisions or statistical samples.",
+      "uncertainty": "Exploratory, post-hoc diagnostics from one learner. Source-campaign bootstrap resamples all selected repeats together. No proof of unwinnable cases, optimal play, or fresh-test improvement."
+    },
+    "simultaneous_zero_boss_hp_losses": 1,
+    "verified_replay_decisions": 75761,
+    "verified_replay_games": 2574
+  },
+  "implementation": {
+    "build": "2732749399bd21dadf25e7c7199fe3894b84e76e15504664203080ee51bbc130",
+    "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+    "rules": "cb4110d297799c139c5912c30a0e0903630c1c8ab2141eded608b90a7b1e0926",
+    "target": "sts2-v0.107.1-steam-23811903"
+  },
+  "inspector": {
+    "limitations": "All42validationopenings and all outcomes retained per selected checkpoint, greedy only. Inspector canonical campaign cutoff labels are separate from confirmed combat outcomes. No private snapshots or RNG enter the viewer; combat win curves are in MLflow.",
+    "report": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-training-20261002/inspection/report.json",
+    "url": "http://127.0.0.1:57871/#run=00aa06ee9f2f48a6b1bcac7cca2268fc&step=0"
+  },
+  "limits": [
+    "One warm-started learner, repeated development selection, and a small validation population; no fresh-test improvement claim.",
+    "Source routes and inventories depend on surviving the fixed collector prefix. Saved later turns are correlated training starts.",
+    "Warm start, critic calibration, focused data and PPO settings were changed together; this experiment does not isolate their causal contributions.",
+    "Greedy win-rate and paired HP bootstrap intervals include zero. Reported HP progress does not prove any state unwinnable or any action optimal.",
+    "Other bosses, full Act 1 retention and a scratch-trained specialist were not measured.",
+    "Health curves are exact-replay derivatives for this study; native training/public schemas and reward definitions are unchanged."
+  ],
+  "lineage": {
+    "initialization": "Actor-preserving value-head-only calibration on TRAIN returns, then fresh specialist PPO optimizer and RNG. Exact native resumes only within this new phase.",
+    "interpretation": "Warm start from rich combat 250k PPO + 8k imitation; native PPO counters measure only this new specialist phase. Count 4096 calibration environment decisions separately. Teacher pool has 1M unique ancestral PPO decisions.",
+    "parent": {
+      "additional_environment_decisions": 0,
+      "arm": "distill-longer",
+      "decisions": 250000,
+      "learner_decisions": 8000,
+      "metric_step_kind": "optimizer_updates",
+      "mode": "exact_imitation_continuation",
+      "offline_updates": 8000,
+      "parent_checkpoint": "7d7171bb27266e2a5162e512e62b179bda6813d9037766152b9613c1f09270b8",
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-research-7h-20261002/distill-longer-seed2/final.sts-model",
+      "phase_supervised_presentations": 95417,
+      "seed_index": 1,
+      "sha256": "900ee2b297dcc2bf9a6c4705c1691f9b77fb22435ff523a62a413bcd93c057fe",
+      "skip_run_tags": true,
+      "supervised_presentations": 127230,
+      "teacher_unique_ancestor_decisions": 1000000
+    }
+  },
+  "mlflow": {
+    "experiment_id": "8",
+    "learner_run": "e0c38f2d8eaf41cf8b6f55efc095d814",
+    "overview_run": "66de676d222c4dba887cd8347b468c29",
+    "publication_receipt": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-training-20261002/publication.json",
+    "url": "http://127.0.0.1:5050/#/experiments/8/runs/66de676d222c4dba887cd8347b468c29"
+  },
+  "next_recommendation": "Repeat this fixed specialist protocol with another learner seed before treating the improvement as reliable or opening the reserved test.",
+  "objective": "Test whether focused Vantom practice improves a warm-started combat actor; retain within-fight HP diagnostics alongside win rate.",
+  "population": {
+    "test_benchmark_unopened": true,
+    "test_fights": 57,
+    "test_starts": 362,
+    "train_fights": 101,
+    "train_starts": 668,
+    "validation_fights": 42,
+    "validation_starts": 267
+  },
+  "production_sources_unchanged": true,
+  "schema": "sts_vantom_specialist_training_evidence_v1",
+  "starting_git_commit": "cf4cdf2e",
+  "status": "complete",
+  "timings": {
+    "calibration_seconds": 32.83865108387545,
+    "collection_seconds": 797.0570643297397,
+    "evaluation_seconds": 478.6323197092861,
+    "exact_replay_seconds": 217.3532918752171,
+    "inspector_export_seconds": 4.840160374995321,
+    "note": "Stage timings may overlap. No separate implementation/review/publication wall-time estimate is invented; the independent review receipt records its available timing.",
+    "policy_drift_seconds": 46.78207958303392,
+    "report_analysis_seconds": 0.6922845831140876,
+    "study_wall_seconds": 1981.5855598328635,
+    "training_seconds": 1384.844230955001,
+    "update_seconds": 561.9705574973486
+  },
+  "training": {
+    "calibration_actor_unchanged": true,
+    "calibration_environment_decisions": 4096,
+    "calibration_fit": "Fixed 400 updates on an 80% source-campaign subset of TRAIN; the remaining TRAIN subset monitors calibration, not model selection.",
+    "calibration_updates": 400,
+    "collection_cutoffs": 990,
+    "configuration": {
+      "encounters": [
+        "boss"
+      ],
+      "ppo": {
+        "batch_size": 16,
+        "clip_ratio": 0.2,
+        "entropy_weight": 0.001,
+        "episode_decisions": 512,
+        "episode_seconds": 120.0,
+        "epochs": 2,
+        "gae_lambda": 0.95,
+        "gamma": 1.0,
+        "gradient_clip": 0.5,
+        "learning_rate": 0.0001,
+        "normalize_advantages": true,
+        "rollout_steps": 4096,
+        "target_kl": 0.03,
+        "value_weight": 0.5
+      },
+      "schema": "sts_ppo_experiment_v2",
+      "source": "act1_combat_corpus_v2:0b9f7cd09f6d63aa47f3110b3e7faca63039ea37e6b392e4ed0db5ebd63a9a9f",
+      "training": {
+        "action_policy": "commit_decisions_v1",
+        "mode": "combat",
+        "reward": {
+          "schema": "sts_training_reward_v1",
+          "weights": {
+            "combat_loss": 0.0,
+            "combat_win": 1.0,
+            "end_turn_action": 0.0,
+            "potion_use_action": 0.0,
+            "win_hp_fraction": 0.1
+          }
+        },
+        "scenario_set": "ironclad_a0_overgrowth_v1"
+      }
+    },
+    "episode_attempts": 11943,
+    "failed_episodes": 0,
+    "native_chunks": 20,
+    "ppo_decisions": 250000,
+    "sampler": "Uniform source fight; opening/continuation equally when both exist; uniform saved later turn. No new success filter.",
+    "skipped_decisions": 0,
+    "trained_decisions": 250000,
+    "update_threads": 4,
+    "workers": 16
+  },
+  "validation": {
+    "blockers": [],
+    "focused_tests": {
+      "command": "PYTHONPATH=. .venv/bin/python -m pytest -q tests/agent/test_combat_training.py tests/headless/test_terminal_outcomes.py tests/headless/test_native_end_boundary.py tests/headless/test_ironclad_complete.py -k 'post_hook or feed or retaliation or end_boundary'",
+      "deselected": 233,
+      "passed": 200,
+      "seconds": 8.51
+    },
+    "independent_review": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-training-20261002/training-review.json",
+    "initial_native_validation_outcomes_reproduced": 42,
+    "inspector_http_checks": [
+      {
+        "bytes": 98672,
+        "route": "/api/report",
+        "status": 200
+      },
+      {
+        "bytes": 220929,
+        "route": "/api/decision?id=00aa06ee9f2f48a6b1bcac7cca2268fc&step=0",
+        "status": 200
+      },
+      {
+        "bytes": 2226,
+        "route": "/api/compare?id=00aa06ee9f2f48a6b1bcac7cca2268fc&step=0",
+        "status": 200
+      }
+    ],
+    "inspector_runs": 84,
+    "inspector_state_action_checks": 12,
+    "native_loading_and_exact_action_replay_games": 2574,
+    "strict_checkpoint_restores": 5
+  }
+}

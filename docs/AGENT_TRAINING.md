@@ -1,6 +1,6 @@
 # Agent training guide
 
-Prepared 2026-09-28; current workflow updated 2026-09-30.
+Prepared 2026-09-28; current workflow updated 2026-10-02.
 **Status: milestones 1–7 implemented and validated.**
 **Current training goal: clear Act 1 with Ironclad at A0.** Measure improvement
 by paired Act 1 clear rate across Overgrowth and Underdocks. Training all three
@@ -21,6 +21,39 @@ This document owns training usage, implementation choices and measured results. 
 owns the full-game objective, the [public contract](AGENT_CONTRACT.md) owns actor
 information, and the [execution guide](AGENT_EXECUTION.md) owns existing recordings
 and workers. The retired training pipelines are not implementation dependencies.
+
+## CPU execution defaults
+
+Commands resolve their worker defaults from the available CPU count. On the
+18-CPU benchmark host the defaults are:
+
+| Command or phase | Default on this host | Explicit override |
+| --- | ---: | --- |
+| New `sts-agent-train ppo` collection | 16 processes | `--workers 1` through `16` |
+| New PPO updates | 4 threads, strict deterministic operations | `--update-threads 1`, `2`, `4` or `8` |
+| `sts-agent-evaluate --act1`, `--full-run` or `--combat-corpus` | 16 processes | `--workers 1` through `16` |
+| `sts-agent-play` | Up to 16 concurrent games | `--workers 1` through `32` |
+| `sts-agent-analyze build` | Up to 8 exporters | `--workers 1` through `8` |
+| `sts-agent-analyze compress --apply` | Up to 8 compression workers | `--workers 1` through `8` |
+
+Game workers default to `min(16, available CPUs)` and artifact workers to
+`min(8, available CPUs)`. PPO chooses the largest of 1, 2 or 4 update threads
+that fits the available CPU count. Unknown CPU availability falls back to one.
+Each spawned game worker uses one Torch thread; worker pools only start as many
+processes as the available jobs require. Compression keeps its existing thread
+pool. Preview compression does not mutate files or start compression work.
+These are the fastest tested game-worker/update settings and the existing
+supported artifact-worker setting, not a claim of optimality for every workload.
+
+An exact PPO resume keeps its saved collection count, CPU threads and determinism
+settings when flags are omitted. Explicit conflicting flags still reject.
+New defaults do not alter saved checkpoints, frozen experiments or historical
+timings. Baseline/hybrid/frozen-suite evaluation modes and the finite fixture
+curriculum retain their existing serial execution paths. Direct Python library
+calls keep their explicit serial defaults; the command layer resolves the new
+performance settings. See the [collector benchmark](#cpu-collector-scaling-8-12-and-16-workers-2026-10-01),
+[evaluation benchmark](#vantom-evaluation-worker-scaling-2026-10-02) and
+[CPU update benchmark](#cpu-ppo-update-threads-and-profiling-2026-10-01).
 
 ## Campaign-derived combat training
 
@@ -109,12 +142,12 @@ sts-agent-train imitate --train-dir runs/combat-demos-train \
   --action-policy commit_decisions_v1 --updates 128
 sts-agent-train ppo --checkpoint runs/combat-imitation/final.sts-model \
   --config runs/combat-corpus/combat-ppo.json --combat-corpus runs/combat-corpus/corpus.json \
-  --output-dir runs/combat-ppo --decisions 20000 --workers 8
+  --output-dir runs/combat-ppo --decisions 20000
 ```
 
 Demonstrations use each requested train/validation fight once; `--split test`
 is rejected. PPO retains the existing commit-selection policy, native selection
-order, 1–8 persistent collectors, and checkpoint/resume workflow. The generated
+order, 1–16 persistent collectors, and checkpoint/resume workflow. The generated
 rollout is 4,096 total decisions, with 512 decisions / 120 seconds per fight and
 two optimization epochs. Resume with the same corpus, experiment, implementation
 and worker allocation, using the matching `.resume.pt` file. A different corpus
@@ -163,6 +196,583 @@ For Act 1 integration, reuse `sts-agent-evaluate --act1 --checkpoint FULL_RUN_MO
 --combat-checkpoint COMBAT_MODEL ... --workers 8`: the hybrid uses the combat
 model inside fights and the unchanged heuristic for other decisions. Keep that
 controller and campaign cases fixed when comparing combat checkpoints.
+
+### Vantom specialist dataset
+
+The 2026-10-02 specialist corpus contains only **Overgrowth Vantom**, with real
+Ironclad A0 inventories. The dataset was published before the specialist training
+experiment below. The existing native loader, sampler, rewards and state guards
+are unchanged. Its public manifest and source-bound PPO configuration are
+`runs/vantom-specialist-20261002/corpus/corpus.json` and
+`runs/vantom-specialist-20261002/corpus/combat-ppo.json`; exact snapshots remain in
+the owner-only `corpus-private` sibling. See the
+[dataset evidence](evidence/vantom_specialist_dataset_2026_10_02.json).
+
+| Split | Separate source fights | Saved starts |
+| --- | ---: | ---: |
+| Training | 101 | 668 |
+| Validation | 42 | 267 |
+| Sealed test | 57 | 362 |
+
+Training reuses only Vantom fights from the earlier large corpus's training
+split. Validation and test come from fresh, disjoint campaign seeds, assigned
+before play. Each fight has its opening and up to seven naturally reached later
+turns; all starts from a campaign keep the same split. Neither victory filtering
+nor invented HP, decks or potions is used. Training includes 37 source campaigns
+that cleared Act 1 and 64 that died. Later-turn states are correlated practice
+positions, not additional independent fights or expert demonstrations.
+
+The 668 training starts cover all four displayed Vantom move categories and
+Slippery stacks 0–8. There are 126 states with a legal potion action, 412 with a
+legal printed-block card under displayed unblocked/lethal pressure, and 81 with
+a legal printed-block card when no attack is displayed. These counts establish
+practice opportunities, not optimal-action labels. The native sampler chooses
+fights uniformly, then opening versus continuation equally when both exist.
+Rewards remain +1 for victory plus 0.1 times HP fraction on victory.
+
+Existing general combat policies were evaluated greedily on all 42 validation
+openings. The two 250k PPO checkpoints won 10/42 and 19/42; the two imitation
+checkpoints won 19/42 and 22/42. Heuristic won 7/42; random-legal won 0/42.
+All 252 games completed without cutoffs or failures. These are starting references,
+not evidence of specialist improvement. Baselines are in the local MLflow
+**Vantom specialist** experiment; verified public traces are in
+`runs/vantom-specialist-20261002/inspection`.
+
+All 935 training/validation starts passed restore, public-state, legal-action and
+clone-isolation checks. A two-worker collection smoke test left weights unchanged.
+Test snapshot integrity was checked by file digest only; the specialist benchmark
+test remains unopened. Raw collection parents are reserved for this derivative,
+so evaluating through a parent alias cannot silently reset held-out history.
+The full derivation recipe and original source schedules are retained locally.
+
+Use the normal `ppo` command with this corpus and config in a **new training
+fork**, retaining an existing model's architecture if warm-starting. An optimizer
+resume bound to the general corpus is incompatible. Track both fixed training
+probes (`training-probes.json` in the dataset root) and full-fight validation wins:
+improving only on training fights indicates overfitting; failing on both calls for
+a learning or representation investigation.
+
+### First Vantom specialist training experiment
+
+The 2026-10-02 experiment completed **250,000 additional PPO decisions**, starting
+from the strongest tested imitation actor on the Vantom validation baseline
+(`imitation8k-seed2`).
+It kept that actor's rich combat representation and architecture. Before PPO,
+4,096 separate training decisions supplied completed-episode returns for 400
+value-head calibration updates. All non-value tensors and checked action
+probabilities remained unchanged. The calibration monitor was a separate subset
+of training campaigns; validation fights never supplied gradients or targets.
+PPO then started with fresh optimizer/RNG state and zero specialist counters.
+
+The run used 16 CPU collectors, four learner threads, learning rate `0.0001` and
+entropy weight `0.001`. Sampling and rewards remained as described above. Exact
+native continuations preserved optimizer and RNG state within this specialist
+phase; each 50k checkpoint passed strict restore. All 250k decisions were trained,
+with no skipped decisions or failed training episodes. Training plus scheduled
+evaluations and calibration took 33.0 minutes, before replay verification and
+result publication. The configuration, scripts, checkpoints and source-bound
+reports are in `runs/vantom-specialist-training-20261002/`.
+
+Every checkpoint used all 101 training openings and all 42 validation openings:
+one greedy game and two paired sampled-action repetitions per opening. Training
+results diagnose learning on the fitted population; validation measures the
+separate development population. The initializer remained eligible for selection.
+
+| Additional PPO decisions | Training greedy /101 | Training sampled /202 | Validation greedy /42 | Validation sampled /84 |
+| ---: | ---: | ---: | ---: | ---: |
+| 0 | 50 | 101 | 22 | 31 |
+| 50,000 | 63 | 109 | 19 | 40 |
+| 100,000 | 62 | 107 | 19 | 37 |
+| 150,000 | 64 | 117 | 22 | 41 |
+| 200,000 | 64 | 113 | 22 | 43 |
+| 250,000 | 63 | 109 | 26 | 46 |
+
+The final 250k checkpoint was selected by the frozen rule: validation greedy wins,
+then sampled wins, then mean winning HP fraction, then the earlier checkpoint.
+Greedy validation rose from 52.4% to 61.9%; sampled validation from 36.9% to 54.8%.
+This is an exploratory result from one learner and repeated validation selection,
+not an independent test claim. The 57 test openings remain unopened. The warm
+start, value calibration, focused data and optimizer settings form one treatment;
+this comparison cannot isolate which component caused the changes. Other bosses
+and full Act 1 retention were not measured.
+
+Results and HP diagnostics are in the local MLflow **Vantom specialist** experiment,
+under the **Vantom · specialist learning curve** overview and the continued
+**Vantom specialist · calibrated PPO 250k** learner. Recovery checkpoints remain
+on disk; the selected final model is retained in Models. The decision inspector
+compares every greedy validation opening for the initial and final actors. It
+still labels a won combat's canonical campaign endpoint as `external_stop`;
+combat outcomes and win rates are in the evaluation reports and MLflow.
+See [training evidence](evidence/vantom_specialist_training_2026_10_02.json).
+
+HP diagnostics keep outcomes and denominators explicit:
+
+- **Boss HP remaining on losses**, in HP and fractions of its terminal maximum;
+  lower values indicate a closer loss. Completed-fight and cutoff summaries are
+  separate, so an unfinished game does not become a defeat.
+- **Player HP remaining on wins**, measured when combat ends, before victory
+  healing. The existing post-cleanup HP measurement is also retained. Each uses
+  its own maximum HP, including any changes caused by cards or relics.
+- **Paired changes on fights both checkpoints won or both lost**, using the same
+  opening and sampled-action repetition. These avoid attributing a different mix
+  of winning or losing fights to better play within the same fights. Conditional
+  means still accompany win/loss counts and the unconditional win rate.
+
+The original public traces omit terminal enemy HP. A separate derivative replays
+the exact recorded actions through the unchanged native adapter, checks every
+public state, execution, reward and combat summary, then reads only the terminal
+HP facts from the retained combat owner. No new policy decisions or independent
+evaluation samples are created. A zero-HP boss can coexist with an authoritative
+defeat after simultaneous lethal retaliation; HP never overrides that outcome.
+These measurements do not change rewards or checkpoint selection, and a closer
+loss does not establish that its starting state was unwinnable.
+
+For the final versus initial greedy validation actors, the 14 fights both lost
+ended with mean boss HP **68.9 → 59.1** (39.8% → 34.2%). The 20 fights both won
+ended with mean player HP **16.9 → 18.1** before healing (20.1% → 21.3%). Six
+previous losses became wins and two previous wins became losses. Across each
+checkpoint's own loss population, mean boss HP instead changed 52.0 → 53.8;
+across its own wins, mean player HP changed 16.9 → 15.6. This difference is why
+the paired and conditional views are both retained. Paired bootstrap intervals
+for these HP changes include zero; they are descriptive signs of progress, not
+settled evidence of better play. The greedy win-rate difference is +9.5 percentage
+points with an exploratory campaign-bootstrap interval of −2.4 to +23.8 points.
+All 2,574 checkpoint fights and 75,761 recorded decisions passed strict native
+loading and exact action replay, including one loss with zero boss HP.
+Reserve the 57 test openings for one final, preselected comparison. The population
+still reflects the collector's route and survival bias and cannot establish
+general boss skill or Act 1 clear probability.
+
+### Vantom potential shaping experiment
+
+The 2026-10-02 pilot compares terminal rewards alone, enemy-HP potential shaping,
+and enemy-plus-player-HP potential shaping. The potentials are respectively zero,
+`-0.5 * enemy_hp_fraction`, and
+`-0.5 * enemy_hp_fraction + 0.25 * player_hp_fraction`; PPO gamma is 1.
+Each arm retains +1 victory and +0.1 winning HP fraction as its base objective.
+The [reward API](#potential-based-combat-reward-shaping) defines the terminal and
+cutoff behavior. The existing 250k rich-combat actor and 97,058-parameter
+architecture are shared by all arms; action-preview channels are not used.
+
+Two matched learner seeds per arm receive 50k additional PPO decisions each,
+using 16 collectors and four CPU update threads. Every critic starts fresh with
+identical weights within learner seed. A shared 4,096-decision parent-policy
+TRAIN sample calibrates each value head to its own return scale while freezing
+the actor and encoder. Its 3,872 completed decisions supply Monte Carlo targets;
+224 cutoff decisions are excluded from calibration. Calibration uses 400 updates
+per model, with identical minibatch sequences within seed. The totals are
+**300,000 PPO decisions + 4,096 shared calibration decisions**, plus **2,400
+value-only updates / 153,600 supervised presentations**. No analytic value
+translation is applied during PPO: exactly translating `V` by `-Phi` would
+cancel the shaping in TD/GAE rather than test its effect on critic learning.
+
+On that fixed training sample, enemy shaping is nonzero on **60.3%** of
+nonterminal decisions; the combined potential is nonzero on **73.4%**, including
+positive progress and negative player-HP changes. The control has no
+nonterminal reward. These are reward-density measurements, not performance
+claims. Each endpoint is evaluated with common unshaped rewards on the same 42
+previously used validation openings, with one greedy and two sampled repetitions.
+This is an exploratory fine-tuning comparison; the 57 test openings stay closed.
+The active source-bound corpus is now
+`runs/combat-potential-shaping-20261002/corpus/corpus.json`, with identical cases,
+splits and snapshot bytes and revalidated TRAIN/validation public starts.
+
+| Reward | Greedy wins, seeds a / b (each /42) | Mean greedy | Sampled wins, seeds a / b (each /84) | Mean sampled |
+| --- | ---: | ---: | ---: | ---: |
+| Terminal-only control | 20 / 20 | 47.6% | 39 / 41 | 47.6% |
+| Enemy HP potential | 23 / 18 | 48.8% | 38 / 42 | 47.6% |
+| Enemy + player HP potential | 20 / 25 | 53.6% | 43 / 46 | 53.0% |
+| Unchanged parent reference | 26 | 61.9% | 46 | 54.8% |
+
+The combined potential is a tentative lead: sampled wins improve in both seeds,
+while its greedy improvement comes from seed b. Enemy-only shaping is
+inconsistent. On fights both policies won greedily, combined shaping leaves
+2.28 and 0.89 more player HP than the corresponding controls. On fights both
+lost, boss HP changes by +6.80 and −2.93, so partial-progress evidence is mixed.
+All 882 evaluation episodes / 26,154 actions passed exact native replay. All
+300,000 scalar training entries passed reward checks; an additional 72 selected
+win/loss/cutoff public pairs passed independent component and telescoping checks.
+No endpoint beats the parent on greedy wins, so retain the existing
+250k specialist. Two learner seeds and reused validation cases do not establish
+a general improvement. The [continuation diagnostic](#vantom-continuation-diagnostic)
+below subsequently tested whether restart handling explained the decline. Future
+shaping comparisons should use a common earlier imitation initialization and fixed
+evaluation checkpoints to measure learning speed. Local MLflow **Vantom potential shaping** keeps the
+curves, common unshaped outcomes, reward-density diagnostics and all six endpoints;
+the inspector retains all seven greedy panels. See
+[potential shaping evidence](evidence/combat_potential_shaping_2026_10_02.json).
+
+### Vantom continuation diagnostic
+
+The 2026-10-02 follow-up completed **300,000 additional PPO decisions** across
+three treatments and two matched continuation schedules. Each run received 50k
+decisions with the parent's architecture, base terminal rewards, 16 collectors
+and four CPU update threads. The treatments retained Adam and the critic, reset
+only Adam, or reset Adam and reused the calibrated critic from the corresponding
+earlier shaping control. No new calibration collection or fitting was needed.
+
+All runs executed the parent's 337 verified original Python sources from the
+preserved research archive. Current production sources and original artifacts
+stayed unchanged. Schedule a retained the parent's exact action RNG, update RNG and
+episode cursor; its retained-Adam arm was a strict full-state continuation.
+Schedule b was an explicitly reseeded fork. Within each schedule, the three arms
+had identical actor weights and made identical first-rollout choices across 4,096
+decisions. Reset arms used valid fresh native counters; retained arms kept their
+250k ancestry in those counters. Diagnostic curves use additional decisions for
+every arm, while canonical PPO counters preserve their actual values.
+
+Every arm evaluated all 101 TRAIN and 42 validation openings greedily at 8,192,
+16,384, 24,576, 32,768, 40,960 and 50,000 additional decisions. Baseline and final
+panels also included two fixed sampled-action repetitions. These are two
+continuation schedules from one selected parent, not independently pretrained
+models. Intermediate checkpoints were diagnostic; the comparison used fixed
+50k endpoints and made no automatic model promotion.
+
+| Treatment | TRAIN greedy a / b (each /101) | Validation greedy a / b (each /42) | Validation sampled a / b (each /84) |
+| --- | ---: | ---: | ---: |
+| Retain Adam and critic | 66 / 65 | 21 / 23 | 39 / 43 |
+| Reset Adam only | 67 / 66 | 24 / 22 | 39 / 42 |
+| Reset Adam and calibrated critic | 64 / 62 | 21 / 23 | 38 / 36 |
+| Unchanged 250k parent | 63 | 26 | 46 |
+
+This does **not support optimizer reset as the primary explanation** for the
+earlier decline: original optimizer/critic continuation also loses validation
+wins, and retaining Adam has no consistent advantage over resetting it. Retained
+and Adam-only arms improve TRAIN greedy and sampled wins in both schedules while
+validation declines. Critic replacement has mixed greedy effects and lower
+sampled validation wins in both schedules. Its initial Monte Carlo prediction
+error is nearly unchanged in schedule a (0.1215 versus 0.1230) and worse in b
+(0.1362 versus 0.1175), so calibration was not uniformly bad.
+
+The evidence is compatible with limited generalization during continued
+optimization and regression from a validation-selected high point. It does not
+separate their contributions or establish a population-level decline. The parent
+was selected among six historical checkpoints on these same 42 cases; all six
+greedy endpoint-versus-parent bootstrap intervals include or touch zero. The 57
+reserved test openings remain unopened. More independent Vantom training fights
+and a frozen development panel are the next priority; compare new reward or
+representation treatments from a common earlier initializer with fixed curves.
+A lower-learning-rate continuation is a separate targeted follow-up when the
+objective is to preserve this specific actor while adapting it.
+
+Across 808 fixed public TRAIN states, final greedy agreement with the parent is
+89.7–93.3%, with mean parent-to-current KL of 0.045–0.079. Agreement measures
+change, not quality. The exact schedule-a continuation loses seven former greedy
+validation wins and gains two. On its 19 shared wins, mean player HP change is
+zero; on its 14 shared losses, mean boss HP change is +0.07. The paired HP views
+retain their own denominators and do not imply causal effects of individual
+changed actions.
+
+All **7,293 evaluation games / 220,113 actions** passed exact headless replay,
+including outcomes and terminal HP; all 36 checkpoint boundaries strictly
+restored. The 300k decisions were all trained, with no skipped updates or failed
+training episodes. The parent reproduced all 429 prior baseline outcomes and
+decision counts. The experiment took 53.6 minutes including evaluations;
+native PPO invocations accounted for 27.8 minutes, followed by 10.5 minutes of
+replay verification. Local MLflow **Vantom continuation diagnosis** keeps the
+curves, paired outcomes and six final diagnostic models. The selected 250k
+specialist remains the reference. Scripts and artifacts are under
+`runs/vantom-continuation-diagnostic-20261002/`; see
+[continuation evidence](evidence/vantom_continuation_diagnostic_2026_10_02.json).
+
+### Vantom action preview experiment
+
+Three opt-in representations test immediate action effects on top of the rich
+combat graph: `action-control`, `action-damage`, and `action-stacks` in the
+imitation CLI's `--representation` option. Their architecture IDs are
+`sts_combat_action_control_actor_critic_v1`,
+`sts_combat_action_damage_actor_critic_v1`, and
+`sts_combat_action_stacks_actor_critic_v1`. PPO inherits the checkpoint's
+representation. Each adds an equally sized action-scoring branch; control receives
+zero channels, damage receives projected enemy HP and Block removed, and stacks
+also receives projected Slippery removed. Each number has a known-value flag,
+value / 100 and signed log1p value.
+
+The preview reconstructs a disposable combat from public values and executes
+supported attacks through native rules, including sequential hits, Block,
+Slippery, early death and supported relics. It does not read the live engine,
+hidden draw order or RNG. Unsupported effects return unknown, never a fabricated
+zero-damage estimate. This first scope is Ironclad against a single Vantom;
+canonical observations, state guards, masks and existing model identities are
+unchanged. All 1,794 supported attack previews across 668 training starts matched
+native execution (79% of attack choices at those starts). Coverage was about
+53% during the parent's complete validation fights, so these are partial action
+previews, not general action-value estimates.
+
+The 2026-10-02 pilot used two matched seeds per representation, each warm-started
+from the same 250k rich-combat specialist and trained for 50k additional decisions
+with 16 collectors and four CPU update threads. Initial logits, values and sampled
+actions matched the parent exactly; optimizer state was fresh. All six models had
+97,586 parameters. The new source-bound corpus was revalidated without changing
+cases, splits or snapshot bytes; reserved test ownership moved to
+`runs/combat-action-preview-20261002/corpus/`, with no test gameplay.
+
+| Representation | Greedy wins, seeds a / b (each /42) | Mean greedy | Sampled wins, seeds a / b (each /84) |
+| --- | ---: | ---: | ---: |
+| Control | 21 / 23 | 52.4% | 42 / 44 |
+| Damage preview | 23 / 21 | 52.4% | 41 / 46 |
+| Damage + Slippery removed | 21 / 20 | 48.8% | 36 / 36 |
+| Unchanged parent reference | 26 | 61.9% | 46 |
+
+This pilot gives no reason to replace the parent or require explicit stack
+removal. Without Boot or other exceptional damage changes, current Slippery and
+projected HP damage already determined stacks removed in every supported training
+example; an explicit channel could still make that relationship easier to learn.
+The two-seed experiment did not demonstrate that benefit. These are exploratory
+fine-tuning results on the same previously used 42 validation cases, not a fresh
+test or a test of learning from scratch. Local MLflow **Vantom action previews**
+retains learner curves, endpoints, paired HP diagnostics and the comparison plot;
+the decision inspector includes all seven greedy panels. See
+[action preview evidence](evidence/combat_action_preview_2026_10_02.json).
+
+### Combat representation experiment
+
+The opt-in `sts_combat_graph_actor_critic_v1` architecture augments the existing
+graph with 52 named numeric channels and five typed pools: current player combat
+state, enemies, cards in hand, owned potions, and the active combat selection.
+Numeric channels retain a known-value flag, value / 100 and signed log1p value.
+They include current HP/block/energy, printed card specifications, visible status
+stacks (including Slippery), and displayed intent pressure. Unknown HP is distinct
+from zero. Intent pressure is not a complete forecast of end-turn HP loss, and
+printed card damage is not an effective-damage simulator. Potion identities remain
+the public definition IDs; no private content lookup supplies additional effects.
+
+The complete canonical graph remains unchanged and still enters the generic
+message-passing path. Extra projections give these numbers and separately pooled
+combat entities a shorter path to state/value and candidate scoring. Hand pools
+exclude run-deck copies and hover previews. Action references, native selection
+order, legality/policy masks, state guards, public recording and rewards are
+unchanged. This variant adds parameters as well as changing the representation;
+a learning difference cannot isolate those two causes without another ablation.
+
+Select it for a new imitation learner with `sts-agent-train imitate ...
+--representation combat`, or construct `Architecture(48, 2,
+'sts_combat_graph_actor_critic_v1')` for a fresh experimental learner. The default
+is the original `graph` representation. Inference, PPO, spawned collectors and
+full-run/combat corpus loaders carry the selected representation. Checkpoints bind
+the architecture and feature identity; a representation change starts a new
+learner, rather than changing an exact resume. Existing graph checkpoints retain
+their original identities and behavior.
+
+#### Matched 50k pilot (2026-10-01)
+
+Four fresh learners completed **50,000 decisions each**: original graph and combat
+representation, paired at learner seeds 2027 and 4099. Shared initial tensors were
+identical within each pair; the additional combat projections change the initial
+policy. All learners used one frozen vocabulary fitted only on training starts,
+16 collectors, four strict deterministic CPU update threads, width 48, two message
+layers, and the same PPO settings. Rewards were +1 for winning the fight and
++0.1 times remaining HP fraction on a win; other reward weights were zero.
+This was fresh PPO training, without imitation initialization.
+
+The newly source-bound corpus contains 1,933 training starts from 516 fights and
+64 source campaigns. Validation uses all 257 opening fights from 32 separate
+campaigns: 207 ordinary fights, 36 elites and 14 bosses. Both splits include all
+42 regional encounters, including all six elites and six bosses. These are combat
+starts reached by the fixed campaign collector, not a measurement of Act 1 clear
+probability. Two reserved test source campaigns were generated during corpus
+construction; their starts were not used for learner training, vocabulary fitting
+or learned-policy evaluation.
+
+The prespecified primary metric equally weights ordinary, elite and boss win
+rates under sampled actions. Each checkpoint at 0, 25k and 50k was evaluated with
+two paired action-sampling seeds and one greedy game per opening. All **9,252
+games** completed, with no failures or decision/time cutoffs.
+
+| Representation | Sampled balanced wins: 0 / 25k / 50k | Greedy balanced wins at 50k | Parameters | Training seconds per 50k |
+| --- | --- | ---: | ---: | ---: |
+| Original graph | 23.7% / 40.5% / 49.4% | 62.1% | 77,714 | 240.2 |
+| Combat channels and typed pools | 24.1% / 44.8% / 51.1% | 64.1% | 97,058 | 261.3 |
+
+Values are means of the two learner seeds. The final primary difference was
+**+1.71 percentage points**, with a paired campaign-cluster bootstrap 95% interval
+of **-1.55 to +5.68 points** (10,000 draws). Individual seed differences were
++2.68 and +0.74 points. The interval conditions on these two learner seeds and
+resamples source campaigns jointly across both seeds and action repeats; it does
+not treat the 1,028 paired sampled games as independent campaigns. The final
+sampled ordinary/elite/boss win rates were 93.6% / 43.8% / 10.7% for graph and
+93.5% / 47.2% / 12.5% for combat. Greedy seed differences were -1.46 and +5.32
+points; its pooled +1.93-point interval also crossed zero.
+
+This is a small positive pilot result, not a demonstrated improvement. The larger
+advantage at 25k narrowed by 50k, and additional model capacity is a confound.
+Keep the variant optional and continue both matched arms before selecting one.
+No checkpoint was automatically promoted or evaluated on the held-out test split.
+
+Combat training took **8.8% longer**. Mean collection/update times were
+139.9s / 96.1s for graph and 150.6s / 106.0s for combat. The table sums in-process
+training invocation times; parent wall times, including process launch and final
+tracking, averaged 251.7s and 273.5s. Preparation took 419.2s, all four training
+invocations 1,003.2s, validation 756.5s, paired analysis and checkpoint checks 2.6s,
+and inspector export 14.9s. Implementation and independent review were interleaved
+with these stages and were not timed separately.
+
+Focused regression suites passed **99 checks in 27.58s** and **74 checks in
+23.76s**; the suites overlap. They cover the unchanged graph path, enriched public
+features, candidate reordering, hidden-RNG isolation, checkpoint feature binding,
+spawned collection, and exact PPO continuation at one and four update threads.
+All 56 closed-update checkpoint pairs and the selected 0/25k/50k pairs passed
+strict restoration. This checks restoration, rather than replaying every research
+checkpoint; exact continuation equivalence is established by the focused tests.
+The evaluator additionally passed 24 preflight games (18.3s), matching production
+greedy traces and repeated seeded sampling. Independent semantic and statistical
+reviews found no blockers.
+
+Results and curves are attached to the four actual learners in the local MLflow
+**Combat representation** experiment (ID 6). The final 1,028 greedy trajectories
+are exported at `runs/combat-representation-20261001/inspection`; the inspector
+can compare all four final checkpoints on a recorded state. Its canonical campaign
+cutoff labels are separate from the benchmark's confirmed combat-win metrics.
+The bound protocol, source identities, checkpoints, grouped diagnostics, paired
+intervals and publication receipts are in
+[the experiment evidence](evidence/combat_representation_2026_10_01.json).
+
+#### Matched 250k continuation (2026-10-01)
+
+All four learners continued from their exact 50k optimizer/RNG checkpoints to
+**250,000 decisions each**: 800,000 additional decisions and 1,000,000 cumulatively.
+Corpus, vocabulary, rewards, source code, PPO settings, 16 collectors and four CPU
+update threads stayed fixed. Every processed decision was trained; no training
+episodes failed. Closed-update checkpoints were retained, with validation at
+100k, 150k, 200k and 250k. The final 250k endpoint was fixed before the continuation;
+intermediate results did not change its budget or select a replacement endpoint.
+
+The same 257 opening fights from 32 validation campaigns received one greedy
+and two paired sampled evaluations per model and checkpoint. All **12,336 new
+games** completed without failures or decision/time cutoffs, bringing the combined
+pilot and continuation to 21,588 games. The table shows mean balanced sampled win
+rates across the two learner seeds, giving ordinary fights, elites and bosses
+equal weight:
+
+| Decisions per learner | Original graph | Combat channels and typed pools |
+| --- | ---: | ---: |
+| 50,000 | 49.4% | 51.1% |
+| 100,000 | 54.7% | 55.8% |
+| 150,000 | 56.1% | 57.9% |
+| 200,000 | 58.5% | 59.8% |
+| 250,000 | 57.5% | 63.4% |
+
+At 250k, the primary paired difference is **+5.94 percentage points**, with a
+campaign-cluster bootstrap 95% interval of **+3.36 to +9.20 points** (10,000 draws).
+The individual learner-seed gains are +9.55 and +2.34 points. Sampled
+ordinary/elite/boss win rates are 95.8% / 56.9% / 19.6% for graph and
+96.7% / 66.7% / 26.8% for combat. Balanced greedy wins are **65.0% versus 70.8%**,
+a +5.77-point difference with a paired interval of +1.69 to +10.30 points.
+
+This is positive validation evidence for the richer model at the fixed 250k
+budget. The uncertainty interval remains conditional on these two learner seeds;
+it does not establish reliability across arbitrary initializations. The richer
+model also has more parameters, so representation and capacity remain confounded.
+Confirming the comparison on fresh held-out combat campaigns is the next useful
+step before making it the default. No learned policy was evaluated on the reserved
+test split, and no model was automatically promoted.
+
+Cumulative in-process training averaged **1,226.3s per graph learner** and
+**1,322.4s per combat learner**, a **7.8%** increase. Mean collection/update times
+were 713.3s / 491.4s and 765.0s / 532.4s respectively; parent wall times averaged
+1,284.4s and 1,387.0s. The extension used 4,094.1s of in-process training and
+900.5s of validation. Total elapsed time through analysis and inspector export
+was 5,262.3s (about 87m 42s); preparation and independent review were not timed
+separately. All 280 cumulative closed-update checkpoint pairs passed strict
+restoration, as did the selected checkpoints. Existing focused regression evidence
+was reused after verifying the unchanged transitive sources and runtime.
+
+The four existing MLflow learners in experiment 6 now carry continuous curves
+through 250k. The final 1,028 greedy traces are available at
+`runs/combat-representation-250k-20261001/inspection`, with all four final models
+available for decision comparison. Representative steps 0 and 29 from each
+learner passed comparison checks. Protocol, results, checkpoint identities,
+timings and publication receipts are bound in
+[the continuation evidence](evidence/combat_representation_250k_2026_10_01.json).
+
+#### Seven-hour combat research (2026-10-02)
+
+The autonomous research window tested training schedules, additional campaign
+data, wider/deeper models, vocabulary transfer, checkpoint averaging and
+successful-fight imitation. It processed **2.9 million new PPO decisions** with
+no skipped updates or failed training episodes, plus 50,000 imitation updates
+and 800 value-head updates across experimental branches. The **38 development
+panels / 132,250 games** completed without failures or cutoffs. These counts
+exclude precursor training, corpus collection, teacher diagnostics and final
+confirmation; concurrent phase durations must not be added as elapsed wall time.
+
+The strongest lead was imitation of **87 successful training fights**: 65 elites
+and 22 bosses, containing 1,797 public decisions. Two existing 250k combat models
+were fitted to demonstrations selected from the shared teacher pool. An
+8,000-update endpoint was frozen before opening the new test. Its teachers have
+1 million unique ancestral PPO decisions collectively, so this is not an
+equal-total-compute comparison with one 250k learner. The 2k/8k/16k sweep did not
+establish an optimal duration; 8k was a development-based compromise between
+greedy and sampled performance.
+
+The locked native test used **514 opening fights from 64 unseen campaigns**:
+410 ordinary fights, 69 elites and 35 bosses. All eight selected checkpoints and
+two reference policies completed their 5,140 games without failures or cutoffs.
+Rates below average two fixed learner seeds using greedy actions. **Balanced
+wins give ordinary fights, elites and bosses equal weight.**
+
+| Model | Balanced wins | Ordinary | Elite | Boss |
+| --- | ---: | ---: | ---: | ---: |
+| Original rich combat model, 250k PPO | 69.7% | 97.9% | 78.3% | 32.9% |
+| Same parents + 8k successful-fight imitation | 72.2% | 97.7% | 77.5% | 41.4% |
+| Same parents + 100k PPO, 1,024-campaign data | 69.8% | 97.4% | 77.5% | 34.3% |
+| Same parents + 100k PPO, original data control | 66.6% | 97.3% | 75.4% | 27.1% |
+
+The prespecified primary imitation difference is **+2.53 percentage points**,
+with a paired source-campaign bootstrap 95% interval of **−0.78 to +6.11 points**:
+promising, but **inconclusive**. The gain is concentrated in bosses; ordinary
+and elite performance is approximately unchanged. The population-weighted gain
+is only +0.29 points because ordinary fights dominate this roster. The larger-data
+comparison against its matched continuation control is descriptive and also
+inconclusive: +3.15 points, interval −1.05 to +7.16. Independent data populations
+confound size and composition. Intervals are conditional on these two learner
+seeds, not evidence of reliability across arbitrary initializations.
+
+A separate fixed-controller Act 1 check completed all **160 games on 32 new
+campaigns**, with no failures or cutoffs. Original combat models cleared
+48.4%; imitation models cleared 50.0%. The paired difference was +1.56 points,
+interval −6.25 to +9.38, with opposing changes across learner seeds. **Act 1
+improvement is not established.** The campaign model alone cleared 37.5%.
+No model selection or further fitting used either final test.
+
+The development experiments exposed a useful next training problem. On 537 fresh
+validation openings, 2k imitation scored 73.35% greedy / 70.60% sampled balanced
+wins. Adding 50k PPO decisions reduced those to 69.29% / 64.65%. Warming only the
+value head for 400 updates before the same PPO budget recovered 72.92% / 67.66%.
+Imitation changed shared features and therefore critic predictions despite an
+unchanged value head. Calibration helped, but did not fully preserve sampled
+performance. An imitation or policy anchor during PPO and separate actor/critic
+features are hypotheses for controlled follow-up, not demonstrated fixes.
+An offline check of all 4,538 public decisions in the original models' 212 hard
+validation trajectories also found broader action distributions after PPO.
+On boss states, mean probability of the 2k imitation model's preferred action
+fell from 0.803 to 0.659 after raw PPO and 0.711 after calibrated PPO. These are
+state-weighted descriptive measurements on fixed parent trajectories, not a
+causal explanation or independent samples. They motivate separately testing
+lower entropy regularization and an imitation/policy anchor after imitation.
+
+Wider and deeper models did not show a clear improvement at the tested budgets
+on the original development population. The earlier rich-versus-graph advantage
+was also smaller on fresh validation: +1.34 points greedy and +1.31 sampled,
+with both intervals crossing zero. The new 1,024-campaign training corpus
+provides 8,362 fights / 30,830 starts for broader hard-fight demonstrations;
+imitation from that larger set has not yet been tested. A tested 237-demo mixture
+from the original and 128-campaign training populations also contained only
+elite/boss successes and did not improve on the 87-demo set at a matched 2k
+budget. More demonstrations alone are therefore not an established solution.
+The next priorities are
+preserving imitation gains during PPO, increasing diverse successful elite/boss
+examples, and confirming with more learner seeds and a new test population.
+The consumed test must not become a tuning set followed by a claimed fresh test.
+
+MLflow experiment **7, Combat research 7h**, retains all completed panels and
+their native learner counters. The two selected 8k inference bundles are retained
+in Models without changing the default policy. All 2,056 primary paired test
+traces are exported at `runs/combat-research-7h-20261002/inspection`, with four
+checkpoints available for same-state comparison. Canonical campaign cutoff labels
+in that viewer remain separate from confirmed combat outcomes. The
+[research evidence](evidence/combat_research_2026_10_02.json) binds the protocol,
+negative results, final tests, independent reviews, source archive and artifacts.
 
 ### Expanded combat population (2026-09-30)
 
@@ -616,7 +1226,7 @@ the previous HUD. Net HP changes include healing and are not damage totals.
 Exports use compressed chunks of 16 decisions, loaded on demand with two chunks
 cached. The output directory is new and never overwrites an existing report;
 failed builds have no completed `report.json`. `build --workers N` accepts 1–8
-workers (default 1). These workers independently validate and export episodes;
+workers (default up to eight available CPUs). These workers independently validate and export episodes;
 they do not run training or inference. Episode identities are reserved before
 writing, report order is stable, and paired-start checks run in the parent.
 Worker errors stop the export without retries; Ctrl-C stops and cleans up workers
@@ -971,6 +1581,57 @@ a small positive terminal HP weight or a negative potion-use weight. Those weigh
 define a different training utility; win rate and HP remain separately reported.
 Changing weights affects further training, not the behaviour of an already frozen
 checkpoint. Goal-conditioned inference is outside the first implementation.
+
+### Potential-based combat reward shaping
+
+The opt-in `sts_training_reward_v2` retains the five combat components and adds
+`enemy_hp_potential` and `player_hp_potential`. It measures public HP before and
+after each reconciled action and pays `gamma * Phi(next) - Phi(current)` on top
+of the configured base reward, following
+[Ng, Harada and Russell's potential-based shaping](https://people.eecs.berkeley.edu/~pabbeel/cs287-fa09/readings/NgHaradaRussell-shaping-ICML1999.pdf).
+The potential is
+`-enemy_weight * enemy_hp_fraction + player_weight * player_hp_fraction`.
+Enemy HP fraction uses the sums of visible enemy HP and max HP, including dead
+slots in the denominator. A selection without a combat HUD or an incomplete
+health measurement has an explicitly neutral potential; unknown HP is not
+interpreted as measured zero HP. No private state or projected damage is used.
+
+For example, replace a combat PPO configuration's `training.reward` with:
+
+```json
+{
+  "schema": "sts_training_reward_v2",
+  "discount": 1.0,
+  "weights": {
+    "combat_win": 1.0,
+    "win_hp_fraction": 0.1,
+    "enemy_hp_potential": 0.5,
+    "player_hp_potential": 0.25
+  }
+}
+```
+
+Omitted weights retain their defaults. `discount` must equal PPO's `gamma`.
+Confirmed combat endings have potential zero, including victories represented
+as canonical `external_stop`; decision/time cutoffs keep the actual successor
+potential and value bootstrap. For a completed fight, discounted shaping sums
+to `-Phi(start)`, a constant for that starting state. Thus this redistributes
+reward without changing the underlying completed-combat objective. A positive
+final adjustment on defeat can be necessary to cancel earlier shaping; clamping
+it would change that objective. Finite critic learning and truncated GAE can
+still change PPO behavior, so this is an empirical learning experiment.
+
+`CombatTrainingEnv`, PPO collection and `sts_combat_training_v2` sidecars share
+the measurement. Public-pair loading recomputes components and scalar rewards;
+explicit rescoring recomputes potentials under the requested weights/discount.
+Imitation value labels honor the declared discount. Old reward schemas and
+recordings retain their original representation and behavior. Checkpoints bind
+the new objective: use an explicit objective reset for a changed reward, with a
+new critic and optimizer, rather than resuming incompatible value estimates.
+The [Vantom pilot](#vantom-potential-shaping-experiment) additionally calibrates
+all critics on the same training-only sample. Compare arms using common unshaped
+wins and HP metrics, because their
+shaped training returns have different state-dependent offsets.
 
 `sts_public_trajectory_v1` and its sparse reward validator remain intact. A successful
 isolated combat ends its still-running canonical run recording with the existing
@@ -1419,8 +2080,8 @@ stopping heuristic and does not guarantee a hard divergence bound. Advantage
 normalization uses population variance and retains the signal for singleton or
 constant batches. Changing these settings declares a different experiment.
 
-The synchronous learner freezes one model throughout a rollout, using one local
-collector by default or persistent processes with `--workers`. Sampling,
+The synchronous learner freezes one model throughout a rollout, using persistent
+processes by command default or one local collector with `--workers 1`. Sampling,
 likelihoods, entropy and update replay all use the original legal candidate mask
 and mapping. The last unfinished fight closes at the rollout decision limit;
 its final public observation supplies the bootstrap value. A true combat win or
@@ -2195,8 +2856,9 @@ took 159.22 seconds (2.65 minutes), and the final artifact audit took 8.90 secon
 ### Parallel PPO collection (2026-09-29)
 
 The `ppo` command supports `--workers 1` through `--workers 16` for both combat and
-full-run tasks. The default remains one local collector, preserving the existing
-serial sampling path. For example:
+full-run tasks. It originally defaulted to one local collector; new commands use
+the [CPU execution defaults](#cpu-execution-defaults). The existing serial sampling
+path remains available with `--workers 1`. For example:
 
 ```bash
 sts-agent-train ppo --checkpoint runs/run-imitation/final.sts-model \
@@ -2265,9 +2927,10 @@ it took **17.13 seconds** versus the parallel median of **5.51 seconds**. All 51
 public states/actions, masks, likelihoods, values, rewards and GAE results matched.
 That single reference timing confirms a collection speedup on identical game work.
 
-Start with four workers when enabling parallelism; eight was fastest in this
-measurement. More processes use additional memory, and total pool RSS was not
-measured. The default remains one worker to preserve existing experiments.
+Eight workers were fastest in this measurement. More processes use additional
+memory, and total pool RSS was not measured. This version defaulted to one worker;
+the later [CPU execution defaults](#cpu-execution-defaults) apply to new commands
+while exact resumes retain their saved worker allocation.
 The first serial rollout and updated weights also match the previous optimization
 exactly. All measured full-run victory rewards remained zero, and more workers
 caused more quota cutoffs; this is throughput evidence, not improved playing strength.
@@ -2312,7 +2975,7 @@ or Torch. The installed commands use the canonical `game` package.
 | --- | --- | --- |
 | `sts-agent-train collect` / `collect-run` | `demonstrations.json` / `run-demonstrations.json` | Separate training/validation corpora; finite episodes; declared assisted fixtures |
 | `sts-agent-train imitate`, with optional `--full-run` | `imitation.json` | Initial/final bundles, combat actor transfer, exact resume with matching private state |
-| `sts-agent-train ppo` | `ppo.json` | Complete-update checkpoints, total decision/time budgets, 1–8 collectors, saved worker count on resume |
+| `sts-agent-train ppo` | `ppo.json` | Complete-update checkpoints, total decision/time budgets, 1–16 collectors, saved worker count on resume |
 | `sts-agent-train curriculum` | `curriculum.json` | Three distinct learners through five finite stages; stage collection remains serial |
 | `sts-agent-evaluate` | `baseline.json`, `hybrid.json`, `full-run.json` or `benchmark.json` | Paired policies, frozen populations, development selection and locked held-out evaluation |
 | `sts-agent-play --combat-checkpoint` / `--checkpoint` | Command summary and canonical trajectories | Correct task routing, two-worker playback and explicit task-mismatch errors |
@@ -2979,8 +3642,9 @@ further tuning, treat those cases as development evidence for subsequent claims.
 A fresh test panel measures generalization across starts; repeatability across
 independently trained learners is a separate question.
 
-Evaluation accepts `--workers 1` through `--workers 8` for both `--act1` and
-`--full-run`; the default is serial. Each persistent worker loads frozen
+Evaluation accepts `--workers 1` through `--workers 16` for `--act1`,
+`--full-run` and `--combat-corpus`; commands default to up to 16 available CPUs.
+Each persistent worker loads frozen
 checkpoint copies once, verifies their digests against the published plan and
 uses one Torch thread. Every case/policy game has its own engine, seed and files.
 The same case seed is reused across its three policies regardless of scheduling.
@@ -3312,9 +3976,10 @@ The separate diagnostic profile still identifies public-observation conversion
 and serialization as the largest remaining collection costs. Collection occupies
 about two-thirds of the process, and the large packed rollout payload is unchanged.
 An exploratory update-only probe with four Torch threads took 7.23 seconds versus
-9.07 seconds with one thread, but produced different weights. The default remains
-one thread; thread tuning needs a separately identified reproducibility/learning
-comparison, and that single probe is not an end-to-end speed claim.
+9.07 seconds with one thread, but produced different weights. That version
+retained one thread. The subsequent [CPU update benchmark](#cpu-ppo-update-threads-and-profiling-2026-10-01)
+validated deterministic multithreading; this earlier single probe is not an
+end-to-end speed claim.
 
 Raw reports, profiles and frozen source snapshots are under
 `runs/training-snapshot-optimization-20260929/`. The
@@ -3855,9 +4520,10 @@ per-seed results, conservative intervals, source bindings and review checks.
 
 ### CPU collector scaling: 8, 12 and 16 workers (2026-10-01)
 
-PPO now accepts up to **16 collectors**. Its default remains one, exact resume
-retains the saved worker count, and matched combat evaluation still supports up
-to eight workers. The production change only raises the PPO limit and updates
+PPO accepts up to **16 collectors**; current command defaults are listed
+[above](#cpu-execution-defaults), and exact resume retains the saved worker count.
+At the time of this benchmark, matched combat evaluation supported up to eight
+workers. That production change only raised the PPO limit and updated
 CLI help; allocation, RNG, recording, state guards and checkpoint semantics are
 unchanged.
 
@@ -3912,10 +4578,62 @@ contains all nine runs and the timing figure. Raw results are under
 [retained evidence](evidence/worker_scaling_2026_10_01.json) binds the inputs,
 sources, repeated measurements, checkpoint checks and review.
 
+### Vantom evaluation worker scaling (2026-10-02)
+
+The Vantom research evaluator was benchmarked with **8, 12 and 16 workers**,
+using one CPU thread per worker. This is a timing experiment on the unchanged
+250k specialist and its 337 verified original game sources. The standard
+evaluation CLI accepted at most eight workers at the time; this benchmark did
+not change that limit. The subsequent [command-default update](#cpu-execution-defaults)
+enables sixteen in the standard campaign and combat-corpus evaluators.
+
+Two panel sizes match the continuation study: 143 greedy games across 101 TRAIN
+and 42 previously used validation openings, and 429 games adding two sampled
+repetitions per opening. Each size/count combination ran three times, with
+worker order rotated across repetitions. The case/repeat action seeds, starting
+states, checkpoint, compressed recordings and game limits stayed fixed.
+Panels ran sequentially, with their games parallelized inside each panel.
+
+| Workers | 143-game panel, median (range) | 429-game panel, median (range) |
+| ---: | ---: | ---: |
+| 8 | 28.66 s (28.42–28.70) | 78.95 s (78.80–78.96) |
+| 12 | 22.19 s (21.97–22.20) | 58.51 s (58.43–58.79) |
+| 16 | **19.14 s (18.64–19.18)** | **50.24 s (50.21–51.04)** |
+
+These are complete evaluation subprocess times, including imports, planning,
+worker startup, full recording and cleanup. Sixteen workers reduce elapsed time
+by **33.2%** for the smaller panel and **36.4%** for the larger panel relative to
+eight, corresponding to **1.50×** and **1.57×** throughput. Twelve workers reduce
+time by 22.6% and 25.9%. Sixteen is the fastest tested setting for this research
+evaluator; these measurements do not establish scaling for every boss, model or
+the separate standard evaluation scheduler.
+
+Applying these medians to the earlier study's 30 small and seven full panels
+estimates 23.54 minutes at eight workers versus 15.43 minutes at sixteen, about
+8.1 minutes saved. This is a panel-mix estimate using one fixed checkpoint,
+not a rerun of the earlier study's different continuation checkpoints.
+The 18 timing trials took 773.47 seconds (12.9 minutes).
+
+All **5,148 games / 153,855 decisions** match the previously replayed 429-game
+parent reference. The comparison covers every public observation, candidate,
+selected action, outcome, reward sidecar and terminal HP value; only episode IDs
+and their dependent trajectory hashes are excluded from semantic equality.
+The original source and reference file hashes also match. Verification took
+204.73 seconds (3.4 minutes), outside the timed trials. The reserved test remains
+unopened. The benchmark scripts compile, and independent semantic and numerical
+review found no blocking issues. No production code or model weights changed.
+
+The [MLflow comparison](http://127.0.0.1:5050/#/experiments/4/runs?searchFilter=tags.sts.benchmark+%3D+%27evaluation_worker_scaling_20261002%27)
+contains the repeated measurements and timing plot. Raw artifacts are under
+`runs/evaluation-worker-scaling-20261002/`; the
+[retained evidence](evidence/evaluation_worker_scaling_2026_10_02.json) binds the
+protocol, original sources, measurements, semantic comparison and reviews.
+
 ### CPU PPO update threads and profiling (2026-10-01)
 
 Use **`--update-threads 4`** with `sts-agent-train ppo` to give the learner four
-CPU compute threads. Supported counts are 1, 2, 4 and 8; new runs default to one.
+CPU compute threads. Supported counts are 1, 2, 4 and 8; new commands now default
+to up to four according to [CPU availability](#cpu-execution-defaults).
 Counts above one enable strict PyTorch deterministic operations. With
 `--workers 16`, each spawned collector still uses one thread; with `--workers 1`,
 collection runs inside the learner process and shares its thread setting.
@@ -4680,34 +5398,34 @@ are recorded above. Hardware and larger compute budgets remain experiment
 settings; cloud jobs, native game launches, live corpus collection and
 profile/save access are outside this implementation's scope.
 
-The signal guard, paired filter comparison, shaped campaign pilots and cumulative
-500k Act 1 training budget are complete. The terminal-outcome fix and authorized
-optimizer reset remain explicit in the checkpoint lineage. Act 1 remains the
-current training target:
+The signal guard, campaign pilots, combat representation comparisons, Vantom
+specialization, action previews and potential-shaping pilots are complete.
+Act 1 remains the integration target; the immediate learning focus is combat:
 
-1. Review paired regressions between the 250k parent and 500k endpoint on the
-   existing validation cases, using 400k as a diagnostic intermediate. Inspect
-   end-turn and late-combat decisions to choose one concrete follow-up hypothesis.
-   Judge progress by Act 1 clear rate, with boss reach, floors, combat outcomes
-   and cutoffs as diagnostics. Retain the completed 250k held-out result as its
-   original evidence; use fresh test cases for a later frozen comparison. Preserve
-   ordered outcomes, native legality and public inputs in any policy change.
-2. Repeat the bounded, predeclared reward comparison from scratch with
-   `commit_decisions_v1` in both arms and another learner seed. Freeze the budget
-   and endpoint before collection; preserve all planned cases and keep reward,
-   action-filter and optimizer-reset effects distinct. Do not promote whichever
-   checkpoint happens to lead the development curve.
-3. If success exposure remains limiting, add Act 1 late-act/boss continuations and
-   successful public demonstrations from training cases. Include reward-screen
-   completion and ordered selectors. Label assisted continuations explicitly and
-   keep their outcomes separate from genuine-start Act 1 clear rate. Expand to
-   later acts only after repeatable Act 1 improvement.
+1. Expand independent Vantom training fights and diverse successful elite/boss
+   demonstrations. Keep starts from each source campaign in one split and freeze
+   a development panel before training. The
+   [continuation diagnostic](#vantom-continuation-diagnostic) found declining
+   validation scores even with Adam and the critic retained; optimizer reset
+   alone does not explain the result. Reusing the same 42 validation cases cannot
+   supply fresh confirmation.
+2. Compare reward and representation treatments from a common earlier initializer,
+   with matched budgets, multiple learner seeds and fixed evaluation points.
+   Measure greedy and sampled wins, paired boss HP on losses and player HP on
+   wins. Retain the selected 250k specialist as a reference. A lower-learning-rate
+   continuation is a separate experiment for preserving that actor; keep it
+   distinct from new-data or new-representation comparisons.
+3. Replicate promising combat gains before increasing training budgets. The
+   [seven-hour research](#seven-hour-combat-research-2026-10-02) identified useful
+   success-imitation leads without conclusive combat or Act 1 confirmation.
+   Validate a frozen candidate on its reserved test population, then check genuine
+   Act 1 runs with the same fixed noncombat controller. Expand to later acts only
+   after repeatable Act 1 improvement.
 
-Configurable rewards now provide dense learning signal, and the guard prevents
-updates when both advantages and value errors are absent. The remaining
-completion failures and Act 1 learning goal motivate the next experiment.
-Keep canonical run victory distinct from Act 1 task success, preserve checkpoint
-lineage, and retain every planned cutoff and defeat in follow-up comparisons.
+New commands use the [benchmarked CPU defaults](#cpu-execution-defaults), while
+exact resumes retain their original execution settings. Keep canonical run victory
+distinct from Act 1 task success and combat shaping, preserve checkpoint lineage,
+and retain every planned cutoff and defeat in follow-up comparisons.
 
 Repeatability is scoped to recorded software, hardware and deterministic settings;
 [PyTorch documents limits across versions and platforms](https://docs.pytorch.org/docs/2.14/notes/randomness.html).

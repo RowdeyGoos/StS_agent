@@ -152,7 +152,9 @@ one fight through the existing full public adapter. It includes nested card and
 potion choices, ends after automatic combat cleanup, and reports final HP and
 the confirmed fight outcome. Its default task reward is +1 for a combat win and
 0 otherwise. A validated JSON configuration can weight victory, defeat, final HP
-on victory, end-turn commands and potion-use commands. Canonical full-run
+on victory, end-turn commands and potion-use commands. An opt-in
+[potential-based objective](docs/AGENT_TRAINING.md#potential-based-combat-reward-shaping)
+adds public HP progress signals during combat. Canonical full-run
 recordings retain their original sparse reward.
 
 ```bash
@@ -192,6 +194,15 @@ potion use and combat selectors. Inference bundles and reports are public;
 optimizer/RNG resume state lives in a separate owner-only sibling directory.
 The initial untrained bundle is retained for comparison.
 
+Imitation also accepts `--representation combat` for an experimental actor with
+explicit public combat numbers and separate player/enemy/hand/potion/selection
+pools. The default remains `graph`. PPO and evaluation select the matching encoder
+from the checkpoint; exact resume preserves its representation. See
+[combat representation](docs/AGENT_TRAINING.md#combat-representation-experiment).
+The same option exposes experimental
+[immediate action previews](docs/AGENT_TRAINING.md#vantom-action-preview-experiment)
+for supported attacks against Vantom, including damage and Slippery removal.
+
 Hybrid evaluation runs ordinary-HP Ironclad A0 campaigns with learned combat
 choices and the heuristic elsewhere. Existing playback also accepts
 `sts-agent-play --combat-checkpoint runs/imitation/final.sts-model --output-dir runs/playback`.
@@ -216,20 +227,21 @@ is exactly zero. Reports distinguish processed, trained and skipped decisions;
 collection still advances to fresh episodes. See the
 [signal guard and pilot](docs/AGENT_TRAINING.md#ppo-signal-guard-and-three-learner-pilot).
 
-Add `--workers N` (1–16) to `sts-agent-train ppo` for persistent parallel
-collection in combat or full-run training. Rollout decisions remain a total
-budget across workers; exact resume restores the saved worker count. See
+New `sts-agent-train ppo` runs default to up to **16 persistent collectors**
+and **four learner CPU threads**, bounded by available CPUs. Use `--workers N`
+(1–16) and `--update-threads N` (1, 2, 4 or 8) to override them. Rollout decisions
+remain a total budget across workers; exact resume restores the saved worker count. See
 [parallel collection and horizon choices](docs/AGENT_TRAINING.md#parallel-ppo-collection-2026-09-29).
-Use `--update-threads 4` to run the CPU learner with four compute threads and
-strict deterministic operations. Spawned collectors still use one thread each.
-The default is one learner thread; exact resume restores its saved CPU settings.
+Multithreaded PPO uses strict deterministic operations. Spawned collectors
+use one thread each; exact resume restores its saved CPU settings.
 See the [CPU update benchmark](docs/AGENT_TRAINING.md#cpu-ppo-update-threads-and-profiling-2026-10-01).
 
 For the current combat focus, use the
 [campaign-derived corpus workflow](docs/AGENT_TRAINING.md#campaign-derived-combat-training)
 to train and compare policies on frozen fights from both Act 1 regions. PPO
-supports up to 16 collectors; matched combat evaluation supports up to eight
-workers. The earlier finite fixture curriculum remains available:
+and matched combat evaluation both support up to 16 workers. The
+[command defaults](docs/AGENT_TRAINING.md#cpu-execution-defaults) also cover
+playback, analysis export and compression. The earlier finite fixture curriculum remains available:
 
 ```bash
 sts-agent-evaluate --freeze-suite configs/training/combat_benchmark.json \
@@ -273,21 +285,23 @@ For the current Act 1 goal, train with `configs/training/act1_ppo.json` and
 an older checkpoint; omit each reset flag when that setting already matches.
 The preset rewards each act clear at +1 alongside the existing combat shaping and ends the
 episode after Act 1. `sts-agent-evaluate --act1 --checkpoint PATH
---reference-checkpoint INITIALIZER --output-dir runs/act1-eval --workers 8` compares Act 1
+--reference-checkpoint INITIALIZER --output-dir runs/act1-eval` compares Act 1
 clear rates against a frozen reference and the heuristic on identical starts.
-`--workers` supports 1–8 parallel evaluation games for `--act1` and `--full-run`
-(default 1). Workers retain frozen policies and validate their own recordings;
+`--workers` supports 1–16 parallel evaluation games for `--act1`, `--full-run`
+and `--combat-corpus`, defaulting to up to 16 available CPUs. Other evaluation
+modes remain serial. Workers retain frozen policies and validate their own recordings;
 the report keeps every planned case, including failures and interruptions.
 Goal and reward weights are configurable and bound to checkpoint identity.
 
 Use `sts-agent-analyze summary --input runs/act1-pilot-20260929` for quick reported
 metrics without replay validation. For validated viewer data, use
 `sts-agent-analyze build --input runs/act1-pilot-20260929
---output-dir runs/act1-analysis-20260929 --goal act1 --workers 8`, then
+--output-dir runs/act1-analysis-20260929 --goal act1`, then
 `sts-agent-analyze serve runs/act1-analysis-20260929` for a local experiment
 overview, run timeline, decision inspector and PPO reward diagnostics. Add
 `--checkpoint LABEL=PATH` to compare checkpoint preferences on the same recorded
-state. See the [analysis guide](docs/AGENT_TRAINING.md#decision-analysis-tools).
+state. Analysis export and trace compression default to up to eight workers,
+bounded by available CPUs. See the [analysis guide](docs/AGENT_TRAINING.md#decision-analysis-tools).
 
 For cross-experiment learning curves, install the optional `tracking` extra and
 use `sts-agent-track import runs --store runs/experiment-tracking`, then

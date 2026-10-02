@@ -163,7 +163,10 @@ policy. Old inspector exports can be rebuilt separately from retained inputs.
 
 Workers use fresh `spawn` processes and independent engines/RNGs. Episode `i` uses
 private seed `base_seed + i`, independent of scheduling; returned summaries retain
-episode order. The defaults are one episode/worker, 4,096 decisions and 300 seconds.
+episode order. The command defaults are one episode, up to 16 available CPU
+workers (capped by the episode count), 4,096 decisions and 300 seconds. Direct
+`run_batch` calls retain their one-worker default. See the shared
+[CPU execution defaults](AGENT_TRAINING.md#cpu-execution-defaults).
 Limits are 1–10,000 episodes and 1–32 workers. Each child has a parent-enforced hard
 deadline five seconds beyond its configured episode budget, including startup.
 Exceeding that deadline is an operational failure, not a fabricated time cutoff.

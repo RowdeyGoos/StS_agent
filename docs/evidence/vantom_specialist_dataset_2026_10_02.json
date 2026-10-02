@@ -1,0 +1,368 @@
+{
+  "bindings": {
+    "docs/AGENT_TRAINING.md": "ec8fcfd9478b3ccebb62a5acf31eceaa32f2b5df1d7f2356a8064ba0b203b7c9",
+    "runs/vantom-specialist-20261002/assemble_dataset.py": "0302393a7ec757cb8c31076d428639f0e9e949665a6b89d713698e46447e99b3",
+    "runs/vantom-specialist-20261002/assembly.json": "d2a107f5585f205188ab4c23eaf637d8c70859c89b8565a5e289f228ec77a0b8",
+    "runs/vantom-specialist-20261002/baseline-complete.json": "3e1888718cc4b3a09a480ea6a5ef71b56b7fa8af57325a20e3abdd01bcd1e6e0",
+    "runs/vantom-specialist-20261002/baseline-v2-plan.json": "ac3d78e1c0c6c67cf9395b9071ef4098f87f0dec8d41ffc2c66da8156b4c157e",
+    "runs/vantom-specialist-20261002/baseline-verified/combat-benchmark.json": "19a536e8a8c4bb045eca55fc5267f25be3b2b443e93e8f7308e108e19f47307f",
+    "runs/vantom-specialist-20261002/baseline.py": "91e4e3ea7fca4808ac9458f92ad2419f0471f33a464a88356c2b6f352e9b55c0",
+    "runs/vantom-specialist-20261002/baseline/combat-benchmark.json": "3be546dff46a6d939f97ee253786fdf386c01ca553ade7866857f3c849d90a9b",
+    "runs/vantom-specialist-20261002/baseline_v2.py": "fa9c9ad4dfe7d7d102c809384f00117ee164d4317f3d0fcda589e3b832931d31",
+    "runs/vantom-specialist-20261002/collect_sources.py": "9910e763e3f71cd3f72785897f03225c881c632cf2d327d1434a48e0a1e90492",
+    "runs/vantom-specialist-20261002/collection-complete.json": "f8939fcb5781ae9aee636507d75b24fb65e9af058bcd3e917eedea1077fb0956",
+    "runs/vantom-specialist-20261002/corpus/combat-ppo.json": "28a03b71a9a8634a6cb15ff65321b6b0dd576601386f02b75718ae02827e9822",
+    "runs/vantom-specialist-20261002/corpus/combat-training.json": "0d6bb24da8d994d488dead222eea42da7af3c787ff70ca7176aefff24a80e2b1",
+    "runs/vantom-specialist-20261002/corpus/corpus.json": "0b9f7cd09f6d63aa47f3110b3e7faca63039ea37e6b392e4ed0db5ebd63a9a9f",
+    "runs/vantom-specialist-20261002/dataset-review.json": "38e92094f2bf596e9ca3fc3442c3ba63b5f8ca3526e1d6173db8a5fd35f6766a",
+    "runs/vantom-specialist-20261002/derivation-plan.json": "491a958724cfad83a8176a97542741c03524b04ca4fd76d95a5d427ff3d95000",
+    "runs/vantom-specialist-20261002/export_baseline.py": "67d08ea053ac22feaf5fa87a1dacee8f59400fe1c4c51951035fde4a71bafccc",
+    "runs/vantom-specialist-20261002/inspection-checks.json": "ebcc858cf26e14aebf67376fb4b3abd0b95f22bedcc5de058d42faf6bd077c9c",
+    "runs/vantom-specialist-20261002/inspection.json": "577fcbfb5444e7f9498df1a86016bce542016cc4425d2bc97b9d59f6f7bfcfe2",
+    "runs/vantom-specialist-20261002/inspection/report.json": "f091b54f1539d0009ebb0384e4a2f4d7a041b690fabbc785ac1edc0e1d7949c1",
+    "runs/vantom-specialist-20261002/plan.json": "f7bfbd738d26dcb4104d40f3e0fdedb73443dc04b02f84ee2a46aec235f92ca7",
+    "runs/vantom-specialist-20261002/prior-AGENT_TRAINING.md": "68bacd411c1c2265e907ebb6eafb2589b1fdba571841ef7f4f370313f05e203d",
+    "runs/vantom-specialist-20261002/publish_results.py": "7077092a810f03bc6a17b36f82ba816a6d481aa8a38cb5359518594a3922d629",
+    "runs/vantom-specialist-20261002/study.py": "fca9258175f5c7433a4d74ec198d231c49f204b156d509bb4a20515c7f08caa4",
+    "runs/vantom-specialist-20261002/training-probes.json": "82d8ed807d1f3e3292382583cf8d31b951c010cac10d82086d991ab246756ffa",
+    "runs/vantom-specialist-20261002/verification.json": "4b6c9b8db36a3bed6643523ba8a279703eca88de31ba51a1f241d4afe993e5e3",
+    "runs/vantom-specialist-20261002/verify_dataset.py": "7f6c0dfedbb48fa11f4fb26a0f982d4f2918137c59041bc8c5a7c49f64c1d938"
+  },
+  "corpus": "act1_combat_corpus_v2:0b9f7cd09f6d63aa47f3110b3e7faca63039ea37e6b392e4ed0db5ebd63a9a9f",
+  "date": "2026-10-02",
+  "implementation": {
+    "build": "2732749399bd21dadf25e7c7199fe3894b84e76e15504664203080ee51bbc130",
+    "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+    "rules": "cb4110d297799c139c5912c30a0e0903630c1c8ab2141eded608b90a7b1e0926",
+    "target": "sts2-v0.107.1-steam-23811903"
+  },
+  "inspector": {
+    "limitations": "All selected policies and outcomes are retained for every selected combat opening. Pairing exists in this source map; the current viewer does not ingest combat-case annotations and reports no paired cases. The native viewer displays canonical campaign outcomes, so a won combat can appear as external_stop/cutoff; the combat benchmark and this source map carry the confirmed fight outcome. Do not read the viewer campaign-success counter as combat win rate. Public recordings are validated and linked without changing their bytes. No private snapshots, RNG state or resume files are exported.",
+    "report": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-20261002/inspection/report.json",
+    "url": "http://127.0.0.1:56862"
+  },
+  "limits": [
+    "Source inventories depend on surviving the fixed collector campaign prefix.",
+    "Counts of Vantom fights are outcomes of a fixed source schedule, not quota-selected successes.",
+    "Later turns are correlated practice states; opening fights are the evaluation unit.",
+    "This task prepares and verifies the dataset; it does not fit a specialized policy.",
+    "Later turns are correlated practice states, not independent evaluation fights or expert action labels.",
+    "Whole-fight evaluation uses openings only. Collector routing and survival bias remain.",
+    "This is a new corpus-bound training fork, incompatible with exact optimizer resume from another corpus.",
+    "No evidence yet that additional Vantom-only training improves behavior."
+  ],
+  "next_experiment": "Track fixed training probes alongside full-opening validation wins; distinguish failure to learn from overfitting. Choose final candidates before opening the reserved test.",
+  "objective": "Prepare a Vantom-only combat population to test whether focused practice learns useful boss behavior.",
+  "operational_notes": [
+    "Initial preparation rejected a public campaigns.json before writing plans; discovery was narrowed to owner-only native private seed maps.",
+    "Initial baseline cancelled before gameplay because Timer received Event.set() instead of Event.set. All 252 entries were unattempted with zero steps. The failed artifact and KILLED tracking runs are retained; the corrected comparison is a new output.",
+    "The inspector first failed to bind inside the sandbox and was then started with permission on loopback only.",
+    "Prior uncommitted training-guide bytes are archived at prior-AGENT_TRAINING.md with their original historical hash.",
+    "Approximate dataset/source/trace footprint reported by du: 5.2 GiB, with byte-identical selected snapshots hardlinked where possible."
+  ],
+  "public_mechanics_coverage": {
+    "train": {
+      "block_under_pressure": 412,
+      "block_without_attack": 81,
+      "checked_states": 668,
+      "phases": {
+        "Dismember": 164,
+        "Ink Blot": 199,
+        "Inky Lance": 194,
+        "Prepare": 111
+      },
+      "potion_legal": 126,
+      "slippery": {
+        "0": 372,
+        "1": 28,
+        "2": 36,
+        "3": 35,
+        "4": 37,
+        "5": 31,
+        "6": 25,
+        "7": 8,
+        "8": 96
+      }
+    },
+    "validation": {
+      "block_under_pressure": 157,
+      "block_without_attack": 34,
+      "checked_states": 267,
+      "phases": {
+        "Dismember": 69,
+        "Ink Blot": 79,
+        "Inky Lance": 77,
+        "Prepare": 42
+      },
+      "potion_legal": 46,
+      "slippery": {
+        "0": 139,
+        "1": 17,
+        "2": 7,
+        "3": 12,
+        "4": 16,
+        "5": 19,
+        "6": 11,
+        "7": 11,
+        "8": 35
+      }
+    }
+  },
+  "rewards": {
+    "combat_win": 1.0,
+    "other_weights": 0.0,
+    "win_hp_fraction": 0.1
+  },
+  "sampling": {
+    "capture_turns": 8,
+    "collector": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/act1-increased-500k-8workers-20260930/chunk-15/final.sts-model",
+    "collector_sha256": "fce362d2e0cc8f337cb06642c198ddc53c8a5e2b312f2e3596feac488a30352f",
+    "fresh_source_campaigns": 1056,
+    "route_policy": "mixed_elites",
+    "source": "Old TRAIN only; fresh validation/test from 16 fixed native source schedules. No result filtering or split relabeling.",
+    "train_source_outcomes": {
+      "act1_cleared": 37,
+      "defeat": 64
+    },
+    "training": "Uniform Vantom source fight; half opening and half continuation when available; uniform later turn."
+  },
+  "schema": "sts_vantom_dataset_evidence_v1",
+  "seconds": {
+    "assembly": 8.60068487515673,
+    "baseline": 36.95536395907402,
+    "collection": 420.2908234591596,
+    "dataset_verification": 73.02155491663143,
+    "inspection_export": 8.583411333151162
+  },
+  "source_scope": "Headless Ironclad A0, overgrowth_vantom only; real campaign-derived inventories and RNG. No live-game claim.",
+  "splits": {
+    "test": {
+      "by_start_kind": {
+        "continuation": 305,
+        "opening": 57
+      },
+      "combats": 57,
+      "deck_size_range": [
+        16,
+        23
+      ],
+      "hp_range": [
+        1,
+        90
+      ],
+      "openings": 57,
+      "source_campaigns": 57,
+      "starts": 362,
+      "starts_with_potions": 59
+    },
+    "train": {
+      "by_start_kind": {
+        "continuation": 567,
+        "opening": 101
+      },
+      "combats": 101,
+      "deck_size_range": [
+        16,
+        24
+      ],
+      "hp_range": [
+        1,
+        87
+      ],
+      "openings": 101,
+      "source_campaigns": 101,
+      "starts": 668,
+      "starts_with_potions": 146
+    },
+    "validation": {
+      "by_start_kind": {
+        "continuation": 225,
+        "opening": 42
+      },
+      "combats": 42,
+      "deck_size_range": [
+        17,
+        24
+      ],
+      "hp_range": [
+        1,
+        90
+      ],
+      "openings": 42,
+      "source_campaigns": 42,
+      "starts": 267,
+      "starts_with_potions": 64
+    }
+  },
+  "status": "complete",
+  "tracking": {
+    "experiment": "Vantom specialist",
+    "url": "http://127.0.0.1:5050/#/experiments/8/runs"
+  },
+  "validation_baselines": {
+    "games": 252,
+    "interpretation": "Existing general combat actors only; no specialist improvement claim.",
+    "mode": "Greedy learned/heuristic policies; native random-legal reference.",
+    "openings_per_policy": 42,
+    "summary": {
+      "heuristic": {
+        "attempted": 42,
+        "cutoffs": 0,
+        "failures": 0,
+        "hp_change_observations": 42,
+        "losses": 35,
+        "mean_final_turn_observed": 6.9523809523809526,
+        "mean_hp_change_observed": -65.71428571428571,
+        "mean_hp_fraction_on_win": 0.17053913519430758,
+        "mean_hp_on_win": 14.285714285714286,
+        "mean_task_return": 0.16950898558657182,
+        "planned": 42,
+        "potion_use_actions": 17,
+        "source_groups": 42,
+        "steps": 1133,
+        "unattempted": 0,
+        "win_rate": 0.16666666666666666,
+        "win_rate_group_hoeffding_95": [
+          0,
+          0.3762262801340389
+        ],
+        "wins": 7
+      },
+      "imitation8k-seed1": {
+        "attempted": 42,
+        "cutoffs": 0,
+        "failures": 0,
+        "hp_change_observations": 42,
+        "losses": 23,
+        "mean_final_turn_observed": 7.071428571428571,
+        "mean_hp_change_observed": -57.714285714285715,
+        "mean_hp_fraction_on_win": 0.27176479484715843,
+        "mean_hp_on_win": 22.94736842105263,
+        "mean_task_return": 0.4646750740526096,
+        "planned": 42,
+        "potion_use_actions": 17,
+        "source_groups": 42,
+        "steps": 1162,
+        "unattempted": 0,
+        "win_rate": 0.4523809523809524,
+        "win_rate_group_hoeffding_95": [
+          0.2428213389135801,
+          0.6619405658483246
+        ],
+        "wins": 19
+      },
+      "imitation8k-seed2": {
+        "attempted": 42,
+        "cutoffs": 0,
+        "failures": 0,
+        "hp_change_observations": 42,
+        "losses": 20,
+        "mean_final_turn_observed": 7.166666666666667,
+        "mean_hp_change_observed": -56.095238095238095,
+        "mean_hp_fraction_on_win": 0.2739420062695924,
+        "mean_hp_on_win": 22.90909090909091,
+        "mean_task_return": 0.538158866995074,
+        "planned": 42,
+        "potion_use_actions": 17,
+        "source_groups": 42,
+        "steps": 1160,
+        "unattempted": 0,
+        "win_rate": 0.5238095238095238,
+        "win_rate_group_hoeffding_95": [
+          0.31424991034215155,
+          0.7333691372768961
+        ],
+        "wins": 22
+      },
+      "ppo250k-seed1": {
+        "attempted": 42,
+        "cutoffs": 0,
+        "failures": 0,
+        "hp_change_observations": 42,
+        "losses": 32,
+        "mean_final_turn_observed": 6.976190476190476,
+        "mean_hp_change_observed": -61.666666666666664,
+        "mean_hp_fraction_on_win": 0.32054597701149423,
+        "mean_hp_on_win": 27.0,
+        "mean_task_return": 0.2457272851669403,
+        "planned": 42,
+        "potion_use_actions": 17,
+        "source_groups": 42,
+        "steps": 1064,
+        "unattempted": 0,
+        "win_rate": 0.23809523809523808,
+        "win_rate_group_hoeffding_95": [
+          0.028535624627865797,
+          0.44765485156261037
+        ],
+        "wins": 10
+      },
+      "ppo250k-seed2": {
+        "attempted": 42,
+        "cutoffs": 0,
+        "failures": 0,
+        "hp_change_observations": 42,
+        "losses": 23,
+        "mean_final_turn_observed": 6.642857142857143,
+        "mean_hp_change_observed": -56.45238095238095,
+        "mean_hp_fraction_on_win": 0.30800816696914696,
+        "mean_hp_on_win": 25.736842105263158,
+        "mean_task_return": 0.46631465517241383,
+        "planned": 42,
+        "potion_use_actions": 17,
+        "source_groups": 42,
+        "steps": 1099,
+        "unattempted": 0,
+        "win_rate": 0.4523809523809524,
+        "win_rate_group_hoeffding_95": [
+          0.2428213389135801,
+          0.6619405658483246
+        ],
+        "wins": 19
+      },
+      "random_legal": {
+        "attempted": 42,
+        "cutoffs": 0,
+        "failures": 0,
+        "hp_change_observations": 42,
+        "losses": 42,
+        "mean_final_turn_observed": 7.071428571428571,
+        "mean_hp_change_observed": -68.0952380952381,
+        "mean_hp_fraction_on_win": null,
+        "mean_hp_on_win": null,
+        "mean_task_return": 0.0,
+        "planned": 42,
+        "potion_use_actions": 5,
+        "source_groups": 42,
+        "steps": 858,
+        "unattempted": 0,
+        "win_rate": 0.0,
+        "win_rate_group_hoeffding_95": [
+          0,
+          0.20955961346737229
+        ],
+        "wins": 0
+      }
+    },
+    "trained_specialist": false
+  },
+  "verification": {
+    "collector_smoke_decisions": 16,
+    "collector_smoke_workers": 2,
+    "independent_review": "runs/vantom-specialist-20261002/dataset-review.json",
+    "inspector_decision_checks": 24,
+    "native_alias_evaluation_rejected": true,
+    "optimizer_updates": 0,
+    "public_trajectories_verified": 252,
+    "raw_parent_aliases_reserved": 16,
+    "restored_train_validation_starts": 935,
+    "scope": "Exact public digest, native legal-action execution, and untouched clone isolation for every training/validation start.",
+    "test_benchmark_unopened": true,
+    "test_integrity_scope": "File digests only; no test-state restore, feature extraction or benchmark gameplay.",
+    "training_sampling": {
+      "distinct_training_starts": 57,
+      "heldout_reads_rejected": true,
+      "resets": 64
+    }
+  }
+}

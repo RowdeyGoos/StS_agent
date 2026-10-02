@@ -1,6 +1,6 @@
 # Roadmap
 
-Priorities updated 2026-09-30. This file owns priorities;
+Priorities updated 2026-10-02. This file owns priorities;
 [current status](docs/STATUS.md) owns capability and evidence. Follow [AGENTS.md](AGENTS.md) for the development
 process. Completed packets and old campaign instructions are historical references.
 
@@ -47,9 +47,17 @@ Further work should start from a new concrete requirement:
    genuine frozen combat starts from both regions, whole-campaign data splits,
    a victory-first combat objective with modest HP shaping, and matched
    encounter-level comparisons. Keep the noncombat heuristic fixed during hybrid
-   Act 1 checks. The existing model architecture and parallel PPO remain in use;
-   increase training budgets after checking population coverage and the combat
-   benchmark. Full-campaign training is deferred until repeatable Act 1
+   Act 1 checks. The existing model architecture and parallel PPO remain in use.
+   The [seven-hour research pass](docs/AGENT_TRAINING.md#seven-hour-combat-research-2026-10-02)
+   identifies successful hard-fight imitation as a promising lead, with
+   inconclusive final combat and Act 1 confirmation. Prioritize preserving its
+   gains during PPO, expanding diverse successful elite/boss demonstrations and
+   replication across more learner seeds before increasing model capacity or
+   training budgets. For the Vantom specialist, prioritize independent training
+   fights and a frozen development panel; the
+   [continuation diagnostic](docs/AGENT_TRAINING.md#vantom-continuation-diagnostic)
+   did not support optimizer resets as the primary explanation for regression.
+   Full-campaign training is deferred until repeatable Act 1
    progress. Use the [Act 1 workflow](docs/AGENT_TRAINING.md#act-1-training-and-configurable-act-rewards)
    for the finite task horizon and paired initializer comparison. Stronger full-run learning,
    throughput targets, stronger policies, exhaustive branch/seed coverage and a

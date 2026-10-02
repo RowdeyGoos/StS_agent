@@ -1113,7 +1113,10 @@ evaluations, and inspector links. Per-update recovery files remain available.
 Historical report import does not rerun games or
 change old source identities. Tracking is opt-in, writes only from the parent
 process, and retains canonical outputs if dashboard logging fails.
-Actual Act 1/full-run evaluation games now also support 1–8 persistent workers.
+Actual Act 1/full-run and matched combat-corpus evaluation support 1–16
+persistent workers. New command defaults use up to 16 available CPUs for game
+workers, up to four PPO update threads and eight analysis/compression workers;
+exact resumes preserve saved settings. See [CPU execution defaults](AGENT_TRAINING.md#cpu-execution-defaults).
 A matched 48-game / 7,066-decision benchmark took 288.55 seconds serially and
 65.86 seconds with eight workers (4.38× faster), including canonical outcome
 validation. Every recorded decision and outcome matched; planned failure and
@@ -1122,9 +1125,10 @@ interruption accounting is preserved. See the
 Combat and full-run PPO now support
 [persistent parallel collection](AGENT_TRAINING.md#parallel-ppo-collection-2026-09-29)
 with a fixed total rollout budget, deterministic worker allocation and exact
-resume at completed update boundaries. The default serial path remains available.
-A [matched Act 1 training benchmark](AGENT_TRAINING.md#direct-prepared-observation-encoding-2026-09-30)
-now measures 48.97 seconds per 8,192 decisions with eight workers, versus a fresh
+resume at completed update boundaries. Serial collection remains available with
+`--workers 1`.
+The [2026-09-30 Act 1 training benchmark](AGENT_TRAINING.md#direct-prepared-observation-encoding-2026-09-30)
+measured 48.97 seconds per 8,192 decisions with eight workers, versus a fresh
 51.35-second baseline that includes the earlier optimizations. Packing validated
 public records directly and precomputing field indexes reduced collection time by
 6.9% and total time by 4.6%. All 617 final regression tests passed;
@@ -1132,3 +1136,12 @@ every recorded decision and final model weight matched. External inputs and save
 recordings retain independent validation, and stale-state guards remain intact.
 The 50k estimate of 4m 59s excludes evaluation/export and is an extrapolation,
 not a new learning result.
+
+Combat research now supports opt-in [richer combat representations](AGENT_TRAINING.md#combat-representation-experiment),
+[bounded action previews](AGENT_TRAINING.md#vantom-action-preview-experiment), and
+[potential-based reward shaping](AGENT_TRAINING.md#potential-based-combat-reward-shaping).
+These preserve canonical public observations and sparse run utility; their
+experimental status does not imply improved playing strength. The selected 250k
+Vantom specialist remains the reference after the preview, shaping and
+[continuation comparisons](AGENT_TRAINING.md#vantom-continuation-diagnostic).
+Current follow-up priorities are in the [roadmap](../ROADMAP.md#immediate-priorities).

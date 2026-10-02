@@ -1,0 +1,494 @@
+{
+  "artifacts": {
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/analysis.json": "d44359b777f31aff7dd113bd86431a119410d0b9783f16cd33c8107c583a8c1e",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/analyze.py": "c62df1728aa8cb7b1e3b708b16690fc73fe7b7215794a396c550337855b6d587",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/benchmark.py": "fcdd48f8b35f60f8baedecf51c5c72d62482a44c6be3dae7d98a5c2f984b239f",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/complete.json": "a049f313fb7cd2f56d6014c5773b61316fa300dbc06540b1f0124270aa5a379d",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/evaluate.py": "78411888ce86dda1c08e02c2fdb362c2dfacc6cc6b28121d399a07fdc8158864",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/plan-preflight-v1.json": "de95bcc6b0e4e4dd2024540c0203b188ec44c2d301a02477d3839a69765cdcb1",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/plan-preflight-v2.json": "d20b70ecd16a708bba85cfa486343f855e3ccd9f0ce0ea100a3adbac883c8d83",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/plan.json": "7c2751a47118fdff5094d6465843fdce8104be98ab4d1b2f0cb74a1389c9dfec",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/ppo-config.json": "9147ce9e39af0f354f2e6a3b9a72b4c85398374a356385c3bc3692b04a6d274d",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/publication.json": "cc78bec9fdc9fcbe13e471165faf79dc860646d037f560be3e8de09df77b51a1",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/publish_results.py": "5ec02f996d9954b863f599cd6f7e6732efad7b37f874fd786ae9d6ae350fcbdf",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/result-review.json": "d88ddb36581a99faa13116cdd0e70cae7a55961f6cff28467802abd1e9f42490",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/semantic-review.json": "4bd894afd935f14c7d8d26f62e72fec78ce0b5417254f802d2e20b023d9d0db2",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/study.py": "20e9ecb9bf27979cf35546a9bb7ad2ff79f64b18cf23d606a4877226b597dca0",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/verification.json": "060e18612660fa6fc3b330adca1cc911a76bd3f08bb734c2807758c4b7804522"
+  },
+  "checkpoint": {
+    "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-training-20261002/ppo/chunk-20/final.sts-model",
+    "sha256": "4da8789591fc9379522b3b30745bb6b6615ee53bb4bfc21215affecf28dfae6a"
+  },
+  "corpus_identity": "act1_combat_corpus_v2:0b9f7cd09f6d63aa47f3110b3e7faca63039ea37e6b392e4ed0db5ebd63a9a9f",
+  "cpu_count": 18,
+  "evaluation": {
+    "cases": {
+      "train": 101,
+      "validation": 42
+    },
+    "panels": {
+      "full": 429,
+      "greedy": 143
+    },
+    "repetitions": 3,
+    "worker_counts": [
+      8,
+      12,
+      16
+    ]
+  },
+  "implementation": {
+    "build": "2732749399bd21dadf25e7c7199fe3894b84e76e15504664203080ee51bbc130",
+    "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+    "rules": "cb4110d297799c139c5912c30a0e0903630c1c8ab2141eded608b90a7b1e0926",
+    "target": "sts2-v0.107.1-steam-23811903"
+  },
+  "interpretation": "Three repetitions per setting and two panel sizes on one original-source Vantom checkpoint. Case-seeded greedy/sampled outcomes and complete public trajectories match replayed references. Timings include startup/recording/cleanup; they do not imply identical scaling for all bosses or the separate standard evaluator.",
+  "machine": "arm64",
+  "publication": {
+    "experiment_id": "4",
+    "overview_run": "2425dc6e77484dce9af8c8794dbe1a5c",
+    "plot": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/evaluation-worker-scaling.png",
+    "plot_sha256": "ae3029c8737e5207107993775e74795bf1c268d42d134e671c4cc0b717c76aa0",
+    "runs": [
+      {
+        "panel": "full",
+        "run_id": "7798321f3e65411ca70cc5b22597f132",
+        "workers": 8
+      },
+      {
+        "panel": "full",
+        "run_id": "0df7f4e8571d4eb0b9e67e4d4a079369",
+        "workers": 12
+      },
+      {
+        "panel": "full",
+        "run_id": "618c440629294ac0bbaf2bd684b6bb91",
+        "workers": 16
+      },
+      {
+        "panel": "greedy",
+        "run_id": "aa35cb4baef04e6495196761c417d111",
+        "workers": 8
+      },
+      {
+        "panel": "greedy",
+        "run_id": "12798de4e3bb4df891c9e0c9b2813be8",
+        "workers": 12
+      },
+      {
+        "panel": "greedy",
+        "run_id": "f41665a0c61045378bdb311612c1178d",
+        "workers": 16
+      }
+    ],
+    "seconds": 1.6781504172831774,
+    "status": "complete",
+    "url": "http://127.0.0.1:5050/#/experiments/4/runs?searchFilter=tags.sts.benchmark+%3D+%27evaluation_worker_scaling_20261002%27"
+  },
+  "runtime": {
+    "deterministic_algorithms": false,
+    "deterministic_warn_only": false,
+    "device": "cpu",
+    "python": "3.11.15",
+    "threads": 1,
+    "torch": "2.13.0"
+  },
+  "schema": "sts_evaluation_worker_scaling_evidence_v1",
+  "scope": "Timing only: unchanged original specialist and game sources; TRAIN and previously used validation only. Existing heldout delegation is preserved. No checkpoint selection, training or test access.",
+  "script_bundle": {
+    "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/benchmark-scripts.zip",
+    "sha256": "cb52744e1b3bc3427be713c848fd83aebf5dd1f3c725a1f6bf3dc6cb1fef8fa5"
+  },
+  "status": "complete",
+  "summaries": [
+    {
+      "decisions": 12809,
+      "games": 429,
+      "max_process_seconds": 78.9558583330363,
+      "median_evaluation_seconds": 77.8784102499485,
+      "median_process_seconds": 78.95311179198325,
+      "min_process_seconds": 78.79831804195419,
+      "panel": "full",
+      "process_seconds": [
+        78.95311179198325,
+        78.9558583330363,
+        78.79831804195419
+      ],
+      "repetitions": 3,
+      "speedup_vs_8": 1.0,
+      "time_reduction_percent": 0.0,
+      "workers": 8
+    },
+    {
+      "decisions": 12809,
+      "games": 429,
+      "max_process_seconds": 58.78608587477356,
+      "median_evaluation_seconds": 57.44147454202175,
+      "median_process_seconds": 58.51324100000784,
+      "min_process_seconds": 58.432739624753594,
+      "panel": "full",
+      "process_seconds": [
+        58.78608587477356,
+        58.51324100000784,
+        58.432739624753594
+      ],
+      "repetitions": 3,
+      "speedup_vs_8": 1.3493204348734105,
+      "time_reduction_percent": 25.888619622527454,
+      "workers": 12
+    },
+    {
+      "decisions": 12809,
+      "games": 429,
+      "max_process_seconds": 51.03809908404946,
+      "median_evaluation_seconds": 49.187189707998186,
+      "median_process_seconds": 50.23543875012547,
+      "min_process_seconds": 50.20824437495321,
+      "panel": "full",
+      "process_seconds": [
+        51.03809908404946,
+        50.20824437495321,
+        50.23543875012547
+      ],
+      "repetitions": 3,
+      "speedup_vs_8": 1.5716616348212158,
+      "time_reduction_percent": 36.37307306837996,
+      "workers": 16
+    },
+    {
+      "decisions": 4286,
+      "games": 143,
+      "max_process_seconds": 28.70184400025755,
+      "median_evaluation_seconds": 27.594625332858413,
+      "median_process_seconds": 28.6554855001159,
+      "min_process_seconds": 28.423437292221934,
+      "panel": "greedy",
+      "process_seconds": [
+        28.423437292221934,
+        28.6554855001159,
+        28.70184400025755
+      ],
+      "repetitions": 3,
+      "speedup_vs_8": 1.0,
+      "time_reduction_percent": 0.0,
+      "workers": 8
+    },
+    {
+      "decisions": 4286,
+      "games": 143,
+      "max_process_seconds": 22.200644874945283,
+      "median_evaluation_seconds": 21.107651624828577,
+      "median_process_seconds": 22.189900999888778,
+      "min_process_seconds": 21.96572474995628,
+      "panel": "greedy",
+      "process_seconds": [
+        21.96572474995628,
+        22.189900999888778,
+        22.200644874945283
+      ],
+      "repetitions": 3,
+      "speedup_vs_8": 1.291375094474713,
+      "time_reduction_percent": 22.563165088237547,
+      "workers": 12
+    },
+    {
+      "decisions": 4286,
+      "games": 143,
+      "max_process_seconds": 19.176898750010878,
+      "median_evaluation_seconds": 18.053454500157386,
+      "median_process_seconds": 19.144901582971215,
+      "min_process_seconds": 18.643810332752764,
+      "panel": "greedy",
+      "process_seconds": [
+        18.643810332752764,
+        19.144901582971215,
+        19.176898750010878
+      ],
+      "repetitions": 3,
+      "speedup_vs_8": 1.496768493477347,
+      "time_reduction_percent": 33.18940074180987,
+      "workers": 16
+    }
+  ],
+  "timing": "Whole evaluation subprocess is primary, including imports, planning, worker startup, gzip recording and cleanup. Internal evaluation seconds also reported. No concurrently running benchmark panels.",
+  "timings": {
+    "benchmark_seconds": 773.4703267919831,
+    "publication_seconds": 1.6781504172831774,
+    "verification_seconds": 204.73163362499326
+  },
+  "trials": [
+    {
+      "decisions": 4286,
+      "evaluation_seconds": 27.340222167316824,
+      "games": 143,
+      "label": "greedy-w8-r1",
+      "panel": "greedy",
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/evaluation/greedy-w8-r1/evaluation.json",
+      "process_seconds": 28.423437292221934,
+      "repeat": 1,
+      "sha256": "b0c33e2bcda40ed8a65344515aed25b9e5127c36043b1ed8e4a9420409009480",
+      "workers": 8
+    },
+    {
+      "decisions": 4286,
+      "evaluation_seconds": 20.895735334139317,
+      "games": 143,
+      "label": "greedy-w12-r1",
+      "panel": "greedy",
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/evaluation/greedy-w12-r1/evaluation.json",
+      "process_seconds": 21.96572474995628,
+      "repeat": 1,
+      "sha256": "42ee8e073da2e2a878dae333c86d2912e6aa1aabfe15c1a3736ddbe046a9e53a",
+      "workers": 12
+    },
+    {
+      "decisions": 4286,
+      "evaluation_seconds": 17.60106512485072,
+      "games": 143,
+      "label": "greedy-w16-r1",
+      "panel": "greedy",
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/evaluation/greedy-w16-r1/evaluation.json",
+      "process_seconds": 18.643810332752764,
+      "repeat": 1,
+      "sha256": "9d37622b6c924a1d85de0e19b29cc871143d82005d3065eda3b36b44eb02e31f",
+      "workers": 16
+    },
+    {
+      "decisions": 12809,
+      "evaluation_seconds": 77.8784102499485,
+      "games": 429,
+      "label": "full-w8-r1",
+      "panel": "full",
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/evaluation/full-w8-r1/evaluation.json",
+      "process_seconds": 78.95311179198325,
+      "repeat": 1,
+      "sha256": "57a7c843fa9b729d3825ee2720008bf0df97295b020aced2b163e1e0096b2053",
+      "workers": 8
+    },
+    {
+      "decisions": 12809,
+      "evaluation_seconds": 57.69861587462947,
+      "games": 429,
+      "label": "full-w12-r1",
+      "panel": "full",
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/evaluation/full-w12-r1/evaluation.json",
+      "process_seconds": 58.78608587477356,
+      "repeat": 1,
+      "sha256": "536055b07ebcb3e14b787902db05f2375a076ac6213aee8c189c936e2d8a67c2",
+      "workers": 12
+    },
+    {
+      "decisions": 12809,
+      "evaluation_seconds": 49.914418667089194,
+      "games": 429,
+      "label": "full-w16-r1",
+      "panel": "full",
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/evaluation/full-w16-r1/evaluation.json",
+      "process_seconds": 51.03809908404946,
+      "repeat": 1,
+      "sha256": "032c4529532af930f1b92fa99064344aa8725010385b32a83b5d1aee5d32e26a",
+      "workers": 16
+    },
+    {
+      "decisions": 12809,
+      "evaluation_seconds": 57.44147454202175,
+      "games": 429,
+      "label": "full-w12-r2",
+      "panel": "full",
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/evaluation/full-w12-r2/evaluation.json",
+      "process_seconds": 58.51324100000784,
+      "repeat": 2,
+      "sha256": "adbc12967c48c18829d6e96ae5c33ae4a9b4f1ed42792619805115e2d1c05890",
+      "workers": 12
+    },
+    {
+      "decisions": 12809,
+      "evaluation_seconds": 49.13925845827907,
+      "games": 429,
+      "label": "full-w16-r2",
+      "panel": "full",
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/evaluation/full-w16-r2/evaluation.json",
+      "process_seconds": 50.20824437495321,
+      "repeat": 2,
+      "sha256": "0976650935ef6d6b53ce820458fa929104e46bb0cca03dbe37cfae728ca6fef4",
+      "workers": 16
+    },
+    {
+      "decisions": 12809,
+      "evaluation_seconds": 77.88016762491316,
+      "games": 429,
+      "label": "full-w8-r2",
+      "panel": "full",
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/evaluation/full-w8-r2/evaluation.json",
+      "process_seconds": 78.9558583330363,
+      "repeat": 2,
+      "sha256": "cb119dd0d1caeb4f6bb02cdc21f636e87aaa7d3656be4fccaa70b89e14ae6e76",
+      "workers": 8
+    },
+    {
+      "decisions": 4286,
+      "evaluation_seconds": 21.107651624828577,
+      "games": 143,
+      "label": "greedy-w12-r2",
+      "panel": "greedy",
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/evaluation/greedy-w12-r2/evaluation.json",
+      "process_seconds": 22.189900999888778,
+      "repeat": 2,
+      "sha256": "6145366285db9a49efb466780892b8f1dfd7a9b559103532848594b266d05a96",
+      "workers": 12
+    },
+    {
+      "decisions": 4286,
+      "evaluation_seconds": 18.053454500157386,
+      "games": 143,
+      "label": "greedy-w16-r2",
+      "panel": "greedy",
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/evaluation/greedy-w16-r2/evaluation.json",
+      "process_seconds": 19.144901582971215,
+      "repeat": 2,
+      "sha256": "228a02690318c1957a0342c32b98254cccc88f08897d7d95f661cb304085e783",
+      "workers": 16
+    },
+    {
+      "decisions": 4286,
+      "evaluation_seconds": 27.594625332858413,
+      "games": 143,
+      "label": "greedy-w8-r2",
+      "panel": "greedy",
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/evaluation/greedy-w8-r2/evaluation.json",
+      "process_seconds": 28.6554855001159,
+      "repeat": 2,
+      "sha256": "60a492e1e00e3003565329c8afedef4134e2d5ee2f0bf1501fa9e25260e1e432",
+      "workers": 8
+    },
+    {
+      "decisions": 4286,
+      "evaluation_seconds": 18.103490250185132,
+      "games": 143,
+      "label": "greedy-w16-r3",
+      "panel": "greedy",
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/evaluation/greedy-w16-r3/evaluation.json",
+      "process_seconds": 19.176898750010878,
+      "repeat": 3,
+      "sha256": "f73a513a8822f591ebb4f216649228e007164e8af6ce2b7ea239ac498c122f47",
+      "workers": 16
+    },
+    {
+      "decisions": 4286,
+      "evaluation_seconds": 27.639523957856,
+      "games": 143,
+      "label": "greedy-w8-r3",
+      "panel": "greedy",
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/evaluation/greedy-w8-r3/evaluation.json",
+      "process_seconds": 28.70184400025755,
+      "repeat": 3,
+      "sha256": "874d09519215a988d24d84ac3acfe3a7a4b899ec1f16c32da5865620460d2df9",
+      "workers": 8
+    },
+    {
+      "decisions": 4286,
+      "evaluation_seconds": 21.136972750071436,
+      "games": 143,
+      "label": "greedy-w12-r3",
+      "panel": "greedy",
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/evaluation/greedy-w12-r3/evaluation.json",
+      "process_seconds": 22.200644874945283,
+      "repeat": 3,
+      "sha256": "a1eae9beae9f93935691bb3ddc9446c6824bbb42e930864d57c65d59e2f2d715",
+      "workers": 12
+    },
+    {
+      "decisions": 12809,
+      "evaluation_seconds": 49.187189707998186,
+      "games": 429,
+      "label": "full-w16-r3",
+      "panel": "full",
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/evaluation/full-w16-r3/evaluation.json",
+      "process_seconds": 50.23543875012547,
+      "repeat": 3,
+      "sha256": "687a68a3d0254ccddea8d25cd3f4add3276ad87b8fd369e55dd7e9c0b06c6faa",
+      "workers": 16
+    },
+    {
+      "decisions": 12809,
+      "evaluation_seconds": 77.73344450024888,
+      "games": 429,
+      "label": "full-w8-r3",
+      "panel": "full",
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/evaluation/full-w8-r3/evaluation.json",
+      "process_seconds": 78.79831804195419,
+      "repeat": 3,
+      "sha256": "d202a75131402f0a57559a6e7786d6503d366e137538ad8f0709b3f104b1b0fb",
+      "workers": 8
+    },
+    {
+      "decisions": 12809,
+      "evaluation_seconds": 57.39603825006634,
+      "games": 429,
+      "label": "full-w12-r3",
+      "panel": "full",
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/evaluation/full-w12-r3/evaluation.json",
+      "process_seconds": 58.432739624753594,
+      "repeat": 3,
+      "sha256": "048391256ce0f6a1a1223265df2bac3f97b60ee000311cd1683245e12ddbf07f",
+      "workers": 12
+    }
+  ],
+  "validation": {
+    "reference_games": 429,
+    "reference_replay_sha256": "c7850a29bd5ec2fa122650153fdb3c3ea57e7929a5f480b57570fb8729b20c9b",
+    "result_review": {
+      "approval": "Approved for publication. No blockers.",
+      "bindings": {
+        "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/docs/AGENT_TRAINING.md": "dc77c096bd063b91cfbc42aa6b2e1d64a3516acfcc291671727bf0226ef150f7",
+        "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/analysis.json": "d44359b777f31aff7dd113bd86431a119410d0b9783f16cd33c8107c583a8c1e",
+        "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/analyze.py": "c62df1728aa8cb7b1e3b708b16690fc73fe7b7215794a396c550337855b6d587",
+        "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/benchmark.py": "fcdd48f8b35f60f8baedecf51c5c72d62482a44c6be3dae7d98a5c2f984b239f",
+        "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/complete.json": "a049f313fb7cd2f56d6014c5773b61316fa300dbc06540b1f0124270aa5a379d",
+        "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/evaluate.py": "78411888ce86dda1c08e02c2fdb362c2dfacc6cc6b28121d399a07fdc8158864",
+        "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/plan.json": "7c2751a47118fdff5094d6465843fdce8104be98ab4d1b2f0cb74a1389c9dfec",
+        "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/publish_results.py": "5ec02f996d9954b863f599cd6f7e6732efad7b37f874fd786ae9d6ae350fcbdf",
+        "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/semantic-review.json": "4bd894afd935f14c7d8d26f62e72fec78ce0b5417254f802d2e20b023d9d0db2",
+        "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/study.py": "20e9ecb9bf27979cf35546a9bb7ad2ff79f64b18cf23d606a4877226b597dca0",
+        "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/verification.json": "060e18612660fa6fc3b330adca1cc911a76bd3f08bb734c2807758c4b7804522"
+      },
+      "blockers": [],
+      "checks": [
+        "All 18 trials, 5,148 games, 153,855 actions, public-file bindings, semantic comparison receipts, terminal results and six timing summaries reconcile.",
+        "Sixteen workers reduce measured time by 33.19 percent for the greedy panel and 36.37 percent for the full panel.",
+        "The 23.54 to 15.43 minute panel-mix estimate is correct and appropriately labeled.",
+        "Documentation preserves benchmark scope and the unchanged production worker limit."
+      ],
+      "reviewer": "/root/combat_representation_review",
+      "scope": "Independent read-only numerical and publication review; no gameplay or private-state reads.",
+      "status": "approved"
+    },
+    "semantic_review": {
+      "bindings": {
+        "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/analyze.py": "c62df1728aa8cb7b1e3b708b16690fc73fe7b7215794a396c550337855b6d587",
+        "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/benchmark.py": "fcdd48f8b35f60f8baedecf51c5c72d62482a44c6be3dae7d98a5c2f984b239f",
+        "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/evaluate.py": "78411888ce86dda1c08e02c2fdb362c2dfacc6cc6b28121d399a07fdc8158864",
+        "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/plan.json": "7c2751a47118fdff5094d6465843fdce8104be98ab4d1b2f0cb74a1389c9dfec",
+        "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/evaluation-worker-scaling-20261002/study.py": "20e9ecb9bf27979cf35546a9bb7ad2ff79f64b18cf23d606a4877226b597dca0"
+      },
+      "blockers": [],
+      "checks": [
+        "All 15 public plan bindings and 337 original source files match.",
+        "Rotating 18-trial plan totals 5,148 games.",
+        "Case/repeat RNG is independent of worker assignment; full public records and terminal HP retained.",
+        "Read-only checker probes passed greedy/sample and win/loss reference traces.",
+        "Latest reserved test remains sealed."
+      ],
+      "limitation": "Timing evidence is specific to this recorded diagnostic evaluator and fixed Vantom checkpoint. Reviewer ran no gameplay or private-state reads.",
+      "plan_sha256": "7c2751a47118fdff5094d6465843fdce8104be98ab4d1b2f0cb74a1389c9dfec",
+      "reviewer": "/root/combat_representation_review",
+      "scope": "Read-only pre-execution review of source bindings, RNG-independent job allocation, owned worker cleanup, timing scope and semantic equality checker.",
+      "status": "approved"
+    },
+    "test_opened": false,
+    "verified_decisions": 153855,
+    "verified_games": 5148
+  }
+}
