@@ -16,7 +16,8 @@ from .model import ActorCritic
 from .rewards import RewardSpec, measure_run
 
 
-def load_run_corpus(paths, *, split, vocabulary=None, base_vocabulary=None, action_policy=ALL_LEGAL, representation=GRAPH):
+def load_run_corpus(paths, *, split, vocabulary=None, base_vocabulary=None, action_policy=ALL_LEGAL, representation=GRAPH,
+                    include_catalog=True):
     validate_policy(action_policy)
     from .run_demonstrations import _LoadedRunPaths
     if vocabulary is None and split != 'train' or base_vocabulary is not None and (split != 'train' or vocabulary is not None):
@@ -34,9 +35,10 @@ def load_run_corpus(paths, *, split, vocabulary=None, base_vocabulary=None, acti
         if not episode.metadata.scenario.startswith(RUN_SCENARIO_SET+':'):
             raise ValueError('Run corpus requires explicitly declared full-run task records')
     if vocabulary is None:
-        vocabulary = Vocabulary.fit((s.observation for e in episodes for s in e.transitions), split='train')
+        vocabulary = Vocabulary.fit((s.observation for e in episodes for s in e.transitions), split='train',
+                                    include_catalog=include_catalog)
         if base_vocabulary is not None:
-            vocabulary = Vocabulary(tuple(sorted(set(vocabulary.names) | set(base_vocabulary.names))))
+            vocabulary = vocabulary.with_names(base_vocabulary.names)
     encoder = FeatureEncoder(vocabulary, action_policy=action_policy, representation=representation)
     objective = RewardSpec.full_run()
     examples, hashes, seconds = [], [], 0.0
@@ -119,3 +121,36 @@ def transfer_run_objective(policy, reward_spec, *, seed=0):
         'source_objective':policy.reward_spec.to_dict(), 'target_objective':reward_spec.to_dict(),
         'actor_vocabulary':'retained_exactly', 'value_head':'fresh_hidden_zero_output',
         'optimizer_rng_cursor':'fresh'}
+
+
+def transfer_catalog(policy, *, seed=0):
+    """Explicit new experiment: enrich public inputs and remap existing names.
+
+    Old actor tensors transfer, but enriched inputs change its predictions.
+    This deliberately does not migrate Adam or claim an exact continuation.
+    """
+    from .catalog import public_catalog
+    old = policy.model
+    catalog = public_catalog()
+    if old.vocabulary.catalog == catalog:
+        raise ValueError('Checkpoint already uses the current public catalog')
+    vocabulary = Vocabulary(tuple(sorted(set(old.vocabulary.names) | set(catalog.names))), catalog)
+    model = ActorCritic(vocabulary, old.architecture, seed=seed, action_policy=old.action_policy)
+    state, source = model.state_dict(), old.state_dict()
+    for key in state:
+        if key != 'name.weight' and not key.startswith('value.'):
+            state[key] = source[key].clone()
+    ids = {name: i + 1 for i, name in enumerate(vocabulary.names)}
+    state['name.weight'][0] = source['name.weight'][0]
+    for i, name in enumerate(old.vocabulary.names, 1):
+        state['name.weight'][ids[name]] = source['name.weight'][i]
+    model.load_state_dict(state, strict=True)
+    with torch.no_grad():
+        model.value[-1].weight.zero_()
+        model.value[-1].bias.zero_()
+    return model, dict(kind='public_catalog_transfer_v1', source_checkpoint=policy.identity,
+        source_vocabulary=old.vocabulary.identity, target_vocabulary=vocabulary.identity,
+        catalog=catalog.identity, retained_names=len(old.vocabulary.names),
+        new_catalog_names=len(vocabulary.names)-len(old.vocabulary.names),
+        value_head='fresh_hidden_zero_output', optimizer_rng_cursor='fresh',
+        predictions_preserved=False)

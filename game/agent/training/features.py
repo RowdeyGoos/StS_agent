@@ -14,8 +14,10 @@ from game.agent.contracts import full as f
 from game.agent.action_policy import ALL_LEGAL, action_mask, validate_policy
 from game.agent.encoding.full import FullRunEncoder
 from .combat_features import GRAPH, COMBAT_REPRESENTATIONS, feature_identity
+from .catalog import ENTITY_KINDS, PublicCatalog
 
 SCHEMA = 'sts_learned_public_graph_v1'
+CATALOG_SCHEMA = 'sts_learned_public_graph_v2'
 _FEATURE_ARRAYS = ('nodes', 'parents', 'positions', 'fields', 'numbers', 'links',
                    'link_positions', 'candidates')
 
@@ -23,6 +25,7 @@ _FEATURE_ARRAYS = ('nodes', 'parents', 'positions', 'fields', 'numbers', 'links'
 @dataclass(frozen=True, slots=True)
 class Vocabulary:
     names: tuple[str, ...]
+    catalog: PublicCatalog | None = None
     _identity: str = field(init=False, repr=False, compare=False)
 
     def __post_init__(self):
@@ -30,14 +33,22 @@ class Vocabulary:
                 any(type(n) is not str or len(n.encode('utf-8')) > 256 for n in self.names) or
                 self.names != tuple(sorted(set(self.names)))):
             raise ValueError('Expected a bounded, sorted, unique public vocabulary')
-        object.__setattr__(self, '_identity', SCHEMA + ':' + hashlib.sha256(json.dumps(
+        if self.catalog is not None:
+            if type(self.catalog) is not PublicCatalog or not set(self.catalog.names) <= set(self.names):
+                raise ValueError('Vocabulary must include its frozen public catalog')
+        schema = CATALOG_SCHEMA if self.catalog is not None else SCHEMA
+        object.__setattr__(self, '_identity', schema + ':' + hashlib.sha256(json.dumps(
             self.to_dict(), sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode()).hexdigest())
 
     @classmethod
-    def fit(cls, decisions, *, split):
+    def fit(cls, decisions, *, split, include_catalog=True):
         if split != 'train':
             raise ValueError('Fit vocabulary on training data only')
-        names = set()
+        if type(include_catalog) is not bool:
+            raise ValueError('Expected a boolean catalog choice')
+        from .catalog import public_catalog
+        catalog = public_catalog() if include_catalog else None
+        names = set(catalog.names) if catalog is not None else set()
         for decision in decisions:
             if type(decision) is not f.PublicDecision:
                 raise f.ContractError('Terminal outcomes have no policy vocabulary')
@@ -48,18 +59,28 @@ class Vocabulary:
                     names.update(v.key for v in node.fields)
                     names.update(v.value for v in node.fields if type(v.value) is str)
                     names.update(v.key for v in node.links)
-        return cls(tuple(sorted(names)))
+        return cls(tuple(sorted(names)), catalog)
+
+    def with_names(self, names):
+        """Explicit new-learner expansion, retaining the frozen feature semantics."""
+        return type(self)(tuple(sorted(set(self.names) | set(names))), self.catalog)
 
     def to_dict(self):
-        return {'schema': SCHEMA, 'unknown_id': 0, 'names': list(self.names)}
+        result = {'schema': CATALOG_SCHEMA if self.catalog is not None else SCHEMA,
+                  'unknown_id': 0, 'names': list(self.names)}
+        if self.catalog is not None:
+            result['catalog'] = self.catalog.to_dict()
+        return result
 
     @classmethod
     def from_dict(cls, value):
-        if (type(value) is not dict or set(value) != {'schema', 'unknown_id', 'names'} or
-                value['schema'] != SCHEMA or type(value['unknown_id']) is not int or value['unknown_id'] != 0 or
+        versioned = type(value) is dict and value.get('schema') == CATALOG_SCHEMA
+        keys = {'schema', 'unknown_id', 'names'} | ({'catalog'} if versioned else set())
+        if (type(value) is not dict or set(value) != keys or
+                value['schema'] not in (SCHEMA, CATALOG_SCHEMA) or type(value['unknown_id']) is not int or value['unknown_id'] != 0 or
                 type(value['names']) is not list):
             raise ValueError('Unsupported feature vocabulary')
-        return cls(tuple(value['names']))
+        return cls(tuple(value['names']), PublicCatalog.from_dict(value['catalog']) if versioned else None)
 
     @property
     def identity(self):
@@ -150,6 +171,8 @@ class FeatureEncoder:
         self.representation = representation
         self.action_policy = validate_policy(action_policy)
         self.names = {name: i + 1 for i, name in enumerate(vocabulary.names)}
+        self.catalog_fields = ({(e.kind, e.definition_id): e.fields for e in vocabulary.catalog.entries}
+                               if vocabulary.catalog is not None else {})
         self.public = FullRunEncoder()
 
     def encode(self, decision):
@@ -181,7 +204,14 @@ class FeatureEncoder:
         roots = (visit(decision.run, -1, 0), visit(decision.context, -1, 1))
         token = lambda name: self.names.get(name, 0)
         for index, node in enumerate(nodes):
-            for field in node.fields:
+            if self.vocabulary.catalog is not None:
+                if node.kind in ENTITY_KINDS and node.definition_id not in self.names:
+                    raise ValueError('Unknown learned entity identity: ' + node.kind + '/' + node.definition_id +
+                                     '; audit representation coverage before training')
+            # Learned enrichment only. The canonical graph/observation and all
+            # physical references remain unchanged, including for recordings.
+            metadata = self.catalog_fields.get((node.kind, node.definition_id), ())
+            for field in node.fields + metadata:
                 kind = {type(None): 0, bool: 1, int: 2, str: 3}[type(field.value)]
                 fields.append((index, token(field.key), kind, token(field.value) if kind == 3 else 0))
                 numbers.append(_number(field.value if kind in (1, 2) else 0))

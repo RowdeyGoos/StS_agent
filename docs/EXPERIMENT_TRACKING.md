@@ -28,6 +28,86 @@ names, tags and the Markdown run description can hold experiment notes. Write
 notes above or below the generated description block; subsequent imports preserve
 that text and retain the inspector link when no replacement URL is supplied.
 
+## Focused saved views
+
+Report imports and live tracking automatically apply reusable views as the
+corresponding metrics arrive. Empty experiments get no empty charts. Open an
+experiment's **Runs** page and use **Views** at the top right. MLflow 3.16 can
+open a saved view in table mode; select the chart icon to show its curated
+charts. The table also retains only the selected metrics. Direct links below
+include chart mode.
+
+| View | Use it for |
+| --- | --- |
+| **01 · Combat performance** | Recorded fixed-case scores and separately labelled online rollout win rates. Greedy, sampled and evaluation populations stay separate. Campaign learners use the name **01 · Performance**. |
+| **02 · Fight quality** | Available fixed-case HP measurements: Vantom player HP before healing, boss HP on losses, paired changes, or the canonical report's HP-on-win metric. Labels distinguish these meanings. Higher player HP and lower boss HP are better; conditional means alone do not establish improvement. |
+| **03 · PPO diagnostics** | Entropy, approximate KL, clipping, critic error, policy loss and gradient norms. |
+| **04 · Training speed** | Collection and update time, collection throughput and cumulative training wall time. |
+
+The previously curated views remain available in **Vantom specialist**, **Vantom action previews**,
+**Vantom potential shaping** and **Vantom continuation diagnosis**. **Combat
+representation** and **Combat research 7h** have performance, PPO and speed views;
+their original and fresh validation populations remain separate. Missing
+measurements are not converted to zeros. The views keep each learner separate
+and use no smoothing or cross-seed averaging. Continuation-diagnostic performance
+curves use additional decisions; PPO diagnostic curves retain native learner
+counters. Win rates are fractions, and parent win-rate differences in the
+shaping/preview views are percentage points.
+
+Useful starting points are the
+[Vantom learning curve](http://127.0.0.1:5050/#/experiments/8/runs?viewStateShareKey=17910198782163edgmyyy&compareRunsMode=CHART),
+[Vantom fight quality](http://127.0.0.1:5050/#/experiments/8/runs?viewStateShareKey=sts-fight-quality-v1&compareRunsMode=CHART),
+[reward-shaping comparison](http://127.0.0.1:5050/#/experiments/10/runs?viewStateShareKey=sts-combat-performance-v1&compareRunsMode=CHART)
+and [continuation comparison](http://127.0.0.1:5050/#/experiments/11/runs?viewStateShareKey=sts-combat-performance-v1&compareRunsMode=CHART).
+
+**Performance benchmarks** has six separate views: collectors above 16,
+collectors from 8 to 16, greedy evaluation, full evaluation, PPO update replay,
+and complete PPO training. Each filters to its own benchmark and workload.
+Evaluation charts show medians of three repetitions; collector bars show the
+individual runs, and update-replay curves use repetition number as their step.
+Start with [collector scaling above 16](http://127.0.0.1:5050/#/experiments/4/runs?viewStateShareKey=sts-collectors-above16-v1&compareRunsMode=CHART).
+
+These layouts are saved in the existing MLflow experiment metadata and survive
+server restarts. They select existing metrics without changing recordings,
+rewards, scores, checkpoints or training. Native charts keep their exact metric
+names, with plain-language section labels. Detailed metrics remain available
+from the ordinary view and run details. New experiments need their own saved
+views, generated from the versioned definitions in
+[`game/agent/tracking/views.py`](../game/agent/tracking/views.py).
+
+New PPO reports get performance, diagnostics and speed views as their metrics
+arrive; fixed-case HP scores add fight quality. Further imports expand untouched
+templates when new metrics appear. Canonical evaluation curves retain their
+population ID in both the metric name and chart label. Historical `combat/*`,
+`diagnostic/*`, `eval/*` and `research/*` aggregate names have explicit mappings;
+unknown metrics stay available in run details without being guessed into a view.
+Templates use the native metric step, unsmoothed lines with visible points and
+no cross-run averaging. Existing hand-curated views keep their original layouts.
+
+To apply templates to an existing experiment, or after an experiment driver
+writes metrics directly through the MLflow client, run:
+
+```bash
+sts-agent-track views --store runs/experiment-tracking --experiment 'Combat research'
+```
+
+This only writes saved-layout metadata, never run metrics, parameters or model
+artifacts. Untouched generated views can be refreshed; edited, renamed, deleted
+or independently created matching views take precedence. Repeated refreshes
+are idempotent, and interrupted writes can be retried with the same command.
+If an interrupted first save leaves no visible view, refresh preserves that
+absence: it cannot distinguish a failed save from a subsequent user deletion.
+Automatic layout failures warn without failing the canonical report import.
+Refreshes occur when a reporting session first imports a report or sees new
+metric keys, rather than on every update with the same metric names.
+
+Benchmark templates use the recorded `sts.benchmark`, `sts.kind` and `panel`
+values to keep workloads separate; they are not tied to experiment IDs or dates.
+New custom metrics or a new naming convention require a template mapping. This
+is local StS tracking integration, not a server-wide MLflow plugin: experiments
+and metrics created directly in MLflow require the command above. The original
+one-off creation recipe and verification remain under `runs/mlflow-views-20261003/`.
+
 ## Compare checkpoints in Models
 
 The experiment's **Models** view focuses on each learner's initial checkpoint,

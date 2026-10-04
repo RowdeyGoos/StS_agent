@@ -37,7 +37,8 @@ class Corpus:
         return sum(e.state.nbytes for e in self.examples)
 
 
-def load_corpus(pairs, *, split, vocabulary=None, reward_spec=None, action_policy=ALL_LEGAL, representation=GRAPH):
+def load_corpus(pairs, *, split, vocabulary=None, reward_spec=None, action_policy=ALL_LEGAL, representation=GRAPH,
+                include_catalog=True):
     validate_policy(action_policy)
     pairs = tuple(pairs)
     if vocabulary is None:
@@ -45,7 +46,7 @@ def load_corpus(pairs, *, split, vocabulary=None, reward_spec=None, action_polic
             raise ValueError('Validation/test data require the frozen training vocabulary')
         decisions = (step.transition.observation for episode in load_training_dataset(
             pairs, split=split, reward_spec=reward_spec) for step in episode.transitions)
-        vocabulary = Vocabulary.fit(decisions, split='train')
+        vocabulary = Vocabulary.fit(decisions, split='train', include_catalog=include_catalog)
     encoder = FeatureEncoder(vocabulary, action_policy=action_policy, representation=representation)
     examples, bindings, objective, seconds = [], [], None, 0.0
     for episode in load_training_dataset(pairs, split=split, reward_spec=reward_spec):

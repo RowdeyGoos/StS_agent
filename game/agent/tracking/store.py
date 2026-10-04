@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 import sqlite3
 import time
+import warnings
 
 from . import records as r
 
@@ -82,6 +83,8 @@ class TrackingStore:
             segment TEXT PRIMARY KEY, source_sha TEXT NOT NULL);
         ''')
         self._histories, self._bundles = {}, {}
+        self._view_metric_keys = set()
+        self._views_dirty = True
 
     def close(self):
         self.db.close()
@@ -119,6 +122,9 @@ class TrackingStore:
         timestamp = int(time.time()*1000)
         for key, value in r.numbers(values).items():
             cache = (run, key)
+            if cache not in self._view_metric_keys:
+                self._view_metric_keys.add(cache)
+                self._views_dirty = True
             if cache not in self._histories:
                 self._histories[cache] = {(m.step, m.value) for m in self.client.get_metric_history(run, key)}
             point = (step, value)
@@ -199,6 +205,7 @@ class TrackingStore:
                     last_path = self.client.get_run(previous['run']).data.tags.get('sts.last_report', str(path))
                     self._notes(previous['run'], last_path)
                 self.db.commit()
+                self._refresh_views_after_report()
                 return {'path': str(path), 'run_id': previous['run'], 'status': 'unchanged'}
             if (previous and previous['source_sha'] != source_sha and
                     previous['status'] not in ('running', 'sync_pending:running')):
@@ -210,11 +217,40 @@ class TrackingStore:
                 normalized = r.prepare_evaluation(path, report)
                 result = self._evaluation(path, normalized, key, source_sha, previous)
             self.db.commit()
+            self._refresh_views_after_report()
             return result
         except BaseException:
             self.db.rollback()
             self._histories.clear()
             raise
+
+    def refresh_views(self):
+        """Apply reusable view templates without importing reports or changing runs."""
+        from .views import sync_views
+        self.db.execute('BEGIN IMMEDIATE')
+        try:
+            result = sync_views(self.client, self.experiment_id)
+            self.db.commit()
+            self._views_dirty = False
+            return result
+        except BaseException:
+            self.db.rollback()
+            raise
+
+    def _refresh_views_after_report(self):
+        if not self._views_dirty:
+            return
+        try:
+            self.refresh_views()
+        except Exception as error:
+            # The report and its metrics have already committed. An optional
+            # layout failure must not change that result, including under -Werror.
+            message = (f'MLflow saved views were not refreshed: {error}. '
+                       'Retry with sts-agent-track views for this experiment.')
+            try:
+                warnings.warn(message, RuntimeWarning)
+            except Exception:
+                pass
 
     def _checkpoint_artifacts(self, path, report, points=None):
         points = list(r.training_points(report)) if points is None else points

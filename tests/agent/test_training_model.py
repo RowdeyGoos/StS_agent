@@ -38,9 +38,9 @@ def decision(hp=70, left=6, right=3):
     return f.PublicDecision(f.SCHEMA, f.PROFILE, run, context, actions)
 
 
-def tiny_corpus():
+def tiny_corpus(*, include_catalog=True):
     decisions = (decision(30, 6, 3), decision(70, 3, 8), decision(70, 8, 3), decision(30, 8, 3))
-    vocab = Vocabulary.fit(decisions, split='train')
+    vocab = Vocabulary.fit(decisions, split='train', include_catalog=include_catalog)
     encoder = FeatureEncoder(vocab)
     examples = []
     for public in decisions:
@@ -301,10 +301,12 @@ def test_one_legal_mask_governs_sampling_log_probability_entropy_and_greedy():
         policy_statistics(logits, mask, torch.tensor([1, 1]))
 
 
-def test_tiny_distinguishable_public_choices_can_be_overfit():
-    corpus = tiny_corpus()
+@pytest.mark.parametrize('include_catalog', (False, True))
+def test_tiny_distinguishable_public_choices_can_be_overfit(include_catalog):
+    corpus = tiny_corpus(include_catalog=include_catalog)
     learner = ImitationLearner(ActorCritic(corpus.vocabulary, Architecture(32, 2), seed=2), corpus,
-                               LearnerConfig(batch_size=4, learning_rate=.01, value_weight=0), seed=4)
+                               LearnerConfig(batch_size=4, learning_rate=.003 if include_catalog else .01,
+                                             value_weight=0), seed=4)
     before = evaluate_imitation(learner.model, corpus)
     for _ in range(160):
         learner.step()

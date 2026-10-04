@@ -29,6 +29,9 @@ The top level contains current guidance. Completed Phase 0/1 work lives in the
 
 ## References and results
 
+- Related agent architecture: [AlphaSpire comparison, October 4](evidence/ALPHASPIRE_COMPARISON_2026_10_04.md)
+  records reported win rates, inspected search and learning mechanisms, differences
+  from our current agent, and a proposed combat-search experiment.
 - Retired simulator, actor and experiment guides: [archive](archive/README.md#retired-simulator-pipelines).
 - Latest live results: [September 25–27 full-agent coverage](evidence/FULL_AGENT_BRIDGE_LIVE_2026_09_25.md).
   Earlier results: [September 12–13 multi-case ledger](evidence/MULTICASE_BRIDGE_LIVE_2026_09_12.md)

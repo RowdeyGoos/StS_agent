@@ -156,6 +156,9 @@ on victory, end-turn commands and potion-use commands. An opt-in
 [potential-based objective](docs/AGENT_TRAINING.md#potential-based-combat-reward-shaping)
 adds public HP progress signals during combat. Canonical full-run
 recordings retain their original sparse reward.
+An optional [defeat reward based on remaining enemy health](docs/AGENT_TRAINING.md#partial-credit-for-enemy-health-on-defeat)
+can distinguish near-wins from losses with little enemy damage; it changes the
+combat objective and is evaluated separately from the default win/HP reward.
 
 ```bash
 sts-agent-evaluate --output-dir runs/combat-baseline --cases-per-scenario 4 \
@@ -189,7 +192,12 @@ sts-agent-evaluate --checkpoint runs/imitation/final.sts-model --hybrid \
 ```
 
 The small actor-critic scores the current legal candidates from public graph
-features. Vocabulary fitting uses only training data. Demonstrations include
+features. New learners include all registered public content identities plus
+structured potion effects and partial relic descriptions; additional observed
+names come only from training data. Saved checkpoints keep their own frozen
+vocabulary. Use `sts-agent-train audit-representation` to check identity and
+description coverage; see [catalog features and auditing](docs/AGENT_TRAINING.md#catalog-backed-vocabulary-and-coverage-audits).
+Demonstrations include
 potion use and combat selectors. Inference bundles and reports are public;
 optimizer/RNG resume state lives in a separate owner-only sibling directory.
 The initial untrained bundle is retained for comparison.

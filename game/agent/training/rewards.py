@@ -8,7 +8,7 @@ import re
 from game.agent import contracts as c
 from game.agent.contracts import full as f
 from game.agent.contracts.codec import _invalid_constant, _unique_object
-from game.agent.headless.combat_summary import CombatSummary
+from game.agent.headless.combat_summary import CombatSummary, CombatHealthSummary, EnemyHealth
 from game.agent.progress import completed_act
 
 SCHEMA = 'sts_training_reward_v1'
@@ -18,6 +18,9 @@ COMPONENTS = tuple(name for name, _ in DEFAULT_WEIGHTS)
 POTENTIAL_SCHEMA = 'sts_training_reward_v2'
 POTENTIAL_WEIGHTS = DEFAULT_WEIGHTS + (('enemy_hp_potential', 0.0), ('player_hp_potential', 0.0))
 POTENTIAL_COMPONENTS = tuple(name for name, _ in POTENTIAL_WEIGHTS)
+DEFEAT_HP_SCHEMA = 'sts_training_reward_v3'
+DEFEAT_HP_WEIGHTS = DEFAULT_WEIGHTS + (('loss_enemy_damage_fraction', 0.0),)
+DEFEAT_HP_COMPONENTS = tuple(name for name, _ in DEFEAT_HP_WEIGHTS)
 RUN_SCHEMA = 'sts_full_run_reward_v1'
 RUN_WEIGHTS = tuple((name, 0.0) for name in COMPONENTS) + (('run_victory', 1.0),)
 SHAPED_RUN_SCHEMA = 'sts_full_run_reward_v2'
@@ -61,7 +64,7 @@ class RewardSpec:
     discount: float | None = None
 
     def __post_init__(self):
-        if self.schema not in (SCHEMA, POTENTIAL_SCHEMA, RUN_SCHEMA, SHAPED_RUN_SCHEMA, ACT_RUN_SCHEMA):
+        if self.schema not in (SCHEMA, POTENTIAL_SCHEMA, DEFEAT_HP_SCHEMA, RUN_SCHEMA, SHAPED_RUN_SCHEMA, ACT_RUN_SCHEMA):
             raise RewardError('Unsupported reward schema')
         if self.schema == POTENTIAL_SCHEMA:
             discount = finite(self.discount)
@@ -76,7 +79,8 @@ class RewardSpec:
         source = tuple(self.weights.items()) if type(self.weights) is dict else self.weights
         if type(source) is not tuple:
             raise RewardError('Weights must be a dictionary or immutable pairs')
-        defaults = (POTENTIAL_WEIGHTS if self.schema == POTENTIAL_SCHEMA else
+        defaults = (DEFEAT_HP_WEIGHTS if self.schema == DEFEAT_HP_SCHEMA else
+                    POTENTIAL_WEIGHTS if self.schema == POTENTIAL_SCHEMA else
                     DEFAULT_WEIGHTS if self.schema == SCHEMA else
                     ACT_RUN_WEIGHTS if self.schema == ACT_RUN_SCHEMA else
                     SHAPED_RUN_WEIGHTS if self.schema == SHAPED_RUN_SCHEMA else RUN_WEIGHTS)
@@ -103,6 +107,11 @@ class RewardSpec:
         return cls(weights, POTENTIAL_SCHEMA, discount=discount)
 
     @classmethod
+    def defeat_hp_combat(cls, weights=()):
+        """Partial credit at real defeat; changes utility, not a potential."""
+        return cls(weights, DEFEAT_HP_SCHEMA)
+
+    @classmethod
     def shaped_full_run(cls, weights=()):
         """Explicit configurable training objective; evaluation still uses wins."""
         return cls(weights, SHAPED_RUN_SCHEMA)
@@ -118,13 +127,14 @@ class RewardSpec:
 
     @property
     def task(self):
-        return 'combat' if self.schema in (SCHEMA, POTENTIAL_SCHEMA) else 'full_run'
+        return 'combat' if self.schema in (SCHEMA, POTENTIAL_SCHEMA, DEFEAT_HP_SCHEMA) else 'full_run'
 
     @property
     def components(self):
         # Zero combat weights in the run preset are declarations, not invented
         # measurements of fights. Run trajectories measure only their utility.
-        return (POTENTIAL_COMPONENTS if self.schema == POTENTIAL_SCHEMA else
+        return (DEFEAT_HP_COMPONENTS if self.schema == DEFEAT_HP_SCHEMA else
+                POTENTIAL_COMPONENTS if self.schema == POTENTIAL_SCHEMA else
                 COMPONENTS if self.task == 'combat' else
                 ACT_RUN_COMPONENTS if self.schema == ACT_RUN_SCHEMA else
                 SHAPED_RUN_COMPONENTS if self.schema == SHAPED_RUN_SCHEMA else ('run_victory',))
@@ -153,7 +163,8 @@ class RewardSpec:
 
     def evaluate(self, components):
         # Validate every measurement, even if its objective weight is zero.
-        kind = (PotentialRewardComponents if self.schema == POTENTIAL_SCHEMA else
+        kind = (DefeatHPRewardComponents if self.schema == DEFEAT_HP_SCHEMA else
+                PotentialRewardComponents if self.schema == POTENTIAL_SCHEMA else
                 RewardComponents if self.task == 'combat' else
                 ActRunRewardComponents if self.schema == ACT_RUN_SCHEMA else
                 ShapedRunRewardComponents if self.schema == SHAPED_RUN_SCHEMA else RunRewardComponents)
@@ -210,6 +221,24 @@ class PotentialRewardComponents(RewardComponents):
     def from_dict(cls, value):
         if type(value) is not dict or set(value) != set(POTENTIAL_COMPONENTS):
             raise RewardError('Missing or unknown potential reward measurement')
+        return cls(**value)
+
+
+@dataclass(frozen=True, slots=True)
+class DefeatHPRewardComponents(RewardComponents):
+    loss_enemy_damage_fraction: float
+
+    def __post_init__(self):
+        RewardComponents.__post_init__(self)
+        value = finite(self.loss_enemy_damage_fraction)
+        if not 0 <= value <= 1 or not self.combat_loss and value != 0:
+            raise RewardError('Enemy damage fraction is only measured on defeat')
+        object.__setattr__(self, 'loss_enemy_damage_fraction', value)
+
+    @classmethod
+    def from_dict(cls, value):
+        if type(value) is not dict or set(value) != set(DEFEAT_HP_COMPONENTS):
+            raise RewardError('Missing or unknown defeat HP reward measurement')
         return cls(**value)
 
 
@@ -282,10 +311,18 @@ def measure_run(successor):
 def public_summary(value):
     """Strict allowlist for the controller's public HUD/result measurement."""
     if type(value) is dict:
-        if set(value) != set(CombatSummary.__dataclass_fields__):
+        kind = CombatHealthSummary if value.get('schema') == 'sts_combat_summary_v2' else CombatSummary
+        if set(value) != set(kind.__dataclass_fields__):
             raise RewardError('Missing or unknown combat summary field')
-        value = CombatSummary(**value)
-    if type(value) is not CombatSummary or value.schema != 'sts_combat_summary_v1':
+        if kind is CombatHealthSummary:
+            enemies = value['enemies']
+            if type(enemies) not in (tuple, list) or any(type(e) is not dict or
+                    set(e) != {'slot', 'hp', 'max_hp'} for e in enemies):
+                raise RewardError('Invalid enemy health summary')
+            value = {**value, 'enemies': tuple(EnemyHealth(**e) for e in enemies)}
+        value = kind(**value)
+    if ((type(value) is not CombatSummary or value.schema != 'sts_combat_summary_v1') and
+            (type(value) is not CombatHealthSummary or value.schema != 'sts_combat_summary_v2')):
         raise RewardError('Unsupported combat summary')
     if (type(value.combat_ref) is not str or re.fullmatch(r'combat:[0-9]+', value.combat_ref) is None
             or value.outcome not in ('ongoing', 'victory', 'defeat')
@@ -294,6 +331,13 @@ def public_summary(value):
         raise RewardError('Invalid combat summary')
     if value.outcome == 'defeat' and value.hp != 0:
         raise RewardError('Defeat requires the final zero-HP HUD')
+    if type(value) is CombatHealthSummary:
+        if (type(value.enemies) is not tuple or not value.enemies or any(
+                type(e) is not EnemyHealth or type(e.slot) is not int or e.slot != i or
+                not (e.hp is None and e.max_hp is None or
+                     type(e.hp) is int and type(e.max_hp) is int and 0 <= e.hp <= e.max_hp and e.max_hp > 0)
+                for i, e in enumerate(value.enemies))):
+            raise RewardError('Invalid enemy health summary')
     return value
 
 
@@ -343,6 +387,17 @@ def health_potentials(public):
 def measure_combat(spec, action, execution, before, after, observation, successor):
     """Measure a real combat edge, including optional discounted public shaping."""
     base = measure(action, execution, before, after)
+    if spec.schema == DEFEAT_HP_SCHEMA:
+        before, after = public_summary(before), public_summary(after)
+        if type(before) is not CombatHealthSummary or type(after) is not CombatHealthSummary:
+            raise RewardError('Defeat HP rewards require recorded enemy health summaries')
+        if len(after.enemies) < len(before.enemies):
+            raise RewardError('Enemy health summaries must retain existing combat slots')
+        if any(e.hp is None for summary in (before, after) for e in summary.enemies):
+            raise RewardError('Defeat HP rewards require known finite enemy health')
+        fraction = (1 - sum(e.hp for e in after.enemies) / sum(e.max_hp for e in after.enemies)
+                    if base.combat_loss else 0.0)
+        return DefeatHPRewardComponents(**asdict(base), loss_enemy_damage_fraction=fraction)
     if spec.schema != POTENTIAL_SCHEMA:
         return base
     before, after = public_summary(before), public_summary(after)

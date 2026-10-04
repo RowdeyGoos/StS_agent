@@ -1,0 +1,3385 @@
+{
+  "completion": {
+    "date": "2026-10-04",
+    "evaluation_report": {
+      "path": "runs/vantom-specialist-1m-20261003/evaluation/specialist/1000000/evaluation.json",
+      "sha256": "ca7116055516a4edc418b5346fc77f2ef6697816121bf5fe090fbb8473b64fde"
+    },
+    "explicit_rules": {
+      "relics": 280,
+      "rows": 330
+    },
+    "groups": {
+      "character_content_module": {
+        "described": 36,
+        "total": 36
+      },
+      "common_combat_module": {
+        "described": 81,
+        "total": 81
+      }
+    },
+    "inherited_v1_vocabulary_checkpoint": {
+      "path": "runs/vantom-specialist-training-20261002/ppo/chunk-20/final.sts-model",
+      "sha256": "4da8789591fc9379522b3b30745bb6b6615ee53bb4bfc21215affecf28dfae6a"
+    },
+    "original_v2_vocabulary": {
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/relic-completion-20261004/before-vocabulary.json",
+      "sha256": "a54166ec1320276e1a2b307e2c0d400e653688e035de9c37ab696fc343105985"
+    },
+    "schema": "sts_relic_description_coverage_evidence_v1",
+    "scope": "Static public catalog and all previously recorded greedy train/development-validation games from the 1M endpoint; no gameplay, fitting on episodes, or test access",
+    "seconds": 68.07696816697717,
+    "source": [
+      {
+        "path": "game/agent/training/catalog.py",
+        "sha256": "6deb69bdf52bd5e9dc9df83828d9638cb75c75cfd598dd125204324e3913a1d4"
+      },
+      {
+        "path": "game/agent/training/relic_features.py",
+        "sha256": "6b1d1e8c6132390ed4b4de170817a1332242c263ef6c710657e97ea48dac9812"
+      },
+      {
+        "path": "game/agent/training/coverage.py",
+        "sha256": "4db78905633984b441bc3dd74a8729047375b0c789bb1916e2dd80e2ab68aefc"
+      }
+    ],
+    "splits": {
+      "train": {
+        "audit": {
+          "after": {
+            "catalog": {
+              "by_kind": {
+                "card": {
+                  "bundled_description_coverage": {
+                    "public_observation": 556
+                  },
+                  "known": 556,
+                  "total": 556,
+                  "unknown": 0,
+                  "unknown_ids": []
+                },
+                "enchantment": {
+                  "bundled_description_coverage": {
+                    "identity": 21
+                  },
+                  "known": 21,
+                  "total": 21,
+                  "unknown": 0,
+                  "unknown_ids": []
+                },
+                "enemy": {
+                  "bundled_description_coverage": {
+                    "identity": 108
+                  },
+                  "known": 108,
+                  "total": 108,
+                  "unknown": 0,
+                  "unknown_ids": []
+                },
+                "orb": {
+                  "bundled_description_coverage": {
+                    "identity": 5
+                  },
+                  "known": 5,
+                  "total": 5,
+                  "unknown": 0,
+                  "unknown_ids": []
+                },
+                "potion": {
+                  "bundled_description_coverage": {
+                    "structured": 63
+                  },
+                  "known": 63,
+                  "total": 63,
+                  "unknown": 0,
+                  "unknown_ids": []
+                },
+                "power": {
+                  "bundled_description_coverage": {
+                    "identity": 197
+                  },
+                  "known": 197,
+                  "total": 197,
+                  "unknown": 0,
+                  "unknown_ids": []
+                },
+                "power_counter": {
+                  "bundled_description_coverage": {
+                    "identity": 223
+                  },
+                  "known": 223,
+                  "total": 223,
+                  "unknown": 0,
+                  "unknown_ids": []
+                },
+                "relic": {
+                  "bundled_description_coverage": {
+                    "partial": 295
+                  },
+                  "identity_only_ids": [],
+                  "known": 295,
+                  "no_intrinsic_effect_ids": [
+                    "circlet",
+                    "fake_merchants_rug",
+                    "wongo_customer_appreciation_badge"
+                  ],
+                  "total": 295,
+                  "unknown": 0,
+                  "unknown_ids": []
+                }
+              },
+              "identity_coverage_complete": true,
+              "interpretation": "Known identifiers do not imply learned competence or complete effect descriptions. Card mechanics are in the public observation; bundled relic descriptions are partial. Static catalogs contain no run outcomes, hidden state or held-out examples.",
+              "reference_catalog": "sts_public_feature_catalog_v1:5df26b4afc2a3d43a9f521edbac8c1633c6ae681b2e6ae7e83c6423ecbf2ea43",
+              "saved_catalog": "sts_public_feature_catalog_v1:5df26b4afc2a3d43a9f521edbac8c1633c6ae681b2e6ae7e83c6423ecbf2ea43",
+              "vocabulary": "sts_learned_public_graph_v2:85a90fec1961f4244ffd80a3c62f6021755720e82851aa713534458b382397ed",
+              "vocabulary_size": 3185
+            },
+            "observed_decisions": 3134,
+            "observed_description_coverage": {
+              "card": {
+                "public_observation": 128385
+              },
+              "enchantment": {
+                "identity": 1850
+              },
+              "enemy": {
+                "identity": 3134
+              },
+              "potion": {
+                "structured": 283
+              },
+              "power": {
+                "identity": 4891
+              },
+              "relic": {
+                "partial": 9928
+              }
+            },
+            "observed_entities": {
+              "card": 128385,
+              "enchantment": 1850,
+              "enemy": 3134,
+              "potion": 283,
+              "power": 4891,
+              "relic": 9928
+            },
+            "observed_identity_coverage_complete": true,
+            "observed_token_coverage_complete": true,
+            "observed_unique_identities": {
+              "card": 76,
+              "enchantment": 3,
+              "enemy": 1,
+              "potion": 28,
+              "power": 33,
+              "relic": 82
+            },
+            "schema": "sts_representation_coverage_v1",
+            "status": "complete",
+            "unknown_tokens": {}
+          },
+          "before": {
+            "catalog": {
+              "by_kind": {
+                "card": {
+                  "bundled_description_coverage": {
+                    "public_observation": 556
+                  },
+                  "known": 556,
+                  "total": 556,
+                  "unknown": 0,
+                  "unknown_ids": []
+                },
+                "enchantment": {
+                  "bundled_description_coverage": {
+                    "identity": 21
+                  },
+                  "known": 21,
+                  "total": 21,
+                  "unknown": 0,
+                  "unknown_ids": []
+                },
+                "enemy": {
+                  "bundled_description_coverage": {
+                    "identity": 108
+                  },
+                  "known": 108,
+                  "total": 108,
+                  "unknown": 0,
+                  "unknown_ids": []
+                },
+                "orb": {
+                  "bundled_description_coverage": {
+                    "identity": 5
+                  },
+                  "known": 5,
+                  "total": 5,
+                  "unknown": 0,
+                  "unknown_ids": []
+                },
+                "potion": {
+                  "bundled_description_coverage": {
+                    "structured": 63
+                  },
+                  "known": 63,
+                  "total": 63,
+                  "unknown": 0,
+                  "unknown_ids": []
+                },
+                "power": {
+                  "bundled_description_coverage": {
+                    "identity": 197
+                  },
+                  "known": 197,
+                  "total": 197,
+                  "unknown": 0,
+                  "unknown_ids": []
+                },
+                "power_counter": {
+                  "bundled_description_coverage": {
+                    "identity": 223
+                  },
+                  "known": 223,
+                  "total": 223,
+                  "unknown": 0,
+                  "unknown_ids": []
+                },
+                "relic": {
+                  "bundled_description_coverage": {
+                    "identity": 72,
+                    "partial": 223
+                  },
+                  "identity_only_ids": [
+                    "alchemical_coffer",
+                    "arcane_scroll",
+                    "archaic_tooth",
+                    "astrolabe",
+                    "beautiful_bracelet",
+                    "calling_bell",
+                    "cauldron",
+                    "circlet",
+                    "claws",
+                    "cursed_pearl",
+                    "distinguished_cape",
+                    "dollys_mirror",
+                    "driftwood",
+                    "dusty_tome",
+                    "electric_shrymp",
+                    "empty_cage",
+                    "fake_lees_waffle",
+                    "fake_merchants_rug",
+                    "fragrant_mushroom",
+                    "fur_coat",
+                    "glass_eye",
+                    "gnarled_hammer",
+                    "golden_compass",
+                    "hefty_tablet",
+                    "jewelry_box",
+                    "juzu_bracelet",
+                    "kaleidoscope",
+                    "kifuda",
+                    "large_capsule",
+                    "lava_rock",
+                    "lead_paperweight",
+                    "leafy_poultice",
+                    "lords_parasol",
+                    "lost_coffer",
+                    "meat_cleaver",
+                    "membership_card",
+                    "miniature_tent",
+                    "neows_bones",
+                    "neows_talisman",
+                    "neows_torment",
+                    "new_leaf",
+                    "nutritious_soup",
+                    "orrery",
+                    "paels_claw",
+                    "paels_growth",
+                    "paels_horn",
+                    "paels_tooth",
+                    "pandoras_box",
+                    "phial_holster",
+                    "pomander",
+                    "precarious_shears",
+                    "precise_scissors",
+                    "preserved_fog",
+                    "punch_dagger",
+                    "regal_pillow",
+                    "royal_stamp",
+                    "sand_castle",
+                    "scroll_boxes",
+                    "sea_glass",
+                    "sere_talon",
+                    "shovel",
+                    "small_capsule",
+                    "storybook",
+                    "tanxs_whistle",
+                    "the_courier",
+                    "touch_of_orobas",
+                    "toy_box",
+                    "tri_boomerang",
+                    "winged_boots",
+                    "wongo_customer_appreciation_badge",
+                    "wongos_mystery_ticket",
+                    "yummy_cookie"
+                  ],
+                  "known": 295,
+                  "no_intrinsic_effect_ids": [],
+                  "total": 295,
+                  "unknown": 0,
+                  "unknown_ids": []
+                }
+              },
+              "identity_coverage_complete": true,
+              "interpretation": "Known identifiers do not imply learned competence or complete effect descriptions. Card mechanics are in the public observation; bundled relic descriptions are partial. Static catalogs contain no run outcomes, hidden state or held-out examples.",
+              "reference_catalog": "sts_public_feature_catalog_v1:5df26b4afc2a3d43a9f521edbac8c1633c6ae681b2e6ae7e83c6423ecbf2ea43",
+              "saved_catalog": "sts_public_feature_catalog_v1:b03677846f8580118b59f9a04cc208b3995b070af4d77072d082c2eb06f7f7fe",
+              "vocabulary": "sts_learned_public_graph_v2:26ad6004a196cc1e2dfdec595fc488f5bc62db9e6820c4de653a231ae450ae1a",
+              "vocabulary_size": 3016
+            },
+            "observed_decisions": 3134,
+            "observed_description_coverage": {
+              "card": {
+                "public_observation": 128385
+              },
+              "enchantment": {
+                "identity": 1850
+              },
+              "enemy": {
+                "identity": 3134
+              },
+              "potion": {
+                "structured": 283
+              },
+              "power": {
+                "identity": 4891
+              },
+              "relic": {
+                "identity": 420,
+                "partial": 9508
+              }
+            },
+            "observed_entities": {
+              "card": 128385,
+              "enchantment": 1850,
+              "enemy": 3134,
+              "potion": 283,
+              "power": 4891,
+              "relic": 9928
+            },
+            "observed_identity_coverage_complete": true,
+            "observed_token_coverage_complete": true,
+            "observed_unique_identities": {
+              "card": 76,
+              "enchantment": 3,
+              "enemy": 1,
+              "potion": 28,
+              "power": 33,
+              "relic": 82
+            },
+            "schema": "sts_representation_coverage_v1",
+            "status": "complete",
+            "unknown_tokens": {}
+          }
+        },
+        "encoding_failure_count": 0,
+        "encoding_failures": [],
+        "games": 101,
+        "relic_occurrences": {
+          "amethyst_aubergine": 290,
+          "anchor": 122,
+          "art_of_war": 35,
+          "bag_of_marbles": 109,
+          "bag_of_preparation": 37,
+          "bellows": 48,
+          "blood_vial": 124,
+          "book_of_five_rings": 185,
+          "bowler_hat": 20,
+          "bronze_scales": 128,
+          "burning_blood": 3134,
+          "candelabra": 84,
+          "captains_wheel": 79,
+          "centennial_puzzle": 214,
+          "chandelier": 60,
+          "eternal_feather": 80,
+          "festive_popper": 71,
+          "gambling_chip": 33,
+          "game_piece": 58,
+          "girya": 30,
+          "gorget": 206,
+          "gremlin_horn": 119,
+          "happy_flower": 102,
+          "horn_cleat": 101,
+          "ice_cream": 23,
+          "joss_paper": 178,
+          "juzu_bracelet": 146,
+          "kunai": 17,
+          "kusarigama": 70,
+          "lantern": 145,
+          "lasting_candy": 97,
+          "letter_opener": 136,
+          "lizard_tail": 78,
+          "lucky_fysh": 48,
+          "meal_ticket": 147,
+          "mercury_hourglass": 85,
+          "miniature_cannon": 28,
+          "molten_egg": 61,
+          "mummified_hand": 29,
+          "nunchaku": 60,
+          "oddly_smooth_stone": 79,
+          "orichalcum": 25,
+          "ornamental_fan": 23,
+          "pantograph": 87,
+          "paper_phrog": 29,
+          "pear": 123,
+          "pen_nib": 77,
+          "pendulum": 69,
+          "permafrost": 26,
+          "petrified_toad": 87,
+          "planisphere": 130,
+          "pocketwatch": 25,
+          "potion_belt": 44,
+          "prayer_wheel": 39,
+          "rainbow_ring": 31,
+          "razor_tooth": 34,
+          "red_mask": 95,
+          "red_skull": 49,
+          "regal_pillow": 249,
+          "ripple_basin": 55,
+          "self_forming_clay": 51,
+          "shuriken": 93,
+          "sparkling_rouge": 103,
+          "stone_cracker": 79,
+          "strawberry": 161,
+          "strike_dummy": 220,
+          "sturdy_clamp": 72,
+          "sword_of_stone": 26,
+          "the_courier": 25,
+          "tiny_mailbox": 66,
+          "toxic_egg": 51,
+          "tungsten_rod": 61,
+          "unceasing_top": 64,
+          "unsettling_lamp": 22,
+          "vajra": 95,
+          "vambrace": 104,
+          "venerable_tea_set": 132,
+          "vexing_puzzlebox": 38,
+          "war_paint": 128,
+          "whetstone": 81,
+          "white_beast_statue": 23,
+          "white_star": 40
+        },
+        "remaining_observed_identity_only": [],
+        "trajectory_sha256": [
+          "a6332e25c3e10e5794d6961dd9a8992c70c2fccd726ebe00526d249844f90dc5",
+          "1826475b0794f48388a425dd33aa18b43994f617d8d9a5cd05f3405145bb0160",
+          "58762c6f4d10faefe267d6515f4dd4458066c72d3d6f4648e894858789e20ff5",
+          "cf32894d8d4171bea32ac36e032a4a0d52afd3f3c3d875f785225ab1bc401938",
+          "6cc2de9873ae15050f6aeab375b2daf2bbc11474b63a70c11c55fa15aa02c332",
+          "07214a7c3d8859e306d73a61418d79c7b67b2ab0874d1fd0125fccbb44296763",
+          "29eded5df2b36d4ec8c260018f671604855fd589e97bb629c045b95a8cba5782",
+          "0b4b3da3b90c4fbf4729c34966ec0b918e13460de7aabf546273e6825b019163",
+          "70187a1e1f5404474653adb54437603ba34cc5d7e9563ec6a57f1e7fbc76e860",
+          "86e40adb5792d34d0f02c894c8ccc46709564712b6845ed66e67367985d4e098",
+          "ccf5a15a5a17189a8c8507fd3ec42c0b7b89c5cba0768e8f785bf93f99416a85",
+          "fecc532916bc3b4fc45c0fc0231c1d577127e16d2614ef458f555ca83c4b8fe9",
+          "1cf41c1d46abb707ed0fecf4733b6b019b799685d291078b4ef448cd3e770112",
+          "1aa4d5eaf8b632726dcb6c21b2e47bf62b3ebb11f7a10aefed67d170d726cc1a",
+          "638de8f102a29bda61f71c0e3ae6b0b7c17f9f44373931ce200d1b2df8d9c11d",
+          "12a59b19badd09969b82e44588ecd7213f5f748e26d00f595b0fe43f3e7e1932",
+          "1df73fac435c4465b404857143e45009e1dc42dd55ee9a338be12bb303f5a74e",
+          "c9443d5ce9c734866d75224364bd43d6ef70225409757d30aeb1d9b67f8cb452",
+          "58498eb45438661a043c8de46f1aa1d62f632f6ff3c4ebbb44ba1622cfc01fa8",
+          "288e76e64c3c8e325a124f7c1a35b0139a40b575847cdff46eadcd8288178485",
+          "afe37b3798d89663fcae0cc8bf1d81ec6439e32238e181a3294d74559615d312",
+          "4b733096a4e9c21069883839838d317cd4f01191e0272e2f55c87462409c4b12",
+          "29bfb6bf50b8149883f8f66aa8cb9e28132b85aebce6736ab420b4751e2462d8",
+          "1b292c2d8fc12221ccc9276b5731584eb2405b6d189fedce649754b6037bc0c6",
+          "ae2f8b6307bf2eee029edad702a7e22262d7d67b47d0c3b87fec14dad8f64240",
+          "323af8bb1a5db2af565640eaca00dff4e5d8d8a926097e0b3c6123a777caa288",
+          "9d791e66aa260223a61220dcf650a0b0f3b691f0403cb1ed16437cbedade9ee5",
+          "499cbc3370ff7fb2ed922eee2debdee0d5bea9df090785eb26126410fc9fbdca",
+          "3bda269d23fc5d05889d92188b4b1670d4ffe2b3faf8b6724633ace5f2c8f243",
+          "76456bf72bf78a95b7cdae78720272aaabee4c5d5173b6ce1f1c5d72f75e77bd",
+          "3d731fd36bb237437c8151d907426190e366662eb4cafbaed53b5db5c463c02c",
+          "006e43b1e86e0a0f11c9e81edb8dfe80adac446c91dd8c13e663ce8e4c50e3b1",
+          "bfc71ec6cf41cb051c7fb3363e13357224b797b78cb28ec3c286fa8c4444a6c3",
+          "8828272e4ef02efe08d636ee2dc5b9e577a144f7b8514f7fc815362699a8ba2f",
+          "72d084c656fcc892a705abd7d67877a4dc1bd2aa9e7e5c5b299c72381f1bddee",
+          "6a1b916f928e272f9a1218b29a8751c15488a9e631c0d9b3fa67697788ebe69a",
+          "c22b615959bed3e7a367b15d3686df96723a2e089826da8928da5978a70c93be",
+          "8c192ad14ea324ced40d8e329bf4a0a322e281ff3d57d9bee6807e8aed696f9f",
+          "76e10e9b973e472880541e200e992bdc4e782bd84ea4386ceddfe48c06596799",
+          "2941a91bd0243e56e60e93fc9d38baebf4bd4986227fdd78817b43c5d78ed572",
+          "0466954d65bd590448007fb7a92835975a36b7e61e517366f83500b58accdaf0",
+          "499bb19cf83233e0d8be0f5235fa18055bf84db5c46a7c0daf0e1a93b53e05e6",
+          "77dec264dd39e9a79046d9d38ac494f75cb8aec5cc5f608c9e899e284c86e7a9",
+          "94e86a86706d76e81a257515d4fa3855eb8ccfcc65ac977fb0a2bc1ffb97f3ab",
+          "bb6218bb801b2db4024bd5b66c85d65314746057db638405f8015254b543e587",
+          "920d646a83939e6e4120a155fd1e09af417ceb500458d4d4859a6a92192128cc",
+          "5e21d1c8283befdbe236781b8b10dc5fa02c9120485f4ebbad283405542b2c56",
+          "cf2b6cca25d4616ae07418cf4aa933cb9d265e9ab555f3158816f1e750907ab9",
+          "803d5a02e6b98270ff216370d7625fbc0fcb953529340c40d8f9ff4d22018f37",
+          "d89af904069eb3d2430d98cf3b6d200585e1d2d140b5c1ed26f260de977d8561",
+          "884cc1c78ab842f4a390a9458cce877884e3d5708a63bb98217771b44921c63c",
+          "09794f534d824d06ddf2356cd9151ff441b617e4db3f99d9f309421e9bec43df",
+          "d03a54f6420902e41e6f8846c37aa9e25c9b6fcc5fb653fda23624f0428f1920",
+          "223bbc598587dfbdf66cede905a1db927c1bfd5bfd06f9192615d33c2a781652",
+          "918ae3f404d6e3a146579c619da005ff5fdf3215cd37735f5d5f11bc8ae28fd8",
+          "6d4ac4bf5ecf47130124964c8564a0233071060e9cbfa418a15d4fde1aa55032",
+          "d2d687ee9a5f792607804c9e88a905742725f73007522f2f161e46840a207e05",
+          "4b33b22cfaaf6988e61ae241ba761b5200131a166f3e4a79ab92233aed3af78f",
+          "213533f232adb92ff8b8cb36612cdfaa672c132322df61edf62e77fd4d38b1ef",
+          "38bddd9e753d5860450c4bef16e2d95d577155a6ba7db96539d4f91f44fbb314",
+          "9e02eb482b2d6aea946f73c3764de050958e09a9f86f565f99179a51421f4b82",
+          "196d50b9e3deb933b6aeafe5e8f32ebb58dbc7128036dec24bdd67e50803be8a",
+          "b0fa84cb84ac3ac60c2f9b3e9d326fabf79c896f71a300d1a704e30ccfb27e83",
+          "e1e621b6ce9a6690224ce54a732ddc5d66c615afe5369e91c2157685ef822e81",
+          "14969b9506785829e86fad0f0f2a8a551745eaf0d73a505dc0009f5700574062",
+          "77221b949422bccb55e83455e827bbec780f04cb070402889ff732cd3936f9f1",
+          "e33d0b6fadcee42368f1914489f5c45768ee0aa34e76b04826f9ee976ced4abb",
+          "5bbd7eab4e543c4baea5b4b16989c5eeefc2a7a3aac74d43fc0d0f780386aa0c",
+          "05f6dfb4dd7fc53fcfac9cd80da4a1aa0738b05932af1da0d2ca9f7e83829ebb",
+          "7d12511c3d135b532e69c18cd86fd08fa3931fe6538e0dda23b597f167d6b19e",
+          "2928dbfb218d8d216f11e2ad32c3dc0f127239003211d9ed8854b153e68a77ed",
+          "84964ac7f6d7ae9ba80375c8cb24bcd9a65c902c60324e11fc657512ee5fa46f",
+          "6ba267fae0707d22f2d030ea3fe731b4c2d3bf7eb1feca9020231b40197d7f4a",
+          "967cfe2d4ea0a55f9bd16623c03ad9f07d6716d4e4858670650631270dab7ec8",
+          "b4301977a25aae51395982f4691ac9978d070b9087d0951b75f5fb2497eda0e1",
+          "051725983529614bcc8a5c182bdfcb4ec6645153a619df0990b596e6339774d9",
+          "80c0d520f502b045f288882b6061e1290f1560bae6b900c0864a9e84b7c6acef",
+          "95184f7d561e7a5cde6350f4ca2ba4c1ea3e1abaaa3b32e97ebc2d3facb81044",
+          "c19ecb0ea2aa407d10278f4d2ff59e6b0f76041d1ad72c85cb90d1b4472cf7d3",
+          "cec5924a081fabaf131a1cc05904e81e82c1a73acc293ee024f39aee1cf4b188",
+          "9b8a7845aa30af5cce130e6ae550d2c2bf05bfb430d7a90b082ba6e6880e63d9",
+          "5117e1024fa80f827d4bdeae00bf4c977c66ae62c3f98c2fe14287bf1da92249",
+          "5e23081b531da1fe59f47791074bd1830340c7ebb290da5faee8bd5ee2904b7a",
+          "9c2e21e95294eebbbcbde678d9b910efbe4fb89bfadb0b8d6d1bf892f3d9b90b",
+          "15fece58d51ba61548d012d62ef9f0e2a652bf2e60ac4f8fe75ba5be7662ccc0",
+          "b6724bd8428b79fb64f8feb080ace855e7dd52e67a936f28efd7da5a6c42dfcc",
+          "69cc515c92c31a7f9ef5e1ac3cd075a77dcb027fa29e332f2aae5a4626f4c19a",
+          "c58e9bdaf02c8b1bdb8d838000dff0967f6e87446a71104751cb97a2fb8e4918",
+          "d8329270e795fe41b0528dc098c07b9a4bce0c132640eec3f02ad6d5778e003c",
+          "6ebd80c4cc878b18aef278aacfb6d299df7a6af2e7497d31fb4787bf31a0b998",
+          "4142f248ae0eb38306349c5af28663bf6d65c1c802548829a36a3f132fe786b6",
+          "806484cca9c91126948947fbce49d473c9df0dbe12a9e5e007ef73bd083b7cb2",
+          "9918b92f9c69ebd23cf20cde0dc4500664ed6d64a0b92ee6c09769cf0a797c72",
+          "c91a8beb69008ae5489c03c12373e8e0edc966fb0226faf934d203f706a20768",
+          "13affa2080143e7e3f60533c83ceeb481e48236c984c76c27da6f9e1f5c5fa57",
+          "4accf27e3618dd30f429eb08d3bf8e0f5b446b44da1468dceb7719ef31a06d68",
+          "b836eabfaa740be3bfcc74a85e5ad8baf26e636a67a5b77d43a7d76886864a1e",
+          "f6e137680bb22d941d3db1c876be63287969e8c24daa66ad14090ef6094ba2de",
+          "e2ba0c4b48b0dfbe7007102a8042995da14c7ef038fad7f5aa6cf839ffe3142c",
+          "7025939de8575cac7161aef28c0ddf736a3ac7592160df84701e1bc54d51b77c",
+          "cddd31b9c3b12bcf6e86086ed6d959ad14755e298d3cb2cac4d7b3cdd7a16e93"
+        ],
+        "unique_relic_description_coverage": {
+          "after": {
+            "partial": 82
+          },
+          "before": {
+            "identity": 3,
+            "partial": 79
+          }
+        },
+        "unique_relics": 82
+      },
+      "validation": {
+        "audit": {
+          "after": {
+            "catalog": {
+              "by_kind": {
+                "card": {
+                  "bundled_description_coverage": {
+                    "public_observation": 556
+                  },
+                  "known": 556,
+                  "total": 556,
+                  "unknown": 0,
+                  "unknown_ids": []
+                },
+                "enchantment": {
+                  "bundled_description_coverage": {
+                    "identity": 21
+                  },
+                  "known": 21,
+                  "total": 21,
+                  "unknown": 0,
+                  "unknown_ids": []
+                },
+                "enemy": {
+                  "bundled_description_coverage": {
+                    "identity": 108
+                  },
+                  "known": 108,
+                  "total": 108,
+                  "unknown": 0,
+                  "unknown_ids": []
+                },
+                "orb": {
+                  "bundled_description_coverage": {
+                    "identity": 5
+                  },
+                  "known": 5,
+                  "total": 5,
+                  "unknown": 0,
+                  "unknown_ids": []
+                },
+                "potion": {
+                  "bundled_description_coverage": {
+                    "structured": 63
+                  },
+                  "known": 63,
+                  "total": 63,
+                  "unknown": 0,
+                  "unknown_ids": []
+                },
+                "power": {
+                  "bundled_description_coverage": {
+                    "identity": 197
+                  },
+                  "known": 197,
+                  "total": 197,
+                  "unknown": 0,
+                  "unknown_ids": []
+                },
+                "power_counter": {
+                  "bundled_description_coverage": {
+                    "identity": 223
+                  },
+                  "known": 223,
+                  "total": 223,
+                  "unknown": 0,
+                  "unknown_ids": []
+                },
+                "relic": {
+                  "bundled_description_coverage": {
+                    "partial": 295
+                  },
+                  "identity_only_ids": [],
+                  "known": 295,
+                  "no_intrinsic_effect_ids": [
+                    "circlet",
+                    "fake_merchants_rug",
+                    "wongo_customer_appreciation_badge"
+                  ],
+                  "total": 295,
+                  "unknown": 0,
+                  "unknown_ids": []
+                }
+              },
+              "identity_coverage_complete": true,
+              "interpretation": "Known identifiers do not imply learned competence or complete effect descriptions. Card mechanics are in the public observation; bundled relic descriptions are partial. Static catalogs contain no run outcomes, hidden state or held-out examples.",
+              "reference_catalog": "sts_public_feature_catalog_v1:5df26b4afc2a3d43a9f521edbac8c1633c6ae681b2e6ae7e83c6423ecbf2ea43",
+              "saved_catalog": "sts_public_feature_catalog_v1:5df26b4afc2a3d43a9f521edbac8c1633c6ae681b2e6ae7e83c6423ecbf2ea43",
+              "vocabulary": "sts_learned_public_graph_v2:85a90fec1961f4244ffd80a3c62f6021755720e82851aa713534458b382397ed",
+              "vocabulary_size": 3185
+            },
+            "observed_decisions": 1254,
+            "observed_description_coverage": {
+              "card": {
+                "public_observation": 52436
+              },
+              "enchantment": {
+                "identity": 298
+              },
+              "enemy": {
+                "identity": 1254
+              },
+              "potion": {
+                "structured": 153
+              },
+              "power": {
+                "identity": 2152
+              },
+              "relic": {
+                "partial": 3933
+              }
+            },
+            "observed_entities": {
+              "card": 52436,
+              "enchantment": 298,
+              "enemy": 1254,
+              "potion": 153,
+              "power": 2152,
+              "relic": 3933
+            },
+            "observed_identity_coverage_complete": true,
+            "observed_token_coverage_complete": true,
+            "observed_unique_identities": {
+              "card": 63,
+              "enchantment": 2,
+              "enemy": 1,
+              "potion": 16,
+              "power": 25,
+              "relic": 56
+            },
+            "schema": "sts_representation_coverage_v1",
+            "status": "complete",
+            "unknown_tokens": {}
+          },
+          "before": {
+            "catalog": {
+              "by_kind": {
+                "card": {
+                  "bundled_description_coverage": {
+                    "public_observation": 556
+                  },
+                  "known": 556,
+                  "total": 556,
+                  "unknown": 0,
+                  "unknown_ids": []
+                },
+                "enchantment": {
+                  "bundled_description_coverage": {
+                    "identity": 21
+                  },
+                  "known": 21,
+                  "total": 21,
+                  "unknown": 0,
+                  "unknown_ids": []
+                },
+                "enemy": {
+                  "bundled_description_coverage": {
+                    "identity": 108
+                  },
+                  "known": 108,
+                  "total": 108,
+                  "unknown": 0,
+                  "unknown_ids": []
+                },
+                "orb": {
+                  "bundled_description_coverage": {
+                    "identity": 5
+                  },
+                  "known": 5,
+                  "total": 5,
+                  "unknown": 0,
+                  "unknown_ids": []
+                },
+                "potion": {
+                  "bundled_description_coverage": {
+                    "structured": 63
+                  },
+                  "known": 63,
+                  "total": 63,
+                  "unknown": 0,
+                  "unknown_ids": []
+                },
+                "power": {
+                  "bundled_description_coverage": {
+                    "identity": 197
+                  },
+                  "known": 197,
+                  "total": 197,
+                  "unknown": 0,
+                  "unknown_ids": []
+                },
+                "power_counter": {
+                  "bundled_description_coverage": {
+                    "identity": 223
+                  },
+                  "known": 223,
+                  "total": 223,
+                  "unknown": 0,
+                  "unknown_ids": []
+                },
+                "relic": {
+                  "bundled_description_coverage": {
+                    "identity": 72,
+                    "partial": 223
+                  },
+                  "identity_only_ids": [
+                    "alchemical_coffer",
+                    "arcane_scroll",
+                    "archaic_tooth",
+                    "astrolabe",
+                    "beautiful_bracelet",
+                    "calling_bell",
+                    "cauldron",
+                    "circlet",
+                    "claws",
+                    "cursed_pearl",
+                    "distinguished_cape",
+                    "dollys_mirror",
+                    "driftwood",
+                    "dusty_tome",
+                    "electric_shrymp",
+                    "empty_cage",
+                    "fake_lees_waffle",
+                    "fake_merchants_rug",
+                    "fragrant_mushroom",
+                    "fur_coat",
+                    "glass_eye",
+                    "gnarled_hammer",
+                    "golden_compass",
+                    "hefty_tablet",
+                    "jewelry_box",
+                    "juzu_bracelet",
+                    "kaleidoscope",
+                    "kifuda",
+                    "large_capsule",
+                    "lava_rock",
+                    "lead_paperweight",
+                    "leafy_poultice",
+                    "lords_parasol",
+                    "lost_coffer",
+                    "meat_cleaver",
+                    "membership_card",
+                    "miniature_tent",
+                    "neows_bones",
+                    "neows_talisman",
+                    "neows_torment",
+                    "new_leaf",
+                    "nutritious_soup",
+                    "orrery",
+                    "paels_claw",
+                    "paels_growth",
+                    "paels_horn",
+                    "paels_tooth",
+                    "pandoras_box",
+                    "phial_holster",
+                    "pomander",
+                    "precarious_shears",
+                    "precise_scissors",
+                    "preserved_fog",
+                    "punch_dagger",
+                    "regal_pillow",
+                    "royal_stamp",
+                    "sand_castle",
+                    "scroll_boxes",
+                    "sea_glass",
+                    "sere_talon",
+                    "shovel",
+                    "small_capsule",
+                    "storybook",
+                    "tanxs_whistle",
+                    "the_courier",
+                    "touch_of_orobas",
+                    "toy_box",
+                    "tri_boomerang",
+                    "winged_boots",
+                    "wongo_customer_appreciation_badge",
+                    "wongos_mystery_ticket",
+                    "yummy_cookie"
+                  ],
+                  "known": 295,
+                  "no_intrinsic_effect_ids": [],
+                  "total": 295,
+                  "unknown": 0,
+                  "unknown_ids": []
+                }
+              },
+              "identity_coverage_complete": true,
+              "interpretation": "Known identifiers do not imply learned competence or complete effect descriptions. Card mechanics are in the public observation; bundled relic descriptions are partial. Static catalogs contain no run outcomes, hidden state or held-out examples.",
+              "reference_catalog": "sts_public_feature_catalog_v1:5df26b4afc2a3d43a9f521edbac8c1633c6ae681b2e6ae7e83c6423ecbf2ea43",
+              "saved_catalog": "sts_public_feature_catalog_v1:b03677846f8580118b59f9a04cc208b3995b070af4d77072d082c2eb06f7f7fe",
+              "vocabulary": "sts_learned_public_graph_v2:26ad6004a196cc1e2dfdec595fc488f5bc62db9e6820c4de653a231ae450ae1a",
+              "vocabulary_size": 3016
+            },
+            "observed_decisions": 1254,
+            "observed_description_coverage": {
+              "card": {
+                "public_observation": 52436
+              },
+              "enchantment": {
+                "identity": 298
+              },
+              "enemy": {
+                "identity": 1254
+              },
+              "potion": {
+                "structured": 153
+              },
+              "power": {
+                "identity": 2152
+              },
+              "relic": {
+                "identity": 147,
+                "partial": 3786
+              }
+            },
+            "observed_entities": {
+              "card": 52436,
+              "enchantment": 298,
+              "enemy": 1254,
+              "potion": 153,
+              "power": 2152,
+              "relic": 3933
+            },
+            "observed_identity_coverage_complete": true,
+            "observed_token_coverage_complete": true,
+            "observed_unique_identities": {
+              "card": 63,
+              "enchantment": 2,
+              "enemy": 1,
+              "potion": 16,
+              "power": 25,
+              "relic": 56
+            },
+            "schema": "sts_representation_coverage_v1",
+            "status": "complete",
+            "unknown_tokens": {}
+          }
+        },
+        "encoding_failure_count": 0,
+        "encoding_failures": [],
+        "games": 42,
+        "relic_occurrences": {
+          "akabeko": 76,
+          "amethyst_aubergine": 73,
+          "anchor": 39,
+          "art_of_war": 11,
+          "bag_of_marbles": 23,
+          "bag_of_preparation": 55,
+          "blood_vial": 38,
+          "book_of_five_rings": 33,
+          "bronze_scales": 29,
+          "burning_blood": 1254,
+          "candelabra": 42,
+          "centennial_puzzle": 36,
+          "chandelier": 31,
+          "demon_tongue": 30,
+          "eternal_feather": 22,
+          "festive_popper": 196,
+          "frozen_egg": 24,
+          "gorget": 161,
+          "happy_flower": 23,
+          "horn_cleat": 18,
+          "intimidating_helmet": 22,
+          "joss_paper": 26,
+          "juzu_bracelet": 86,
+          "kusarigama": 53,
+          "lantern": 54,
+          "lasting_candy": 91,
+          "letter_opener": 17,
+          "lucky_fysh": 36,
+          "meat_on_the_bone": 30,
+          "mercury_hourglass": 23,
+          "nunchaku": 29,
+          "oddly_smooth_stone": 56,
+          "old_coin": 29,
+          "orichalcum": 73,
+          "ornamental_fan": 102,
+          "pantograph": 33,
+          "parrying_shield": 56,
+          "pear": 30,
+          "permafrost": 78,
+          "potion_belt": 72,
+          "red_skull": 32,
+          "regal_pillow": 28,
+          "reptile_trinket": 29,
+          "ripple_basin": 18,
+          "shovel": 33,
+          "sparkling_rouge": 60,
+          "stone_calendar": 46,
+          "stone_cracker": 62,
+          "strawberry": 83,
+          "strike_dummy": 23,
+          "sword_of_stone": 30,
+          "tiny_mailbox": 37,
+          "tuning_fork": 37,
+          "vajra": 34,
+          "war_paint": 58,
+          "whetstone": 113
+        },
+        "remaining_observed_identity_only": [],
+        "trajectory_sha256": [
+          "9598d935aa8c01b2b31e93f26e84eb57af23417d516ce20de3a4df625b7e4a6d",
+          "107a4a07b617045bbbb6ee64006f85a961dcdd1168c0e26287853b4313d7c009",
+          "fe08a7b18322d8b866f756c0fcb7e89cea7fdf201b1b6f67f67e63d7989ef6bb",
+          "351516d7717d394c4f2fe4df001c42e35f8fa2eefcf169dbadde0220f01be881",
+          "b2baa7ffd442f502629951fe9f3b9be1b79cf7a99ac7f2cfb0e815f4db056148",
+          "0a62ad1f1a17da6e328511b5b9cd15d70015d6de105c8bfc8a3bce7727aa3184",
+          "be82483738af96f088054e2a510736132b78b3d9ec7e764642d5b04e63f8c64d",
+          "eee0494f0df11902b0e7f6271ed8f612166a731c835fa44f8f648a87ef95e333",
+          "eecf49e0a1f6598ac5e5b6ccda2edff6892f57adfdc38c86509accef23bedf84",
+          "71bad2dc5b5b7ea140f4c4f3636ec43a193a8f0f58a7feec7912448741363c33",
+          "ea403cded4222c85a48734e08fd78b7b37692211c18e9ff410a0a5a1ea3f33f3",
+          "2d1e7123788ff33a11891cab8b234fd35c2cc3232380292665103f23bdf72c2f",
+          "94a29d15c20ef96b5540ad6db7e80852ebb7bb180db83ff784db6d55126e1c16",
+          "373f9df4c3f3c76080b351d1b6bf0fd51532bdb8b8f359a1059591855c61d9e5",
+          "68ea05eb58cdce217f557a30b50c66d0b3b0f326501a334bed3b481238525b37",
+          "4a1913716a42010e226c149b665a7b0dcf3e39a326da019b4cb7b6057690b502",
+          "4d901717465bad43ae516e7638a755c941892c1e2f0a1fe8b3f3a190e0005b74",
+          "2ba6c1e20a7b120bbb93a5036b98060a82a42d0ea7efaaf24c214c7358ba872a",
+          "73662c47d44f69207286330a3fd3182a98f9c9824163b6f89e632d71079e83d3",
+          "4cf28e743b26dec8f75c2bec2f16f208b916199e4cf63472d7c7c41a8fde9930",
+          "8532a85963f071cbf9fe617726ecc9e27a1d552009f26a2d499b0fc55ccdde20",
+          "af248c88d056ca76b6c30061bdf5753a09de1c1ac9f3c8209bc77b4562b397b0",
+          "f050749a6ec9235958a05fb28ca0bfa7330cf3cf5444cb9c5dd249699d2950f3",
+          "0c99c1317d73abd99274dd96f0be9177fb264048f295dcb9c1a4d82545c6100b",
+          "8e1d400a8e69913662bade83195edbd5c53c95cd15b4ac53a8fa3280993de08a",
+          "14e50cd6c9319e0841fd86656a85fd9a6219cf65d0663d81627141b4ab85c648",
+          "a3c139e8568f083bfe85e981074fecebc9aafb5a891467aecbe5b33190ff267e",
+          "73821e46adf70f6c9b8120e5d80aa5eecf0e0454a29be04b7503ae730a22e7f5",
+          "1ca39adf67681bb4bc5ecf2be9a61d18e1475a6fe048c6e49377d1b322042bfc",
+          "062a515dbcb7f4bdd592db183efd0d48bf0f851e542c4b2d424e167ad1b1dcc9",
+          "6d54278672987db895cb456aa6f884b22ea2939416cb98c15b144c1b6d482ca6",
+          "e5b1c5096dab1e3cbe18d1ecea7671463abc04727679828b4057e250af9ac338",
+          "b5b5a21dc554fd8e6c7513f8e562433bbd91cc149925bee7c3e105a653d76213",
+          "c66b0d545b4e393db31664914843596dccd4975c961dee7fab1f4c0aec291d7f",
+          "429c543039c2ba2cb3b96ead51f803b6d9c0607a0a58dac6158bdc3efa2c7097",
+          "bb63764db0700c94e29ecdd2338a1ff026a5d58a3d87e4b128ddb91349128ca5",
+          "2eb855e46f0116debe76616d6f6bb364a94ce464e24e08055db5965f802d839e",
+          "5f71b80ebf35b8ad8644f57abccd32120793d064a810c4b28681386e35ce5f23",
+          "6324e3428b309305dcceada1c5ffe9e8c4fcdc63830c45c36d3eab0a77654c3e",
+          "e697313a87c5ac495de40bc9139fbea8f0f01bf29ef5114983434c8bd300e0b4",
+          "81de336d76b48c3c13afd3d34f1e8524ae4332b5ea66f8b10d40582df8e28074",
+          "84914e2c64d69a2eb05e918f592e582f117d2cc28b834a43aa5147b6f08fa0e7"
+        ],
+        "unique_relic_description_coverage": {
+          "after": {
+            "partial": 56
+          },
+          "before": {
+            "identity": 3,
+            "partial": 53
+          }
+        },
+        "unique_relics": 56
+      }
+    },
+    "static": {
+      "after": {
+        "by_kind": {
+          "card": {
+            "bundled_description_coverage": {
+              "public_observation": 556
+            },
+            "known": 556,
+            "total": 556,
+            "unknown": 0,
+            "unknown_ids": []
+          },
+          "enchantment": {
+            "bundled_description_coverage": {
+              "identity": 21
+            },
+            "known": 21,
+            "total": 21,
+            "unknown": 0,
+            "unknown_ids": []
+          },
+          "enemy": {
+            "bundled_description_coverage": {
+              "identity": 108
+            },
+            "known": 108,
+            "total": 108,
+            "unknown": 0,
+            "unknown_ids": []
+          },
+          "orb": {
+            "bundled_description_coverage": {
+              "identity": 5
+            },
+            "known": 5,
+            "total": 5,
+            "unknown": 0,
+            "unknown_ids": []
+          },
+          "potion": {
+            "bundled_description_coverage": {
+              "structured": 63
+            },
+            "known": 63,
+            "total": 63,
+            "unknown": 0,
+            "unknown_ids": []
+          },
+          "power": {
+            "bundled_description_coverage": {
+              "identity": 197
+            },
+            "known": 197,
+            "total": 197,
+            "unknown": 0,
+            "unknown_ids": []
+          },
+          "power_counter": {
+            "bundled_description_coverage": {
+              "identity": 223
+            },
+            "known": 223,
+            "total": 223,
+            "unknown": 0,
+            "unknown_ids": []
+          },
+          "relic": {
+            "bundled_description_coverage": {
+              "partial": 295
+            },
+            "identity_only_ids": [],
+            "known": 295,
+            "no_intrinsic_effect_ids": [
+              "circlet",
+              "fake_merchants_rug",
+              "wongo_customer_appreciation_badge"
+            ],
+            "total": 295,
+            "unknown": 0,
+            "unknown_ids": []
+          }
+        },
+        "identity_coverage_complete": true,
+        "interpretation": "Known identifiers do not imply learned competence or complete effect descriptions. Card mechanics are in the public observation; bundled relic descriptions are partial. Static catalogs contain no run outcomes, hidden state or held-out examples.",
+        "reference_catalog": "sts_public_feature_catalog_v1:5df26b4afc2a3d43a9f521edbac8c1633c6ae681b2e6ae7e83c6423ecbf2ea43",
+        "saved_catalog": "sts_public_feature_catalog_v1:5df26b4afc2a3d43a9f521edbac8c1633c6ae681b2e6ae7e83c6423ecbf2ea43",
+        "vocabulary": "sts_learned_public_graph_v2:bff24b2bcd609cd9d2ffa973638b110feb41ddbface02b16e6b21e4c6047e01f",
+        "vocabulary_size": 3147
+      },
+      "before": {
+        "by_kind": {
+          "card": {
+            "bundled_description_coverage": {
+              "public_observation": 556
+            },
+            "known": 556,
+            "total": 556,
+            "unknown": 0,
+            "unknown_ids": []
+          },
+          "enchantment": {
+            "bundled_description_coverage": {
+              "identity": 21
+            },
+            "known": 21,
+            "total": 21,
+            "unknown": 0,
+            "unknown_ids": []
+          },
+          "enemy": {
+            "bundled_description_coverage": {
+              "identity": 108
+            },
+            "known": 108,
+            "total": 108,
+            "unknown": 0,
+            "unknown_ids": []
+          },
+          "orb": {
+            "bundled_description_coverage": {
+              "identity": 5
+            },
+            "known": 5,
+            "total": 5,
+            "unknown": 0,
+            "unknown_ids": []
+          },
+          "potion": {
+            "bundled_description_coverage": {
+              "structured": 63
+            },
+            "known": 63,
+            "total": 63,
+            "unknown": 0,
+            "unknown_ids": []
+          },
+          "power": {
+            "bundled_description_coverage": {
+              "identity": 197
+            },
+            "known": 197,
+            "total": 197,
+            "unknown": 0,
+            "unknown_ids": []
+          },
+          "power_counter": {
+            "bundled_description_coverage": {
+              "identity": 223
+            },
+            "known": 223,
+            "total": 223,
+            "unknown": 0,
+            "unknown_ids": []
+          },
+          "relic": {
+            "bundled_description_coverage": {
+              "identity": 72,
+              "partial": 223
+            },
+            "identity_only_ids": [
+              "alchemical_coffer",
+              "arcane_scroll",
+              "archaic_tooth",
+              "astrolabe",
+              "beautiful_bracelet",
+              "calling_bell",
+              "cauldron",
+              "circlet",
+              "claws",
+              "cursed_pearl",
+              "distinguished_cape",
+              "dollys_mirror",
+              "driftwood",
+              "dusty_tome",
+              "electric_shrymp",
+              "empty_cage",
+              "fake_lees_waffle",
+              "fake_merchants_rug",
+              "fragrant_mushroom",
+              "fur_coat",
+              "glass_eye",
+              "gnarled_hammer",
+              "golden_compass",
+              "hefty_tablet",
+              "jewelry_box",
+              "juzu_bracelet",
+              "kaleidoscope",
+              "kifuda",
+              "large_capsule",
+              "lava_rock",
+              "lead_paperweight",
+              "leafy_poultice",
+              "lords_parasol",
+              "lost_coffer",
+              "meat_cleaver",
+              "membership_card",
+              "miniature_tent",
+              "neows_bones",
+              "neows_talisman",
+              "neows_torment",
+              "new_leaf",
+              "nutritious_soup",
+              "orrery",
+              "paels_claw",
+              "paels_growth",
+              "paels_horn",
+              "paels_tooth",
+              "pandoras_box",
+              "phial_holster",
+              "pomander",
+              "precarious_shears",
+              "precise_scissors",
+              "preserved_fog",
+              "punch_dagger",
+              "regal_pillow",
+              "royal_stamp",
+              "sand_castle",
+              "scroll_boxes",
+              "sea_glass",
+              "sere_talon",
+              "shovel",
+              "small_capsule",
+              "storybook",
+              "tanxs_whistle",
+              "the_courier",
+              "touch_of_orobas",
+              "toy_box",
+              "tri_boomerang",
+              "winged_boots",
+              "wongo_customer_appreciation_badge",
+              "wongos_mystery_ticket",
+              "yummy_cookie"
+            ],
+            "known": 295,
+            "no_intrinsic_effect_ids": [],
+            "total": 295,
+            "unknown": 0,
+            "unknown_ids": []
+          }
+        },
+        "identity_coverage_complete": true,
+        "interpretation": "Known identifiers do not imply learned competence or complete effect descriptions. Card mechanics are in the public observation; bundled relic descriptions are partial. Static catalogs contain no run outcomes, hidden state or held-out examples.",
+        "reference_catalog": "sts_public_feature_catalog_v1:5df26b4afc2a3d43a9f521edbac8c1633c6ae681b2e6ae7e83c6423ecbf2ea43",
+        "saved_catalog": "sts_public_feature_catalog_v1:b03677846f8580118b59f9a04cc208b3995b070af4d77072d082c2eb06f7f7fe",
+        "vocabulary": "sts_learned_public_graph_v2:d739f2e27e79286f5bc1ff30d3c72ea6e354d6519bfd109c9c706a8e593fd944",
+        "vocabulary_size": 2978
+      }
+    },
+    "timing": {
+      "implementation_and_review": "Overlapping work; not separately timed",
+      "recorded_audit_seconds": 68.07696816697717,
+      "release_preparation": "Not requested",
+      "start_to_validation_wall_seconds": 546,
+      "task_started_at_utc": "2026-10-04 10:06:10 UTC",
+      "user_wait_seconds": 0,
+      "validation_completed_at_utc": "2026-10-04 10:15:16 UTC"
+    },
+    "validation": {
+      "dedicated_relic_suite": {
+        "passed": 73,
+        "seconds": 1.2
+      },
+      "focused_suite": {
+        "command": ".venv/bin/python -m pytest -q tests/agent/test_relic_features.py tests/agent/test_representation_coverage.py tests/agent/test_training_model.py tests/agent/test_training_checkpoint.py tests/agent/test_set_models.py tests/agent/test_full_run_training.py tests/headless/test_all_ancients.py tests/headless/test_relic_run.py tests/headless/test_shop.py",
+        "passed": 771,
+        "seconds": 65.07
+      },
+      "independent_review": "Read-only semantic review of all 72 additions, gap/no-intrinsic-effect auditing, native examples and frozen-v2 compatibility tests. Final Fur Coat wording correction verified; no remaining semantic blockers.",
+      "limitations": [
+        "Coverage means partial base-rule facts or explicit no-intrinsic-effect classification, not exhaustive interaction simulation or demonstrated learning improvement.",
+        "No trained checkpoint was modified; saved v1/v2 inputs remain frozen.",
+        "Fur Coat mark generation belongs to its acquisition act, but current engine activation matches saved coordinates without an act guard. The descriptor does not promise expiry; no gameplay change or new native cross-act validation was performed.",
+        "Driftwood explicitly excludes the current unsupported Kaleidoscope reroll pool."
+      ],
+      "test_source": {
+        "path": "tests/agent/test_relic_features.py",
+        "sha256": "b878ad7938389bb781a14a6438e210adb680e7426890ae04edf4ea69f190bfe5"
+      }
+    }
+  },
+  "date": "2026-10-04",
+  "evaluation_report": {
+    "path": "runs/vantom-specialist-1m-20261003/evaluation/specialist/1000000/evaluation.json",
+    "sha256": "ca7116055516a4edc418b5346fc77f2ef6697816121bf5fe090fbb8473b64fde"
+  },
+  "explicit_rules": {
+    "relics": 208,
+    "rows": 229
+  },
+  "groups": {
+    "character_content_module": {
+      "described": 36,
+      "total": 36
+    },
+    "common_combat_module": {
+      "described": 81,
+      "total": 81
+    }
+  },
+  "inherited_v1_vocabulary_checkpoint": {
+    "path": "runs/vantom-specialist-training-20261002/ppo/chunk-20/final.sts-model",
+    "sha256": "4da8789591fc9379522b3b30745bb6b6615ee53bb4bfc21215affecf28dfae6a"
+  },
+  "original_v2_vocabulary": {
+    "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/relic-coverage-20261004/before-vocabulary.json",
+    "sha256": "5b461b9d4e7308e04d2a6d5d3897520ad52041334857e063ad55df589a09a479"
+  },
+  "schema": "sts_relic_description_coverage_evidence_v1",
+  "scope": "Static public catalog and all previously recorded greedy train/development-validation games from the 1M endpoint; no gameplay, fitting on episodes, or test access",
+  "seconds": 65.99652816681191,
+  "source": [
+    {
+      "path": "game/agent/training/catalog.py",
+      "sha256": "6deb69bdf52bd5e9dc9df83828d9638cb75c75cfd598dd125204324e3913a1d4"
+    },
+    {
+      "path": "game/agent/training/relic_features.py",
+      "sha256": "3c9cd313363c5f9e3f660437c5a9f1cf14e76c64f0d70d0e6c144f6436f11c69"
+    },
+    {
+      "path": "game/agent/training/coverage.py",
+      "sha256": "9fa415fcd336cb4bcb99fd84606cb0f6b17915bd0027a3555468f5acfc3bb525"
+    }
+  ],
+  "splits": {
+    "train": {
+      "audit": {
+        "after": {
+          "catalog": {
+            "by_kind": {
+              "card": {
+                "bundled_description_coverage": {
+                  "public_observation": 556
+                },
+                "known": 556,
+                "total": 556,
+                "unknown": 0,
+                "unknown_ids": []
+              },
+              "enchantment": {
+                "bundled_description_coverage": {
+                  "identity": 21
+                },
+                "known": 21,
+                "total": 21,
+                "unknown": 0,
+                "unknown_ids": []
+              },
+              "enemy": {
+                "bundled_description_coverage": {
+                  "identity": 108
+                },
+                "known": 108,
+                "total": 108,
+                "unknown": 0,
+                "unknown_ids": []
+              },
+              "orb": {
+                "bundled_description_coverage": {
+                  "identity": 5
+                },
+                "known": 5,
+                "total": 5,
+                "unknown": 0,
+                "unknown_ids": []
+              },
+              "potion": {
+                "bundled_description_coverage": {
+                  "structured": 63
+                },
+                "known": 63,
+                "total": 63,
+                "unknown": 0,
+                "unknown_ids": []
+              },
+              "power": {
+                "bundled_description_coverage": {
+                  "identity": 197
+                },
+                "known": 197,
+                "total": 197,
+                "unknown": 0,
+                "unknown_ids": []
+              },
+              "power_counter": {
+                "bundled_description_coverage": {
+                  "identity": 223
+                },
+                "known": 223,
+                "total": 223,
+                "unknown": 0,
+                "unknown_ids": []
+              },
+              "relic": {
+                "bundled_description_coverage": {
+                  "identity": 72,
+                  "partial": 223
+                },
+                "identity_only_ids": [
+                  "alchemical_coffer",
+                  "arcane_scroll",
+                  "archaic_tooth",
+                  "astrolabe",
+                  "beautiful_bracelet",
+                  "calling_bell",
+                  "cauldron",
+                  "circlet",
+                  "claws",
+                  "cursed_pearl",
+                  "distinguished_cape",
+                  "dollys_mirror",
+                  "driftwood",
+                  "dusty_tome",
+                  "electric_shrymp",
+                  "empty_cage",
+                  "fake_lees_waffle",
+                  "fake_merchants_rug",
+                  "fragrant_mushroom",
+                  "fur_coat",
+                  "glass_eye",
+                  "gnarled_hammer",
+                  "golden_compass",
+                  "hefty_tablet",
+                  "jewelry_box",
+                  "juzu_bracelet",
+                  "kaleidoscope",
+                  "kifuda",
+                  "large_capsule",
+                  "lava_rock",
+                  "lead_paperweight",
+                  "leafy_poultice",
+                  "lords_parasol",
+                  "lost_coffer",
+                  "meat_cleaver",
+                  "membership_card",
+                  "miniature_tent",
+                  "neows_bones",
+                  "neows_talisman",
+                  "neows_torment",
+                  "new_leaf",
+                  "nutritious_soup",
+                  "orrery",
+                  "paels_claw",
+                  "paels_growth",
+                  "paels_horn",
+                  "paels_tooth",
+                  "pandoras_box",
+                  "phial_holster",
+                  "pomander",
+                  "precarious_shears",
+                  "precise_scissors",
+                  "preserved_fog",
+                  "punch_dagger",
+                  "regal_pillow",
+                  "royal_stamp",
+                  "sand_castle",
+                  "scroll_boxes",
+                  "sea_glass",
+                  "sere_talon",
+                  "shovel",
+                  "small_capsule",
+                  "storybook",
+                  "tanxs_whistle",
+                  "the_courier",
+                  "touch_of_orobas",
+                  "toy_box",
+                  "tri_boomerang",
+                  "winged_boots",
+                  "wongo_customer_appreciation_badge",
+                  "wongos_mystery_ticket",
+                  "yummy_cookie"
+                ],
+                "known": 295,
+                "total": 295,
+                "unknown": 0,
+                "unknown_ids": []
+              }
+            },
+            "identity_coverage_complete": true,
+            "interpretation": "Known identifiers do not imply learned competence or complete effect descriptions. Card mechanics are in the public observation; bundled relic descriptions are partial. Static catalogs contain no run outcomes, hidden state or held-out examples.",
+            "reference_catalog": "sts_public_feature_catalog_v1:b03677846f8580118b59f9a04cc208b3995b070af4d77072d082c2eb06f7f7fe",
+            "saved_catalog": "sts_public_feature_catalog_v1:b03677846f8580118b59f9a04cc208b3995b070af4d77072d082c2eb06f7f7fe",
+            "vocabulary": "sts_learned_public_graph_v2:26ad6004a196cc1e2dfdec595fc488f5bc62db9e6820c4de653a231ae450ae1a",
+            "vocabulary_size": 3016
+          },
+          "observed_decisions": 3134,
+          "observed_description_coverage": {
+            "card": {
+              "public_observation": 128385
+            },
+            "enchantment": {
+              "identity": 1850
+            },
+            "enemy": {
+              "identity": 3134
+            },
+            "potion": {
+              "structured": 283
+            },
+            "power": {
+              "identity": 4891
+            },
+            "relic": {
+              "identity": 420,
+              "partial": 9508
+            }
+          },
+          "observed_entities": {
+            "card": 128385,
+            "enchantment": 1850,
+            "enemy": 3134,
+            "potion": 283,
+            "power": 4891,
+            "relic": 9928
+          },
+          "observed_identity_coverage_complete": true,
+          "observed_token_coverage_complete": true,
+          "observed_unique_identities": {
+            "card": 76,
+            "enchantment": 3,
+            "enemy": 1,
+            "potion": 28,
+            "power": 33,
+            "relic": 82
+          },
+          "schema": "sts_representation_coverage_v1",
+          "status": "complete",
+          "unknown_tokens": {}
+        },
+        "before": {
+          "catalog": {
+            "by_kind": {
+              "card": {
+                "bundled_description_coverage": {
+                  "public_observation": 556
+                },
+                "known": 556,
+                "total": 556,
+                "unknown": 0,
+                "unknown_ids": []
+              },
+              "enchantment": {
+                "bundled_description_coverage": {
+                  "identity": 21
+                },
+                "known": 21,
+                "total": 21,
+                "unknown": 0,
+                "unknown_ids": []
+              },
+              "enemy": {
+                "bundled_description_coverage": {
+                  "identity": 108
+                },
+                "known": 108,
+                "total": 108,
+                "unknown": 0,
+                "unknown_ids": []
+              },
+              "orb": {
+                "bundled_description_coverage": {
+                  "identity": 5
+                },
+                "known": 5,
+                "total": 5,
+                "unknown": 0,
+                "unknown_ids": []
+              },
+              "potion": {
+                "bundled_description_coverage": {
+                  "structured": 63
+                },
+                "known": 63,
+                "total": 63,
+                "unknown": 0,
+                "unknown_ids": []
+              },
+              "power": {
+                "bundled_description_coverage": {
+                  "identity": 197
+                },
+                "known": 197,
+                "total": 197,
+                "unknown": 0,
+                "unknown_ids": []
+              },
+              "power_counter": {
+                "bundled_description_coverage": {
+                  "identity": 223
+                },
+                "known": 223,
+                "total": 223,
+                "unknown": 0,
+                "unknown_ids": []
+              },
+              "relic": {
+                "bundled_description_coverage": {
+                  "identity": 247,
+                  "partial": 48
+                },
+                "identity_only_ids": [
+                  "alchemical_coffer",
+                  "amethyst_aubergine",
+                  "arcane_scroll",
+                  "archaic_tooth",
+                  "astrolabe",
+                  "beating_remnant",
+                  "beautiful_bracelet",
+                  "bellows",
+                  "belt_buckle",
+                  "big_hat",
+                  "biiig_hug",
+                  "bing_bong",
+                  "black_star",
+                  "blessed_antler",
+                  "blood_soaked_rose",
+                  "blood_vial",
+                  "bone_flute",
+                  "bone_tea",
+                  "book_repair_knife",
+                  "bookmark",
+                  "booming_conch",
+                  "bound_phylactery",
+                  "bowler_hat",
+                  "bread",
+                  "brilliant_scarf",
+                  "brimstone",
+                  "burning_sticks",
+                  "byrdpip",
+                  "calling_bell",
+                  "cauldron",
+                  "centennial_puzzle",
+                  "charons_ashes",
+                  "chemical_x",
+                  "choices_paradox",
+                  "chosen_cheese",
+                  "circlet",
+                  "claws",
+                  "cloak_clasp",
+                  "cracked_core",
+                  "crossbow",
+                  "cursed_pearl",
+                  "darkstone_periapt",
+                  "data_disk",
+                  "daughter_of_the_wind",
+                  "delicate_frond",
+                  "demon_tongue",
+                  "diamond_diadem",
+                  "dingy_rug",
+                  "distinguished_cape",
+                  "divine_destiny",
+                  "divine_right",
+                  "dollys_mirror",
+                  "dragon_fruit",
+                  "dream_catcher",
+                  "driftwood",
+                  "dusty_tome",
+                  "ectoplasm",
+                  "electric_shrymp",
+                  "ember_tea",
+                  "emotion_chip",
+                  "empty_cage",
+                  "eternal_feather",
+                  "fake_anchor",
+                  "fake_blood_vial",
+                  "fake_lees_waffle",
+                  "fake_merchants_rug",
+                  "fake_orichalcum",
+                  "fake_snecko_eye",
+                  "fake_strike_dummy",
+                  "fake_venerable_tea_set",
+                  "fencing_manual",
+                  "festive_popper",
+                  "fiddle",
+                  "forgotten_soul",
+                  "fragrant_mushroom",
+                  "fresnel_lens",
+                  "frozen_egg",
+                  "funerary_mask",
+                  "fur_coat",
+                  "gambling_chip",
+                  "game_piece",
+                  "ghost_seed",
+                  "girya",
+                  "glass_eye",
+                  "glitter",
+                  "gnarled_hammer",
+                  "gold_plated_cables",
+                  "golden_compass",
+                  "gremlin_horn",
+                  "hand_drill",
+                  "hefty_tablet",
+                  "helical_dart",
+                  "history_course",
+                  "ice_cream",
+                  "infused_core",
+                  "intimidating_helmet",
+                  "ivory_tile",
+                  "jeweled_mask",
+                  "jewelry_box",
+                  "joss_paper",
+                  "juzu_bracelet",
+                  "kaleidoscope",
+                  "kifuda",
+                  "large_capsule",
+                  "lava_lamp",
+                  "lava_rock",
+                  "lead_paperweight",
+                  "leafy_poultice",
+                  "lizard_tail",
+                  "lords_parasol",
+                  "lost_coffer",
+                  "lost_wisp",
+                  "lucky_fysh",
+                  "lunar_pastry",
+                  "maw_bank",
+                  "meal_ticket",
+                  "meat_cleaver",
+                  "meat_on_the_bone",
+                  "membership_card",
+                  "mercury_hourglass",
+                  "metronome",
+                  "mini_regent",
+                  "miniature_cannon",
+                  "miniature_tent",
+                  "molten_egg",
+                  "mr_struggles",
+                  "mummified_hand",
+                  "music_box",
+                  "mystic_lighter",
+                  "neows_bones",
+                  "neows_talisman",
+                  "neows_torment",
+                  "new_leaf",
+                  "ninja_scroll",
+                  "nutritious_soup",
+                  "orange_dough",
+                  "orichalcum",
+                  "orrery",
+                  "paels_blood",
+                  "paels_claw",
+                  "paels_eye",
+                  "paels_flesh",
+                  "paels_growth",
+                  "paels_horn",
+                  "paels_legion",
+                  "paels_tears",
+                  "paels_tooth",
+                  "pandoras_box",
+                  "pantograph",
+                  "paper_krane",
+                  "paper_phrog",
+                  "parrying_shield",
+                  "permafrost",
+                  "petrified_toad",
+                  "phial_holster",
+                  "philosophers_stone",
+                  "phylactery_unbound",
+                  "planisphere",
+                  "pomander",
+                  "potion_belt",
+                  "power_cell",
+                  "prayer_wheel",
+                  "precarious_shears",
+                  "precise_scissors",
+                  "preserved_fog",
+                  "prismatic_gem",
+                  "pumpkin_candle",
+                  "punch_dagger",
+                  "radiant_pearl",
+                  "rainbow_ring",
+                  "razor_tooth",
+                  "red_skull",
+                  "regal_pillow",
+                  "regalite",
+                  "reptile_trinket",
+                  "ring_of_the_drake",
+                  "ring_of_the_snake",
+                  "ringing_triangle",
+                  "ripple_basin",
+                  "royal_poison",
+                  "royal_stamp",
+                  "ruined_helmet",
+                  "runic_capacitor",
+                  "runic_pyramid",
+                  "sai",
+                  "sand_castle",
+                  "screaming_flagon",
+                  "scroll_boxes",
+                  "sea_glass",
+                  "seal_of_gold",
+                  "self_forming_clay",
+                  "sere_talon",
+                  "shovel",
+                  "silken_tress",
+                  "silver_crucible",
+                  "sling_of_courage",
+                  "small_capsule",
+                  "snecko_eye",
+                  "snecko_skull",
+                  "sozu",
+                  "sparkling_rouge",
+                  "spiked_gauntlets",
+                  "stone_calendar",
+                  "stone_cracker",
+                  "stone_humidifier",
+                  "storybook",
+                  "strike_dummy",
+                  "sturdy_clamp",
+                  "sword_of_stone",
+                  "symbiotic_virus",
+                  "tanxs_whistle",
+                  "tea_of_discourtesy",
+                  "the_abacus",
+                  "the_boot",
+                  "the_courier",
+                  "throwing_axe",
+                  "tingsha",
+                  "tiny_mailbox",
+                  "toasty_mittens",
+                  "toolbox",
+                  "touch_of_orobas",
+                  "tough_bandages",
+                  "toxic_egg",
+                  "toy_box",
+                  "tri_boomerang",
+                  "tungsten_rod",
+                  "twisted_funnel",
+                  "unceasing_top",
+                  "undying_sigil",
+                  "unsettling_lamp",
+                  "vambrace",
+                  "velvet_choker",
+                  "venerable_tea_set",
+                  "very_hot_cocoa",
+                  "vexing_puzzlebox",
+                  "vitruvian_minion",
+                  "war_hammer",
+                  "war_paint",
+                  "whetstone",
+                  "whispering_earring",
+                  "white_beast_statue",
+                  "white_star",
+                  "wing_charm",
+                  "winged_boots",
+                  "wongo_customer_appreciation_badge",
+                  "wongos_mystery_ticket",
+                  "yummy_cookie"
+                ],
+                "known": 295,
+                "total": 295,
+                "unknown": 0,
+                "unknown_ids": []
+              }
+            },
+            "identity_coverage_complete": true,
+            "interpretation": "Known identifiers do not imply learned competence or complete effect descriptions. Card mechanics are in the public observation; bundled relic descriptions are partial. Static catalogs contain no run outcomes, hidden state or held-out examples.",
+            "reference_catalog": "sts_public_feature_catalog_v1:b03677846f8580118b59f9a04cc208b3995b070af4d77072d082c2eb06f7f7fe",
+            "saved_catalog": "sts_public_feature_catalog_v1:3f8d572bd9b1a766c8bd865b3289c4f12d1d8fe59db38403c012d94d68e20c63",
+            "vocabulary": "sts_learned_public_graph_v2:34d29378614603b32385c14a08dbf25b2ea9cb33575c51d6d328268fd0cb4b27",
+            "vocabulary_size": 2764
+          },
+          "observed_decisions": 3134,
+          "observed_description_coverage": {
+            "card": {
+              "public_observation": 128385
+            },
+            "enchantment": {
+              "identity": 1850
+            },
+            "enemy": {
+              "identity": 3134
+            },
+            "potion": {
+              "structured": 283
+            },
+            "power": {
+              "identity": 4891
+            },
+            "relic": {
+              "identity": 4181,
+              "partial": 5747
+            }
+          },
+          "observed_entities": {
+            "card": 128385,
+            "enchantment": 1850,
+            "enemy": 3134,
+            "potion": 283,
+            "power": 4891,
+            "relic": 9928
+          },
+          "observed_identity_coverage_complete": true,
+          "observed_token_coverage_complete": true,
+          "observed_unique_identities": {
+            "card": 76,
+            "enchantment": 3,
+            "enemy": 1,
+            "potion": 28,
+            "power": 33,
+            "relic": 82
+          },
+          "schema": "sts_representation_coverage_v1",
+          "status": "complete",
+          "unknown_tokens": {}
+        }
+      },
+      "encoding_failure_count": 0,
+      "encoding_failures": [],
+      "games": 101,
+      "relic_occurrences": {
+        "amethyst_aubergine": 290,
+        "anchor": 122,
+        "art_of_war": 35,
+        "bag_of_marbles": 109,
+        "bag_of_preparation": 37,
+        "bellows": 48,
+        "blood_vial": 124,
+        "book_of_five_rings": 185,
+        "bowler_hat": 20,
+        "bronze_scales": 128,
+        "burning_blood": 3134,
+        "candelabra": 84,
+        "captains_wheel": 79,
+        "centennial_puzzle": 214,
+        "chandelier": 60,
+        "eternal_feather": 80,
+        "festive_popper": 71,
+        "gambling_chip": 33,
+        "game_piece": 58,
+        "girya": 30,
+        "gorget": 206,
+        "gremlin_horn": 119,
+        "happy_flower": 102,
+        "horn_cleat": 101,
+        "ice_cream": 23,
+        "joss_paper": 178,
+        "juzu_bracelet": 146,
+        "kunai": 17,
+        "kusarigama": 70,
+        "lantern": 145,
+        "lasting_candy": 97,
+        "letter_opener": 136,
+        "lizard_tail": 78,
+        "lucky_fysh": 48,
+        "meal_ticket": 147,
+        "mercury_hourglass": 85,
+        "miniature_cannon": 28,
+        "molten_egg": 61,
+        "mummified_hand": 29,
+        "nunchaku": 60,
+        "oddly_smooth_stone": 79,
+        "orichalcum": 25,
+        "ornamental_fan": 23,
+        "pantograph": 87,
+        "paper_phrog": 29,
+        "pear": 123,
+        "pen_nib": 77,
+        "pendulum": 69,
+        "permafrost": 26,
+        "petrified_toad": 87,
+        "planisphere": 130,
+        "pocketwatch": 25,
+        "potion_belt": 44,
+        "prayer_wheel": 39,
+        "rainbow_ring": 31,
+        "razor_tooth": 34,
+        "red_mask": 95,
+        "red_skull": 49,
+        "regal_pillow": 249,
+        "ripple_basin": 55,
+        "self_forming_clay": 51,
+        "shuriken": 93,
+        "sparkling_rouge": 103,
+        "stone_cracker": 79,
+        "strawberry": 161,
+        "strike_dummy": 220,
+        "sturdy_clamp": 72,
+        "sword_of_stone": 26,
+        "the_courier": 25,
+        "tiny_mailbox": 66,
+        "toxic_egg": 51,
+        "tungsten_rod": 61,
+        "unceasing_top": 64,
+        "unsettling_lamp": 22,
+        "vajra": 95,
+        "vambrace": 104,
+        "venerable_tea_set": 132,
+        "vexing_puzzlebox": 38,
+        "war_paint": 128,
+        "whetstone": 81,
+        "white_beast_statue": 23,
+        "white_star": 40
+      },
+      "remaining_observed_identity_only": [
+        "juzu_bracelet",
+        "regal_pillow",
+        "the_courier"
+      ],
+      "trajectory_sha256": [
+        "a6332e25c3e10e5794d6961dd9a8992c70c2fccd726ebe00526d249844f90dc5",
+        "1826475b0794f48388a425dd33aa18b43994f617d8d9a5cd05f3405145bb0160",
+        "58762c6f4d10faefe267d6515f4dd4458066c72d3d6f4648e894858789e20ff5",
+        "cf32894d8d4171bea32ac36e032a4a0d52afd3f3c3d875f785225ab1bc401938",
+        "6cc2de9873ae15050f6aeab375b2daf2bbc11474b63a70c11c55fa15aa02c332",
+        "07214a7c3d8859e306d73a61418d79c7b67b2ab0874d1fd0125fccbb44296763",
+        "29eded5df2b36d4ec8c260018f671604855fd589e97bb629c045b95a8cba5782",
+        "0b4b3da3b90c4fbf4729c34966ec0b918e13460de7aabf546273e6825b019163",
+        "70187a1e1f5404474653adb54437603ba34cc5d7e9563ec6a57f1e7fbc76e860",
+        "86e40adb5792d34d0f02c894c8ccc46709564712b6845ed66e67367985d4e098",
+        "ccf5a15a5a17189a8c8507fd3ec42c0b7b89c5cba0768e8f785bf93f99416a85",
+        "fecc532916bc3b4fc45c0fc0231c1d577127e16d2614ef458f555ca83c4b8fe9",
+        "1cf41c1d46abb707ed0fecf4733b6b019b799685d291078b4ef448cd3e770112",
+        "1aa4d5eaf8b632726dcb6c21b2e47bf62b3ebb11f7a10aefed67d170d726cc1a",
+        "638de8f102a29bda61f71c0e3ae6b0b7c17f9f44373931ce200d1b2df8d9c11d",
+        "12a59b19badd09969b82e44588ecd7213f5f748e26d00f595b0fe43f3e7e1932",
+        "1df73fac435c4465b404857143e45009e1dc42dd55ee9a338be12bb303f5a74e",
+        "c9443d5ce9c734866d75224364bd43d6ef70225409757d30aeb1d9b67f8cb452",
+        "58498eb45438661a043c8de46f1aa1d62f632f6ff3c4ebbb44ba1622cfc01fa8",
+        "288e76e64c3c8e325a124f7c1a35b0139a40b575847cdff46eadcd8288178485",
+        "afe37b3798d89663fcae0cc8bf1d81ec6439e32238e181a3294d74559615d312",
+        "4b733096a4e9c21069883839838d317cd4f01191e0272e2f55c87462409c4b12",
+        "29bfb6bf50b8149883f8f66aa8cb9e28132b85aebce6736ab420b4751e2462d8",
+        "1b292c2d8fc12221ccc9276b5731584eb2405b6d189fedce649754b6037bc0c6",
+        "ae2f8b6307bf2eee029edad702a7e22262d7d67b47d0c3b87fec14dad8f64240",
+        "323af8bb1a5db2af565640eaca00dff4e5d8d8a926097e0b3c6123a777caa288",
+        "9d791e66aa260223a61220dcf650a0b0f3b691f0403cb1ed16437cbedade9ee5",
+        "499cbc3370ff7fb2ed922eee2debdee0d5bea9df090785eb26126410fc9fbdca",
+        "3bda269d23fc5d05889d92188b4b1670d4ffe2b3faf8b6724633ace5f2c8f243",
+        "76456bf72bf78a95b7cdae78720272aaabee4c5d5173b6ce1f1c5d72f75e77bd",
+        "3d731fd36bb237437c8151d907426190e366662eb4cafbaed53b5db5c463c02c",
+        "006e43b1e86e0a0f11c9e81edb8dfe80adac446c91dd8c13e663ce8e4c50e3b1",
+        "bfc71ec6cf41cb051c7fb3363e13357224b797b78cb28ec3c286fa8c4444a6c3",
+        "8828272e4ef02efe08d636ee2dc5b9e577a144f7b8514f7fc815362699a8ba2f",
+        "72d084c656fcc892a705abd7d67877a4dc1bd2aa9e7e5c5b299c72381f1bddee",
+        "6a1b916f928e272f9a1218b29a8751c15488a9e631c0d9b3fa67697788ebe69a",
+        "c22b615959bed3e7a367b15d3686df96723a2e089826da8928da5978a70c93be",
+        "8c192ad14ea324ced40d8e329bf4a0a322e281ff3d57d9bee6807e8aed696f9f",
+        "76e10e9b973e472880541e200e992bdc4e782bd84ea4386ceddfe48c06596799",
+        "2941a91bd0243e56e60e93fc9d38baebf4bd4986227fdd78817b43c5d78ed572",
+        "0466954d65bd590448007fb7a92835975a36b7e61e517366f83500b58accdaf0",
+        "499bb19cf83233e0d8be0f5235fa18055bf84db5c46a7c0daf0e1a93b53e05e6",
+        "77dec264dd39e9a79046d9d38ac494f75cb8aec5cc5f608c9e899e284c86e7a9",
+        "94e86a86706d76e81a257515d4fa3855eb8ccfcc65ac977fb0a2bc1ffb97f3ab",
+        "bb6218bb801b2db4024bd5b66c85d65314746057db638405f8015254b543e587",
+        "920d646a83939e6e4120a155fd1e09af417ceb500458d4d4859a6a92192128cc",
+        "5e21d1c8283befdbe236781b8b10dc5fa02c9120485f4ebbad283405542b2c56",
+        "cf2b6cca25d4616ae07418cf4aa933cb9d265e9ab555f3158816f1e750907ab9",
+        "803d5a02e6b98270ff216370d7625fbc0fcb953529340c40d8f9ff4d22018f37",
+        "d89af904069eb3d2430d98cf3b6d200585e1d2d140b5c1ed26f260de977d8561",
+        "884cc1c78ab842f4a390a9458cce877884e3d5708a63bb98217771b44921c63c",
+        "09794f534d824d06ddf2356cd9151ff441b617e4db3f99d9f309421e9bec43df",
+        "d03a54f6420902e41e6f8846c37aa9e25c9b6fcc5fb653fda23624f0428f1920",
+        "223bbc598587dfbdf66cede905a1db927c1bfd5bfd06f9192615d33c2a781652",
+        "918ae3f404d6e3a146579c619da005ff5fdf3215cd37735f5d5f11bc8ae28fd8",
+        "6d4ac4bf5ecf47130124964c8564a0233071060e9cbfa418a15d4fde1aa55032",
+        "d2d687ee9a5f792607804c9e88a905742725f73007522f2f161e46840a207e05",
+        "4b33b22cfaaf6988e61ae241ba761b5200131a166f3e4a79ab92233aed3af78f",
+        "213533f232adb92ff8b8cb36612cdfaa672c132322df61edf62e77fd4d38b1ef",
+        "38bddd9e753d5860450c4bef16e2d95d577155a6ba7db96539d4f91f44fbb314",
+        "9e02eb482b2d6aea946f73c3764de050958e09a9f86f565f99179a51421f4b82",
+        "196d50b9e3deb933b6aeafe5e8f32ebb58dbc7128036dec24bdd67e50803be8a",
+        "b0fa84cb84ac3ac60c2f9b3e9d326fabf79c896f71a300d1a704e30ccfb27e83",
+        "e1e621b6ce9a6690224ce54a732ddc5d66c615afe5369e91c2157685ef822e81",
+        "14969b9506785829e86fad0f0f2a8a551745eaf0d73a505dc0009f5700574062",
+        "77221b949422bccb55e83455e827bbec780f04cb070402889ff732cd3936f9f1",
+        "e33d0b6fadcee42368f1914489f5c45768ee0aa34e76b04826f9ee976ced4abb",
+        "5bbd7eab4e543c4baea5b4b16989c5eeefc2a7a3aac74d43fc0d0f780386aa0c",
+        "05f6dfb4dd7fc53fcfac9cd80da4a1aa0738b05932af1da0d2ca9f7e83829ebb",
+        "7d12511c3d135b532e69c18cd86fd08fa3931fe6538e0dda23b597f167d6b19e",
+        "2928dbfb218d8d216f11e2ad32c3dc0f127239003211d9ed8854b153e68a77ed",
+        "84964ac7f6d7ae9ba80375c8cb24bcd9a65c902c60324e11fc657512ee5fa46f",
+        "6ba267fae0707d22f2d030ea3fe731b4c2d3bf7eb1feca9020231b40197d7f4a",
+        "967cfe2d4ea0a55f9bd16623c03ad9f07d6716d4e4858670650631270dab7ec8",
+        "b4301977a25aae51395982f4691ac9978d070b9087d0951b75f5fb2497eda0e1",
+        "051725983529614bcc8a5c182bdfcb4ec6645153a619df0990b596e6339774d9",
+        "80c0d520f502b045f288882b6061e1290f1560bae6b900c0864a9e84b7c6acef",
+        "95184f7d561e7a5cde6350f4ca2ba4c1ea3e1abaaa3b32e97ebc2d3facb81044",
+        "c19ecb0ea2aa407d10278f4d2ff59e6b0f76041d1ad72c85cb90d1b4472cf7d3",
+        "cec5924a081fabaf131a1cc05904e81e82c1a73acc293ee024f39aee1cf4b188",
+        "9b8a7845aa30af5cce130e6ae550d2c2bf05bfb430d7a90b082ba6e6880e63d9",
+        "5117e1024fa80f827d4bdeae00bf4c977c66ae62c3f98c2fe14287bf1da92249",
+        "5e23081b531da1fe59f47791074bd1830340c7ebb290da5faee8bd5ee2904b7a",
+        "9c2e21e95294eebbbcbde678d9b910efbe4fb89bfadb0b8d6d1bf892f3d9b90b",
+        "15fece58d51ba61548d012d62ef9f0e2a652bf2e60ac4f8fe75ba5be7662ccc0",
+        "b6724bd8428b79fb64f8feb080ace855e7dd52e67a936f28efd7da5a6c42dfcc",
+        "69cc515c92c31a7f9ef5e1ac3cd075a77dcb027fa29e332f2aae5a4626f4c19a",
+        "c58e9bdaf02c8b1bdb8d838000dff0967f6e87446a71104751cb97a2fb8e4918",
+        "d8329270e795fe41b0528dc098c07b9a4bce0c132640eec3f02ad6d5778e003c",
+        "6ebd80c4cc878b18aef278aacfb6d299df7a6af2e7497d31fb4787bf31a0b998",
+        "4142f248ae0eb38306349c5af28663bf6d65c1c802548829a36a3f132fe786b6",
+        "806484cca9c91126948947fbce49d473c9df0dbe12a9e5e007ef73bd083b7cb2",
+        "9918b92f9c69ebd23cf20cde0dc4500664ed6d64a0b92ee6c09769cf0a797c72",
+        "c91a8beb69008ae5489c03c12373e8e0edc966fb0226faf934d203f706a20768",
+        "13affa2080143e7e3f60533c83ceeb481e48236c984c76c27da6f9e1f5c5fa57",
+        "4accf27e3618dd30f429eb08d3bf8e0f5b446b44da1468dceb7719ef31a06d68",
+        "b836eabfaa740be3bfcc74a85e5ad8baf26e636a67a5b77d43a7d76886864a1e",
+        "f6e137680bb22d941d3db1c876be63287969e8c24daa66ad14090ef6094ba2de",
+        "e2ba0c4b48b0dfbe7007102a8042995da14c7ef038fad7f5aa6cf839ffe3142c",
+        "7025939de8575cac7161aef28c0ddf736a3ac7592160df84701e1bc54d51b77c",
+        "cddd31b9c3b12bcf6e86086ed6d959ad14755e298d3cb2cac4d7b3cdd7a16e93"
+      ],
+      "unique_relic_description_coverage": {
+        "after": {
+          "identity": 3,
+          "partial": 79
+        },
+        "before": {
+          "identity": 53,
+          "partial": 29
+        }
+      },
+      "unique_relics": 82
+    },
+    "validation": {
+      "audit": {
+        "after": {
+          "catalog": {
+            "by_kind": {
+              "card": {
+                "bundled_description_coverage": {
+                  "public_observation": 556
+                },
+                "known": 556,
+                "total": 556,
+                "unknown": 0,
+                "unknown_ids": []
+              },
+              "enchantment": {
+                "bundled_description_coverage": {
+                  "identity": 21
+                },
+                "known": 21,
+                "total": 21,
+                "unknown": 0,
+                "unknown_ids": []
+              },
+              "enemy": {
+                "bundled_description_coverage": {
+                  "identity": 108
+                },
+                "known": 108,
+                "total": 108,
+                "unknown": 0,
+                "unknown_ids": []
+              },
+              "orb": {
+                "bundled_description_coverage": {
+                  "identity": 5
+                },
+                "known": 5,
+                "total": 5,
+                "unknown": 0,
+                "unknown_ids": []
+              },
+              "potion": {
+                "bundled_description_coverage": {
+                  "structured": 63
+                },
+                "known": 63,
+                "total": 63,
+                "unknown": 0,
+                "unknown_ids": []
+              },
+              "power": {
+                "bundled_description_coverage": {
+                  "identity": 197
+                },
+                "known": 197,
+                "total": 197,
+                "unknown": 0,
+                "unknown_ids": []
+              },
+              "power_counter": {
+                "bundled_description_coverage": {
+                  "identity": 223
+                },
+                "known": 223,
+                "total": 223,
+                "unknown": 0,
+                "unknown_ids": []
+              },
+              "relic": {
+                "bundled_description_coverage": {
+                  "identity": 72,
+                  "partial": 223
+                },
+                "identity_only_ids": [
+                  "alchemical_coffer",
+                  "arcane_scroll",
+                  "archaic_tooth",
+                  "astrolabe",
+                  "beautiful_bracelet",
+                  "calling_bell",
+                  "cauldron",
+                  "circlet",
+                  "claws",
+                  "cursed_pearl",
+                  "distinguished_cape",
+                  "dollys_mirror",
+                  "driftwood",
+                  "dusty_tome",
+                  "electric_shrymp",
+                  "empty_cage",
+                  "fake_lees_waffle",
+                  "fake_merchants_rug",
+                  "fragrant_mushroom",
+                  "fur_coat",
+                  "glass_eye",
+                  "gnarled_hammer",
+                  "golden_compass",
+                  "hefty_tablet",
+                  "jewelry_box",
+                  "juzu_bracelet",
+                  "kaleidoscope",
+                  "kifuda",
+                  "large_capsule",
+                  "lava_rock",
+                  "lead_paperweight",
+                  "leafy_poultice",
+                  "lords_parasol",
+                  "lost_coffer",
+                  "meat_cleaver",
+                  "membership_card",
+                  "miniature_tent",
+                  "neows_bones",
+                  "neows_talisman",
+                  "neows_torment",
+                  "new_leaf",
+                  "nutritious_soup",
+                  "orrery",
+                  "paels_claw",
+                  "paels_growth",
+                  "paels_horn",
+                  "paels_tooth",
+                  "pandoras_box",
+                  "phial_holster",
+                  "pomander",
+                  "precarious_shears",
+                  "precise_scissors",
+                  "preserved_fog",
+                  "punch_dagger",
+                  "regal_pillow",
+                  "royal_stamp",
+                  "sand_castle",
+                  "scroll_boxes",
+                  "sea_glass",
+                  "sere_talon",
+                  "shovel",
+                  "small_capsule",
+                  "storybook",
+                  "tanxs_whistle",
+                  "the_courier",
+                  "touch_of_orobas",
+                  "toy_box",
+                  "tri_boomerang",
+                  "winged_boots",
+                  "wongo_customer_appreciation_badge",
+                  "wongos_mystery_ticket",
+                  "yummy_cookie"
+                ],
+                "known": 295,
+                "total": 295,
+                "unknown": 0,
+                "unknown_ids": []
+              }
+            },
+            "identity_coverage_complete": true,
+            "interpretation": "Known identifiers do not imply learned competence or complete effect descriptions. Card mechanics are in the public observation; bundled relic descriptions are partial. Static catalogs contain no run outcomes, hidden state or held-out examples.",
+            "reference_catalog": "sts_public_feature_catalog_v1:b03677846f8580118b59f9a04cc208b3995b070af4d77072d082c2eb06f7f7fe",
+            "saved_catalog": "sts_public_feature_catalog_v1:b03677846f8580118b59f9a04cc208b3995b070af4d77072d082c2eb06f7f7fe",
+            "vocabulary": "sts_learned_public_graph_v2:26ad6004a196cc1e2dfdec595fc488f5bc62db9e6820c4de653a231ae450ae1a",
+            "vocabulary_size": 3016
+          },
+          "observed_decisions": 1254,
+          "observed_description_coverage": {
+            "card": {
+              "public_observation": 52436
+            },
+            "enchantment": {
+              "identity": 298
+            },
+            "enemy": {
+              "identity": 1254
+            },
+            "potion": {
+              "structured": 153
+            },
+            "power": {
+              "identity": 2152
+            },
+            "relic": {
+              "identity": 147,
+              "partial": 3786
+            }
+          },
+          "observed_entities": {
+            "card": 52436,
+            "enchantment": 298,
+            "enemy": 1254,
+            "potion": 153,
+            "power": 2152,
+            "relic": 3933
+          },
+          "observed_identity_coverage_complete": true,
+          "observed_token_coverage_complete": true,
+          "observed_unique_identities": {
+            "card": 63,
+            "enchantment": 2,
+            "enemy": 1,
+            "potion": 16,
+            "power": 25,
+            "relic": 56
+          },
+          "schema": "sts_representation_coverage_v1",
+          "status": "complete",
+          "unknown_tokens": {}
+        },
+        "before": {
+          "catalog": {
+            "by_kind": {
+              "card": {
+                "bundled_description_coverage": {
+                  "public_observation": 556
+                },
+                "known": 556,
+                "total": 556,
+                "unknown": 0,
+                "unknown_ids": []
+              },
+              "enchantment": {
+                "bundled_description_coverage": {
+                  "identity": 21
+                },
+                "known": 21,
+                "total": 21,
+                "unknown": 0,
+                "unknown_ids": []
+              },
+              "enemy": {
+                "bundled_description_coverage": {
+                  "identity": 108
+                },
+                "known": 108,
+                "total": 108,
+                "unknown": 0,
+                "unknown_ids": []
+              },
+              "orb": {
+                "bundled_description_coverage": {
+                  "identity": 5
+                },
+                "known": 5,
+                "total": 5,
+                "unknown": 0,
+                "unknown_ids": []
+              },
+              "potion": {
+                "bundled_description_coverage": {
+                  "structured": 63
+                },
+                "known": 63,
+                "total": 63,
+                "unknown": 0,
+                "unknown_ids": []
+              },
+              "power": {
+                "bundled_description_coverage": {
+                  "identity": 197
+                },
+                "known": 197,
+                "total": 197,
+                "unknown": 0,
+                "unknown_ids": []
+              },
+              "power_counter": {
+                "bundled_description_coverage": {
+                  "identity": 223
+                },
+                "known": 223,
+                "total": 223,
+                "unknown": 0,
+                "unknown_ids": []
+              },
+              "relic": {
+                "bundled_description_coverage": {
+                  "identity": 247,
+                  "partial": 48
+                },
+                "identity_only_ids": [
+                  "alchemical_coffer",
+                  "amethyst_aubergine",
+                  "arcane_scroll",
+                  "archaic_tooth",
+                  "astrolabe",
+                  "beating_remnant",
+                  "beautiful_bracelet",
+                  "bellows",
+                  "belt_buckle",
+                  "big_hat",
+                  "biiig_hug",
+                  "bing_bong",
+                  "black_star",
+                  "blessed_antler",
+                  "blood_soaked_rose",
+                  "blood_vial",
+                  "bone_flute",
+                  "bone_tea",
+                  "book_repair_knife",
+                  "bookmark",
+                  "booming_conch",
+                  "bound_phylactery",
+                  "bowler_hat",
+                  "bread",
+                  "brilliant_scarf",
+                  "brimstone",
+                  "burning_sticks",
+                  "byrdpip",
+                  "calling_bell",
+                  "cauldron",
+                  "centennial_puzzle",
+                  "charons_ashes",
+                  "chemical_x",
+                  "choices_paradox",
+                  "chosen_cheese",
+                  "circlet",
+                  "claws",
+                  "cloak_clasp",
+                  "cracked_core",
+                  "crossbow",
+                  "cursed_pearl",
+                  "darkstone_periapt",
+                  "data_disk",
+                  "daughter_of_the_wind",
+                  "delicate_frond",
+                  "demon_tongue",
+                  "diamond_diadem",
+                  "dingy_rug",
+                  "distinguished_cape",
+                  "divine_destiny",
+                  "divine_right",
+                  "dollys_mirror",
+                  "dragon_fruit",
+                  "dream_catcher",
+                  "driftwood",
+                  "dusty_tome",
+                  "ectoplasm",
+                  "electric_shrymp",
+                  "ember_tea",
+                  "emotion_chip",
+                  "empty_cage",
+                  "eternal_feather",
+                  "fake_anchor",
+                  "fake_blood_vial",
+                  "fake_lees_waffle",
+                  "fake_merchants_rug",
+                  "fake_orichalcum",
+                  "fake_snecko_eye",
+                  "fake_strike_dummy",
+                  "fake_venerable_tea_set",
+                  "fencing_manual",
+                  "festive_popper",
+                  "fiddle",
+                  "forgotten_soul",
+                  "fragrant_mushroom",
+                  "fresnel_lens",
+                  "frozen_egg",
+                  "funerary_mask",
+                  "fur_coat",
+                  "gambling_chip",
+                  "game_piece",
+                  "ghost_seed",
+                  "girya",
+                  "glass_eye",
+                  "glitter",
+                  "gnarled_hammer",
+                  "gold_plated_cables",
+                  "golden_compass",
+                  "gremlin_horn",
+                  "hand_drill",
+                  "hefty_tablet",
+                  "helical_dart",
+                  "history_course",
+                  "ice_cream",
+                  "infused_core",
+                  "intimidating_helmet",
+                  "ivory_tile",
+                  "jeweled_mask",
+                  "jewelry_box",
+                  "joss_paper",
+                  "juzu_bracelet",
+                  "kaleidoscope",
+                  "kifuda",
+                  "large_capsule",
+                  "lava_lamp",
+                  "lava_rock",
+                  "lead_paperweight",
+                  "leafy_poultice",
+                  "lizard_tail",
+                  "lords_parasol",
+                  "lost_coffer",
+                  "lost_wisp",
+                  "lucky_fysh",
+                  "lunar_pastry",
+                  "maw_bank",
+                  "meal_ticket",
+                  "meat_cleaver",
+                  "meat_on_the_bone",
+                  "membership_card",
+                  "mercury_hourglass",
+                  "metronome",
+                  "mini_regent",
+                  "miniature_cannon",
+                  "miniature_tent",
+                  "molten_egg",
+                  "mr_struggles",
+                  "mummified_hand",
+                  "music_box",
+                  "mystic_lighter",
+                  "neows_bones",
+                  "neows_talisman",
+                  "neows_torment",
+                  "new_leaf",
+                  "ninja_scroll",
+                  "nutritious_soup",
+                  "orange_dough",
+                  "orichalcum",
+                  "orrery",
+                  "paels_blood",
+                  "paels_claw",
+                  "paels_eye",
+                  "paels_flesh",
+                  "paels_growth",
+                  "paels_horn",
+                  "paels_legion",
+                  "paels_tears",
+                  "paels_tooth",
+                  "pandoras_box",
+                  "pantograph",
+                  "paper_krane",
+                  "paper_phrog",
+                  "parrying_shield",
+                  "permafrost",
+                  "petrified_toad",
+                  "phial_holster",
+                  "philosophers_stone",
+                  "phylactery_unbound",
+                  "planisphere",
+                  "pomander",
+                  "potion_belt",
+                  "power_cell",
+                  "prayer_wheel",
+                  "precarious_shears",
+                  "precise_scissors",
+                  "preserved_fog",
+                  "prismatic_gem",
+                  "pumpkin_candle",
+                  "punch_dagger",
+                  "radiant_pearl",
+                  "rainbow_ring",
+                  "razor_tooth",
+                  "red_skull",
+                  "regal_pillow",
+                  "regalite",
+                  "reptile_trinket",
+                  "ring_of_the_drake",
+                  "ring_of_the_snake",
+                  "ringing_triangle",
+                  "ripple_basin",
+                  "royal_poison",
+                  "royal_stamp",
+                  "ruined_helmet",
+                  "runic_capacitor",
+                  "runic_pyramid",
+                  "sai",
+                  "sand_castle",
+                  "screaming_flagon",
+                  "scroll_boxes",
+                  "sea_glass",
+                  "seal_of_gold",
+                  "self_forming_clay",
+                  "sere_talon",
+                  "shovel",
+                  "silken_tress",
+                  "silver_crucible",
+                  "sling_of_courage",
+                  "small_capsule",
+                  "snecko_eye",
+                  "snecko_skull",
+                  "sozu",
+                  "sparkling_rouge",
+                  "spiked_gauntlets",
+                  "stone_calendar",
+                  "stone_cracker",
+                  "stone_humidifier",
+                  "storybook",
+                  "strike_dummy",
+                  "sturdy_clamp",
+                  "sword_of_stone",
+                  "symbiotic_virus",
+                  "tanxs_whistle",
+                  "tea_of_discourtesy",
+                  "the_abacus",
+                  "the_boot",
+                  "the_courier",
+                  "throwing_axe",
+                  "tingsha",
+                  "tiny_mailbox",
+                  "toasty_mittens",
+                  "toolbox",
+                  "touch_of_orobas",
+                  "tough_bandages",
+                  "toxic_egg",
+                  "toy_box",
+                  "tri_boomerang",
+                  "tungsten_rod",
+                  "twisted_funnel",
+                  "unceasing_top",
+                  "undying_sigil",
+                  "unsettling_lamp",
+                  "vambrace",
+                  "velvet_choker",
+                  "venerable_tea_set",
+                  "very_hot_cocoa",
+                  "vexing_puzzlebox",
+                  "vitruvian_minion",
+                  "war_hammer",
+                  "war_paint",
+                  "whetstone",
+                  "whispering_earring",
+                  "white_beast_statue",
+                  "white_star",
+                  "wing_charm",
+                  "winged_boots",
+                  "wongo_customer_appreciation_badge",
+                  "wongos_mystery_ticket",
+                  "yummy_cookie"
+                ],
+                "known": 295,
+                "total": 295,
+                "unknown": 0,
+                "unknown_ids": []
+              }
+            },
+            "identity_coverage_complete": true,
+            "interpretation": "Known identifiers do not imply learned competence or complete effect descriptions. Card mechanics are in the public observation; bundled relic descriptions are partial. Static catalogs contain no run outcomes, hidden state or held-out examples.",
+            "reference_catalog": "sts_public_feature_catalog_v1:b03677846f8580118b59f9a04cc208b3995b070af4d77072d082c2eb06f7f7fe",
+            "saved_catalog": "sts_public_feature_catalog_v1:3f8d572bd9b1a766c8bd865b3289c4f12d1d8fe59db38403c012d94d68e20c63",
+            "vocabulary": "sts_learned_public_graph_v2:34d29378614603b32385c14a08dbf25b2ea9cb33575c51d6d328268fd0cb4b27",
+            "vocabulary_size": 2764
+          },
+          "observed_decisions": 1254,
+          "observed_description_coverage": {
+            "card": {
+              "public_observation": 52436
+            },
+            "enchantment": {
+              "identity": 298
+            },
+            "enemy": {
+              "identity": 1254
+            },
+            "potion": {
+              "structured": 153
+            },
+            "power": {
+              "identity": 2152
+            },
+            "relic": {
+              "identity": 1523,
+              "partial": 2410
+            }
+          },
+          "observed_entities": {
+            "card": 52436,
+            "enchantment": 298,
+            "enemy": 1254,
+            "potion": 153,
+            "power": 2152,
+            "relic": 3933
+          },
+          "observed_identity_coverage_complete": true,
+          "observed_token_coverage_complete": true,
+          "observed_unique_identities": {
+            "card": 63,
+            "enchantment": 2,
+            "enemy": 1,
+            "potion": 16,
+            "power": 25,
+            "relic": 56
+          },
+          "schema": "sts_representation_coverage_v1",
+          "status": "complete",
+          "unknown_tokens": {}
+        }
+      },
+      "encoding_failure_count": 0,
+      "encoding_failures": [],
+      "games": 42,
+      "relic_occurrences": {
+        "akabeko": 76,
+        "amethyst_aubergine": 73,
+        "anchor": 39,
+        "art_of_war": 11,
+        "bag_of_marbles": 23,
+        "bag_of_preparation": 55,
+        "blood_vial": 38,
+        "book_of_five_rings": 33,
+        "bronze_scales": 29,
+        "burning_blood": 1254,
+        "candelabra": 42,
+        "centennial_puzzle": 36,
+        "chandelier": 31,
+        "demon_tongue": 30,
+        "eternal_feather": 22,
+        "festive_popper": 196,
+        "frozen_egg": 24,
+        "gorget": 161,
+        "happy_flower": 23,
+        "horn_cleat": 18,
+        "intimidating_helmet": 22,
+        "joss_paper": 26,
+        "juzu_bracelet": 86,
+        "kusarigama": 53,
+        "lantern": 54,
+        "lasting_candy": 91,
+        "letter_opener": 17,
+        "lucky_fysh": 36,
+        "meat_on_the_bone": 30,
+        "mercury_hourglass": 23,
+        "nunchaku": 29,
+        "oddly_smooth_stone": 56,
+        "old_coin": 29,
+        "orichalcum": 73,
+        "ornamental_fan": 102,
+        "pantograph": 33,
+        "parrying_shield": 56,
+        "pear": 30,
+        "permafrost": 78,
+        "potion_belt": 72,
+        "red_skull": 32,
+        "regal_pillow": 28,
+        "reptile_trinket": 29,
+        "ripple_basin": 18,
+        "shovel": 33,
+        "sparkling_rouge": 60,
+        "stone_calendar": 46,
+        "stone_cracker": 62,
+        "strawberry": 83,
+        "strike_dummy": 23,
+        "sword_of_stone": 30,
+        "tiny_mailbox": 37,
+        "tuning_fork": 37,
+        "vajra": 34,
+        "war_paint": 58,
+        "whetstone": 113
+      },
+      "remaining_observed_identity_only": [
+        "juzu_bracelet",
+        "regal_pillow",
+        "shovel"
+      ],
+      "trajectory_sha256": [
+        "9598d935aa8c01b2b31e93f26e84eb57af23417d516ce20de3a4df625b7e4a6d",
+        "107a4a07b617045bbbb6ee64006f85a961dcdd1168c0e26287853b4313d7c009",
+        "fe08a7b18322d8b866f756c0fcb7e89cea7fdf201b1b6f67f67e63d7989ef6bb",
+        "351516d7717d394c4f2fe4df001c42e35f8fa2eefcf169dbadde0220f01be881",
+        "b2baa7ffd442f502629951fe9f3b9be1b79cf7a99ac7f2cfb0e815f4db056148",
+        "0a62ad1f1a17da6e328511b5b9cd15d70015d6de105c8bfc8a3bce7727aa3184",
+        "be82483738af96f088054e2a510736132b78b3d9ec7e764642d5b04e63f8c64d",
+        "eee0494f0df11902b0e7f6271ed8f612166a731c835fa44f8f648a87ef95e333",
+        "eecf49e0a1f6598ac5e5b6ccda2edff6892f57adfdc38c86509accef23bedf84",
+        "71bad2dc5b5b7ea140f4c4f3636ec43a193a8f0f58a7feec7912448741363c33",
+        "ea403cded4222c85a48734e08fd78b7b37692211c18e9ff410a0a5a1ea3f33f3",
+        "2d1e7123788ff33a11891cab8b234fd35c2cc3232380292665103f23bdf72c2f",
+        "94a29d15c20ef96b5540ad6db7e80852ebb7bb180db83ff784db6d55126e1c16",
+        "373f9df4c3f3c76080b351d1b6bf0fd51532bdb8b8f359a1059591855c61d9e5",
+        "68ea05eb58cdce217f557a30b50c66d0b3b0f326501a334bed3b481238525b37",
+        "4a1913716a42010e226c149b665a7b0dcf3e39a326da019b4cb7b6057690b502",
+        "4d901717465bad43ae516e7638a755c941892c1e2f0a1fe8b3f3a190e0005b74",
+        "2ba6c1e20a7b120bbb93a5036b98060a82a42d0ea7efaaf24c214c7358ba872a",
+        "73662c47d44f69207286330a3fd3182a98f9c9824163b6f89e632d71079e83d3",
+        "4cf28e743b26dec8f75c2bec2f16f208b916199e4cf63472d7c7c41a8fde9930",
+        "8532a85963f071cbf9fe617726ecc9e27a1d552009f26a2d499b0fc55ccdde20",
+        "af248c88d056ca76b6c30061bdf5753a09de1c1ac9f3c8209bc77b4562b397b0",
+        "f050749a6ec9235958a05fb28ca0bfa7330cf3cf5444cb9c5dd249699d2950f3",
+        "0c99c1317d73abd99274dd96f0be9177fb264048f295dcb9c1a4d82545c6100b",
+        "8e1d400a8e69913662bade83195edbd5c53c95cd15b4ac53a8fa3280993de08a",
+        "14e50cd6c9319e0841fd86656a85fd9a6219cf65d0663d81627141b4ab85c648",
+        "a3c139e8568f083bfe85e981074fecebc9aafb5a891467aecbe5b33190ff267e",
+        "73821e46adf70f6c9b8120e5d80aa5eecf0e0454a29be04b7503ae730a22e7f5",
+        "1ca39adf67681bb4bc5ecf2be9a61d18e1475a6fe048c6e49377d1b322042bfc",
+        "062a515dbcb7f4bdd592db183efd0d48bf0f851e542c4b2d424e167ad1b1dcc9",
+        "6d54278672987db895cb456aa6f884b22ea2939416cb98c15b144c1b6d482ca6",
+        "e5b1c5096dab1e3cbe18d1ecea7671463abc04727679828b4057e250af9ac338",
+        "b5b5a21dc554fd8e6c7513f8e562433bbd91cc149925bee7c3e105a653d76213",
+        "c66b0d545b4e393db31664914843596dccd4975c961dee7fab1f4c0aec291d7f",
+        "429c543039c2ba2cb3b96ead51f803b6d9c0607a0a58dac6158bdc3efa2c7097",
+        "bb63764db0700c94e29ecdd2338a1ff026a5d58a3d87e4b128ddb91349128ca5",
+        "2eb855e46f0116debe76616d6f6bb364a94ce464e24e08055db5965f802d839e",
+        "5f71b80ebf35b8ad8644f57abccd32120793d064a810c4b28681386e35ce5f23",
+        "6324e3428b309305dcceada1c5ffe9e8c4fcdc63830c45c36d3eab0a77654c3e",
+        "e697313a87c5ac495de40bc9139fbea8f0f01bf29ef5114983434c8bd300e0b4",
+        "81de336d76b48c3c13afd3d34f1e8524ae4332b5ea66f8b10d40582df8e28074",
+        "84914e2c64d69a2eb05e918f592e582f117d2cc28b834a43aa5147b6f08fa0e7"
+      ],
+      "unique_relic_description_coverage": {
+        "after": {
+          "identity": 3,
+          "partial": 53
+        },
+        "before": {
+          "identity": 31,
+          "partial": 25
+        }
+      },
+      "unique_relics": 56
+    }
+  },
+  "static": {
+    "after": {
+      "by_kind": {
+        "card": {
+          "bundled_description_coverage": {
+            "public_observation": 556
+          },
+          "known": 556,
+          "total": 556,
+          "unknown": 0,
+          "unknown_ids": []
+        },
+        "enchantment": {
+          "bundled_description_coverage": {
+            "identity": 21
+          },
+          "known": 21,
+          "total": 21,
+          "unknown": 0,
+          "unknown_ids": []
+        },
+        "enemy": {
+          "bundled_description_coverage": {
+            "identity": 108
+          },
+          "known": 108,
+          "total": 108,
+          "unknown": 0,
+          "unknown_ids": []
+        },
+        "orb": {
+          "bundled_description_coverage": {
+            "identity": 5
+          },
+          "known": 5,
+          "total": 5,
+          "unknown": 0,
+          "unknown_ids": []
+        },
+        "potion": {
+          "bundled_description_coverage": {
+            "structured": 63
+          },
+          "known": 63,
+          "total": 63,
+          "unknown": 0,
+          "unknown_ids": []
+        },
+        "power": {
+          "bundled_description_coverage": {
+            "identity": 197
+          },
+          "known": 197,
+          "total": 197,
+          "unknown": 0,
+          "unknown_ids": []
+        },
+        "power_counter": {
+          "bundled_description_coverage": {
+            "identity": 223
+          },
+          "known": 223,
+          "total": 223,
+          "unknown": 0,
+          "unknown_ids": []
+        },
+        "relic": {
+          "bundled_description_coverage": {
+            "identity": 72,
+            "partial": 223
+          },
+          "identity_only_ids": [
+            "alchemical_coffer",
+            "arcane_scroll",
+            "archaic_tooth",
+            "astrolabe",
+            "beautiful_bracelet",
+            "calling_bell",
+            "cauldron",
+            "circlet",
+            "claws",
+            "cursed_pearl",
+            "distinguished_cape",
+            "dollys_mirror",
+            "driftwood",
+            "dusty_tome",
+            "electric_shrymp",
+            "empty_cage",
+            "fake_lees_waffle",
+            "fake_merchants_rug",
+            "fragrant_mushroom",
+            "fur_coat",
+            "glass_eye",
+            "gnarled_hammer",
+            "golden_compass",
+            "hefty_tablet",
+            "jewelry_box",
+            "juzu_bracelet",
+            "kaleidoscope",
+            "kifuda",
+            "large_capsule",
+            "lava_rock",
+            "lead_paperweight",
+            "leafy_poultice",
+            "lords_parasol",
+            "lost_coffer",
+            "meat_cleaver",
+            "membership_card",
+            "miniature_tent",
+            "neows_bones",
+            "neows_talisman",
+            "neows_torment",
+            "new_leaf",
+            "nutritious_soup",
+            "orrery",
+            "paels_claw",
+            "paels_growth",
+            "paels_horn",
+            "paels_tooth",
+            "pandoras_box",
+            "phial_holster",
+            "pomander",
+            "precarious_shears",
+            "precise_scissors",
+            "preserved_fog",
+            "punch_dagger",
+            "regal_pillow",
+            "royal_stamp",
+            "sand_castle",
+            "scroll_boxes",
+            "sea_glass",
+            "sere_talon",
+            "shovel",
+            "small_capsule",
+            "storybook",
+            "tanxs_whistle",
+            "the_courier",
+            "touch_of_orobas",
+            "toy_box",
+            "tri_boomerang",
+            "winged_boots",
+            "wongo_customer_appreciation_badge",
+            "wongos_mystery_ticket",
+            "yummy_cookie"
+          ],
+          "known": 295,
+          "total": 295,
+          "unknown": 0,
+          "unknown_ids": []
+        }
+      },
+      "identity_coverage_complete": true,
+      "interpretation": "Known identifiers do not imply learned competence or complete effect descriptions. Card mechanics are in the public observation; bundled relic descriptions are partial. Static catalogs contain no run outcomes, hidden state or held-out examples.",
+      "reference_catalog": "sts_public_feature_catalog_v1:b03677846f8580118b59f9a04cc208b3995b070af4d77072d082c2eb06f7f7fe",
+      "saved_catalog": "sts_public_feature_catalog_v1:b03677846f8580118b59f9a04cc208b3995b070af4d77072d082c2eb06f7f7fe",
+      "vocabulary": "sts_learned_public_graph_v2:d739f2e27e79286f5bc1ff30d3c72ea6e354d6519bfd109c9c706a8e593fd944",
+      "vocabulary_size": 2978
+    },
+    "before": {
+      "by_kind": {
+        "card": {
+          "bundled_description_coverage": {
+            "public_observation": 556
+          },
+          "known": 556,
+          "total": 556,
+          "unknown": 0,
+          "unknown_ids": []
+        },
+        "enchantment": {
+          "bundled_description_coverage": {
+            "identity": 21
+          },
+          "known": 21,
+          "total": 21,
+          "unknown": 0,
+          "unknown_ids": []
+        },
+        "enemy": {
+          "bundled_description_coverage": {
+            "identity": 108
+          },
+          "known": 108,
+          "total": 108,
+          "unknown": 0,
+          "unknown_ids": []
+        },
+        "orb": {
+          "bundled_description_coverage": {
+            "identity": 5
+          },
+          "known": 5,
+          "total": 5,
+          "unknown": 0,
+          "unknown_ids": []
+        },
+        "potion": {
+          "bundled_description_coverage": {
+            "structured": 63
+          },
+          "known": 63,
+          "total": 63,
+          "unknown": 0,
+          "unknown_ids": []
+        },
+        "power": {
+          "bundled_description_coverage": {
+            "identity": 197
+          },
+          "known": 197,
+          "total": 197,
+          "unknown": 0,
+          "unknown_ids": []
+        },
+        "power_counter": {
+          "bundled_description_coverage": {
+            "identity": 223
+          },
+          "known": 223,
+          "total": 223,
+          "unknown": 0,
+          "unknown_ids": []
+        },
+        "relic": {
+          "bundled_description_coverage": {
+            "identity": 247,
+            "partial": 48
+          },
+          "identity_only_ids": [
+            "alchemical_coffer",
+            "amethyst_aubergine",
+            "arcane_scroll",
+            "archaic_tooth",
+            "astrolabe",
+            "beating_remnant",
+            "beautiful_bracelet",
+            "bellows",
+            "belt_buckle",
+            "big_hat",
+            "biiig_hug",
+            "bing_bong",
+            "black_star",
+            "blessed_antler",
+            "blood_soaked_rose",
+            "blood_vial",
+            "bone_flute",
+            "bone_tea",
+            "book_repair_knife",
+            "bookmark",
+            "booming_conch",
+            "bound_phylactery",
+            "bowler_hat",
+            "bread",
+            "brilliant_scarf",
+            "brimstone",
+            "burning_sticks",
+            "byrdpip",
+            "calling_bell",
+            "cauldron",
+            "centennial_puzzle",
+            "charons_ashes",
+            "chemical_x",
+            "choices_paradox",
+            "chosen_cheese",
+            "circlet",
+            "claws",
+            "cloak_clasp",
+            "cracked_core",
+            "crossbow",
+            "cursed_pearl",
+            "darkstone_periapt",
+            "data_disk",
+            "daughter_of_the_wind",
+            "delicate_frond",
+            "demon_tongue",
+            "diamond_diadem",
+            "dingy_rug",
+            "distinguished_cape",
+            "divine_destiny",
+            "divine_right",
+            "dollys_mirror",
+            "dragon_fruit",
+            "dream_catcher",
+            "driftwood",
+            "dusty_tome",
+            "ectoplasm",
+            "electric_shrymp",
+            "ember_tea",
+            "emotion_chip",
+            "empty_cage",
+            "eternal_feather",
+            "fake_anchor",
+            "fake_blood_vial",
+            "fake_lees_waffle",
+            "fake_merchants_rug",
+            "fake_orichalcum",
+            "fake_snecko_eye",
+            "fake_strike_dummy",
+            "fake_venerable_tea_set",
+            "fencing_manual",
+            "festive_popper",
+            "fiddle",
+            "forgotten_soul",
+            "fragrant_mushroom",
+            "fresnel_lens",
+            "frozen_egg",
+            "funerary_mask",
+            "fur_coat",
+            "gambling_chip",
+            "game_piece",
+            "ghost_seed",
+            "girya",
+            "glass_eye",
+            "glitter",
+            "gnarled_hammer",
+            "gold_plated_cables",
+            "golden_compass",
+            "gremlin_horn",
+            "hand_drill",
+            "hefty_tablet",
+            "helical_dart",
+            "history_course",
+            "ice_cream",
+            "infused_core",
+            "intimidating_helmet",
+            "ivory_tile",
+            "jeweled_mask",
+            "jewelry_box",
+            "joss_paper",
+            "juzu_bracelet",
+            "kaleidoscope",
+            "kifuda",
+            "large_capsule",
+            "lava_lamp",
+            "lava_rock",
+            "lead_paperweight",
+            "leafy_poultice",
+            "lizard_tail",
+            "lords_parasol",
+            "lost_coffer",
+            "lost_wisp",
+            "lucky_fysh",
+            "lunar_pastry",
+            "maw_bank",
+            "meal_ticket",
+            "meat_cleaver",
+            "meat_on_the_bone",
+            "membership_card",
+            "mercury_hourglass",
+            "metronome",
+            "mini_regent",
+            "miniature_cannon",
+            "miniature_tent",
+            "molten_egg",
+            "mr_struggles",
+            "mummified_hand",
+            "music_box",
+            "mystic_lighter",
+            "neows_bones",
+            "neows_talisman",
+            "neows_torment",
+            "new_leaf",
+            "ninja_scroll",
+            "nutritious_soup",
+            "orange_dough",
+            "orichalcum",
+            "orrery",
+            "paels_blood",
+            "paels_claw",
+            "paels_eye",
+            "paels_flesh",
+            "paels_growth",
+            "paels_horn",
+            "paels_legion",
+            "paels_tears",
+            "paels_tooth",
+            "pandoras_box",
+            "pantograph",
+            "paper_krane",
+            "paper_phrog",
+            "parrying_shield",
+            "permafrost",
+            "petrified_toad",
+            "phial_holster",
+            "philosophers_stone",
+            "phylactery_unbound",
+            "planisphere",
+            "pomander",
+            "potion_belt",
+            "power_cell",
+            "prayer_wheel",
+            "precarious_shears",
+            "precise_scissors",
+            "preserved_fog",
+            "prismatic_gem",
+            "pumpkin_candle",
+            "punch_dagger",
+            "radiant_pearl",
+            "rainbow_ring",
+            "razor_tooth",
+            "red_skull",
+            "regal_pillow",
+            "regalite",
+            "reptile_trinket",
+            "ring_of_the_drake",
+            "ring_of_the_snake",
+            "ringing_triangle",
+            "ripple_basin",
+            "royal_poison",
+            "royal_stamp",
+            "ruined_helmet",
+            "runic_capacitor",
+            "runic_pyramid",
+            "sai",
+            "sand_castle",
+            "screaming_flagon",
+            "scroll_boxes",
+            "sea_glass",
+            "seal_of_gold",
+            "self_forming_clay",
+            "sere_talon",
+            "shovel",
+            "silken_tress",
+            "silver_crucible",
+            "sling_of_courage",
+            "small_capsule",
+            "snecko_eye",
+            "snecko_skull",
+            "sozu",
+            "sparkling_rouge",
+            "spiked_gauntlets",
+            "stone_calendar",
+            "stone_cracker",
+            "stone_humidifier",
+            "storybook",
+            "strike_dummy",
+            "sturdy_clamp",
+            "sword_of_stone",
+            "symbiotic_virus",
+            "tanxs_whistle",
+            "tea_of_discourtesy",
+            "the_abacus",
+            "the_boot",
+            "the_courier",
+            "throwing_axe",
+            "tingsha",
+            "tiny_mailbox",
+            "toasty_mittens",
+            "toolbox",
+            "touch_of_orobas",
+            "tough_bandages",
+            "toxic_egg",
+            "toy_box",
+            "tri_boomerang",
+            "tungsten_rod",
+            "twisted_funnel",
+            "unceasing_top",
+            "undying_sigil",
+            "unsettling_lamp",
+            "vambrace",
+            "velvet_choker",
+            "venerable_tea_set",
+            "very_hot_cocoa",
+            "vexing_puzzlebox",
+            "vitruvian_minion",
+            "war_hammer",
+            "war_paint",
+            "whetstone",
+            "whispering_earring",
+            "white_beast_statue",
+            "white_star",
+            "wing_charm",
+            "winged_boots",
+            "wongo_customer_appreciation_badge",
+            "wongos_mystery_ticket",
+            "yummy_cookie"
+          ],
+          "known": 295,
+          "total": 295,
+          "unknown": 0,
+          "unknown_ids": []
+        }
+      },
+      "identity_coverage_complete": true,
+      "interpretation": "Known identifiers do not imply learned competence or complete effect descriptions. Card mechanics are in the public observation; bundled relic descriptions are partial. Static catalogs contain no run outcomes, hidden state or held-out examples.",
+      "reference_catalog": "sts_public_feature_catalog_v1:b03677846f8580118b59f9a04cc208b3995b070af4d77072d082c2eb06f7f7fe",
+      "saved_catalog": "sts_public_feature_catalog_v1:3f8d572bd9b1a766c8bd865b3289c4f12d1d8fe59db38403c012d94d68e20c63",
+      "vocabulary": "sts_learned_public_graph_v2:e0a18e6979728149a7b5080322847317216cf36002a3198ddc2ab6730e3462eb",
+      "vocabulary_size": 2721
+    }
+  },
+  "timing": {
+    "implementation_and_review": "Overlapping work; not separately timed",
+    "recorded_audit_seconds": 65.99652816681191,
+    "release_preparation": "Not requested",
+    "task_started_at_utc": "2026-10-04 09:23:00 UTC",
+    "user_wait_seconds": 0
+  },
+  "validation": {
+    "final_fixture_recheck": {
+      "command": ".venv/bin/python -m pytest -q tests/agent/test_relic_features.py::test_old_v2_hook_fields_and_inference_survive_current_catalog_changes",
+      "passed": 1,
+      "seconds": 0.98
+    },
+    "focused_suite": {
+      "command": ".venv/bin/python -m pytest -q tests/agent/test_relic_features.py tests/agent/test_representation_coverage.py tests/agent/test_training_model.py tests/agent/test_training_checkpoint.py tests/agent/test_set_models.py tests/agent/test_full_run_training.py tests/headless/test_relic_combat.py",
+      "passed": 225,
+      "seconds": 29.37
+    },
+    "independent_review": "All descriptor rules reviewed against native call paths. Corrected first-turn block retention, victory-only progression, damage-source restrictions, whole-play limits and X-cost exclusions; no remaining production blocker.",
+    "limits": "Descriptions remain partial. Existing checkpoints are unchanged. These checks establish input coverage and compatibility, not improved combat performance.",
+    "test_sources": [
+      {
+        "path": "tests/agent/test_relic_features.py",
+        "sha256": "1de8f8ace77de32863a4d8732c2831a2dca1cdf0a791efb10e62f4b02b619fc6"
+      },
+      {
+        "path": "tests/agent/test_representation_coverage.py",
+        "sha256": "6724be5098c926190df0b248253cac016bd641631745ee2508deb65d50ce4230"
+      }
+    ]
+  }
+}

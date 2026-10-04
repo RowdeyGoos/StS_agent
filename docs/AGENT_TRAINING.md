@@ -52,6 +52,7 @@ timings. Baseline/hybrid/frozen-suite evaluation modes and the finite fixture
 curriculum retain their existing serial execution paths. Direct Python library
 calls keep their explicit serial defaults; the command layer resolves the new
 performance settings. See the [collector benchmark](#cpu-collector-scaling-8-12-and-16-workers-2026-10-01),
+[higher-worker comparison](#cpu-collector-scaling-above-16-workers-2026-10-02),
 [evaluation benchmark](#vantom-evaluation-worker-scaling-2026-10-02) and
 [CPU update benchmark](#cpu-ppo-update-threads-and-profiling-2026-10-01).
 
@@ -343,6 +344,146 @@ Reserve the 57 test openings for one final, preselected comparison. The populati
 still reflects the collector's route and survival bias and cannot establish
 general boss skill or Act 1 clear probability.
 
+### Vantom specialist continuation to 500k (2026-10-03)
+
+The original selected 250k specialist was continued to **500,000 total specialist
+PPO decisions**, preserving its rich-combat graph, critic, Adam state, RNG streams,
+episode cursor, dataset and reward: combat win `1`, winning HP fraction `0.1`.
+The run kept 16 collectors, four CPU update threads, learning rate `0.0001` and
+entropy weight `0.001`. It used the original verified source/runtime and strict
+native restoration, with no new value calibration or initialization.
+
+The earlier [continuation diagnostic](#vantom-continuation-diagnostic) had already
+completed an exact retained-state 250k-to-300k prefix. That verified 50k prefix was
+reused, then **200k new decisions** were trained. A fresh 300k evaluation reproduced
+all 429 historical games exactly. This experiment does not count the reused
+prefix as newly executed work. Each new checkpoint, at 350k/400k/450k/500k, passed
+strict restore. Native commands remain bounded to at most 20k decisions; each
+50k segment used 16,384 + 16,384 + 16,384 + 848 decisions, retaining the original
+4,096-decision rollout size and carrying training state across commands.
+
+The fixed primary endpoint was 500k; intermediate checkpoints describe the
+learning curve. Each point uses all 101 training and 42 validation openings,
+with one greedy game and two paired sampled-action repetitions per opening.
+The accepted 250k evaluation was reused. The other five panels were newly run.
+
+| Total specialist PPO decisions | Training greedy /101 | Training sampled /202 | Validation greedy /42 | Validation sampled /84 |
+| ---: | ---: | ---: | ---: | ---: |
+| 250,000 | 63 | 109 | 26 | 46 |
+| 300,000 | 66 | 112 | 21 | 39 |
+| 350,000 | 65 | 111 | 20 | 41 |
+| 400,000 | 67 | 119 | 19 | 39 |
+| 450,000 | 68 | 123 | 17 | 41 |
+| 500,000 | 67 | 124 | 24 | 45 |
+
+More training improved fitted-population wins but **did not improve validation
+win rate over the selected 250k parent**. Greedy validation changed from 61.9% to
+57.1%; sampled validation from 54.8% to 53.6%. At 500k, two parent greedy losses
+became wins and four parent wins became losses. Sampled outcomes switched five
+losses to wins and six wins to losses. The intermediate drop followed by recovery
+also argues against inferring a monotonic learning trend from one checkpoint.
+
+Fight-quality changes were mixed. On the 14 shared greedy validation losses,
+500k left the boss with **9.57 less HP** on average. On the 22 shared wins, player
+HP after combat cleanup was **1.41 lower**. Sampled comparisons went in the other
+direction: **2.52 more boss HP** on 33 shared losses and **1.65 more player HP** on
+40 shared wins. These are descriptive paired means, not proof of a general gain.
+Raw player HP before victory healing is also retained in the evaluation reports.
+
+Keep the 250k reference. This is one continuation from a validation-selected
+actor on a repeatedly used development panel; it does not establish that more
+training is always harmful or identify the cause of the plateau. The reserved
+57 test openings remain unopened. Additional independent Vantom fights and a
+separately controlled lower-learning-rate continuation remain useful follow-ups.
+
+All 250k extension decisions (50k reused plus 200k new) passed reward accounting;
+none were skipped and no training episodes failed. The audit checked 66 canonical
+trajectory/sidecar joins. Training included 998 quota/episode cutoffs, retained
+with their bootstrap semantics rather than relabeled as defeats. New PPO work
+took **17.6 minutes**; the resumed runner, including four new checkpoint panels
+and tracking, took **22.1 minutes**. Its already completed 300k preflight panel
+took another 51.8 seconds; historical prefix cost and later verification are
+separate.
+
+All **2,145 new evaluation games and 65,778 recorded actions** passed exact native
+replay, including outcome, reward, boss HP and player HP before and after cleanup.
+Replay took 113.0 seconds; all games completed without failures or cutoffs. The
+inspector export verified 252 trace identities and 24 same-state policy checks;
+its HTTP responses passed complete-JSON and checkpoint-identity checks. These
+checks use the accepted original engine sources; no production behavior changed
+and no unrelated gameplay suite was rerun.
+
+Local MLflow **Vantom specialist 500k continuation** (14) contains the continuous
+learner and comparison overview. Scripts and artifacts are under
+`runs/vantom-specialist-500k-20261003/`; the inspector includes all 252 greedy
+validation traces from the six checkpoints, with same-state comparisons for
+250k/300k/400k/500k. See the
+[continuation evidence](evidence/vantom_specialist_500k_2026_10_03.json).
+
+#### Follow-up to one million decisions (2026-10-03)
+
+The same specialist was extended from 500k to **1,000,000 total PPO decisions**,
+adding **500k new decisions** with the unchanged model, reward, dataset,
+optimizer, RNG state and CPU settings above. All 40 bounded native invocations
+preserved exact continuation. Checkpoints and evaluations were fixed every 50k;
+the primary endpoint was 1M versus 500k, with the original 250k also retained as
+a reference. The six accepted 250k–500k panels were reused without new gameplay.
+The ten new panels each used the same 429 training/validation games.
+
+| Total specialist PPO decisions | Training greedy /101 | Training sampled /202 | Validation greedy /42 | Validation sampled /84 |
+| ---: | ---: | ---: | ---: | ---: |
+| 250,000 reference | 63 | 109 | 26 | 46 |
+| 500,000 reference | 67 | 124 | 24 | 45 |
+| 550,000 | 69 | 122 | 23 | 43 |
+| 600,000 | 73 | 128 | 21 | 40 |
+| 650,000 | 68 | 120 | 19 | 38 |
+| 700,000 | 73 | 123 | 24 | 43 |
+| 750,000 | 69 | 126 | 22 | 43 |
+| 800,000 | 73 | 133 | 22 | 36 |
+| 850,000 | 73 | 130 | 22 | 36 |
+| 900,000 | 71 | 118 | 22 | 43 |
+| 950,000 | 73 | 128 | 20 | 41 |
+| 1,000,000 | 76 | 127 | 21 | 45 |
+
+Training-population wins increased, but **validation wins did not improve**.
+Relative to 500k, greedy validation fell from 57.1% to 50.0% (two newly won and
+five newly lost fights); sampled validation stayed at 53.6% (six gains and six
+losses). Relative to 250k, the endpoint lost five greedy wins and one sampled
+win overall. Source-group uncertainty intervals include zero; these results do
+not establish that longer training generally harms performance.
+
+On the 16 shared greedy validation losses versus 500k, 1M left the boss with
+**12.81 more HP** on average; on 19 shared wins, player HP after cleanup was
+**1.26 higher**. Sampled comparisons left **8.12 more boss HP** on 33 shared
+losses and **0.36 more player HP** on 39 shared wins. Raw player HP before
+victory healing is also retained. These mixed descriptive changes do not show
+a consistent fight-quality gain. Keep 250k as the reference; this is one
+continued learner on repeated development validation, and all 57 reserved test
+openings remain unopened.
+
+All **500k new decisions** passed reward accounting with zero skipped decisions
+or failed training episodes. The 23,450 training episodes included 1,979 valid
+quota/episode cutoffs with bootstrap semantics preserved. The audit checked
+120 canonical trajectory/sidecar joins. PPO took **52.3 minutes**; the complete
+training/evaluation runner took **64.9 minutes**, including **9.2 minutes** for
+the ten new evaluation panels. Historical work and subsequent verification are
+excluded from those timings.
+
+All **4,290 new evaluation games and 129,628 recorded actions** passed exact
+native replay, including outcomes, rewards, boss HP and player HP before and
+after cleanup. No evaluation games failed or reached a cutoff. Replay took
+261.3 seconds; the reward audit took 16.6 seconds. The inspector export checked
+all 672 trace identities and 24 same-state policy comparisons in 50.6 seconds.
+Its HTTP checks verified complete JSON and the four selected checkpoint
+identities. No production behavior changed or unrelated gameplay suite was rerun.
+
+Local MLflow **Vantom specialist 1M continuation** (15) contains the continuous
+learner and comparison overview. Scripts and artifacts are under
+`runs/vantom-specialist-1m-20261003/`. The inspector contains all 672 greedy
+validation traces across sixteen checkpoints, with same-state comparisons for
+250k/500k/750k/1M. See the
+[one-million-decision evidence](evidence/vantom_specialist_1m_2026_10_03.json).
+
 ### Vantom potential shaping experiment
 
 The 2026-10-02 pilot compares terminal rewards alone, enemy-HP potential shaping,
@@ -524,6 +665,338 @@ test or a test of learning from scratch. Local MLflow **Vantom action previews**
 retains learner curves, endpoints, paired HP diagnostics and the comparison plot;
 the decision inspector includes all seven greedy panels. See
 [action preview evidence](evidence/combat_action_preview_2026_10_02.json).
+
+### Non-graph combat architectures
+
+New learners can select `--representation set-mlp` or `--representation
+set-attention`. Both consume the same public numeric combat channels, frozen
+vocabulary and candidate tables as `combat`, preserving native action identities,
+policy masks and state guards. The canonical observation is unchanged.
+
+- `set-mlp` independently processes each public row with residual MLP blocks,
+  then pools the rows globally and by combat role. Its action scorer receives
+  the pooled state plus the chosen subject and target embeddings.
+- `set-attention` uses four-head self-attention over current combat entities,
+  the public roots and candidate operands. Other public rows still contribute
+  to global pooling. Attention is isolated per observation; it does not read
+  parent/child or reference-link edges.
+
+Both omit graph message passing and graph-derived child counts. Explicit public
+combat channels still attach printed card specifications and visible powers to
+their owning entities. This preserves those named bindings; arbitrary unnamed
+relationships represented only by graph edges are no longer propagated.
+`--message-layers` controls processing depth for all architectures: message
+layers for graphs, residual blocks for the MLP and attention blocks for the
+attention model. Attention requires a hidden size divisible by four.
+
+Architecture schemas are `sts_combat_set_mlp_actor_critic_v1` and
+`sts_combat_set_attention_actor_critic_v1`. They share the rich combat **feature**
+identity because their input tables are identical; checkpoint architecture and
+weight validation distinguish the networks. Changing architecture starts a new
+learner. Existing graph checkpoint behavior and exact PPO resume are preserved.
+
+#### Vantom matched 50k pilot (2026-10-03)
+
+Six learners completed **50,000 PPO decisions each**, comparing the rich combat
+graph with both non-graph architectures at two matched learner seeds. All used
+width 48, depth 2, the same public combat features, 16 collectors, four CPU update
+threads and 16 evaluation workers. Rewards were +1 per combat win plus 0.1 times
+remaining HP fraction on wins; potential shaping was disabled. The graph and MLP
+had 97,058 and 96,482 parameters; attention had 115,490, about 19% more than graph.
+
+Each network started with random weights, then received the same **8,192 TRAIN-only
+teacher decisions** from the selected 250k specialist. Each warm-up used 2,000
+updates with batch size 32, soft action targets and completed-episode value labels.
+The fixed teacher dataset was split by training source fight into fit and monitor
+groups; monitor data was neither fitted nor used for checkpoint selection. No
+teacher weights were copied. This is an architecture comparison after common
+teacher warm-up, not a comparison of pure random-start PPO.
+
+The corpus kept the existing 101 training fights, 42 validation fights and 57
+reserved test fights. Its public starts were revalidated against the new source;
+the native engine and snapshots were unchanged. Training sampled opening and
+continuation states. Evaluation used the same 42 validation openings, with greedy
+checks at 0, 25k and 50k and two paired action-sampling seeds at 50k. The final 50k
+checkpoint was the fixed primary endpoint. No test snapshots were restored.
+
+| Architecture | Greedy wins, seeds a / b (each /42) | Mean greedy | Sampled wins, seeds a / b (each /84) | Mean PPO time |
+| --- | ---: | ---: | ---: | ---: |
+| Rich combat graph | 21 / 21 | 50.0% | 41 / 40 | 266.9 s |
+| Pooled MLP | 21 / 22 | 51.2% | 39 / 40 | 243.1 s |
+| Entity attention | 20 / 25 | 53.6% | 44 / 46 | 245.5 s |
+| Selected 250k teacher reference | 26 | 61.9% | 46 | — |
+
+Attention is the most promising follow-up: +3.6 percentage points in mean greedy
+win rate and +5.4 points in sampled win rate over the matched graph, using 8.0%
+less PPO time. The greedy result was uneven across seeds (one fewer and four more
+wins), while sampled wins increased for both. MLP used 8.9% less time but showed
+no consistent win-rate improvement. On shared losses, attention left the boss
+with 5.2 and 3.3 fewer HP than its matched graph; shared-win player HP did not
+clearly improve. Winning HP in the report uses the canonical completed combat
+summary after combat-end healing; raw pre-healing HP remains a separate metric.
+
+Four of the six learners lost greedy wins during PPO relative to their own
+warm-up checkpoint. Graph curves were 26→22→21 and 25→25→21; MLP curves were
+28→22→21 and 20→21→22; attention curves were 23→21→20 and 24→25→25.
+Architecture alone has not resolved this regression. Two seeds and repeatedly
+used validation cases support exploratory follow-up, not promotion of a proven
+winner. The selected teacher has more training history and is a reference rather
+than a matched control.
+
+All 300,000 PPO decisions were trained without skips or failed episodes. All
+1,992 evaluation games finished without errors or cutoffs; the teacher reproduced
+126 historical outcomes exactly. Validation included 158 focused tests, exact
+final-checkpoint restoration for all six learners and independent semantic and
+results review. The pilot runner took 35m54s including warm-up and evaluation;
+the table's PPO timings exclude those separate stages.
+
+Local MLflow experiment **Vantom non-graph architectures** (12) retains separate
+warm-up and PPO runs, comparison curves and reports. The decision inspector at
+`runs/vantom-nongraph-20261003/inspection` contains all 294 final greedy traces,
+including the teacher reference. Its initial same-state comparison loads the
+reference plus seed a from each architecture; both seeds' traces are available.
+See [the complete experiment evidence](evidence/vantom_nongraph_2026_10_03.json).
+
+### Vantom enemy-health defeat reward experiment (2026-10-03)
+
+Six learners completed **50,000 additional PPO decisions each** from the same
+selected 250k rich-combat graph actor. The comparison used defeat-reward
+coefficients **0, 0.25 and 0.5**, each with two matched training seeds. A confirmed
+defeat paid the coefficient times final missing enemy-health fraction; wins kept
++1 plus 0.1 times remaining player-health fraction. There was no intermediate or
+cutoff bonus. See [reward semantics and configuration](#partial-credit-for-enemy-health-on-defeat).
+
+All arms used the same new reward schema, including the zero-coefficient control.
+Their actor parameters and vocabulary were copied exactly. Fresh value heads were
+calibrated separately for each objective on one shared **4,096-decision TRAIN-only
+collection**, with the actor frozen, followed by fresh PPO optimizer state. The
+3,850 completed-episode decisions supplied Monte Carlo labels; 246 cutoff
+decisions were excluded. Fit/monitor source fights were disjoint, and monitor
+data was not used for fitting or checkpoint selection. All six initial actors
+reproduced the parent's 26/42 greedy wins; the first 4,096 PPO actions also matched
+exactly across reward arms within each seed, before their first update.
+
+Training kept 16 collectors, four CPU update threads, rollout size 4,096,
+minibatch size 16, two epochs, learning rate 0.0001 and gamma 1. The existing
+101/42/57 training/validation/reserved-test fight split was retained, with
+opening and continuation starts during training. The native engine and snapshots
+were unchanged; public train/validation starts were revalidated. Evaluation used
+16 workers and the same **unshaped** win/HP objective for every policy. Greedy
+validation ran at 0, 25k and 50k; 50k was the fixed primary endpoint. Endpoint
+evaluation also used two paired action-sampling seeds per validation fight and
+all 101 training openings. Reserved test snapshots were not restored.
+
+| Defeat coefficient | Greedy wins, seeds a / b (each /42) | Mean greedy | Sampled wins, seeds a / b (each /84) | Mean sampled |
+| --- | ---: | ---: | ---: | ---: |
+| 0, matched control | 24 / 23 | 56.0% | 42 / 41 | 49.4% |
+| 0.25 | 20 / 21 | 48.8% | 40 / 46 | 51.2% |
+| 0.5 | 22 / 21 | 51.2% | 40 / 46 | 51.2% |
+| Selected 250k parent reference | 26 | 61.9% | 46 | 54.8% |
+
+The 0.25 reward reduced boss HP on **shared losses** by 0.56 and 3.12 HP
+(18 and 17 paired fights), while losing four and two greedy wins versus the
+matched controls. The 0.5 reward changed boss HP by +4.24 and −4.53 HP
+(17 paired losses in each seed), while losing two greedy wins in each seed.
+Player HP on shared wins changed by +1.10/−0.05 for 0.25 and +0.86/−0.84 for 0.5;
+these use completed combat summaries after combat-end healing. Across all greedy
+fights, mean remaining boss-health fraction was 12.0% for control, 12.0% for 0.25
+and 12.4% for 0.5. Conditional loss-only means should not be compared without
+accounting for different win/loss populations.
+
+Neither bonus showed a convincing overall improvement. Sampled wins improved
+only in seed b; greedy wins fell in both seeds. All six endpoints also remained
+below their shared initial actor on greedy validation. Keep the current reward
+default and selected specialist; these results do not justify scaling either
+bonus yet. This is an exploratory two-seed fine-tuning study on repeatedly used
+validation, not fresh-test confirmation or a test of learning from scratch.
+
+All 300,000 PPO decisions were trained without skips or failed episodes. Every
+scalar reward was recomputed, 72 selected sidecars were rejoined to full public
+trajectories, and all six final checkpoints passed strict resume restoration.
+All 1,992 evaluation games finished without errors or cutoffs. Validation included
+285 focused tests plus independent semantic and results review. The pilot runner
+took **33m34s**, including calibration and evaluation; PPO itself averaged about
+4m26s per learner. Inspector export used eight artifact workers.
+
+Local MLflow **Vantom defeat HP rewards** (13) contains the six PPO runs and a
+comparison overview with curves, paired HP diagnostics and verified reports.
+`runs/vantom-defeat-hp-20261003/inspection` contains all 294 final greedy traces,
+including the parent. Its same-state comparison loads the parent and seed a from
+each reward arm; both seeds' traces are available. See
+[the complete experiment evidence](evidence/vantom_defeat_hp_2026_10_03.json).
+
+### Vantom catalog representation pilot (2026-10-04)
+
+Six matched forks completed **50,000 additional PPO decisions each** from the
+same selected 250k rich-combat graph specialist: legacy vocabulary, complete
+catalog vocabulary without extra fields, and complete vocabulary plus the new
+potion/relic descriptions. All retained the same graph architecture and base
+win/HP reward. This tests short adaptation of an existing actor, not learning
+the richer representation from scratch.
+
+The legacy model has **564 names / 97,058 parameters**; both expanded models have
+**3,185 names / 222,866 parameters**. Complete vocabulary includes entity IDs and
+structural/value tokens. Vocabulary expansion therefore changes coverage and
+capacity; descriptions versus complete vocabulary holds capacity fixed and
+isolates the additional fields. The latter adds frozen descriptors for all 63
+potions and 295 relics, leaving canonical public observations unchanged.
+
+Existing embeddings were remapped by name, and every new row initially copied
+the legacy unknown row. This experiment-specific initializer preserves the
+control's predictions for vocabulary-only expansion; the normal CLI
+`--reset-representation` still gives new names fresh embeddings. All three arms
+used identical fresh critic weights within each seed, a shared 4,096-decision
+TRAIN collection, and 400 value-only calibration updates with matched batches.
+The 3,836 completed-episode decisions supplied Monte Carlo targets; 260 cutoff
+decisions were excluded. Fit/monitor groups were separate training campaigns.
+PPO then used fresh optimizer/RNG state and matched per-seed starting cursors.
+
+Control and complete vocabulary had identical initial logits across those
+3,836 states and identical first 4,096 PPO actions in **both** seeds. Description
+inputs changed 0.52% of initial greedy choices on that training probe. Initial
+validation was 26/42 wins for control/vocabulary and 25/42 for descriptions.
+This initial difference is retained in the curves rather than attributed to PPO.
+
+Training used 16 collectors, four CPU update threads, rollout size 4,096,
+minibatch size 16, two epochs, learning rate 0.0001 and gamma 1. Rewards remained
++1 for a combat win plus 0.1 times winning player-HP fraction, with no defeat or
+intermediate bonus. The existing 101/42/57 opening split was preserved, together
+with training continuation starts. All 935 training/development starting states
+were revalidated against their exact public digests under unchanged native rules.
+The active corpus is `runs/vantom-catalog-20261004/corpus/corpus.json`; the earlier
+owner delegates its heldouts to this derivative. Reserved test fights were not
+restored.
+
+Greedy validation ran at 0, 25k and 50k; the fixed 50k endpoint was primary.
+Endpoints also used two paired sampled-action repetitions per validation fight
+and all 101 training openings. Evaluation used 16 workers.
+
+| Representation | Greedy wins a / b (each /42) | Mean greedy | Sampled wins a / b (each /84) | Mean sampled |
+| --- | ---: | ---: | ---: | ---: |
+| Legacy control | 20 / 22 | 50.0% | 39 / 44 | 49.4% |
+| Complete vocabulary | 21 / 22 | 51.2% | 40 / 38 | 46.4% |
+| Vocabulary + descriptions | 20 / 21 | 48.8% | 37 / 42 | 47.0% |
+| Unchanged selected 250k reference | 26 | 61.9% | 46 | 54.8% |
+
+There is **no convincing performance improvement** in this pilot. Complete
+vocabulary adds one greedy win in seed a and ties seed b, but sampled results are
+mixed. Descriptions lose one greedy win per seed against the equal-capacity
+vocabulary arm; sampled differences are −3/+4 games. Every endpoint remains
+below its own initial greedy score and below the selected parent. These are two
+continuation seeds from one validation-selected actor on repeatedly used
+development cases, not independent pretrained models or fresh-test evidence.
+
+Compared with matched controls, descriptions leave the boss **2.85 / 0.63 HP
+lower on shared losses** (20/19 paired fights). Winning player HP changes
+**−0.83 / +0.70 HP** on shared wins (18/20 fights). Vocabulary-only boss-HP
+changes are −4.05/+1.88, also mixed. Winning HP here uses completed combat
+summaries after combat-end healing; raw pre-healing HP remains separately
+labelled. These conditional diagnostics do not establish an overall benefit.
+
+Keep the selected 250k specialist as the reference. Catalog coverage remains a
+useful input-completeness property, but does not by itself establish better
+learning. A comparison that uses the representations from initial training is a
+separate question; these results do not justify a larger continuation budget or
+automatic promotion of the enriched model.
+
+All **300,000 decisions** were trained without skipped updates or failed
+episodes. Every scalar reward was checked, 72 sampled training sidecars were
+rejoined to their canonical recordings, all six final checkpoints passed strict
+resume, and **all 1,992 evaluation games / 58,843 actions** passed exact native
+replay. Evaluation had no failures or cutoffs. Independent semantic review
+covered the protocol, representation transfer and heldout ownership. The pilot
+runner took **37m58s**, including 5m18s of shared collection/calibration; PPO
+averaged **4m22s / 4m25s / 4m27s** for control/vocabulary/descriptions. Replay
+verification took another 100 seconds and the reward audit 13 seconds.
+
+Local MLflow **Vantom catalog representation** (16) contains all six learner
+curves and the comparison overview. The inspector retains all **294 final
+greedy validation traces**, including the parent, with same-state comparisons
+for the parent and the three seed-a endpoints. Scripts, frozen source archive
+and artifacts live under `runs/vantom-catalog-20261004/`; see
+[the source-bound experiment evidence](evidence/vantom_catalog_representation_2026_10_04.json).
+
+### Vantom representations from initialization (2026-10-04)
+
+The follow-up completed **six fresh rich-combat graph models**, two seeds per
+representation, with 8,192 shared TRAIN-only teacher decisions, 2,000 warm-up
+updates, then **50,000 PPO decisions each**. No trained teacher weights were
+copied. This tests learning the representations from their first update; it is
+fresh initialization with supervised warm-up, not random-start PPO.
+
+The control fits its vocabulary on the TRAIN warm-up fit partition: **488 names /
+93,410 parameters**. Both catalog variants have **3,182 names / 222,722
+parameters**. Common random tensors and embeddings were matched by name; the
+teacher targets and minibatch streams were shared within each seed. Descriptions
+versus vocabulary-only holds capacity fixed. The control is therefore different
+from the historical 564-name checkpoint. Training used 16 collectors and four
+CPU update threads, with the same graph width/depth, PPO settings and base win/HP
+reward as the preceding pilot. Evaluation used 16 workers and the same opening
+panels. TEST remained closed; the previously selected teacher is an unmatched
+reference, and validation remains reused development data.
+
+| Representation | Greedy wins a / b (each /42) | Mean greedy | Sampled wins a / b (each /84) | Mean sampled |
+| --- | ---: | ---: | ---: | ---: |
+| Observed vocabulary | 22 / 24 | 54.8% | 41 / 42 | 49.4% |
+| Complete vocabulary | 24 / 26 | 59.5% | 40 / 42 | 48.8% |
+| Vocabulary + descriptions | 22 / 23 | 53.6% | 41 / 40 | 48.2% |
+| Unchanged selected 250k teacher | 26 | 61.9% | 46 | 54.8% |
+
+Complete vocabulary shows a modest greedy-play signal: two additional wins out
+of 42 in each matched seed, giving 59.5% mean greedy success versus 54.8% for
+the observed-vocabulary control. This is not corroborated by sampled play (48.8%
+versus 49.4%) or consistently better paired HP. On shared losses,
+vocabulary-only leaves Vantom +2.63 / -1.88 HP relative to the controls; on
+shared wins, player HP changes -1.65 / +0.46. The overall evidence remains
+preliminary.
+
+Adding descriptions does not help in this pilot: 53.6% mean greedy and 48.2%
+sampled success. It loses two / three greedy wins per seed against the
+equal-capacity vocabulary-only models. Training-opening scores are 64/68 for
+control, 65/65 for vocabulary-only and 61/66 for descriptions.
+
+Keep the selected 250k teacher as the reference (61.9% greedy, 54.8% sampled),
+while retaining vocabulary-only as the most promising fresh representation
+candidate. The teacher has a different, larger training history and was
+previously selected on these validation cases. Two fresh weight seeds sharing
+one demonstration pool on reused development validation do not establish a
+general improvement; TEST remains unopened.
+
+The next controlled experiment should address value-head fitting during warm-up:
+its error on unused TRAIN campaigns worsens across all three representations
+despite lower fit error. Compare the existing schedule with shorter or
+separately fitted critic calibration while holding actor training fixed. This is
+a diagnostic hypothesis, not a demonstrated cause of the PPO performance
+changes.
+
+Greedy validation at 0/25k was diagnostic; every primary endpoint was fixed at
+50k, with no early stopping or best-checkpoint selection. **0 means after
+warm-up, before PPO.** Curves, paired boss HP on shared losses and completed
+player HP on shared wins are retained in the evidence. The warm-up had 6,755 fit
+and 1,437 monitor decisions from separate TRAIN campaigns; cutoff decisions had
+policy targets but no value targets. PPO could subsequently use all TRAIN cases.
+
+A post-hoc diagnostic found a shared value-head problem: mean monitor MSE rose
+from **0.176–0.180 at 500 warm-up updates to 0.253–0.269 at 2,000**, while fit MSE
+fell to 0.049–0.053. Teacher-action imitation improved overall. This is compatible
+with critic overfitting, not proof that critic initialization caused later PPO
+validation changes. The frozen 2,000-update schedule was unchanged.
+
+All **300,000 decisions** were trained without skips or failures. All **1,992
+evaluation games / 58,933 actions** passed exact native replay; every training
+reward was checked, 72 selected sidecars were rejoined to canonical traces,
+and all six final checkpoints passed strict resume. Independent semantic review
+covered initialization, fitting boundaries, RNG/persistence and heldout ownership.
+The runner took **43m06s**, including **9m45s** for shared data preparation
+and warm-up. PPO averaged **4m25s / 4m30s / 4m32s** for control/vocabulary/descriptions.
+Replay verification took another 108 seconds.
+
+Local MLflow **Vantom fresh catalog representation** (17) contains all six
+PPO curves, warm-up curves and comparison artifacts. The inspector retains all
+**294 final greedy traces**, including the teacher, with same-state comparison
+for the teacher and three seed-a models. Scripts and artifacts live under
+`runs/vantom-catalog-fresh-20261004/`; see
+[the source-bound evidence](evidence/vantom_fresh_catalog_representation_2026_10_04.json).
 
 ### Combat representation experiment
 
@@ -1633,6 +2106,54 @@ all critics on the same training-only sample. Compare arms using common unshaped
 wins and HP metrics, because their
 shaped training returns have different state-dependent offsets.
 
+### Partial credit for enemy health on defeat
+
+The opt-in `sts_training_reward_v3` adds `loss_enemy_damage_fraction` to the
+original five combat components. On genuine defeat it measures
+`1 - sum(final enemy HP) / sum(final enemy max HP)`. Dead enemy slots remain in
+the denominator. The component is zero on wins, ordinary actions and external
+cutoffs; a revival is not a defeat. This measures **final missing health**,
+including damage already present at a continuation start, rather than damage
+dealt by the current policy. It is an intentional change to combat utility,
+not potential-based shaping. Multi-enemy summons or max-HP changes can alter
+the denominator; the initial experiment uses single-boss Vantom fights.
+
+For example, use `RewardSpec.defeat_hp_combat` or this `training.reward` value:
+
+```json
+{
+  "schema": "sts_training_reward_v3",
+  "weights": {
+    "combat_win": 1.0,
+    "win_hp_fraction": 0.1,
+    "loss_enemy_damage_fraction": 0.5
+  }
+}
+```
+
+A defeat with half enemy HP remaining then earns 0.25; one with full enemy HP
+earns zero. Wins retain their existing reward. Other omitted weights keep their
+defaults. The coefficient is configurable, so compare experiments on common
+win/HP metrics rather than their differently weighted training returns.
+
+The adapter's separate `combat_health_summary` exposes `sts_combat_summary_v2`
+with stable-slot enemy HP/max HP, retained through combat cleanup. It preserves
+the HUD's unknown/infinite values; this reward requires known finite health and
+fails explicitly when it is unavailable, including at zero coefficient. Existing
+`combat_summary` and policy observations are unchanged. Terminal enemy HP is an
+owner-attested public measurement, as terminal player HP already was; it cannot
+be reconstructed from the canonical run-outcome footer alone.
+
+New reward recordings use `sts_combat_training_v3`; PPO scalar journals use
+`sts_ppo_rollout_v6` and bind the complete reward specification. Loaders check
+ongoing enemy HUD values and recompute rewards from the recorded final summary.
+Old recordings remain loadable but cannot be converted to this objective when
+they lack enemy health. New recordings can be rescored under the original
+objective. A reward change starts a new experiment with a reset critic/optimizer;
+exact resume preserves the saved objective.
+
+### Canonical trajectories and combat reward sidecars
+
 `sts_public_trajectory_v1` and its sparse reward validator remain intact. A successful
 isolated combat ends its still-running canonical run recording with the existing
 `truncated/external_stop` outcome; its training task has terminated successfully.
@@ -1865,11 +2386,138 @@ The default network has 48 hidden units and two graph message-passing layers.
 Typed scalar features, frozen public-name embeddings, parent/child order and
 typed entity links feed pooled state/entity representations. One shared scorer
 handles every candidate; a separate value head fits complete-episode returns.
-Unknown names have ID 0; validation/test corpora cannot fit a vocabulary. Exact
+Legacy unknown names have ID 0. New learners use the catalog-backed vocabulary
+described below; unknown entity identities fail explicitly, while unrecognized
+structural strings retain the ID 0 fallback. Validation/test corpora cannot fit a vocabulary. Exact
 public values and dispatch mappings remain in populated tables from the shared
 encoder. Scalar scaling/log transforms are explicitly lossy model features.
 Every policy probability, sample, entropy and greedy decision uses the same legal
 mask; terminal observations have no categorical distribution.
+
+#### Catalog-backed vocabulary and coverage audits
+
+New imitation learners default to `--vocabulary catalog`, using
+`sts_learned_public_graph_v2`. Static public registries contribute every supported
+card, potion, relic, enemy, power/counter, enchantment and orb identity. Registered
+character, encounter and event names, public card mechanics at every defined
+upgrade level, displayed card flags and action-history labels are included too.
+Only **additional observed strings** are fitted from training demonstrations.
+Knowing the game's published content is not validation leakage: the catalog
+builder reads no episodes, snapshots, run outcomes or RNG state and constructs
+no games. `--vocabulary observed` retains the legacy training-only fitting option
+for explicit comparisons.
+
+The catalog also supplies learned entity fields describing authored potion
+effects and selection semantics. For example, Liquid Memories identifies the
+discard pile and the `free_this_turn` modifier, while Droplet of Precognition
+identifies the draw pile. Relics include available base facts, public counter
+periods and structured trigger/effect rules with numeric operands and conditions.
+The [relic descriptors](../game/agent/training/relic_features.py) contain 330 rule
+rows for 280 relics; another 15 relics use declared base facts from the registry.
+These cover all 81 relics in the engine's common combat group and all 36 in its
+character-relic group. Examples include Pen Nib's whole-card
+damage multiplier and persistent counter, Tungsten Rod's HP-loss reduction,
+Mummified Hand's temporary cost override, and Metronome's single seventh-orb
+trigger. Conditions distinguish per-turn, per-combat and run-wide counters,
+temporary effects, HP thresholds, resource retention and damage sources. Run
+effects also describe pickup selection eligibility and counts, unavoidable
+drawbacks, reward offers versus automatic grants, rest options, shop discounts
+and map rules. Pael's Tooth returns one stored card per victory; Toy Box melts
+one remaining wax relic every three victories. No sampled cards, future reward
+contents or private map coordinates enter the static catalog.
+These are descriptions of base mechanics,
+not forecasts of exact damage or a substitute for training. The original
+canonical observation, recording schema, candidate indices, legal masks and
+state guard are unchanged. All graph, combat-channel, action-preview and set
+architectures consume the enriched generic fields.
+
+The 2026-10-04 catalog covers 556 cards, 63 potions, 295 relics, 108 enemy types,
+197 powers, 223 power/counter labels, 21 enchantments and five orb types. Card
+mechanics already reside in the public observation. All potion definitions have
+structured operator/operand descriptions. **All 295 relics now have explicit
+descriptors**, up from the initial 48: **292** have partial mechanical facts,
+and **three** explicitly have no intrinsic effect in the current engine (Circlet,
+Fake Merchant's Rug and Wongo Customer Appreciation Badge). These still retain
+their owned identities. The audit's `catalog.by_kind.relic.identity_only_ids`
+is empty; `no_intrinsic_effect_ids` lists the three explicit cases separately.
+All entries retain the existing `partial` coverage category.
+All relic descriptions remain explicitly incomplete: a described base rule does
+not cover every interaction, modifier or acquisition side effect. Enemy, power, orb and enchantment
+identities are covered, but their static catalog entries do not describe all
+their mechanics. Their existing visible state remains in the canonical graph.
+An embedding for an unseen item starts untrained: vocabulary coverage guarantees
+distinguishability, not correct strategy or generalization.
+
+The immutable catalog payload is serialized **inside each checkpoint** and bound
+into its feature identity. Loading uses that saved payload, not the current
+engine catalog. Old v1 bundles preserve their original names, tensor shapes and
+encoding behavior; earlier v2 catalogs also retain their saved hook fields and
+amounts. Adding new catalog entries therefore requires an explicit
+new experiment; exact resume never expands names or changes field semantics.
+
+```bash
+# Current static catalog; does not load games or fit any data.
+sts-agent-train audit-representation --output runs/catalog-coverage.json
+# Audit an existing bundle against selected, completed public validation traces.
+sts-agent-train audit-representation --checkpoint MODEL.sts-model \
+  --input runs/validation-traces --split validation --max-decisions 10000 \
+  --output runs/model-coverage.json
+# Explicitly fork an older policy with the new inputs and the same PPO objective.
+sts-agent-train ppo --checkpoint MODEL.sts-model --config PPO_CONFIG.json \
+  --reset-representation --output-dir runs/catalog-fork --decisions 4096
+```
+
+The audit separates missing identities, structural labels, field/link names and
+string values from incomplete effect descriptions. It validates complete public
+trajectory artifacts, counts decision prefixes up to the global limit and never
+fits from them. Only train/development-validation inputs are accepted; private
+paths, symlinks and test-split trajectories are rejected. A capped decision count
+does not cap the bytes needed to validate each complete input trajectory.
+
+`--reset-representation` remaps existing embedding rows by name and retains other
+actor/shared weights. New names receive fresh embeddings; the critic, optimizer,
+RNG and decision/cursor counters start fresh. The report records source and target
+vocabulary identities and explicitly marks predictions as changed. This cannot be
+combined with exact resume, objective reset or action-policy reset. It does not
+retroactively repair a previously trained specialist or establish a performance
+gain; compare the resulting new experiment against the unchanged old policy.
+
+The [initial coverage evidence](evidence/representation_coverage_2026_10_04.json) records
+the original static census, recorded train/validation audit and legacy compatibility check,
+before the relic-description expansion.
+On the reused Vantom panel recorded by the 1M endpoint, the audit covered all 101
+training fights and 42 validation fights: **4,388 decisions**. Applying the old
+250k specialist's frozen vocabulary to those recordings found 52 distinct unknown
+entity identities in training and 29 in validation. The proposed
+catalog transfer had **zero unknown tokens and zero encoding failures** on that
+panel, including history and temporary-card fields. That initial vocabulary contained
+2,764 names, compared with the old model's 564. The static catalog alone contained
+2,721 names; the additional transfer names came from the old frozen vocabulary.
+Old inference was compared with the preserved original source on the reported
+potion example: all eight feature arrays, action probabilities and value matched
+exactly. These checks establish representation coverage and compatibility, not
+a combat win-rate improvement.
+
+The [relic expansion evidence](evidence/relic_feature_coverage_2026_10_04.json)
+preserves the earlier 48-to-223 audit and its original source bindings. That
+stage described **79/82** distinct relic types in the recorded training fights
+and **53/56** in validation, with no encoding failures across 4,388 decisions.
+Its static vocabulary had 2,978 names (3,016 when retaining the old specialist's
+additional names). The evidence's `completion` record covers the remaining 72,
+including the formerly missing Juzu Bracelet, Regal Pillow, The Courier and
+Shovel observed in those recordings. This is input-coverage verification on
+existing public traces, not a new evaluation or evidence of improved learning.
+The completed catalog describes **82/82** observed training relic types and
+**56/56** validation relic types; all **4,388 decisions** encode with zero unknown
+tokens or failures. Its static vocabulary has 3,147 names (3,185 when retaining
+the old specialist's additional names). The final focused suite passed **771
+tests**, including executed pickup choices and penalties, reward/slot behavior,
+victory timing, all seven model variants and frozen older checkpoints. Static
+descriptions follow current engine behavior: Fur Coat describes mark generation
+and coordinate-based activation without promising act expiry; Driftwood excludes
+the unsupported Kaleidoscope reroll pool. No gameplay rules changed.
+
+#### Imitation objectives and checkpoint persistence
 
 Imitation uses cross-entropy and a value MSE with weight 0.25, Adam learning rate
 0.003, batch size 8 and gradient clipping at 1.0. Complete returns use gamma 1.
@@ -2527,7 +3175,8 @@ Cutoff demonstrations also have no Monte Carlo value target. Review the recorded
 context/ending coverage before starting PPO; a time limit can stop demonstrations
 before their intended endpoint.
 
-Vocabulary expansion unions the old vocabulary with training-only public names.
+Vocabulary expansion unions the old vocabulary with training-only observed public
+names and, by default for new learners, the static public catalog described above.
 The transfer remaps embeddings by name, including unknown row zero, and copies
 compatible shared/actor weights. The critic gets a fresh hidden layer and zero
 output; Adam, learner RNG and sampling cursor start fresh. The imitation report
@@ -4578,6 +5227,66 @@ contains all nine runs and the timing figure. Raw results are under
 [retained evidence](evidence/worker_scaling_2026_10_01.json) binds the inputs,
 sources, repeated measurements, checkpoint checks and review.
 
+### CPU collector scaling above 16 workers (2026-10-02)
+
+**Keep the 16-worker default on this host.** Three timing repetitions at each of
+16, 18, 24 and 32 collectors found no useful end-to-end gain above 16. Higher
+counts were enabled only in a frozen source copy by raising its bounded PPO
+limit to 32; production sources, defaults and the 16-worker cap remain unchanged.
+
+Each run trains 8,192 decisions in two 4,096-decision rollouts from the same
+frozen 250k Vantom rich-combat checkpoint, with a fresh optimizer and identical
+learner seed/cursor. PPO uses batch 16, two epochs, four deterministic CPU update
+threads and one thread per collector. Normal compressed recordings, checkpoints
+and local MLflow tracking are included. The host reports 18 available CPUs.
+A strictly revalidated derivative retains all 668 training starts from 101
+Vantom fights; it contains no validation/test cases or snapshot files. Original
+research artifacts and held-out ownership are unchanged.
+
+The table gives medians of three repetitions. Complete invocation includes
+startup, both rounds, recording, tracking and cleanup, plus up to 0.1 seconds of
+controller polling. Warm collection is the second rollout only.
+
+| Workers | Total collection, 8,192 decisions | PPO updates | Complete invocation | Warm collection, 4,096 decisions | Episode cutoffs |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 16 | 27.38 s | 17.55 s | **49.03 s** | 9.73 s | 32/382 (8.38%) |
+| 18 | 28.17 s | 17.43 s | 49.13 s | 9.64 s | 34/395 (8.61%) |
+| 24 | 31.29 s | 17.60 s | 52.93 s | 9.69 s | 47/399 (11.78%) |
+| 32 | 35.33 s | 17.47 s | 56.70 s | 9.59 s | 60/398 (15.08%) |
+
+Eighteen workers effectively ties sixteen: its median total is 0.22% longer and
+the observed timing ranges overlap. Twenty-four and thirty-two take **7.97%** and
+**15.66%** longer overall. Most extra collection time occurs in the first round,
+which includes initialization: its median rises from 17.64 to 25.74 seconds
+between 16 and 32 workers. Warm collection medians differ by less than 1.5%, with
+overlapping ranges; this does not demonstrate a useful sustained speedup.
+
+Fixed total rollout size gives each worker 256 decisions at 16 workers, 227–228
+at 18, 170–171 at 24 and 128 at 32. More quota boundaries increase bootstrapped
+episode cutoffs. Worker count also changes sampling streams, so cross-count
+workloads are not identical trajectories. Order rotates across repetitions but
+is not fully balanced. These are timing repeats, not independent learner seeds;
+background load, long-run thermals and learning quality were not measured.
+
+All twelve runs complete without failed episodes, skipped updates or KL early
+stops, each performing 1,024 optimizer steps. Within each worker count, all
+canonical observations/actions/outcomes, rollout values/rewards, model weights,
+Adam and RNG states match across repetitions. Comparison normalizes episode
+UUIDs and their dependent completion checksums only, after checking original
+prefix and full-file hashes. Verification covers **4,722 trajectories / 98,304
+decisions** and **48 strict checkpoint restores**. The 32-process preflight also
+reproduces resumed decisions and weights and verifies complete worker cleanup.
+Independent source and result reviews approve these conclusions.
+
+Corpus preparation takes 16.94 seconds, the final preflight 35.68 seconds, the
+twelve timed invocations together 622.96 seconds, and final artifact verification
+15.29 seconds. Preparation, validation and plotting are outside the training
+timings. The [MLflow comparison](http://127.0.0.1:5050/#/experiments/4/runs?searchFilter=tags.sts.benchmark+%3D+%27training_workers_above16_20261002%27)
+contains all twelve runs, timing metrics and the comparison plot. Reproduction
+scripts, the isolated sources and raw outputs are under
+`runs/training-worker-scaling-20261002/`; see the
+[retained evidence](evidence/training_workers_above16_2026_10_02.json).
+
 ### Vantom evaluation worker scaling (2026-10-02)
 
 The Vantom research evaluator was benchmarked with **8, 12 and 16 workers**,
@@ -5405,10 +6114,12 @@ Act 1 remains the integration target; the immediate learning focus is combat:
 1. Expand independent Vantom training fights and diverse successful elite/boss
    demonstrations. Keep starts from each source campaign in one split and freeze
    a development panel before training. The
-   [continuation diagnostic](#vantom-continuation-diagnostic) found declining
-   validation scores even with Adam and the critic retained; optimizer reset
-   alone does not explain the result. Reusing the same 42 validation cases cannot
-   supply fresh confirmation.
+   [continuation diagnostic](#vantom-continuation-diagnostic),
+   [500k continuation](#vantom-specialist-continuation-to-500k-2026-10-03) and
+   [1M follow-up](#follow-up-to-one-million-decisions-2026-10-03) did not
+   improve validation wins over the selected 250k parent, even with Adam and the
+   critic retained; optimizer reset alone does not explain the result. Reusing
+   the same 42 validation cases cannot supply fresh confirmation.
 2. Compare reward and representation treatments from a common earlier initializer,
    with matched budgets, multiple learner seeds and fixed evaluation points.
    Measure greedy and sampled wins, paired boss HP on losses and player HP on

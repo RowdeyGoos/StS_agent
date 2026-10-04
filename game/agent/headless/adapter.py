@@ -9,7 +9,7 @@ from game.headless.run.state import RunPhase
 from .errors import AdapterFault
 from .identity import Identities
 from .projection import Projection
-from .combat_summary import summarize
+from .combat_summary import summarize, with_enemy_health
 
 
 @dataclass(frozen=True, slots=True)
@@ -55,6 +55,7 @@ class HeadlessAdapter:
         self._roots = self._owned_roots()
         self._combat_summary = (summarize(engine.combat, self._epoch)
                                 if engine.combat and self.decision_profile == 'full_run_v2' else None)
+        self._combat_health_summary = with_enemy_health(self._combat_summary, engine.combat)
 
     @property
     def combat_summary(self):
@@ -69,6 +70,12 @@ class HeadlessAdapter:
         if self._faulted:
             raise AdapterFault('Adapter stopped after an execution failure.')
         return self._combat_summary
+
+    @property
+    def combat_health_summary(self):
+        """Optional enemy HP facts from the same reconciled combat boundary."""
+        self.combat_summary  # Apply the same profile and fault checks.
+        return self._combat_health_summary
 
     @property
     def run_outcome(self):
@@ -322,6 +329,8 @@ class HeadlessAdapter:
             self._roots = self._owned_roots()
             self._combat_summary = completed or (
                 summarize(self._engine.combat, self._epoch) if self._engine.combat else None)
+            health_owner = (result if instant else combat_before) if completed else self._engine.combat
+            self._combat_health_summary = with_enemy_health(self._combat_summary, health_owner)
         except BaseException as error:
             self._faulted = True
             if not isinstance(error, Exception):

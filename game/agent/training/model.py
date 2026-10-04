@@ -1,4 +1,4 @@
-"""Small CPU graph actor-critic; every action uses the same candidate scorer."""
+"""CPU graph and set actor-critics with a shared public candidate interface."""
 from dataclasses import dataclass
 
 import numpy as np
@@ -9,7 +9,9 @@ from game.agent.contracts import full as f
 from game.agent.action_policy import ALL_LEGAL, validate_policy
 from .features import Vocabulary
 from .action_features import WIDTH as ACTION_WIDTH, mode as preview_mode
-from .combat_features import GRAPH, COMBAT_REPRESENTATIONS, REPRESENTATIONS, WIDTH, ROLES, feature_identity
+from .combat_features import (GRAPH, COMBAT_REPRESENTATIONS, REPRESENTATIONS, WIDTH, ROLES,
+                              SET_MLP, SET_ATTENTION, SET_REPRESENTATIONS, feature_identity)
+from .set_layers import EntityAttention, attend_entities
 
 
 @dataclass(frozen=True, slots=True)
@@ -23,6 +25,8 @@ class Architecture:
                 not 8 <= self.hidden_size <= 128 or type(self.message_layers) is not int or
                 not 1 <= self.message_layers <= 4):
             raise ValueError('Unsupported model architecture')
+        if self.schema == SET_ATTENTION and self.hidden_size % 4:
+            raise ValueError('Entity attention requires a width divisible by four')
 
 
 def collate(states, *, vocabulary):
@@ -114,21 +118,30 @@ class ActorCritic(nn.Module):
         self.feature_identity = feature_identity(vocabulary, architecture.schema)
         self.action_policy = validate_policy(action_policy)
         d = architecture.hidden_size
+        is_set = architecture.schema in SET_REPRESENTATIONS
         # Initialization must not alter the caller's global torch RNG.
         with torch.random.fork_rng(devices=[]):
             torch.manual_seed(seed)
             self.name = nn.Embedding(len(vocabulary.names) + 1, d)
             self.field_type = nn.Embedding(4, d)
-            self.namespace = nn.Embedding(len(f.NAMESPACES) + 1, d)
+            if not is_set:
+                self.namespace = nn.Embedding(len(f.NAMESPACES) + 1, d)
             self.action = nn.Embedding(len(f.ACTIONS), d)
             self.number = nn.Linear(2, d)
             self.position = nn.Linear(2, d)
-            self.link_position = nn.Linear(3, d)
+            if not is_set:
+                self.link_position = nn.Linear(3, d)
             self.counts = nn.Linear(2, d)
             self.field = nn.Sequential(nn.Linear(d, d), nn.Tanh())
             self.base = nn.Sequential(nn.Linear(d * 3, d), nn.Tanh())
-            self.messages = nn.ModuleList(nn.Sequential(nn.Linear(d * 4, d), nn.Tanh(), nn.LayerNorm(d))
-                                          for _ in range(architecture.message_layers))
+            if not is_set:
+                self.messages = nn.ModuleList(nn.Sequential(nn.Linear(d * 4, d), nn.Tanh(), nn.LayerNorm(d))
+                                              for _ in range(architecture.message_layers))
+            elif architecture.schema == SET_MLP:
+                self.entities = nn.ModuleList(nn.Sequential(nn.Linear(d, d * 2), nn.Tanh(),
+                    nn.Linear(d * 2, d), nn.LayerNorm(d)) for _ in range(architecture.message_layers))
+            else:
+                self.entities = nn.ModuleList(EntityAttention(d) for _ in range(architecture.message_layers))
             self.state = nn.Sequential(nn.Linear(d * 3, d), nn.Tanh())
             self.scorer = nn.Sequential(nn.Linear(d * 4 + 2, d), nn.Tanh(), nn.Linear(d, 1))
             self.value = nn.Sequential(nn.Linear(d, d), nn.Tanh(), nn.Linear(d, 1))
@@ -154,20 +167,32 @@ class ActorCritic(nn.Module):
                                   self.name(fields[:, 3]) * (fields[:, 2] == 3).unsqueeze(-1) +
                                   self.number(batch['numbers']))
         attributes, field_counts = _pool(field_values, fields[:, 0], n)
-        parent = batch['parents']
-        child_indexes = torch.nonzero(parent >= 0, as_tuple=True)[0]
-        child_counts = torch.bincount(parent[child_indexes], minlength=n).to(attributes.dtype)
+        is_set = self.architecture.schema in SET_REPRESENTATIONS
+        if is_set:
+            # Keep this channel absent: neither set model reads parent/link
+            # connectivity, including derived child counts.
+            child_counts = torch.zeros_like(field_counts)
+        else:
+            parent = batch['parents']
+            child_indexes = torch.nonzero(parent >= 0, as_tuple=True)[0]
+            child_counts = torch.bincount(parent[child_indexes], minlength=n).to(attributes.dtype)
         h = self.base(torch.cat((self.name(nodes[:, 0]), self.name(nodes[:, 1]), attributes), -1))
         h = h + self.position(batch['positions']) + self.counts(torch.stack(
             (torch.log1p(field_counts), torch.log1p(child_counts)), -1))
         if self.architecture.schema in COMBAT_REPRESENTATIONS:
             h = h + self.combat_node(batch['combat'])
-        for layer in self.messages:
-            children, _ = _pool(h[child_indexes], parent[child_indexes], n)
-            linked = _linked(h, links[:, 2]) + self.name(links[:, 1]) + self.namespace(links[:, 3])
-            linked = linked + self.link_position(batch['link_positions'])
-            linked, _ = _pool(torch.tanh(linked), links[:, 0], n)
-            h = h + layer(torch.cat((h, children, _linked(h, parent), linked), -1))
+        if self.architecture.schema == SET_MLP:
+            for layer in self.entities:
+                h = h + layer(h)
+        elif self.architecture.schema == SET_ATTENTION:
+            h = attend_entities(h, batch, self.entities)
+        else:
+            for layer in self.messages:
+                children, _ = _pool(h[child_indexes], parent[child_indexes], n)
+                linked = _linked(h, links[:, 2]) + self.name(links[:, 1]) + self.namespace(links[:, 3])
+                linked = linked + self.link_position(batch['link_positions'])
+                linked, _ = _pool(torch.tanh(linked), links[:, 0], n)
+                h = h + layer(torch.cat((h, children, _linked(h, parent), linked), -1))
         pooled, _ = _pool(h, batch['owners'], len(batch['roots']))
         state = self.state(torch.cat((pooled, h[batch['roots'][:, 0]], h[batch['roots'][:, 1]]), -1))
         if self.architecture.schema in COMBAT_REPRESENTATIONS:

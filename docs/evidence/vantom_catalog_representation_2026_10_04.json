@@ -1,0 +1,1282 @@
+{
+  "artifacts": {
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/analysis.json": "39a7e9c67d22760216bec156928fe46ce16c9814fed50c4cee7635143b605446",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/analyze.py": "d878b2c5e3fd61a14e980da5aad0991bbb0927980a945351b3d4fea8202a3b76",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/audit_training.py": "d48d4b741619ff48f8ec7301aaa3ac48ca9cf4d9c5b3132c3bc51fb018412897",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/comparison.png": "7a5805fe0574a8a16cadb7328a54376c5f6e17635928a953e69901fe85fd06ee",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/complete.json": "d160dbbf6795ba60eb8e191aefdc49f7c8b39b3e801cab88adcbdfbdff292cfc",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/corpus-validation.json": "fa44178b9307d4a00db7841ce98f25d1ecdcf7c4af7430114d1bb2cd36a883e4",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/evaluate.py": "f4b4e35124f5c638cf8e1aa4116a2e320c7502f5ab60594e9c3147f5cc1f8d3c",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/export_inspection.py": "4ae7b75c32b50f3d0905d172e6bf2628954fd446ff26b3e7bad35d606d07eb5f",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/initialization.json": "e3bfb2a0730cb92a722b064b82162ea3f2b23c55b9628b688b2d411b54e40061",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/initialize.py": "89bd4a19566c4bf1de08c4aa7463580b50d7a9606dc9d5335608099890c9cf74",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/inspection.json": "3d10f8f9d2060173d07aa2488e1538ceccf696b55deed33c5815f2477671a93e",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/model-preflight.json": "0b117e96320b421f4af506e1f55dd0a516ea8181e93134d1c4b27ae0381f8425",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/plan.json": "013e1d4e2cd7798321dffb1e1d4959bd61c7ca671fd28acf1b609d43c8f5e4e3",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/plot.py": "b14af65ec9a65e2ad8e075e62a681624864dd693641edfceec74c917f051edf1",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/prepare.py": "e1d6416add9093d1859d30e5e263d86abb066f9ada1045fe744535e0d2fa6226",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/protocol-review.json": "9f65b9a0a65dcebbd9edc09a107a83fb54b8b6288186e335535280ec3a5ce7b4",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/review-addendum.json": "076523477f8cf525629c28f1dc457a5186adb8e0eee240db6a702f9535e14d1c",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/run.py": "812ee27ce52d87788117856fb69c02da2457863595f90695a68e2b5db9947a4f",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/serving.json": "960f88b5fb8ca68fb9d0ffb78c75da818c2617059ab426c0f221444efbd301a0",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/source-binding.json": "72801d6c1895efc3c07c3d4c7c61ad8126eff896cc69f8d669b27c6d9d9a9bcf",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/source.tar.gz": "69605386914419901ce263121e6d2ef77961953ba5ba75cb053f70a486ac4eae",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/study.py": "2c1de679ee8d889febd023e97017619a497e55d9315ddbfd693ed11a26e3204d",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/training-audit.json": "c30be9b3dc2d6669e482b800acf257a285d8dd2190b6a152e1b01a3b2893b2c3",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/verification.json": "88ac49fd3aae5f61d098f5dc8950df5e8254fc7dca97ca3880568220ba8f8643",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/verify_results.py": "3976da7b7125260a965fbeb8667665894f843b18584248b9bd8f65e9bcd209b6"
+  },
+  "budget": {
+    "calibration_collection": 4096,
+    "evaluation_workers": 16,
+    "ppo_decisions_per_run": 50000,
+    "total_ppo": 300000,
+    "update_threads": 4,
+    "workers": 16
+  },
+  "calibration": {
+    "batch_size": 64,
+    "environment_decisions": 4096,
+    "learning_rate": 0.001,
+    "source": "One shared parent-policy TRAIN sample, complete episodes only; 80/20 source-group fit/monitor; fixed fit steps, no selection.",
+    "split": "train",
+    "target": "Unshaped Monte Carlo combat return; identical targets and minibatch stream per paired seed; separate frozen representation vectors.",
+    "value_only_updates_per_model": 400
+  },
+  "config": {
+    "encounters": [
+      "boss"
+    ],
+    "ppo": {
+      "batch_size": 16,
+      "clip_ratio": 0.2,
+      "entropy_weight": 0.001,
+      "episode_decisions": 512,
+      "episode_seconds": 120.0,
+      "epochs": 2,
+      "gae_lambda": 0.95,
+      "gamma": 1.0,
+      "gradient_clip": 0.5,
+      "learning_rate": 0.0001,
+      "normalize_advantages": true,
+      "rollout_steps": 4096,
+      "target_kl": 0.03,
+      "value_weight": 0.5
+    },
+    "schema": "sts_ppo_experiment_v2",
+    "source": "act1_combat_corpus_v2:01e34face70f278ef2ac3dce531d75ca6b17886232e3be4a6d81f420918ae0c7",
+    "training": {
+      "action_policy": "commit_decisions_v1",
+      "mode": "combat",
+      "reward": {
+        "schema": "sts_training_reward_v1",
+        "weights": {
+          "combat_loss": 0.0,
+          "combat_win": 1.0,
+          "end_turn_action": 0.0,
+          "potion_use_action": 0.0,
+          "win_hp_fraction": 0.1
+        }
+      },
+      "scenario_set": "ironclad_a0_overgrowth_v1"
+    }
+  },
+  "corpus": {
+    "compatibility": {
+      "exact_snapshot_digests": 1297,
+      "implementation": {
+        "build": "3a9391de7d88c467b9ca8fda0bd4da2b684d2dd3ee6eb99144e9846d443064dc",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "1774c49c412fc7fae7c0d0f642927e6d91075c8d73268315baf9f9ef19f5b12b",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "parent_corpus": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-defeat-hp-20261003/corpus/corpus.json",
+      "parent_implementation": {
+        "build": "907db2e4f6e3647c246569935e8185cd5d822fbabd627ecc4b53db78c65cc2a1",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "1774c49c412fc7fae7c0d0f642927e6d91075c8d73268315baf9f9ef19f5b12b",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "parent_registry_sha256": "60186eee9f4c627cbe877690014032338e798a8ea55769d5aa8dc9d2a56cbd88",
+      "parent_sha256": "3beb2fe93a5704270b31816ee19b0fefddba2a758909329178f64455eee2dcd0",
+      "restored_public_starts": {
+        "train": 668,
+        "validation": 267
+      },
+      "script_sha256": "e1d6416add9093d1859d30e5e263d86abb066f9ada1045fe744535e0d2fa6226",
+      "seconds": 22.104698833078146,
+      "semantics": "Same snapshots, source campaigns, splits and public starts. Previously used validation is development data. No new heldout claim.",
+      "status": "complete",
+      "test_snapshots_restored": 0,
+      "unchanged_engine_rules": true
+    },
+    "identity": "act1_combat_corpus_v2:01e34face70f278ef2ac3dce531d75ca6b17886232e3be4a6d81f420918ae0c7",
+    "reserved_test_openings": 57,
+    "sha256": "01e34face70f278ef2ac3dce531d75ca6b17886232e3be4a6d81f420918ae0c7",
+    "test_restored": false,
+    "training_openings": 101,
+    "validation_openings": 42
+  },
+  "date": "2026-10-04",
+  "implementation": {
+    "build": "3a9391de7d88c467b9ca8fda0bd4da2b684d2dd3ee6eb99144e9846d443064dc",
+    "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+    "rules": "1774c49c412fc7fae7c0d0f642927e6d91075c8d73268315baf9f9ef19f5b12b",
+    "target": "sts2-v0.107.1-steam-23811903"
+  },
+  "initial_models": [
+    {
+      "arm": "control",
+      "catalog_identity": null,
+      "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/initializers/control-a/initial.sts-model",
+      "feature_identity": "sts_public_combat_channels_v1:c5c7c49b9e15983692ab828df52cc213f3a6721d5ae48c0e292a6363d910b6a1",
+      "initial_greedy_agreement": 1.0,
+      "initial_logits_equal_parent": true,
+      "label": "control-a",
+      "parameters": 97058,
+      "parent_to_initial_kl": 0.0,
+      "probe_states": 3836,
+      "resume_sha256": "e59586d8e11aab2b8a8657126e92a076184b334449be80c3e761a953344d5c66",
+      "seconds": 40.99509329115972,
+      "seed": "a",
+      "sha256": "41e946ff576951596b47b7824fc1bec22a0d382f3014cb27f134d62dd463735d",
+      "supervised_presentations": 25600,
+      "value_after": {
+        "fit_mse": 0.11061501502990723,
+        "monitor_mse": 0.1377808302640915,
+        "monitor_prediction_mean": 0.5364108085632324,
+        "monitor_target_mean": 0.564477264881134
+      },
+      "value_before": {
+        "fit_mse": 0.5108489394187927,
+        "monitor_mse": 0.5794532895088196,
+        "monitor_prediction_mean": 0.0,
+        "monitor_target_mean": 0.564477264881134
+      },
+      "value_fit_updates": 400,
+      "vocabulary_names": 564
+    },
+    {
+      "arm": "identities",
+      "catalog_identity": "sts_public_feature_catalog_v1:dde51b3787fb639b94d3ec60e38dd404aa8c529182f58b6a236cdffffdfddc78",
+      "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/initializers/identities-a/initial.sts-model",
+      "feature_identity": "sts_public_combat_channels_v1:70557f141d326c859315b58c6ec25dc278614a2e03ec80eccf39d6f3ddaf7113",
+      "initial_greedy_agreement": 1.0,
+      "initial_logits_equal_parent": true,
+      "label": "identities-a",
+      "parameters": 222866,
+      "parent_to_initial_kl": 0.0,
+      "probe_states": 3836,
+      "resume_sha256": "f5331d278256623fe9c8562d72cc901276aa6e59996dd5215068dac6bb7beadc",
+      "seconds": 40.15919820778072,
+      "seed": "a",
+      "sha256": "bc768b4d71394ea68d688e590aac02a0d06c0e427f1ddc556f52a0a37066b945",
+      "supervised_presentations": 25600,
+      "value_after": {
+        "fit_mse": 0.11061501502990723,
+        "monitor_mse": 0.1377808302640915,
+        "monitor_prediction_mean": 0.5364108085632324,
+        "monitor_target_mean": 0.564477264881134
+      },
+      "value_before": {
+        "fit_mse": 0.5108489394187927,
+        "monitor_mse": 0.5794532895088196,
+        "monitor_prediction_mean": 0.0,
+        "monitor_target_mean": 0.564477264881134
+      },
+      "value_fit_updates": 400,
+      "vocabulary_names": 3185
+    },
+    {
+      "arm": "descriptions",
+      "catalog_identity": "sts_public_feature_catalog_v1:5df26b4afc2a3d43a9f521edbac8c1633c6ae681b2e6ae7e83c6423ecbf2ea43",
+      "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/initializers/descriptions-a/initial.sts-model",
+      "feature_identity": "sts_public_combat_channels_v1:eda55e7b50405cd1889d7afe1caf1866625f6c0504cea1931298fa0103c80a9c",
+      "initial_greedy_agreement": 0.9947862356621481,
+      "initial_logits_equal_parent": false,
+      "label": "descriptions-a",
+      "parameters": 222866,
+      "parent_to_initial_kl": 0.0024411551565794456,
+      "probe_states": 3836,
+      "resume_sha256": "92c41a2b39879928fa89524915b784f79d782f601acf230ff936e96fa7d2186a",
+      "seconds": 40.144484207965434,
+      "seed": "a",
+      "sha256": "20e3e83866650ab5260b789ab3861c38417e296366e73b4934232b37f8602b9e",
+      "supervised_presentations": 25600,
+      "value_after": {
+        "fit_mse": 0.11028929799795151,
+        "monitor_mse": 0.1357303261756897,
+        "monitor_prediction_mean": 0.5321696400642395,
+        "monitor_target_mean": 0.564477264881134
+      },
+      "value_before": {
+        "fit_mse": 0.5108489394187927,
+        "monitor_mse": 0.5794532895088196,
+        "monitor_prediction_mean": 0.0,
+        "monitor_target_mean": 0.564477264881134
+      },
+      "value_fit_updates": 400,
+      "vocabulary_names": 3185
+    },
+    {
+      "arm": "control",
+      "catalog_identity": null,
+      "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/initializers/control-b/initial.sts-model",
+      "feature_identity": "sts_public_combat_channels_v1:c5c7c49b9e15983692ab828df52cc213f3a6721d5ae48c0e292a6363d910b6a1",
+      "initial_greedy_agreement": 1.0,
+      "initial_logits_equal_parent": true,
+      "label": "control-b",
+      "parameters": 97058,
+      "parent_to_initial_kl": 0.0,
+      "probe_states": 3836,
+      "resume_sha256": "5c841d23814e5300c2719379f72b595d66b92ea5ddc8efdcd683652c8c941239",
+      "seconds": 40.0870707500726,
+      "seed": "b",
+      "sha256": "e4ad2df66cca8067a4aa78a5ab31956764984a2af51236029b2e319b71692f9d",
+      "supervised_presentations": 25600,
+      "value_after": {
+        "fit_mse": 0.11256100237369537,
+        "monitor_mse": 0.14659839868545532,
+        "monitor_prediction_mean": 0.505081832408905,
+        "monitor_target_mean": 0.564477264881134
+      },
+      "value_before": {
+        "fit_mse": 0.5108489394187927,
+        "monitor_mse": 0.5794532895088196,
+        "monitor_prediction_mean": 0.0,
+        "monitor_target_mean": 0.564477264881134
+      },
+      "value_fit_updates": 400,
+      "vocabulary_names": 564
+    },
+    {
+      "arm": "identities",
+      "catalog_identity": "sts_public_feature_catalog_v1:dde51b3787fb639b94d3ec60e38dd404aa8c529182f58b6a236cdffffdfddc78",
+      "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/initializers/identities-b/initial.sts-model",
+      "feature_identity": "sts_public_combat_channels_v1:70557f141d326c859315b58c6ec25dc278614a2e03ec80eccf39d6f3ddaf7113",
+      "initial_greedy_agreement": 1.0,
+      "initial_logits_equal_parent": true,
+      "label": "identities-b",
+      "parameters": 222866,
+      "parent_to_initial_kl": 0.0,
+      "probe_states": 3836,
+      "resume_sha256": "8be5bddb35df9ea9256f3ed20b3340e71a34abd077ca96b7e8b135eedf61b9e8",
+      "seconds": 40.2372108749114,
+      "seed": "b",
+      "sha256": "f5c33d741c44d80d51b4ef6490a3aa1ef29edbb220d5041ddfaf75b2c56b94bc",
+      "supervised_presentations": 25600,
+      "value_after": {
+        "fit_mse": 0.11256100237369537,
+        "monitor_mse": 0.14659839868545532,
+        "monitor_prediction_mean": 0.505081832408905,
+        "monitor_target_mean": 0.564477264881134
+      },
+      "value_before": {
+        "fit_mse": 0.5108489394187927,
+        "monitor_mse": 0.5794532895088196,
+        "monitor_prediction_mean": 0.0,
+        "monitor_target_mean": 0.564477264881134
+      },
+      "value_fit_updates": 400,
+      "vocabulary_names": 3185
+    },
+    {
+      "arm": "descriptions",
+      "catalog_identity": "sts_public_feature_catalog_v1:5df26b4afc2a3d43a9f521edbac8c1633c6ae681b2e6ae7e83c6423ecbf2ea43",
+      "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/initializers/descriptions-b/initial.sts-model",
+      "feature_identity": "sts_public_combat_channels_v1:eda55e7b50405cd1889d7afe1caf1866625f6c0504cea1931298fa0103c80a9c",
+      "initial_greedy_agreement": 0.9947862356621481,
+      "initial_logits_equal_parent": false,
+      "label": "descriptions-b",
+      "parameters": 222866,
+      "parent_to_initial_kl": 0.0024411551565794456,
+      "probe_states": 3836,
+      "resume_sha256": "5b63e857f81b6bea0abd5a12f1ad6e21e63efb43f4c36cf4b63bc7457b6e68bc",
+      "seconds": 40.97582179168239,
+      "seed": "b",
+      "sha256": "03b88a20bf8b2eb18fa729552ad27dcb6cbe3c96db981964476505e8e72011f3",
+      "supervised_presentations": 25600,
+      "value_after": {
+        "fit_mse": 0.11231257766485214,
+        "monitor_mse": 0.14445514976978302,
+        "monitor_prediction_mean": 0.5058729648590088,
+        "monitor_target_mean": 0.564477264881134
+      },
+      "value_before": {
+        "fit_mse": 0.5108489394187927,
+        "monitor_mse": 0.5794532895088196,
+        "monitor_prediction_mean": 0.0,
+        "monitor_target_mean": 0.564477264881134
+      },
+      "value_fit_updates": 400,
+      "vocabulary_names": 3185
+    }
+  ],
+  "initialization": "Common selected250k rich-combat graph actor. Shared non-name actor tensors copied exactly. Existing name rows remapped by string. All new rows equal parent unknown row to isolate learning new identities from random input disruption. Identical fresh critic weights per seed before per-arm TRAIN calibration. Fresh PPO optimizer, paired RNG/cursors; native counters start at0. Full descriptions can immediately change predictions; measured before training.",
+  "initialization_evidence": {
+    "calibration_environment_decisions": 4096,
+    "excluded_cutoff_decisions": 260,
+    "fit_decisions": 2925,
+    "monitor_decisions": 911,
+    "monte_carlo_decisions": 3836,
+    "seconds": 317.69456362491474
+  },
+  "inspector": "http://127.0.0.1:59714/#run=80f1566b703243bf836339f7774e5443&step=0",
+  "interpretation": "This pilot does not show a convincing combat improvement from either representation change. Mean greedy validation is 50.0% for legacy, 51.2% for complete vocabulary, and 48.8% with descriptions. Mean sampled validation is 49.4%, 46.4%, and 47.0%, respectively. The selected 250k parent remains ahead at 61.9% greedy and 54.8% sampled.\n\nComplete vocabulary adds one greedy win in seed a and ties seed b; sampled differences versus control are +1 and -6 games. Descriptions lose one greedy win per seed versus the equal-capacity vocabulary arm; their sampled differences are -3 and +4 games. These small, inconsistent changes do not justify promotion or a larger continuation budget.\n\nDescriptions leave Vantom 2.85 and 0.63 HP lower on shared losses versus matched controls, but completed player HP on shared wins changes -0.83 and +0.70 HP. Vocabulary-only loss HP changes -4.05 and +1.88 HP. These conditional diagnostics do not establish an overall improvement. All endpoints regress from their own initial greedy scores.\n\nThe richer inputs are inexpensive here: PPO averages 4m22s for legacy, 4m25s for complete vocabulary, and 4m27s for descriptions. Different learned trajectories contribute to these timings; this is not an isolated encoder microbenchmark.\n\nKeep the selected 250k specialist as the reference. Coverage fixes remain useful for representing public information, but they are not evidence of better decisions. This experiment tests 50k adaptation of an inherited actor with matched fresh critics and optimizers. It does not settle whether using these features from initial training helps. A matched comparison from the same earlier training stage is the next representation-specific question; broader training-state coverage is a separate data experiment. The 57 reserved test openings remain untouched.\n",
+  "limitations": [
+    "Two fine-tuning schedules share one historically validation-selected parent; not independent pretrained learners.",
+    "Repeated development-validation use; no new test confirmation and no population-wide claim.",
+    "Complete vocabulary changes identity/structural token coverage and model capacity; metadata versus vocabulary holds capacity fixed.",
+    "Static descriptions are partial mechanical features, not an exact simulator or textual reasoning model.",
+    "This 50k adaptation study does not test from-scratch learning, longer budgets, other bosses or full-run performance."
+  ],
+  "mlflow": {
+    "experiment_id": "16",
+    "overview_run": "1d444b453fd44741a1a4681b4cdc7c7e"
+  },
+  "parent": {
+    "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-training-20261002/ppo/chunk-20/final.sts-model",
+    "sha256": "4da8789591fc9379522b3b30745bb6b6615ee53bb4bfc21215affecf28dfae6a",
+    "specialist_ppo_decisions": 250000
+  },
+  "protocol": {
+    "checkpoints": [
+      0,
+      25000,
+      50000
+    ],
+    "primary": "Fixed50k validation greedy wins per paired seed versus control. Full descriptions versus complete-vocabulary-only isolates added fields at equal parameter count; zero-shot diagnostic separates transfer disruption.",
+    "secondary": "Sampled wins, common-loss boss HP, common-win completed player HP, unconditional boss HP, training win rate, speed.",
+    "selection": "No early stopping, no automatic promotion; reserved test remains closed.",
+    "start_kind": "opening",
+    "train_greedy_at_endpoint": 101,
+    "uncertainty": "Two forks from one selected parent and repeatedly used42-case development validation; not independently pretrained seeds or heldout confirmation.",
+    "validation_greedy": 42,
+    "validation_sampled_repeats_at_endpoint": 2,
+    "workers": 16
+  },
+  "question": "Do complete public vocabulary and static potion/relic descriptions improve Vantom combat fine-tuning?",
+  "results": {
+    "aggregate": {
+      "control": {
+        "calibration_seconds": 40.54108202061616,
+        "greedy_delta_vs_control_per_seed": [
+          0.0,
+          0.0
+        ],
+        "mean_boss_hp_fraction_all": 0.12895678502614918,
+        "ppo_seconds": 261.8441555411555,
+        "train_greedy_wins": 64,
+        "validation_greedy_wins": 21,
+        "validation_sampled_wins": 41.5
+      },
+      "descriptions": {
+        "calibration_seconds": 40.56015299982391,
+        "greedy_delta_vs_control_per_seed": [
+          0.0,
+          -0.023809523809523808
+        ],
+        "mean_boss_hp_fraction_all": 0.12214423341590973,
+        "ppo_seconds": 266.69542760471813,
+        "train_greedy_wins": 62,
+        "validation_greedy_wins": 20.5,
+        "validation_sampled_wins": 39.5
+      },
+      "identities": {
+        "calibration_seconds": 40.19820454134606,
+        "greedy_delta_vs_control_per_seed": [
+          0.023809523809523808,
+          0.0
+        ],
+        "mean_boss_hp_fraction_all": 0.12276355628956784,
+        "ppo_seconds": 265.07786187459715,
+        "train_greedy_wins": 65,
+        "validation_greedy_wins": 21.5,
+        "validation_sampled_wins": 39
+      }
+    },
+    "comparisons": {
+      "control-a": {
+        "greedy_vs_identity_only": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.4429287507442684,
+            0.39530970312522073
+          ],
+          "win_rate_difference": -0.023809523809523808,
+          "wins_only_candidate": 1,
+          "wins_only_identity_only": 2
+        },
+        "greedy_vs_matched_control": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.41911922693474457,
+            0.41911922693474457
+          ],
+          "win_rate_difference": 0.0,
+          "wins_only_candidate": 0,
+          "wins_only_matched_control": 0
+        },
+        "greedy_vs_own_initial": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.5619763697918874,
+            0.2762620840776017
+          ],
+          "win_rate_difference": -0.14285714285714285,
+          "wins_only_candidate": 1,
+          "wins_only_own_initial": 7
+        },
+        "greedy_vs_reference": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.5619763697918874,
+            0.2762620840776017
+          ],
+          "win_rate_difference": -0.14285714285714285,
+          "wins_only_candidate": 1,
+          "wins_only_selected_250k_parent": 7
+        },
+        "same_outcome_hp_vs_identity_only": {
+          "defeat": {
+            "cases": 20,
+            "mean_hp_delta": 4.05,
+            "mean_hp_fraction_delta": 0.023410404624277462
+          },
+          "victory": {
+            "cases": 19,
+            "mean_hp_delta": 0.7368421052631579,
+            "mean_hp_fraction_delta": 0.008272837265577732
+          }
+        },
+        "same_outcome_hp_vs_matched_control": {
+          "defeat": {
+            "cases": 22,
+            "mean_hp_delta": 0,
+            "mean_hp_fraction_delta": 0.0
+          },
+          "victory": {
+            "cases": 20,
+            "mean_hp_delta": 0,
+            "mean_hp_fraction_delta": 0.0
+          }
+        },
+        "same_outcome_hp_vs_reference": {
+          "defeat": {
+            "cases": 15,
+            "mean_hp_delta": -1.5333333333333334,
+            "mean_hp_fraction_delta": -0.008863198458574185
+          },
+          "victory": {
+            "cases": 19,
+            "mean_hp_delta": -0.7894736842105263,
+            "mean_hp_fraction_delta": -0.009339080459770117
+          }
+        },
+        "sampled_vs_identity_only": {
+          "cases": 84,
+          "difference_group_hoeffding_95": [
+            -0.4310239888395065,
+            0.40721446502998265
+          ],
+          "win_rate_difference": -0.011904761904761904,
+          "wins_only_candidate": 4,
+          "wins_only_identity_only": 5
+        },
+        "sampled_vs_matched_control": {
+          "cases": 84,
+          "difference_group_hoeffding_95": [
+            -0.41911922693474457,
+            0.41911922693474457
+          ],
+          "win_rate_difference": 0.0,
+          "wins_only_candidate": 0,
+          "wins_only_matched_control": 0
+        }
+      },
+      "control-b": {
+        "greedy_vs_identity_only": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.41911922693474457,
+            0.41911922693474457
+          ],
+          "win_rate_difference": 0.0,
+          "wins_only_candidate": 3,
+          "wins_only_identity_only": 3
+        },
+        "greedy_vs_matched_control": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.41911922693474457,
+            0.41911922693474457
+          ],
+          "win_rate_difference": 0.0,
+          "wins_only_candidate": 0,
+          "wins_only_matched_control": 0
+        },
+        "greedy_vs_own_initial": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.5143573221728398,
+            0.32388113169664934
+          ],
+          "win_rate_difference": -0.09523809523809523,
+          "wins_only_candidate": 0,
+          "wins_only_own_initial": 4
+        },
+        "greedy_vs_reference": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.5143573221728398,
+            0.32388113169664934
+          ],
+          "win_rate_difference": -0.09523809523809523,
+          "wins_only_candidate": 0,
+          "wins_only_selected_250k_parent": 4
+        },
+        "same_outcome_hp_vs_identity_only": {
+          "defeat": {
+            "cases": 17,
+            "mean_hp_delta": -1.8823529411764706,
+            "mean_hp_fraction_delta": -0.010880652839170356
+          },
+          "victory": {
+            "cases": 19,
+            "mean_hp_delta": -0.2631578947368421,
+            "mean_hp_fraction_delta": -0.002850877192982454
+          }
+        },
+        "same_outcome_hp_vs_matched_control": {
+          "defeat": {
+            "cases": 20,
+            "mean_hp_delta": 0,
+            "mean_hp_fraction_delta": 0.0
+          },
+          "victory": {
+            "cases": 22,
+            "mean_hp_delta": 0,
+            "mean_hp_fraction_delta": 0.0
+          }
+        },
+        "same_outcome_hp_vs_reference": {
+          "defeat": {
+            "cases": 16,
+            "mean_hp_delta": -3,
+            "mean_hp_fraction_delta": -0.01734104046242775
+          },
+          "victory": {
+            "cases": 22,
+            "mean_hp_delta": 0.3181818181818182,
+            "mean_hp_fraction_delta": 0.0028800940438871467
+          }
+        },
+        "sampled_vs_identity_only": {
+          "cases": 84,
+          "difference_group_hoeffding_95": [
+            -0.3476906555061732,
+            0.49054779836331597
+          ],
+          "win_rate_difference": 0.07142857142857142,
+          "wins_only_candidate": 9,
+          "wins_only_identity_only": 3
+        },
+        "sampled_vs_matched_control": {
+          "cases": 84,
+          "difference_group_hoeffding_95": [
+            -0.41911922693474457,
+            0.41911922693474457
+          ],
+          "win_rate_difference": 0.0,
+          "wins_only_candidate": 0,
+          "wins_only_matched_control": 0
+        }
+      },
+      "descriptions-a": {
+        "greedy_vs_identity_only": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.4429287507442684,
+            0.39530970312522073
+          ],
+          "win_rate_difference": -0.023809523809523808,
+          "wins_only_candidate": 2,
+          "wins_only_identity_only": 3
+        },
+        "greedy_vs_matched_control": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.41911922693474457,
+            0.41911922693474457
+          ],
+          "win_rate_difference": 0.0,
+          "wins_only_candidate": 2,
+          "wins_only_matched_control": 2
+        },
+        "greedy_vs_own_initial": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.5381668459823636,
+            0.3000716078871255
+          ],
+          "win_rate_difference": -0.11904761904761904,
+          "wins_only_candidate": 0,
+          "wins_only_own_initial": 5
+        },
+        "greedy_vs_reference": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.5619763697918874,
+            0.2762620840776017
+          ],
+          "win_rate_difference": -0.14285714285714285,
+          "wins_only_candidate": 0,
+          "wins_only_selected_250k_parent": 6
+        },
+        "same_outcome_hp_vs_identity_only": {
+          "defeat": {
+            "cases": 19,
+            "mean_hp_delta": 1.263157894736842,
+            "mean_hp_fraction_delta": 0.00730149072102221
+          },
+          "victory": {
+            "cases": 18,
+            "mean_hp_delta": -0.05555555555555555,
+            "mean_hp_fraction_delta": -0.0009019795657726744
+          }
+        },
+        "same_outcome_hp_vs_matched_control": {
+          "defeat": {
+            "cases": 20,
+            "mean_hp_delta": -2.85,
+            "mean_hp_fraction_delta": -0.01647398843930636
+          },
+          "victory": {
+            "cases": 18,
+            "mean_hp_delta": -0.8333333333333334,
+            "mean_hp_fraction_delta": -0.00963441890166028
+          }
+        },
+        "same_outcome_hp_vs_reference": {
+          "defeat": {
+            "cases": 16,
+            "mean_hp_delta": -4.1875,
+            "mean_hp_fraction_delta": -0.024205202312138734
+          },
+          "victory": {
+            "cases": 20,
+            "mean_hp_delta": -1.4,
+            "mean_hp_fraction_delta": -0.01639367816091954
+          }
+        },
+        "sampled_vs_identity_only": {
+          "cases": 84,
+          "difference_group_hoeffding_95": [
+            -0.45483351264903027,
+            0.3834049412204589
+          ],
+          "win_rate_difference": -0.03571428571428571,
+          "wins_only_candidate": 4,
+          "wins_only_identity_only": 7
+        },
+        "sampled_vs_matched_control": {
+          "cases": 84,
+          "difference_group_hoeffding_95": [
+            -0.4429287507442684,
+            0.39530970312522073
+          ],
+          "win_rate_difference": -0.023809523809523808,
+          "wins_only_candidate": 3,
+          "wins_only_matched_control": 5
+        }
+      },
+      "descriptions-b": {
+        "greedy_vs_identity_only": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.4429287507442684,
+            0.39530970312522073
+          ],
+          "win_rate_difference": -0.023809523809523808,
+          "wins_only_candidate": 2,
+          "wins_only_identity_only": 3
+        },
+        "greedy_vs_matched_control": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.4429287507442684,
+            0.39530970312522073
+          ],
+          "win_rate_difference": -0.023809523809523808,
+          "wins_only_candidate": 1,
+          "wins_only_matched_control": 2
+        },
+        "greedy_vs_own_initial": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.5143573221728398,
+            0.32388113169664934
+          ],
+          "win_rate_difference": -0.09523809523809523,
+          "wins_only_candidate": 1,
+          "wins_only_own_initial": 5
+        },
+        "greedy_vs_reference": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.5381668459823636,
+            0.3000716078871255
+          ],
+          "win_rate_difference": -0.11904761904761904,
+          "wins_only_candidate": 0,
+          "wins_only_selected_250k_parent": 5
+        },
+        "same_outcome_hp_vs_identity_only": {
+          "defeat": {
+            "cases": 18,
+            "mean_hp_delta": 0.2777777777777778,
+            "mean_hp_fraction_delta": 0.0016056518946692315
+          },
+          "victory": {
+            "cases": 19,
+            "mean_hp_delta": 0.631578947368421,
+            "mean_hp_fraction_delta": 0.009565940713853608
+          }
+        },
+        "same_outcome_hp_vs_matched_control": {
+          "defeat": {
+            "cases": 19,
+            "mean_hp_delta": -0.631578947368421,
+            "mean_hp_fraction_delta": -0.0036507453605111036
+          },
+          "victory": {
+            "cases": 20,
+            "mean_hp_delta": 0.7,
+            "mean_hp_fraction_delta": 0.010071839080459779
+          }
+        },
+        "same_outcome_hp_vs_reference": {
+          "defeat": {
+            "cases": 16,
+            "mean_hp_delta": -1.125,
+            "mean_hp_fraction_delta": -0.006502890173410407
+          },
+          "victory": {
+            "cases": 21,
+            "mean_hp_delta": 0.09523809523809523,
+            "mean_hp_fraction_delta": 0.0022099069512862674
+          }
+        },
+        "sampled_vs_identity_only": {
+          "cases": 84,
+          "difference_group_hoeffding_95": [
+            -0.37150017931569695,
+            0.4667382745537922
+          ],
+          "win_rate_difference": 0.047619047619047616,
+          "wins_only_candidate": 9,
+          "wins_only_identity_only": 5
+        },
+        "sampled_vs_matched_control": {
+          "cases": 84,
+          "difference_group_hoeffding_95": [
+            -0.4429287507442684,
+            0.39530970312522073
+          ],
+          "win_rate_difference": -0.023809523809523808,
+          "wins_only_candidate": 3,
+          "wins_only_matched_control": 5
+        }
+      },
+      "identities-a": {
+        "greedy_vs_identity_only": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.41911922693474457,
+            0.41911922693474457
+          ],
+          "win_rate_difference": 0.0,
+          "wins_only_candidate": 0,
+          "wins_only_identity_only": 0
+        },
+        "greedy_vs_matched_control": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.39530970312522073,
+            0.4429287507442684
+          ],
+          "win_rate_difference": 0.023809523809523808,
+          "wins_only_candidate": 2,
+          "wins_only_matched_control": 1
+        },
+        "greedy_vs_own_initial": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.5381668459823636,
+            0.3000716078871255
+          ],
+          "win_rate_difference": -0.11904761904761904,
+          "wins_only_candidate": 2,
+          "wins_only_own_initial": 7
+        },
+        "greedy_vs_reference": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.5381668459823636,
+            0.3000716078871255
+          ],
+          "win_rate_difference": -0.11904761904761904,
+          "wins_only_candidate": 2,
+          "wins_only_selected_250k_parent": 7
+        },
+        "same_outcome_hp_vs_identity_only": {
+          "defeat": {
+            "cases": 21,
+            "mean_hp_delta": 0,
+            "mean_hp_fraction_delta": 0.0
+          },
+          "victory": {
+            "cases": 21,
+            "mean_hp_delta": 0,
+            "mean_hp_fraction_delta": 0.0
+          }
+        },
+        "same_outcome_hp_vs_matched_control": {
+          "defeat": {
+            "cases": 20,
+            "mean_hp_delta": -4.05,
+            "mean_hp_fraction_delta": -0.023410404624277462
+          },
+          "victory": {
+            "cases": 19,
+            "mean_hp_delta": -0.7368421052631579,
+            "mean_hp_fraction_delta": -0.008272837265577732
+          }
+        },
+        "same_outcome_hp_vs_reference": {
+          "defeat": {
+            "cases": 14,
+            "mean_hp_delta": -3.357142857142857,
+            "mean_hp_fraction_delta": -0.0194054500412882
+          },
+          "victory": {
+            "cases": 19,
+            "mean_hp_delta": -1.6842105263157894,
+            "mean_hp_fraction_delta": -0.019585601935874164
+          }
+        },
+        "sampled_vs_identity_only": {
+          "cases": 84,
+          "difference_group_hoeffding_95": [
+            -0.41911922693474457,
+            0.41911922693474457
+          ],
+          "win_rate_difference": 0.0,
+          "wins_only_candidate": 0,
+          "wins_only_identity_only": 0
+        },
+        "sampled_vs_matched_control": {
+          "cases": 84,
+          "difference_group_hoeffding_95": [
+            -0.40721446502998265,
+            0.4310239888395065
+          ],
+          "win_rate_difference": 0.011904761904761904,
+          "wins_only_candidate": 5,
+          "wins_only_matched_control": 4
+        }
+      },
+      "identities-b": {
+        "greedy_vs_identity_only": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.41911922693474457,
+            0.41911922693474457
+          ],
+          "win_rate_difference": 0.0,
+          "wins_only_candidate": 0,
+          "wins_only_identity_only": 0
+        },
+        "greedy_vs_matched_control": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.41911922693474457,
+            0.41911922693474457
+          ],
+          "win_rate_difference": 0.0,
+          "wins_only_candidate": 3,
+          "wins_only_matched_control": 3
+        },
+        "greedy_vs_own_initial": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.5143573221728398,
+            0.32388113169664934
+          ],
+          "win_rate_difference": -0.09523809523809523,
+          "wins_only_candidate": 0,
+          "wins_only_own_initial": 4
+        },
+        "greedy_vs_reference": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.5143573221728398,
+            0.32388113169664934
+          ],
+          "win_rate_difference": -0.09523809523809523,
+          "wins_only_candidate": 0,
+          "wins_only_selected_250k_parent": 4
+        },
+        "same_outcome_hp_vs_identity_only": {
+          "defeat": {
+            "cases": 20,
+            "mean_hp_delta": 0,
+            "mean_hp_fraction_delta": 0.0
+          },
+          "victory": {
+            "cases": 22,
+            "mean_hp_delta": 0,
+            "mean_hp_fraction_delta": 0.0
+          }
+        },
+        "same_outcome_hp_vs_matched_control": {
+          "defeat": {
+            "cases": 17,
+            "mean_hp_delta": 1.8823529411764706,
+            "mean_hp_fraction_delta": 0.010880652839170356
+          },
+          "victory": {
+            "cases": 19,
+            "mean_hp_delta": 0.2631578947368421,
+            "mean_hp_fraction_delta": 0.002850877192982454
+          }
+        },
+        "same_outcome_hp_vs_reference": {
+          "defeat": {
+            "cases": 16,
+            "mean_hp_delta": -1.1875,
+            "mean_hp_fraction_delta": -0.006864161849710984
+          },
+          "victory": {
+            "cases": 22,
+            "mean_hp_delta": -0.5454545454545454,
+            "mean_hp_fraction_delta": -0.007196969696969701
+          }
+        },
+        "sampled_vs_identity_only": {
+          "cases": 84,
+          "difference_group_hoeffding_95": [
+            -0.41911922693474457,
+            0.41911922693474457
+          ],
+          "win_rate_difference": 0.0,
+          "wins_only_candidate": 0,
+          "wins_only_identity_only": 0
+        },
+        "sampled_vs_matched_control": {
+          "cases": 84,
+          "difference_group_hoeffding_95": [
+            -0.49054779836331597,
+            0.3476906555061732
+          ],
+          "win_rate_difference": -0.07142857142857142,
+          "wins_only_candidate": 3,
+          "wins_only_matched_control": 9
+        }
+      }
+    },
+    "completion_sha256": "d160dbbf6795ba60eb8e191aefdc49f7c8b39b3e801cab88adcbdfbdff292cfc",
+    "evaluation_games": 1992,
+    "hp_definition": "Winning HP uses canonical completed CombatSummary after post-combat hooks, matching the reward. Raw evaluation player_hp is before those hooks and is not used for the headline metric. Boss HP comes from the retained stable enemy slot.",
+    "interpretation": "Exploratory two-seed catalog-representation pilot from one inherited actor after matched TRAIN-only value calibration. New names start from the unknown embedding. Description fields can change the initial behavior; zero-shot performance is measured. Final 50k is primary; 0/25k are diagnostics. The parent was previously selected on this reused validation and every arm inherits it. No independent test confirmation. Conditional HP means can change when win/loss populations change; common-outcome deltas are paired.",
+    "protocol_sha256": "013e1d4e2cd7798321dffb1e1d4959bd61c7ca671fd28acf1b609d43c8f5e4e3",
+    "reference": {
+      "validation": {
+        "greedy": {
+          "attempted": 42,
+          "cutoffs": 0,
+          "failures": 0,
+          "hp_change_observations": 42,
+          "losses": 16,
+          "mean_boss_hp_fraction_all": 0.1184971098265896,
+          "mean_boss_hp_fraction_on_loss": 0.31105491329479773,
+          "mean_boss_hp_on_loss": 53.8125,
+          "mean_final_turn_observed": 7.380952380952381,
+          "mean_hp_change_observed": -54.45238095238095,
+          "mean_hp_fraction_on_win": 0.2624910065706212,
+          "mean_hp_on_win": 22.03846153846154,
+          "mean_player_hp_fraction_on_win": 0.18496071063261732,
+          "mean_player_hp_on_win": 15.576923076923077,
+          "mean_task_return": 0.6352970623115145,
+          "planned": 42,
+          "potion_use_actions": 17,
+          "source_groups": 42,
+          "steps": 1236,
+          "unattempted": 0,
+          "win_rate": 0.6190476190476191,
+          "win_rate_group_hoeffding_95": [
+            0.4094880055802468,
+            0.8286072325149914
+          ],
+          "wins": 26
+        },
+        "sampled": {
+          "attempted": 84,
+          "cutoffs": 0,
+          "failures": 0,
+          "hp_change_observations": 84,
+          "losses": 38,
+          "mean_boss_hp_fraction_all": 0.13714560968896225,
+          "mean_boss_hp_fraction_on_loss": 0.3031639793124429,
+          "mean_boss_hp_on_loss": 52.44736842105263,
+          "mean_final_turn_observed": 7.416666666666667,
+          "mean_hp_change_observed": -56.55952380952381,
+          "mean_hp_fraction_on_win": 0.25247498799619794,
+          "mean_hp_on_win": 21.065217391304348,
+          "mean_player_hp_fraction_on_win": 0.18000093090709543,
+          "mean_player_hp_on_win": 15.065217391304348,
+          "mean_task_return": 0.5614450588664583,
+          "planned": 84,
+          "potion_use_actions": 34,
+          "source_groups": 42,
+          "steps": 2471,
+          "unattempted": 0,
+          "win_rate": 0.5476190476190477,
+          "win_rate_group_hoeffding_95": [
+            0.3380594341516754,
+            0.75717866108642
+          ],
+          "wins": 46
+        }
+      }
+    },
+    "rows": [
+      {
+        "arm": "control",
+        "boss_hp_fraction_on_loss": 0.255911718339464,
+        "boss_hp_on_loss": 44.27272727272727,
+        "calibration_seconds": 40.99509329115972,
+        "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/ppo/control-a/chunk-04/final.sts-model",
+        "greedy_win_curve": {
+          "0": 26,
+          "25000": 23,
+          "50000": 20
+        },
+        "label": "control-a",
+        "mean_boss_hp_fraction_all": 0.13404899532067163,
+        "mlflow_run": "5af465e3b3db4d7fb7067634798fa58f",
+        "parameters": 97058,
+        "player_hp_fraction_on_win": 0.29522537750732475,
+        "player_hp_on_win": 24.8,
+        "ppo_seconds": 262.4969359161332,
+        "ppo_wall_seconds": 275.4310834580101,
+        "seed": "a",
+        "train_greedy_cutoffs": 0,
+        "train_greedy_wins": 62,
+        "validation_greedy_cutoffs": 0,
+        "validation_greedy_wins": 20,
+        "validation_sampled_cutoffs": 0,
+        "validation_sampled_wins": 39
+      },
+      {
+        "arm": "identities",
+        "boss_hp_fraction_on_loss": 0.2438755849160473,
+        "boss_hp_on_loss": 42.19047619047619,
+        "calibration_seconds": 40.15919820778072,
+        "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/ppo/identities-a/chunk-04/final.sts-model",
+        "greedy_win_curve": {
+          "0": 26,
+          "25000": 20,
+          "50000": 21
+        },
+        "label": "identities-a",
+        "mean_boss_hp_fraction_all": 0.12193779245802365,
+        "mlflow_run": "1ad0caf618c948d99442b263c80192d3",
+        "parameters": 222866,
+        "player_hp_fraction_on_win": 0.2832058877190723,
+        "player_hp_on_win": 23.714285714285715,
+        "ppo_seconds": 265.53767237532884,
+        "ppo_wall_seconds": 278.23300545755774,
+        "seed": "a",
+        "train_greedy_cutoffs": 0,
+        "train_greedy_wins": 64,
+        "validation_greedy_cutoffs": 0,
+        "validation_greedy_wins": 21,
+        "validation_sampled_cutoffs": 0,
+        "validation_sampled_wins": 40
+      },
+      {
+        "arm": "descriptions",
+        "boss_hp_fraction_on_loss": 0.23357856016815556,
+        "boss_hp_on_loss": 40.40909090909091,
+        "calibration_seconds": 40.144484207965434,
+        "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/ppo/descriptions-a/chunk-04/final.sts-model",
+        "greedy_win_curve": {
+          "0": 25,
+          "25000": 22,
+          "50000": 20
+        },
+        "label": "descriptions-a",
+        "mean_boss_hp_fraction_all": 0.12235067437379576,
+        "mlflow_run": "c6977bf7630a483591608167eceb8f73",
+        "parameters": 222866,
+        "player_hp_fraction_on_win": 0.26885536398467436,
+        "player_hp_on_win": 22.6,
+        "ppo_seconds": 266.704483166337,
+        "ppo_wall_seconds": 279.82165299961343,
+        "seed": "a",
+        "train_greedy_cutoffs": 0,
+        "train_greedy_wins": 63,
+        "validation_greedy_cutoffs": 0,
+        "validation_greedy_wins": 20,
+        "validation_sampled_cutoffs": 0,
+        "validation_sampled_wins": 37
+      },
+      {
+        "arm": "descriptions",
+        "boss_hp_fraction_on_loss": 0.24387558491604738,
+        "boss_hp_on_loss": 42.19047619047619,
+        "calibration_seconds": 40.97582179168239,
+        "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/ppo/descriptions-b/chunk-04/final.sts-model",
+        "greedy_win_curve": {
+          "0": 25,
+          "25000": 21,
+          "50000": 21
+        },
+        "label": "descriptions-b",
+        "mean_boss_hp_fraction_all": 0.12193779245802369,
+        "mlflow_run": "a405862d75be4d16bdf0195d54d397ca",
+        "parameters": 222866,
+        "player_hp_fraction_on_win": 0.290588208463462,
+        "player_hp_on_win": 24.333333333333332,
+        "ppo_seconds": 266.68637204309925,
+        "ppo_wall_seconds": 279.7899112496525,
+        "seed": "b",
+        "train_greedy_cutoffs": 0,
+        "train_greedy_wins": 61,
+        "validation_greedy_cutoffs": 0,
+        "validation_greedy_wins": 21,
+        "validation_sampled_cutoffs": 0,
+        "validation_sampled_wins": 42
+      },
+      {
+        "arm": "identities",
+        "boss_hp_fraction_on_loss": 0.25953757225433527,
+        "boss_hp_on_loss": 44.9,
+        "calibration_seconds": 40.2372108749114,
+        "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/ppo/identities-b/chunk-04/final.sts-model",
+        "greedy_win_curve": {
+          "0": 26,
+          "25000": 23,
+          "50000": 22
+        },
+        "label": "identities-b",
+        "mean_boss_hp_fraction_all": 0.12358932012111203,
+        "mlflow_run": "54a47564220b40c3a43285fa49025984",
+        "parameters": 222866,
+        "player_hp_fraction_on_win": 0.28220593357510193,
+        "player_hp_on_win": 23.772727272727273,
+        "ppo_seconds": 264.61805137386546,
+        "ppo_wall_seconds": 277.9313001255505,
+        "seed": "b",
+        "train_greedy_cutoffs": 0,
+        "train_greedy_wins": 66,
+        "validation_greedy_cutoffs": 0,
+        "validation_greedy_wins": 22,
+        "validation_sampled_cutoffs": 0,
+        "validation_sampled_wins": 38
+      },
+      {
+        "arm": "control",
+        "boss_hp_fraction_on_loss": 0.26011560693641617,
+        "boss_hp_on_loss": 45.0,
+        "calibration_seconds": 40.0870707500726,
+        "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/ppo/control-b/chunk-04/final.sts-model",
+        "greedy_win_curve": {
+          "0": 26,
+          "25000": 24,
+          "50000": 22
+        },
+        "label": "control-b",
+        "mean_boss_hp_fraction_all": 0.12386457473162674,
+        "mlflow_run": "7fa0c661e62f4690a9afdebf72d1a4b1",
+        "parameters": 97058,
+        "player_hp_fraction_on_win": 0.28282636199725447,
+        "player_hp_on_win": 23.90909090909091,
+        "ppo_seconds": 261.19137516617775,
+        "ppo_wall_seconds": 274.01659404393286,
+        "seed": "b",
+        "train_greedy_cutoffs": 0,
+        "train_greedy_wins": 66,
+        "validation_greedy_cutoffs": 0,
+        "validation_greedy_wins": 22,
+        "validation_sampled_cutoffs": 0,
+        "validation_sampled_wins": 44
+      }
+    ],
+    "status": "complete",
+    "test_opened": false
+  },
+  "root": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004",
+  "schema": "sts_vantom_catalog_representation_evidence_v1",
+  "status": "complete",
+  "timings": {
+    "calibration_seconds": 317.69456362491474,
+    "inspector_export_seconds": 13.259684584103525,
+    "pilot_runner_seconds": 2278.225548250135,
+    "ppo_seconds": 1587.2348900409415,
+    "replay_seconds": 100.23861987516284,
+    "training_audit_seconds": 12.790659166872501
+  },
+  "variants": {
+    "control": "Legacy observed vocabulary; unchanged public inputs",
+    "descriptions": "All identities plus frozen potion/relic descriptions; same new embedding initialization",
+    "identities": "Complete catalog vocabulary (entities and structural/value tokens), empty metadata fields; new embeddings initially equal legacy unknown"
+  },
+  "verification": {
+    "canonical_training_joins": 72,
+    "checked_training_rewards": 300000,
+    "exact_replay_decisions": 58843,
+    "exact_replay_games": 1992,
+    "first_collection_equivalence": [
+      {
+        "control_vs_identity_exact_actions": 4096,
+        "seed": "a"
+      },
+      {
+        "control_vs_identity_exact_actions": 4096,
+        "seed": "b"
+      }
+    ],
+    "independent_protocol_review": {
+      "bindings": {
+        "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/evaluate.py": "f4b4e35124f5c638cf8e1aa4116a2e320c7502f5ab60594e9c3147f5cc1f8d3c",
+        "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/initialize.py": "89bd4a19566c4bf1de08c4aa7463580b50d7a9606dc9d5335608099890c9cf74",
+        "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/prepare.py": "e1d6416add9093d1859d30e5e263d86abb066f9ada1045fe744535e0d2fa6226",
+        "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/run.py": "812ee27ce52d87788117856fb69c02da2457863595f90695a68e2b5db9947a4f",
+        "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/study.py": "2c1de679ee8d889febd023e97017619a497e55d9315ddbfd693ed11a26e3204d"
+      },
+      "blockers": [],
+      "findings": [
+        "No preparation ownership/revalidation blocker; all20 inherited reservations validated.",
+        "No blocking training/evaluation issue;300k PPO+4096 TRAIN calibration,1992 evaluations.",
+        "Complete-vocabulary arm includes structural/value tokens as well as entity identities and has more parameters than legacy.",
+        "Descriptions versus complete vocabulary has equal parameter count and isolates added metadata fields.",
+        "Completed post-hook winning HP and raw pre-healing HP remain separately labelled."
+      ],
+      "mode": "independent read-only semantic review",
+      "reviewer": "/root/nongraph_review",
+      "scope": "Corpus revalidation and reserved-test ownership, frozen vocabulary ablations, matched transfer/calibration, PPO protocol and evaluation",
+      "status": "complete"
+    },
+    "review_addendum": {
+      "author_checked": true,
+      "change": "Two human-readable protocol strings clarified that complete vocabulary includes structural/value tokens, and that metadata comparison holds parameter count fixed; no executable logic changed.",
+      "current_study_sha256": "2c1de679ee8d889febd023e97017619a497e55d9315ddbfd693ed11a26e3204d",
+      "original_reviewed_study_sha256": "2b7af83919ad60ba7ee03ec7ad8584e36071540bfa5fcccb3f39052639144a7a",
+      "reviewer_reported_no_blockers": true,
+      "status": "complete"
+    },
+    "strict_final_resumes": true
+  }
+}

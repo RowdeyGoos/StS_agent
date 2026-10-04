@@ -1,0 +1,1996 @@
+{
+  "artifacts": {
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/corpus-validation.json": "fa44178b9307d4a00db7841ce98f25d1ecdcf7c4af7430114d1bb2cd36a883e4",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/source-binding.json": "72801d6c1895efc3c07c3d4c7c61ad8126eff896cc69f8d669b27c6d9d9a9bcf",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/source.tar.gz": "69605386914419901ce263121e6d2ef77961953ba5ba75cb053f70a486ac4eae",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/analysis.json": "741c7b1e483f91ffc3920dfd48c0b09304139f0b211e20365b2a96ef0ad4694f",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/analyze.py": "e33069ecfe0d3b0a50f0c1b04b9ab129be4d4f98c5dfaf58260a6fe043ce155d",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/audit_training.py": "30bad40c76544f16a84421d99c9bfdbaeab30e37c69bda87d4ce9264c2cb12d4",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/comparison.png": "264c4ecda6643a9034b0d666632480e6e79d3a701e54fe53c646bee7a2f70e5d",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/complete.json": "8fa7c9271eaa68ba19b29f368c3d975be09cfca0d0e6b679b8e23d6366c45c0d",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/evaluate.py": "f4b4e35124f5c638cf8e1aa4116a2e320c7502f5ab60594e9c3147f5cc1f8d3c",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/export_inspection.py": "e9ba0d878af978d7b2f6f77b0fb07895abb404de74caeea6f84dfbba42203bf4",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/freeze.py": "e8484d7e2d1162cb8835517a3e20bf0185387cd204572aaf24bbc7e2860c91ab",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/initialization.json": "2f01ad37bd54601a32f426dd4094011fd848e84215ffa22e9986b861487a9d92",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/initialize.py": "5ae93a50c163704dd679b1cff7afed9a00f953a636a81f456e8546043a2deeb7",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/inspection.json": "8f143e69b1da2c768f957d313ddad45bb40fa2791803d9cddf98a59552beba1b",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/plan.json": "23f15781b6e2f1979604b672b1c08bf2124e65c27f3732d03347e11edd51e282",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/plot.py": "498cdc2ae26037b0cf8cd39667142a8c9eaf33257c9c6807ab58659b0d9b8a5c",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/preflight.json": "97beb9d6b8e6245c682f21d4d14a2a41f36d88c220aeefbdfa1606971731c023",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/protocol-review.json": "13d2ae0368a1e077c678dbc41d8378971e3673879158ba46f2b8e9bbb15ab11b",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/review-addendum.json": "7ded67ea97b1bc999796acce72cca82911126b394ecd97c0728dd2ee8032419a",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/run.py": "c560febe6a9eb1e9f6e6d883121eeebcfa4d5809a3be63ee4c5aaad7bda87835",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/serving.json": "e37d425b601bc031d18ebc498a49e9b069da0594355ac64f00cf124098d92a87",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/study.py": "b0077cca8f7edce0e85a626602fbd1746d12113d3ebf88e4fc9551523e2b6de8",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/teacher-data.json": "cc49a3d9d3b43df70564e7229f68e5129d96570ddc9638143bf876f22bd0e118",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/training-audit.json": "dd14d1b15b481347f435003543330e16d7ad5f876dd4e0d03ee8da4476f2011b",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/verification.json": "53fecda9f07ef4de29eae7d4970cec7f3fe6b346832b03da9f471aa90c8f105a",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/verify_results.py": "3976da7b7125260a965fbeb8667665894f843b18584248b9bd8f65e9bcd209b6",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/warmup-diagnostics.json": "ae00fc0d5921c90ace9d22d470b67a1006d0dcbd008d1fdbb1aab2b58f8fb0f2",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/warmup.png": "40f026bab853411682b4e9a5c5665bf62489ad8d233f1c9ab83a3034deb959c1",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/warmup.svg": "84bb38ed6d60c73329139bb58a9662d03da6d52a57f9ab45fe53ac8c5c3c24aa",
+    "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/warmup_diagnostics.py": "2989b39309c240a7131fb268d08ec53a91fef5e9b88be832244bf6dea62c7503"
+  },
+  "budget": {
+    "evaluation_workers": 16,
+    "ppo_decisions_per_run": 50000,
+    "teacher_collection": 8192,
+    "total_ppo": 300000,
+    "update_threads": 4,
+    "warmup_batch_size": 32,
+    "warmup_updates_per_model": 2000,
+    "workers": 16
+  },
+  "config": {
+    "encounters": [
+      "boss"
+    ],
+    "ppo": {
+      "batch_size": 16,
+      "clip_ratio": 0.2,
+      "entropy_weight": 0.001,
+      "episode_decisions": 512,
+      "episode_seconds": 120.0,
+      "epochs": 2,
+      "gae_lambda": 0.95,
+      "gamma": 1.0,
+      "gradient_clip": 0.5,
+      "learning_rate": 0.0001,
+      "normalize_advantages": true,
+      "rollout_steps": 4096,
+      "target_kl": 0.03,
+      "value_weight": 0.5
+    },
+    "schema": "sts_ppo_experiment_v2",
+    "source": "act1_combat_corpus_v2:01e34face70f278ef2ac3dce531d75ca6b17886232e3be4a6d81f420918ae0c7",
+    "training": {
+      "action_policy": "commit_decisions_v1",
+      "mode": "combat",
+      "reward": {
+        "schema": "sts_training_reward_v1",
+        "weights": {
+          "combat_loss": 0.0,
+          "combat_win": 1.0,
+          "end_turn_action": 0.0,
+          "potion_use_action": 0.0,
+          "win_hp_fraction": 0.1
+        }
+      },
+      "scenario_set": "ironclad_a0_overgrowth_v1"
+    }
+  },
+  "corpus": {
+    "compatibility": {
+      "exact_snapshot_digests": 1297,
+      "implementation": {
+        "build": "3a9391de7d88c467b9ca8fda0bd4da2b684d2dd3ee6eb99144e9846d443064dc",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "1774c49c412fc7fae7c0d0f642927e6d91075c8d73268315baf9f9ef19f5b12b",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "parent_corpus": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-defeat-hp-20261003/corpus/corpus.json",
+      "parent_implementation": {
+        "build": "907db2e4f6e3647c246569935e8185cd5d822fbabd627ecc4b53db78c65cc2a1",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "1774c49c412fc7fae7c0d0f642927e6d91075c8d73268315baf9f9ef19f5b12b",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "parent_registry_sha256": "60186eee9f4c627cbe877690014032338e798a8ea55769d5aa8dc9d2a56cbd88",
+      "parent_sha256": "3beb2fe93a5704270b31816ee19b0fefddba2a758909329178f64455eee2dcd0",
+      "restored_public_starts": {
+        "train": 668,
+        "validation": 267
+      },
+      "script_sha256": "e1d6416add9093d1859d30e5e263d86abb066f9ada1045fe744535e0d2fa6226",
+      "seconds": 22.104698833078146,
+      "semantics": "Same snapshots, source campaigns, splits and public starts. Previously used validation is development data. No new heldout claim.",
+      "status": "complete",
+      "test_snapshots_restored": 0,
+      "unchanged_engine_rules": true
+    },
+    "identity": "act1_combat_corpus_v2:01e34face70f278ef2ac3dce531d75ca6b17886232e3be4a6d81f420918ae0c7",
+    "reserved_test_openings": 57,
+    "sha256": "01e34face70f278ef2ac3dce531d75ca6b17886232e3be4a6d81f420918ae0c7",
+    "test_restored": false,
+    "training_openings": 101,
+    "validation_openings": 42
+  },
+  "date": "2026-10-04",
+  "implementation": {
+    "build": "3a9391de7d88c467b9ca8fda0bd4da2b684d2dd3ee6eb99144e9846d443064dc",
+    "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+    "rules": "1774c49c412fc7fae7c0d0f642927e6d91075c8d73268315baf9f9ef19f5b12b",
+    "target": "sts2-v0.107.1-steam-23811903"
+  },
+  "initial_models": [
+    {
+      "after": {
+        "fit": {
+          "agreement": 0.966796875,
+          "kl": 0.01393698010360822,
+          "value_mse": 0.050037765050187366
+        },
+        "monitor": {
+          "agreement": 0.91796875,
+          "kl": 0.05215751065406948,
+          "value_mse": 0.27003306654400516
+        }
+      },
+      "arm": "control",
+      "before": {
+        "fit": {
+          "agreement": 0.251953125,
+          "kl": 0.8313322886824608,
+          "value_mse": 0.5625170863563229
+        },
+        "monitor": {
+          "agreement": 0.25,
+          "kl": 0.8458656072616577,
+          "value_mse": 0.493233490649743
+        }
+      },
+      "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/initializers/control-a/initial.sts-model",
+      "checkpoint_sha256": "5b8360c4b7c9258b9976424de924533a44988b540dcbd2c519a433d0d104c008",
+      "curve": [
+        {
+          "scores": {
+            "fit": {
+              "agreement": 0.251953125,
+              "kl": 0.8313322886824608,
+              "value_mse": 0.5625170863563229
+            },
+            "monitor": {
+              "agreement": 0.25,
+              "kl": 0.8458656072616577,
+              "value_mse": 0.493233490649743
+            }
+          },
+          "update": 0
+        },
+        {
+          "scores": {
+            "fit": {
+              "agreement": 0.916015625,
+              "kl": 0.06716794543899596,
+              "value_mse": 0.1384095354757694
+            },
+            "monitor": {
+              "agreement": 0.896484375,
+              "kl": 0.11353476135991514,
+              "value_mse": 0.1756226364095425
+            }
+          },
+          "update": 500
+        },
+        {
+          "scores": {
+            "fit": {
+              "agreement": 0.9375,
+              "kl": 0.04112957790493965,
+              "value_mse": 0.1187590496232791
+            },
+            "monitor": {
+              "agreement": 0.8984375,
+              "kl": 0.09665420814417303,
+              "value_mse": 0.17379972411782357
+            }
+          },
+          "update": 1000
+        },
+        {
+          "scores": {
+            "fit": {
+              "agreement": 0.953125,
+              "kl": 0.019884789653588086,
+              "value_mse": 0.06184251812396582
+            },
+            "monitor": {
+              "agreement": 0.919921875,
+              "kl": 0.05580217274837196,
+              "value_mse": 0.2561561425755069
+            }
+          },
+          "update": 1500
+        },
+        {
+          "scores": {
+            "fit": {
+              "agreement": 0.966796875,
+              "kl": 0.01393698010360822,
+              "value_mse": 0.050037765050187366
+            },
+            "monitor": {
+              "agreement": 0.91796875,
+              "kl": 0.05215751065406948,
+              "value_mse": 0.27003306654400516
+            }
+          },
+          "update": 2000
+        }
+      ],
+      "feature_identity": "sts_public_combat_channels_v1:2cc1d615a1259ef5ea8656651fc7d74bbe1b1b8efaf7522e1cf74de0b93fd62d",
+      "label": "control-a",
+      "minibatch_stream_sha256": "9ced5af8bc7332d363f53adcf76619fbfff29e2c9da311bf2ca3159ceaf92ae7",
+      "mlflow_warmup_run": "0d953234948c4dc0a8a1e63216873ad4",
+      "parameters": 93410,
+      "random_state_sha256": "c9020714e257046098ce03674cbf60ab60917390ff1825b8d0dd0ae7186264ca",
+      "resume_sha256": "2c9eab2f671072791eceb71e3c7ec5ed6c021c381076e306a89dc1070a58d100",
+      "seconds": 39.48707679193467,
+      "seed": "a",
+      "strict_restore": true,
+      "vocabulary_names": 488
+    },
+    {
+      "after": {
+        "fit": {
+          "agreement": 0.966796875,
+          "kl": 0.01393702210043557,
+          "value_mse": 0.0500380020226134
+        },
+        "monitor": {
+          "agreement": 0.91796875,
+          "kl": 0.06273987691383809,
+          "value_mse": 0.2797089407146599
+        }
+      },
+      "arm": "identities",
+      "before": {
+        "fit": {
+          "agreement": 0.251953125,
+          "kl": 0.8313322886824608,
+          "value_mse": 0.5625170863563229
+        },
+        "monitor": {
+          "agreement": 0.25,
+          "kl": 0.84587711840868,
+          "value_mse": 0.49299811990251124
+        }
+      },
+      "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/initializers/identities-a/initial.sts-model",
+      "checkpoint_sha256": "30430984109bdc4f5e7fa982141d1cdb4a7f8a87db90895ac19c421d0744a2c9",
+      "curve": [
+        {
+          "scores": {
+            "fit": {
+              "agreement": 0.251953125,
+              "kl": 0.8313322886824608,
+              "value_mse": 0.5625170863563229
+            },
+            "monitor": {
+              "agreement": 0.25,
+              "kl": 0.84587711840868,
+              "value_mse": 0.49299811990251124
+            }
+          },
+          "update": 0
+        },
+        {
+          "scores": {
+            "fit": {
+              "agreement": 0.916015625,
+              "kl": 0.06716794543899596,
+              "value_mse": 0.1384095354757694
+            },
+            "monitor": {
+              "agreement": 0.89453125,
+              "kl": 0.12063513020984828,
+              "value_mse": 0.17559319272606258
+            }
+          },
+          "update": 500
+        },
+        {
+          "scores": {
+            "fit": {
+              "agreement": 0.9375,
+              "kl": 0.04112950072158128,
+              "value_mse": 0.11875903874820803
+            },
+            "monitor": {
+              "agreement": 0.896484375,
+              "kl": 0.10592897911556065,
+              "value_mse": 0.17389130103936523
+            }
+          },
+          "update": 1000
+        },
+        {
+          "scores": {
+            "fit": {
+              "agreement": 0.953125,
+              "kl": 0.01988476747646928,
+              "value_mse": 0.06184248910063789
+            },
+            "monitor": {
+              "agreement": 0.91796875,
+              "kl": 0.0670674885623157,
+              "value_mse": 0.25785356954455624
+            }
+          },
+          "update": 1500
+        },
+        {
+          "scores": {
+            "fit": {
+              "agreement": 0.966796875,
+              "kl": 0.01393702210043557,
+              "value_mse": 0.0500380020226134
+            },
+            "monitor": {
+              "agreement": 0.91796875,
+              "kl": 0.06273987691383809,
+              "value_mse": 0.2797089407146599
+            }
+          },
+          "update": 2000
+        }
+      ],
+      "feature_identity": "sts_public_combat_channels_v1:22b1d6dc2e585355ba95138817221ee3a81f453215ac81e531146a00ab0fee53",
+      "label": "identities-a",
+      "minibatch_stream_sha256": "9ced5af8bc7332d363f53adcf76619fbfff29e2c9da311bf2ca3159ceaf92ae7",
+      "mlflow_warmup_run": "a9f4c0f67a604fef865146f15f4ac3e3",
+      "parameters": 222722,
+      "random_state_sha256": "d9f3f7fe52b3b8769dd23614d5167e89065ab3371d9347f3dd68622f72baad13",
+      "resume_sha256": "f9690fec5470ed9c80efb5e40dd24a1dd31854454e1d665022a5dd0643f227e8",
+      "seconds": 39.258822958916426,
+      "seed": "a",
+      "strict_restore": true,
+      "vocabulary_names": 3182
+    },
+    {
+      "after": {
+        "fit": {
+          "agreement": 0.953125,
+          "kl": 0.021553619590122253,
+          "value_mse": 0.05315247327320694
+        },
+        "monitor": {
+          "agreement": 0.9296875,
+          "kl": 0.05993001931346953,
+          "value_mse": 0.26772166799466146
+        }
+      },
+      "arm": "descriptions",
+      "before": {
+        "fit": {
+          "agreement": 0.251953125,
+          "kl": 0.8301221169531345,
+          "value_mse": 0.5640302504071538
+        },
+        "monitor": {
+          "agreement": 0.25,
+          "kl": 0.8432843014597893,
+          "value_mse": 0.49622539519517056
+        }
+      },
+      "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/initializers/descriptions-a/initial.sts-model",
+      "checkpoint_sha256": "159d381e1fa50ac4392da15292794769cb934457a3fc272b440e7515ee531759",
+      "curve": [
+        {
+          "scores": {
+            "fit": {
+              "agreement": 0.251953125,
+              "kl": 0.8301221169531345,
+              "value_mse": 0.5640302504071538
+            },
+            "monitor": {
+              "agreement": 0.25,
+              "kl": 0.8432843014597893,
+              "value_mse": 0.49622539519517056
+            }
+          },
+          "update": 0
+        },
+        {
+          "scores": {
+            "fit": {
+              "agreement": 0.90234375,
+              "kl": 0.07330293860286474,
+              "value_mse": 0.14572803693096584
+            },
+            "monitor": {
+              "agreement": 0.8828125,
+              "kl": 0.13039501896128058,
+              "value_mse": 0.1746296915760369
+            }
+          },
+          "update": 500
+        },
+        {
+          "scores": {
+            "fit": {
+              "agreement": 0.93359375,
+              "kl": 0.03675980295520276,
+              "value_mse": 0.11755246308865508
+            },
+            "monitor": {
+              "agreement": 0.904296875,
+              "kl": 0.08308069955091923,
+              "value_mse": 0.19698213938320355
+            }
+          },
+          "update": 1000
+        },
+        {
+          "scores": {
+            "fit": {
+              "agreement": 0.953125,
+              "kl": 0.020173981378320605,
+              "value_mse": 0.06319413959640648
+            },
+            "monitor": {
+              "agreement": 0.908203125,
+              "kl": 0.06838880095165223,
+              "value_mse": 0.2557447823095048
+            }
+          },
+          "update": 1500
+        },
+        {
+          "scores": {
+            "fit": {
+              "agreement": 0.953125,
+              "kl": 0.021553619590122253,
+              "value_mse": 0.05315247327320694
+            },
+            "monitor": {
+              "agreement": 0.9296875,
+              "kl": 0.05993001931346953,
+              "value_mse": 0.26772166799466146
+            }
+          },
+          "update": 2000
+        }
+      ],
+      "feature_identity": "sts_public_combat_channels_v1:ecc69b4fb2ca9cde889d3d1bdcafe3b51f47c978851346531b5175a5e2dd7ff0",
+      "label": "descriptions-a",
+      "minibatch_stream_sha256": "9ced5af8bc7332d363f53adcf76619fbfff29e2c9da311bf2ca3159ceaf92ae7",
+      "mlflow_warmup_run": "fc861b72ab764e938207755369aa815b",
+      "parameters": 222722,
+      "random_state_sha256": "d9f3f7fe52b3b8769dd23614d5167e89065ab3371d9347f3dd68622f72baad13",
+      "resume_sha256": "59744abe94bda7ac140ad6cfd0f20eac8b2e8c6601d4233028446ae7c9cb1eeb",
+      "seconds": 39.59594445768744,
+      "seed": "a",
+      "strict_restore": true,
+      "vocabulary_names": 3182
+    },
+    {
+      "after": {
+        "fit": {
+          "agreement": 0.939453125,
+          "kl": 0.036882060347124934,
+          "value_mse": 0.053393830446908194
+        },
+        "monitor": {
+          "agreement": 0.88671875,
+          "kl": 0.0792711484245956,
+          "value_mse": 0.2606044368728964
+        }
+      },
+      "arm": "descriptions",
+      "before": {
+        "fit": {
+          "agreement": 0.263671875,
+          "kl": 0.8471598066389561,
+          "value_mse": 0.660069335444867
+        },
+        "monitor": {
+          "agreement": 0.23828125,
+          "kl": 0.8677160628139973,
+          "value_mse": 0.5761657754165395
+        }
+      },
+      "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/initializers/descriptions-b/initial.sts-model",
+      "checkpoint_sha256": "baa35f6a7ff7da072fdec00875b8431b271c52068d4d1706e88282fa58fe0c7d",
+      "curve": [
+        {
+          "scores": {
+            "fit": {
+              "agreement": 0.263671875,
+              "kl": 0.8471598066389561,
+              "value_mse": 0.660069335444867
+            },
+            "monitor": {
+              "agreement": 0.23828125,
+              "kl": 0.8677160628139973,
+              "value_mse": 0.5761657754165395
+            }
+          },
+          "update": 0
+        },
+        {
+          "scores": {
+            "fit": {
+              "agreement": 0.91015625,
+              "kl": 0.07105614081956446,
+              "value_mse": 0.12389979318678997
+            },
+            "monitor": {
+              "agreement": 0.8828125,
+              "kl": 0.1105224050115794,
+              "value_mse": 0.18635603689077254
+            }
+          },
+          "update": 500
+        },
+        {
+          "scores": {
+            "fit": {
+              "agreement": 0.91796875,
+              "kl": 0.042833622195757926,
+              "value_mse": 0.11150716255972351
+            },
+            "monitor": {
+              "agreement": 0.890625,
+              "kl": 0.07963805308099836,
+              "value_mse": 0.20322874988699507
+            }
+          },
+          "update": 1000
+        },
+        {
+          "scores": {
+            "fit": {
+              "agreement": 0.94921875,
+              "kl": 0.02463893557433039,
+              "value_mse": 0.08333740624026482
+            },
+            "monitor": {
+              "agreement": 0.9140625,
+              "kl": 0.06648453325033188,
+              "value_mse": 0.20915322000304692
+            }
+          },
+          "update": 1500
+        },
+        {
+          "scores": {
+            "fit": {
+              "agreement": 0.939453125,
+              "kl": 0.036882060347124934,
+              "value_mse": 0.053393830446908194
+            },
+            "monitor": {
+              "agreement": 0.88671875,
+              "kl": 0.0792711484245956,
+              "value_mse": 0.2606044368728964
+            }
+          },
+          "update": 2000
+        }
+      ],
+      "feature_identity": "sts_public_combat_channels_v1:ecc69b4fb2ca9cde889d3d1bdcafe3b51f47c978851346531b5175a5e2dd7ff0",
+      "label": "descriptions-b",
+      "minibatch_stream_sha256": "f90d3a8f8b9dc09781dd57382a92f6defee6f686c207e3aae9782355ac5a0d0b",
+      "mlflow_warmup_run": "63d0c0a6ee7040c98e7df898dbfd1015",
+      "parameters": 222722,
+      "random_state_sha256": "f705e802991db12a1f4faf2c3b265d7c70e5de15829a6a284cee6cd9a9e59126",
+      "resume_sha256": "cdc2a7fe7fa0915ecbed9463591b3f2e740a7e2ffbb7aac5f2d70c9aa4c8ec63",
+      "seconds": 39.44712545815855,
+      "seed": "b",
+      "strict_restore": true,
+      "vocabulary_names": 3182
+    },
+    {
+      "after": {
+        "fit": {
+          "agreement": 0.943359375,
+          "kl": 0.031398759078001603,
+          "value_mse": 0.04701607293732788
+        },
+        "monitor": {
+          "agreement": 0.8984375,
+          "kl": 0.07284085149876773,
+          "value_mse": 0.25823529389743266
+        }
+      },
+      "arm": "identities",
+      "before": {
+        "fit": {
+          "agreement": 0.2734375,
+          "kl": 0.8466419577598572,
+          "value_mse": 0.6665018526663692
+        },
+        "monitor": {
+          "agreement": 0.248046875,
+          "kl": 0.8670886717736721,
+          "value_mse": 0.583889599477324
+        }
+      },
+      "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/initializers/identities-b/initial.sts-model",
+      "checkpoint_sha256": "05f0bd9f559ed58b295fa52d482a9ecb8b89f812b5f59ea40e6368c5a02b73fb",
+      "curve": [
+        {
+          "scores": {
+            "fit": {
+              "agreement": 0.2734375,
+              "kl": 0.8466419577598572,
+              "value_mse": 0.6665018526663692
+            },
+            "monitor": {
+              "agreement": 0.248046875,
+              "kl": 0.8670886717736721,
+              "value_mse": 0.583889599477324
+            }
+          },
+          "update": 0
+        },
+        {
+          "scores": {
+            "fit": {
+              "agreement": 0.908203125,
+              "kl": 0.07047658669762313,
+              "value_mse": 0.12704998302595463
+            },
+            "monitor": {
+              "agreement": 0.884765625,
+              "kl": 0.10672641184646636,
+              "value_mse": 0.17659107093273474
+            }
+          },
+          "update": 500
+        },
+        {
+          "scores": {
+            "fit": {
+              "agreement": 0.927734375,
+              "kl": 0.04902492533437908,
+              "value_mse": 0.11514882405537256
+            },
+            "monitor": {
+              "agreement": 0.892578125,
+              "kl": 0.07822349265916273,
+              "value_mse": 0.2069110288158339
+            }
+          },
+          "update": 1000
+        },
+        {
+          "scores": {
+            "fit": {
+              "agreement": 0.947265625,
+              "kl": 0.02477142703719437,
+              "value_mse": 0.07482067588138284
+            },
+            "monitor": {
+              "agreement": 0.9140625,
+              "kl": 0.058236470562405884,
+              "value_mse": 0.2469089662885616
+            }
+          },
+          "update": 1500
+        },
+        {
+          "scores": {
+            "fit": {
+              "agreement": 0.943359375,
+              "kl": 0.031398759078001603,
+              "value_mse": 0.04701607293732788
+            },
+            "monitor": {
+              "agreement": 0.8984375,
+              "kl": 0.07284085149876773,
+              "value_mse": 0.25823529389743266
+            }
+          },
+          "update": 2000
+        }
+      ],
+      "feature_identity": "sts_public_combat_channels_v1:22b1d6dc2e585355ba95138817221ee3a81f453215ac81e531146a00ab0fee53",
+      "label": "identities-b",
+      "minibatch_stream_sha256": "f90d3a8f8b9dc09781dd57382a92f6defee6f686c207e3aae9782355ac5a0d0b",
+      "mlflow_warmup_run": "9a003e0fe0034789b4aa27dcaf13ec8a",
+      "parameters": 222722,
+      "random_state_sha256": "f705e802991db12a1f4faf2c3b265d7c70e5de15829a6a284cee6cd9a9e59126",
+      "resume_sha256": "bcabbebe530624f198e55603e5f81eee37d939da43b842f4fe8266e67db8d7b5",
+      "seconds": 39.27295016590506,
+      "seed": "b",
+      "strict_restore": true,
+      "vocabulary_names": 3182
+    },
+    {
+      "after": {
+        "fit": {
+          "agreement": 0.943359375,
+          "kl": 0.03139852164895274,
+          "value_mse": 0.04701622288990342
+        },
+        "monitor": {
+          "agreement": 0.904296875,
+          "kl": 0.06971172871999443,
+          "value_mse": 0.23556412436799118
+        }
+      },
+      "arm": "control",
+      "before": {
+        "fit": {
+          "agreement": 0.2734375,
+          "kl": 0.8466419577598572,
+          "value_mse": 0.6665018526663692
+        },
+        "monitor": {
+          "agreement": 0.248046875,
+          "kl": 0.8670346289873123,
+          "value_mse": 0.5837735523448359
+        }
+      },
+      "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/initializers/control-b/initial.sts-model",
+      "checkpoint_sha256": "547cfd4d930f141c1cd1abfdc2f8afd0276c64ec6d414d329fa81aa37f4b4e9d",
+      "curve": [
+        {
+          "scores": {
+            "fit": {
+              "agreement": 0.2734375,
+              "kl": 0.8466419577598572,
+              "value_mse": 0.6665018526663692
+            },
+            "monitor": {
+              "agreement": 0.248046875,
+              "kl": 0.8670346289873123,
+              "value_mse": 0.5837735523448359
+            }
+          },
+          "update": 0
+        },
+        {
+          "scores": {
+            "fit": {
+              "agreement": 0.908203125,
+              "kl": 0.07047655223868787,
+              "value_mse": 0.1270499025967057
+            },
+            "monitor": {
+              "agreement": 0.884765625,
+              "kl": 0.10509681119583547,
+              "value_mse": 0.17656464327227844
+            }
+          },
+          "update": 500
+        },
+        {
+          "scores": {
+            "fit": {
+              "agreement": 0.927734375,
+              "kl": 0.04902536328881979,
+              "value_mse": 0.11514880846005789
+            },
+            "monitor": {
+              "agreement": 0.89453125,
+              "kl": 0.07400162681005895,
+              "value_mse": 0.2067643248462478
+            }
+          },
+          "update": 1000
+        },
+        {
+          "scores": {
+            "fit": {
+              "agreement": 0.947265625,
+              "kl": 0.024771531170699745,
+              "value_mse": 0.07481800300487573
+            },
+            "monitor": {
+              "agreement": 0.919921875,
+              "kl": 0.054328704718500376,
+              "value_mse": 0.2304258814590958
+            }
+          },
+          "update": 1500
+        },
+        {
+          "scores": {
+            "fit": {
+              "agreement": 0.943359375,
+              "kl": 0.03139852164895274,
+              "value_mse": 0.04701622288990342
+            },
+            "monitor": {
+              "agreement": 0.904296875,
+              "kl": 0.06971172871999443,
+              "value_mse": 0.23556412436799118
+            }
+          },
+          "update": 2000
+        }
+      ],
+      "feature_identity": "sts_public_combat_channels_v1:2cc1d615a1259ef5ea8656651fc7d74bbe1b1b8efaf7522e1cf74de0b93fd62d",
+      "label": "control-b",
+      "minibatch_stream_sha256": "f90d3a8f8b9dc09781dd57382a92f6defee6f686c207e3aae9782355ac5a0d0b",
+      "mlflow_warmup_run": "46f8c91c9e5a442f8092807f0cc61310",
+      "parameters": 93410,
+      "random_state_sha256": "9ebd62dc8a3f3708829bd1d1dbc78096fb260d1fe505b9e675e47b06ca3ee60f",
+      "resume_sha256": "68e8bf46a071ae4a9cb05a46bf486265d5fb63a0f8f391ba5098b5b3df013890",
+      "seconds": 39.368636791128665,
+      "seed": "b",
+      "strict_restore": true,
+      "vocabulary_names": 488
+    }
+  ],
+  "initialization": "Random weights, paired seeds. One full-sized random network per seed; all common tensors copied and embedding rows mapped by name into each fresh variant. No trained teacher weights used. Fresh native PPO optimizer/RNG/cursor/counters after warm-up.",
+  "initialization_evidence": {
+    "matched_minibatch_streams": true,
+    "matched_random_initialization": true,
+    "minibatch_streams": {
+      "a": "9ced5af8bc7332d363f53adcf76619fbfff29e2c9da311bf2ca3159ceaf92ae7",
+      "b": "f90d3a8f8b9dc09781dd57382a92f6defee6f686c207e3aae9782355ac5a0d0b"
+    },
+    "new_environment_decisions": 8192,
+    "plan_sha256": "23f15781b6e2f1979604b672b1c08bf2124e65c27f3732d03347e11edd51e282",
+    "ppo_decisions": 0,
+    "random_states": {
+      "a": {
+        "control": "c9020714e257046098ce03674cbf60ab60917390ff1825b8d0dd0ae7186264ca",
+        "descriptions": "d9f3f7fe52b3b8769dd23614d5167e89065ab3371d9347f3dd68622f72baad13",
+        "identities": "d9f3f7fe52b3b8769dd23614d5167e89065ab3371d9347f3dd68622f72baad13"
+      },
+      "b": {
+        "control": "9ebd62dc8a3f3708829bd1d1dbc78096fb260d1fe505b9e675e47b06ca3ee60f",
+        "descriptions": "f705e802991db12a1f4faf2c3b265d7c70e5de15829a6a284cee6cd9a9e59126",
+        "identities": "f705e802991db12a1f4faf2c3b265d7c70e5de15829a6a284cee6cd9a9e59126"
+      }
+    },
+    "seconds": 585.8498835829087,
+    "status": "complete",
+    "teacher_data_sha256": "cc49a3d9d3b43df70564e7229f68e5129d96570ddc9638143bf876f22bd0e118",
+    "test_opened": false
+  },
+  "inspector": "http://127.0.0.1:60715/#run=6417afbdb9a644138deb8b9a39036683&step=0",
+  "interpretation": "Complete vocabulary shows a modest greedy-play signal: two additional wins out of 42 in each matched seed, giving 59.5% mean greedy success versus 54.8% for the observed-vocabulary control. This is not corroborated by sampled play (48.8% versus 49.4%) or consistently better paired HP. On shared losses, vocabulary-only leaves Vantom +2.63 / -1.88 HP relative to the controls; on shared wins, player HP changes -1.65 / +0.46. The overall evidence remains preliminary.\n\nAdding descriptions does not help in this pilot: 53.6% mean greedy and 48.2% sampled success. It loses two / three greedy wins per seed against the equal-capacity vocabulary-only models. Training-opening scores are 64/68 for control, 65/65 for vocabulary-only and 61/66 for descriptions.\n\nKeep the selected 250k teacher as the reference (61.9% greedy, 54.8% sampled), while retaining vocabulary-only as the most promising fresh representation candidate. The teacher has a different, larger training history and was previously selected on these validation cases. Two fresh weight seeds sharing one demonstration pool on reused development validation do not establish a general improvement; TEST remains unopened.\n\nThe next controlled experiment should address value-head fitting during warm-up: its error on unused TRAIN campaigns worsens across all three representations despite lower fit error. Compare the existing schedule with shorter or separately fitted critic calibration while holding actor training fixed. This is a diagnostic hypothesis, not a demonstrated cause of the PPO performance changes.\n",
+  "limitations": [
+    "Two fresh weight seeds share one teacher-data sample, with supervised warm-up before PPO; not random-start PPO.",
+    "Teacher was historically validation-selected and uses a larger prior training budget. It is an unmatched reference, not the representation control.",
+    "Repeated development-validation use; no new test confirmation or population-wide claim.",
+    "Complete vocabulary changes token coverage and parameter count; metadata versus vocabulary-only holds capacity fixed.",
+    "Static descriptions are partial mechanical features, not an exact simulator or textual reasoning model.",
+    "The observed-vocabulary control fits names on this TRAIN warm-up partition, not the historical 564-token checkpoint.",
+    "This 50k pilot does not test longer budgets, other bosses or full-run performance."
+  ],
+  "mlflow": {
+    "experiment_id": "17",
+    "overview_run": "9e558071115c4abd99e53b60882fa30d"
+  },
+  "protocol": {
+    "checkpoints": [
+      0,
+      25000,
+      50000
+    ],
+    "primary": "Fixed50k validation greedy wins per paired seed versus fresh observed-vocabulary control. Full descriptions versus vocabulary-only isolates metadata at equal model size.",
+    "secondary": "Sampled wins, paired common-loss bossHP, common-win completed playerHP, unconditional bossHP, TRAIN win rate, warm-up fit/monitor KL and speed.",
+    "selection": "0 means after warm-up before PPO;0/25k diagnostic only. No early stopping, no automatic promotion; TEST closed.",
+    "start_kind": "opening",
+    "train_greedy_at_endpoint": 101,
+    "uncertainty": "Two fresh seeds, one shared teacher-data sample, repeatedly used42-case development validation. Teacher selected historically on these cases and has larger prior budget. This is fresh learners with supervised warm-up, not random-start PPO or independent confirmation.",
+    "validation_greedy": 42,
+    "validation_sampled_repeats_at_endpoint": 2,
+    "workers": 16
+  },
+  "question": "Do complete public vocabulary and static potion/relic descriptions help when fresh graph learners use them from their first update?",
+  "results": {
+    "aggregate": {
+      "control": {
+        "greedy_delta_vs_control_per_seed": [
+          0.0,
+          0.0
+        ],
+        "mean_boss_hp_fraction_all": 0.11815304156344619,
+        "ppo_seconds": 265.9684318129439,
+        "train_greedy_wins": 66,
+        "validation_greedy_wins": 23,
+        "validation_sampled_wins": 41.5,
+        "warmup_seconds": 39.42785679153167
+      },
+      "descriptions": {
+        "greedy_delta_vs_control_per_seed": [
+          0.0,
+          -0.023809523809523808
+        ],
+        "mean_boss_hp_fraction_all": 0.12345169281585466,
+        "ppo_seconds": 272.35389793803915,
+        "train_greedy_wins": 63.5,
+        "validation_greedy_wins": 22.5,
+        "validation_sampled_wins": 40.5,
+        "warmup_seconds": 39.521534957922995
+      },
+      "identities": {
+        "greedy_delta_vs_control_per_seed": [
+          0.047619047619047616,
+          0.047619047619047616
+        ],
+        "mean_boss_hp_fraction_all": 0.11540049545829895,
+        "ppo_seconds": 270.3236070838757,
+        "train_greedy_wins": 65,
+        "validation_greedy_wins": 25,
+        "validation_sampled_wins": 41,
+        "warmup_seconds": 39.26588656241074
+      }
+    },
+    "comparisons": {
+      "control-a": {
+        "greedy_vs_identity_only": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.4667382745537922,
+            0.37150017931569695
+          ],
+          "win_rate_difference": -0.047619047619047616,
+          "wins_only_candidate": 2,
+          "wins_only_identity_only": 4
+        },
+        "greedy_vs_matched_control": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.41911922693474457,
+            0.41911922693474457
+          ],
+          "win_rate_difference": 0.0,
+          "wins_only_candidate": 0,
+          "wins_only_matched_control": 0
+        },
+        "greedy_vs_own_initial": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.5143573221728398,
+            0.32388113169664934
+          ],
+          "win_rate_difference": -0.09523809523809523,
+          "wins_only_candidate": 2,
+          "wins_only_own_initial": 6
+        },
+        "greedy_vs_reference": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.5143573221728398,
+            0.32388113169664934
+          ],
+          "win_rate_difference": -0.09523809523809523,
+          "wins_only_candidate": 3,
+          "wins_only_selected_250k_teacher": 7
+        },
+        "same_outcome_hp_vs_identity_only": {
+          "defeat": {
+            "cases": 16,
+            "mean_hp_delta": -2.625,
+            "mean_hp_fraction_delta": -0.015173410404624268
+          },
+          "victory": {
+            "cases": 20,
+            "mean_hp_delta": 1.65,
+            "mean_hp_fraction_delta": 0.02010649087221095
+          }
+        },
+        "same_outcome_hp_vs_matched_control": {
+          "defeat": {
+            "cases": 20,
+            "mean_hp_delta": 0,
+            "mean_hp_fraction_delta": 0.0
+          },
+          "victory": {
+            "cases": 22,
+            "mean_hp_delta": 0,
+            "mean_hp_fraction_delta": 0.0
+          }
+        },
+        "same_outcome_hp_vs_reference": {
+          "defeat": {
+            "cases": 13,
+            "mean_hp_delta": -0.9230769230769231,
+            "mean_hp_fraction_delta": -0.00533570475767007
+          },
+          "victory": {
+            "cases": 19,
+            "mean_hp_delta": 1.0526315789473684,
+            "mean_hp_fraction_delta": 0.013338048468026052
+          }
+        },
+        "sampled_vs_identity_only": {
+          "cases": 84,
+          "difference_group_hoeffding_95": [
+            -0.40721446502998265,
+            0.4310239888395065
+          ],
+          "win_rate_difference": 0.011904761904761904,
+          "wins_only_candidate": 7,
+          "wins_only_identity_only": 6
+        },
+        "sampled_vs_matched_control": {
+          "cases": 84,
+          "difference_group_hoeffding_95": [
+            -0.41911922693474457,
+            0.41911922693474457
+          ],
+          "win_rate_difference": 0.0,
+          "wins_only_candidate": 0,
+          "wins_only_matched_control": 0
+        }
+      },
+      "control-b": {
+        "greedy_vs_identity_only": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.4667382745537922,
+            0.37150017931569695
+          ],
+          "win_rate_difference": -0.047619047619047616,
+          "wins_only_candidate": 0,
+          "wins_only_identity_only": 2
+        },
+        "greedy_vs_matched_control": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.41911922693474457,
+            0.41911922693474457
+          ],
+          "win_rate_difference": 0.0,
+          "wins_only_candidate": 0,
+          "wins_only_matched_control": 0
+        },
+        "greedy_vs_own_initial": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.37150017931569695,
+            0.4667382745537922
+          ],
+          "win_rate_difference": 0.047619047619047616,
+          "wins_only_candidate": 3,
+          "wins_only_own_initial": 1
+        },
+        "greedy_vs_reference": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.4667382745537922,
+            0.37150017931569695
+          ],
+          "win_rate_difference": -0.047619047619047616,
+          "wins_only_candidate": 2,
+          "wins_only_selected_250k_teacher": 4
+        },
+        "same_outcome_hp_vs_identity_only": {
+          "defeat": {
+            "cases": 16,
+            "mean_hp_delta": 1.875,
+            "mean_hp_fraction_delta": 0.010838150289017343
+          },
+          "victory": {
+            "cases": 24,
+            "mean_hp_delta": -0.4583333333333333,
+            "mean_hp_fraction_delta": -0.0056014527458493005
+          }
+        },
+        "same_outcome_hp_vs_matched_control": {
+          "defeat": {
+            "cases": 18,
+            "mean_hp_delta": 0,
+            "mean_hp_fraction_delta": 0.0
+          },
+          "victory": {
+            "cases": 24,
+            "mean_hp_delta": 0,
+            "mean_hp_fraction_delta": 0.0
+          }
+        },
+        "same_outcome_hp_vs_reference": {
+          "defeat": {
+            "cases": 14,
+            "mean_hp_delta": -5.071428571428571,
+            "mean_hp_fraction_delta": -0.029314616019818336
+          },
+          "victory": {
+            "cases": 22,
+            "mean_hp_delta": -1.5,
+            "mean_hp_fraction_delta": -0.018064263322884015
+          }
+        },
+        "sampled_vs_identity_only": {
+          "cases": 84,
+          "difference_group_hoeffding_95": [
+            -0.41911922693474457,
+            0.41911922693474457
+          ],
+          "win_rate_difference": 0.0,
+          "wins_only_candidate": 5,
+          "wins_only_identity_only": 5
+        },
+        "sampled_vs_matched_control": {
+          "cases": 84,
+          "difference_group_hoeffding_95": [
+            -0.41911922693474457,
+            0.41911922693474457
+          ],
+          "win_rate_difference": 0.0,
+          "wins_only_candidate": 0,
+          "wins_only_matched_control": 0
+        }
+      },
+      "descriptions-a": {
+        "greedy_vs_identity_only": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.4667382745537922,
+            0.37150017931569695
+          ],
+          "win_rate_difference": -0.047619047619047616,
+          "wins_only_candidate": 2,
+          "wins_only_identity_only": 4
+        },
+        "greedy_vs_matched_control": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.41911922693474457,
+            0.41911922693474457
+          ],
+          "win_rate_difference": 0.0,
+          "wins_only_candidate": 4,
+          "wins_only_matched_control": 4
+        },
+        "greedy_vs_own_initial": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.4667382745537922,
+            0.37150017931569695
+          ],
+          "win_rate_difference": -0.047619047619047616,
+          "wins_only_candidate": 2,
+          "wins_only_own_initial": 4
+        },
+        "greedy_vs_reference": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.5143573221728398,
+            0.32388113169664934
+          ],
+          "win_rate_difference": -0.09523809523809523,
+          "wins_only_candidate": 2,
+          "wins_only_selected_250k_teacher": 6
+        },
+        "same_outcome_hp_vs_identity_only": {
+          "defeat": {
+            "cases": 16,
+            "mean_hp_delta": -5,
+            "mean_hp_fraction_delta": -0.02890173410404624
+          },
+          "victory": {
+            "cases": 20,
+            "mean_hp_delta": -1.1,
+            "mean_hp_fraction_delta": -0.013247126436781612
+          }
+        },
+        "same_outcome_hp_vs_matched_control": {
+          "defeat": {
+            "cases": 16,
+            "mean_hp_delta": 1.5,
+            "mean_hp_fraction_delta": 0.008670520231213869
+          },
+          "victory": {
+            "cases": 18,
+            "mean_hp_delta": -2.1666666666666665,
+            "mean_hp_fraction_delta": -0.026116088197731206
+          }
+        },
+        "same_outcome_hp_vs_reference": {
+          "defeat": {
+            "cases": 14,
+            "mean_hp_delta": -6.214285714285714,
+            "mean_hp_fraction_delta": -0.035920726672171756
+          },
+          "victory": {
+            "cases": 20,
+            "mean_hp_delta": -1.45,
+            "mean_hp_fraction_delta": -0.01683189655172414
+          }
+        },
+        "sampled_vs_identity_only": {
+          "cases": 84,
+          "difference_group_hoeffding_95": [
+            -0.40721446502998265,
+            0.4310239888395065
+          ],
+          "win_rate_difference": 0.011904761904761904,
+          "wins_only_candidate": 7,
+          "wins_only_identity_only": 6
+        },
+        "sampled_vs_matched_control": {
+          "cases": 84,
+          "difference_group_hoeffding_95": [
+            -0.41911922693474457,
+            0.41911922693474457
+          ],
+          "win_rate_difference": 0.0,
+          "wins_only_candidate": 7,
+          "wins_only_matched_control": 7
+        }
+      },
+      "descriptions-b": {
+        "greedy_vs_identity_only": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.49054779836331597,
+            0.3476906555061732
+          ],
+          "win_rate_difference": -0.07142857142857142,
+          "wins_only_candidate": 0,
+          "wins_only_identity_only": 3
+        },
+        "greedy_vs_matched_control": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.4429287507442684,
+            0.39530970312522073
+          ],
+          "win_rate_difference": -0.023809523809523808,
+          "wins_only_candidate": 2,
+          "wins_only_matched_control": 3
+        },
+        "greedy_vs_own_initial": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.4429287507442684,
+            0.39530970312522073
+          ],
+          "win_rate_difference": -0.023809523809523808,
+          "wins_only_candidate": 4,
+          "wins_only_own_initial": 5
+        },
+        "greedy_vs_reference": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.49054779836331597,
+            0.3476906555061732
+          ],
+          "win_rate_difference": -0.07142857142857142,
+          "wins_only_candidate": 2,
+          "wins_only_selected_250k_teacher": 5
+        },
+        "same_outcome_hp_vs_identity_only": {
+          "defeat": {
+            "cases": 16,
+            "mean_hp_delta": 7.3125,
+            "mean_hp_fraction_delta": 0.04226878612716764
+          },
+          "victory": {
+            "cases": 23,
+            "mean_hp_delta": 0.8260869565217391,
+            "mean_hp_fraction_delta": 0.010140762951857401
+          }
+        },
+        "same_outcome_hp_vs_matched_control": {
+          "defeat": {
+            "cases": 16,
+            "mean_hp_delta": 5.4375,
+            "mean_hp_fraction_delta": 0.0314306358381503
+          },
+          "victory": {
+            "cases": 21,
+            "mean_hp_delta": 1.2380952380952381,
+            "mean_hp_fraction_delta": 0.015127257799671594
+          }
+        },
+        "same_outcome_hp_vs_reference": {
+          "defeat": {
+            "cases": 14,
+            "mean_hp_delta": 0.2857142857142857,
+            "mean_hp_fraction_delta": 0.001651527663088363
+          },
+          "victory": {
+            "cases": 21,
+            "mean_hp_delta": -0.2857142857142857,
+            "mean_hp_fraction_delta": -0.0032019704433497533
+          }
+        },
+        "sampled_vs_identity_only": {
+          "cases": 84,
+          "difference_group_hoeffding_95": [
+            -0.4429287507442684,
+            0.39530970312522073
+          ],
+          "win_rate_difference": -0.023809523809523808,
+          "wins_only_candidate": 6,
+          "wins_only_identity_only": 8
+        },
+        "sampled_vs_matched_control": {
+          "cases": 84,
+          "difference_group_hoeffding_95": [
+            -0.4429287507442684,
+            0.39530970312522073
+          ],
+          "win_rate_difference": -0.023809523809523808,
+          "wins_only_candidate": 5,
+          "wins_only_matched_control": 7
+        }
+      },
+      "identities-a": {
+        "greedy_vs_identity_only": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.41911922693474457,
+            0.41911922693474457
+          ],
+          "win_rate_difference": 0.0,
+          "wins_only_candidate": 0,
+          "wins_only_identity_only": 0
+        },
+        "greedy_vs_matched_control": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.37150017931569695,
+            0.4667382745537922
+          ],
+          "win_rate_difference": 0.047619047619047616,
+          "wins_only_candidate": 4,
+          "wins_only_matched_control": 2
+        },
+        "greedy_vs_own_initial": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.4429287507442684,
+            0.39530970312522073
+          ],
+          "win_rate_difference": -0.023809523809523808,
+          "wins_only_candidate": 1,
+          "wins_only_own_initial": 2
+        },
+        "greedy_vs_reference": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.4667382745537922,
+            0.37150017931569695
+          ],
+          "win_rate_difference": -0.047619047619047616,
+          "wins_only_candidate": 2,
+          "wins_only_selected_250k_teacher": 4
+        },
+        "same_outcome_hp_vs_identity_only": {
+          "defeat": {
+            "cases": 18,
+            "mean_hp_delta": 0,
+            "mean_hp_fraction_delta": 0.0
+          },
+          "victory": {
+            "cases": 24,
+            "mean_hp_delta": 0,
+            "mean_hp_fraction_delta": 0.0
+          }
+        },
+        "same_outcome_hp_vs_matched_control": {
+          "defeat": {
+            "cases": 16,
+            "mean_hp_delta": 2.625,
+            "mean_hp_fraction_delta": 0.015173410404624268
+          },
+          "victory": {
+            "cases": 20,
+            "mean_hp_delta": -1.65,
+            "mean_hp_fraction_delta": -0.02010649087221095
+          }
+        },
+        "same_outcome_hp_vs_reference": {
+          "defeat": {
+            "cases": 14,
+            "mean_hp_delta": -1.5714285714285714,
+            "mean_hp_fraction_delta": -0.009083402146985966
+          },
+          "victory": {
+            "cases": 22,
+            "mean_hp_delta": -0.22727272727272727,
+            "mean_hp_fraction_delta": -0.0022139498432601854
+          }
+        },
+        "sampled_vs_identity_only": {
+          "cases": 84,
+          "difference_group_hoeffding_95": [
+            -0.41911922693474457,
+            0.41911922693474457
+          ],
+          "win_rate_difference": 0.0,
+          "wins_only_candidate": 0,
+          "wins_only_identity_only": 0
+        },
+        "sampled_vs_matched_control": {
+          "cases": 84,
+          "difference_group_hoeffding_95": [
+            -0.4310239888395065,
+            0.40721446502998265
+          ],
+          "win_rate_difference": -0.011904761904761904,
+          "wins_only_candidate": 6,
+          "wins_only_matched_control": 7
+        }
+      },
+      "identities-b": {
+        "greedy_vs_identity_only": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.41911922693474457,
+            0.41911922693474457
+          ],
+          "win_rate_difference": 0.0,
+          "wins_only_candidate": 0,
+          "wins_only_identity_only": 0
+        },
+        "greedy_vs_matched_control": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.37150017931569695,
+            0.4667382745537922
+          ],
+          "win_rate_difference": 0.047619047619047616,
+          "wins_only_candidate": 2,
+          "wins_only_matched_control": 0
+        },
+        "greedy_vs_own_initial": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.32388113169664934,
+            0.5143573221728398
+          ],
+          "win_rate_difference": 0.09523809523809523,
+          "wins_only_candidate": 5,
+          "wins_only_own_initial": 1
+        },
+        "greedy_vs_reference": {
+          "cases": 42,
+          "difference_group_hoeffding_95": [
+            -0.41911922693474457,
+            0.41911922693474457
+          ],
+          "win_rate_difference": 0.0,
+          "wins_only_candidate": 3,
+          "wins_only_selected_250k_teacher": 3
+        },
+        "same_outcome_hp_vs_identity_only": {
+          "defeat": {
+            "cases": 16,
+            "mean_hp_delta": 0,
+            "mean_hp_fraction_delta": 0.0
+          },
+          "victory": {
+            "cases": 26,
+            "mean_hp_delta": 0,
+            "mean_hp_fraction_delta": 0.0
+          }
+        },
+        "same_outcome_hp_vs_matched_control": {
+          "defeat": {
+            "cases": 16,
+            "mean_hp_delta": -1.875,
+            "mean_hp_fraction_delta": -0.010838150289017343
+          },
+          "victory": {
+            "cases": 24,
+            "mean_hp_delta": 0.4583333333333333,
+            "mean_hp_fraction_delta": 0.0056014527458493005
+          }
+        },
+        "same_outcome_hp_vs_reference": {
+          "defeat": {
+            "cases": 13,
+            "mean_hp_delta": -9.23076923076923,
+            "mean_hp_fraction_delta": -0.05335704757670076
+          },
+          "victory": {
+            "cases": 23,
+            "mean_hp_delta": -0.9565217391304348,
+            "mean_hp_fraction_delta": -0.011433866400133264
+          }
+        },
+        "sampled_vs_identity_only": {
+          "cases": 84,
+          "difference_group_hoeffding_95": [
+            -0.41911922693474457,
+            0.41911922693474457
+          ],
+          "win_rate_difference": 0.0,
+          "wins_only_candidate": 0,
+          "wins_only_identity_only": 0
+        },
+        "sampled_vs_matched_control": {
+          "cases": 84,
+          "difference_group_hoeffding_95": [
+            -0.41911922693474457,
+            0.41911922693474457
+          ],
+          "win_rate_difference": 0.0,
+          "wins_only_candidate": 5,
+          "wins_only_matched_control": 5
+        }
+      }
+    },
+    "completion_sha256": "8fa7c9271eaa68ba19b29f368c3d975be09cfca0d0e6b679b8e23d6366c45c0d",
+    "evaluation_games": 1992,
+    "hp_definition": "Winning HP uses canonical completed CombatSummary after post-combat hooks, matching the reward. Raw evaluation player_hp is before those hooks and is not used for the headline metric. Boss HP comes from the retained stable enemy slot.",
+    "interpretation": "Exploratory two-seed fresh catalog-representation pilot. All networks begin with matched random weights and receive the same TRAIN-only teacher warm-up. Vocabulary is fitted only on the TRAIN fit partition; catalog arms add static public knowledge. Evaluation at0 means after warm-up, before PPO. Final 50k is primary; 0/25k are diagnostics. The parent was previously selected on this reused validation and every arm uses its TRAIN action targets, but none copies its weights. No independent test confirmation. Conditional HP means can change when win/loss populations change; common-outcome deltas are paired.",
+    "protocol_sha256": "23f15781b6e2f1979604b672b1c08bf2124e65c27f3732d03347e11edd51e282",
+    "reference": {
+      "validation": {
+        "greedy": {
+          "attempted": 42,
+          "cutoffs": 0,
+          "failures": 0,
+          "hp_change_observations": 42,
+          "losses": 16,
+          "mean_boss_hp_fraction_all": 0.1184971098265896,
+          "mean_boss_hp_fraction_on_loss": 0.31105491329479773,
+          "mean_boss_hp_on_loss": 53.8125,
+          "mean_final_turn_observed": 7.380952380952381,
+          "mean_hp_change_observed": -54.45238095238095,
+          "mean_hp_fraction_on_win": 0.2624910065706212,
+          "mean_hp_on_win": 22.03846153846154,
+          "mean_player_hp_fraction_on_win": 0.18496071063261732,
+          "mean_player_hp_on_win": 15.576923076923077,
+          "mean_task_return": 0.6352970623115145,
+          "planned": 42,
+          "potion_use_actions": 17,
+          "source_groups": 42,
+          "steps": 1236,
+          "unattempted": 0,
+          "win_rate": 0.6190476190476191,
+          "win_rate_group_hoeffding_95": [
+            0.4094880055802468,
+            0.8286072325149914
+          ],
+          "wins": 26
+        },
+        "sampled": {
+          "attempted": 84,
+          "cutoffs": 0,
+          "failures": 0,
+          "hp_change_observations": 84,
+          "losses": 38,
+          "mean_boss_hp_fraction_all": 0.13714560968896225,
+          "mean_boss_hp_fraction_on_loss": 0.3031639793124429,
+          "mean_boss_hp_on_loss": 52.44736842105263,
+          "mean_final_turn_observed": 7.416666666666667,
+          "mean_hp_change_observed": -56.55952380952381,
+          "mean_hp_fraction_on_win": 0.25247498799619794,
+          "mean_hp_on_win": 21.065217391304348,
+          "mean_player_hp_fraction_on_win": 0.18000093090709543,
+          "mean_player_hp_on_win": 15.065217391304348,
+          "mean_task_return": 0.5614450588664583,
+          "planned": 84,
+          "potion_use_actions": 34,
+          "source_groups": 42,
+          "steps": 2471,
+          "unattempted": 0,
+          "win_rate": 0.5476190476190477,
+          "win_rate_group_hoeffding_95": [
+            0.3380594341516754,
+            0.75717866108642
+          ],
+          "wins": 46
+        }
+      }
+    },
+    "rows": [
+      {
+        "arm": "control",
+        "boss_hp_fraction_on_loss": 0.2557803468208092,
+        "boss_hp_on_loss": 44.25,
+        "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/ppo/control-a/chunk-04/final.sts-model",
+        "greedy_win_curve": {
+          "0": 26,
+          "25000": 25,
+          "50000": 22
+        },
+        "label": "control-a",
+        "mean_boss_hp_fraction_all": 0.12180016515276629,
+        "mlflow_run": "117e092d54f6410eb6f64eccc3b32d69",
+        "parameters": 93410,
+        "player_hp_fraction_on_win": 0.2940908834798287,
+        "player_hp_on_win": 24.545454545454547,
+        "ppo_seconds": 264.4802940422669,
+        "ppo_wall_seconds": 277.6255400837399,
+        "seed": "a",
+        "train_greedy_cutoffs": 0,
+        "train_greedy_wins": 64,
+        "validation_greedy_cutoffs": 0,
+        "validation_greedy_wins": 22,
+        "validation_sampled_cutoffs": 0,
+        "validation_sampled_wins": 41,
+        "warmup_seconds": 39.48707679193467
+      },
+      {
+        "arm": "identities",
+        "boss_hp_fraction_on_loss": 0.2957610789980733,
+        "boss_hp_on_loss": 51.166666666666664,
+        "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/ppo/identities-a/chunk-04/final.sts-model",
+        "greedy_win_curve": {
+          "0": 25,
+          "25000": 25,
+          "50000": 24
+        },
+        "label": "identities-a",
+        "mean_boss_hp_fraction_all": 0.12675474814203141,
+        "mlflow_run": "95eb0998a1b2439a8dbef57d1a6e134b",
+        "parameters": 222722,
+        "player_hp_fraction_on_win": 0.2863827379610849,
+        "player_hp_on_win": 23.916666666666668,
+        "ppo_seconds": 270.59586687525734,
+        "ppo_wall_seconds": 283.9326103334315,
+        "seed": "a",
+        "train_greedy_cutoffs": 0,
+        "train_greedy_wins": 65,
+        "validation_greedy_cutoffs": 0,
+        "validation_greedy_wins": 24,
+        "validation_sampled_cutoffs": 0,
+        "validation_sampled_wins": 40,
+        "warmup_seconds": 39.258822958916426
+      },
+      {
+        "arm": "descriptions",
+        "boss_hp_fraction_on_loss": 0.26416184971098267,
+        "boss_hp_on_loss": 45.7,
+        "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/ppo/descriptions-a/chunk-04/final.sts-model",
+        "greedy_win_curve": {
+          "0": 24,
+          "25000": 21,
+          "50000": 22
+        },
+        "label": "descriptions-a",
+        "mean_boss_hp_fraction_all": 0.12579135700522984,
+        "mlflow_run": "5ce58a56be14487893eff7b48d4c003f",
+        "parameters": 222722,
+        "player_hp_fraction_on_win": 0.2812078697727785,
+        "player_hp_on_win": 23.59090909090909,
+        "ppo_seconds": 271.47649258421734,
+        "ppo_wall_seconds": 284.49325287435204,
+        "seed": "a",
+        "train_greedy_cutoffs": 0,
+        "train_greedy_wins": 61,
+        "validation_greedy_cutoffs": 0,
+        "validation_greedy_wins": 22,
+        "validation_sampled_cutoffs": 0,
+        "validation_sampled_wins": 41,
+        "warmup_seconds": 39.59594445768744
+      },
+      {
+        "arm": "descriptions",
+        "boss_hp_fraction_on_loss": 0.267721326437481,
+        "boss_hp_on_loss": 46.31578947368421,
+        "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/ppo/descriptions-b/chunk-04/final.sts-model",
+        "greedy_win_curve": {
+          "0": 24,
+          "25000": 23,
+          "50000": 23
+        },
+        "label": "descriptions-b",
+        "mean_boss_hp_fraction_all": 0.12111202862647949,
+        "mlflow_run": "09a2305d8028497791062b6e3022ec34",
+        "parameters": 222722,
+        "player_hp_fraction_on_win": 0.26783275029152087,
+        "player_hp_on_win": 22.47826086956522,
+        "ppo_seconds": 273.23130329186097,
+        "ppo_wall_seconds": 286.9814406260848,
+        "seed": "b",
+        "train_greedy_cutoffs": 0,
+        "train_greedy_wins": 66,
+        "validation_greedy_cutoffs": 0,
+        "validation_greedy_wins": 23,
+        "validation_sampled_cutoffs": 0,
+        "validation_sampled_wins": 40,
+        "warmup_seconds": 39.44712545815855
+      },
+      {
+        "arm": "identities",
+        "boss_hp_fraction_on_loss": 0.273121387283237,
+        "boss_hp_on_loss": 47.25,
+        "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/ppo/identities-b/chunk-04/final.sts-model",
+        "greedy_win_curve": {
+          "0": 22,
+          "25000": 23,
+          "50000": 26
+        },
+        "label": "identities-b",
+        "mean_boss_hp_fraction_all": 0.10404624277456646,
+        "mlflow_run": "91a466f2cccd4a37b183da9ad3749309",
+        "parameters": 222722,
+        "player_hp_fraction_on_win": 0.27187797975069783,
+        "player_hp_on_win": 22.73076923076923,
+        "ppo_seconds": 270.05134729249403,
+        "ppo_wall_seconds": 283.1366602508351,
+        "seed": "b",
+        "train_greedy_cutoffs": 0,
+        "train_greedy_wins": 65,
+        "validation_greedy_cutoffs": 0,
+        "validation_greedy_wins": 26,
+        "validation_sampled_cutoffs": 0,
+        "validation_sampled_wins": 42,
+        "warmup_seconds": 39.27295016590506
+      },
+      {
+        "arm": "control",
+        "boss_hp_fraction_on_loss": 0.2671804752729609,
+        "boss_hp_on_loss": 46.22222222222222,
+        "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004/ppo/control-b/chunk-04/final.sts-model",
+        "greedy_win_curve": {
+          "0": 22,
+          "25000": 22,
+          "50000": 24
+        },
+        "label": "control-b",
+        "mean_boss_hp_fraction_all": 0.1145059179741261,
+        "mlflow_run": "218af6a17ca14d1c9733b17b601bd2a2",
+        "parameters": 93410,
+        "player_hp_fraction_on_win": 0.2742060138231538,
+        "player_hp_on_win": 22.958333333333332,
+        "ppo_seconds": 267.4565695836209,
+        "ppo_wall_seconds": 280.9363842927851,
+        "seed": "b",
+        "train_greedy_cutoffs": 0,
+        "train_greedy_wins": 68,
+        "validation_greedy_cutoffs": 0,
+        "validation_greedy_wins": 24,
+        "validation_sampled_cutoffs": 0,
+        "validation_sampled_wins": 42,
+        "warmup_seconds": 39.368636791128665
+      }
+    ],
+    "status": "complete",
+    "test_opened": false
+  },
+  "root": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-fresh-20261004",
+  "schema": "sts_vantom_fresh_catalog_representation_evidence_v1",
+  "status": "complete",
+  "teacher": {
+    "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-training-20261002/ppo/chunk-20/final.sts-model",
+    "role": "Teacher and unmatched historical reference only; no weights copied",
+    "sha256": "4da8789591fc9379522b3b30745bb6b6615ee53bb4bfc21215affecf28dfae6a",
+    "specialist_ppo_decisions": 250000
+  },
+  "teacher_data": {
+    "collection_and_encoding_seconds": 347.1496165827848,
+    "completed_value_targets": 7726,
+    "cutoff_value_targets_excluded": 466,
+    "environment_decisions": 8192,
+    "fit_decisions": 6755,
+    "max_recomputed_action_log_probability_error": 2.86102294921875e-06,
+    "monitor_decisions": 1437,
+    "plan_sha256": "23f15781b6e2f1979604b672b1c08bf2124e65c27f3732d03347e11edd51e282",
+    "source": "train",
+    "status": "complete",
+    "teacher_sha256": "4da8789591fc9379522b3b30745bb6b6615ee53bb4bfc21215affecf28dfae6a",
+    "training_fights": 95,
+    "vocabularies": {
+      "control": {
+        "catalog_identity": null,
+        "identity": "sts_learned_public_graph_v1:9bc0dc0d09c2bf9338420e4d0ba984585e61d1859cbea3704e87108b27ee4658",
+        "names": 488
+      },
+      "descriptions": {
+        "catalog_identity": "sts_public_feature_catalog_v1:5df26b4afc2a3d43a9f521edbac8c1633c6ae681b2e6ae7e83c6423ecbf2ea43",
+        "identity": "sts_learned_public_graph_v2:ee72d6cca857aa45d1b72516a7dd5f49f764ca04f95f1bd28795a88bbbdb4628",
+        "names": 3182
+      },
+      "identities": {
+        "catalog_identity": "sts_public_feature_catalog_v1:dde51b3787fb639b94d3ec60e38dd404aa8c529182f58b6a236cdffffdfddc78",
+        "identity": "sts_learned_public_graph_v2:d8b128d7f90c3991d41e80c7eb767483c41005aacadd1d88f755e710dd8297f0",
+        "names": 3182
+      }
+    },
+    "vocabulary_fit": "TRAIN fit partition only; monitor never fitted"
+  },
+  "timings": {
+    "initialization_seconds": 585.8498835829087,
+    "inspector_export_seconds": 23.191200332716107,
+    "observed_preparation_wall_seconds": 486.3241741657257,
+    "pilot_runner_seconds": 2586.512520249933,
+    "ppo_seconds": 1617.2918736697175,
+    "preflight_seconds": 2.0237157908268273,
+    "preparation_scope": "First recorded task clock to frozen protocol, including inspection, experiment implementation, preflight and overlapping independent review; review time not measured separately.",
+    "replay_seconds": 107.71728566661477,
+    "training_audit_seconds": 8.882046082988381
+  },
+  "variants": {
+    "control": "Vocabulary fitted on TRAIN teacher-fit decisions; no catalog or metadata",
+    "descriptions": "Same full vocabulary and model size as identities; frozen public potion/relic description fields",
+    "identities": "Same observed names plus complete frozen public vocabulary; metadata fields empty"
+  },
+  "verification": {
+    "canonical_training_joins": 72,
+    "checked_training_rewards": 300000,
+    "exact_replay_decisions": 58933,
+    "exact_replay_games": 1992,
+    "independent_protocol_review": {
+      "blockers": [],
+      "checks": [
+        "Matched random family and embedding-name mapping",
+        "TRAIN fit-only vocabulary",
+        "Shared soft targets, legal masks and minibatch streams",
+        "Fresh native PPO state",
+        "Active corpus and 21 inherited reservation digests",
+        "Unchanged accepted evaluator",
+        "Weighted warm-up probe metrics",
+        "Static compilation"
+      ],
+      "corrections": [
+        "Bound preflight.py as well as result",
+        "Weighted diagnostic KL/agreement by rows and value MSE by finite value targets"
+      ],
+      "created_unix": 1791118283.4279559,
+      "limits": [
+        "Two fresh weight seeds share one teacher dataset",
+        "Repeated development validation",
+        "Teacher has unmatched prior budget",
+        "Vocabulary expansion increases parameter count"
+      ],
+      "reviewed": {
+        "evaluate.py": "f4b4e35124f5c638cf8e1aa4116a2e320c7502f5ab60594e9c3147f5cc1f8d3c",
+        "freeze.py": "e8484d7e2d1162cb8835517a3e20bf0185387cd204572aaf24bbc7e2860c91ab",
+        "initialize.py": "5ae93a50c163704dd679b1cff7afed9a00f953a636a81f456e8546043a2deeb7",
+        "preflight.json": "97beb9d6b8e6245c682f21d4d14a2a41f36d88c220aeefbdfa1606971731c023",
+        "preflight.py": "e91607645f95773ae1c72ddd146963290245a820beebaab8e988144e07db97c3",
+        "run.py": "c560febe6a9eb1e9f6e6d883121eeebcfa4d5809a3be63ee4c5aaad7bda87835",
+        "study.py": "b0077cca8f7edce0e85a626602fbd1746d12113d3ebf88e4fc9551523e2b6de8"
+      },
+      "reviewer": "/root/nongraph_review",
+      "status": "complete"
+    },
+    "matched_minibatch_streams": true,
+    "matched_random_initialization": true,
+    "review_addendum": {
+      "bindings": {
+        "analysis.json": "741c7b1e483f91ffc3920dfd48c0b09304139f0b211e20365b2a96ef0ad4694f",
+        "inspection.json": "8f143e69b1da2c768f957d313ddad45bb40fa2791803d9cddf98a59552beba1b",
+        "serving.json": "e37d425b601bc031d18ebc498a49e9b069da0594355ac64f00cf124098d92a87",
+        "training-audit.json": "dd14d1b15b481347f435003543330e16d7ad5f876dd4e0d03ee8da4476f2011b",
+        "verification.json": "53fecda9f07ef4de29eae7d4970cec7f3fe6b346832b03da9f471aa90c8f105a",
+        "warmup-diagnostics.json": "ae00fc0d5921c90ace9d22d470b67a1006d0dcbd008d1fdbb1aab2b58f8fb0f2"
+      },
+      "blockers": [],
+      "checks": {
+        "all_training_decisions": 300000,
+        "canonical_training_joins": 72,
+        "exact_native_replay_actions": 58933,
+        "exact_native_replay_games": 1992,
+        "failed_or_truncated_evaluations": 0,
+        "inspector_traces": 294,
+        "plots_visually_checked": [
+          "comparison.png",
+          "warmup.png"
+        ],
+        "same_state_model_decisions": 24,
+        "strict_final_resumes": 6
+      },
+      "created_unix": 1791121034.7264042,
+      "limitations": "Two fresh seeds, one shared teacher-data sample, repeatedly used42-case development validation. Teacher selected historically on these cases and has larger prior budget. This is fresh learners with supervised warm-up, not random-start PPO or independent confirmation.",
+      "post_protocol_changes": "No training, evaluation or initialization changes after protocol freeze. Additional analysis/plots summarize fixed results and warm-up curves; no retraining or checkpoint selection.",
+      "review": "Author final results and artifact review; independent protocol review remains bound by plan.",
+      "status": "complete"
+    },
+    "strict_final_resumes": true
+  },
+  "warmup": {
+    "monitor": "Not fitted and not used for selection or early stopping. All TRAIN cases available to subsequent PPO.",
+    "objective": "KL(teacher || student) + .25 * completed-episode Monte Carlo value MSE; cutoff steps have policy targets but no value target.",
+    "optimizer": "Adam lr.001,foreach false,gradient clip1; 2000 updates,batch32,same minibatch-index stream within seed.",
+    "source": "One shared8192-decision TRAIN-only teacher sample. Deterministic source-campaign80/20 fit/monitor split; vocabulary fit on fit partition only."
+  },
+  "warmup_diagnostics": {
+    "aggregate": {
+      "control": {
+        "fit_kl": {
+          "0": 0.838987123221159,
+          "1000": 0.04507747059687972,
+          "1500": 0.022328160412143916,
+          "2000": 0.02266775087628048,
+          "500": 0.06882224883884192
+        },
+        "fit_value_mse": {
+          "0": 0.614509469511346,
+          "1000": 0.11695392904166849,
+          "1500": 0.06833026056442078,
+          "2000": 0.048526993970045396,
+          "500": 0.13272971903623754
+        },
+        "monitor_kl": {
+          "0": 0.856450118124485,
+          "1000": 0.08532791747711599,
+          "1500": 0.05506543873343617,
+          "2000": 0.060934619687031955,
+          "500": 0.1093157862778753
+        },
+        "monitor_value_mse": {
+          "0": 0.5385035214972894,
+          "1000": 0.19028202448203568,
+          "1500": 0.24329101201730136,
+          "2000": 0.25279859545599814,
+          "500": 0.17609363984091048
+        }
+      },
+      "descriptions": {
+        "fit_kl": {
+          "0": 0.8386409617960453,
+          "1000": 0.03979671257548034,
+          "1500": 0.022406458476325497,
+          "2000": 0.029217839968623593,
+          "500": 0.0721795397112146
+        },
+        "fit_value_mse": {
+          "0": 0.6120497929260105,
+          "1000": 0.1145298128241893,
+          "1500": 0.07326577291833565,
+          "2000": 0.05327315186005757,
+          "500": 0.1348139150588779
+        },
+        "monitor_kl": {
+          "0": 0.8555001821368933,
+          "1000": 0.0813593763159588,
+          "1500": 0.06743666710099205,
+          "2000": 0.06960058386903256,
+          "500": 0.12045871198642999
+        },
+        "monitor_value_mse": {
+          "0": 0.536195585305855,
+          "1000": 0.20010544463509933,
+          "1500": 0.23244900115627587,
+          "2000": 0.2641630524337789,
+          "500": 0.18049286423340472
+        }
+      },
+      "identities": {
+        "fit_kl": {
+          "0": 0.838987123221159,
+          "1000": 0.04507721302798018,
+          "1500": 0.022328097256831825,
+          "2000": 0.022667890589218587,
+          "500": 0.06882226606830955
+        },
+        "fit_value_mse": {
+          "0": 0.614509469511346,
+          "1000": 0.1169539314017903,
+          "1500": 0.06833158249101037,
+          "2000": 0.04852703747997064,
+          "500": 0.132729759250862
+        },
+        "monitor_kl": {
+          "0": 0.856482895091176,
+          "1000": 0.09207623588736169,
+          "1500": 0.0626519795623608,
+          "2000": 0.06779036420630291,
+          "500": 0.11368077102815732
+        },
+        "monitor_value_mse": {
+          "0": 0.5384438596899176,
+          "1000": 0.19040116492759956,
+          "1500": 0.2523812679165589,
+          "2000": 0.2689721173060463,
+          "500": 0.17609213182939865
+        }
+      }
+    },
+    "fit_return_mean": 0.6290439963340759,
+    "initialization_sha256": "2f01ad37bd54601a32f426dd4094011fd848e84215ffa22e9986b861487a9d92",
+    "interpretation": "Post-hoc diagnostic. Fit value MSE falls while source-campaign monitor MSE rises after early warm-up. This is compatible with critic overfitting, not a causal explanation of PPO validation changes. Fixed protocol unchanged.",
+    "probes": {
+      "fit": {
+        "constant_fit_mean_mse": 0.24857620894908905,
+        "known_targets": 483
+      },
+      "monitor": {
+        "constant_fit_mean_mse": 0.26984646916389465,
+        "known_targets": 479
+      }
+    },
+    "status": "complete",
+    "teacher_data_sha256": "cc49a3d9d3b43df70564e7229f68e5129d96570ddc9638143bf876f22bd0e118"
+  }
+}

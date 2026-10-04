@@ -52,8 +52,16 @@ def test_reload_reproduces_inference_and_private_state_is_separate(bundle):
         assert policy(p) in p.candidates
     with zipfile.ZipFile(public) as archive:
         assert sorted(archive.namelist()) == ['manifest.json', 'weights.pt']
-        manifest = archive.read('manifest.json').decode()
-        assert not any('"'+k+'"' in manifest for k in ('optimizer', 'learner_rng', 'seed', 'cursor', 'order'))
+        manifest = json.loads(archive.read('manifest.json'))
+        # Public catalog tokens may include words such as "order". They are
+        # content names, not a serialized private sampling order or RNG state.
+        def keys(value):
+            if type(value) is dict:
+                return set(value).union(*(keys(v) for v in value.values()))
+            if type(value) is list:
+                return set().union(*(keys(v) for v in value))
+            return set()
+        assert not keys(manifest) & {'optimizer', 'learner_rng', 'seed', 'cursor', 'order'}
     assert private.stat().st_mode & 0o777 == 0o600
     assert private.parent.stat().st_mode & 0o777 == 0o700
     with pytest.raises(FileExistsError):

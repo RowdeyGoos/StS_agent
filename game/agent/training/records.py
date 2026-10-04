@@ -11,15 +11,17 @@ from pathlib import Path
 
 from game.agent import contracts as c
 from game.agent.contracts import full as f
-from game.agent.headless.combat_summary import CombatSummary
+from game.agent.headless.combat_summary import CombatSummary, CombatHealthSummary
 from game.agent.trace_storage import is_trajectory, logical_path, trajectory_digest
 from game.agent.recording import (SUFFIX as TRAJECTORY_SUFFIX, Trajectory, TrajectoryError,
                                   TrajectoryWriter, Transition, load_trajectory)
-from .rewards import (POTENTIAL_SCHEMA, PotentialRewardComponents, RewardComponents, RewardSpec,
+from .rewards import (DEFEAT_HP_SCHEMA, DefeatHPRewardComponents,
+                      POTENTIAL_SCHEMA, PotentialRewardComponents, RewardComponents, RewardSpec,
                       finite, measure_combat, public_summary, strict_json)
 
 SCHEMA = 'sts_combat_training_v1'
 POTENTIAL_RECORD_SCHEMA = 'sts_combat_training_v2'
+DEFEAT_HP_RECORD_SCHEMA = 'sts_combat_training_v3'
 SUFFIX = '.training.json'
 
 
@@ -63,6 +65,27 @@ def _state(summary, state):
                  'Combat measurement disagrees with the public HUD')
         if state.context.kind == 'combat':
             _require(state.context.get('round') == summary.turn, 'Combat turn measurement mismatch')
+            if type(summary) is CombatHealthSummary:
+                groups = [n for n in state.context.children if n.kind == 'enemies']
+                _require(len(groups) == 1, 'Missing public enemy HUD')
+                expected = tuple((n.get('slot'), n.get('hp'), n.get('max_hp')) for n in groups[0].children)
+                _require(all(n.kind == 'enemy' for n in groups[0].children) and
+                         tuple((e.slot, e.hp, e.max_hp) for e in summary.enemies) == expected,
+                         'Enemy measurement disagrees with the public HUD')
+
+
+def _record_schema(spec):
+    return (DEFEAT_HP_RECORD_SCHEMA if spec.schema == DEFEAT_HP_SCHEMA else
+            POTENTIAL_RECORD_SCHEMA if spec.schema == POTENTIAL_SCHEMA else SCHEMA)
+
+
+def _summary(value, spec):
+    result = public_summary(value)
+    _require((type(result) is CombatHealthSummary) == (spec.schema == DEFEAT_HP_SCHEMA),
+             'Combat summary schema disagrees with reward specification')
+    if spec.schema == DEFEAT_HP_SCHEMA:
+        _require(all(e.hp is not None for e in result.enemies), 'Defeat HP rewards require known enemy health')
+    return result
 
 
 @dataclass(frozen=True, slots=True)
@@ -108,10 +131,11 @@ def _read(path):
     value = strict_json(path.read_text(encoding='utf-8'))
     _keys(value, ('schema', 'task', 'trajectory_sha256', 'episode_id', 'reward_spec',
                   'reward_spec_id', 'initial_combat', 'transitions', 'ending'))
-    _require(value['schema'] in (SCHEMA, POTENTIAL_RECORD_SCHEMA) and value['task'] == 'combat', 'Unsupported training sidecar')
+    _require(value['schema'] in (SCHEMA, POTENTIAL_RECORD_SCHEMA, DEFEAT_HP_RECORD_SCHEMA) and
+             value['task'] == 'combat', 'Unsupported training sidecar')
     spec = RewardSpec.from_dict(value['reward_spec'])
     _require(spec.task == 'combat', 'Combat sidecars require a combat objective')
-    _require((value['schema'] == POTENTIAL_RECORD_SCHEMA) == (spec.schema == POTENTIAL_SCHEMA),
+    _require(value['schema'] == _record_schema(spec),
              'Combat sidecar schema disagrees with its reward specification')
     _require(value['reward_spec_id'] == spec.identity, 'Reward specification identity mismatch')
     return value, spec
@@ -123,7 +147,9 @@ def _validate(value, spec, trajectory, reward_spec=None):
     _require(value['trajectory_sha256'] == trajectory.sha256 and bool(trajectory.sha256),
              'Training trajectory digest mismatch')
     _require(value['episode_id'] == trajectory.metadata.episode_id, 'Training episode identity mismatch')
-    before = public_summary(value['initial_combat'])
+    before = _summary(value['initial_combat'], spec)
+    if effective.schema == DEFEAT_HP_SCHEMA:
+        _summary(value['initial_combat'], effective)
     _require(not before.completed, 'Combat task must start in an ongoing fight')
     _state(before, trajectory.initial)
     rows = value['transitions']
@@ -132,8 +158,9 @@ def _validate(value, spec, trajectory, reward_spec=None):
     for index, (row, transition) in enumerate(zip(rows, trajectory.transitions)):
         _keys(row, ('index', 'components', 'reward', 'terminated', 'truncated', 'combat'))
         _require(type(row['index']) is int and row['index'] == index, 'Invalid training transition sequence')
-        after = public_summary(row['combat'])
-        kind = PotentialRewardComponents if spec.schema == POTENTIAL_SCHEMA else RewardComponents
+        after = _summary(row['combat'], spec)
+        kind = (DefeatHPRewardComponents if spec.schema == DEFEAT_HP_SCHEMA else
+                PotentialRewardComponents if spec.schema == POTENTIAL_SCHEMA else RewardComponents)
         components = kind.from_dict(row['components'])
         inputs = (transition.action, transition.execution, before, after, transition.observation, transition.successor)
         _require(components == measure_combat(spec, *inputs),
@@ -149,7 +176,7 @@ def _validate(value, spec, trajectory, reward_spec=None):
         before = after
     ending = value['ending']
     _keys(ending, ('terminated', 'truncated', 'combat'))
-    final = public_summary(ending['combat'])
+    final = _summary(ending['combat'], spec)
     _require(final == before, 'Ending cannot introduce an unrecorded combat result')
     _flags(final, ending['terminated'], ending['truncated'])
     _require(ending['terminated'] or ending['truncated'], 'Missing task endpoint')
@@ -187,7 +214,7 @@ class CombatTrainingRecorder:
     def __init__(self, path, metadata, initial, initial_combat, *, reward_spec=None, prepared=None):
         self.spec = RewardSpec() if reward_spec is None else reward_spec
         _require(type(self.spec) is RewardSpec and self.spec.task == 'combat', 'Expected a combat RewardSpec')
-        self.initial = self.current = public_summary(initial_combat)
+        self.initial = self.current = _summary(initial_combat, self.spec)
         _require(not self.initial.completed, 'Combat task must start in an ongoing fight')
         initial, prepared = _owned_public(initial, prepared)
         _state(self.initial, initial)
@@ -214,7 +241,7 @@ class CombatTrainingRecorder:
         _require(not self._rows or not (self._rows[-1].terminated or self._rows[-1].truncated),
                  'Action after task boundary')
         successor, prepared = _owned_public(successor, prepared)
-        after = public_summary(combat_summary)
+        after = _summary(combat_summary, self.spec)
         components = measure_combat(self.spec, action, execution, self.current, after,
                                     self.writer.current, successor)
         _require(finite(reward) == self.spec.evaluate(components), 'Environment reward disagrees with recorder')
@@ -226,7 +253,7 @@ class CombatTrainingRecorder:
 
     def finish(self, outcome, *, combat_summary, terminated, truncated, check_cancel=None):
         _require(not self._closed, 'Recorder is closed')
-        final = public_summary(combat_summary)
+        final = _summary(combat_summary, self.spec)
         _require(final == self.current, 'Ending cannot introduce an unrecorded combat result')
         _flags(final, terminated, truncated)
         _require(terminated or truncated, 'Missing task endpoint')
@@ -255,7 +282,7 @@ class CombatTrainingRecorder:
             # gzip CRC/footer), without rebuilding every public observation.
             _require(trajectory_digest(self.writer.path) == completion.sha256,
                      'Published training trajectory digest mismatch')
-            value = {'schema': POTENTIAL_RECORD_SCHEMA if self.spec.schema == POTENTIAL_SCHEMA else SCHEMA,
+            value = {'schema': _record_schema(self.spec),
                      'task': 'combat', 'trajectory_sha256': completion.sha256,
                      'episode_id': completion.metadata.episode_id, 'reward_spec': self.spec.to_dict(),
                      'reward_spec_id': self.spec.identity, 'initial_combat': asdict(self.initial),

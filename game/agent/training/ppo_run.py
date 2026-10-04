@@ -13,7 +13,7 @@ from game.agent.tracking import report_progress
 from .checkpoint import load_policy, publish, restore_ppo, runtime, save_ppo_checkpoint
 from .ppo import PPOLearner, UPDATE_POLICY
 from .rollout import advantages, check_cancel
-from .rewards import ACT_RUN_SCHEMA, POTENTIAL_SCHEMA, SHAPED_RUN_SCHEMAS
+from .rewards import ACT_RUN_SCHEMA, DEFEAT_HP_SCHEMA, POTENTIAL_SCHEMA, SHAPED_RUN_SCHEMAS
 
 
 def _publish_json(path, value):
@@ -24,11 +24,12 @@ def _rollout_record(rollout, experiment):
     adv, returns = advantages(rollout.steps, gamma=experiment.ppo.gamma, gae_lambda=experiment.ppo.gae_lambda)
     shaped = experiment.training.reward.schema in SHAPED_RUN_SCHEMAS
     potential = experiment.training.reward.schema == POTENTIAL_SCHEMA
+    defeat_hp = experiment.training.reward.schema == DEFEAT_HP_SCHEMA
     restricted = experiment.training.action_policy != ALL_LEGAL
-    return {'schema':'sts_ppo_rollout_v5' if potential else
+    return {'schema':'sts_ppo_rollout_v6' if defeat_hp else 'sts_ppo_rollout_v5' if potential else
                     'sts_ppo_rollout_v4' if experiment.training.reward.schema == ACT_RUN_SCHEMA else
                     'sts_ppo_rollout_v3' if restricted else 'sts_ppo_rollout_v2' if shaped else 'sts_ppo_rollout_v1',
-            **({'reward_spec':experiment.training.reward.to_dict()} if shaped or potential else {}),
+            **({'reward_spec':experiment.training.reward.to_dict()} if shaped or potential or defeat_hp else {}),
             **({'action_policy':experiment.training.action_policy} if restricted else {}),
             'behavior':rollout.behavior, 'iteration':rollout.iteration,
             'experiment':experiment.identity, 'episodes':rollout.progress['episodes'],
@@ -55,7 +56,7 @@ def _peak_rss():
 
 def run_ppo(*, checkpoint, experiment, output_dir, decisions=256, time_limit_seconds=3600,
             resume_state=None, seed=None, start_index=None, cancel=None, env_factory=None, audit_dir=None,
-            workers=None, reset_objective=False, reset_action_policy=False):
+            workers=None, reset_objective=False, reset_action_policy=False, reset_representation=False):
     if type(decisions) is not int or not 1 <= decisions <= 20000:
         raise ValueError('Choose 1–20,000 bounded PPO decisions per invocation')
     if (type(time_limit_seconds) not in (int, float) or not math.isfinite(time_limit_seconds) or
@@ -67,11 +68,18 @@ def run_ppo(*, checkpoint, experiment, output_dir, decisions=256, time_limit_sec
         raise ValueError('Objective reset starts a new experiment; it cannot resume optimizer state')
     if type(reset_action_policy) is not bool or reset_action_policy and resume_state is not None:
         raise ValueError('Action-policy reset starts a new experiment; it cannot resume optimizer state')
+    if type(reset_representation) is not bool or reset_representation and (
+            resume_state is not None or reset_objective or reset_action_policy):
+        raise ValueError('Representation reset starts a separate experiment; do not combine with resume or other resets')
     policy = load_policy(checkpoint, reward_spec=None if reset_objective else experiment.training.reward)
     changed_actions = policy.model.action_policy != experiment.training.action_policy
     if changed_actions != reset_action_policy:
         raise ValueError('A different action policy requires --reset-action-policy; omit it for an unchanged policy')
     model, transfer = policy.model, None
+    representation_transfer = None
+    if reset_representation:
+        from .run_corpus import transfer_catalog
+        model, representation_transfer = transfer_catalog(policy, seed=0 if seed is None else seed)
     if reset_objective:
         from .run_corpus import transfer_run_objective
         model, transfer = transfer_run_objective(policy, experiment.training.reward,
@@ -100,6 +108,8 @@ def run_ppo(*, checkpoint, experiment, output_dir, decisions=256, time_limit_sec
         'start_decisions':learner.decisions, 'start_iteration':learner.iterations, 'iterations':[]}
     if transfer is not None:
         report['initialization']['objective_transfer'] = transfer
+    if representation_transfer is not None:
+        report['initialization']['representation_transfer'] = representation_transfer
     if reset_action_policy:
         report['initialization']['action_policy_transfer'] = {
             'source':policy.model.action_policy, 'target':model.action_policy,

@@ -11,6 +11,12 @@ from game.agent import performance
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest='command', required=True)
+    audit = sub.add_parser('audit-representation', help='Audit frozen identities and effect descriptions without training')
+    audit.add_argument('--checkpoint', help='Audit this saved vocabulary; default is the current public catalog')
+    audit.add_argument('--input', nargs='+', default=[], help='Optional completed public trajectory files/directories')
+    audit.add_argument('--split', choices=('train', 'validation'), default='train')
+    audit.add_argument('--max-decisions', type=int, default=10000, help='Maximum recorded decisions audited globally')
+    audit.add_argument('--output', help='Publish the full JSON audit to a new file')
     collect = sub.add_parser('collect', help='Record the public heuristic on controlled or frozen combat starts')
     collect.add_argument('--output-dir', required=True)
     collect.add_argument('--split', choices=('train', 'validation', 'test'), default='train')
@@ -49,9 +55,11 @@ def main(argv=None):
     imitate.add_argument('--batch-size', type=int, help='Defaults to 8; resume preserves the saved setting')
     imitate.add_argument('--learning-rate', type=float, help='Defaults to .003; resume preserves the saved setting')
     imitate.add_argument('--hidden-size', type=int, help='Defaults to 48')
-    imitate.add_argument('--message-layers', type=int, help='Defaults to 2')
-    imitate.add_argument('--representation', choices=('graph', 'combat', 'action-control', 'action-damage', 'action-stacks'),
-                         help='New learners default to graph; combat adds public numeric channels and typed combat pooling')
+    imitate.add_argument('--message-layers', type=int, help='Processing depth; graph messages or set blocks. Defaults to 2')
+    imitate.add_argument('--representation', choices=('graph', 'combat', 'set-mlp', 'set-attention', 'action-control', 'action-damage', 'action-stacks'),
+                         help='New learners default to graph; combat adds numeric channels, set variants use those channels without graph messages')
+    imitate.add_argument('--vocabulary', choices=('catalog', 'observed'),
+                         help='New learners default to all public catalog identities/effects; observed reproduces legacy train-only fitting')
     imitate.add_argument('--seed', type=int, help='Private learner RNG seed; defaults to 0 for a new learner')
     imitate.add_argument('--resume-bundle')
     imitate.add_argument('--resume-state')
@@ -72,6 +80,8 @@ def main(argv=None):
         help='Start a different reward objective within the same task: keep actor, reset critic/optimizer; incompatible with resume')
     ppo.add_argument('--reset-action-policy', action='store_true',
         help='Adopt the config action policy in a new experiment; keep weights, start a fresh optimizer')
+    ppo.add_argument('--reset-representation', action='store_true',
+        help='New experiment with current public catalog: remap actor names, reset critic/optimizer; incompatible with resume/other resets')
     ppo.add_argument('--workers', type=int,
         help=f'1–16 persistent collectors; defaults to min(16, CPUs), currently {performance.game_workers()}, or saved count on resume')
     ppo.add_argument('--update-threads', type=int, choices=(1, 2, 4, 8),
@@ -109,6 +119,15 @@ def _run(args, parser):
                     torch.is_deterministic_algorithms_warn_only_enabled())
     try:
         torch.set_num_threads(1)
+        if args.command == 'audit-representation':
+            from game.agent.training.features import Vocabulary
+            from game.agent.training.coverage import audit_paths
+            vocabulary = load_policy(args.checkpoint).model.vocabulary if args.checkpoint else Vocabulary.fit((), split='train')
+            report = audit_paths(vocabulary, args.input, split=args.split, max_decisions=args.max_decisions)
+            if args.output:
+                publish(Path(args.output).resolve(), (json.dumps(report, indent=2, sort_keys=True)+'\n').encode())
+            print(json.dumps(report, indent=2, sort_keys=True))
+            return 0
         if args.command == 'ppo':
             _configure_ppo_cpu(args, load_policy)
             if args.workers is None and not args.resume_state:
@@ -160,7 +179,8 @@ def _run(args, parser):
                         output_dir=args.output_dir, decisions=args.decisions, time_limit_seconds=args.time_limit,
                         resume_state=args.resume_state, seed=args.seed, start_index=args.start_index, cancel=stopped,
                         workers=args.workers, reset_objective=args.reset_objective,
-                        reset_action_policy=args.reset_action_policy, env_factory=factory)
+                        reset_action_policy=args.reset_action_policy, reset_representation=args.reset_representation,
+                        env_factory=factory)
             finally:
                 for sig, handler in previous.items():
                     signal.signal(sig, handler)
@@ -191,12 +211,16 @@ def _run(args, parser):
         task = 'full_run' if args.full_run else 'combat'
         resumed = load_policy(args.resume_bundle, task=task) if args.resume_bundle else None
         frozen = resumed.model.vocabulary if resumed else None
+        include_catalog = args.vocabulary != 'observed'
+        if resumed and args.vocabulary is not None and include_catalog != (frozen.catalog is not None):
+            raise ValueError('Exact resume cannot change its vocabulary schema')
         action_policy = args.action_policy or (resumed.model.action_policy if resumed else ALL_LEGAL)
         if resumed and action_policy != resumed.model.action_policy:
             raise ValueError('Exact resume cannot change its policy-action version')
         source = load_policy(args.initialize_combat, task='combat') if args.initialize_combat else None
         inherited = (resumed or source).model.architecture.schema if resumed or source else GRAPH
-        representation = {'graph': GRAPH, 'combat': COMBAT, 'action-control': CONTROL,
+        from game.agent.training.combat_features import SET_MLP, SET_ATTENTION
+        representation = {'graph': GRAPH, 'combat': COMBAT, 'set-mlp': SET_MLP, 'set-attention': SET_ATTENTION, 'action-control': CONTROL,
                           'action-damage': DAMAGE, 'action-stacks': STACKS}.get(args.representation, inherited)
         if (resumed or source) and representation != inherited:
             raise ValueError('Resume/actor transfer cannot change representation')
@@ -206,12 +230,12 @@ def _run(args, parser):
             from game.agent.training.run_demonstrations import corpus_paths
             train = load_run_corpus(corpus_paths(args.train_dir, split='train', retain=True), split='train', vocabulary=frozen,
                 base_vocabulary=source.model.vocabulary if source else None, action_policy=action_policy,
-                representation=representation)
+                representation=representation, include_catalog=include_catalog)
             validation = load_run_corpus(corpus_paths(args.validation_dir, split='validation', retain=True),
                 split='validation', vocabulary=train.vocabulary, action_policy=action_policy, representation=representation)
         else:
             train = load_corpus(corpus_pairs(args.train_dir, split='train'), split='train', vocabulary=frozen,
-                                action_policy=action_policy, representation=representation)
+                                action_policy=action_policy, representation=representation, include_catalog=include_catalog)
             validation = load_corpus(corpus_pairs(args.validation_dir, split='validation'), split='validation',
                                      vocabulary=train.vocabulary, action_policy=action_policy, representation=representation)
         if train.reward_spec != validation.reward_spec:

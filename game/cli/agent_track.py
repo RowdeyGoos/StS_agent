@@ -83,6 +83,9 @@ def main(argv=None):
     catalog.add_argument('--experiment', default='StS experiments')
     catalog.add_argument('--keep-checkpoint', action='append', default=[], help='Retain an imported checkpoint as a candidate')
     catalog.add_argument('--release-checkpoint', action='append', default=[], help='Remove an explicit candidate retention')
+    views = sub.add_parser('views', help='Create or refresh standard views; preserve user edits and deletions')
+    views.add_argument('--store', default='runs/experiment-tracking')
+    views.add_argument('--experiment', default='StS experiments')
     args = parser.parse_args(argv)
     try:
         from game.agent.tracking.store import TrackingStore, local_store
@@ -97,6 +100,10 @@ def main(argv=None):
         if args.command == 'catalog':
             with TrackingStore(args.store, experiment=args.experiment) as store:
                 print(json.dumps(store.curate_models(keep=args.keep_checkpoint, release=args.release_checkpoint), indent=2))
+            return 0
+        if args.command == 'views':
+            with TrackingStore(args.store, experiment=args.experiment) as store:
+                print(json.dumps(store.refresh_views(), indent=2))
             return 0
         with TrackingStore(args.store, experiment=args.experiment, name=args.name,
                            inspector_url=args.inspector_url) as store:

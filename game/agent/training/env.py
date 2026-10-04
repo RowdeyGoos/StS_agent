@@ -6,7 +6,7 @@ from game.agent import contracts as c
 from game.agent.encoding.full import FULL_RUN_PROFILE
 from game.agent.gym_env import EnvironmentFailure, StsEnv
 from .scenarios import scenario
-from .rewards import RewardSpec, measure_combat
+from .rewards import DEFEAT_HP_SCHEMA, RewardSpec, measure_combat
 
 
 class CombatTrainingEnv(StsEnv):
@@ -85,7 +85,8 @@ class CombatTrainingEnv(StsEnv):
         return report
 
     def _refresh(self, *, initial=False):
-        summary = self._adapter.combat_summary
+        summary = (self._adapter.combat_health_summary if self.reward_spec.schema == DEFEAT_HP_SCHEMA
+                   else self._adapter.combat_summary)
         if initial:
             if summary is None or summary.completed:
                 raise EnvironmentFailure('combat_start_required')

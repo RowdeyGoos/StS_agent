@@ -12,8 +12,11 @@ import numpy as np
 
 GRAPH = 'sts_graph_actor_critic_v1'
 COMBAT = 'sts_combat_graph_actor_critic_v1'
+SET_MLP = 'sts_combat_set_mlp_actor_critic_v1'
+SET_ATTENTION = 'sts_combat_set_attention_actor_critic_v1'
+SET_REPRESENTATIONS = (SET_MLP, SET_ATTENTION)
 from .action_features import REPRESENTATIONS as ACTION_REPRESENTATIONS
-COMBAT_REPRESENTATIONS = (COMBAT, *ACTION_REPRESENTATIONS)
+COMBAT_REPRESENTATIONS = (COMBAT, *ACTION_REPRESENTATIONS, *SET_REPRESENTATIONS)
 REPRESENTATIONS = (GRAPH, *COMBAT_REPRESENTATIONS)
 SCHEMA = 'sts_public_combat_channels_v1'
 
@@ -36,6 +39,8 @@ WIDTH = len(CHANNELS) * 3
 
 
 def feature_identity(vocabulary, representation):
+    # Set and graph networks consume identical public feature tables. Their
+    # different processing is versioned by Architecture, not the input schema.
     if representation not in REPRESENTATIONS:
         raise ValueError('Unsupported feature representation')
     if representation == GRAPH:
