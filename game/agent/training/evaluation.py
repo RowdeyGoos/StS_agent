@@ -49,7 +49,7 @@ def _audit(path, case, identity, policy, config, scenario_set=SCENARIO_SET):
 
 def _episode(case, policy, identity, output, audit, config, *, chooser=None,
              engine_factory=None, scenario_set=SCENARIO_SET, cancel=None,
-             episode_id=None, expected_start=None, evidence='controlled_fixture'):
+             episode_id=None, expected_start=None, evidence='controlled_fixture', planning_start=None):
     episode_id = uuid.uuid4().hex if episode_id is None else episode_id
     path = output / (episode_id + SUFFIX)
     result = {'episode_id': episode_id, 'encounter': case.encounter, 'policy': policy,
@@ -65,6 +65,11 @@ def _episode(case, policy, identity, output, audit, config, *, chooser=None,
     try:
         _audit(audit / (episode_id + '.audit.json'), case, identity, policy, config, scenario_set)
         observation, info = env.reset(seed=case.seed)
+        if callable(getattr(chooser, 'reset', None)):
+            chooser.reset()
+        if planning_start is not None:
+            chooser.begin_combat(planning_start, env.public_state)
+        env.record_combat_reveals = bool(getattr(chooser, 'needs_combat_reveals', False))
         if expected_start is not None:
             from .combat_corpus import public_digest
             result['public_state_sha256'] = public_digest(env.public_state)
@@ -100,6 +105,13 @@ def _episode(case, policy, identity, output, audit, config, *, chooser=None,
                     execution = c.from_dict(report)
                     if execution.status != 'reconciled':
                         raise RuntimeError('Baseline selected an unreconciled action')
+                    if callable(getattr(chooser, 'observe_transition', None)):
+                        before = time.perf_counter()
+                        successor = env.planning_successor if planning_start is not None else env.public_state
+                        if env.record_combat_reveals:
+                            chooser.observe_reveals(env.combat_reveals)
+                        chooser.observe_transition(public, chosen, execution, successor)
+                        policy_seconds += time.perf_counter() - before
                     before = time.perf_counter()
                     writer.append(chosen, execution, env.public_state, combat_summary=info['combat'],
                                   reward=reward, terminated=terminated, truncated=truncated)
@@ -134,6 +146,8 @@ def _episode(case, policy, identity, output, audit, config, *, chooser=None,
                              'recording_seconds': recording,
                              'total_seconds': time.perf_counter() - started}
         env.close()
+        if callable(getattr(chooser, 'summary', None)):
+            result['search'] = chooser.summary()
     return result
 
 

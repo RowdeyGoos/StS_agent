@@ -27,7 +27,7 @@ function client(responses,onWait=()=>{}) {
   };
   vm.runInNewContext(source,context);
   booting=false;
-  return {api:context.api,calls,waits};
+  return {api:context.api,searchFates:context.searchFates,percent:context.percent,calls,waits};
 }
 
 test('a valid decision loads once, without delay or changes to its contents',async()=>{
@@ -101,4 +101,31 @@ test('navigation during the retry delay also stops the obsolete request',async()
   await assert.rejects(c.api(route,()=>current),/Unable to load step 57/);
   assert.equal(c.calls.length,1);
   assert.equal(c.waits.length,1);
+});
+
+test('elimination is inferred only from a following recorded round, including a cutoff',()=>{
+  const c=client([]),data={probabilities:{a:.4,b:.3,c:.2,d:.09,e:.01},visits:{a:4,b:3,c:1,d:1,e:0},
+    cutoff:'search_time_budget',tree_work:{root_rounds:[{ranked:['a','b','c','d']},{ranked:['b','a']}]}};
+  assert.equal(c.searchFates(data).c,'Eliminated after round 1');
+  assert.equal(c.searchFates(data).a,'Last round');
+  assert.equal(c.searchFates(data).b,'Last round');
+  assert.equal(c.searchFates(data).e,'Not considered');
+  data.tree_work.root_rounds.pop();
+  assert.equal(c.searchFates(data).c,'Last round');
+});
+
+test('older diagnostics and root-only rounds do not invent elimination evidence',()=>{
+  const c=client([]),data={probabilities:{a:.4,b:.6},visits:{a:0,b:4}};
+  assert.equal(c.searchFates(data).a,'Unvisited');
+  assert.equal(c.searchFates(data).b,'Visited');
+  data.tree_work={root_rounds:[{ranked:['a','b']},{ranked:['b','a']}]};
+  assert.equal(c.searchFates(data).a,'Last round');
+  assert.equal(c.searchFates(data).b,'Last round');
+});
+
+test('tiny nonzero priors are distinguished from an excluded or missing value',()=>{
+  const c=client([]);
+  assert.equal(c.percent(.0000005),'<0.01%');
+  assert.equal(c.percent(0),'0%');
+  assert.equal(c.percent(null),'—');
 });

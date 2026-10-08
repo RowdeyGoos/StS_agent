@@ -17,6 +17,9 @@ class MonsterConstruction:
             return low if low == high else self.ai.randint(low, high)
         eligible = [value for value in range(low, high + 1) if value not in self.used_hp]
         value = self.hp.choice(eligible) if eligible else self.hp.randint(low, high)
+        knowledge = getattr(self.hp, 'hp_knowledge', None)
+        if knowledge is not None:
+            value = knowledge.condition(eligible or list(range(low, high + 1)))
         self.used_hp.append(value)
         return value
 

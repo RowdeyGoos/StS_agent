@@ -203,7 +203,7 @@ def execute(p, op, args):
             if key == 'sentry_mode':
                 create(p, catalog(p).definition('sweeping_gaze'))
             elif key == 'call_of_the_void':
-                selected = select_cards(pool(p, 'ironclad'), p.deck.generation_rng, 1, distinct=True)
+                selected = select_cards(pool(p, 'ironclad'), p.deck.generation_rng, 1, distinct=True, revealed=True)
                 for definition in selected:
                     c = create(p, definition, destination='offered')
                     c.combat_state.ethereal_this_combat = True

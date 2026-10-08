@@ -1,0 +1,889 @@
+{
+  "bindings": [
+    {
+      "path": "runs/search-worker-scaling-20261007/protocol.json",
+      "sha256": "e5c6645abb451c9519f9c2725edbc8c2e31773a21f3e8c587ec3a5467411d826"
+    },
+    {
+      "path": "runs/search-worker-scaling-20261007/benchmark.py",
+      "sha256": "f4e150d637c51573e5e7a641df329bc3af5ffae5657d8b6b7745d3f3c2731bb8"
+    },
+    {
+      "path": "runs/search-worker-scaling-20261007/review.json",
+      "sha256": "21e41d8f10579325082701f0884bc08e697b849bbaa867f1b942489104935027"
+    },
+    {
+      "path": "runs/search-worker-scaling-20261007/encoding_probe.py",
+      "sha256": "7347e8ba57b8534d5c51f70be68a24616da67ba1b11c753ec50a202ae3eb7fdb"
+    },
+    {
+      "path": "runs/search-worker-scaling-20261007/overhead.py",
+      "sha256": "6b5205562be4eb098affa8baf3c8c6e939d0e30deb12fbf673fe8dee69524223"
+    },
+    {
+      "path": "runs/search-worker-scaling-20261007/encoding-review.json",
+      "sha256": "342e207299f21297dd1591256e31ff1e5a7dcabe7fddc5590b07c2178da27508"
+    },
+    {
+      "path": "runs/search-worker-scaling-20261007/overhead-preflight-correction.json",
+      "sha256": "89de18708811e5dac91b156a6b6df49c2f89482369175b58f3d35d563ddff0e8"
+    },
+    {
+      "path": "runs/search-worker-scaling-20261007/analyze.py",
+      "sha256": "a517f53d58897fca62bebdf9cbc24a27ae9af473c5dad43bf872a18ae1afb54f"
+    },
+    {
+      "path": "runs/search-worker-scaling-20261007/analysis.json",
+      "sha256": "6570fcc98a1165bb78d7fee585bfcc46aee2a30ae296784d04b9d5e57de70390"
+    },
+    {
+      "path": "runs/search-worker-scaling-20261007/overhead.json",
+      "sha256": "8ec38f23e431cae1749563d4b3ab1aea7411dbd04b1bf345d52427deb875c033"
+    },
+    {
+      "path": "runs/search-worker-scaling-20261007/overhead.pstats",
+      "sha256": "a8205bf50f4716981d96816c97345cd6773fa8100a4d62111c4b2864eb01d78d"
+    }
+  ],
+  "checkpoint_sha256": "4da8789591fc9379522b3b30745bb6b6615ee53bb4bfc21215affecf28dfae6a",
+  "date": "2026-10-07",
+  "elapsed_seconds": {
+    "overhead_probe": 169.14560058293864,
+    "preflight": 1.3676057499833405,
+    "worker_trials": 3104.5682090418413
+  },
+  "implementation": {
+    "build": "039c92c06c04f9269742d20510ba704b40cd8cfb5448b8002a39793e0ba18989",
+    "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+    "rules": "237b89973ceeeab4b02962ddc69876cd08a57be27ae6f7c1b52ea371e5bceaea",
+    "target": "sts2-v0.107.1-steam-23811903"
+  },
+  "probe_validation": {
+    "adversarial_checks": 39,
+    "all_results_identical": true,
+    "observations": 96,
+    "paired_search_runs": 54,
+    "root_case_indices": [
+      0,
+      7,
+      14,
+      21,
+      28,
+      35
+    ]
+  },
+  "runtime": {
+    "cpus": 18,
+    "numpy": "2.4.6",
+    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "python": "3.11.15",
+    "torch": "2.13.0",
+    "torch_threads": 1
+  },
+  "schema": "sts_search_worker_scaling_evidence_v1",
+  "search": {
+    "belief_particles": 2,
+    "belief_proposals": 1024,
+    "belief_replay_proposals": 2048,
+    "belief_replay_steps": 16384,
+    "belief_seconds": 120.0,
+    "considered_actions": 16,
+    "exploration": false,
+    "final_selection": "prior_value",
+    "leaf_rollout_steps": 4,
+    "max_depth": 16,
+    "method": "gumbel",
+    "model_version": "direct_belief_v1",
+    "q_scale": 0.1,
+    "seed": 20261007,
+    "simulations": 24,
+    "time_limit": 120.0
+  },
+  "source_bundle": "runs/search-worker-scaling-20261007",
+  "status": "complete",
+  "summary": {
+    "checks": {
+      "belief_budget_fallbacks": 0,
+      "complete_fights": 504,
+      "execution_failures": 0,
+      "fixed_simulations_per_trial": 14544,
+      "matching_public_trajectories": 504,
+      "matching_search_results": 504,
+      "same_prior_study_behavior": true,
+      "search_cutoffs": 0
+    },
+    "inference_components": {
+      "calls": 726.0,
+      "collate": 0.0382774923928082,
+      "features": 1.359005724079907,
+      "network": 0.5861122338101268,
+      "pack": 5.580410225782543
+    },
+    "limitations": [
+      "42 previously used validation openings with the same guarded experimental adapter and partial coverage.",
+      "Three timing repetitions share the same fights; they are not new independent outcome evidence.",
+      "120-second search/conditioning ceilings measure fixed work, not five-second deployment behavior.",
+      "Individual-decision latency can increase with concurrency even when batch throughput improves.",
+      "Three serial batch timings per worker count; thermal and unrelated host activity were not controlled.",
+      "Summed worker RSS high-water marks are not simultaneous resident memory.",
+      "No held-out games, new training or change to default search behavior."
+    ],
+    "overhead": [
+      {
+        "encoding_96_seconds_median": 0.8219851250760257,
+        "encoding_96_seconds_range": [
+          0.8009659172967076,
+          0.9041240001097322
+        ],
+        "per_repeat_search_speedup_vs_current": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "six_search_seconds_median": 12.634529917035252,
+        "six_search_seconds_range": [
+          12.598035622853786,
+          12.6602166662924
+        ],
+        "variant": "current"
+      },
+      {
+        "encoding_96_seconds_median": 0.8283782498911023,
+        "encoding_96_seconds_range": [
+          0.8180049997754395,
+          0.8606798336841166
+        ],
+        "per_repeat_search_speedup_vs_current": [
+          1.006984807286256,
+          1.029879358448282,
+          1.0196723234700265
+        ],
+        "six_search_seconds_median": 12.354984373785555,
+        "six_search_seconds_range": [
+          12.292912332341075,
+          12.546892292331904
+        ],
+        "variant": "prepared"
+      },
+      {
+        "encoding_96_seconds_median": 0.4300923333503306,
+        "encoding_96_seconds_range": [
+          0.420262583065778,
+          0.4453764157369733
+        ],
+        "per_repeat_search_speedup_vs_current": [
+          1.420232225718589,
+          1.4296355573920743,
+          1.4458900379876598
+        ],
+        "six_search_seconds_median": 8.855555250309408,
+        "six_search_seconds_range": [
+          8.712997041177005,
+          8.896101417951286
+        ],
+        "variant": "compact"
+      }
+    ],
+    "protocol_sha256": "e5c6645abb451c9519f9c2725edbc8c2e31773a21f3e8c587ec3a5467411d826",
+    "search_components": {
+      "inference": 7.575428305659443,
+      "projection": 3.698303780518472,
+      "reconstruction": 0.10015595750883222,
+      "sampling": 0.6545927827246487,
+      "transition": 0.2755252253264189
+    },
+    "status": "complete",
+    "trials": [
+      {
+        "all_search_seconds": 1440.5115004684776,
+        "fallbacks": {
+          "forced_action": 249,
+          "opening_scope:card:havoc": 44,
+          "opening_scope:card:hellraiser": 12,
+          "opening_scope:card:infernal_blade": 14,
+          "opening_scope:card:juggling": 45,
+          "opening_scope:card:pillage": 59,
+          "opening_scope:end_turn_draw_trigger": 39,
+          "opening_scope:intrinsic_retention": 29,
+          "opening_scope:potion:bottled_potential": 11,
+          "opening_scope:potion:colorless_potion": 21,
+          "opening_scope:potion:fysh_oil": 24,
+          "opening_scope:potion:liquid_memories": 26,
+          "opening_scope:potion:radiant_tincture": 27,
+          "opening_scope:potion:stable_serum": 18
+        },
+        "fights_per_minute": 6.439750223703875,
+        "name": "repeat-1-workers-4",
+        "phase_worker_seconds": {
+          "conditioning": 27.775946900248528,
+          "inference": 875.7994578112848,
+          "projection": 392.61693547526374,
+          "reconstruction": 4.773244870826602,
+          "sampling": 73.89330443693325,
+          "transition": 32.321362463291734
+        },
+        "real_decisions_per_second": 3.1278786800847396,
+        "repeat": 0,
+        "searched_action_max_seconds": 4.437545458320528,
+        "searched_action_p50_seconds": 2.5031970411073416,
+        "searched_action_p95_seconds": 2.9917729585431516,
+        "searched_actions_over_5_seconds": 0,
+        "searched_decisions_per_second": 1.5486066014145032,
+        "seconds": 391.3195252083242,
+        "simulations_per_second": 37.16655843394808,
+        "sum_worker_high_water_bytes": 1339670528,
+        "worker_peak_rss_bytes_by_pid": {
+          "38960": 330629120,
+          "38961": 333103104,
+          "38962": 332922880,
+          "38963": 343015424
+        },
+        "workers": 4
+      },
+      {
+        "all_search_seconds": 1889.0003412114456,
+        "fallbacks": {
+          "forced_action": 249,
+          "opening_scope:card:havoc": 44,
+          "opening_scope:card:hellraiser": 12,
+          "opening_scope:card:infernal_blade": 14,
+          "opening_scope:card:juggling": 45,
+          "opening_scope:card:pillage": 59,
+          "opening_scope:end_turn_draw_trigger": 39,
+          "opening_scope:intrinsic_retention": 29,
+          "opening_scope:potion:bottled_potential": 11,
+          "opening_scope:potion:colorless_potion": 21,
+          "opening_scope:potion:fysh_oil": 24,
+          "opening_scope:potion:liquid_memories": 26,
+          "opening_scope:potion:radiant_tincture": 27,
+          "opening_scope:potion:stable_serum": 18
+        },
+        "fights_per_minute": 13.799487058003812,
+        "name": "repeat-1-workers-16",
+        "phase_worker_seconds": {
+          "conditioning": 35.537323337979615,
+          "inference": 1155.149913504254,
+          "projection": 505.23062042798847,
+          "reconstruction": 6.254582996014506,
+          "sampling": 98.0175311411731,
+          "transition": 43.90010129427537
+        },
+        "real_decisions_per_second": 6.7026079996018515,
+        "repeat": 0,
+        "searched_action_max_seconds": 6.080714916810393,
+        "searched_action_p50_seconds": 3.312551354523748,
+        "searched_action_p95_seconds": 4.017764427466318,
+        "searched_actions_over_5_seconds": 2,
+        "searched_decisions_per_second": 3.31844807823425,
+        "seconds": 182.61548341671005,
+        "simulations_per_second": 79.642753877622,
+        "sum_worker_high_water_bytes": 5157486592,
+        "worker_peak_rss_bytes_by_pid": {
+          "39357": 331300864,
+          "39358": 335675392,
+          "39359": 326254592,
+          "39360": 326746112,
+          "39361": 309755904,
+          "39362": 303939584,
+          "39363": 303169536,
+          "39364": 311066624,
+          "39365": 319406080,
+          "39366": 333250560,
+          "39367": 323633152,
+          "39368": 314654720,
+          "39369": 331808768,
+          "39370": 324337664,
+          "39371": 336232448,
+          "39372": 326254592
+        },
+        "workers": 16
+      },
+      {
+        "all_search_seconds": 1627.4363196496852,
+        "fallbacks": {
+          "forced_action": 249,
+          "opening_scope:card:havoc": 44,
+          "opening_scope:card:hellraiser": 12,
+          "opening_scope:card:infernal_blade": 14,
+          "opening_scope:card:juggling": 45,
+          "opening_scope:card:pillage": 59,
+          "opening_scope:end_turn_draw_trigger": 39,
+          "opening_scope:intrinsic_retention": 29,
+          "opening_scope:potion:bottled_potential": 11,
+          "opening_scope:potion:colorless_potion": 21,
+          "opening_scope:potion:fysh_oil": 24,
+          "opening_scope:potion:liquid_memories": 26,
+          "opening_scope:potion:radiant_tincture": 27,
+          "opening_scope:potion:stable_serum": 18
+        },
+        "fights_per_minute": 10.366709999192278,
+        "name": "repeat-1-workers-8",
+        "phase_worker_seconds": {
+          "conditioning": 31.19266105722636,
+          "inference": 991.0440182127059,
+          "projection": 440.4679178339429,
+          "reconstruction": 5.364064663182944,
+          "sampling": 83.44063199916855,
+          "transition": 37.58543300209567
+        },
+        "real_decisions_per_second": 5.035259142464821,
+        "repeat": 0,
+        "searched_action_max_seconds": 5.087239166721702,
+        "searched_action_p50_seconds": 2.847094104392454,
+        "searched_action_p95_seconds": 3.346319781965576,
+        "searched_actions_over_5_seconds": 1,
+        "searched_decisions_per_second": 2.4929469283771906,
+        "seconds": 243.0858006249182,
+        "simulations_per_second": 59.83072628105258,
+        "sum_worker_high_water_bytes": 2665693184,
+        "worker_peak_rss_bytes_by_pid": {
+          "39532": 335953920,
+          "39533": 325484544,
+          "39534": 330153984,
+          "39535": 335872000,
+          "39536": 329547776,
+          "39537": 341278720,
+          "39538": 340213760,
+          "39539": 327188480
+        },
+        "workers": 8
+      },
+      {
+        "all_search_seconds": 1790.7658508182503,
+        "fallbacks": {
+          "forced_action": 249,
+          "opening_scope:card:havoc": 44,
+          "opening_scope:card:hellraiser": 12,
+          "opening_scope:card:infernal_blade": 14,
+          "opening_scope:card:juggling": 45,
+          "opening_scope:card:pillage": 59,
+          "opening_scope:end_turn_draw_trigger": 39,
+          "opening_scope:intrinsic_retention": 29,
+          "opening_scope:potion:bottled_potential": 11,
+          "opening_scope:potion:colorless_potion": 21,
+          "opening_scope:potion:fysh_oil": 24,
+          "opening_scope:potion:liquid_memories": 26,
+          "opening_scope:potion:radiant_tincture": 27,
+          "opening_scope:potion:stable_serum": 18
+        },
+        "fights_per_minute": 12.536679906915936,
+        "name": "repeat-1-workers-12",
+        "phase_worker_seconds": {
+          "conditioning": 33.53825892927125,
+          "inference": 1096.4098957804963,
+          "projection": 479.19963326398283,
+          "reconstruction": 5.9264174439013,
+          "sampling": 91.65809116046876,
+          "transition": 41.42500818055123
+        },
+        "real_decisions_per_second": 6.089244526216311,
+        "repeat": 0,
+        "searched_action_max_seconds": 5.636335126124322,
+        "searched_action_p50_seconds": 3.1411022709216923,
+        "searched_action_p95_seconds": 3.7158401353517547,
+        "searched_actions_over_5_seconds": 2,
+        "searched_decisions_per_second": 3.0147730252345464,
+        "seconds": 201.01015729131177,
+        "simulations_per_second": 72.35455260562911,
+        "sum_worker_high_water_bytes": 3945938944,
+        "worker_peak_rss_bytes_by_pid": {
+          "39754": 335429632,
+          "39755": 327335936,
+          "39756": 326893568,
+          "39757": 334200832,
+          "39758": 322519040,
+          "39759": 324075520,
+          "39760": 332480512,
+          "39761": 320749568,
+          "39762": 334266368,
+          "39763": 321896448,
+          "39764": 339640320,
+          "39765": 326451200
+        },
+        "workers": 12
+      },
+      {
+        "all_search_seconds": 1810.4651378924027,
+        "fallbacks": {
+          "forced_action": 249,
+          "opening_scope:card:havoc": 44,
+          "opening_scope:card:hellraiser": 12,
+          "opening_scope:card:infernal_blade": 14,
+          "opening_scope:card:juggling": 45,
+          "opening_scope:card:pillage": 59,
+          "opening_scope:end_turn_draw_trigger": 39,
+          "opening_scope:intrinsic_retention": 29,
+          "opening_scope:potion:bottled_potential": 11,
+          "opening_scope:potion:colorless_potion": 21,
+          "opening_scope:potion:fysh_oil": 24,
+          "opening_scope:potion:liquid_memories": 26,
+          "opening_scope:potion:radiant_tincture": 27,
+          "opening_scope:potion:stable_serum": 18
+        },
+        "fights_per_minute": 12.415802659226976,
+        "name": "repeat-2-workers-12",
+        "phase_worker_seconds": {
+          "conditioning": 33.971711224876344,
+          "inference": 1108.0690161893144,
+          "projection": 484.7277770396322,
+          "reconstruction": 5.905185780022293,
+          "sampling": 92.79190329788253,
+          "transition": 41.86000693868846
+        },
+        "real_decisions_per_second": 6.030532720195961,
+        "repeat": 1,
+        "searched_action_max_seconds": 5.635970001108944,
+        "searched_action_p50_seconds": 3.1744891246780753,
+        "searched_action_p95_seconds": 3.738180416636169,
+        "searched_actions_over_5_seconds": 2,
+        "searched_decisions_per_second": 2.985704925195059,
+        "seconds": 202.9671434997581,
+        "simulations_per_second": 71.6569182046814,
+        "sum_worker_high_water_bytes": 3939303424,
+        "worker_peak_rss_bytes_by_pid": {
+          "39928": 327794688,
+          "39929": 325124096,
+          "39930": 341884928,
+          "39931": 328122368,
+          "39932": 333447168,
+          "39933": 322158592,
+          "39934": 328073216,
+          "39935": 325992448,
+          "39936": 334823424,
+          "39937": 330219520,
+          "39938": 321994752,
+          "39939": 319668224
+        },
+        "workers": 12
+      },
+      {
+        "all_search_seconds": 1671.130713580642,
+        "fallbacks": {
+          "forced_action": 249,
+          "opening_scope:card:havoc": 44,
+          "opening_scope:card:hellraiser": 12,
+          "opening_scope:card:infernal_blade": 14,
+          "opening_scope:card:juggling": 45,
+          "opening_scope:card:pillage": 59,
+          "opening_scope:end_turn_draw_trigger": 39,
+          "opening_scope:intrinsic_retention": 29,
+          "opening_scope:potion:bottled_potential": 11,
+          "opening_scope:potion:colorless_potion": 21,
+          "opening_scope:potion:fysh_oil": 24,
+          "opening_scope:potion:liquid_memories": 26,
+          "opening_scope:potion:radiant_tincture": 27,
+          "opening_scope:potion:stable_serum": 18
+        },
+        "fights_per_minute": 10.053101123419843,
+        "name": "repeat-2-workers-8",
+        "phase_worker_seconds": {
+          "conditioning": 32.097641058731824,
+          "inference": 1018.0903628668748,
+          "projection": 451.2010796670802,
+          "reconstruction": 5.504331845790148,
+          "sampling": 85.91436578147113,
+          "transition": 38.80890386225656
+        },
+        "real_decisions_per_second": 4.882934831375352,
+        "repeat": 1,
+        "searched_action_max_seconds": 5.237813792191446,
+        "searched_action_p50_seconds": 2.9164106878452003,
+        "searched_action_p95_seconds": 3.4273207916412503,
+        "searched_actions_over_5_seconds": 1,
+        "searched_decisions_per_second": 2.4175314606319143,
+        "seconds": 250.66891987482086,
+        "simulations_per_second": 58.02075505516595,
+        "sum_worker_high_water_bytes": 2677784576,
+        "worker_peak_rss_bytes_by_pid": {
+          "40128": 338886656,
+          "40129": 336887808,
+          "40130": 333725696,
+          "40131": 341983232,
+          "40132": 334413824,
+          "40133": 333742080,
+          "40134": 330252288,
+          "40135": 327892992
+        },
+        "workers": 8
+      },
+      {
+        "all_search_seconds": 2016.9272567080334,
+        "fallbacks": {
+          "forced_action": 249,
+          "opening_scope:card:havoc": 44,
+          "opening_scope:card:hellraiser": 12,
+          "opening_scope:card:infernal_blade": 14,
+          "opening_scope:card:juggling": 45,
+          "opening_scope:card:pillage": 59,
+          "opening_scope:end_turn_draw_trigger": 39,
+          "opening_scope:intrinsic_retention": 29,
+          "opening_scope:potion:bottled_potential": 11,
+          "opening_scope:potion:colorless_potion": 21,
+          "opening_scope:potion:fysh_oil": 24,
+          "opening_scope:potion:liquid_memories": 26,
+          "opening_scope:potion:radiant_tincture": 27,
+          "opening_scope:potion:stable_serum": 18
+        },
+        "fights_per_minute": 12.98397199864119,
+        "name": "repeat-2-workers-16",
+        "phase_worker_seconds": {
+          "conditioning": 37.78991585224867,
+          "inference": 1233.335440304596,
+          "projection": 538.9184385994449,
+          "reconstruction": 6.66925706109032,
+          "sampling": 104.91278836177662,
+          "transition": 46.87555524939671
+        },
+        "real_decisions_per_second": 6.306500685054292,
+        "repeat": 1,
+        "searched_action_max_seconds": 6.556928958743811,
+        "searched_action_p50_seconds": 3.540591000346467,
+        "searched_action_p95_seconds": 4.29707222932484,
+        "searched_actions_over_5_seconds": 2,
+        "searched_decisions_per_second": 3.1223361234827625,
+        "seconds": 194.0854462920688,
+        "simulations_per_second": 74.9360669635863,
+        "sum_worker_high_water_bytes": 5146951680,
+        "worker_peak_rss_bytes_by_pid": {
+          "40341": 336347136,
+          "40343": 327450624,
+          "40344": 311508992,
+          "40345": 334512128,
+          "40346": 306528256,
+          "40347": 318636032,
+          "40349": 328122368,
+          "40350": 312393728,
+          "40351": 301580288,
+          "40352": 329039872,
+          "40353": 325713920,
+          "40354": 332906496,
+          "40355": 322174976,
+          "40356": 311197696,
+          "40357": 324861952,
+          "40358": 323977216
+        },
+        "workers": 16
+      },
+      {
+        "all_search_seconds": 1466.2032165224664,
+        "fallbacks": {
+          "forced_action": 249,
+          "opening_scope:card:havoc": 44,
+          "opening_scope:card:hellraiser": 12,
+          "opening_scope:card:infernal_blade": 14,
+          "opening_scope:card:juggling": 45,
+          "opening_scope:card:pillage": 59,
+          "opening_scope:end_turn_draw_trigger": 39,
+          "opening_scope:intrinsic_retention": 29,
+          "opening_scope:potion:bottled_potential": 11,
+          "opening_scope:potion:colorless_potion": 21,
+          "opening_scope:potion:fysh_oil": 24,
+          "opening_scope:potion:liquid_memories": 26,
+          "opening_scope:potion:radiant_tincture": 27,
+          "opening_scope:potion:stable_serum": 18
+        },
+        "fights_per_minute": 6.320682820778247,
+        "name": "repeat-2-workers-4",
+        "phase_worker_seconds": {
+          "conditioning": 28.233039907179773,
+          "inference": 892.3993041538633,
+          "projection": 398.4567794553004,
+          "reconstruction": 4.794802694581449,
+          "sampling": 75.07575172511861,
+          "transition": 33.2237619808875
+        },
+        "real_decisions_per_second": 3.0700459415208625,
+        "repeat": 1,
+        "searched_action_max_seconds": 4.43590054102242,
+        "searched_action_p50_seconds": 2.554956208448857,
+        "searched_action_p95_seconds": 3.0333184278570116,
+        "searched_actions_over_5_seconds": 0,
+        "searched_decisions_per_second": 1.5199737259490544,
+        "seconds": 398.6911021252163,
+        "simulations_per_second": 36.47936942277731,
+        "sum_worker_high_water_bytes": 1344487424,
+        "worker_peak_rss_bytes_by_pid": {
+          "40522": 334266368,
+          "40523": 337805312,
+          "40524": 337166336,
+          "40525": 335249408
+        },
+        "workers": 4
+      },
+      {
+        "all_search_seconds": 1654.2403944320977,
+        "fallbacks": {
+          "forced_action": 249,
+          "opening_scope:card:havoc": 44,
+          "opening_scope:card:hellraiser": 12,
+          "opening_scope:card:infernal_blade": 14,
+          "opening_scope:card:juggling": 45,
+          "opening_scope:card:pillage": 59,
+          "opening_scope:end_turn_draw_trigger": 39,
+          "opening_scope:intrinsic_retention": 29,
+          "opening_scope:potion:bottled_potential": 11,
+          "opening_scope:potion:colorless_potion": 21,
+          "opening_scope:potion:fysh_oil": 24,
+          "opening_scope:potion:liquid_memories": 26,
+          "opening_scope:potion:radiant_tincture": 27,
+          "opening_scope:potion:stable_serum": 18
+        },
+        "fights_per_minute": 10.210818765354391,
+        "name": "repeat-3-workers-8",
+        "phase_worker_seconds": {
+          "conditioning": 31.612627473659813,
+          "inference": 1008.1739859497175,
+          "projection": 446.589697082527,
+          "reconstruction": 5.463487328961492,
+          "sampling": 85.08292499743402,
+          "transition": 38.23053634818643
+        },
+        "real_decisions_per_second": 4.959540543172133,
+        "repeat": 2,
+        "searched_action_max_seconds": 5.159988041501492,
+        "searched_action_p50_seconds": 2.8925162500236183,
+        "searched_action_p95_seconds": 3.385001030866988,
+        "searched_actions_over_5_seconds": 1,
+        "searched_decisions_per_second": 2.4554587983352225,
+        "seconds": 246.7970549580641,
+        "simulations_per_second": 58.931011160045344,
+        "sum_worker_high_water_bytes": 2670739456,
+        "worker_peak_rss_bytes_by_pid": {
+          "40806": 337051648,
+          "40807": 337772544,
+          "40808": 336363520,
+          "40809": 339247104,
+          "40810": 337608704,
+          "40811": 331186176,
+          "40812": 327794688,
+          "40813": 323715072
+        },
+        "workers": 8
+      },
+      {
+        "all_search_seconds": 1473.3494498073123,
+        "fallbacks": {
+          "forced_action": 249,
+          "opening_scope:card:havoc": 44,
+          "opening_scope:card:hellraiser": 12,
+          "opening_scope:card:infernal_blade": 14,
+          "opening_scope:card:juggling": 45,
+          "opening_scope:card:pillage": 59,
+          "opening_scope:end_turn_draw_trigger": 39,
+          "opening_scope:intrinsic_retention": 29,
+          "opening_scope:potion:bottled_potential": 11,
+          "opening_scope:potion:colorless_potion": 21,
+          "opening_scope:potion:fysh_oil": 24,
+          "opening_scope:potion:liquid_memories": 26,
+          "opening_scope:potion:radiant_tincture": 27,
+          "opening_scope:potion:stable_serum": 18
+        },
+        "fights_per_minute": 6.290418247515287,
+        "name": "repeat-3-workers-4",
+        "phase_worker_seconds": {
+          "conditioning": 28.411204362288117,
+          "inference": 895.7840042258613,
+          "projection": 400.5779056940228,
+          "reconstruction": 5.209112050477415,
+          "sampling": 75.89069195371121,
+          "transition": 33.17657735198736
+        },
+        "real_decisions_per_second": 3.0553460059359967,
+        "repeat": 2,
+        "searched_action_max_seconds": 5.109548584092408,
+        "searched_action_p50_seconds": 2.5558506245724857,
+        "searched_action_p95_seconds": 3.0400804898235947,
+        "searched_actions_over_5_seconds": 1,
+        "searched_decisions_per_second": 1.5126958166643907,
+        "seconds": 400.6092919171788,
+        "simulations_per_second": 36.30469959994537,
+        "sum_worker_high_water_bytes": 1336377344,
+        "worker_peak_rss_bytes_by_pid": {
+          "41016": 331841536,
+          "41017": 335593472,
+          "41018": 338608128,
+          "41019": 330334208
+        },
+        "workers": 4
+      },
+      {
+        "all_search_seconds": 1816.564004930202,
+        "fallbacks": {
+          "forced_action": 249,
+          "opening_scope:card:havoc": 44,
+          "opening_scope:card:hellraiser": 12,
+          "opening_scope:card:infernal_blade": 14,
+          "opening_scope:card:juggling": 45,
+          "opening_scope:card:pillage": 59,
+          "opening_scope:end_turn_draw_trigger": 39,
+          "opening_scope:intrinsic_retention": 29,
+          "opening_scope:potion:bottled_potential": 11,
+          "opening_scope:potion:colorless_potion": 21,
+          "opening_scope:potion:fysh_oil": 24,
+          "opening_scope:potion:liquid_memories": 26,
+          "opening_scope:potion:radiant_tincture": 27,
+          "opening_scope:potion:stable_serum": 18
+        },
+        "fights_per_minute": 12.404605415537551,
+        "name": "repeat-3-workers-12",
+        "phase_worker_seconds": {
+          "conditioning": 34.11117753945291,
+          "inference": 1111.4278619033284,
+          "projection": 486.6022931560874,
+          "reconstruction": 6.051202464848757,
+          "sampling": 93.01560656121,
+          "transition": 42.082324635237455
+        },
+        "real_decisions_per_second": 6.025094058975382,
+        "repeat": 2,
+        "searched_action_max_seconds": 5.766101167071611,
+        "searched_action_p50_seconds": 3.196690020384267,
+        "searched_action_p95_seconds": 3.7589210215955973,
+        "searched_actions_over_5_seconds": 2,
+        "searched_decisions_per_second": 2.9830122546887923,
+        "seconds": 203.15035549970344,
+        "simulations_per_second": 71.59229411253101,
+        "sum_worker_high_water_bytes": 3944316928,
+        "worker_peak_rss_bytes_by_pid": {
+          "41381": 330858496,
+          "41382": 325156864,
+          "41383": 322158592,
+          "41384": 337281024,
+          "41385": 325156864,
+          "41386": 326451200,
+          "41387": 330727424,
+          "41388": 322945024,
+          "41389": 336969728,
+          "41390": 320749568,
+          "41391": 331448320,
+          "41392": 334413824
+        },
+        "workers": 12
+      },
+      {
+        "all_search_seconds": 1976.7136444151402,
+        "fallbacks": {
+          "forced_action": 249,
+          "opening_scope:card:havoc": 44,
+          "opening_scope:card:hellraiser": 12,
+          "opening_scope:card:infernal_blade": 14,
+          "opening_scope:card:juggling": 45,
+          "opening_scope:card:pillage": 59,
+          "opening_scope:end_turn_draw_trigger": 39,
+          "opening_scope:intrinsic_retention": 29,
+          "opening_scope:potion:bottled_potential": 11,
+          "opening_scope:potion:colorless_potion": 21,
+          "opening_scope:potion:fysh_oil": 24,
+          "opening_scope:potion:liquid_memories": 26,
+          "opening_scope:potion:radiant_tincture": 27,
+          "opening_scope:potion:stable_serum": 18
+        },
+        "fights_per_minute": 13.293387874994915,
+        "name": "repeat-3-workers-16",
+        "phase_worker_seconds": {
+          "conditioning": 37.11411381326616,
+          "inference": 1208.04283223534,
+          "projection": 529.2668924252503,
+          "reconstruction": 6.56599115813151,
+          "sampling": 102.59867470012978,
+          "transition": 45.87195962201804
+        },
+        "real_decisions_per_second": 6.456788396426101,
+        "repeat": 2,
+        "searched_action_max_seconds": 6.410890792030841,
+        "searched_action_p50_seconds": 3.4865857921540737,
+        "searched_action_p95_seconds": 4.2084485738305375,
+        "searched_actions_over_5_seconds": 2,
+        "searched_decisions_per_second": 3.196743274701158,
+        "seconds": 189.56792833376676,
+        "simulations_per_second": 76.7218385928278,
+        "sum_worker_high_water_bytes": 5160124416,
+        "worker_peak_rss_bytes_by_pid": {
+          "41577": 325664768,
+          "41578": 339099648,
+          "41579": 321781760,
+          "41580": 312360960,
+          "41581": 305037312,
+          "41582": 326238208,
+          "41583": 335986688,
+          "41584": 326336512,
+          "41585": 312836096,
+          "41586": 323747840,
+          "41587": 304136192,
+          "41588": 323829760,
+          "41589": 331923456,
+          "41590": 329728000,
+          "41591": 314556416,
+          "41592": 326860800
+        },
+        "workers": 16
+      }
+    ],
+    "workers": [
+      {
+        "batch_seconds_median": 398.6911021252163,
+        "batch_seconds_range": [
+          391.3195252083242,
+          400.6092919171788
+        ],
+        "fights_per_minute": 6.320682820778247,
+        "real_decisions_per_second": 3.0700459415208625,
+        "searched_action_p50_median": 2.554956208448857,
+        "searched_action_p95_median": 3.0333184278570116,
+        "searched_actions_over_5_seconds": 1,
+        "searched_decisions_per_second": 1.5199737259490544,
+        "speedup_vs_4": 1.0,
+        "sum_worker_high_water_gib_median": 1.2476654052734375,
+        "workers": 4
+      },
+      {
+        "batch_seconds_median": 246.7970549580641,
+        "batch_seconds_range": [
+          243.0858006249182,
+          250.66891987482086
+        ],
+        "fights_per_minute": 10.210818765354391,
+        "real_decisions_per_second": 4.959540543172133,
+        "searched_action_p50_median": 2.8925162500236183,
+        "searched_action_p95_median": 3.385001030866988,
+        "searched_actions_over_5_seconds": 3,
+        "searched_decisions_per_second": 2.4554587983352225,
+        "speedup_vs_4": 1.615461344111104,
+        "sum_worker_high_water_gib_median": 2.4873199462890625,
+        "workers": 8
+      },
+      {
+        "batch_seconds_median": 202.9671434997581,
+        "batch_seconds_range": [
+          201.01015729131177,
+          203.15035549970344
+        ],
+        "fights_per_minute": 12.415802659226976,
+        "real_decisions_per_second": 6.030532720195961,
+        "searched_action_p50_median": 3.1744891246780753,
+        "searched_action_p95_median": 3.738180416636169,
+        "searched_actions_over_5_seconds": 6,
+        "searched_decisions_per_second": 2.985704925195059,
+        "speedup_vs_4": 1.964313510308093,
+        "sum_worker_high_water_gib_median": 3.673431396484375,
+        "workers": 12
+      },
+      {
+        "batch_seconds_median": 189.56792833376676,
+        "batch_seconds_range": [
+          182.61548341671005,
+          194.0854462920688
+        ],
+        "fights_per_minute": 13.293387874994915,
+        "real_decisions_per_second": 6.456788396426101,
+        "searched_action_p50_median": 3.4865857921540737,
+        "searched_action_p95_median": 4.2084485738305375,
+        "searched_actions_over_5_seconds": 6,
+        "searched_decisions_per_second": 3.196743274701158,
+        "speedup_vs_4": 2.103156929706234,
+        "sum_worker_high_water_gib_median": 4.80328369140625,
+        "workers": 16
+      }
+    ]
+  }
+}

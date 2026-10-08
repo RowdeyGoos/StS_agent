@@ -31,14 +31,18 @@ from .scenarios import SCENARIO_SET, episode_seed
 
 
 def fingerprint(model):
+    from game.agent.input_views import RAW
     digest = hashlib.sha256(model.vocabulary.identity.encode())
     digest.update(repr(model.architecture).encode())
     if model.action_policy != ALL_LEGAL:
         digest.update(model.action_policy.encode())
+    if model.input_view != RAW:
+        digest.update(model.input_view.encode())
     for name, value in model.state_dict().items():
         digest.update(name.encode())
         digest.update(value.detach().cpu().contiguous().numpy().tobytes())
-    return ('sts_policy_state_v2:' if model.action_policy != ALL_LEGAL else 'sts_policy_state_v1:') + digest.hexdigest()
+    return ('sts_policy_state_v3:' if model.input_view != RAW else
+            'sts_policy_state_v2:' if model.action_policy != ALL_LEGAL else 'sts_policy_state_v1:') + digest.hexdigest()
 
 
 def check_cancel(cancel):
@@ -134,7 +138,7 @@ def collect(model, experiment, generator, *, cursor, iteration, decisions=None,
     identity, behavior = implementation(), fingerprint(model)
     identity = replace(identity, policy='ppo_v1:' + behavior.split(':')[-1])
     encoder = FeatureEncoder(model.vocabulary, action_policy=model.action_policy,
-                             representation=model.architecture.schema)
+                             representation=model.architecture.schema, input_view=model.input_view)
     prepared = None
     model.eval()
     steps, episodes = [], []
@@ -222,9 +226,16 @@ def collect(model, experiment, generator, *, cursor, iteration, decisions=None,
                             steps[-1] = replace(steps[-1], truncated=True, next_value=value)
                         break
                     count = len(state.graph.candidate_refs)
-                    if (not np.array_equal(observation['action_mask'][:count], state.graph.observation['action_mask']) or
+                    # Detaching old links can renumber the encoder's reference
+                    # table even though current candidates are identical. Check
+                    # the environment against its original public graph, and
+                    # require the policy to retain exactly its ordered actions.
+                    from game.agent.input_views import RAW
+                    mapping = state.graph if encoder.input_view == RAW else encoder.public.pack(public)
+                    if (mapping.candidate_refs != state.graph.candidate_refs or
+                            not np.array_equal(observation['action_mask'][:count], mapping.observation['action_mask']) or
                             observation['action_mask'][count:].any() or not np.array_equal(
-                            observation['candidates'][:count], state.graph.observation['candidates'])):
+                            observation['candidates'][:count], mapping.observation['candidates'])):
                         raise ValueError('Policy and environment candidate mappings disagree')
                     with torch.inference_mode():
                         action = sample_actions(logits, batch['mask'], generator=generator)

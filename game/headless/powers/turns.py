@@ -16,7 +16,7 @@ def execute(p, op, args):
             from game.headless.cards.colorless_effects import create, pool
             from game.headless.generation.combat import select_cards
             options = [d for d in pool(p) if d.rarity == 'common']
-            for definition in select_cards(options, p.deck.generation_rng, p.rules.powers[key], distinct=True):
+            for definition in select_cards(options, p.deck.generation_rng, p.rules.powers[key], distinct=True, revealed=True):
                 create(p, definition)
         elif key == 'creative_ai':
             push(p, ['def_before_draw', p.rules.powers.get(key, 0)])

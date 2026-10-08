@@ -14,11 +14,28 @@ class Scenario:
     encounter: str
     difficulty: str
 
+    def planning_start(self):
+        """Public constants of this controlled fresh-inventory scenario only.
+
+        Never derive this declaration from a restored corpus or campaign state.
+        The ordinary producer still verifies the sampled opening against it.
+        """
+        from game.agent.contracts.planning import CombatStart, StartingCard, StartingRelic
+        from game.headless.cards.catalog import DEFAULT_CARDS
+        from game.headless.run.construction import declared_combat_region
+        declared_combat_region(self.encounter)
+        start = definition('ironclad')
+        return CombatStart('sts_declared_combat_start_v1', 'declared_fresh_inventory',
+            DEFAULT_CARDS.snapshot_fingerprint(), 'ironclad', 0, self.encounter,
+            start.max_hp, start.max_hp, 99, tuple(StartingCard(c, 0) for c in start.deck),
+            (StartingRelic(start.relic, 0),), (None, None, None))
+
     def make(self, seed):
         start = definition('ironclad')
         run = RunEngine(seed=seed, card_ids=start.deck, max_hp=start.max_hp,
                         gold=99, config=RunConfig(character='ironclad', ascension=0,
-                                                 act='overgrowth'), rng_profile='native')
+                                                 act='underdocks' if self.encounter.startswith('underdocks_') else 'overgrowth'),
+                        rng_profile='native')
         run.obtain_relic(start.relic)
         run.start_combat(encounter_id=self.encounter)
         return run

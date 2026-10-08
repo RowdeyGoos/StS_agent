@@ -32,7 +32,7 @@ def execute(p, op, identity):
         push(p, ['autoplay_next', identity])
     elif op == 'autoplay_take':
         if p.deck.draw_pile:
-            card = p.deck.draw_pile.pop()
+            card = p.deck.take_top('autoplay_top')
             p.deck.in_play.append(card)
             batch['cards'].append(card.instance_id)
             batch['remaining'] -= 1

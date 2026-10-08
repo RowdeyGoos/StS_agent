@@ -1,5 +1,6 @@
 """Public card mechanics without a per-definition content allowlist."""
 from dataclasses import fields, is_dataclass
+from functools import lru_cache
 import json
 
 from game.agent.contracts.full import Field, Node
@@ -27,6 +28,35 @@ def public_static(value, kind, name):
         else:
             raise UnsupportedProfile('public_mechanic_parameter:' + key)
     return Node(kind, name, fields=tuple(entries), children=tuple(children))
+
+
+@lru_cache(maxsize=2048)
+def _immutable_static(kind, name, parameters):
+    entries, children = [], []
+    for key, item_type, item in parameters:
+        if item_type is tuple:
+            children.append(Node('parameters', key, fields=tuple(Field(str(i), v) for i, (_, v) in enumerate(item))))
+        else:
+            entries.append(Field(key, item))
+    return Node(kind, name, fields=tuple(entries), children=tuple(children))
+
+
+def cached_static(value, kind, name):
+    params = getattr(type(value), '__dataclass_params__', None)
+    if params is not None and params.frozen:
+        parameters = []
+        # Dataclass equality can ignore fields, and bool compares equal to int.
+        # Key every validated public value explicitly, preserving scalar types.
+        for field in fields(value):
+            item = getattr(value, field.name)
+            if type(item) in (str, int, bool, type(None)):
+                parameters.append((field.name, type(item), item))
+            elif type(item) is tuple and all(type(v) in (str, int, bool, type(None)) for v in item):
+                parameters.append((field.name, tuple, tuple((type(v), v) for v in item)))
+            else:
+                return public_static(value, kind, name)
+        return _immutable_static(kind, name, tuple(parameters))
+    return public_static(value, kind, name)
 
 
 def card_node(card, ref=None, player=None, *, on_table=False):
@@ -91,7 +121,7 @@ class CardViews:
     def _static(self, value, kind, name):
         key = (id(value), kind, name)
         if key not in self._static_values:
-            self._static_values[key] = (value, public_static(value, kind, name))
+            self._static_values[key] = (value, cached_static(value, kind, name))
         return self._static_values[key][1]
 
     def card(self, card, ref=None, *, on_table=False):

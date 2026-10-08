@@ -87,7 +87,7 @@ def run_ppo(*, checkpoint, experiment, output_dir, decisions=256, time_limit_sec
     if reset_action_policy:
         from .model import ActorCritic
         initialized = ActorCritic(model.vocabulary, model.architecture,
-                                 action_policy=experiment.training.action_policy)
+                                 action_policy=experiment.training.action_policy, input_view=model.input_view)
         initialized.load_state_dict(model.state_dict(), strict=True)
         model = initialized
     learner = (restore_ppo(checkpoint, resume_state, experiment=experiment, env_factory=env_factory, workers=workers)

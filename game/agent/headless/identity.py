@@ -29,7 +29,13 @@ class Identities:
         Keys are private dispatch identities, not ordering tie breakers.
         """
         current = {key for key, _ in (*visible, *draw)}
+        drawing = {key: signature(card) for key, card in draw}
         for keys in self.draw_groups:
+            if all(key in drawing for key in keys) and len({drawing[key] for key in keys}) == 1:
+                # No public event resolved this group's ambiguity. Re-reading
+                # the same pile (including a selector toggle) must not rebind
+                # opaque references according to its private physical order.
+                continue
             names = sorted((self.refs['card', k] for k in keys), key=number)
             destinations = [k for k, _ in (*visible, *draw) if k in keys]
             # A disappeared card could have been consumed by an unobserved

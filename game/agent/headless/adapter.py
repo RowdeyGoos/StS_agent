@@ -56,6 +56,7 @@ class HeadlessAdapter:
         self._combat_summary = (summarize(engine.combat, self._epoch)
                                 if engine.combat and self.decision_profile == 'full_run_v2' else None)
         self._combat_health_summary = with_enemy_health(self._combat_summary, engine.combat)
+        self._combat_completion = None
 
     @property
     def combat_summary(self):
@@ -76,6 +77,19 @@ class HeadlessAdapter:
         """Optional enemy HP facts from the same reconciled combat boundary."""
         self.combat_summary  # Apply the same profile and fault checks.
         return self._combat_health_summary
+
+    @property
+    def combat_completion(self):
+        """Latest settled public inventory/HUD, frozen at verified cleanup."""
+        self.combat_summary  # Apply the same profile and stopped-owner checks.
+        return self._combat_completion
+
+    def _project_completion(self, summary):
+        from game.agent.contracts.planning import CombatEnd, validate_end
+        from .full_projection import FullProjection
+        owner = FullProjection(self._engine, self._ids, self._history, self._power_cards,
+                               'attachment', self._epoch, False)
+        return validate_end(CombatEnd(summary.outcome, owner.run()))
 
     @property
     def run_outcome(self):
@@ -331,6 +345,10 @@ class HeadlessAdapter:
                 summarize(self._engine.combat, self._epoch) if self._engine.combat else None)
             health_owner = (result if instant else combat_before) if completed else self._engine.combat
             self._combat_health_summary = with_enemy_health(self._combat_summary, health_owner)
+            if completed:
+                self._combat_completion = self._project_completion(completed)
+            elif self._engine.combat is not combat_before:
+                self._combat_completion = None
         except BaseException as error:
             self._faulted = True
             if not isinstance(error, Exception):

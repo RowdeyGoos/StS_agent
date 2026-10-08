@@ -67,7 +67,7 @@ function renderOverview() {
   const groups=new Map(),categories={};
   for(const r of runs) {
     // Distinct source implementations/objectives/evidence/splits are never pooled in a policy rate.
-    const key=JSON.stringify([r.policy,r.goal,r.metadata.split,r.metadata.evidence,r.metadata.build,r.metadata.rules,r.training?.reward_identity,r.training?.collection_id||r.metadata.policy]);
+    const key=JSON.stringify([r.policy,r.goal,r.metadata.split,r.metadata.evidence,r.metadata.build,r.metadata.rules,r.training?.reward_identity,r.training?.collection_id||r.metadata.policy,r.search?.teacher,r.search?.purpose]);
     if(!groups.has(key)) groups.set(key,[]);
     groups.get(key).push(r);
     for(const [category,count] of Object.entries(r.categories)) categories[category]=(categories[category]||0)+count;
@@ -87,9 +87,11 @@ function renderOverview() {
   set('category-bars',Object.entries(categories).sort((a,b)=>b[1]-a[1]).map(([key,count])=>el('div',{class:'bar-row'},names[key]||human(key),el('div',{class:'bar-track'},el('div',{class:'bar-fill',style:{width:(100*count/max)+'%',background:colors[key]||'#919b92'}})),el('span',{class:'bar-count'},fmt(count)))));
   $('run-count').textContent=`/ ${runs.length}`;
   set('run-rows',runs.map(r=>el('tr',{},el('td',{},el('button',{class:'link-button',onclick:()=>openRun(r.id)},'↗ '+short(r.id)),el('span',{class:'muted mono'},r.case_id?'case '+short(r.case_id):r.metadata.split)),
-    el('td',{},r.policy),el('td',{},badge(outcome(r),r.status)),el('td',{},fmt(r.last_hud?.floor)),el('td',{},fmt(r.steps)),
+    el('td',{},r.policy,r.search?.purpose==='reanalysis'?el('span',{class:'muted'},'Reanalysis targets attached'):null),el('td',{},badge(outcome(r),r.status)),el('td',{},fmt(r.last_hud?.floor)),el('td',{},fmt(r.steps)),
     el('td',{},r.flag_counts.warning?badge(`${r.flag_counts.warning} loop signal${r.flag_counts.warning>1?'s':''}`,'warning'):el('span',{class:'muted'},`${r.flag_counts.info} informational`)))));
-  $('pending').textContent=report.pending.length ? `${report.pending.length} planned episode(s) have no completed recording (failed, interrupted or unattempted). They remain listed in provenance. Rates above use recorded episodes only; this is not a complete planned evaluation rate.` : report.sources.length?'All episodes declared in the loaded evaluation and PPO reports have completed recordings.':'No evaluation or PPO plan was loaded. This view describes the supplied recordings only.';
+  const searchSources=report.sources.some(s=>s.kind==='search_report');
+  $('pending').textContent=(report.pending.length ? `${report.pending.length} reported episode(s) have no completed recording (failed, interrupted or unattempted). They remain listed in provenance. Rates above use recorded episodes only.` : searchSources?'This view describes the supplied canonical recordings.':report.sources.length?'All episodes declared in the loaded evaluation and PPO reports have completed recordings.':'No evaluation or PPO plan was loaded. This view describes the supplied recordings only.')+
+    (searchSources?' Search joins verify recorded targets; report-wide episode completion and combat task outcomes are not assessed here.':'');
   $('review-flags').disabled=!runs.some(r=>r.flag_counts.warning);
 }
 async function openRun(id,step=null) {
@@ -104,7 +106,8 @@ async function openRun(id,step=null) {
     $('run-title').textContent=`${run.policy} / ${short(run.id)}`;
     $('run-subtitle').textContent=`${run.metadata.split} · ${human(run.metadata.evidence)} · ${run.goal==='act1'?'Act 1 goal':run.goal==='full_run'?'Campaign goal':'Goal not recorded'} · ${run.case_id?'paired case '+short(run.case_id):run.metadata.scenario}`;
     $('run-select').value=id;
-    set('run-summary',badge(outcome(run),run.status),el('span',{},el('strong',{},fmt(run.steps)),' decisions'),el('span',{},'Last floor ',el('strong',{},fmt(run.last_hud?.floor))),el('span',{},'Canonical outcome: ',el('strong',{},human(run.outcome.kind)+' / '+human(run.outcome.reason))),el('span',{},'Canonical return: ',el('strong',{},run.canonical_return)));
+    set('run-summary',badge(outcome(run),run.status),el('span',{},el('strong',{},fmt(run.steps)),' decisions'),el('span',{},'Last floor ',el('strong',{},fmt(run.last_hud?.floor))),el('span',{},'Canonical outcome: ',el('strong',{},human(run.outcome.kind)+' / '+human(run.outcome.reason))),el('span',{},'Canonical return: ',el('strong',{},run.canonical_return)),
+      el('button',{id:'show-search',class:'quiet',onclick:()=>$('search-panel').scrollIntoView({block:'start'})},run.search?`Inspect search · ${run.search.searched}/${run.search.decisions} searched ↓`:'Search diagnostics ↓'));
     set('category',el('option',{value:'all'},'All categories'),Object.keys(run.categories).map(key=>el('option',{value:key},names[key]||human(key))));
     set('rooms',run.rooms.map(room=>el('button',{class:'room',title:`Act ${room.act}, floor ${room.floor}: ${room.contexts.join(', ')}`,onclick:()=>chooseStep(room.start)},el('span',{class:'room-label'},`ACT ${room.act}`),el('span',{class:'floor'},room.floor),el('span',{class:'room-label'},(names[room.contexts[0]]||human(room.contexts[0])).slice(0,12)))));
     renderFlags();
@@ -241,7 +244,7 @@ async function chooseStep(step) {
   if(!run||!run.steps)return;
   step=Math.min(run.steps-1,Math.max(0,Math.floor(Number(step)||0)));
   const id=run.id,token=++sequence;
-  comparison=null; error(''); $('compare').disabled=true;
+  comparison=null; error(''); $('compare').disabled=true;$('search-compare').disabled=true;
   try {
     const value=await api(`decision?id=${encodeURIComponent(id)}&step=${step}`,()=>token===sequence);
     if(token!==sequence||run.id!==id)return;
@@ -252,7 +255,7 @@ async function chooseStep(step) {
     $('step-number').value=step+1;$('step-number').max=run.steps;$('step-slider').max=run.steps-1;$('step-slider').value=step;
     $('previous').disabled=step===0;$('next').disabled=step===run.steps-1;
     [...$('rooms').children].forEach((button,i)=>button.classList.toggle('active',run.rooms[i].start<=step&&run.rooms[i].end>=step));
-    renderDecisionList();showState(value);renderActions();renderLearner();
+    renderDecisionList();showState(value);renderActions();renderSearch();renderLearner();
     $('raw-state').textContent=JSON.stringify(value.observation,null,2);
     $('provenance').textContent=`Trajectory ${run.sha256}\nState ${value.state_sha256}\nRecorded policy ${run.metadata.policy}\nBuild ${run.metadata.build}\nRules ${run.metadata.rules}`;
     $('compare').disabled=!report.models.length;
@@ -277,10 +280,98 @@ function renderActions() {
     action.subject||action.target?el('details',{},el('summary',{class:'muted'},'Choice details'),[action.subject,action.target].filter(ref=>refs.has(ref)).map(ref=>entity(refs.get(ref)))):null),
     models.map((m,index)=>{const p=m.probabilities.find(p=>p.ref===action.ref),only=m.probabilities.filter(p=>p.allowed).length===1;return el('td',{class:'prob'},p.allowed?el('span',{class:'prob-number'},fmt(100*p.probability,2)+'%'):el('span',{class:'prob-excluded'},'Policy excluded'),p.allowed?el('div',{class:'bar-track'},el('div',{class:'bar-fill',style:{width:100*p.probability+'%',background:index%2?'#a1864b':'#567765'}})):null,only&&p.allowed?el('span',{class:'muted'},'Only policy-allowed action'):null);}),
     !models.length?el('td',{class:'muted'},'Not recomputed'):null)));
-  set('model-notes',models.map(m=>el('div',{class:'model-note'},el('strong',{},m.label),el('span',{class:'muted'},`Critic ${fmt(m.value,4)} · shaped ${m.reward_spec.goal||m.reward_spec.schema} return`),el('span',{class:'muted'},m.matches_recorded_policy?'Matches recorded policy identity':'Different from recorded policy'),el('span',{class:'muted mono'},m.identity),el('span',{class:'muted'},`Action policy: ${m.action_policy}`))));
+  set('model-notes',models.map(m=>el('div',{class:'model-note'},el('strong',{},m.label),el('span',{class:'muted'},`Critic ${fmt(m.value,4)} · shaped ${m.reward_spec.goal||m.reward_spec.schema} return`),el('span',{class:'muted'},m.matches_recorded_policy?'Matches recorded policy identity':'Different from recorded policy'),el('span',{class:'muted mono'},m.identity),el('span',{class:'muted'},`Action policy: ${m.action_policy} · input view: ${m.input_view||'public_observation_v1'}`))));
   const different=new Set(models.map(m=>m.reward_identity)).size>1;
   $('comparison-note').textContent=models.length?`${comparison.interpretation}${different?' These checkpoints use different reward objectives; their critic values are not directly comparable.':''}`:
     report.models.length?'Compare to rank these legal actions under each loaded checkpoint. This does not replay alternative outcomes.':'To enable probabilities, restart the viewer with --checkpoint label=path.sts-model. Recorded choices and public states work without training dependencies.';
+}
+// Only infer elimination when a subsequent recorded round confirms it. The
+// final round can be interrupted; it does not prove the rest were eliminated.
+function searchFates(data) {
+  const rounds=data.tree_work?.root_rounds||[],fates={};
+  for(const ref of Object.keys(data.probabilities)) {
+    if(!rounds.length){fates[ref]=data.visits[ref]?'Visited':'Unvisited';continue;}
+    if(!rounds[0].ranked.includes(ref)){fates[ref]='Not considered';continue;}
+    fates[ref]='Last round';
+    for(let i=0;i<rounds.length-1;i++)if(rounds[i].ranked.includes(ref)&&!rounds[i+1].ranked.includes(ref)) {
+      fates[ref]=`Eliminated after round ${i+1}`;break;
+    }
+  }
+  return fates;
+}
+function percent(value) { return value==null?'—':value>0&&value<.0001?'<0.01%':fmt(100*value,2)+'%'; }
+function searchProbability(value,kind='') {
+  return el('td',{class:'prob '+kind},el('span',{class:'prob-number'},percent(value)),value==null?null:
+    el('div',{class:'bar-track'},el('div',{class:'bar-fill',style:{width:100*value+'%'}})));
+}
+function renderSearch() {
+  const data=decision?.search,meta=run?.search,button=$('search-compare');
+  button.hidden=!data;
+  if(!data||!meta){set('search-content',el('p',{class:'note'},'No recorded search diagnostics for this decision. Rebuild with the public search output directory (or the trajectory and its .search.json.gz sidecar). Full simulated paths are not retained.'));return;}
+  const actor=comparison?.search_actor,available=actor?.status==='available',reanalysis=meta.purpose==='reanalysis';
+  const matched=report.models.some(m=>m.identity===meta.checkpoint);
+  button.disabled=!matched;button.textContent=available?'Recompute search actor':matched?'Recompute search actor':'Recorded checkpoint not loaded';
+  const labels=new Map(decision.candidates.map(a=>[a.ref,a.label]));
+  const label=ref=>labels.get(ref)||ref;
+  const bestActor=available?actor.action_ref:null;
+  const visited=Object.keys(data.visits).filter(ref=>data.visits[ref]>0);
+  const bestValue=visited.length?visited.reduce((a,b)=>data.values[b]>data.values[a]?b:a):null;
+  const choice=el('div',{class:'search-choices'},
+    el('div',{class:'search-choice selected'},el('span',{class:'eyebrow'},reanalysis?'REANALYSIS SUGGESTION':data.reason?'FALLBACK CHOICE':'SEARCH CHOICE'),el('strong',{},label(data.action_ref)),el('span',{class:'muted'},reanalysis?'Recorded play: '+label(decision.action.ref):'Matches the recorded action')),
+    el('div',{class:'search-choice'},el('span',{class:'eyebrow'},'ACTOR PREFERENCE · RECOMPUTED'),el('strong',{},bestActor?label(bestActor):'Not recomputed'),el('span',{class:'muted'},bestActor?percent(actor.probabilities[bestActor])+' prior probability':'Requires the matching checkpoint and planning view')),
+    el('div',{class:'search-choice'},el('span',{class:'eyebrow'},'HIGHEST VISITED VALUE'),el('strong',{},bestValue?label(bestValue):'No completed simulations'),el('span',{class:'muted'},bestValue?'Q '+fmt(data.values[bestValue],6)+' · ties may exist':'No simulated outcome asserted')));
+  const fates=searchFates(data),sort=el('select',{'aria-label':'Sort search actions'},['Search probability','Completed value','Visits','Actor prior'].map((x,i)=>el('option',{value:i},x)));
+  const rows=el('tbody');
+  function actions() {
+    const mode=Number(sort.value),order=[data.probabilities,data.values,data.visits,available?actor.probabilities:{}][mode];
+    const sorted=[...decision.candidates].sort((a,b)=>(order[b.ref]??-Infinity)-(order[a.ref]??-Infinity));
+    rows.replaceChildren(...sorted.map(action=>{
+      const ref=action.ref,supported=Object.hasOwn(data.probabilities,ref),selected=ref===data.action_ref;
+      return el('tr',{class:selected?'recorded':''},el('td',{},el('span',{class:'search-action'},action.label),el('span',{class:'muted mono'},ref),
+        selected?el('span',{class:'recorded-mark'},reanalysis?'SUGGESTED':data.reason?'FALLBACK':'CHOSEN'):null,
+        reanalysis&&ref===decision.action.ref?el('span',{class:'recorded-mark'},'PLAYED'):null),
+        searchProbability(available?actor.probabilities[ref]:null,'actor-prob'),searchProbability(data.probabilities[ref]),
+        el('td',{class:'search-number'},supported?fmt(data.values[ref],6):'—',supported&&!data.visits[ref]?el('span',{class:'muted'},'Unvisited estimate'):null),
+        el('td',{class:'search-number'},supported?fmt(data.visits[ref]):'—'),el('td',{class:'search-fate'},supported?fates[ref]:'Outside recorded support'));
+    }));
+  }
+  sort.addEventListener('change',actions);actions();
+  const table=el('div',{class:'table-wrap search-table-wrap'},el('table',{class:'search-table'},el('thead',{},el('tr',{},
+    ['Legal action','Actor prior ↻',data.reason?'Fallback probability':'Search target','Completed Q','Visits','Consideration'].map(x=>el('th',{},x)))),rows));
+  const rounds=data.tree_work?.root_rounds||[];
+  const roundButtons=el('div',{class:'search-round-tabs',role:'group','aria-label':'Recorded elimination rounds'}),roundContent=el('div',{'aria-live':'polite'});
+  function round(index) {
+    const r=rounds[index],next=rounds[index+1];
+    [...roundButtons.children].forEach((b,i)=>{b.classList.toggle('active',i===index);b.setAttribute('aria-pressed',String(i===index));});
+    roundContent.replaceChildren(el('p',{class:'note'},`Completed simulations ${r.simulations_before} → ${r.simulations_after}. Ranking at round end; values and probabilities above are final totals.`),
+      el('ol',{class:'search-ranked'},r.ranked.map(ref=>el('li',{},el('span',{},label(ref),el('span',{class:'muted mono'},ref)),
+        el('span',{class:'muted'},`${r.visits[ref]} visits · ${next?(next.ranked.includes(ref)?'Continued':'Eliminated'):'Last recorded round'}`)))));
+  }
+  rounds.forEach((r,i)=>roundButtons.append(el('button',{'aria-pressed':'false',onclick:()=>round(i)},`Round ${i+1}`,el('span',{},`${r.ranked.length} actions · ${r.simulations_after} sims`))));
+  if(rounds.length)round(0);
+  const work=data.tree_work,leaf=data.leaf_work,depths=work?.depth_histogram||{},maxDepth=Math.max(1,...Object.values(depths));
+  const depthRows=Object.entries(depths).sort((a,b)=>Number(a[0])-Number(b[0])).map(([depth,count])=>el('div',{class:'bar-row'},`Depth ${depth}`,el('div',{class:'bar-track'},el('div',{class:'bar-fill',style:{width:100*count/maxDepth+'%'}})),el('span',{class:'bar-count'},fmt(count))));
+  const status=data.reason?'Fallback · '+human(data.reason):data.cutoff?'Partial search · '+human(data.cutoff):'Search completed';
+  const actorNote=available?`Matching checkpoint · ${actor.planning_view}. Raw critic ${fmt(actor.critic,6)} → clipped search value ${fmt(actor.search_value,6)}.`:
+    actor?.reason||'Recompute actor priors with the exact checkpoint; this does not run search.';
+  set('search-content',el('div',{class:'search-status'},badge(status,data.reason||data.cutoff?'warning':'success'),badge(reanalysis?'Reanalysis · later suggestion':'Recorded decision'),
+      el('span',{class:'muted'},human(meta.config.method)+' · '+(meta.config.model_version||'reconstruction_v1'))),
+    data.cutoff&&data.reason?el('p',{class:'note'},'Search cutoff: '+human(data.cutoff)):null,
+    choice,el('div',{class:'search-stats'},stat('Completed / budget',`${data.simulations} / ${meta.config.simulations}`),stat('Elapsed / limit',`${fmt(data.seconds,2)} / ${meta.config.time_limit} s`),
+      stat('Visited / supported',`${visited.length} / ${Object.keys(data.probabilities).length}`),stat('Depth / leaf limit',`${meta.config.max_depth} / ${meta.config.leaf_rollout_steps||0}`)),
+    el('div',{class:'panel-heading search-table-heading'},el('div',{},el('h3',{},'Root actions'),el('p',{},'Recorded search statistics · actor column recomputed separately')),el('label',{},'Sort ',sort)),
+    table,el('p',{class:'note search-actor-note'},actorNote),
+    el('p',{class:'note'},data.reason?'Fallback probabilities are the actor distribution returned by the recorded search attempt. Values can include partial work; they did not select this action.':
+      'Completed Q is the mean backed-up value for visited actions; zero-visit actions receive a mixed estimate. The search target is not a visit fraction or calibrated win probability. Selection also uses priors and the surviving candidates.'),
+    el('details',{class:'search-detail'},el('summary',{},`Root selection rounds${rounds.length?' · '+rounds.length:''}`),rounds.length?[roundButtons,roundContent]:el('p',{class:'note'},work?'No selection rounds completed in this search attempt.':'Round diagnostics were not retained in this recording.')),
+    el('details',{class:'search-detail'},el('summary',{},'Depth, leaf evaluation & timing'),
+      el('div',{class:'search-work'},el('div',{},el('h4',{},'Tree work'),work?el('p',{},`${work.expansions} expansions · ${work.terminals} terminal hits`):el('p',{},'Not recorded'),
+        el('div',{class:'bars'},depthRows.length?depthRows:el('p',{},work?'No completed depth entries.':'Depth histogram unavailable.'))),
+      el('div',{},el('h4',{},'Leaf continuations'),leaf?el('p',{},`${leaf.steps} steps · ${leaf.terminals} terminal hits · ${leaf.bootstraps} critic bootstraps (${leaf.time_bootstraps} time-limited)`):el('p',{},meta.config.leaf_rollout_steps?'Not recorded':'Critic-only leaves; no continuation rollouts'),
+        el('h4',{},'Measured time'),Object.entries(data.timings).map(([key,seconds])=>el('p',{},`${human(key)} · ${fmt(seconds,3)} s`)))),
+      el('p',{class:'note'},'Work counters can include interrupted attempts. Timing components need not sum to elapsed time. Search cutoffs are separate from the game outcome.')),
+    el('details',{class:'search-detail'},el('summary',{},'Search configuration & provenance'),el('pre',{class:'mono'},JSON.stringify({checkpoint:meta.checkpoint,teacher:meta.teacher,planning_view:meta.planning_view,purpose:meta.purpose,reward_spec:meta.reward_spec,config:meta.config,source:meta.source,report:meta.report},null,2))),
+    el('p',{class:'note search-limit'},'Only root statistics and aggregate work were saved. Full simulated paths and counterfactual state playback are unavailable. Combat value: victory + 0.1 × winning HP fraction; defeat 0.'));
 }
 function renderLearner() {
   const data=decision.training;$('learner-panel').hidden=!data;
@@ -292,10 +383,10 @@ function renderLearner() {
 async function compare() {
   if(!decision||!report.models.length)return;
   const token=sequence,id=run.id,step=decision.step;
-  $('compare').disabled=true;$('compare').textContent='Scoring this state…';error('');
-  try {const value=await api(`compare?id=${id}&step=${step}`,()=>token===sequence);if(token===sequence){if(value.state_sha256!==decision.state_sha256)throw new Error('Comparison state mismatch');comparison=value;renderActions();}}
+  $('compare').disabled=true;$('compare').textContent='Scoring this state…';$('search-compare').disabled=true;error('');
+  try {const value=await api(`compare?id=${id}&step=${step}`,()=>token===sequence);if(token===sequence){if(value.state_sha256!==decision.state_sha256)throw new Error('Comparison state mismatch');comparison=value;renderActions();renderSearch();}}
   catch(e){if(token===sequence)error(e.message);}
-  finally{if(token===sequence){$('compare').disabled=false;$('compare').textContent='Recompute comparison';}}
+  finally{if(token===sequence){$('compare').disabled=false;$('compare').textContent='Recompute comparison';renderSearch();}}
 }
 function chart(iterations,key,color) {
   const points=iterations.filter(i=>i[key]!=null),values=points.map(i=>i[key]);
@@ -334,6 +425,7 @@ async function start() {
     $('previous').addEventListener('click',()=>chooseStep(decision.step-1));$('next').addEventListener('click',()=>chooseStep(decision.step+1));
     $('step-number').addEventListener('change',e=>chooseStep(Number(e.target.value)-1));$('step-slider').addEventListener('change',e=>chooseStep(e.target.value));
     $('compare').addEventListener('click',compare);
+    $('search-compare').addEventListener('click',compare);
     document.addEventListener('keydown',e=>{if(view!=='inspector'||!decision||['INPUT','SELECT','TEXTAREA','BUTTON'].includes(document.activeElement.tagName))return;if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();chooseStep(decision.step+(e.key==='ArrowRight'?1:-1));}});
     resetFilters();renderTraining();$('loading').hidden=true;$('main').hidden=false;
     function followHash(){

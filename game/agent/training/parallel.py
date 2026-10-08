@@ -43,13 +43,13 @@ def allocations(quota, workers, cursor):
     return tuple(jobs)
 
 
-def _worker(vocabulary, architecture, experiment, env_factory, stopped, connection):
+def _worker(vocabulary, architecture, input_view, experiment, env_factory, stopped, connection):
     signal.signal(signal.SIGINT, signal.SIG_IGN)
     # Avoid multiplying the parent's BLAS/Torch thread count by the pool size.
     torch.set_num_threads(1)
     try:
         model = ActorCritic(vocabulary, architecture,
-                           action_policy=experiment.training.action_policy).requires_grad_(False)
+                           action_policy=experiment.training.action_policy, input_view=input_view).requires_grad_(False)
         while not stopped.is_set():
             if not connection.poll(.05):
                 continue
@@ -99,6 +99,7 @@ class ParallelCollector:
     def __init__(self, model, experiment, env_factory, workers):
         self.settings = collection_settings(workers)
         self.vocabulary, self.architecture = model.vocabulary, model.architecture
+        self.input_view = model.input_view
         self.experiment, self.env_factory = experiment, env_factory
         self.context = multiprocessing.get_context('spawn')
         self.stopped = self.context.Event()
@@ -114,7 +115,7 @@ class ParallelCollector:
                 raise TimeoutError('PPO collection startup exceeded its time budget')
             parent, child = self.context.Pipe()
             process = self.context.Process(target=_worker, args=(self.vocabulary, self.architecture,
-                self.experiment, self.env_factory, self.stopped, child), name='sts-ppo-collector')
+                self.input_view, self.experiment, self.env_factory, self.stopped, child), name='sts-ppo-collector')
             # Register before start, and defer signals until the OS handle is
             # attached. Reuse the episode runner's interruption-safe lifecycle.
             self.active[index] = (process, parent, time.monotonic())

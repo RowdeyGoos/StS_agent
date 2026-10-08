@@ -1,0 +1,1168 @@
+{
+  "bindings": {
+    "collection-00/search.json": "af881a0f38968e808fb1d6ec8d6cc8356cc5553f64af817e060fcd3d8de500eb",
+    "collection-01/search.json": "721ceb1341aa5d5a867c8bc7378a47a4c4f9d0545519489fa6abdc0915d841e6",
+    "collection-02/search.json": "b94059f75cfe5c548f02e91d41dfed18e47ee57b87ea78d343ebdd4e05b6e8f4",
+    "collection-03/search.json": "7c255d5e6b2cd62e8a78cd91d5adfc362e4a083146fdef27eaf5ecb886fc2bde",
+    "collection-04/search.json": "c93f9b75c216ac2c6103b737d6fc3c53e45ebbc71217a76220df13b20c09ff80",
+    "control-audit.json": "8d84cc341e5d60150528514b72c7723cb690acede7c75039605c96c2af41a2ed",
+    "evaluation.json": "25909e6e13f1262e78591ffdff399cc98266694191c0d23d177d16892cd8acdd",
+    "initialization-audit.json": "2e8dcc6491c3c921e8739857d883b185d5aef935b141aaebe295573323cc4b35",
+    "review.json": "418cc0506798d0b40b8edd32c3a439d0648fe0a1f51c088c39ac29d67b397167",
+    "source-archive.json": "65820904335f2db216464de8ce0acf15d74a2d0ff8ef718f34f15d239705cfdf",
+    "student/final.sts-model": "7805954e02238a6928a3c15ce2b6d65e492f1743a3a1bb87054dc8ffa5d9c9b0",
+    "student/search-distillation.json": "f77cc67a0cd01c7e32a637eae323e08e63235de16b4195c0e1150f8d66b5361f",
+    "training-phase.json": "7f60a0ba952d2a00f25b7614d88af31461234fbcb11ec68ac705832ed5e07ebc"
+  },
+  "chunks": [
+    {
+      "decisions": 10000,
+      "searched": 7894,
+      "seconds": 1017.1221916670911
+    },
+    {
+      "decisions": 10000,
+      "searched": 7985,
+      "seconds": 1048.1112080840394
+    },
+    {
+      "decisions": 10000,
+      "searched": 7939,
+      "seconds": 1030.3923921668902
+    },
+    {
+      "decisions": 10000,
+      "searched": 7911,
+      "seconds": 1026.1148441671394
+    },
+    {
+      "decisions": 10000,
+      "searched": 7938,
+      "seconds": 1007.2386077083647
+    }
+  ],
+  "collection": {
+    "all_latency_seconds": {
+      "count": 50000,
+      "maximum": 4.567171833943576,
+      "mean": 1.5324680708999001,
+      "median": 1.9606787916272879,
+      "p95": 2.4858511248603463
+    },
+    "completed_value_examples": 38784,
+    "coverage_all": 0.79334,
+    "coverage_eligible": 1.0,
+    "cutoffs": {},
+    "decisions": 50000,
+    "distinct_source_cases": 588,
+    "distinct_source_fights": 101,
+    "distinct_source_groups": 101,
+    "eligible": 39667,
+    "episode_statuses": {
+      "terminated": 2230,
+      "truncated": 78
+    },
+    "episodes": 2308,
+    "fallback_reasons": {
+      "forced_action": 10333
+    },
+    "forced": 10333,
+    "missing_value_examples": 883,
+    "outcomes": {
+      "defeat": 895,
+      "ongoing": 78,
+      "victory": 1335
+    },
+    "potion_use_actions": 949,
+    "searched": 39667,
+    "searched_actions_over_5_seconds": 0,
+    "searched_latency_seconds": {
+      "count": 39667,
+      "maximum": 4.567171833943576,
+      "mean": 1.9150036397925214,
+      "median": 2.0516642909497023,
+      "p95": 2.5256432513706386
+    },
+    "selected_action_prior": {
+      "count": 39667,
+      "maximum": 0.9999998687046643,
+      "mean": 0.6589144438247434,
+      "median": 0.763184520059634,
+      "p95": 0.9994328936338249
+    },
+    "selected_below_max_prior": 10982,
+    "starts": {
+      "continuation": 1158,
+      "opening": 1150
+    },
+    "summed_component_seconds": {
+      "conditioning": 2076.206907739397,
+      "inference": 22062.922053272836,
+      "projection": 37772.202113954816,
+      "reconstruction": 921.2337571075186,
+      "sampling": 7241.327010036912,
+      "transition": 3125.2671176968142
+    },
+    "target_argmax_below_max_prior": 8648,
+    "target_entropy_nats": {
+      "count": 39667,
+      "maximum": 2.0963426449408438,
+      "mean": 0.4059125146091555,
+      "median": 0.3129492153944381,
+      "p95": 1.1084274160591476
+    },
+    "target_kl_from_prior_nats": {
+      "count": 39667,
+      "maximum": 3.3860272200219166,
+      "mean": 0.32495381987624233,
+      "median": 0.06314124206684668,
+      "p95": 1.6335509279125955
+    },
+    "tree_depth_histogram": {
+      "1": 316067,
+      "2": 327706,
+      "3": 209886,
+      "4": 77924,
+      "5": 17306,
+      "6": 2806,
+      "7": 281,
+      "8": 32
+    },
+    "work": {
+      "leaf_bootstraps": 704359,
+      "leaf_steps": 3213139,
+      "leaf_terminals": 156724,
+      "leaf_time_bootstraps": 0,
+      "simulations": 952008,
+      "tree_terminals": 90925
+    }
+  },
+  "collection_wall_seconds": 5128.979243793525,
+  "cumulative_fresh_training_decisions": 150000,
+  "evaluation_search": {
+    "specialist_search": {
+      "all_latency_seconds": {
+        "count": 1248,
+        "maximum": 3.0242034159600735,
+        "mean": 1.582423547048865,
+        "median": 2.0229801046662033,
+        "p95": 2.4163465830497444
+      },
+      "completed_value_examples": 990,
+      "coverage_all": 0.7932692307692307,
+      "coverage_eligible": 1.0,
+      "cutoffs": {},
+      "decisions": 1248,
+      "distinct_source_cases": 42,
+      "distinct_source_fights": 42,
+      "distinct_source_groups": 42,
+      "eligible": 990,
+      "episode_statuses": {
+        "terminated": 42
+      },
+      "episodes": 42,
+      "fallback_reasons": {
+        "forced_action": 258
+      },
+      "forced": 258,
+      "missing_value_examples": 0,
+      "outcomes": {
+        "defeat": 14,
+        "victory": 28
+      },
+      "potion_use_actions": 17,
+      "searched": 990,
+      "searched_actions_over_5_seconds": 0,
+      "searched_latency_seconds": {
+        "count": 990,
+        "maximum": 3.0242034159600735,
+        "mean": 1.9786513872886773,
+        "median": 2.1015235004015267,
+        "p95": 2.4599195420742035
+      },
+      "selected_action_prior": {
+        "count": 990,
+        "maximum": 0.9999999899470869,
+        "mean": 0.7647628420962519,
+        "median": 0.9025240607878094,
+        "p95": 0.9999764183279045
+      },
+      "selected_below_max_prior": 142,
+      "starts": {
+        "opening": 42
+      },
+      "summed_component_seconds": {
+        "conditioning": 53.20464054029435,
+        "inference": 577.8401174978353,
+        "projection": 991.3085344256833,
+        "reconstruction": 3.206658912356943,
+        "sampling": 181.85819631954655,
+        "transition": 81.01819606032223
+      },
+      "target_argmax_below_max_prior": 150,
+      "target_entropy_nats": {
+        "count": 990,
+        "maximum": 1.5393944681417158,
+        "mean": 0.3397863331344195,
+        "median": 0.19710902220597304,
+        "p95": 1.0104319249009703
+      },
+      "target_kl_from_prior_nats": {
+        "count": 990,
+        "maximum": 3.325619329271282,
+        "mean": 0.22210075749776573,
+        "median": 0.014218208164196115,
+        "p95": 1.1949775137318746
+      },
+      "tree_depth_histogram": {
+        "1": 7624,
+        "2": 7964,
+        "3": 5421,
+        "4": 2177,
+        "5": 500,
+        "6": 73,
+        "7": 1
+      },
+      "work": {
+        "leaf_bootstraps": 18732,
+        "leaf_steps": 83156,
+        "leaf_terminals": 3156,
+        "leaf_time_bootstraps": 0,
+        "simulations": 23760,
+        "tree_terminals": 1872
+      }
+    },
+    "student_search": {
+      "all_latency_seconds": {
+        "count": 1239,
+        "maximum": 2.8608372919261456,
+        "mean": 1.552055646206874,
+        "median": 1.9780935002490878,
+        "p95": 2.3978001247160137
+      },
+      "completed_value_examples": 995,
+      "coverage_all": 0.8030669895076675,
+      "coverage_eligible": 1.0,
+      "cutoffs": {},
+      "decisions": 1239,
+      "distinct_source_cases": 42,
+      "distinct_source_fights": 42,
+      "distinct_source_groups": 42,
+      "eligible": 995,
+      "episode_statuses": {
+        "terminated": 42
+      },
+      "episodes": 42,
+      "fallback_reasons": {
+        "forced_action": 244
+      },
+      "forced": 244,
+      "missing_value_examples": 0,
+      "outcomes": {
+        "defeat": 14,
+        "victory": 28
+      },
+      "potion_use_actions": 17,
+      "searched": 995,
+      "searched_actions_over_5_seconds": 0,
+      "searched_latency_seconds": {
+        "count": 995,
+        "maximum": 2.8608372919261456,
+        "mean": 1.9167156021461715,
+        "median": 2.0593786258250475,
+        "p95": 2.4204673739150167
+      },
+      "selected_action_prior": {
+        "count": 995,
+        "maximum": 0.999998223131855,
+        "mean": 0.642486996122773,
+        "median": 0.6690622317327607,
+        "p95": 0.9981485686678727
+      },
+      "selected_below_max_prior": 234,
+      "starts": {
+        "opening": 42
+      },
+      "summed_component_seconds": {
+        "conditioning": 51.59001558832824,
+        "inference": 571.4687652331777,
+        "projection": 955.6795457596891,
+        "reconstruction": 3.252287212293595,
+        "sampling": 179.76773569034413,
+        "transition": 78.10350603889674
+      },
+      "target_argmax_below_max_prior": 253,
+      "target_entropy_nats": {
+        "count": 995,
+        "maximum": 1.7772194603604472,
+        "mean": 0.48901481136337027,
+        "median": 0.43965557328691435,
+        "p95": 1.2067581173034954
+      },
+      "target_kl_from_prior_nats": {
+        "count": 995,
+        "maximum": 3.362052020526425,
+        "mean": 0.3221136126395126,
+        "median": 0.09677297965707224,
+        "p95": 1.3716888725339087
+      },
+      "tree_depth_histogram": {
+        "1": 7941,
+        "2": 8597,
+        "3": 5070,
+        "4": 1835,
+        "5": 387,
+        "6": 50
+      },
+      "work": {
+        "leaf_bootstraps": 18784,
+        "leaf_steps": 83370,
+        "leaf_terminals": 3269,
+        "leaf_time_bootstraps": 0,
+        "simulations": 23880,
+        "tree_terminals": 1827
+      }
+    },
+    "teacher_search": {
+      "all_latency_seconds": {
+        "count": 1210,
+        "maximum": 2.815562498755753,
+        "mean": 1.5426089184997558,
+        "median": 1.9567008544690907,
+        "p95": 2.3709415830671787
+      },
+      "completed_value_examples": 964,
+      "coverage_all": 0.7966942148760331,
+      "coverage_eligible": 1.0,
+      "cutoffs": {},
+      "decisions": 1210,
+      "distinct_source_cases": 42,
+      "distinct_source_fights": 42,
+      "distinct_source_groups": 42,
+      "eligible": 964,
+      "episode_statuses": {
+        "terminated": 42
+      },
+      "episodes": 42,
+      "fallback_reasons": {
+        "forced_action": 246
+      },
+      "forced": 246,
+      "missing_value_examples": 0,
+      "outcomes": {
+        "defeat": 15,
+        "victory": 27
+      },
+      "potion_use_actions": 17,
+      "searched": 964,
+      "searched_actions_over_5_seconds": 0,
+      "searched_latency_seconds": {
+        "count": 964,
+        "maximum": 2.815562498755753,
+        "mean": 1.91951562332799,
+        "median": 2.0338077917695045,
+        "p95": 2.3937175828032196
+      },
+      "selected_action_prior": {
+        "count": 964,
+        "maximum": 0.9999993818253231,
+        "mean": 0.6899856415202987,
+        "median": 0.7935312159744361,
+        "p95": 0.9995582757070143
+      },
+      "selected_below_max_prior": 199,
+      "starts": {
+        "opening": 42
+      },
+      "summed_component_seconds": {
+        "conditioning": 48.55685208784416,
+        "inference": 552.7301794495434,
+        "projection": 930.4415322677232,
+        "reconstruction": 3.3441186798736453,
+        "sampling": 171.2615620791912,
+        "transition": 77.90666654193774
+      },
+      "target_argmax_below_max_prior": 216,
+      "target_entropy_nats": {
+        "count": 964,
+        "maximum": 1.6848968330698142,
+        "mean": 0.4082614637677731,
+        "median": 0.28469810140658575,
+        "p95": 1.1192224278222105
+      },
+      "target_kl_from_prior_nats": {
+        "count": 964,
+        "maximum": 3.300679092468554,
+        "mean": 0.31400522583565466,
+        "median": 0.060819278847537475,
+        "p95": 1.5018215932204093
+      },
+      "tree_depth_histogram": {
+        "1": 7532,
+        "2": 8060,
+        "3": 5096,
+        "4": 1917,
+        "5": 447,
+        "6": 84
+      },
+      "work": {
+        "leaf_bootstraps": 18109,
+        "leaf_steps": 81114,
+        "leaf_terminals": 3381,
+        "leaf_time_bootstraps": 0,
+        "simulations": 23136,
+        "tree_terminals": 1646
+      }
+    }
+  },
+  "evaluation_summary": {
+    "specialist_network": {
+      "attempted": 42,
+      "cutoffs": 0,
+      "failures": 0,
+      "hp_change_observations": 42,
+      "losses": 16,
+      "mean_final_turn_observed": 7.380952380952381,
+      "mean_hp_change_observed": -54.45238095238095,
+      "mean_hp_fraction_on_win": 0.2624910065706212,
+      "mean_hp_on_win": 22.03846153846154,
+      "mean_task_return": 0.6352970623115145,
+      "planned": 42,
+      "potion_use_actions": 17,
+      "source_groups": 42,
+      "steps": 1236,
+      "unattempted": 0,
+      "valid_completed_combat_comparison": true,
+      "win_rate": 0.6190476190476191,
+      "win_rate_group_hoeffding_95": [
+        0.4094880055802468,
+        0.8286072325149914
+      ],
+      "wins": 26
+    },
+    "specialist_search": {
+      "attempted": 42,
+      "cutoffs": 0,
+      "failures": 0,
+      "hp_change_observations": 42,
+      "losses": 14,
+      "mean_final_turn_observed": 7.476190476190476,
+      "mean_hp_change_observed": -53.19047619047619,
+      "mean_hp_fraction_on_win": 0.26727518593644356,
+      "mean_hp_on_win": 22.357142857142858,
+      "mean_task_return": 0.6844850123957629,
+      "planned": 42,
+      "potion_use_actions": 17,
+      "source_groups": 42,
+      "steps": 1248,
+      "unattempted": 0,
+      "valid_completed_combat_comparison": true,
+      "win_rate": 0.6666666666666666,
+      "win_rate_group_hoeffding_95": [
+        0.45710705319929434,
+        0.8762262801340389
+      ],
+      "wins": 28
+    },
+    "student_network": {
+      "attempted": 42,
+      "cutoffs": 0,
+      "failures": 0,
+      "hp_change_observations": 42,
+      "losses": 20,
+      "mean_final_turn_observed": 7.285714285714286,
+      "mean_hp_change_observed": -55.92857142857143,
+      "mean_hp_fraction_on_win": 0.27642807384186696,
+      "mean_hp_on_win": 23.227272727272727,
+      "mean_task_return": 0.5382890895821928,
+      "planned": 42,
+      "potion_use_actions": 17,
+      "source_groups": 42,
+      "steps": 1212,
+      "unattempted": 0,
+      "valid_completed_combat_comparison": true,
+      "win_rate": 0.5238095238095238,
+      "win_rate_group_hoeffding_95": [
+        0.31424991034215155,
+        0.7333691372768961
+      ],
+      "wins": 22
+    },
+    "student_search": {
+      "attempted": 42,
+      "cutoffs": 0,
+      "failures": 0,
+      "hp_change_observations": 42,
+      "losses": 14,
+      "mean_final_turn_observed": 7.476190476190476,
+      "mean_hp_change_observed": -53.88095238095238,
+      "mean_hp_fraction_on_win": 0.25606828938471937,
+      "mean_hp_on_win": 21.321428571428573,
+      "mean_task_return": 0.6837378859589811,
+      "planned": 42,
+      "potion_use_actions": 17,
+      "source_groups": 42,
+      "steps": 1239,
+      "unattempted": 0,
+      "valid_completed_combat_comparison": true,
+      "win_rate": 0.6666666666666666,
+      "win_rate_group_hoeffding_95": [
+        0.45710705319929434,
+        0.8762262801340389
+      ],
+      "wins": 28
+    },
+    "teacher_network": {
+      "attempted": 42,
+      "cutoffs": 0,
+      "failures": 0,
+      "hp_change_observations": 42,
+      "losses": 23,
+      "mean_final_turn_observed": 7.119047619047619,
+      "mean_hp_change_observed": -57.142857142857146,
+      "mean_hp_fraction_on_win": 0.2874218592458157,
+      "mean_hp_on_win": 24.210526315789473,
+      "mean_task_return": 0.46538336982302503,
+      "planned": 42,
+      "potion_use_actions": 17,
+      "source_groups": 42,
+      "steps": 1182,
+      "unattempted": 0,
+      "valid_completed_combat_comparison": true,
+      "win_rate": 0.4523809523809524,
+      "win_rate_group_hoeffding_95": [
+        0.2428213389135801,
+        0.6619405658483246
+      ],
+      "wins": 19
+    },
+    "teacher_search": {
+      "attempted": 42,
+      "cutoffs": 0,
+      "failures": 0,
+      "hp_change_observations": 42,
+      "losses": 15,
+      "mean_final_turn_observed": 7.357142857142857,
+      "mean_hp_change_observed": -53.80952380952381,
+      "mean_hp_fraction_on_win": 0.2660139066269334,
+      "mean_hp_on_win": 22.22222222222222,
+      "mean_task_return": 0.6599580368545885,
+      "planned": 42,
+      "potion_use_actions": 17,
+      "source_groups": 42,
+      "steps": 1210,
+      "unattempted": 0,
+      "valid_completed_combat_comparison": true,
+      "win_rate": 0.6428571428571429,
+      "win_rate_group_hoeffding_95": [
+        0.4332975293897706,
+        0.8524167563245152
+      ],
+      "wins": 27
+    }
+  },
+  "evaluation_wall_seconds": 408.33124291617423,
+  "heldout_test_opened": false,
+  "implementation": {
+    "build": "322f129e4bd1a4124603dcb760302da9fdcf362a110a877835ce913585c97a22",
+    "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+    "rules": "efcc2494d3c1f896669e334cb49a60455048ac4f2a44a3466a7a62225cd0771c",
+    "target": "sts2-v0.107.1-steam-23811903"
+  },
+  "learner": {
+    "episodes": 2308,
+    "epochs": 2,
+    "examples": 39667,
+    "final_sha256": "7805954e02238a6928a3c15ce2b6d65e492f1743a3a1bb87054dc8ffa5d9c9b0",
+    "first_100_update_means": {
+      "entropy": 0.6032262030243873,
+      "imitation_loss": 0.700575040280819,
+      "loss": 0.7316316789388657,
+      "value_loss": 0.12422655373811722
+    },
+    "initialization": {
+      "checkpoint": "imitation_v1:b026cc683387db0fb01e01594d8a5b25fca7dbbf2919ffd2a0876ad7d889be36",
+      "input_view": "detached_combat_history_cards_v1",
+      "resumed": false,
+      "source_input_view": "detached_combat_history_cards_v1"
+    },
+    "last_100_update_means": {
+      "entropy": 0.6769044077396393,
+      "imitation_loss": 0.6929081594944,
+      "loss": 0.7235480111837387,
+      "value_loss": 0.1225594075396657
+    },
+    "load_train_publish_seconds": 725.0820715418085,
+    "optimization_and_checkpoint_seconds": 46.67783066583797,
+    "sample_presentations": 79334,
+    "updates": 2480
+  },
+  "paired": {
+    "student_network_vs_specialist_network": {
+      "cases": 42,
+      "difference_group_hoeffding_95": [
+        -0.5143573221728398,
+        0.32388113169664934
+      ],
+      "paired_campaign_bootstrap_95": [
+        -0.23809523809523808,
+        0.023809523809523808
+      ],
+      "status": "complete",
+      "win_rate_difference": -0.09523809523809523,
+      "wins_only_candidate": 2,
+      "wins_only_specialist_network": 6
+    },
+    "student_network_vs_teacher_network": {
+      "cases": 42,
+      "difference_group_hoeffding_95": [
+        -0.3476906555061732,
+        0.49054779836331597
+      ],
+      "paired_campaign_bootstrap_95": [
+        -0.023809523809523808,
+        0.16666666666666666
+      ],
+      "status": "complete",
+      "win_rate_difference": 0.07142857142857142,
+      "wins_only_candidate": 4,
+      "wins_only_teacher_network": 1
+    },
+    "student_search_vs_specialist_network": {
+      "cases": 42,
+      "difference_group_hoeffding_95": [
+        -0.37150017931569695,
+        0.4667382745537922
+      ],
+      "paired_campaign_bootstrap_95": [
+        -0.09523809523809523,
+        0.19047619047619047
+      ],
+      "status": "complete",
+      "win_rate_difference": 0.047619047619047616,
+      "wins_only_candidate": 5,
+      "wins_only_specialist_network": 3
+    },
+    "student_search_vs_specialist_search": {
+      "cases": 42,
+      "difference_group_hoeffding_95": [
+        -0.41911922693474457,
+        0.41911922693474457
+      ],
+      "paired_campaign_bootstrap_95": [
+        -0.11904761904761904,
+        0.11904761904761904
+      ],
+      "status": "complete",
+      "win_rate_difference": 0.0,
+      "wins_only_candidate": 3,
+      "wins_only_specialist_search": 3
+    },
+    "student_search_vs_student_network": {
+      "cases": 42,
+      "difference_group_hoeffding_95": [
+        -0.2762620840776017,
+        0.5619763697918874
+      ],
+      "paired_campaign_bootstrap_95": [
+        0.023809523809523808,
+        0.2857142857142857
+      ],
+      "status": "complete",
+      "win_rate_difference": 0.14285714285714285,
+      "wins_only_candidate": 7,
+      "wins_only_student_network": 1
+    },
+    "student_search_vs_teacher_search": {
+      "cases": 42,
+      "difference_group_hoeffding_95": [
+        -0.39530970312522073,
+        0.4429287507442684
+      ],
+      "paired_campaign_bootstrap_95": [
+        -0.047619047619047616,
+        0.11904761904761904
+      ],
+      "status": "complete",
+      "win_rate_difference": 0.023809523809523808,
+      "wins_only_candidate": 2,
+      "wins_only_teacher_search": 1
+    },
+    "teacher_search_vs_teacher_network": {
+      "cases": 42,
+      "difference_group_hoeffding_95": [
+        -0.2286430364585541,
+        0.609595417410935
+      ],
+      "paired_campaign_bootstrap_95": [
+        0.07142857142857142,
+        0.30952380952380953
+      ],
+      "status": "complete",
+      "win_rate_difference": 0.19047619047619047,
+      "wins_only_candidate": 8,
+      "wins_only_teacher_network": 0
+    }
+  },
+  "paired_fight_quality": {
+    "student_network_vs_specialist_network": {
+      "end_hp": {
+        "mean_difference": -1.4761904761904763,
+        "paired_campaign_bootstrap_95": [
+          -4.761904761904762,
+          1.8571428571428572
+        ]
+      },
+      "potion_use_actions": {
+        "mean_difference": 0.0,
+        "paired_campaign_bootstrap_95": [
+          0.0,
+          0.0
+        ]
+      },
+      "task_return": {
+        "mean_difference": -0.0970079727293216,
+        "paired_campaign_bootstrap_95": [
+          -0.242211758266525,
+          0.026050218938149978
+        ]
+      }
+    },
+    "student_network_vs_teacher_network": {
+      "end_hp": {
+        "mean_difference": 1.2142857142857142,
+        "paired_campaign_bootstrap_95": [
+          -0.8095238095238095,
+          3.119047619047619
+        ]
+      },
+      "potion_use_actions": {
+        "mean_difference": 0.0,
+        "paired_campaign_bootstrap_95": [
+          0.0,
+          0.0
+        ]
+      },
+      "task_return": {
+        "mean_difference": 0.07290571975916804,
+        "paired_campaign_bootstrap_95": [
+          -0.024750273672687458,
+          0.17113403119868634
+        ]
+      }
+    },
+    "student_search_vs_specialist_network": {
+      "end_hp": {
+        "mean_difference": 0.5714285714285714,
+        "paired_campaign_bootstrap_95": [
+          -3.0952380952380953,
+          3.9523809523809526
+        ]
+      },
+      "potion_use_actions": {
+        "mean_difference": 0.0,
+        "paired_campaign_bootstrap_95": [
+          0.0,
+          0.0
+        ]
+      },
+      "task_return": {
+        "mean_difference": 0.04844082364746665,
+        "paired_campaign_bootstrap_95": [
+          -0.09456947529969842,
+          0.19129649752621353
+        ]
+      }
+    },
+    "student_search_vs_specialist_search": {
+      "end_hp": {
+        "mean_difference": -0.6904761904761905,
+        "paired_campaign_bootstrap_95": [
+          -3.4523809523809526,
+          2.0476190476190474
+        ]
+      },
+      "potion_use_actions": {
+        "mean_difference": 0.0,
+        "paired_campaign_bootstrap_95": [
+          0.0,
+          0.0
+        ]
+      },
+      "task_return": {
+        "mean_difference": -0.0007471264367816163,
+        "paired_campaign_bootstrap_95": [
+          -0.12144658821382961,
+          0.1201761767925561
+        ]
+      }
+    },
+    "student_search_vs_student_network": {
+      "end_hp": {
+        "mean_difference": 2.0476190476190474,
+        "paired_campaign_bootstrap_95": [
+          -1.2619047619047619,
+          5.428571428571429
+        ]
+      },
+      "potion_use_actions": {
+        "mean_difference": 0.0,
+        "paired_campaign_bootstrap_95": [
+          0.0,
+          0.0
+        ]
+      },
+      "task_return": {
+        "mean_difference": 0.1454487963767882,
+        "paired_campaign_bootstrap_95": [
+          0.023513588385545778,
+          0.28850313113751247
+        ]
+      }
+    },
+    "student_search_vs_teacher_search": {
+      "end_hp": {
+        "mean_difference": -0.07142857142857142,
+        "paired_campaign_bootstrap_95": [
+          -2.7142857142857144,
+          2.357142857142857
+        ]
+      },
+      "potion_use_actions": {
+        "mean_difference": 0.0,
+        "paired_campaign_bootstrap_95": [
+          0.0,
+          0.0
+        ]
+      },
+      "task_return": {
+        "mean_difference": 0.023779849104392698,
+        "paired_campaign_bootstrap_95": [
+          -0.05005370826491518,
+          0.11592995052427095
+        ]
+      }
+    },
+    "teacher_search_vs_teacher_network": {
+      "end_hp": {
+        "mean_difference": 3.3333333333333335,
+        "paired_campaign_bootstrap_95": [
+          0.9523809523809523,
+          5.809523809523809
+        ]
+      },
+      "potion_use_actions": {
+        "mean_difference": 0.0,
+        "paired_campaign_bootstrap_95": [
+          0.0,
+          0.0
+        ]
+      },
+      "task_return": {
+        "mean_difference": 0.19457466703156356,
+        "paired_campaign_bootstrap_95": [
+          0.07442448914431675,
+          0.316650588396278
+        ]
+      }
+    }
+  },
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "promotion": "experimental_only",
+  "protocol": {
+    "bindings": [
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-round3-20261008/round3.py",
+        "sha256": "8958c0955b95e8cd9fcd8b503995d577d7529f5c20346a799955c94a83b0c74c"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-20261002/corpus/corpus.json",
+        "sha256": "0b9f7cd09f6d63aa47f3110b3e7faca63039ea37e6b392e4ed0db5ebd63a9a9f"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-training-20261008/correction/prefix-recovery.json",
+        "sha256": "9bfedfffc4280fcc7995b2ba6f4f59a9af98962955c56cf0f5bcb2dc31025d5d"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-training-20261008/correction.py",
+        "sha256": "050ac6778846dd17ec7aa15602b841570e5b13cb709c0dd37ad66c8bd6b6f7c7"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-training-20261008/study.py",
+        "sha256": "5035dbd6a2665092a6bcc03e2fddad5ce8db796e3103592806dae16cc9c2e396"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-training-20261008/correction/prefix-validation.json",
+        "sha256": "5de830aaa90bc159fef01ddf80de39cfec4a991e1232d9a55e8270b5655fb260"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-round2-20261008/student/search-distillation.json",
+        "sha256": "16f7ca5c6898a31c7048f4d2a1fc3da8e7930a7ce4a5191a8e30522ef6d61d44"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-round2-20261008/round2.py",
+        "sha256": "3835baf35a8a8c7886535ebec6051f635d4bbd4b3be2aeb40e391b058d7de527"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-round2-20261008/protocol.json",
+        "sha256": "6725ce6754ab77116bbad62807a2fb0c903b3e9f9f2392eaeca7f0937b1b53f6"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-round2-20261008/summary.json",
+        "sha256": "3e9f1bddc5d54c217c81121c72ae2cf31e65d72c7a3ea9c6ba2e3cf41545075e"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/search-training-speed-20261008/summary.json",
+        "sha256": "9f0c7b7365efda4015e7f085a10ece253472d43901f434791fa2860095086165"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/search-training-speed-20261008/review.json",
+        "sha256": "8270ecce44b7481c690d7b9ccf19ead355212db4cbc945837999ae666445a56d"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/search-training-speed-20261008/validation.json",
+        "sha256": "bc1305706e2decaa0f8746f1d998aed2c4ff6c72ea0185a5c7989e81a9536b3a"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-round3-20261008/smoke-check.json",
+        "sha256": "fc16685424c683cfdd0ecff96e33bb51d707ac760b3a01b45137c6ea2ee61e4c"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-round3-20261008/review.json",
+        "sha256": "418cc0506798d0b40b8edd32c3a439d0648fe0a1f51c088c39ac29d67b397167"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-round3-20261008/smoke/search.json",
+        "sha256": "25967d2176a191ba62f922d8fe0fc4f012acadc428933261db0255ab6653329d"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-round2-20261008/student/final.sts-model",
+        "sha256": "b026cc683387db0fb01e01594d8a5b25fca7dbbf2919ffd2a0876ad7d889be36"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-training-20261002/ppo/chunk-20/final.sts-model",
+        "sha256": "4da8789591fc9379522b3b30745bb6b6615ee53bb4bfc21215affecf28dfae6a"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-20261002/corpus/test-opened.json",
+        "sha256": "4ecf002c05a76e5ec990909844d23487ae306e9043c8209adc70ce5d8cdbd279"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-action-preview-20261002/corpus/corpus.json",
+        "sha256": "6306c4e3d94edde7782f9cedacd6a9a4cfb2e6da5f7870404794619dfcbeffb5"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-action-preview-20261002/corpus/test-opened.json",
+        "sha256": "d828d0d66afa9422da386323f1f59103543ad1c150f1dd8bbe3c5d38695d0108"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/corpus/corpus.json",
+        "sha256": "c817e01031d3abcd0668ea68401c7a80ddff093a5cb114bf4d9697595c96a7c9"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/corpus/test-opened.json",
+        "sha256": "7b7c1d8c64c9024edfd2431d75fdd63930555536ab0ff025f9afdf6bd005f531"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-nongraph-20261003/corpus/corpus.json",
+        "sha256": "b43736e38c603dd8c9a689c11287a40ace74b27f371675fb6d07be32c665335b"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-nongraph-20261003/corpus/test-opened.json",
+        "sha256": "ee91967c79e4e2e5cb15fe56a557776e0997df1a44afbb11fe11cec7793fd482"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-defeat-hp-20261003/corpus/corpus.json",
+        "sha256": "3beb2fe93a5704270b31816ee19b0fefddba2a758909329178f64455eee2dcd0"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-defeat-hp-20261003/corpus/test-opened.json",
+        "sha256": "44cb68dc26776641ee24da6d5e710a1ecaa85a4c2c6c0da03d8c556fb7b1e8ee"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/corpus/corpus.json",
+        "sha256": "01e34face70f278ef2ac3dce531d75ca6b17886232e3be4a6d81f420918ae0c7"
+      }
+    ],
+    "budget_exclusions": [
+      "256-decision smoke and two smoke learner updates",
+      "validation"
+    ],
+    "collection_chunks": 5,
+    "created_unix": 1791459310.3192399,
+    "cumulative_fresh_training_decisions": 150000,
+    "decisions_per_chunk": 10000,
+    "evaluation": {
+      "arms": [
+        "teacher_network",
+        "teacher_search",
+        "specialist_network",
+        "specialist_search",
+        "student_network",
+        "student_search"
+      ],
+      "cases": 42,
+      "episode_seconds": 1800,
+      "max_decisions": 512,
+      "primary": "student_search versus teacher_search on identical starts",
+      "secondary": "network improvement, search contribution, and original 250k PPO specialist",
+      "seed_schedule": "same 20261008 + sorted case index as prior corrected evaluation",
+      "selection": "fixed final checkpoint after two epochs; no validation-selected hyperparameters",
+      "split": "validation",
+      "start_kind": "opening",
+      "uncertainty": "paired source-campaign bootstrap 95%, plus existing conservative Hoeffding intervals"
+    },
+    "fresh_training_decisions": 50000,
+    "heldout_test_opened": false,
+    "implementation": {
+      "build": "322f129e4bd1a4124603dcb760302da9fdcf362a110a877835ce913585c97a22",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "efcc2494d3c1f896669e334cb49a60455048ac4f2a44a3466a7a62225cd0771c",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "learner_threads": 4,
+    "models": {
+      "specialist": {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-training-20261002/ppo/chunk-20/final.sts-model",
+        "sha256": "4da8789591fc9379522b3b30745bb6b6615ee53bb4bfc21215affecf28dfae6a"
+      },
+      "teacher": {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-round2-20261008/student/final.sts-model",
+        "sha256": "b026cc683387db0fb01e01594d8a5b25fca7dbbf2919ffd2a0876ad7d889be36"
+      }
+    },
+    "objective": {
+      "schema": "sts_training_reward_v1",
+      "weights": {
+        "combat_loss": 0.0,
+        "combat_win": 1.0,
+        "end_turn_action": 0.0,
+        "potion_use_action": 0.0,
+        "win_hp_fraction": 0.1
+      }
+    },
+    "parent_cumulative_fresh_training_decisions": 100000,
+    "parent_distillation_sha256": "16f7ca5c6898a31c7048f4d2a1fc3da8e7930a7ce4a5191a8e30522ef6d61d44",
+    "parent_fresh_training_decisions": 50000,
+    "promotion": "experimental_only",
+    "reserved_test_owner": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/corpus/corpus.json",
+    "round": 3,
+    "sampling": "same sample_training_case: uniform encounter/fight, half opening/continuation",
+    "schema": "sts_vantom_search_round_protocol_v1",
+    "search": {
+      "belief_particles": 2,
+      "belief_proposals": 4096,
+      "belief_replay_proposals": 2048,
+      "belief_replay_steps": 16384,
+      "belief_seconds": 120.0,
+      "considered_actions": 16,
+      "exploration": true,
+      "final_selection": "prior_value",
+      "leaf_rollout_steps": 4,
+      "max_depth": 16,
+      "method": "gumbel",
+      "model_version": "revealed_belief_v1",
+      "q_scale": 0.1,
+      "seed": 0,
+      "simulations": 24,
+      "time_limit": 120.0
+    },
+    "seed_schedule": "round3.py:20261008030000 + 1000*chunk + worker; independent sample/analysis streams",
+    "teacher": "round2_student_frozen_for_all_collection",
+    "training": {
+      "actor": "search_distribution_cross_entropy",
+      "batch_size": 32,
+      "critic": "completed_undiscounted_behavior_returns",
+      "data": "round3 fresh trajectories only",
+      "epochs": 2,
+      "forced_and_fallback_decisions": "counted_as_real_actions_excluded_from_distillation",
+      "gradient_clip": 1.0,
+      "initialization": "exact round2 student weights; fresh Adam state for the new distillation round",
+      "learning_rate": 0.0001,
+      "seed": 2026100803,
+      "value_weight": 0.25
+    },
+    "validation_owner": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/corpus/corpus.json",
+    "worker_torch_threads": 1,
+    "workers": 16
+  },
+  "protocol_sha256": "90c04d262a3389f95d7ad330183c600796afb942d480d928094bf8bd493ebfd1",
+  "python": "3.11.15 (main, Mar  3 2026, 00:52:57) [Clang 21.0.0 (clang-2100.0.123.102)]",
+  "round": 3,
+  "schema": "sts_vantom_search_round_evidence_v1",
+  "status": "complete",
+  "torch": "2.13.0",
+  "validation": {
+    "accepted": {
+      "agent_and_package_tests": {
+        "initial_sandbox_failures": 1,
+        "passed": 1659,
+        "seconds": 621.95,
+        "skipped": 1
+      },
+      "compileall": {
+        "paths": [
+          "game",
+          "tests"
+        ],
+        "status": "passed"
+      },
+      "focused_tests": {
+        "passed": 73,
+        "seconds": 10.44
+      },
+      "localhost_retry": {
+        "passed": 1,
+        "reason": "Sandbox forbids localhost bind; isolated read-only server test passed with permission",
+        "seconds": 0.63
+      }
+    },
+    "controls": {
+      "compared_fights": 168,
+      "differences": [],
+      "prior_evaluation_sha256": "37480fe661000c84dffa2ab604b96c3d75f68b36458f40cfa6b993a65a745126",
+      "status": "passed"
+    },
+    "independent_review": {
+      "bindings": {
+        "finish_round.py": "bff377c91880d146ce6771761182b636ae2036d29b139b291fce0ec2a2360c2d",
+        "round3.py": "8958c0955b95e8cd9fcd8b503995d577d7529f5c20346a799955c94a83b0c74c",
+        "track_round.py": "47c134ac1ab9b8b59b1dbaaad5ddd9d65471e366508500f24c4edd169f5262df"
+      },
+      "blockers": [],
+      "findings_resolved": [],
+      "method": "Independent source diff, parent/artifact checks and exhaustive bounded seed enumeration; no games or heavy tests.",
+      "reviewer": "/root/selection_semantic_review",
+      "scope": [
+        "exact 50000 reconciled-action quota",
+        "100k frozen teacher and exact weight initialization",
+        "fresh Adam and two epochs",
+        "sampling and analysis seeds distinct from both earlier rounds and smoke",
+        "public/private and train/validation boundaries; held-out unopened",
+        "immutable parent evidence and completed-chunk continuation",
+        "prior control mappings and 150k cumulative tracking"
+      ],
+      "smoke": "256 decisions and two learner updates; 38 initial tensors match the frozen100kteacher; excluded from budget",
+      "status": "complete"
+    },
+    "initialization": {
+      "exact_initial_tensors": 38,
+      "final_sha256": "7805954e02238a6928a3c15ce2b6d65e492f1743a3a1bb87054dc8ffa5d9c9b0",
+      "initial_sha256": "031e77ca34b00344f472a64fff38ede1c29e341492d2646acc7e7b8d5fe4374a",
+      "input_view": "detached_combat_history_cards_v1",
+      "status": "passed",
+      "teacher_sha256": "b026cc683387db0fb01e01594d8a5b25fca7dbbf2919ffd2a0876ad7d889be36",
+      "weights_changed": true
+    },
+    "production_evidence": "source-identical accepted speed validation reused; not rerun",
+    "smoke": {
+      "examples": 208,
+      "excluded_from_training": true,
+      "initialization_tensors": 38,
+      "input_view": "detached_combat_history_cards_v1",
+      "status": "passed",
+      "teacher_sha256": "b026cc683387db0fb01e01594d8a5b25fca7dbbf2919ffd2a0876ad7d889be36",
+      "updates": 2
+    }
+  }
+}

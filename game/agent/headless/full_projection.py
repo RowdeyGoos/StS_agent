@@ -467,7 +467,7 @@ class FullProjection:
             return project_event(self)
         raise UnsupportedProfile('room_kind:' + str(kind))
 
-    def decision(self):
+    def decision(self, *, transform=None):
         legal = self.engine.legal_actions()
         if any(type(action) not in COMMANDS for action in legal):
             raise UnsupportedProfile('legal_action_family')
@@ -502,6 +502,8 @@ class FullProjection:
         self.commands = {f'action:{i}': commands[a.ref] for i, a in enumerate(candidates)}
         candidates = tuple(replace(a, ref=f'action:{i}') for i, a in enumerate(candidates))
         result = f.PublicDecision(f.SCHEMA, f.PROFILE, public_run, context, candidates)
+        if transform is not None:
+            result = transform(result)
         self.prepared = f.PreparedPublic(result)
         return self.prepared.value
 

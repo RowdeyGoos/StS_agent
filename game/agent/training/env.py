@@ -35,6 +35,8 @@ class CombatTrainingEnv(StsEnv):
                          render_mode=render_mode, decision_profile='full_run_v2')
         self._combat = self._combat_ref = None
         self._timings = {}
+        self.record_combat_reveals = False
+        self.combat_reveals = None
 
     def reset(self, *, seed=None, options=None):
         if options is not None and (type(options) is not dict or
@@ -49,6 +51,10 @@ class CombatTrainingEnv(StsEnv):
     @property
     def reward_spec(self):
         return self._reward_spec
+
+    @property
+    def planning_successor(self):
+        return self._adapter.combat_completion or self.public_state
 
     def step(self, action):
         self._reward_measurement = self._reward_input = None
@@ -80,7 +86,13 @@ class CombatTrainingEnv(StsEnv):
         action = next(a for a in self._frame.decision.candidates if a.ref == candidate_ref)
         before = self._combat
         public = self._frame.decision
-        report = self._measure('simulation_dispatch_seconds', super()._dispatch, candidate_ref)
+        if self.record_combat_reveals:
+            from game.headless.reveals import combat_reveals
+            with combat_reveals(self._adapter._engine.combat) as journal:
+                report = self._measure('simulation_dispatch_seconds', super()._dispatch, candidate_ref)
+            self.combat_reveals = journal.events
+        else:
+            report = self._measure('simulation_dispatch_seconds', super()._dispatch, candidate_ref)
         self._reward_input = action, report, before, public
         return report
 

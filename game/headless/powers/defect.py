@@ -90,7 +90,7 @@ def generate_power(p, *, free=False):
     from game.headless.cards.colorless_effects import catalog, pool
     from game.headless.generation.combat import select_cards
     from game.headless.core.piles import after_generated_entry
-    for definition in select_cards(pool(p, 'ironclad', 'power'), p.deck.generation_rng, 1, distinct=True):
+    for definition in select_cards(pool(p, 'ironclad', 'power'), p.deck.generation_rng, 1, distinct=True, revealed=True):
         card = catalog(p).create(definition.definition_id)
         p.deck._ensure_identity(card)
         card.combat_state.free_this_turn = free

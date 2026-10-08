@@ -194,6 +194,45 @@ it does not infer missing state. Reuse the same rules/catalogs when restoring.
 Mutable branch state is independent, while immutable definitions may be shared.
 Do not serialize arbitrary callables or import a type named by a snapshot.
 
+The domain helpers in [run construction](../game/headless/run/construction.py)
+also build declared Ironclad A0 combat setups from fresh card templates,
+already-owned inventory and explicit persistent counters. They use normal
+`start_combat()` and `RunEngine.apply()` rules; importing owned items does not
+repeat their pickup effects. Ordinary encounters in both Act 1 regions resolve
+through the existing encounter registries, including their elite/boss room kind;
+event fights require their own continuation and are excluded. This is not
+reconstruction from an arbitrary display.
+`fork_combat()` clones through the existing snapshot validator and can refresh
+future native randomness at an ordinary player decision or validated owned
+selector in a hypothetical world, including setup, end-turn and enemy-turn pauses,
+preserving existing draw order/effects and run/combat stream aliases. Normal
+gameplay RNG behavior is unchanged. Captured enemy intents/hit cursors and queued
+effects remain in the validated snapshot; only unresolved future randomness is
+refreshed. Pending work without a valid selector remains unsupported. The agent-side public prerequisites and
+tested scope belong to the [search architecture plan](COMBAT_SEARCH_ARCHITECTURE.md).
+
+`reveals.py` provides an optional ephemeral observer for public intermediate
+combat reveals. Normal draw/autoplay, visible generation and displayed-cost
+operations emit descriptions without private identities or RNG state. Recording
+preserves engine state and RNG consumption. Hypothetical engines can condition
+these same operations on a public receipt, with explicit likelihoods; masked
+cost setters are integrated over rather than exposed. Observers are removed
+after the synchronous command and are never serialized. The engine has no
+dependency on agent contracts, encoders or training. Native bridge production
+of equivalent receipts is separate work.
+
+For hypothetical declared starts, construction also accepts optional engine-owned
+draw/HP conditioning helpers from [`draw_knowledge.py`](../game/headless/draw_knowledge.py).
+They attach only to that world's owned streams. The ordinary draw and monster
+construction operations provide candidates and likelihoods; top/bottom placement
+uses `Deck.put_on_draw()`, and shuffle invalidates the helper's position knowledge.
+Normal gameplay without a helper keeps the same operations and RNG requests.
+These helpers are planner knowledge paired with a hypothetical world, not new
+private snapshot fields. A materialized engine still round-trips normally;
+the direct simulation-world owner clones its knowledge separately when branching.
+Content/provenance restrictions and probability validation are owned by the
+architecture plan and direct-sampling evidence, not inferred from a raw snapshot.
+
 Terminal outcome checks resolve player death before enemy elimination, after
 Fairy in a Bottle and Lizard Tail have had their normal chance to revive the
 player. If a lethal hit and Thorns kill both sides, the run ends in defeat without

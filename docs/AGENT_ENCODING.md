@@ -216,6 +216,20 @@ keeps these exact packed tables alongside explicitly lossy neural scalar feature
 and a frozen training vocabulary. Raw reference ordinals and per-frame string
 indexes are not model features.
 
+Checkpoint inference uses `FeatureEncoder.encode_inference()` to return the
+existing compact `RolloutFeatures` directly. It validates a fresh public owner;
+`encode_prepared()` can reuse an existing owner only for its exact immutable
+decision. Search validates after its public context/view transformations and
+passes that owner to inference. Both paths use the same bounded traversal and
+candidate ordering, while omitting the
+lossless arrays the network does not consume. Node, string, reference, integer
+and candidate capacity failures remain explicit. Canonical public records take
+this path; structural caller records and custom encoder hooks retain the
+ordinary encoding path and its ordering. Public recordings, padded observations,
+feature identities and checkpoint formats are unchanged. Combat channel
+extraction visits populated values while preserving known zero versus unknown.
+See the [inference measurements](evidence/SEARCH_INFERENCE_2026_10_08.md).
+
 Use `full_policy.choose_action` with v2 and `policy.choose_action` with v1.
 `HeadlessAdapter(..., decision_profile="full_run_v2")` remains usable without
 NumPy/Gymnasium. `FullRunEnv(engine_factory=...)` accepts the same positional-seed

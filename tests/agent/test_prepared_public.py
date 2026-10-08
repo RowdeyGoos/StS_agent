@@ -196,11 +196,12 @@ def test_prepared_packing_preserves_exact_capacity_failures(dimension):
     owner, encoder = f.PreparedPublic(source), FullRunEncoder(profile)
     errors = []
     for encode in (lambda: encoder.pack(owner.value),
-                   lambda: encoder._pack_prepared(owner.value, owner)):
+                   lambda: encoder._pack_prepared(owner.value, owner),
+                   lambda: encoder.mapping_prepared(owner.value, owner)):
         with pytest.raises(CapacityError) as error:
             encode()
         errors.append((error.value.dimension, error.value.required, error.value.capacity))
-    assert errors[0] == errors[1]
+    assert errors[0] == errors[1] == errors[2]
     assert errors[0][0] == dimension
 
 
@@ -250,11 +251,12 @@ def test_specialized_packing_preserves_competing_capacity_failures():
                                                    references=references, string_bytes=6))
             errors = []
             for call in (lambda: encoder.pack(owner.value),
-                         lambda: encoder._pack_prepared(owner.value, owner)):
+                         lambda: encoder._pack_prepared(owner.value, owner),
+                         lambda: encoder.mapping_prepared(owner.value, owner)):
                 with pytest.raises(CapacityError) as error:
                     call()
                 errors.append((error.value.dimension, error.value.required, error.value.capacity))
-            assert errors[0] == errors[1]
+            assert errors[0] == errors[1] == errors[2]
 
 
 @pytest.mark.parametrize('failure', ('identity', 'owner_type', 'capacity', 'padding', 'terminal'))

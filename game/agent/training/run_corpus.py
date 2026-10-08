@@ -8,6 +8,7 @@ import torch
 
 from game.agent.recording import load_trajectory
 from game.agent.action_policy import ALL_LEGAL, validate_policy
+from game.agent.input_views import RAW, apply_view, validate_view
 from .config import RUN_SCENARIO_SET
 from .features import FeatureEncoder, Vocabulary
 from .combat_features import GRAPH, feature_identity
@@ -17,8 +18,9 @@ from .rewards import RewardSpec, measure_run
 
 
 def load_run_corpus(paths, *, split, vocabulary=None, base_vocabulary=None, action_policy=ALL_LEGAL, representation=GRAPH,
-                    include_catalog=True):
+                    include_catalog=True, input_view=RAW):
     validate_policy(action_policy)
+    validate_view(input_view)
     from .run_demonstrations import _LoadedRunPaths
     if vocabulary is None and split != 'train' or base_vocabulary is not None and (split != 'train' or vocabulary is not None):
         raise ValueError('Fit/expand vocabulary on train only; evaluation requires frozen vocabulary')
@@ -35,11 +37,11 @@ def load_run_corpus(paths, *, split, vocabulary=None, base_vocabulary=None, acti
         if not episode.metadata.scenario.startswith(RUN_SCENARIO_SET+':'):
             raise ValueError('Run corpus requires explicitly declared full-run task records')
     if vocabulary is None:
-        vocabulary = Vocabulary.fit((s.observation for e in episodes for s in e.transitions), split='train',
+        vocabulary = Vocabulary.fit((apply_view(s.observation, input_view) for e in episodes for s in e.transitions), split='train',
                                     include_catalog=include_catalog)
         if base_vocabulary is not None:
             vocabulary = vocabulary.with_names(base_vocabulary.names)
-    encoder = FeatureEncoder(vocabulary, action_policy=action_policy, representation=representation)
+    encoder = FeatureEncoder(vocabulary, action_policy=action_policy, representation=representation, input_view=input_view)
     objective = RewardSpec.full_run()
     examples, hashes, seconds = [], [], 0.0
     while episodes:
@@ -66,11 +68,11 @@ def load_run_corpus(paths, *, split, vocabulary=None, base_vocabulary=None, acti
         seconds += time.perf_counter()-before
     if not examples:
         raise ValueError('Full-run corpus has no reconciled decisions')
-    bindings = [feature_identity(vocabulary, representation), objective.identity, hashes]
+    bindings = [encoder.identity, objective.identity, hashes]
     if action_policy != ALL_LEGAL:
         bindings.append(action_policy)
     identity = 'sts_full_run_corpus_v1:'+hashlib.sha256(json.dumps(bindings, separators=(',', ':')).encode()).hexdigest()
-    return Corpus(tuple(examples), vocabulary, objective, identity, split, len(hashes), seconds, action_policy)
+    return Corpus(tuple(examples), vocabulary, objective, identity, split, len(hashes), seconds, action_policy, input_view)
 
 
 def transfer_combat(policy, vocabulary, *, seed=0, action_policy=None):
@@ -79,7 +81,7 @@ def transfer_combat(policy, vocabulary, *, seed=0, action_policy=None):
     if policy.reward_spec.task != 'combat' or not set(old.vocabulary.names) <= set(vocabulary.names):
         raise ValueError('Combat transfer requires an expanded training vocabulary')
     model = ActorCritic(vocabulary, old.architecture, seed=seed,
-        action_policy=old.action_policy if action_policy is None else action_policy)
+        action_policy=old.action_policy if action_policy is None else action_policy, input_view=old.input_view)
     state, source = model.state_dict(), old.state_dict()
     for key in state:
         if key != 'name.weight' and not key.startswith('value.'):
@@ -108,7 +110,7 @@ def transfer_run_objective(policy, reward_spec, *, seed=0):
             policy.reward_spec == reward_spec):
         raise ValueError('Objective reset requires different same-task reward specifications')
     old = policy.model
-    model = ActorCritic(old.vocabulary, old.architecture, seed=seed, action_policy=old.action_policy)
+    model = ActorCritic(old.vocabulary, old.architecture, seed=seed, action_policy=old.action_policy, input_view=old.input_view)
     state = model.state_dict()
     for key, tensor in old.state_dict().items():
         if not key.startswith('value.'):
@@ -135,7 +137,7 @@ def transfer_catalog(policy, *, seed=0):
     if old.vocabulary.catalog == catalog:
         raise ValueError('Checkpoint already uses the current public catalog')
     vocabulary = Vocabulary(tuple(sorted(set(old.vocabulary.names) | set(catalog.names))), catalog)
-    model = ActorCritic(vocabulary, old.architecture, seed=seed, action_policy=old.action_policy)
+    model = ActorCritic(vocabulary, old.architecture, seed=seed, action_policy=old.action_policy, input_view=old.input_view)
     state, source = model.state_dict(), old.state_dict()
     for key in state:
         if key != 'name.weight' and not key.startswith('value.'):

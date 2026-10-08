@@ -85,8 +85,9 @@ class ColorlessOperation:
             card.combat_state.return_next_turn = True
         elif op == "alchemize":
             from game.headless.potions.pools import generate
-            potion = generate(r.potion_pool, p.deck.potion_rng, in_combat=True)
             from game.headless.relics.combat import has
+            potion = generate(r.potion_pool, p.deck.potion_rng, in_combat=True,
+                              revealed=bool(r.potion_slots) and not has(p, "sozu"))
             if r.potion_slots and not has(p, "sozu"):
                 r.potions_generated.append(potion)
                 r.potion_slots -= 1
@@ -110,7 +111,7 @@ class ColorlessOperation:
                 choices = splash_pool(catalog(p), p.rules.character)
             offers = [
                 create(p, d, upgraded=op == "splash" and card.upgraded, destination="offered")
-                for d in select_cards(choices, p.deck.generation_rng, 3, distinct=True)
+                for d in select_cards(choices, p.deck.generation_rng, 3, distinct=True, revealed=True)
             ]
             begin(
                 p,
@@ -151,11 +152,11 @@ class ColorlessOperation:
                 push(p, ["draw", amount, False])
         elif op == "jack_of_all_trades":
             choices = [d for d in pool(p, "colorless") if d.definition_id != op]
-            for definition in select_cards(choices, p.deck.generation_rng, amount, distinct=True):
+            for definition in select_cards(choices, p.deck.generation_rng, amount, distinct=True, revealed=True):
                 create(p, definition)
         elif op == "jackpot":
             choices = [d for d in pool(p) if d.levels[0].cost == 0 and not d.levels[0].x_cost]
-            for definition in select_cards(choices, p.deck.generation_rng, amount, distinct=False):
+            for definition in select_cards(choices, p.deck.generation_rng, amount, distinct=False, revealed=True):
                 create(p, definition, upgraded=card.upgraded)
         elif op == "prolong":
             from game.headless.powers.ironclad import apply_power
@@ -170,10 +171,9 @@ class ColorlessOperation:
             push(p, ["draw", max(0, 10 - len(p.hand)), False])
         elif op in ("secret_technique", "secret_weapon", "seeker_strike", "thinking_ahead"):
             choices = list(p.hand if op == "thinking_ahead" else p.deck.draw_pile)
-            if op == "secret_technique":
-                choices = [c for c in choices if c.spec.kind in ("skill", "block")]
-            elif op == "secret_weapon":
-                choices = [c for c in choices if c.spec.kind == "attack"]
+            if op in ("secret_technique", "secret_weapon"):
+                from game.headless.core.piles import draw_choice_cards
+                choices = draw_choice_cards(p, op)
             elif op == "seeker_strike":
                 from game.headless.core.native_rng import NativeRng
                 if isinstance(p.deck.selection_rng, NativeRng):
@@ -183,8 +183,8 @@ class ColorlessOperation:
                 else:
                     p.deck.selection_rng.shuffle(choices)
                 whitelist = [c.instance_id for c in choices[:3]]
-                from game.headless.core.piles import stratagem_cards
-                choices = [c for c in stratagem_cards(p) if c.instance_id in whitelist]
+                from game.headless.core.piles import draw_choice_cards
+                choices = draw_choice_cards(p, op, whitelist)
                 begin(p, card.instance_id, choices, whitelist=whitelist)
                 return
             begin(p, card.instance_id, choices, destination="draw_pile" if op == "thinking_ahead" else "hand")

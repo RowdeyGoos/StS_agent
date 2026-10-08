@@ -418,18 +418,23 @@ class CorpusEnvironment:
             raise ValueError('Room kind has no training cases in this corpus')
 
         def make(seed):
-            rng = Random(seed)
-            fights = pool[rng.choice(sorted(pool))]
-            rows = fights[rng.choice(sorted(fights))]
-            opening = [r for r in rows if r['start_kind'] == 'opening']
-            later = [r for r in rows if r['start_kind'] == 'continuation']
-            row = rng.choice(rng.choice((opening, later)) if later else opening)
+            row = sample_training_case(pool, seed)
             run = self.corpus.restore(row['case_id'], split='train')
             env.corpus_case = row
             return run
 
         env = CombatTrainingEnv(engine_factory=make, **settings)
         return env
+
+
+def sample_training_case(pool, seed):
+    """Shared encounter/fight-balanced opening-versus-continuation sampling."""
+    rng = Random(seed)
+    fights = pool[rng.choice(sorted(pool))]
+    rows = fights[rng.choice(sorted(fights))]
+    opening = [r for r in rows if r['start_kind'] == 'opening']
+    later = [r for r in rows if r['start_kind'] == 'continuation']
+    return rng.choice(rng.choice((opening, later)) if later else opening)
 
 
 def training_factory(path, experiment):

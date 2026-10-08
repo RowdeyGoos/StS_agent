@@ -1,0 +1,2353 @@
+{
+  "bindings": {
+    "correction-tests.log": "2ddf325822ef6123b6b69285a14480916620f5e5adaca8e00f5f148292ba7587",
+    "correction/driver-review.json": "76337579dad85ce511303ccce3a674da92bd1fd24f278863da55220a47b80b6d",
+    "correction/evaluation.json": "6eb4ba09ce9b96af3f36fde3988fdaad08f390731381c73061afb5c9ed7de3f0",
+    "correction/protocol.json": "8c531856a4f47f5ebbd0a5f172362431fef8a0ba60f19a891596aa99d4854a09",
+    "correction/review.json": "e349263cdd97582c9e28b5235e205cd56c9d64dd483b722872de55f2170f044d",
+    "correction/source-archive.json": "514ba21914f7e5cf263cca79196c70fd62ca69d111c731d64a771d5812da9479",
+    "correction/viewer-check.json": "4f9c04bce3e75622ea7b486b12aa8dddfbd14a307e6540cc345db9c6a432cbc1",
+    "evaluation.json": "c8c1e3e4bcb67cb8226b3edc1350b66ea5d6593d9e5f0d015c58c45554d8dda8",
+    "final-validation.json": "b4f8c59de0b6696e06f62974bb1395fb1120d86fed4a4ef7c96169c7b31cce79",
+    "postrun-audit.json": "2925a0b9f5df0b294fe807b92cdf6664c5427c52e51f408feb9e0e0b6bb27d33",
+    "probe-validation-gap-corrected.log": "a9b033f02a38e32c078ba6724fc7e4de66e3ed4163c30796a8782b57217a822b",
+    "protocol.json": "8116a71337d658c61e654a62b04fbbd66bd61c154a6d0150b9befa03b003e2e0",
+    "student/final.sts-model": "eb608a617bd68e1c4f39b3e72ae8a7c1568bcde31b06b05936ac30624dd2e00e",
+    "summary.json": "9187c833e3486814244868da57736fbf1e64054349712363d9fe1f9538eab32a"
+  },
+  "corrected_evaluation": {
+    "paired": {
+      "initial_search_vs_initial_same_view": {
+        "cases": 42,
+        "difference_group_hoeffding_95": [
+          -0.41911922693474457,
+          0.41911922693474457
+        ],
+        "paired_campaign_bootstrap_95": [
+          -0.09523809523809523,
+          0.09523809523809523
+        ],
+        "status": "complete",
+        "win_rate_difference": 0.0,
+        "wins_only_candidate": 2,
+        "wins_only_initial_same_view": 2
+      },
+      "specialist_search_vs_specialist_same_view": {
+        "cases": 42,
+        "difference_group_hoeffding_95": [
+          -0.37150017931569695,
+          0.4667382745537922
+        ],
+        "paired_campaign_bootstrap_95": [
+          -0.07142857142857142,
+          0.16666666666666666
+        ],
+        "status": "complete",
+        "win_rate_difference": 0.047619047619047616,
+        "wins_only_candidate": 4,
+        "wins_only_specialist_same_view": 2
+      },
+      "student_network_vs_initial_same_view": {
+        "cases": 42,
+        "difference_group_hoeffding_95": [
+          -0.49054779836331597,
+          0.3476906555061732
+        ],
+        "paired_campaign_bootstrap_95": [
+          -0.16666666666666666,
+          0.023809523809523808
+        ],
+        "status": "complete",
+        "win_rate_difference": -0.07142857142857142,
+        "wins_only_candidate": 1,
+        "wins_only_initial_same_view": 4
+      },
+      "student_network_vs_ppo50k_raw": {
+        "cases": 42,
+        "difference_group_hoeffding_95": [
+          -0.41911922693474457,
+          0.41911922693474457
+        ],
+        "paired_campaign_bootstrap_95": [
+          -0.09523809523809523,
+          0.09523809523809523
+        ],
+        "status": "complete",
+        "win_rate_difference": 0.0,
+        "wins_only_candidate": 2,
+        "wins_only_ppo50k_raw": 2
+      },
+      "student_network_vs_specialist_raw": {
+        "cases": 42,
+        "difference_group_hoeffding_95": [
+          -0.5857858936014112,
+          0.25245256026807794
+        ],
+        "paired_campaign_bootstrap_95": [
+          -0.30952380952380953,
+          -0.047619047619047616
+        ],
+        "status": "complete",
+        "win_rate_difference": -0.16666666666666666,
+        "wins_only_candidate": 1,
+        "wins_only_specialist_raw": 8
+      },
+      "student_search_vs_specialist_raw": {
+        "cases": 42,
+        "difference_group_hoeffding_95": [
+          -0.4429287507442684,
+          0.39530970312522073
+        ],
+        "paired_campaign_bootstrap_95": [
+          -0.19047619047619047,
+          0.11904761904761904
+        ],
+        "status": "complete",
+        "win_rate_difference": -0.023809523809523808,
+        "wins_only_candidate": 5,
+        "wins_only_specialist_raw": 6
+      },
+      "student_search_vs_student_network": {
+        "cases": 42,
+        "difference_group_hoeffding_95": [
+          -0.2762620840776017,
+          0.5619763697918874
+        ],
+        "paired_campaign_bootstrap_95": [
+          -0.023809523809523808,
+          0.30952380952380953
+        ],
+        "status": "complete",
+        "win_rate_difference": 0.14285714285714285,
+        "wins_only_candidate": 9,
+        "wins_only_student_network": 3
+      }
+    },
+    "paired_fight_quality": {
+      "initial_search_vs_initial_same_view": {
+        "end_hp": {
+          "mean_difference": 0.7619047619047619,
+          "paired_campaign_bootstrap_95": [
+            -1.4285714285714286,
+            3.0952380952380953
+          ]
+        },
+        "potion_use_actions": {
+          "mean_difference": 0.0,
+          "paired_campaign_bootstrap_95": [
+            0.0,
+            0.0
+          ]
+        },
+        "task_return": {
+          "mean_difference": 0.0009628717387338044,
+          "paired_campaign_bootstrap_95": [
+            -0.09615980204342274,
+            0.09828532658274038
+          ]
+        }
+      },
+      "specialist_search_vs_specialist_same_view": {
+        "end_hp": {
+          "mean_difference": 1.2619047619047619,
+          "paired_campaign_bootstrap_95": [
+            -1.5952380952380953,
+            4.095238095238095
+          ]
+        },
+        "potion_use_actions": {
+          "mean_difference": 0.0,
+          "paired_campaign_bootstrap_95": [
+            0.0,
+            0.0
+          ]
+        },
+        "task_return": {
+          "mean_difference": 0.04918795008424829,
+          "paired_campaign_bootstrap_95": [
+            -0.07194251934490269,
+            0.17045783160007302
+          ]
+        }
+      },
+      "student_network_vs_initial_same_view": {
+        "end_hp": {
+          "mean_difference": -1.3095238095238095,
+          "paired_campaign_bootstrap_95": [
+            -3.1666666666666665,
+            0.21428571428571427
+          ]
+        },
+        "potion_use_actions": {
+          "mean_difference": 0.0,
+          "paired_campaign_bootstrap_95": [
+            0.0,
+            0.0
+          ]
+        },
+        "task_return": {
+          "mean_difference": -0.07303343367998541,
+          "paired_campaign_bootstrap_95": [
+            -0.17112456668491152,
+            0.02407738095238095
+          ]
+        }
+      },
+      "student_network_vs_ppo50k_raw": {
+        "end_hp": {
+          "mean_difference": -0.23809523809523808,
+          "paired_campaign_bootstrap_95": [
+            -1.9285714285714286,
+            1.5
+          ]
+        },
+        "potion_use_actions": {
+          "mean_difference": 0.0,
+          "paired_campaign_bootstrap_95": [
+            0.0,
+            0.0
+          ]
+        },
+        "task_return": {
+          "mean_difference": -0.0002823389892355437,
+          "paired_campaign_bootstrap_95": [
+            -0.0968853767560664,
+            0.09652481299033022
+          ]
+        }
+      },
+      "student_network_vs_specialist_raw": {
+        "end_hp": {
+          "mean_difference": -2.9523809523809526,
+          "paired_campaign_bootstrap_95": [
+            -5.976190476190476,
+            0.30952380952380953
+          ]
+        },
+        "potion_use_actions": {
+          "mean_difference": 0.0,
+          "paired_campaign_bootstrap_95": [
+            0.0,
+            0.0
+          ]
+        },
+        "task_return": {
+          "mean_difference": -0.17017162899642613,
+          "paired_campaign_bootstrap_95": [
+            -0.31511087768440704,
+            -0.04734801104349783
+          ]
+        }
+      },
+      "student_search_vs_specialist_raw": {
+        "end_hp": {
+          "mean_difference": 0.9047619047619048,
+          "paired_campaign_bootstrap_95": [
+            -2.880952380952381,
+            4.690476190476191
+          ]
+        },
+        "potion_use_actions": {
+          "mean_difference": 0.0,
+          "paired_campaign_bootstrap_95": [
+            0.0,
+            0.0
+          ]
+        },
+        "task_return": {
+          "mean_difference": -0.02255525773527799,
+          "paired_campaign_bootstrap_95": [
+            -0.19079879557186855,
+            0.1259086939373451
+          ]
+        }
+      },
+      "student_search_vs_student_network": {
+        "end_hp": {
+          "mean_difference": 3.857142857142857,
+          "paired_campaign_bootstrap_95": [
+            1.0476190476190477,
+            6.785714285714286
+          ]
+        },
+        "potion_use_actions": {
+          "mean_difference": 0.0,
+          "paired_campaign_bootstrap_95": [
+            0.0,
+            0.0
+          ]
+        },
+        "task_return": {
+          "mean_difference": 0.1476163712611481,
+          "paired_campaign_bootstrap_95": [
+            -0.01873095694216381,
+            0.3155743235991715
+          ]
+        }
+      }
+    },
+    "search": {
+      "initial_search": {
+        "all_latency_seconds": {
+          "count": 1188,
+          "maximum": 3.5855497075244784,
+          "mean": 1.9274877637494607,
+          "median": 2.468259874265641,
+          "p95": 3.0168435843661427
+        },
+        "completed_value_examples": 937,
+        "coverage_all": 0.7887205387205387,
+        "coverage_eligible": 1.0,
+        "cutoffs": {},
+        "decisions": 1188,
+        "distinct_source_cases": 42,
+        "distinct_source_fights": 42,
+        "distinct_source_groups": 42,
+        "eligible": 937,
+        "episode_statuses": {
+          "terminated": 42
+        },
+        "episodes": 42,
+        "fallback_reasons": {
+          "forced_action": 251
+        },
+        "forced": 251,
+        "missing_value_examples": 0,
+        "outcomes": {
+          "defeat": 20,
+          "victory": 22
+        },
+        "potion_use_actions": 17,
+        "searched": 937,
+        "searched_actions_over_5_seconds": 0,
+        "searched_latency_seconds": {
+          "count": 937,
+          "maximum": 3.5855497075244784,
+          "mean": 2.4234862559944146,
+          "median": 2.571628167293966,
+          "p95": 3.0760400001890957
+        },
+        "selected_action_prior": {
+          "count": 937,
+          "maximum": 0.9999999991656447,
+          "mean": 0.8021946695285722,
+          "median": 0.9642852501173284,
+          "p95": 0.9999921954186427
+        },
+        "selected_below_max_prior": 126,
+        "starts": {
+          "opening": 42
+        },
+        "summed_component_seconds": {
+          "conditioning": 56.777106864377856,
+          "inference": 994.2053524400108,
+          "projection": 878.9571133479476,
+          "reconstruction": 3.170378865208477,
+          "sampling": 164.8676648340188,
+          "transition": 83.91804590448737
+        },
+        "target_argmax_below_max_prior": 135,
+        "target_entropy_nats": {
+          "count": 937,
+          "maximum": 1.43094791283968,
+          "mean": 0.278134454913984,
+          "median": 0.09406778878644863,
+          "p95": 0.9536288010243364
+        },
+        "target_kl_from_prior_nats": {
+          "count": 937,
+          "maximum": 3.3855834289834394,
+          "mean": 0.23837780948132162,
+          "median": 0.010198094766996322,
+          "p95": 1.429057601700182
+        },
+        "tree_depth_histogram": {
+          "1": 7146,
+          "2": 7746,
+          "3": 5044,
+          "4": 1984,
+          "5": 468,
+          "6": 99,
+          "7": 1
+        },
+        "work": {
+          "leaf_bootstraps": 17498,
+          "leaf_steps": 78708,
+          "leaf_terminals": 3308,
+          "leaf_time_bootstraps": 0,
+          "simulations": 22488,
+          "tree_terminals": 1682
+        }
+      },
+      "specialist_search": {
+        "all_latency_seconds": {
+          "count": 1248,
+          "maximum": 3.6407872922718525,
+          "mean": 1.9748997778586226,
+          "median": 2.523326666560024,
+          "p95": 3.0888553760014474
+        },
+        "completed_value_examples": 990,
+        "coverage_all": 0.7932692307692307,
+        "coverage_eligible": 1.0,
+        "cutoffs": {},
+        "decisions": 1248,
+        "distinct_source_cases": 42,
+        "distinct_source_fights": 42,
+        "distinct_source_groups": 42,
+        "eligible": 990,
+        "episode_statuses": {
+          "terminated": 42
+        },
+        "episodes": 42,
+        "fallback_reasons": {
+          "forced_action": 258
+        },
+        "forced": 258,
+        "missing_value_examples": 0,
+        "outcomes": {
+          "defeat": 14,
+          "victory": 28
+        },
+        "potion_use_actions": 17,
+        "searched": 990,
+        "searched_actions_over_5_seconds": 0,
+        "searched_latency_seconds": {
+          "count": 990,
+          "maximum": 3.6407872922718525,
+          "mean": 2.4707844722446883,
+          "median": 2.6308864164166152,
+          "p95": 3.1314102918840945
+        },
+        "selected_action_prior": {
+          "count": 990,
+          "maximum": 0.9999999899470869,
+          "mean": 0.7647628420962519,
+          "median": 0.9025240607878094,
+          "p95": 0.9999764183279045
+        },
+        "selected_below_max_prior": 142,
+        "starts": {
+          "opening": 42
+        },
+        "summed_component_seconds": {
+          "conditioning": 58.91582431085408,
+          "inference": 1075.451420133002,
+          "projection": 948.4886983414181,
+          "reconstruction": 3.3115204498171806,
+          "sampling": 175.1858717952855,
+          "transition": 89.75199376093224
+        },
+        "target_argmax_below_max_prior": 150,
+        "target_entropy_nats": {
+          "count": 990,
+          "maximum": 1.5393944681417158,
+          "mean": 0.3397863331344195,
+          "median": 0.19710902220597304,
+          "p95": 1.0104319249009703
+        },
+        "target_kl_from_prior_nats": {
+          "count": 990,
+          "maximum": 3.325619329271282,
+          "mean": 0.22210075749776573,
+          "median": 0.014218208164196115,
+          "p95": 1.1949775137318746
+        },
+        "tree_depth_histogram": {
+          "1": 7624,
+          "2": 7964,
+          "3": 5421,
+          "4": 2177,
+          "5": 500,
+          "6": 73,
+          "7": 1
+        },
+        "work": {
+          "leaf_bootstraps": 18732,
+          "leaf_steps": 83156,
+          "leaf_terminals": 3156,
+          "leaf_time_bootstraps": 0,
+          "simulations": 23760,
+          "tree_terminals": 1872
+        }
+      },
+      "student_search": {
+        "all_latency_seconds": {
+          "count": 1204,
+          "maximum": 3.6623913324438035,
+          "mean": 1.9417338381789042,
+          "median": 2.503804478328675,
+          "p95": 3.0106730423867702
+        },
+        "completed_value_examples": 959,
+        "coverage_all": 0.7965116279069767,
+        "coverage_eligible": 1.0,
+        "cutoffs": {},
+        "decisions": 1204,
+        "distinct_source_cases": 42,
+        "distinct_source_fights": 42,
+        "distinct_source_groups": 42,
+        "eligible": 959,
+        "episode_statuses": {
+          "terminated": 42
+        },
+        "episodes": 42,
+        "fallback_reasons": {
+          "forced_action": 245
+        },
+        "forced": 245,
+        "missing_value_examples": 0,
+        "outcomes": {
+          "defeat": 17,
+          "victory": 25
+        },
+        "potion_use_actions": 17,
+        "searched": 959,
+        "searched_actions_over_5_seconds": 0,
+        "searched_latency_seconds": {
+          "count": 959,
+          "maximum": 3.6623913324438035,
+          "mean": 2.4195272369049023,
+          "median": 2.5988928736187518,
+          "p95": 3.058771834243089
+        },
+        "selected_action_prior": {
+          "count": 959,
+          "maximum": 0.9999999650148664,
+          "mean": 0.7506142157254921,
+          "median": 0.8910668889194677,
+          "p95": 0.9999110031884443
+        },
+        "selected_below_max_prior": 165,
+        "starts": {
+          "opening": 42
+        },
+        "summed_component_seconds": {
+          "conditioning": 57.73184667248279,
+          "inference": 1026.659379470162,
+          "projection": 889.1526550226845,
+          "reconstruction": 3.3086878252215683,
+          "sampling": 168.10383715480566,
+          "transition": 85.4928076043725
+        },
+        "target_argmax_below_max_prior": 175,
+        "target_entropy_nats": {
+          "count": 959,
+          "maximum": 1.5737185568760401,
+          "mean": 0.35536508478720036,
+          "median": 0.20957609468592422,
+          "p95": 1.054818925578554
+        },
+        "target_kl_from_prior_nats": {
+          "count": 959,
+          "maximum": 3.3399387493406816,
+          "mean": 0.2450757891417507,
+          "median": 0.028105065574035974,
+          "p95": 1.3872007450309565
+        },
+        "tree_depth_histogram": {
+          "1": 7438,
+          "2": 7996,
+          "3": 5003,
+          "4": 2009,
+          "5": 489,
+          "6": 80,
+          "7": 1
+        },
+        "work": {
+          "leaf_bootstraps": 17747,
+          "leaf_steps": 80116,
+          "leaf_terminals": 3460,
+          "leaf_time_bootstraps": 0,
+          "simulations": 23016,
+          "tree_terminals": 1809
+        }
+      }
+    },
+    "summary": {
+      "initial_raw": {
+        "attempted": 42,
+        "cutoffs": 0,
+        "failures": 0,
+        "hp_change_observations": 42,
+        "losses": 20,
+        "mean_final_turn_observed": 7.166666666666667,
+        "mean_hp_change_observed": -56.095238095238095,
+        "mean_hp_fraction_on_win": 0.2739420062695925,
+        "mean_hp_on_win": 22.90909090909091,
+        "mean_task_return": 0.5381588669950739,
+        "planned": 42,
+        "potion_use_actions": 17,
+        "source_groups": 42,
+        "steps": 1160,
+        "unattempted": 0,
+        "valid_completed_combat_comparison": true,
+        "win_rate": 0.5238095238095238,
+        "win_rate_group_hoeffding_95": [
+          0.31424991034215155,
+          0.7333691372768961
+        ],
+        "wins": 22
+      },
+      "initial_same_view": {
+        "attempted": 42,
+        "cutoffs": 0,
+        "failures": 0,
+        "hp_change_observations": 42,
+        "losses": 20,
+        "mean_final_turn_observed": 7.166666666666667,
+        "mean_hp_change_observed": -56.095238095238095,
+        "mean_hp_fraction_on_win": 0.2739420062695925,
+        "mean_hp_on_win": 22.90909090909091,
+        "mean_task_return": 0.5381588669950739,
+        "planned": 42,
+        "potion_use_actions": 17,
+        "source_groups": 42,
+        "steps": 1160,
+        "unattempted": 0,
+        "valid_completed_combat_comparison": true,
+        "win_rate": 0.5238095238095238,
+        "win_rate_group_hoeffding_95": [
+          0.31424991034215155,
+          0.7333691372768961
+        ],
+        "wins": 22
+      },
+      "initial_search": {
+        "attempted": 42,
+        "cutoffs": 0,
+        "failures": 0,
+        "hp_change_observations": 42,
+        "losses": 20,
+        "mean_final_turn_observed": 7.309523809523809,
+        "mean_hp_change_observed": -55.333333333333336,
+        "mean_hp_fraction_on_win": 0.29232410309996515,
+        "mean_hp_on_win": 24.363636363636363,
+        "mean_task_return": 0.5391217387338076,
+        "planned": 42,
+        "potion_use_actions": 17,
+        "source_groups": 42,
+        "steps": 1188,
+        "unattempted": 0,
+        "valid_completed_combat_comparison": true,
+        "win_rate": 0.5238095238095238,
+        "win_rate_group_hoeffding_95": [
+          0.31424991034215155,
+          0.7333691372768961
+        ],
+        "wins": 22
+      },
+      "ppo50k_raw": {
+        "attempted": 42,
+        "cutoffs": 0,
+        "failures": 0,
+        "hp_change_observations": 42,
+        "losses": 23,
+        "mean_final_turn_observed": 7.309523809523809,
+        "mean_hp_change_observed": -57.166666666666664,
+        "mean_hp_fraction_on_win": 0.2879612825166364,
+        "mean_hp_on_win": 24.157894736842106,
+        "mean_task_return": 0.46540777230432395,
+        "planned": 42,
+        "potion_use_actions": 17,
+        "source_groups": 42,
+        "steps": 1205,
+        "unattempted": 0,
+        "valid_completed_combat_comparison": true,
+        "win_rate": 0.4523809523809524,
+        "win_rate_group_hoeffding_95": [
+          0.2428213389135801,
+          0.6619405658483246
+        ],
+        "wins": 19
+      },
+      "specialist_raw": {
+        "attempted": 42,
+        "cutoffs": 0,
+        "failures": 0,
+        "hp_change_observations": 42,
+        "losses": 16,
+        "mean_final_turn_observed": 7.380952380952381,
+        "mean_hp_change_observed": -54.45238095238095,
+        "mean_hp_fraction_on_win": 0.2624910065706212,
+        "mean_hp_on_win": 22.03846153846154,
+        "mean_task_return": 0.6352970623115145,
+        "planned": 42,
+        "potion_use_actions": 17,
+        "source_groups": 42,
+        "steps": 1236,
+        "unattempted": 0,
+        "valid_completed_combat_comparison": true,
+        "win_rate": 0.6190476190476191,
+        "win_rate_group_hoeffding_95": [
+          0.4094880055802468,
+          0.8286072325149914
+        ],
+        "wins": 26
+      },
+      "specialist_same_view": {
+        "attempted": 42,
+        "cutoffs": 0,
+        "failures": 0,
+        "hp_change_observations": 42,
+        "losses": 16,
+        "mean_final_turn_observed": 7.380952380952381,
+        "mean_hp_change_observed": -54.45238095238095,
+        "mean_hp_fraction_on_win": 0.2624910065706212,
+        "mean_hp_on_win": 22.03846153846154,
+        "mean_task_return": 0.6352970623115145,
+        "planned": 42,
+        "potion_use_actions": 17,
+        "source_groups": 42,
+        "steps": 1236,
+        "unattempted": 0,
+        "valid_completed_combat_comparison": true,
+        "win_rate": 0.6190476190476191,
+        "win_rate_group_hoeffding_95": [
+          0.4094880055802468,
+          0.8286072325149914
+        ],
+        "wins": 26
+      },
+      "specialist_search": {
+        "attempted": 42,
+        "cutoffs": 0,
+        "failures": 0,
+        "hp_change_observations": 42,
+        "losses": 14,
+        "mean_final_turn_observed": 7.476190476190476,
+        "mean_hp_change_observed": -53.19047619047619,
+        "mean_hp_fraction_on_win": 0.26727518593644356,
+        "mean_hp_on_win": 22.357142857142858,
+        "mean_task_return": 0.6844850123957629,
+        "planned": 42,
+        "potion_use_actions": 17,
+        "source_groups": 42,
+        "steps": 1248,
+        "unattempted": 0,
+        "valid_completed_combat_comparison": true,
+        "win_rate": 0.6666666666666666,
+        "win_rate_group_hoeffding_95": [
+          0.45710705319929434,
+          0.8762262801340389
+        ],
+        "wins": 28
+      },
+      "student_network": {
+        "attempted": 42,
+        "cutoffs": 0,
+        "failures": 0,
+        "hp_change_observations": 42,
+        "losses": 23,
+        "mean_final_turn_observed": 7.214285714285714,
+        "mean_hp_change_observed": -57.404761904761905,
+        "mean_hp_fraction_on_win": 0.2817201048598507,
+        "mean_hp_on_win": 23.63157894736842,
+        "mean_task_return": 0.4651254333150884,
+        "planned": 42,
+        "potion_use_actions": 17,
+        "source_groups": 42,
+        "steps": 1191,
+        "unattempted": 0,
+        "valid_completed_combat_comparison": true,
+        "win_rate": 0.4523809523809524,
+        "win_rate_group_hoeffding_95": [
+          0.2428213389135801,
+          0.6619405658483246
+        ],
+        "wins": 19
+      },
+      "student_search": {
+        "attempted": 42,
+        "cutoffs": 0,
+        "failures": 0,
+        "hp_change_observations": 42,
+        "losses": 17,
+        "mean_final_turn_observed": 7.333333333333333,
+        "mean_hp_change_observed": -53.54761904761905,
+        "mean_hp_fraction_on_win": 0.2940623168807753,
+        "mean_hp_on_win": 24.44,
+        "mean_task_return": 0.6127418045762365,
+        "planned": 42,
+        "potion_use_actions": 17,
+        "source_groups": 42,
+        "steps": 1204,
+        "unattempted": 0,
+        "valid_completed_combat_comparison": true,
+        "win_rate": 0.5952380952380952,
+        "win_rate_group_hoeffding_95": [
+          0.38567848177072295,
+          0.8047977087054675
+        ],
+        "wins": 25
+      }
+    },
+    "total_seconds": 507.5453260410577
+  },
+  "corrected_protocol": {
+    "bindings": [
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-training-20261008/protocol.json",
+        "sha256": "8116a71337d658c61e654a62b04fbbd66bd61c154a6d0150b9befa03b003e2e0"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-training-20261008/evaluation.json",
+        "sha256": "c8c1e3e4bcb67cb8226b3edc1350b66ea5d6593d9e5f0d015c58c45554d8dda8"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-training-20261008/summary.json",
+        "sha256": "9187c833e3486814244868da57736fbf1e64054349712363d9fe1f9538eab32a"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-training-20261008/student/final.sts-model",
+        "sha256": "eb608a617bd68e1c4f39b3e72ae8a7c1568bcde31b06b05936ac30624dd2e00e"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-training-20261008/student/search-distillation.json",
+        "sha256": "5fc05d059e688d1c81a7b2945cffab207d7f3bc4934b7e88b723b5eb684b9c64"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-training-20261008/correction.py",
+        "sha256": "050ac6778846dd17ec7aa15602b841570e5b13cb709c0dd37ad66c8bd6b6f7c7"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-training-20261008/study.py",
+        "sha256": "5035dbd6a2665092a6bcc03e2fddad5ce8db796e3103592806dae16cc9c2e396"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-training-20261008/recover_prefixes.py",
+        "sha256": "d98159233dee831b53a280f37adaa5662fc07e44785d42a94b6a36f7edf33a5b"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-training-20261008/validate_prefixes.py",
+        "sha256": "6636299acd6755c88641a0142d950db5aac7c022f66f0773671a32d2cb4ab223"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-training-20261008/correction-tests.log",
+        "sha256": "2ddf325822ef6123b6b69285a14480916620f5e5adaca8e00f5f148292ba7587"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-training-20261008/correction/prefix-recovery.json",
+        "sha256": "9bfedfffc4280fcc7995b2ba6f4f59a9af98962955c56cf0f5bcb2dc31025d5d"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-training-20261008/correction/prefix-validation.json",
+        "sha256": "5de830aaa90bc159fef01ddf80de39cfec4a991e1232d9a55e8270b5655fb260"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-training-20261008/correction/review.json",
+        "sha256": "e349263cdd97582c9e28b5235e205cd56c9d64dd483b722872de55f2170f044d"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-20261002/corpus/corpus.json",
+        "sha256": "0b9f7cd09f6d63aa47f3110b3e7faca63039ea37e6b392e4ed0db5ebd63a9a9f"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-20261002/corpus/test-opened.json",
+        "sha256": "4ecf002c05a76e5ec990909844d23487ae306e9043c8209adc70ce5d8cdbd279"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-action-preview-20261002/corpus/corpus.json",
+        "sha256": "6306c4e3d94edde7782f9cedacd6a9a4cfb2e6da5f7870404794619dfcbeffb5"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-action-preview-20261002/corpus/test-opened.json",
+        "sha256": "d828d0d66afa9422da386323f1f59103543ad1c150f1dd8bbe3c5d38695d0108"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/corpus/corpus.json",
+        "sha256": "c817e01031d3abcd0668ea68401c7a80ddff093a5cb114bf4d9697595c96a7c9"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/corpus/test-opened.json",
+        "sha256": "7b7c1d8c64c9024edfd2431d75fdd63930555536ab0ff025f9afdf6bd005f531"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-nongraph-20261003/corpus/corpus.json",
+        "sha256": "b43736e38c603dd8c9a689c11287a40ace74b27f371675fb6d07be32c665335b"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-nongraph-20261003/corpus/test-opened.json",
+        "sha256": "ee91967c79e4e2e5cb15fe56a557776e0997df1a44afbb11fe11cec7793fd482"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-defeat-hp-20261003/corpus/corpus.json",
+        "sha256": "3beb2fe93a5704270b31816ee19b0fefddba2a758909329178f64455eee2dcd0"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-defeat-hp-20261003/corpus/test-opened.json",
+        "sha256": "44cb68dc26776641ee24da6d5e710a1ecaa85a4c2c6c0da03d8c556fb7b1e8ee"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/corpus/corpus.json",
+        "sha256": "01e34face70f278ef2ac3dce531d75ca6b17886232e3be4a6d81f420918ae0c7"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-training-20261002/initializer/initial.sts-model",
+        "sha256": "a27da5b53aaa6332e0657a2fc3baa3d84e78e4714732d5d4e870e92376817fd2"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-training-20261002/ppo/chunk-04/final.sts-model",
+        "sha256": "b8e5e777f31a2be3a3cfd8892bf2e2bf0a75f351cd70578f556a1d62e240f162"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-training-20261002/ppo/chunk-20/final.sts-model",
+        "sha256": "4da8789591fc9379522b3b30745bb6b6615ee53bb4bfc21215affecf28dfae6a"
+      }
+    ],
+    "evaluation": {
+      "arms": [
+        "initial_raw",
+        "initial_same_view",
+        "initial_search",
+        "ppo50k_raw",
+        "specialist_raw",
+        "specialist_same_view",
+        "specialist_search",
+        "student_network",
+        "student_search"
+      ],
+      "cases": 42,
+      "episode_seconds": 1800,
+      "max_decisions": 512,
+      "primary": "student_search versus original specialist_raw on identical starts",
+      "secondary": "same-model search versus network and raw-view controls",
+      "selection": "fixed final checkpoint after two epochs; no validation-selected hyperparameters",
+      "split": "validation",
+      "start_kind": "opening",
+      "uncertainty": "paired source-campaign bootstrap 95%, plus existing conservative Hoeffding intervals"
+    },
+    "heldout_test_opened": false,
+    "implementation": {
+      "build": "357142e7dd5d321cfa707fc6b444c1306fa8e01503542f8af887317a23950039",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "efcc2494d3c1f896669e334cb49a60455048ac4f2a44a3466a7a62225cd0771c",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "objective": {
+      "schema": "sts_training_reward_v1",
+      "weights": {
+        "combat_loss": 0.0,
+        "combat_win": 1.0,
+        "end_turn_action": 0.0,
+        "potion_use_action": 0.0,
+        "win_hp_fraction": 0.1
+      }
+    },
+    "original_evaluation_sha256": "c8c1e3e4bcb67cb8226b3edc1350b66ea5d6593d9e5f0d015c58c45554d8dda8",
+    "original_protocol_sha256": "8116a71337d658c61e654a62b04fbbd66bd61c154a6d0150b9befa03b003e2e0",
+    "rationale": "Fix invalid cached draw-selector ordering; no new training, checkpoint selection or search tuning.",
+    "schema": "sts_vantom_selector_correction_protocol_v1",
+    "search": {
+      "belief_particles": 2,
+      "belief_proposals": 4096,
+      "belief_replay_proposals": 2048,
+      "belief_replay_steps": 16384,
+      "belief_seconds": 120.0,
+      "considered_actions": 16,
+      "exploration": true,
+      "final_selection": "prior_value",
+      "leaf_rollout_steps": 4,
+      "max_depth": 16,
+      "method": "gumbel",
+      "model_version": "revealed_belief_v1",
+      "q_scale": 0.1,
+      "seed": 0,
+      "simulations": 24,
+      "time_limit": 120.0
+    },
+    "student_sha256": "eb608a617bd68e1c4f39b3e72ae8a7c1568bcde31b06b05936ac30624dd2e00e",
+    "workers": 16
+  },
+  "correction_differences": [
+    {
+      "actions_equal": false,
+      "arm": "initial_search",
+      "case_id": "08ebccdda466438bae165f82e10fc89a",
+      "score_changes": {
+        "combat": {
+          "new": {
+            "combat_ref": "combat:0",
+            "hp": 17,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 9
+          },
+          "old": {
+            "combat_ref": "combat:0",
+            "hp": 12,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 9
+          }
+        },
+        "end_hp": {
+          "new": 17,
+          "old": 12
+        },
+        "steps": {
+          "new": 37,
+          "old": 36
+        },
+        "task_return": {
+          "new": 1.02125,
+          "old": 1.015
+        }
+      }
+    },
+    {
+      "actions_equal": false,
+      "arm": "specialist_search",
+      "case_id": "08ebccdda466438bae165f82e10fc89a",
+      "score_changes": {
+        "combat": {
+          "new": {
+            "combat_ref": "combat:0",
+            "hp": 17,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 9
+          },
+          "old": {
+            "combat_ref": "combat:0",
+            "hp": 12,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 9
+          }
+        },
+        "end_hp": {
+          "new": 17,
+          "old": 12
+        },
+        "task_return": {
+          "new": 1.02125,
+          "old": 1.015
+        }
+      }
+    },
+    {
+      "actions_equal": false,
+      "arm": "student_search",
+      "case_id": "08ebccdda466438bae165f82e10fc89a",
+      "score_changes": {}
+    }
+  ],
+  "correction_validation": {
+    "driver_review": {
+      "blockers": [],
+      "driver_sha256": "050ac6778846dd17ec7aa15602b841570e5b13cb709c0dd37ad66c8bd6b6f7c7",
+      "findings": "Original and correction bindings match; independent six-corpus/test-marker check and freeze admission passed. Same nine arms and42 validation openings, no retraining or held-out access.",
+      "future_preparation": "Check validation_owner before replay as well as at freeze. Current preparation remains admissible, no rerun needed; keep frozen artifacts immutable.",
+      "protocol_sha256": "8c531856a4f47f5ebbd0a5f172362431fef8a0ba60f19a891596aa99d4854a09",
+      "reviewer": "/root/selection_semantic_review"
+    },
+    "focused_passed": 1072,
+    "prefix_seconds": 53.32433229172602,
+    "prefix_starts": 935,
+    "review": {
+      "bindings": {
+        "game/agent/search/direct.py": "568d077eb4fbc4ed1197e0f66749eadf1319b5c306af74744b577fc7c0f1e1e5",
+        "game/headless/cards/colorless_effects.py": "5de160007772086e0620dd6fe621b5082737c00bb499404acb8755ec9ecbf172",
+        "game/headless/core/choice_snapshots.py": "98c6645da168d5a6b8aff7932f14b70e4d14324f4e6c3d0027ca6dd131f958ee",
+        "game/headless/core/piles.py": "617429db9a5ceb5384910d9f220595285ef516fe0cb1d9d6810d38b022de2b0d",
+        "game/headless/run/construction.py": "b905481f67f068cd921638c30ea8169f3f4d11573d976002adbcd9192b745c87",
+        "tests/agent/test_observed_belief.py": "c9de8561260ce71c85e1532059218799cf36c2dc89270970860985135ef3874d",
+        "tests/agent/test_search_draw_selectors.py": "ac6086ba8992959f9afc5f796d595e184d84a68f0ede343d0088be97106f26e6"
+      },
+      "blockers": [],
+      "findings": "Ordering only; active membership mismatch fails; selected order, bounds, sampled whitelist and deferred membership preserved. Ordinary eligibility and Seeker Strike RNG calls unchanged.",
+      "limitations": [
+        "Deferred membership guard is unit-level coverage, not exhaustive scheduler evidence."
+      ],
+      "reviewer": "/root/selection_semantic_review",
+      "scope": "Hypothetical draw selector caches: public information, proposal RNG and strict snapshot validation",
+      "validation": "1072 focused tests passed in54.15s. Original failing public trace replays without fallback."
+    },
+    "seconds": 54.15
+  },
+  "heldout_test_opened": false,
+  "network_only_action_and_score_parity_cases": 252,
+  "original_initialization_and_baseline_audit": {
+    "action_differences": [],
+    "evaluation_sha256": "c8c1e3e4bcb67cb8226b3edc1350b66ea5d6593d9e5f0d015c58c45554d8dda8",
+    "historical_baseline_cases": 42,
+    "historical_report_sha256": "64c5f53f3ff2204c34e5bd67e964b3fa0d786ccdae4e14bd1b02fe3ad674a14f",
+    "parameter_and_buffer_tensors": 38,
+    "protocol_sha256": "8116a71337d658c61e654a62b04fbbd66bd61c154a6d0150b9befa03b003e2e0",
+    "same_architecture": true,
+    "same_initial_weights": true,
+    "same_vocabulary": true,
+    "schema": "sts_vantom_search_postrun_audit_v1",
+    "score_differences": [],
+    "source_input_view": "public_observation_v1",
+    "status": "passed",
+    "student_initial_sha256": "f3d8c6372ac8e52b7f4e3dedf1c4fd8760f42c99af9c5af3a55025fc82ad03c2",
+    "student_input_view": "detached_combat_history_cards_v1"
+  },
+  "original_validation": {
+    "created_unix": 1791418376.500417,
+    "implementation": {
+      "build": "440a82da8ce08ab83767a6e510038675232d452ffd842ee3eef989a44edaad90",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "e5b0716f228657ebefe2f9febd074facfddc472be220ae822ffb9532deb71f12",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "integration": [
+      {
+        "log": "engine-integration.log",
+        "passed": 7372,
+        "scope": "tests/headless tests/test_package_layout.py",
+        "seconds": 1417.7
+      },
+      {
+        "log": "agent-integration.log",
+        "passed": 1616,
+        "scope": "tests/agent",
+        "seconds": 654.25,
+        "skipped": 1,
+        "warnings": 3
+      }
+    ],
+    "log_sha256": {
+      "agent-integration.log": "0b4cedf161eadc1b9826cf8adbd5dc281bbcc295ccc6710a3aab401ef72a41f2",
+      "engine-integration.log": "82624dc008dcf4a37a566d6947193ceccbc038a346e4e9220094ba9be9312ae3"
+    },
+    "precollection_checks_sha256": "58cd8645b15b30809e24fb6dd19c6246f318fffabac96e31414af3344d197209",
+    "schema": "sts_experiment_final_validation_v1",
+    "status": "passed",
+    "timing_note": "The last part of the broad headless suite overlapped the beginning of collection. Collection timings include this contention."
+  },
+  "promotion": "experimental_only",
+  "schema": "sts_vantom_search_training_final_v1",
+  "status": "complete",
+  "training": {
+    "bindings": {
+      "collection-00/search.json": "2e235fb61b72afd3d4f51490f550f63f545b2e16fed5e7a2b0ca74d58df8a1fd",
+      "collection-01/search.json": "6d3032e0ee3b7bdf8f46eeb784375706a672c1e6060ff0b371a023e9f1d5f470",
+      "collection-02/search.json": "6bfd97d76f4510813f5f0159d746ea70a0047e8cfa33d05e50d4fb57252369a9",
+      "collection-03/search.json": "d3d3e3cf7e992b11fa909dec1fc4bad0609637cbdbfdafe9a5f9f796e73ada23",
+      "collection-04/search.json": "4294c32363a589b055b0f7ceefe0a9e9f934bf0584000b761a4c1056311e8a0a",
+      "evaluation.json": "c8c1e3e4bcb67cb8226b3edc1350b66ea5d6593d9e5f0d015c58c45554d8dda8",
+      "source-archive.json": "3ac0c77da8e977db6cba43ebbbd53ff8beb9adb11bba33a45e907966dee17347",
+      "student/final.sts-model": "eb608a617bd68e1c4f39b3e72ae8a7c1568bcde31b06b05936ac30624dd2e00e",
+      "student/search-distillation.json": "5fc05d059e688d1c81a7b2945cffab207d7f3bc4934b7e88b723b5eb684b9c64"
+    },
+    "chunks": [
+      {
+        "decisions": 10000,
+        "searched": 7804,
+        "seconds": 1244.6972386669368
+      },
+      {
+        "decisions": 10000,
+        "searched": 7851,
+        "seconds": 1239.2869479171932
+      },
+      {
+        "decisions": 10000,
+        "searched": 7861,
+        "seconds": 1226.7688857498579
+      },
+      {
+        "decisions": 10000,
+        "searched": 7841,
+        "seconds": 1225.6051102499478
+      },
+      {
+        "decisions": 10000,
+        "searched": 7810,
+        "seconds": 1240.9927919167094
+      }
+    ],
+    "collection": {
+      "all_latency_seconds": {
+        "count": 50000,
+        "maximum": 5.762805833015591,
+        "mean": 1.8440288610162399,
+        "median": 2.38187116663903,
+        "p95": 3.0562902502715588
+      },
+      "completed_value_examples": 38301,
+      "coverage_all": 0.78334,
+      "coverage_eligible": 1.0,
+      "cutoffs": {},
+      "decisions": 50000,
+      "distinct_source_cases": 586,
+      "distinct_source_fights": 101,
+      "distinct_source_groups": 101,
+      "eligible": 39167,
+      "episode_statuses": {
+        "terminated": 2256,
+        "truncated": 77
+      },
+      "episodes": 2333,
+      "fallback_reasons": {
+        "forced_action": 10833
+      },
+      "forced": 10833,
+      "missing_value_examples": 866,
+      "outcomes": {
+        "defeat": 972,
+        "ongoing": 77,
+        "victory": 1284
+      },
+      "potion_use_actions": 864,
+      "searched": 39167,
+      "searched_actions_over_5_seconds": 7,
+      "searched_latency_seconds": {
+        "count": 39167,
+        "maximum": 5.762805833015591,
+        "mean": 2.334452091459984,
+        "median": 2.512366999872029,
+        "p95": 3.1115750833414495
+      },
+      "selected_action_prior": {
+        "count": 39167,
+        "maximum": 0.9999999999951648,
+        "mean": 0.7697683495120234,
+        "median": 0.9529163043827643,
+        "p95": 0.9999963079915848
+      },
+      "selected_below_max_prior": 7459,
+      "starts": {
+        "continuation": 1174,
+        "opening": 1159
+      },
+      "summed_component_seconds": {
+        "conditioning": 2279.1938971290365,
+        "inference": 39435.75512789795,
+        "projection": 34963.22119173501,
+        "reconstruction": 886.3838751190342,
+        "sampling": 6828.486176836304,
+        "transition": 3416.0737332175486
+      },
+      "target_argmax_below_max_prior": 5892,
+      "target_entropy_nats": {
+        "count": 39167,
+        "maximum": 1.9884389927300545,
+        "mean": 0.2837053121065413,
+        "median": 0.11955528126695013,
+        "p95": 0.9463479811900972
+      },
+      "target_kl_from_prior_nats": {
+        "count": 39167,
+        "maximum": 3.3859826622670552,
+        "mean": 0.23398798635164011,
+        "median": 0.008921899555817382,
+        "p95": 1.3300987669419835
+      },
+      "tree_depth_histogram": {
+        "1": 307272,
+        "2": 314715,
+        "3": 211780,
+        "4": 82008,
+        "5": 20370,
+        "6": 3247,
+        "7": 553,
+        "8": 59,
+        "9": 4
+      },
+      "work": {
+        "leaf_bootstraps": 693497,
+        "leaf_steps": 3164222,
+        "leaf_terminals": 154764,
+        "leaf_time_bootstraps": 0,
+        "simulations": 940008,
+        "tree_terminals": 91747
+      }
+    },
+    "collection_wall_seconds": 6177.350974500645,
+    "evaluation_search": {
+      "initial_search": {
+        "coverage": 0.7683235046335299,
+        "cutoffs": {},
+        "decisions": 1187,
+        "fallbacks": {
+          "belief_history_mismatch": 23,
+          "belief_transition_unsupported": 1,
+          "forced_action": 251
+        },
+        "leaf_work": {
+          "bootstraps": 17043,
+          "steps": 76623,
+          "terminals": 3186,
+          "time_bootstraps": 0
+        },
+        "max_episode_p95_seconds": 3.4824890829622746,
+        "searched": 912,
+        "seconds": 2301.034819035325,
+        "simulations": 21888,
+        "timings": {
+          "conditioning": 73.54585780343041,
+          "inference": 1003.4524439834058,
+          "projection": 882.743846159894,
+          "reconstruction": 3.2360770204104483,
+          "sampling": 165.29268226353452,
+          "transition": 83.53182727983221
+        }
+      },
+      "specialist_search": {
+        "coverage": 0.7740384615384616,
+        "cutoffs": {},
+        "decisions": 1248,
+        "fallbacks": {
+          "belief_history_mismatch": 23,
+          "belief_transition_unsupported": 1,
+          "forced_action": 258
+        },
+        "leaf_work": {
+          "bootstraps": 18264,
+          "steps": 81093,
+          "terminals": 3071,
+          "time_bootstraps": 0
+        },
+        "max_episode_p95_seconds": 3.617349124979228,
+        "searched": 966,
+        "seconds": 2463.544294218067,
+        "simulations": 23184,
+        "timings": {
+          "conditioning": 75.43211601441726,
+          "inference": 1079.7256297217682,
+          "projection": 944.8899813299067,
+          "reconstruction": 3.5098460912704468,
+          "sampling": 175.60222443938255,
+          "transition": 89.75812225556001
+        }
+      },
+      "student_search": {
+        "coverage": 0.7790697674418605,
+        "cutoffs": {},
+        "decisions": 1204,
+        "fallbacks": {
+          "belief_history_mismatch": 20,
+          "belief_transition_unsupported": 1,
+          "forced_action": 245
+        },
+        "leaf_work": {
+          "bootstraps": 17349,
+          "steps": 78341,
+          "terminals": 3400,
+          "time_bootstraps": 0
+        },
+        "max_episode_p95_seconds": 3.4819705416448414,
+        "searched": 938,
+        "seconds": 2312.0663932859898,
+        "simulations": 22512,
+        "timings": {
+          "conditioning": 71.179099900648,
+          "inference": 1014.0955268652178,
+          "projection": 884.1323186471127,
+          "reconstruction": 3.2797439168207347,
+          "sampling": 165.7311927783303,
+          "transition": 84.3157472438179
+        }
+      }
+    },
+    "evaluation_search_details": {
+      "initial_search": {
+        "all_latency_seconds": {
+          "count": 1187,
+          "maximum": 3.788503000047058,
+          "mean": 1.9385297548739049,
+          "median": 2.5189070836640894,
+          "p95": 3.135291166137904
+        },
+        "completed_value_examples": 912,
+        "coverage_all": 0.7683235046335299,
+        "coverage_eligible": 0.9743589743589743,
+        "cutoffs": {},
+        "decisions": 1187,
+        "distinct_source_cases": 42,
+        "distinct_source_fights": 42,
+        "distinct_source_groups": 42,
+        "eligible": 936,
+        "episode_statuses": {
+          "terminated": 42
+        },
+        "episodes": 42,
+        "fallback_reasons": {
+          "belief_history_mismatch": 23,
+          "belief_transition_unsupported": 1,
+          "forced_action": 251
+        },
+        "forced": 251,
+        "missing_value_examples": 0,
+        "outcomes": {
+          "defeat": 20,
+          "victory": 22
+        },
+        "potion_use_actions": 17,
+        "searched": 912,
+        "searched_actions_over_5_seconds": 0,
+        "searched_latency_seconds": {
+          "count": 912,
+          "maximum": 3.788503000047058,
+          "mean": 2.501980175057389,
+          "median": 2.663222604431212,
+          "p95": 3.200352125801146
+        },
+        "selected_action_prior": {
+          "count": 912,
+          "maximum": 0.9999999991656447,
+          "mean": 0.8002705109427751,
+          "median": 0.964128865924206,
+          "p95": 0.9999921954186427
+        },
+        "selected_below_max_prior": 124,
+        "starts": {
+          "opening": 42
+        },
+        "summed_component_seconds": {
+          "conditioning": 57.062425430398434,
+          "inference": 1000.7384666223079,
+          "projection": 882.743846159894,
+          "reconstruction": 3.2353347302414477,
+          "sampling": 165.29268226353452,
+          "transition": 83.53182727983221
+        },
+        "target_argmax_below_max_prior": 132,
+        "target_entropy_nats": {
+          "count": 912,
+          "maximum": 1.43094791283968,
+          "mean": 0.279342735491447,
+          "median": 0.09436535244312708,
+          "p95": 0.9536288010243364
+        },
+        "target_kl_from_prior_nats": {
+          "count": 912,
+          "maximum": 3.3855834289834394,
+          "mean": 0.23721486288324473,
+          "median": 0.010228067062425926,
+          "p95": 1.40147667572661
+        },
+        "tree_depth_histogram": {
+          "1": 6965,
+          "2": 7557,
+          "3": 4902,
+          "4": 1899,
+          "5": 465,
+          "6": 99,
+          "7": 1
+        },
+        "work": {
+          "leaf_bootstraps": 17043,
+          "leaf_steps": 76623,
+          "leaf_terminals": 3186,
+          "leaf_time_bootstraps": 0,
+          "simulations": 21888,
+          "tree_terminals": 1659
+        }
+      },
+      "specialist_search": {
+        "all_latency_seconds": {
+          "count": 1248,
+          "maximum": 3.7028829166665673,
+          "mean": 1.973993825495246,
+          "median": 2.572558229556307,
+          "p95": 3.169520708732307
+        },
+        "completed_value_examples": 966,
+        "coverage_all": 0.7740384615384616,
+        "coverage_eligible": 0.9757575757575757,
+        "cutoffs": {},
+        "decisions": 1248,
+        "distinct_source_cases": 42,
+        "distinct_source_fights": 42,
+        "distinct_source_groups": 42,
+        "eligible": 990,
+        "episode_statuses": {
+          "terminated": 42
+        },
+        "episodes": 42,
+        "fallback_reasons": {
+          "belief_history_mismatch": 23,
+          "belief_transition_unsupported": 1,
+          "forced_action": 258
+        },
+        "forced": 258,
+        "missing_value_examples": 0,
+        "outcomes": {
+          "defeat": 14,
+          "victory": 28
+        },
+        "potion_use_actions": 17,
+        "searched": 966,
+        "searched_actions_over_5_seconds": 0,
+        "searched_latency_seconds": {
+          "count": 966,
+          "maximum": 3.7028829166665673,
+          "mean": 2.530935248155648,
+          "median": 2.7034759789239615,
+          "p95": 3.213878415990621
+        },
+        "selected_action_prior": {
+          "count": 966,
+          "maximum": 0.9999999899470869,
+          "mean": 0.7627115071378028,
+          "median": 0.8996452615052881,
+          "p95": 0.9999752770476653
+        },
+        "selected_below_max_prior": 139,
+        "starts": {
+          "opening": 42
+        },
+        "summed_component_seconds": {
+          "conditioning": 59.84628755226731,
+          "inference": 1076.6837592697702,
+          "projection": 944.8899813299067,
+          "reconstruction": 3.509083926677704,
+          "sampling": 175.60222443938255,
+          "transition": 89.75812225556001
+        },
+        "target_argmax_below_max_prior": 147,
+        "target_entropy_nats": {
+          "count": 966,
+          "maximum": 1.5393944681417158,
+          "mean": 0.342152376340461,
+          "median": 0.20374864319223918,
+          "p95": 1.0160369861039416
+        },
+        "target_kl_from_prior_nats": {
+          "count": 966,
+          "maximum": 3.325619329271282,
+          "mean": 0.22294598561225,
+          "median": 0.015054484940823766,
+          "p95": 1.1949775137318746
+        },
+        "tree_depth_histogram": {
+          "1": 7441,
+          "2": 7786,
+          "3": 5283,
+          "4": 2100,
+          "5": 500,
+          "6": 73,
+          "7": 1
+        },
+        "work": {
+          "leaf_bootstraps": 18264,
+          "leaf_steps": 81093,
+          "leaf_terminals": 3071,
+          "leaf_time_bootstraps": 0,
+          "simulations": 23184,
+          "tree_terminals": 1849
+        }
+      },
+      "student_search": {
+        "all_latency_seconds": {
+          "count": 1204,
+          "maximum": 3.6251870417036116,
+          "mean": 1.9203209246561377,
+          "median": 2.519453791435808,
+          "p95": 3.064564167521894
+        },
+        "completed_value_examples": 938,
+        "coverage_all": 0.7790697674418605,
+        "coverage_eligible": 0.9781021897810219,
+        "cutoffs": {},
+        "decisions": 1204,
+        "distinct_source_cases": 42,
+        "distinct_source_fights": 42,
+        "distinct_source_groups": 42,
+        "eligible": 959,
+        "episode_statuses": {
+          "terminated": 42
+        },
+        "episodes": 42,
+        "fallback_reasons": {
+          "belief_history_mismatch": 20,
+          "belief_transition_unsupported": 1,
+          "forced_action": 245
+        },
+        "forced": 245,
+        "missing_value_examples": 0,
+        "outcomes": {
+          "defeat": 17,
+          "victory": 25
+        },
+        "potion_use_actions": 17,
+        "searched": 938,
+        "searched_actions_over_5_seconds": 0,
+        "searched_latency_seconds": {
+          "count": 938,
+          "maximum": 3.6251870417036116,
+          "mean": 2.4462716537815674,
+          "median": 2.6200572496745735,
+          "p95": 3.096115541178733
+        },
+        "selected_action_prior": {
+          "count": 938,
+          "maximum": 0.9999999650148664,
+          "mean": 0.7505088444287076,
+          "median": 0.8911019481078195,
+          "p95": 0.9999142903507939
+        },
+        "selected_below_max_prior": 161,
+        "starts": {
+          "opening": 42
+        },
+        "summed_component_seconds": {
+          "conditioning": 56.46043598232791,
+          "inference": 1011.3809226183221,
+          "projection": 884.1323186471127,
+          "reconstruction": 3.279219289775938,
+          "sampling": 165.7311927783303,
+          "transition": 84.3157472438179
+        },
+        "target_argmax_below_max_prior": 172,
+        "target_entropy_nats": {
+          "count": 938,
+          "maximum": 1.5737185568760401,
+          "mean": 0.35323928317941167,
+          "median": 0.20570844901166813,
+          "p95": 1.0542978524744964
+        },
+        "target_kl_from_prior_nats": {
+          "count": 938,
+          "maximum": 3.3399387493406816,
+          "mean": 0.24662730788952716,
+          "median": 0.02861452678057606,
+          "p95": 1.3872007450309565
+        },
+        "tree_depth_histogram": {
+          "1": 7284,
+          "2": 7818,
+          "3": 4870,
+          "4": 1973,
+          "5": 486,
+          "6": 80,
+          "7": 1
+        },
+        "work": {
+          "leaf_bootstraps": 17349,
+          "leaf_steps": 78341,
+          "leaf_terminals": 3400,
+          "leaf_time_bootstraps": 0,
+          "simulations": 22512,
+          "tree_terminals": 1763
+        }
+      }
+    },
+    "evaluation_summary": {
+      "initial_raw": {
+        "attempted": 42,
+        "cutoffs": 0,
+        "failures": 0,
+        "hp_change_observations": 42,
+        "losses": 20,
+        "mean_final_turn_observed": 7.166666666666667,
+        "mean_hp_change_observed": -56.095238095238095,
+        "mean_hp_fraction_on_win": 0.2739420062695925,
+        "mean_hp_on_win": 22.90909090909091,
+        "mean_task_return": 0.5381588669950739,
+        "planned": 42,
+        "potion_use_actions": 17,
+        "source_groups": 42,
+        "steps": 1160,
+        "unattempted": 0,
+        "valid_completed_combat_comparison": true,
+        "win_rate": 0.5238095238095238,
+        "win_rate_group_hoeffding_95": [
+          0.31424991034215155,
+          0.7333691372768961
+        ],
+        "wins": 22
+      },
+      "initial_same_view": {
+        "attempted": 42,
+        "cutoffs": 0,
+        "failures": 0,
+        "hp_change_observations": 42,
+        "losses": 20,
+        "mean_final_turn_observed": 7.166666666666667,
+        "mean_hp_change_observed": -56.095238095238095,
+        "mean_hp_fraction_on_win": 0.2739420062695925,
+        "mean_hp_on_win": 22.90909090909091,
+        "mean_task_return": 0.5381588669950739,
+        "planned": 42,
+        "potion_use_actions": 17,
+        "source_groups": 42,
+        "steps": 1160,
+        "unattempted": 0,
+        "valid_completed_combat_comparison": true,
+        "win_rate": 0.5238095238095238,
+        "win_rate_group_hoeffding_95": [
+          0.31424991034215155,
+          0.7333691372768961
+        ],
+        "wins": 22
+      },
+      "initial_search": {
+        "attempted": 42,
+        "cutoffs": 0,
+        "failures": 0,
+        "hp_change_observations": 42,
+        "losses": 20,
+        "mean_final_turn_observed": 7.309523809523809,
+        "mean_hp_change_observed": -55.45238095238095,
+        "mean_hp_fraction_on_win": 0.28948319400905603,
+        "mean_hp_on_win": 24.136363636363637,
+        "mean_task_return": 0.5389729292099981,
+        "planned": 42,
+        "potion_use_actions": 17,
+        "source_groups": 42,
+        "steps": 1187,
+        "unattempted": 0,
+        "valid_completed_combat_comparison": true,
+        "win_rate": 0.5238095238095238,
+        "win_rate_group_hoeffding_95": [
+          0.31424991034215155,
+          0.7333691372768961
+        ],
+        "wins": 22
+      },
+      "ppo50k_raw": {
+        "attempted": 42,
+        "cutoffs": 0,
+        "failures": 0,
+        "hp_change_observations": 42,
+        "losses": 23,
+        "mean_final_turn_observed": 7.309523809523809,
+        "mean_hp_change_observed": -57.166666666666664,
+        "mean_hp_fraction_on_win": 0.2879612825166364,
+        "mean_hp_on_win": 24.157894736842106,
+        "mean_task_return": 0.46540777230432395,
+        "planned": 42,
+        "potion_use_actions": 17,
+        "source_groups": 42,
+        "steps": 1205,
+        "unattempted": 0,
+        "valid_completed_combat_comparison": true,
+        "win_rate": 0.4523809523809524,
+        "win_rate_group_hoeffding_95": [
+          0.2428213389135801,
+          0.6619405658483246
+        ],
+        "wins": 19
+      },
+      "specialist_raw": {
+        "attempted": 42,
+        "cutoffs": 0,
+        "failures": 0,
+        "hp_change_observations": 42,
+        "losses": 16,
+        "mean_final_turn_observed": 7.380952380952381,
+        "mean_hp_change_observed": -54.45238095238095,
+        "mean_hp_fraction_on_win": 0.2624910065706212,
+        "mean_hp_on_win": 22.03846153846154,
+        "mean_task_return": 0.6352970623115145,
+        "planned": 42,
+        "potion_use_actions": 17,
+        "source_groups": 42,
+        "steps": 1236,
+        "unattempted": 0,
+        "valid_completed_combat_comparison": true,
+        "win_rate": 0.6190476190476191,
+        "win_rate_group_hoeffding_95": [
+          0.4094880055802468,
+          0.8286072325149914
+        ],
+        "wins": 26
+      },
+      "specialist_same_view": {
+        "attempted": 42,
+        "cutoffs": 0,
+        "failures": 0,
+        "hp_change_observations": 42,
+        "losses": 16,
+        "mean_final_turn_observed": 7.380952380952381,
+        "mean_hp_change_observed": -54.45238095238095,
+        "mean_hp_fraction_on_win": 0.2624910065706212,
+        "mean_hp_on_win": 22.03846153846154,
+        "mean_task_return": 0.6352970623115145,
+        "planned": 42,
+        "potion_use_actions": 17,
+        "source_groups": 42,
+        "steps": 1236,
+        "unattempted": 0,
+        "valid_completed_combat_comparison": true,
+        "win_rate": 0.6190476190476191,
+        "win_rate_group_hoeffding_95": [
+          0.4094880055802468,
+          0.8286072325149914
+        ],
+        "wins": 26
+      },
+      "specialist_search": {
+        "attempted": 42,
+        "cutoffs": 0,
+        "failures": 0,
+        "hp_change_observations": 42,
+        "losses": 14,
+        "mean_final_turn_observed": 7.476190476190476,
+        "mean_hp_change_observed": -53.30952380952381,
+        "mean_hp_fraction_on_win": 0.26504304307930066,
+        "mean_hp_on_win": 22.178571428571427,
+        "mean_task_return": 0.6843362028719533,
+        "planned": 42,
+        "potion_use_actions": 17,
+        "source_groups": 42,
+        "steps": 1248,
+        "unattempted": 0,
+        "valid_completed_combat_comparison": true,
+        "win_rate": 0.6666666666666666,
+        "win_rate_group_hoeffding_95": [
+          0.45710705319929434,
+          0.8762262801340389
+        ],
+        "wins": 28
+      },
+      "student_network": {
+        "attempted": 42,
+        "cutoffs": 0,
+        "failures": 0,
+        "hp_change_observations": 42,
+        "losses": 23,
+        "mean_final_turn_observed": 7.214285714285714,
+        "mean_hp_change_observed": -57.404761904761905,
+        "mean_hp_fraction_on_win": 0.2817201048598507,
+        "mean_hp_on_win": 23.63157894736842,
+        "mean_task_return": 0.4651254333150884,
+        "planned": 42,
+        "potion_use_actions": 17,
+        "source_groups": 42,
+        "steps": 1191,
+        "unattempted": 0,
+        "valid_completed_combat_comparison": true,
+        "win_rate": 0.4523809523809524,
+        "win_rate_group_hoeffding_95": [
+          0.2428213389135801,
+          0.6619405658483246
+        ],
+        "wins": 19
+      },
+      "student_search": {
+        "attempted": 42,
+        "cutoffs": 0,
+        "failures": 0,
+        "hp_change_observations": 42,
+        "losses": 17,
+        "mean_final_turn_observed": 7.333333333333333,
+        "mean_hp_change_observed": -53.54761904761905,
+        "mean_hp_fraction_on_win": 0.2940623168807753,
+        "mean_hp_on_win": 24.44,
+        "mean_task_return": 0.6127418045762365,
+        "planned": 42,
+        "potion_use_actions": 17,
+        "source_groups": 42,
+        "steps": 1204,
+        "unattempted": 0,
+        "valid_completed_combat_comparison": true,
+        "win_rate": 0.5952380952380952,
+        "win_rate_group_hoeffding_95": [
+          0.38567848177072295,
+          0.8047977087054675
+        ],
+        "wins": 25
+      }
+    },
+    "evaluation_wall_seconds": 508.41742449998856,
+    "heldout_test_opened": false,
+    "learner": {
+      "episodes": 2333,
+      "epochs": 2,
+      "examples": 39167,
+      "final_sha256": "eb608a617bd68e1c4f39b3e72ae8a7c1568bcde31b06b05936ac30624dd2e00e",
+      "first_100_update_means": {
+        "entropy": 0.3571881553530693,
+        "imitation_loss": 0.5034187403321266,
+        "loss": 0.5457565903663635,
+        "value_loss": 0.1693513935059309
+      },
+      "initialization": {
+        "checkpoint": "ppo_v1:a27da5b53aaa6332e0657a2fc3baa3d84e78e4714732d5d4e870e92376817fd2",
+        "input_view": "detached_combat_history_cards_v1",
+        "resumed": false,
+        "source_input_view": "public_observation_v1"
+      },
+      "last_100_update_means": {
+        "entropy": 0.4525672510266304,
+        "imitation_loss": 0.4688279873132706,
+        "loss": 0.5009897142648697,
+        "value_loss": 0.12864690713584423
+      },
+      "load_train_publish_seconds": 1042.9450993752107,
+      "optimization_and_checkpoint_seconds": 55.93435116717592,
+      "sample_presentations": 78334,
+      "updates": 2448
+    },
+    "paired": {
+      "initial_search_vs_initial_same_view": {
+        "cases": 42,
+        "difference_group_hoeffding_95": [
+          -0.41911922693474457,
+          0.41911922693474457
+        ],
+        "paired_campaign_bootstrap_95": [
+          -0.09523809523809523,
+          0.09523809523809523
+        ],
+        "status": "complete",
+        "win_rate_difference": 0.0,
+        "wins_only_candidate": 2,
+        "wins_only_initial_same_view": 2
+      },
+      "specialist_search_vs_specialist_same_view": {
+        "cases": 42,
+        "difference_group_hoeffding_95": [
+          -0.37150017931569695,
+          0.4667382745537922
+        ],
+        "paired_campaign_bootstrap_95": [
+          -0.07142857142857142,
+          0.16666666666666666
+        ],
+        "status": "complete",
+        "win_rate_difference": 0.047619047619047616,
+        "wins_only_candidate": 4,
+        "wins_only_specialist_same_view": 2
+      },
+      "student_network_vs_initial_same_view": {
+        "cases": 42,
+        "difference_group_hoeffding_95": [
+          -0.49054779836331597,
+          0.3476906555061732
+        ],
+        "paired_campaign_bootstrap_95": [
+          -0.16666666666666666,
+          0.023809523809523808
+        ],
+        "status": "complete",
+        "win_rate_difference": -0.07142857142857142,
+        "wins_only_candidate": 1,
+        "wins_only_initial_same_view": 4
+      },
+      "student_network_vs_ppo50k_raw": {
+        "cases": 42,
+        "difference_group_hoeffding_95": [
+          -0.41911922693474457,
+          0.41911922693474457
+        ],
+        "paired_campaign_bootstrap_95": [
+          -0.09523809523809523,
+          0.09523809523809523
+        ],
+        "status": "complete",
+        "win_rate_difference": 0.0,
+        "wins_only_candidate": 2,
+        "wins_only_ppo50k_raw": 2
+      },
+      "student_network_vs_specialist_raw": {
+        "cases": 42,
+        "difference_group_hoeffding_95": [
+          -0.5857858936014112,
+          0.25245256026807794
+        ],
+        "paired_campaign_bootstrap_95": [
+          -0.30952380952380953,
+          -0.047619047619047616
+        ],
+        "status": "complete",
+        "win_rate_difference": -0.16666666666666666,
+        "wins_only_candidate": 1,
+        "wins_only_specialist_raw": 8
+      },
+      "student_search_vs_specialist_raw": {
+        "cases": 42,
+        "difference_group_hoeffding_95": [
+          -0.4429287507442684,
+          0.39530970312522073
+        ],
+        "paired_campaign_bootstrap_95": [
+          -0.19047619047619047,
+          0.11904761904761904
+        ],
+        "status": "complete",
+        "win_rate_difference": -0.023809523809523808,
+        "wins_only_candidate": 5,
+        "wins_only_specialist_raw": 6
+      },
+      "student_search_vs_student_network": {
+        "cases": 42,
+        "difference_group_hoeffding_95": [
+          -0.2762620840776017,
+          0.5619763697918874
+        ],
+        "paired_campaign_bootstrap_95": [
+          -0.023809523809523808,
+          0.30952380952380953
+        ],
+        "status": "complete",
+        "win_rate_difference": 0.14285714285714285,
+        "wins_only_candidate": 9,
+        "wins_only_student_network": 3
+      }
+    },
+    "paired_fight_quality": {
+      "initial_search_vs_initial_same_view": {
+        "end_hp": {
+          "mean_difference": 0.6428571428571429,
+          "paired_campaign_bootstrap_95": [
+            -1.5238095238095237,
+            3.0
+          ]
+        },
+        "potion_use_actions": {
+          "mean_difference": 0.0,
+          "paired_campaign_bootstrap_95": [
+            0.0,
+            0.0
+          ]
+        },
+        "task_return": {
+          "mean_difference": 0.0008140622149242784,
+          "paired_campaign_bootstrap_95": [
+            -0.09637953840540048,
+            0.0980960363072432
+          ]
+        }
+      },
+      "specialist_search_vs_specialist_same_view": {
+        "end_hp": {
+          "mean_difference": 1.1428571428571428,
+          "paired_campaign_bootstrap_95": [
+            -1.7380952380952381,
+            3.9761904761904763
+          ]
+        },
+        "potion_use_actions": {
+          "mean_difference": 0.0,
+          "paired_campaign_bootstrap_95": [
+            0.0,
+            0.0
+          ]
+        },
+        "task_return": {
+          "mean_difference": 0.04903914056043875,
+          "paired_campaign_bootstrap_95": [
+            -0.07204721256318622,
+            0.1703465984094788
+          ]
+        }
+      },
+      "student_network_vs_initial_same_view": {
+        "end_hp": {
+          "mean_difference": -1.3095238095238095,
+          "paired_campaign_bootstrap_95": [
+            -3.1666666666666665,
+            0.21428571428571427
+          ]
+        },
+        "potion_use_actions": {
+          "mean_difference": 0.0,
+          "paired_campaign_bootstrap_95": [
+            0.0,
+            0.0
+          ]
+        },
+        "task_return": {
+          "mean_difference": -0.07303343367998541,
+          "paired_campaign_bootstrap_95": [
+            -0.17112456668491152,
+            0.02407738095238095
+          ]
+        }
+      },
+      "student_network_vs_ppo50k_raw": {
+        "end_hp": {
+          "mean_difference": -0.23809523809523808,
+          "paired_campaign_bootstrap_95": [
+            -1.9285714285714286,
+            1.5
+          ]
+        },
+        "potion_use_actions": {
+          "mean_difference": 0.0,
+          "paired_campaign_bootstrap_95": [
+            0.0,
+            0.0
+          ]
+        },
+        "task_return": {
+          "mean_difference": -0.0002823389892355437,
+          "paired_campaign_bootstrap_95": [
+            -0.0968853767560664,
+            0.09652481299033022
+          ]
+        }
+      },
+      "student_network_vs_specialist_raw": {
+        "end_hp": {
+          "mean_difference": -2.9523809523809526,
+          "paired_campaign_bootstrap_95": [
+            -5.976190476190476,
+            0.30952380952380953
+          ]
+        },
+        "potion_use_actions": {
+          "mean_difference": 0.0,
+          "paired_campaign_bootstrap_95": [
+            0.0,
+            0.0
+          ]
+        },
+        "task_return": {
+          "mean_difference": -0.17017162899642613,
+          "paired_campaign_bootstrap_95": [
+            -0.31511087768440704,
+            -0.04734801104349783
+          ]
+        }
+      },
+      "student_search_vs_specialist_raw": {
+        "end_hp": {
+          "mean_difference": 0.9047619047619048,
+          "paired_campaign_bootstrap_95": [
+            -2.880952380952381,
+            4.690476190476191
+          ]
+        },
+        "potion_use_actions": {
+          "mean_difference": 0.0,
+          "paired_campaign_bootstrap_95": [
+            0.0,
+            0.0
+          ]
+        },
+        "task_return": {
+          "mean_difference": -0.02255525773527799,
+          "paired_campaign_bootstrap_95": [
+            -0.19079879557186855,
+            0.1259086939373451
+          ]
+        }
+      },
+      "student_search_vs_student_network": {
+        "end_hp": {
+          "mean_difference": 3.857142857142857,
+          "paired_campaign_bootstrap_95": [
+            1.0476190476190477,
+            6.785714285714286
+          ]
+        },
+        "potion_use_actions": {
+          "mean_difference": 0.0,
+          "paired_campaign_bootstrap_95": [
+            0.0,
+            0.0
+          ]
+        },
+        "task_return": {
+          "mean_difference": 0.1476163712611481,
+          "paired_campaign_bootstrap_95": [
+            -0.01873095694216381,
+            0.3155743235991715
+          ]
+        }
+      }
+    },
+    "protocol": {
+      "bindings": [
+        {
+          "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-20261002/corpus/corpus.json",
+          "sha256": "0b9f7cd09f6d63aa47f3110b3e7faca63039ea37e6b392e4ed0db5ebd63a9a9f"
+        },
+        {
+          "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-training-20261008/prefixes-v3.json.gz",
+          "sha256": "5b15d16f6eddc012a61685618f33a02490ab6df56ebdce002d3e101253cbcd14"
+        },
+        {
+          "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-training-20261008/prefix-validation-v3.json",
+          "sha256": "bc70ab7adf63fdcbb2fa146ecc3ec13174a88e3e066a8d948dc7ba909b0f688b"
+        },
+        {
+          "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-training-20261008/review.json",
+          "sha256": "db90ef0eca760d323a1636b269de2d0cb0c8d438689774c4d100e6e67861a5cb"
+        },
+        {
+          "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-training-20261008/driver-review.json",
+          "sha256": "86f417a11ed4d6109367eb0b0fe575c3d1e4906121884da5ba6927d5ea8af9d1"
+        },
+        {
+          "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-training-20261008/checks.json",
+          "sha256": "58cd8645b15b30809e24fb6dd19c6246f318fffabac96e31414af3344d197209"
+        },
+        {
+          "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-training-20261008/study.py",
+          "sha256": "5035dbd6a2665092a6bcc03e2fddad5ce8db796e3103592806dae16cc9c2e396"
+        },
+        {
+          "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-training-20261008/recover_prefixes.py",
+          "sha256": "d98159233dee831b53a280f37adaa5662fc07e44785d42a94b6a36f7edf33a5b"
+        },
+        {
+          "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-training-20261008/smoke/search.json",
+          "sha256": "f6b0e53f09390d3587c0da2688bbc670f0d30b0c5488cbbd336164a5da31057e"
+        },
+        {
+          "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-training-20261002/initializer/initial.sts-model",
+          "sha256": "a27da5b53aaa6332e0657a2fc3baa3d84e78e4714732d5d4e870e92376817fd2"
+        },
+        {
+          "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-training-20261002/ppo/chunk-04/final.sts-model",
+          "sha256": "b8e5e777f31a2be3a3cfd8892bf2e2bf0a75f351cd70578f556a1d62e240f162"
+        },
+        {
+          "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-training-20261002/ppo/chunk-20/final.sts-model",
+          "sha256": "4da8789591fc9379522b3b30745bb6b6615ee53bb4bfc21215affecf28dfae6a"
+        },
+        {
+          "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-20261002/corpus/test-opened.json",
+          "sha256": "4ecf002c05a76e5ec990909844d23487ae306e9043c8209adc70ce5d8cdbd279"
+        },
+        {
+          "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-action-preview-20261002/corpus/corpus.json",
+          "sha256": "6306c4e3d94edde7782f9cedacd6a9a4cfb2e6da5f7870404794619dfcbeffb5"
+        },
+        {
+          "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-action-preview-20261002/corpus/test-opened.json",
+          "sha256": "d828d0d66afa9422da386323f1f59103543ad1c150f1dd8bbe3c5d38695d0108"
+        },
+        {
+          "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/corpus/corpus.json",
+          "sha256": "c817e01031d3abcd0668ea68401c7a80ddff093a5cb114bf4d9697595c96a7c9"
+        },
+        {
+          "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/corpus/test-opened.json",
+          "sha256": "7b7c1d8c64c9024edfd2431d75fdd63930555536ab0ff025f9afdf6bd005f531"
+        },
+        {
+          "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-nongraph-20261003/corpus/corpus.json",
+          "sha256": "b43736e38c603dd8c9a689c11287a40ace74b27f371675fb6d07be32c665335b"
+        },
+        {
+          "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-nongraph-20261003/corpus/test-opened.json",
+          "sha256": "ee91967c79e4e2e5cb15fe56a557776e0997df1a44afbb11fe11cec7793fd482"
+        },
+        {
+          "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-defeat-hp-20261003/corpus/corpus.json",
+          "sha256": "3beb2fe93a5704270b31816ee19b0fefddba2a758909329178f64455eee2dcd0"
+        },
+        {
+          "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-defeat-hp-20261003/corpus/test-opened.json",
+          "sha256": "44cb68dc26776641ee24da6d5e710a1ecaa85a4c2c6c0da03d8c556fb7b1e8ee"
+        },
+        {
+          "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/corpus/corpus.json",
+          "sha256": "01e34face70f278ef2ac3dce531d75ca6b17886232e3be4a6d81f420918ae0c7"
+        }
+      ],
+      "budget_exclusions": [
+        "source-prefix recovery",
+        "1024-decision smoke",
+        "validation"
+      ],
+      "collection_chunks": 5,
+      "created_unix": 1791417810.6607108,
+      "decisions_per_chunk": 10000,
+      "evaluation": {
+        "arms": [
+          "initial_raw",
+          "initial_same_view",
+          "initial_search",
+          "ppo50k_raw",
+          "specialist_raw",
+          "specialist_same_view",
+          "specialist_search",
+          "student_network",
+          "student_search"
+        ],
+        "cases": 42,
+        "episode_seconds": 1800,
+        "max_decisions": 512,
+        "primary": "student_search versus original specialist_raw on identical starts",
+        "secondary": "same-model search versus network and raw-view controls",
+        "selection": "fixed final checkpoint after two epochs; no validation-selected hyperparameters",
+        "split": "validation",
+        "start_kind": "opening",
+        "uncertainty": "paired source-campaign bootstrap 95%, plus existing conservative Hoeffding intervals"
+      },
+      "fresh_training_decisions": 50000,
+      "implementation": {
+        "build": "440a82da8ce08ab83767a6e510038675232d452ffd842ee3eef989a44edaad90",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "e5b0716f228657ebefe2f9febd074facfddc472be220ae822ffb9532deb71f12",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "learner_threads": 4,
+      "limitations": [
+        "development comparison, not held-out proof",
+        "50k search versus 250k PPO is not equal compute",
+        "finite belief particles and independently resampled future RNG",
+        "experimental Vantom headless capability",
+        "tree child keys currently use successor observations without intermediate reveal journals"
+      ],
+      "models": {
+        "initial": {
+          "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-training-20261002/initializer/initial.sts-model",
+          "sha256": "a27da5b53aaa6332e0657a2fc3baa3d84e78e4714732d5d4e870e92376817fd2"
+        },
+        "ppo50k": {
+          "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-training-20261002/ppo/chunk-04/final.sts-model",
+          "sha256": "b8e5e777f31a2be3a3cfd8892bf2e2bf0a75f351cd70578f556a1d62e240f162"
+        },
+        "specialist": {
+          "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-training-20261002/ppo/chunk-20/final.sts-model",
+          "sha256": "4da8789591fc9379522b3b30745bb6b6615ee53bb4bfc21215affecf28dfae6a"
+        }
+      },
+      "objective": {
+        "schema": "sts_training_reward_v1",
+        "weights": {
+          "combat_loss": 0.0,
+          "combat_win": 1.0,
+          "end_turn_action": 0.0,
+          "potion_use_action": 0.0,
+          "win_hp_fraction": 0.1
+        }
+      },
+      "reserved_test_owner": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/corpus/corpus.json",
+      "sampling": "same sample_training_case as original PPO: uniform encounter/fight, half opening/continuation",
+      "schema": "sts_vantom_search_training_protocol_v1",
+      "search": {
+        "belief_particles": 2,
+        "belief_proposals": 4096,
+        "belief_replay_proposals": 2048,
+        "belief_replay_steps": 16384,
+        "belief_seconds": 120.0,
+        "considered_actions": 16,
+        "exploration": true,
+        "final_selection": "prior_value",
+        "leaf_rollout_steps": 4,
+        "max_depth": 16,
+        "method": "gumbel",
+        "model_version": "revealed_belief_v1",
+        "q_scale": 0.1,
+        "seed": 0,
+        "simulations": 24,
+        "time_limit": 120.0
+      },
+      "seed_schedule": "study.py:independent sample and analysis seeds",
+      "teacher": "initial_frozen_for_all_collection",
+      "training": {
+        "actor": "search_distribution_cross_entropy",
+        "batch_size": 32,
+        "critic": "completed_undiscounted_behavior_returns",
+        "epochs": 2,
+        "forced_and_fallback_decisions": "counted_as_real_actions_excluded_from_distillation",
+        "learning_rate": 0.0001,
+        "value_weight": 0.25
+      },
+      "validation_owner": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/corpus/corpus.json",
+      "worker_torch_threads": 1,
+      "workers": 16
+    },
+    "protocol_sha256": "8116a71337d658c61e654a62b04fbbd66bd61c154a6d0150b9befa03b003e2e0",
+    "schema": "sts_vantom_search_training_evidence_v1",
+    "status": "complete"
+  }
+}

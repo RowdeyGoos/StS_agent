@@ -23,7 +23,7 @@ class EventOperation:
             begin(p, card.instance_id, [c for c in p.hand if c.spec.kind in ('attack','power')], operation='dual_wield_up' if card.upgraded else 'dual_wield')
         elif self.operation == 'distraction':
             from game.headless.core.card_costs import free_this_turn
-            options = select_cards(pool(p,p.rules.character,'skill'),p.deck.generation_rng,1,distinct=True)
+            options = select_cards(pool(p,p.rules.character,'skill'),p.deck.generation_rng,1,distinct=True, revealed=True)
             if options: free_this_turn(create(p,options[0]))
         elif self.operation == 'entrench':
             p.gain_block(p.block)
@@ -36,7 +36,7 @@ class EventOperation:
                 result=catalog(p).create(definition.definition_id)
                 result.combat_state.free_this_combat=True
                 p.deck._ensure_identity(result)
-                p.deck.draw_pile.insert(p.deck.rng.randrange(len(p.deck.draw_pile)+1),result)
+                p.deck.insert_into_draw(p.deck.rng.randrange(len(p.deck.draw_pile)+1),result)
                 after_generated_entry(p,result)
         elif self.operation == 'enlightenment':
             from game.headless.core.card_costs import mark_setter
@@ -63,7 +63,7 @@ class EventOperation:
                 if rider=='energized': p.gain_energy(2)
                 elif rider=='wisdom': push(p,['draw',3,False])
                 elif rider=='chaos':
-                    d=select_cards(pool(p),p.deck.generation_rng,1,distinct=True)[0]
+                    d=select_cards(pool(p),p.deck.generation_rng,1,distinct=True, revealed=True)[0]
                     from game.headless.core.card_costs import free_this_turn
                     free_this_turn(create(p,d))
             elif rider=='expertise':

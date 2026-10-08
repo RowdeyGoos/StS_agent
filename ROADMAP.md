@@ -1,6 +1,6 @@
 # Roadmap
 
-Priorities updated 2026-10-02. This file owns priorities;
+Priorities updated 2026-10-07. This file owns priorities;
 [current status](docs/STATUS.md) owns capability and evidence. Follow [AGENTS.md](AGENTS.md) for the development
 process. Completed packets and old campaign instructions are historical references.
 
@@ -48,6 +48,47 @@ Further work should start from a new concrete requirement:
    a victory-first combat objective with modest HP shaping, and matched
    encounter-level comparisons. Keep the noncombat heuristic fixed during hybrid
    Act 1 checks. The existing model architecture and parallel PPO remain in use.
+   The new [experimental combat search](docs/AGENT_TRAINING.md#experimental-combat-search)
+   adds public-history planning, soft-target distillation and reanalysis. Measure
+   supported-state coverage, critic accuracy and paired combat gains before
+   scaling its training; require a positive paired Act 1 confidence gate before
+   making searched play the default. The
+   [search architecture redesign](docs/COMBAT_SEARCH_ARCHITECTURE.md) has a
+   controlled implementation of shared engine construction, maintained public-information
+   beliefs, bounded prefix recovery and search integration. Declared starts now
+   cover both Act 1 regions, with validated setup/turn selectors and a
+   [representative coverage audit](docs/evidence/COMBAT_BELIEF_COVERAGE_2026_10_04.md).
+   A bounded direct draw/HP sampler now addresses rejection overhead; the
+   [direct-sampling experiment](docs/evidence/COMBAT_DIRECT_SAMPLING_2026_10_04.md)
+   records its coverage and timing. Its versioned planning view now carries
+   through collection, distillation, reanalysis and student checkpoints; the
+   [learning verification](docs/evidence/COMBAT_SEARCH_LEARNING_2026_10_04.md)
+   records the bounded check. A [128-start paired comparison and critic audit](docs/evidence/COMBAT_SEARCH_BENEFIT_2026_10_04.md)
+   shows full eligible search coverage and bounded latency, but its starter deck
+   produced no changed win outcomes. The
+   [developed-deck benchmark](docs/evidence/COMBAT_SEARCH_DEVELOPED_BENCHMARK_2026_10_05.md)
+   adds calibrated, tactically sensitive inventories: Gumbel rescued two losses
+   and lost one greedy win on 32 harder starts, an inconclusive net gain. Its
+   [decision diagnosis](docs/evidence/COMBAT_SEARCH_DEVELOPED_BENCHMARK_2026_10_05.md#follow-up-decision-diagnosis)
+   isolates useful block/attack ordering and a costly missed Inflame play. The
+   [rollout-search and learning study](docs/evidence/COMBAT_SEARCH_LEARNING_2026_10_06.md)
+   now confirms useful search on fresh authored challenge fights at the tested
+   thinking cost. Its bounded learning round did not improve searched performance
+   on confirmation. Keep the original searched checkpoint as the benchmark
+   teacher. The [strength diagnosis](docs/evidence/COMBAT_SEARCH_STRENGTH_2026_10_06.md)
+   found no established additional gain from more passes and exposes a synthetic
+   case where the actor prior outweighs an exactly evaluated win. The
+   [selection diagnosis](docs/evidence/COMBAT_SEARCH_SELECTION_2026_10_07.md)
+   tested value weighting, final-action selection and a cheaper horizon extension.
+   None established a stronger practical teacher; the horizon candidate failed
+   fresh confirmation. Keep the original 24-by-4 reference and next isolate
+   critic quality while holding actor probabilities and search settings fixed,
+   before another large collection round. Expensive planning improved fresh
+   combat return but missed the latency target; validate both strength and cost
+   before promotion.
+   Campaign/corpus and native anchors still need their own public history
+   support; current display fields do not establish fresh inventory. Then investigate
+   campaign-aware combat exit values.
    The [seven-hour research pass](docs/AGENT_TRAINING.md#seven-hour-combat-research-2026-10-02)
    identifies successful hard-fight imitation as a promising lead, with
    inconclusive final combat and Act 1 confirmation. Prioritize preserving its

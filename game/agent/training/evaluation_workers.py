@@ -32,8 +32,12 @@ def _worker(checkpoints, policies, source, output, private, stopped, connection,
         choices = {'heuristic': {}}
         combat_owner = None
         if combat is not None:
-            from .combat_benchmark import CorpusEvaluator
-            combat_owner = CorpusEvaluator(combat, checkpoints, policies, source)
+            if combat.get('kind') == 'search':
+                from .search_run import SearchEvaluator
+                combat_owner = SearchEvaluator(combat, checkpoints, policies, source)
+            else:
+                from .combat_benchmark import CorpusEvaluator
+                combat_owner = CorpusEvaluator(combat, checkpoints, policies, source)
         for name, (path, digest, task) in (() if combat_owner else checkpoints.items()):
             model = load_policy(path, expected_sha256=digest, task=task)
             identity = ('hybrid_v1:'+digest+':'+source['policy'] if name == 'hybrid' else model.identity)

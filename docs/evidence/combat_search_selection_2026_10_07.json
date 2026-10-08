@@ -1,0 +1,4249 @@
+{
+  "amendment": {
+    "created_unix": 1791368869.751153,
+    "preserved_runner": "runs/search-selection-20261007/audit_runner_frozen.py",
+    "previous_runner_sha256": "9c4a0727774406012d90b0349cfd36fef269ec6f01b7c2bd23be2506c2ab5774",
+    "protocol_sha256": "6321d77dead4e21427d882c319ef6a707adcab015695d8f17b81b9114a055d31",
+    "reason": "Independent review tightened no-control-win-loss from aggregate counts to zero paired losses and requires a healthy baseline. No panel gameplay or results existed at this amendment.",
+    "runner": "runs/search-selection-20261007/study.py",
+    "runner_sha256": "1de7fc303e288ec0452ebceb5867f0c23f9bcfdb33a141a3c5115d527f2b973f",
+    "schema": "sts_experiment_protocol_amendment_v1",
+    "unchanged": "Checkpoint, production Python, audit behavior/results, variants, start allocation, paired statistics and latency thresholds remain frozen. Original runner bytes and original protocol preserved."
+  },
+  "artifacts": [
+    {
+      "path": "runs/search-selection-20261007/protocol.json",
+      "sha256": "6321d77dead4e21427d882c319ef6a707adcab015695d8f17b81b9114a055d31"
+    },
+    {
+      "path": "runs/search-selection-20261007/protocol-amendment.json",
+      "sha256": "634908c8165488ee728f77f76c55f815acc26926354abc27f6b7d5012746c1f3"
+    },
+    {
+      "path": "runs/search-selection-20261007/study.py",
+      "sha256": "1de7fc303e288ec0452ebceb5867f0c23f9bcfdb33a141a3c5115d527f2b973f"
+    },
+    {
+      "path": "runs/search-selection-20261007/audit_runner_frozen.py",
+      "sha256": "9c4a0727774406012d90b0349cfd36fef269ec6f01b7c2bd23be2506c2ab5774"
+    },
+    {
+      "path": "runs/search-selection-20261007/export.py",
+      "sha256": "3aa14c1e4690a89685eae9448239b79b21857df152214370b4002aeabfaa5d8f"
+    },
+    {
+      "path": "runs/search-selection-20261007/validation.json",
+      "sha256": "f6d703b5c05a42bfa4b8964d0ef79016628c00409a4a33c939fa2c867debbc21"
+    },
+    {
+      "path": "runs/search-selection-20261007/selection.json",
+      "sha256": "6f890765911cc0cbd331c6737b17af69b7ff1dca827bc31daf5faeeb49cce5a0"
+    },
+    {
+      "path": "runs/search-selection-20261007/audit-summary.json",
+      "sha256": "91e0f26229c73770ad2751936f71b0693a9db93dab914cfdfe61e741f2d9db33"
+    },
+    {
+      "path": "runs/search-selection-20261007/control/search.json",
+      "sha256": "8439fccd1d052a8558c998db2a44ff3d0cdadaffdaa9046b4ccff3d12053efa9"
+    },
+    {
+      "path": "runs/search-selection-20261007/control-summary.json",
+      "sha256": "e9f296000cc0783bd6a46f57fd01169b32b4962fea20a562bbfa2234b209b942"
+    },
+    {
+      "path": "runs/search-selection-20261007/q_scale_1/search.json",
+      "sha256": "3260d2f842630ec95e05488f4442ec4b62adab983a13bf5dd47bc86de011758d"
+    },
+    {
+      "path": "runs/search-selection-20261007/q_scale_1-summary.json",
+      "sha256": "931afac6f03920e5eb52de0fa539da61656c04661aac971449a2216fd90c5f94"
+    },
+    {
+      "path": "runs/search-selection-20261007/final_max_value/search.json",
+      "sha256": "743ecf691b1aa2dcc5dae49946e9cf3b95da9f65e19a27c12e6f87d1be46d121"
+    },
+    {
+      "path": "runs/search-selection-20261007/final_max_value-summary.json",
+      "sha256": "f60ae565b7bd5ca221e48eb6e69bc905743298db077ea8a57ed1f8843013ab13"
+    },
+    {
+      "path": "runs/search-selection-20261007/leaf_16/search.json",
+      "sha256": "5033fde758f579ba950055d8e47f9af8ae4e90692df7775bf142693269606eac"
+    },
+    {
+      "path": "runs/search-selection-20261007/leaf_16-summary.json",
+      "sha256": "8aa1dc44a233ad988d237d24415236bc7f2d940cdebf217b0d36d7309ec7236b"
+    },
+    {
+      "path": "runs/search-selection-20261007/fresh-control/search.json",
+      "sha256": "3c8530b2d1bcd9e74883f0c8922694d2ad00045a7b5c2c98d70359816ab67972"
+    },
+    {
+      "path": "runs/search-selection-20261007/fresh-control-summary.json",
+      "sha256": "83f015314fa4c8ca71965f84540121e04b27b08fdfc903babbeac39287c9a4fb"
+    },
+    {
+      "path": "runs/search-selection-20261007/fresh-candidate/search.json",
+      "sha256": "a2340c8867cb488728a8c5362725e545111ba07f288de7bf278e86e9443c0020"
+    },
+    {
+      "path": "runs/search-selection-20261007/fresh-candidate-summary.json",
+      "sha256": "102894433377413dd9dc7e2257d392968f9547ca9c42f92809501f042d931a3d"
+    },
+    {
+      "path": "runs/search-selection-20261007/confirmation.json",
+      "sha256": "5f37e123d9ae1fac811f61346aa7871a87e7fc69f32ccd802ad8d3228463e918"
+    }
+  ],
+  "audit": {
+    "artifacts": [
+      {
+        "path": "audit-00.json",
+        "sha256": "cfcc9a65692f88f1d72d1ff94748319c82d4f2efb2a1a81e1819cef82dc6d777"
+      },
+      {
+        "path": "audit-01.json",
+        "sha256": "2bd1b99298b3a1876ebf029ab9ede5775d0eb12cac826d91faa64044d57e2264"
+      },
+      {
+        "path": "audit-02.json",
+        "sha256": "0d33bfd37c19dccb4ed4db540beec52b162244c47eecb03950d78b6aa11a10fd"
+      },
+      {
+        "path": "audit-03.json",
+        "sha256": "ffe09cedfa81527ae04e24c7aa0bc8022dbf82d1296f0a15879a78bf635bd4d3"
+      },
+      {
+        "path": "audit-04.json",
+        "sha256": "0dc8ace9259740ebe381c3cb25cc4eb244d57e209745708b118019e73e0ac9d6"
+      },
+      {
+        "path": "audit-05.json",
+        "sha256": "81295b75b30826022a9598da2db114672256450f27990289cb26435c08be1091"
+      },
+      {
+        "path": "audit-06.json",
+        "sha256": "401859abc6fd386e384c1f3bcda8bf790e7c835625fad736abba0c3a95a32074"
+      },
+      {
+        "path": "audit-07.json",
+        "sha256": "806a68dfe5e9c6d86b74971558c8e3aa972548746d5bb519f6f2d9e95eef3664"
+      },
+      {
+        "path": "audit-08.json",
+        "sha256": "8039484bbb48094b05a2bce7bf8d7fb561c3698c6be4d8f862f594c8e739f12f"
+      },
+      {
+        "path": "audit-09.json",
+        "sha256": "5fac69898f5bdf0e75ecc556e303811dba9f931b8a31f64d71ea5ed9790aecd8"
+      },
+      {
+        "path": "audit-10.json",
+        "sha256": "a1165bbee6b9243c65ff53c42fa45cded0789b250de42165c850560739a31c87"
+      },
+      {
+        "path": "audit-11.json",
+        "sha256": "663b49bea319ffb01b5b5bb4311002822c715262a19005e394cdbd8b8fcf51b9"
+      },
+      {
+        "path": "audit-12.json",
+        "sha256": "602c76756fcda3b419f73d141e824e20654f80967db0900d83fa64e467fbfb5d"
+      },
+      {
+        "path": "audit-13.json",
+        "sha256": "4242a03ad3517de45c43a8f8d6e5a685b8a69704c35b340c4026e8b52d9081d4"
+      }
+    ],
+    "completed": 1344,
+    "cutoffs": 0,
+    "horizon_fit": {
+      "1": {
+        "bias": 0.1554390906480452,
+        "critic_bootstraps": 1344,
+        "critic_only_bias": 0.1554390906480452,
+        "critic_only_mse": 0.187849469985572,
+        "exact_terminals": 0,
+        "mse": 0.187849469985572,
+        "samples": 1344
+      },
+      "16": {
+        "bias": 0.13594883944678493,
+        "critic_bootstraps": 588,
+        "critic_only_bias": 0.3107402044497941,
+        "critic_only_mse": 0.26650867844172754,
+        "exact_terminals": 756,
+        "mse": 0.11659754681825579,
+        "samples": 1344
+      },
+      "32": {
+        "bias": 0.0647745846405104,
+        "critic_bootstraps": 378,
+        "critic_only_bias": 0.23030963427737033,
+        "critic_only_mse": 0.14565194016769004,
+        "exact_terminals": 966,
+        "mse": 0.04096460817216282,
+        "samples": 1344
+      },
+      "4": {
+        "bias": 0.1232226844539955,
+        "critic_bootstraps": 1246,
+        "critic_only_bias": 0.1329143562649839,
+        "critic_only_mse": 0.1874711363422311,
+        "exact_terminals": 98,
+        "mse": 0.17380136598394338,
+        "samples": 1344
+      }
+    },
+    "interpretation": "Stratified diagnostic positions and alternative actions; pooled horizon fit is descriptive with correlated samples. It is not population calibration or a confidence bound on search values.",
+    "positions": [
+      {
+        "actions": [
+          {
+            "common_completed": 32,
+            "common_mean_return": 1.0991796875000004,
+            "common_wins": 32,
+            "horizon_means": {
+              "1": 1.0169557332992554,
+              "16": 1.0823964310437444,
+              "32": 1.0991796875000004,
+              "4": 0.954736702144146
+            },
+            "kind": "play_card",
+            "prior": 0.10425196588039398,
+            "recorded_q": 1.0992708333333334,
+            "recorded_visits": 60,
+            "ref": "action:3",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "iron_wave",
+            "target": "LeafSlimeSmall"
+          },
+          {
+            "common_completed": 32,
+            "common_mean_return": 1.0987890625000003,
+            "common_wins": 32,
+            "horizon_means": {
+              "1": 1.0323772430419922,
+              "16": 1.0751370142400267,
+              "32": 1.0987890625000003,
+              "4": 0.9441307857632637
+            },
+            "kind": "play_card",
+            "prior": 7.321166776819155e-05,
+            "recorded_q": 1.1,
+            "recorded_visits": 4,
+            "ref": "action:10",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "strike",
+            "target": "LeafSlimeSmall"
+          },
+          {
+            "common_completed": 32,
+            "common_mean_return": 1.0975390625,
+            "common_wins": 32,
+            "horizon_means": {
+              "1": 1.0132173299789429,
+              "16": 1.0576576114445926,
+              "32": 1.0975390625,
+              "4": 0.947252944111824
+            },
+            "kind": "play_card",
+            "prior": 0.5665531754493713,
+            "recorded_q": 1.090957995227405,
+            "recorded_visits": 28,
+            "ref": "action:5",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "iron_wave",
+            "target": "TwigSlimeSmall"
+          },
+          {
+            "common_completed": 32,
+            "common_mean_return": 1.0991796875000004,
+            "common_wins": 32,
+            "horizon_means": {
+              "1": 0.9966788217425346,
+              "16": 1.082402529343963,
+              "32": 1.0991796875000004,
+              "4": 0.9521451573818922
+            },
+            "kind": "play_card",
+            "prior": 0.11402059346437454,
+            "recorded_q": 1.0990833333333334,
+            "recorded_visits": 60,
+            "ref": "action:15",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "pommel_strike",
+            "target": "TwigSlimeSmall"
+          }
+        ],
+        "artifact": "audit-00.json",
+        "case_index": 71000,
+        "common_completed": 32,
+        "episode_id": "f5547539ba8f46bfbc52eb73854918e7",
+        "outcome": "victory",
+        "paired_vs_recorded": {
+          "actor": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              -0.0025390625000000777,
+              -0.0007812500000000527
+            ],
+            "mean_difference": -0.0016406250000000691
+          },
+          "control": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "final_max_value": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "leaf_16": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "q_scale_1": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "recorded_chosen": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "target_argmax": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "visited_q_argmax": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              -0.0010546875000000332,
+              0.00027343749999999417
+            ],
+            "mean_difference": -0.00039062500000001943
+          }
+        },
+        "raw_critic": 1.0377293825149536,
+        "roles": {
+          "actor": "action:5",
+          "control": "action:15",
+          "final_max_value": "action:15",
+          "leaf_16": "action:3",
+          "q_scale_1": "action:15",
+          "recorded_chosen": "action:3",
+          "target_argmax": "action:3",
+          "visited_q_argmax": "action:10"
+        },
+        "scenario_id": "draw_order_overgrowth_slimes",
+        "selection_reason": "first_actor_chosen_disagreement",
+        "sha256": "cfcc9a65692f88f1d72d1ff94748319c82d4f2efb2a1a81e1819cef82dc6d777",
+        "source_group": "15f1e6391d854fb4b71bd88fd5503d08",
+        "step": 0
+      },
+      {
+        "actions": [
+          {
+            "common_completed": 32,
+            "common_mean_return": 1.05234375,
+            "common_wins": 32,
+            "horizon_means": {
+              "1": 1.0562506914138794,
+              "16": 1.05234375,
+              "32": 1.05234375,
+              "4": 1.0140303745865822
+            },
+            "kind": "play_card",
+            "prior": 0.9385583400726318,
+            "recorded_q": 1.0526846590909091,
+            "recorded_visits": 88,
+            "ref": "action:4",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "strike",
+            "target": "BygoneEffigy"
+          },
+          {
+            "common_completed": 32,
+            "common_mean_return": 1.0521484374999999,
+            "common_wins": 32,
+            "horizon_means": {
+              "1": 1.0477925315499306,
+              "16": 1.0521484374999999,
+              "32": 1.0521484374999999,
+              "4": 1.022424902766943
+            },
+            "kind": "play_card",
+            "prior": 0.0606364943087101,
+            "recorded_q": 1.054702380952381,
+            "recorded_visits": 84,
+            "ref": "action:2",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "shrug_it_off",
+            "target": null
+          }
+        ],
+        "artifact": "audit-01.json",
+        "case_index": 71001,
+        "common_completed": 32,
+        "episode_id": "e439a4b4cf3b4b2c94182aaff296f056",
+        "outcome": "victory",
+        "paired_vs_recorded": {
+          "actor": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "control": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "final_max_value": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              -0.005039062499999983,
+              0.004414062499999996
+            ],
+            "mean_difference": -0.0001953124999999889
+          },
+          "leaf_16": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "q_scale_1": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "recorded_chosen": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "target_argmax": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "visited_q_argmax": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              -0.005039062499999983,
+              0.004414062499999996
+            ],
+            "mean_difference": -0.0001953124999999889
+          }
+        },
+        "raw_critic": 1.0676840543746948,
+        "roles": {
+          "actor": "action:4",
+          "control": "action:4",
+          "final_max_value": "action:2",
+          "leaf_16": "action:4",
+          "q_scale_1": "action:4",
+          "recorded_chosen": "action:4",
+          "target_argmax": "action:4",
+          "visited_q_argmax": "action:2"
+        },
+        "scenario_id": "draw_order_overgrowth_bygone_effigy",
+        "selection_reason": "nearest_eligible_midpoint",
+        "sha256": "2bd1b99298b3a1876ebf029ab9ede5775d0eb12cac826d91faa64044d57e2264",
+        "source_group": "971400e44f6541b18c8bb8a2008acc35",
+        "step": 9
+      },
+      {
+        "actions": [
+          {
+            "common_completed": 32,
+            "common_mean_return": 1.0923828125,
+            "common_wins": 32,
+            "horizon_means": {
+              "1": 0.9247025847434998,
+              "16": 1.070021589398384,
+              "32": 1.0923828125,
+              "4": 0.9603268411010504
+            },
+            "kind": "play_card",
+            "prior": 0.0046557653695344925,
+            "recorded_q": 1.0865213785337862,
+            "recorded_visits": 86,
+            "ref": "action:4",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "defend",
+            "target": null
+          },
+          {
+            "common_completed": 32,
+            "common_mean_return": 1.0923828125,
+            "common_wins": 32,
+            "horizon_means": {
+              "1": 0.9315639734268188,
+              "16": 1.0700198739022015,
+              "32": 1.0923828125,
+              "4": 0.9603405240923166
+            },
+            "kind": "play_card",
+            "prior": 0.9238553047180176,
+            "recorded_q": 1.0654291957616806,
+            "recorded_visits": 12,
+            "ref": "action:3",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "strike",
+            "target": "TwigSlimeSmall"
+          },
+          {
+            "common_completed": 32,
+            "common_mean_return": 1.090625,
+            "common_wins": 32,
+            "horizon_means": {
+              "1": 0.9501717686653137,
+              "16": 1.0161045928299428,
+              "32": 1.090625,
+              "4": 0.9578820541501045
+            },
+            "kind": "play_card",
+            "prior": 0.015863869339227676,
+            "recorded_q": 1.0653342081904416,
+            "recorded_visits": 40,
+            "ref": "action:1",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "strike",
+            "target": "LeafSlimeSmall"
+          }
+        ],
+        "artifact": "audit-02.json",
+        "case_index": 71002,
+        "common_completed": 32,
+        "episode_id": "60a2ba237de646669c13150f353af0c8",
+        "outcome": "victory",
+        "paired_vs_recorded": {
+          "actor": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "control": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "final_max_value": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "leaf_16": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "q_scale_1": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              -0.003750000000000059,
+              0.00011718749999996281
+            ],
+            "mean_difference": -0.0017578125000000527
+          },
+          "recorded_chosen": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "target_argmax": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "visited_q_argmax": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          }
+        },
+        "raw_critic": 0.9434501528739929,
+        "roles": {
+          "actor": "action:3",
+          "control": "action:3",
+          "final_max_value": "action:3",
+          "leaf_16": "action:3",
+          "q_scale_1": "action:1",
+          "recorded_chosen": "action:4",
+          "target_argmax": "action:4",
+          "visited_q_argmax": "action:4"
+        },
+        "scenario_id": "block_conversion_overgrowth_slimes",
+        "selection_reason": "first_actor_chosen_disagreement",
+        "sha256": "0d33bfd37c19dccb4ed4db540beec52b162244c47eecb03950d78b6aa11a10fd",
+        "source_group": "8abfbdee6b1b46d8b1377fe494985c87",
+        "step": 2
+      },
+      {
+        "actions": [
+          {
+            "common_completed": 32,
+            "common_mean_return": 0.9652734375,
+            "common_wins": 30,
+            "horizon_means": {
+              "1": 0.9682410359382629,
+              "16": 1.0010893270373344,
+              "32": 0.9524850920587778,
+              "4": 0.9866004884243011
+            },
+            "kind": "play_card",
+            "prior": 0.2984679937362671,
+            "recorded_q": 0.9899140223791432,
+            "recorded_visits": 86,
+            "ref": "action:0",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "strike",
+            "target": "BygoneEffigy"
+          },
+          {
+            "common_completed": 32,
+            "common_mean_return": 0.8635546874999999,
+            "common_wins": 27,
+            "horizon_means": {
+              "1": 0.9539846777915955,
+              "16": 0.9992970209568739,
+              "32": 0.8635546874999999,
+              "4": 1.045793928205967
+            },
+            "kind": "play_card",
+            "prior": 0.4117790460586548,
+            "recorded_q": 0.9340997144579888,
+            "recorded_visits": 40,
+            "ref": "action:3",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "impervious",
+            "target": null
+          }
+        ],
+        "artifact": "audit-03.json",
+        "case_index": 71003,
+        "common_completed": 32,
+        "episode_id": "577759ba59f14ae4b95675cdccf7ea9d",
+        "outcome": "victory",
+        "paired_vs_recorded": {
+          "actor": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              -0.23136816406250002,
+              0.02660156249999998
+            ],
+            "mean_difference": -0.10171875000000002
+          },
+          "control": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              -0.23136816406250002,
+              0.02660156249999998
+            ],
+            "mean_difference": -0.10171875000000002
+          },
+          "final_max_value": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              -0.23136816406250002,
+              0.02660156249999998
+            ],
+            "mean_difference": -0.10171875000000002
+          },
+          "leaf_16": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              -0.23136816406250002,
+              0.02660156249999998
+            ],
+            "mean_difference": -0.10171875000000002
+          },
+          "q_scale_1": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              -0.23136816406250002,
+              0.02660156249999998
+            ],
+            "mean_difference": -0.10171875000000002
+          },
+          "recorded_chosen": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "target_argmax": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "visited_q_argmax": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          }
+        },
+        "raw_critic": 0.9599528908729553,
+        "roles": {
+          "actor": "action:3",
+          "control": "action:3",
+          "final_max_value": "action:3",
+          "leaf_16": "action:3",
+          "q_scale_1": "action:3",
+          "recorded_chosen": "action:0",
+          "target_argmax": "action:0",
+          "visited_q_argmax": "action:0"
+        },
+        "scenario_id": "block_conversion_overgrowth_bygone_effigy",
+        "selection_reason": "first_actor_chosen_disagreement",
+        "sha256": "ffe09cedfa81527ae04e24c7aa0bc8022dbf82d1296f0a15879a78bf635bd4d3",
+        "source_group": "272c2a79e5984f5bab9917d95d35c60b",
+        "step": 1
+      },
+      {
+        "actions": [
+          {
+            "common_completed": 32,
+            "common_mean_return": 0.15988281249999997,
+            "common_wins": 5,
+            "horizon_means": {
+              "1": 0.8369974493980408,
+              "16": 0.7307148892432451,
+              "32": 0.4041188416304067,
+              "4": 0.8245084844529629
+            },
+            "kind": "play_card",
+            "prior": 0.00766412541270256,
+            "recorded_q": 0.6706372554860233,
+            "recorded_visits": 96,
+            "ref": "action:0",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "body_slam",
+            "target": "Vantom"
+          },
+          {
+            "common_completed": 32,
+            "common_mean_return": 0.15988281249999997,
+            "common_wins": 5,
+            "horizon_means": {
+              "1": 0.8709401488304138,
+              "16": 0.7307848846539855,
+              "32": 0.404194611357525,
+              "4": 0.8244639132171869
+            },
+            "kind": "discard_potion",
+            "prior": 1.564362901262939e-05,
+            "recorded_q": 0.6771841902518645,
+            "recorded_visits": 32,
+            "ref": "action:3",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "block_potion",
+            "target": null
+          },
+          {
+            "common_completed": 32,
+            "common_mean_return": 0.15988281249999997,
+            "common_wins": 5,
+            "horizon_means": {
+              "1": 0.8732209801673889,
+              "16": 0.7307848846539855,
+              "32": 0.404194611357525,
+              "4": 0.8244639132171869
+            },
+            "kind": "use_potion",
+            "prior": 0.9923200011253357,
+            "recorded_q": 0.6535348115333667,
+            "recorded_visits": 96,
+            "ref": "action:2",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "block_potion",
+            "target": null
+          },
+          {
+            "common_completed": 32,
+            "common_mean_return": 0.128125,
+            "common_wins": 4,
+            "horizon_means": {
+              "1": 0.827895550057292,
+              "16": 0.7479470586404204,
+              "32": 0.4152373282413464,
+              "4": 0.8940074946731329
+            },
+            "kind": "end_turn",
+            "prior": 2.1136276018296485e-07,
+            "recorded_q": 0.6298618903383613,
+            "recorded_visits": 32,
+            "ref": "action:1",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": null,
+            "target": null
+          }
+        ],
+        "artifact": "audit-04.json",
+        "case_index": 71004,
+        "common_completed": 32,
+        "episode_id": "1531cace56154cc6ad33bc668ec225a6",
+        "outcome": "defeat",
+        "paired_vs_recorded": {
+          "actor": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "control": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "final_max_value": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "leaf_16": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "q_scale_1": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              -0.0959765625,
+              0.0005468749999999953
+            ],
+            "mean_difference": -0.031757812499999996
+          },
+          "recorded_chosen": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "target_argmax": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "visited_q_argmax": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          }
+        },
+        "raw_critic": 0.8379390835762024,
+        "roles": {
+          "actor": "action:2",
+          "control": "action:2",
+          "final_max_value": "action:0",
+          "leaf_16": "action:2",
+          "q_scale_1": "action:1",
+          "recorded_chosen": "action:0",
+          "target_argmax": "action:0",
+          "visited_q_argmax": "action:3"
+        },
+        "scenario_id": "block_conversion_overgrowth_vantom",
+        "selection_reason": "first_actor_chosen_disagreement",
+        "sha256": "0dc8ace9259740ebe381c3cb25cc4eb244d57e209745708b118019e73e0ac9d6",
+        "source_group": "b3e406e661fd46a69394c2e84eeb3690",
+        "step": 2
+      },
+      {
+        "actions": [
+          {
+            "common_completed": 32,
+            "common_mean_return": 1.0960156250000002,
+            "common_wins": 32,
+            "horizon_means": {
+              "1": 0.918493390083313,
+              "16": 1.0960156250000002,
+              "32": 1.0960156250000002,
+              "4": 0.9332599847763777
+            },
+            "kind": "play_card",
+            "prior": 0.48178166151046753,
+            "recorded_q": 1.096031976744185,
+            "recorded_visits": 86,
+            "ref": "action:4",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "strike",
+            "target": "LeafSlimeMedium"
+          },
+          {
+            "common_completed": 32,
+            "common_mean_return": 1.0999218750000006,
+            "common_wins": 32,
+            "horizon_means": {
+              "1": 0.9155669808387756,
+              "16": 1.0999218750000006,
+              "32": 1.0999218750000006,
+              "4": 0.9250278770923615
+            },
+            "kind": "play_card",
+            "prior": 0.000120212571346201,
+            "recorded_q": 1.0998958333333333,
+            "recorded_visits": 12,
+            "ref": "action:0",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "defend",
+            "target": null
+          },
+          {
+            "common_completed": 32,
+            "common_mean_return": 1.0960156250000002,
+            "common_wins": 32,
+            "horizon_means": {
+              "1": 0.918493390083313,
+              "16": 1.0960156250000002,
+              "32": 1.0960156250000002,
+              "4": 0.9332599847763777
+            },
+            "kind": "play_card",
+            "prior": 0.3344435691833496,
+            "recorded_q": 1.09596875,
+            "recorded_visits": 40,
+            "ref": "action:2",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "strike",
+            "target": "LeafSlimeMedium"
+          }
+        ],
+        "artifact": "audit-05.json",
+        "case_index": 71005,
+        "common_completed": 32,
+        "episode_id": "848f3160d4754815ae78cf532e573066",
+        "outcome": "victory",
+        "paired_vs_recorded": {
+          "actor": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "control": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "final_max_value": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "leaf_16": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "q_scale_1": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "recorded_chosen": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "target_argmax": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.003750000000000142,
+              0.004140625000000099
+            ],
+            "mean_difference": 0.003906250000000125
+          },
+          "visited_q_argmax": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.003750000000000142,
+              0.004140625000000099
+            ],
+            "mean_difference": 0.003906250000000125
+          }
+        },
+        "raw_critic": 0.9441525340080261,
+        "roles": {
+          "actor": "action:4",
+          "control": "action:2",
+          "final_max_value": "action:2",
+          "leaf_16": "action:4",
+          "q_scale_1": "action:2",
+          "recorded_chosen": "action:4",
+          "target_argmax": "action:0",
+          "visited_q_argmax": "action:0"
+        },
+        "scenario_id": "strength_overgrowth_slimes",
+        "selection_reason": "first_target_chosen_disagreement",
+        "sha256": "81295b75b30826022a9598da2db114672256450f27990289cb26435c08be1091",
+        "source_group": "7876d6b8deb944c8b9677b51f54e0e97",
+        "step": 5
+      },
+      {
+        "actions": [
+          {
+            "common_completed": 32,
+            "common_mean_return": 1.08625,
+            "common_wins": 32,
+            "horizon_means": {
+              "1": 1.0225340127944946,
+              "16": 1.08625,
+              "32": 1.08625,
+              "4": 1.08625
+            },
+            "kind": "play_card",
+            "prior": 0.9040261507034302,
+            "recorded_q": 1.0862500000000028,
+            "recorded_visits": 104,
+            "ref": "action:0",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "strike",
+            "target": "BygoneEffigy"
+          },
+          {
+            "common_completed": 32,
+            "common_mean_return": 1.0913281250000004,
+            "common_wins": 32,
+            "horizon_means": {
+              "1": 1.039944052696228,
+              "16": 1.0913281250000004,
+              "32": 1.0913281250000004,
+              "4": 1.0760496398061519
+            },
+            "kind": "play_card",
+            "prior": 3.786424349527806e-05,
+            "recorded_q": 1.0924999999999998,
+            "recorded_visits": 17,
+            "ref": "action:1",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "defend",
+            "target": null
+          }
+        ],
+        "artifact": "audit-06.json",
+        "case_index": 71006,
+        "common_completed": 32,
+        "episode_id": "b0bff7d51493442a81f71ac0aaf0bb83",
+        "outcome": "victory",
+        "paired_vs_recorded": {
+          "actor": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "control": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "final_max_value": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "leaf_16": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "q_scale_1": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.003320312500000082,
+              0.006250000000000089
+            ],
+            "mean_difference": 0.005078125000000086
+          },
+          "recorded_chosen": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "target_argmax": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.003320312500000082,
+              0.006250000000000089
+            ],
+            "mean_difference": 0.005078125000000086
+          },
+          "visited_q_argmax": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.003320312500000082,
+              0.006250000000000089
+            ],
+            "mean_difference": 0.005078125000000086
+          }
+        },
+        "raw_critic": 1.0403984785079956,
+        "roles": {
+          "actor": "action:0",
+          "control": "action:0",
+          "final_max_value": "action:0",
+          "leaf_16": "action:0",
+          "q_scale_1": "action:1",
+          "recorded_chosen": "action:0",
+          "target_argmax": "action:1",
+          "visited_q_argmax": "action:1"
+        },
+        "scenario_id": "strength_overgrowth_bygone_effigy",
+        "selection_reason": "first_target_chosen_disagreement",
+        "sha256": "401859abc6fd386e384c1f3bcda8bf790e7c835625fad736abba0c3a95a32074",
+        "source_group": "11099fa05b7c49a18b0e1a1b57cd1d2b",
+        "step": 9
+      },
+      {
+        "actions": [
+          {
+            "common_completed": 32,
+            "common_mean_return": 0.9584374999999996,
+            "common_wins": 30,
+            "horizon_means": {
+              "1": 0.9957971572875977,
+              "16": 0.9584374999999996,
+              "32": 0.9584374999999996,
+              "4": 0.925145225971937
+            },
+            "kind": "play_card",
+            "prior": 0.2421688288450241,
+            "recorded_q": 0.9729326923076929,
+            "recorded_visits": 104,
+            "ref": "action:2",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "strike",
+            "target": "Vantom"
+          },
+          {
+            "common_completed": 32,
+            "common_mean_return": 0.9584374999999996,
+            "common_wins": 30,
+            "horizon_means": {
+              "1": 0.9957971572875977,
+              "16": 0.9584374999999996,
+              "32": 0.9584374999999996,
+              "4": 0.925145225971937
+            },
+            "kind": "play_card",
+            "prior": 0.13345637917518616,
+            "recorded_q": 1.020735294117647,
+            "recorded_visits": 17,
+            "ref": "action:1",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "strike",
+            "target": "Vantom"
+          },
+          {
+            "common_completed": 32,
+            "common_mean_return": 0.9584374999999996,
+            "common_wins": 30,
+            "horizon_means": {
+              "1": 0.9957971572875977,
+              "16": 0.9584374999999996,
+              "32": 0.9584374999999996,
+              "4": 0.925145225971937
+            },
+            "kind": "play_card",
+            "prior": 0.49811893701553345,
+            "recorded_q": 0.9627205882352942,
+            "recorded_visits": 17,
+            "ref": "action:3",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "strike",
+            "target": "Vantom"
+          },
+          {
+            "common_completed": 32,
+            "common_mean_return": 0.9584374999999996,
+            "common_wins": 30,
+            "horizon_means": {
+              "1": 0.9957971572875977,
+              "16": 0.9584374999999996,
+              "32": 0.9584374999999996,
+              "4": 0.925145225971937
+            },
+            "kind": "play_card",
+            "prior": 0.12625563144683838,
+            "recorded_q": 0.9718069306930703,
+            "recorded_visits": 101,
+            "ref": "action:0",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "strike",
+            "target": "Vantom"
+          }
+        ],
+        "artifact": "audit-07.json",
+        "case_index": 71007,
+        "common_completed": 32,
+        "episode_id": "029446cc2e1c49c78f600addb3ac136b",
+        "outcome": "victory",
+        "paired_vs_recorded": {
+          "actor": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "control": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "final_max_value": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "leaf_16": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "q_scale_1": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "recorded_chosen": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "target_argmax": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "visited_q_argmax": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          }
+        },
+        "raw_critic": 0.9243858456611633,
+        "roles": {
+          "actor": "action:3",
+          "control": "action:0",
+          "final_max_value": "action:0",
+          "leaf_16": "action:2",
+          "q_scale_1": "action:0",
+          "recorded_chosen": "action:2",
+          "target_argmax": "action:1",
+          "visited_q_argmax": "action:1"
+        },
+        "scenario_id": "strength_overgrowth_vantom",
+        "selection_reason": "first_target_chosen_disagreement",
+        "sha256": "806a68dfe5e9c6d86b74971558c8e3aa972548746d5bb519f6f2d9e95eef3664",
+        "source_group": "f6fb9410cf384ddd8ce153e5850f9889",
+        "step": 26
+      },
+      {
+        "actions": [
+          {
+            "common_completed": 32,
+            "common_mean_return": 1.0279296874999997,
+            "common_wins": 32,
+            "horizon_means": {
+              "1": 1.0041417330503464,
+              "16": 1.0279296874999997,
+              "32": 1.0279296874999997,
+              "4": 0.9697090554982424
+            },
+            "kind": "play_card",
+            "prior": 0.9997671246528625,
+            "recorded_q": 1.0092788461538467,
+            "recorded_visits": 104,
+            "ref": "action:0",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "pommel_strike",
+            "target": "LagavulinMatriarch"
+          },
+          {
+            "common_completed": 32,
+            "common_mean_return": 1.0286328125,
+            "common_wins": 32,
+            "horizon_means": {
+              "1": 1.0112379789352417,
+              "16": 1.0286328125,
+              "32": 1.0286328125,
+              "4": 0.9716816283762455
+            },
+            "kind": "play_card",
+            "prior": 5.8127567172050476e-05,
+            "recorded_q": 1.0300735294117647,
+            "recorded_visits": 17,
+            "ref": "action:1",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "strike",
+            "target": "LagavulinMatriarch"
+          },
+          {
+            "common_completed": 32,
+            "common_mean_return": 1.0286328125,
+            "common_wins": 32,
+            "horizon_means": {
+              "1": 1.0112379789352417,
+              "16": 1.0286328125,
+              "32": 1.0286328125,
+              "4": 0.9716816283762455
+            },
+            "kind": "play_card",
+            "prior": 0.00010174150520469993,
+            "recorded_q": 0.9975495049504949,
+            "recorded_visits": 101,
+            "ref": "action:3",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "strike",
+            "target": "LagavulinMatriarch"
+          }
+        ],
+        "artifact": "audit-08.json",
+        "case_index": 71008,
+        "common_completed": 32,
+        "episode_id": "5481741a57e84a35a75279e1ce67c27d",
+        "outcome": "victory",
+        "paired_vs_recorded": {
+          "actor": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "control": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "final_max_value": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              -0.00441406250000001,
+              0.005625000000000005
+            ],
+            "mean_difference": 0.0007031250000000058
+          },
+          "leaf_16": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "q_scale_1": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              -0.00441406250000001,
+              0.005625000000000005
+            ],
+            "mean_difference": 0.0007031250000000058
+          },
+          "recorded_chosen": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "target_argmax": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "visited_q_argmax": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              -0.00441406250000001,
+              0.005625000000000005
+            ],
+            "mean_difference": 0.0007031250000000058
+          }
+        },
+        "raw_critic": 0.9846060276031494,
+        "roles": {
+          "actor": "action:0",
+          "control": "action:0",
+          "final_max_value": "action:3",
+          "leaf_16": "action:0",
+          "q_scale_1": "action:3",
+          "recorded_chosen": "action:0",
+          "target_argmax": "action:0",
+          "visited_q_argmax": "action:1"
+        },
+        "scenario_id": "strength_underdocks_lagavulin_matriarch",
+        "selection_reason": "nearest_eligible_midpoint",
+        "sha256": "8039484bbb48094b05a2bce7bf8d7fb561c3698c6be4d8f862f594c8e739f12f",
+        "source_group": "fef04dedbce74169a17940b7b19cb1e2",
+        "step": 11
+      },
+      {
+        "actions": [
+          {
+            "common_completed": 32,
+            "common_mean_return": 1.0976562500000002,
+            "common_wins": 32,
+            "horizon_means": {
+              "1": 0.98111492395401,
+              "16": 1.037261302471161,
+              "32": 1.0976562500000002,
+              "4": 0.8585535287857056
+            },
+            "kind": "play_card",
+            "prior": 0.3010309338569641,
+            "recorded_q": 1.0953837618388622,
+            "recorded_visits": 76,
+            "ref": "action:2",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "headbutt",
+            "target": "TwigSlimeSmall"
+          },
+          {
+            "common_completed": 32,
+            "common_mean_return": 1.0986718750000004,
+            "common_wins": 32,
+            "horizon_means": {
+              "1": 0.9945946931838989,
+              "16": 1.0469690573215487,
+              "32": 1.0986718750000004,
+              "4": 0.9128581881523132
+            },
+            "kind": "play_card",
+            "prior": 0.0005056321388110518,
+            "recorded_q": 1.0980769230769232,
+            "recorded_visits": 13,
+            "ref": "action:9",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "strike",
+            "target": "LeafSlimeMedium"
+          },
+          {
+            "common_completed": 32,
+            "common_mean_return": 1.0976562500000002,
+            "common_wins": 32,
+            "horizon_means": {
+              "1": 0.91142338514328,
+              "16": 1.0372939863055946,
+              "32": 1.0976562500000002,
+              "4": 0.858564555644989
+            },
+            "kind": "use_potion",
+            "prior": 0.6286891102790833,
+            "recorded_q": 1.0889898582299544,
+            "recorded_visits": 66,
+            "ref": "action:12",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "energy_potion",
+            "target": null
+          },
+          {
+            "common_completed": 32,
+            "common_mean_return": 1.0989843750000003,
+            "common_wins": 32,
+            "horizon_means": {
+              "1": 1.0125784054398537,
+              "16": 0.998252001181245,
+              "32": 1.0989843750000003,
+              "4": 0.9635862242430449
+            },
+            "kind": "end_turn",
+            "prior": 3.865885446430184e-06,
+            "recorded_q": 1.0246964871883393,
+            "recorded_visits": 4,
+            "ref": "action:11",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": null,
+            "target": null
+          }
+        ],
+        "artifact": "audit-09.json",
+        "case_index": 71009,
+        "common_completed": 32,
+        "episode_id": "2ce913e6354d42c8be30eda9b73eacda",
+        "outcome": "victory",
+        "paired_vs_recorded": {
+          "actor": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "control": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "final_max_value": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "leaf_16": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "q_scale_1": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.00015625000000002442,
+              0.0024609375000000377
+            ],
+            "mean_difference": 0.001328125000000041
+          },
+          "recorded_chosen": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "target_argmax": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "visited_q_argmax": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              4.145989107584585e-17,
+              0.002031250000000061
+            ],
+            "mean_difference": 0.0010156250000000477
+          }
+        },
+        "raw_critic": 0.9924730062484741,
+        "roles": {
+          "actor": "action:12",
+          "control": "action:12",
+          "final_max_value": "action:12",
+          "leaf_16": "action:12",
+          "q_scale_1": "action:11",
+          "recorded_chosen": "action:2",
+          "target_argmax": "action:2",
+          "visited_q_argmax": "action:9"
+        },
+        "scenario_id": "exhaust_draw_overgrowth_slimes",
+        "selection_reason": "first_actor_chosen_disagreement",
+        "sha256": "5fac69898f5bdf0e75ecc556e303811dba9f931b8a31f64d71ea5ed9790aecd8",
+        "source_group": "d8a640632b6e44c9854141edd92d0c35",
+        "step": 0
+      },
+      {
+        "actions": [
+          {
+            "common_completed": 32,
+            "common_mean_return": 1.0469921875000001,
+            "common_wins": 32,
+            "horizon_means": {
+              "1": 1.0157445669174194,
+              "16": 1.015932484269142,
+              "32": 1.0469921875000001,
+              "4": 0.9920573439449072
+            },
+            "kind": "use_potion",
+            "prior": 0.9996639490127563,
+            "recorded_q": 1.0357980924623986,
+            "recorded_visits": 108,
+            "ref": "action:1",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "energy_potion",
+            "target": null
+          },
+          {
+            "common_completed": 32,
+            "common_mean_return": 1.0573437500000002,
+            "common_wins": 32,
+            "horizon_means": {
+              "1": 0.964748365804553,
+              "16": 1.0374907226115466,
+              "32": 1.0573437500000002,
+              "4": 1.0231472365558147
+            },
+            "kind": "end_turn",
+            "prior": 4.932382580591366e-06,
+            "recorded_q": 1.041434920345034,
+            "recorded_visits": 42,
+            "ref": "action:0",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": null,
+            "target": null
+          },
+          {
+            "common_completed": 32,
+            "common_mean_return": 1.0451171874999998,
+            "common_wins": 32,
+            "horizon_means": {
+              "1": 1.0078948736190796,
+              "16": 1.0167199238389732,
+              "32": 1.0451171874999998,
+              "4": 1.0248586274683475
+            },
+            "kind": "discard_potion",
+            "prior": 0.00033111547236330807,
+            "recorded_q": 1.0356375212489435,
+            "recorded_visits": 106,
+            "ref": "action:2",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "energy_potion",
+            "target": null
+          }
+        ],
+        "artifact": "audit-10.json",
+        "case_index": 71010,
+        "common_completed": 32,
+        "episode_id": "4f3b9541873a4e52b0e703ac9331e25f",
+        "outcome": "victory",
+        "paired_vs_recorded": {
+          "actor": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "control": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "final_max_value": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              -0.00808593749999998,
+              0.004453124999999961
+            ],
+            "mean_difference": -0.0018750000000000086
+          },
+          "leaf_16": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "q_scale_1": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              -0.00808593749999998,
+              0.004453124999999961
+            ],
+            "mean_difference": -0.0018750000000000086
+          },
+          "recorded_chosen": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "target_argmax": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0033593750000000047,
+              0.017773437499999996
+            ],
+            "mean_difference": 0.010351562499999994
+          },
+          "visited_q_argmax": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0033593750000000047,
+              0.017773437499999996
+            ],
+            "mean_difference": 0.010351562499999994
+          }
+        },
+        "raw_critic": 1.004158616065979,
+        "roles": {
+          "actor": "action:1",
+          "control": "action:1",
+          "final_max_value": "action:2",
+          "leaf_16": "action:1",
+          "q_scale_1": "action:2",
+          "recorded_chosen": "action:1",
+          "target_argmax": "action:0",
+          "visited_q_argmax": "action:0"
+        },
+        "scenario_id": "exhaust_draw_overgrowth_bygone_effigy",
+        "selection_reason": "first_target_chosen_disagreement",
+        "sha256": "a1165bbee6b9243c65ff53c42fa45cded0789b250de42165c850560739a31c87",
+        "source_group": "4db9c2b45b054970a8b7e6fa6168dd03",
+        "step": 3
+      },
+      {
+        "actions": [
+          {
+            "common_completed": 32,
+            "common_mean_return": 0.0,
+            "common_wins": 0,
+            "horizon_means": {
+              "1": 0.8557390589267015,
+              "16": 0.5029827449470758,
+              "32": 0.25621529898489825,
+              "4": 0.8197010364383459
+            },
+            "kind": "play_card",
+            "prior": 0.9214507341384888,
+            "recorded_q": 0.3866602695636349,
+            "recorded_visits": 73,
+            "ref": "action:2",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "shrug_it_off",
+            "target": null
+          },
+          {
+            "common_completed": 32,
+            "common_mean_return": 0.0,
+            "common_wins": 0,
+            "horizon_means": {
+              "1": 0.8584109544754028,
+              "16": 0.5026813098229468,
+              "32": 0.25614787251106463,
+              "4": 0.8194626551121473
+            },
+            "kind": "use_potion",
+            "prior": 0.03926990553736687,
+            "recorded_q": 0.49244332166328547,
+            "recorded_visits": 31,
+            "ref": "action:6",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "energy_potion",
+            "target": null
+          }
+        ],
+        "artifact": "audit-11.json",
+        "case_index": 71011,
+        "common_completed": 32,
+        "episode_id": "80394402596c4023ab25006b5c0f06e6",
+        "outcome": "victory",
+        "paired_vs_recorded": {
+          "actor": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "control": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "final_max_value": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "leaf_16": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "original_heavy": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "q_scale_1": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "recorded_chosen": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "target_argmax": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "visited_q_argmax": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          }
+        },
+        "raw_critic": 0.8337350487709045,
+        "roles": {
+          "actor": "action:2",
+          "control": "action:2",
+          "final_max_value": "action:2",
+          "leaf_16": "action:2",
+          "original_heavy": "action:2",
+          "q_scale_1": "action:2",
+          "recorded_chosen": "action:2",
+          "target_argmax": "action:6",
+          "visited_q_argmax": "action:6"
+        },
+        "scenario_id": "exhaust_draw_overgrowth_vantom",
+        "selection_reason": "first_target_chosen_disagreement",
+        "sha256": "663b49bea319ffb01b5b5bb4311002822c715262a19005e394cdbd8b8fcf51b9",
+        "source_group": "90bdfa31e5ab42c7b8bd1bea4082b117",
+        "step": 0
+      },
+      {
+        "actions": [
+          {
+            "common_completed": 32,
+            "common_mean_return": 0.0,
+            "common_wins": 0,
+            "horizon_means": {
+              "1": 0.7400466203689575,
+              "16": 0.2663822692120448,
+              "32": 0.11582452722359449,
+              "4": 0.5793642746284604
+            },
+            "kind": "play_card",
+            "prior": 0.012647833675146103,
+            "recorded_q": 0.2917582862751765,
+            "recorded_visits": 108,
+            "ref": "action:0",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "defend",
+            "target": null
+          },
+          {
+            "common_completed": 32,
+            "common_mean_return": 0.0,
+            "common_wins": 0,
+            "horizon_means": {
+              "1": 0.4960448509082198,
+              "16": 0.2785338333924301,
+              "32": 0.09458002587780356,
+              "4": 0.39957932056859136
+            },
+            "kind": "end_turn",
+            "prior": 7.1707795541442465e-06,
+            "recorded_q": 0.33700966453623205,
+            "recorded_visits": 42,
+            "ref": "action:2",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": null,
+            "target": null
+          },
+          {
+            "common_completed": 32,
+            "common_mean_return": 0.032109375,
+            "common_wins": 1,
+            "horizon_means": {
+              "1": 0.7819754481315613,
+              "16": 0.3134732914622873,
+              "32": 0.06482583947945386,
+              "4": 0.6114031826145947
+            },
+            "kind": "play_card",
+            "prior": 0.9873449206352234,
+            "recorded_q": 0.2643673279638982,
+            "recorded_visits": 106,
+            "ref": "action:1",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "true_grit",
+            "target": null
+          }
+        ],
+        "artifact": "audit-12.json",
+        "case_index": 71023,
+        "common_completed": 32,
+        "episode_id": "84a74e5b9e444a438cf1f43fbce662ab",
+        "outcome": "defeat",
+        "paired_vs_recorded": {
+          "actor": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.09632812500000001
+            ],
+            "mean_difference": 0.032109375
+          },
+          "control": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.09632812500000001
+            ],
+            "mean_difference": 0.032109375
+          },
+          "final_max_value": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.09632812500000001
+            ],
+            "mean_difference": 0.032109375
+          },
+          "leaf_16": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.09632812500000001
+            ],
+            "mean_difference": 0.032109375
+          },
+          "q_scale_1": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.09632812500000001
+            ],
+            "mean_difference": 0.032109375
+          },
+          "recorded_chosen": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "target_argmax": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "visited_q_argmax": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          }
+        },
+        "raw_critic": 0.74213045835495,
+        "roles": {
+          "actor": "action:1",
+          "control": "action:1",
+          "final_max_value": "action:1",
+          "leaf_16": "action:1",
+          "q_scale_1": "action:1",
+          "recorded_chosen": "action:0",
+          "target_argmax": "action:2",
+          "visited_q_argmax": "action:2"
+        },
+        "scenario_id": "exhaust_draw_overgrowth_vantom",
+        "selection_reason": "first_target_chosen_disagreement",
+        "sha256": "602c76756fcda3b419f73d141e824e20654f80967db0900d83fa64e467fbfb5d",
+        "source_group": "d1ae575c46e04bacb6f06e1222678026",
+        "step": 4
+      },
+      {
+        "actions": [
+          {
+            "common_completed": 32,
+            "common_mean_return": 0.2236328125,
+            "common_wins": 7,
+            "horizon_means": {
+              "1": 0.8280786871910095,
+              "16": 0.8495733551681042,
+              "32": 0.5154272353975102,
+              "4": 0.7972463071346283
+            },
+            "kind": "play_card",
+            "prior": 0.4191625118255615,
+            "recorded_q": 0.7886221964250911,
+            "recorded_visits": 88,
+            "ref": "action:3",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "strike",
+            "target": "Vantom"
+          },
+          {
+            "common_completed": 32,
+            "common_mean_return": 0.2236328125,
+            "common_wins": 7,
+            "horizon_means": {
+              "1": 0.8280786871910095,
+              "16": 0.8495733551681042,
+              "32": 0.5154272353975102,
+              "4": 0.7972463071346283
+            },
+            "kind": "play_card",
+            "prior": 0.23084419965744019,
+            "recorded_q": 0.7977127794708524,
+            "recorded_visits": 42,
+            "ref": "action:2",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "strike",
+            "target": "Vantom"
+          },
+          {
+            "common_completed": 32,
+            "common_mean_return": 0.1588671875,
+            "common_wins": 5,
+            "horizon_means": {
+              "1": 0.9064521193504333,
+              "16": 0.849717662204057,
+              "32": 0.5331430978840217,
+              "4": 0.81742724776268
+            },
+            "kind": "play_card",
+            "prior": 0.08465159684419632,
+            "recorded_q": 0.7274305950850248,
+            "recorded_visits": 14,
+            "ref": "action:0",
+            "statuses": {
+              "completed": 32
+            },
+            "subject": "defend",
+            "target": null
+          }
+        ],
+        "artifact": "audit-13.json",
+        "case_index": 71064,
+        "common_completed": 32,
+        "episode_id": "200c78f1e629441c91483ef0db2b74a8",
+        "outcome": "victory",
+        "paired_vs_recorded": {
+          "actor": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "control": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "final_max_value": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              -0.2237109375,
+              0.09339843749999999
+            ],
+            "mean_difference": -0.06476562500000001
+          },
+          "leaf_16": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "q_scale_1": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              -0.2237109375,
+              0.09339843749999999
+            ],
+            "mean_difference": -0.06476562500000001
+          },
+          "recorded_chosen": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "target_argmax": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          },
+          "visited_q_argmax": {
+            "common_completed": 32,
+            "interpretation": "Conditional public-belief greedy-continuation estimate; sampled worlds are not independent source fights or an optimal-play oracle.",
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "mean_difference": 0.0
+          }
+        },
+        "raw_critic": 0.8749207258224487,
+        "roles": {
+          "actor": "action:3",
+          "control": "action:3",
+          "final_max_value": "action:0",
+          "leaf_16": "action:2",
+          "q_scale_1": "action:0",
+          "recorded_chosen": "action:3",
+          "target_argmax": "action:2",
+          "visited_q_argmax": "action:2"
+        },
+        "scenario_id": "block_conversion_overgrowth_vantom",
+        "selection_reason": "first_target_chosen_disagreement",
+        "sha256": "4242a03ad3517de45c43a8f8d6e5a685b8a69704c35b340c4026e8b52d9081d4",
+        "source_group": "a5c29f5bb2d3496d9acee1e3a064fa9c",
+        "step": 6
+      }
+    ],
+    "source_groups": 14,
+    "source_sha256": "13ebf3689368eecc682b0cec80bd8e8019a0eef8dc9cd83bbc55692286800f94",
+    "unsupported": 0
+  },
+  "confirmation": {
+    "control_pairs": {
+      "cases": 32,
+      "interpretation": "Percentile bootstrap over paired independent source fights; exploratory if used for development selection.",
+      "mean_hp_on_candidate_wins": 79.5,
+      "return_difference": 0.0017968750000000103,
+      "return_interval_95": [
+        0.0008203124999999964,
+        0.0028906250000000078
+      ],
+      "source_fights": 32,
+      "win_difference": 0.0,
+      "win_interval_95": [
+        0.0,
+        0.0
+      ],
+      "wins_only_baseline": 0,
+      "wins_only_candidate": 0
+    },
+    "paired": {
+      "cases": 64,
+      "interpretation": "Percentile bootstrap over paired independent source fights; exploratory if used for development selection.",
+      "mean_hp_on_candidate_wins": 38.51063829787234,
+      "return_difference": -0.030039062499999998,
+      "return_interval_95": [
+        -0.094375,
+        0.03193457031249999
+      ],
+      "source_fights": 64,
+      "win_difference": -0.03125,
+      "win_interval_95": [
+        -0.09375,
+        0.03125
+      ],
+      "wins_only_baseline": 3,
+      "wins_only_candidate": 1
+    },
+    "selected": "leaf_16",
+    "selection_sha256": "6f890765911cc0cbd331c6737b17af69b7ff1dca827bc31daf5faeeb49cce5a0",
+    "status": "development_confirmation",
+    "teacher_gate": false
+  },
+  "created_unix": 1791372795.918895,
+  "implementation": {
+    "build": "039c92c06c04f9269742d20510ba704b40cd8cfb5448b8002a39793e0ba18989",
+    "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+    "rules": "237b89973ceeeab4b02962ddc69876cd08a57be27ae6f7c1b52ea371e5bceaea",
+    "target": "sts2-v0.107.1-steam-23811903"
+  },
+  "panels": {
+    "control": {
+      "controllers": {
+        "gumbel": {
+          "by_scenario": {
+            "block_conversion_overgrowth_bygone_effigy": {
+              "cases": 4,
+              "mean_return": 1.038125,
+              "wins": 4
+            },
+            "block_conversion_overgrowth_slimes": {
+              "cases": 4,
+              "mean_return": 1.09625,
+              "wins": 4
+            },
+            "block_conversion_overgrowth_vantom": {
+              "cases": 4,
+              "mean_return": 0.2525,
+              "wins": 1
+            },
+            "draw_order_overgrowth_bygone_effigy": {
+              "cases": 4,
+              "mean_return": 1.0453124999999999,
+              "wins": 4
+            },
+            "draw_order_overgrowth_slimes": {
+              "cases": 4,
+              "mean_return": 1.0959375,
+              "wins": 4
+            },
+            "exhaust_draw_overgrowth_bygone_effigy": {
+              "cases": 4,
+              "mean_return": 1.0631249999999999,
+              "wins": 4
+            },
+            "exhaust_draw_overgrowth_slimes": {
+              "cases": 4,
+              "mean_return": 1.095625,
+              "wins": 4
+            },
+            "exhaust_draw_overgrowth_vantom": {
+              "cases": 4,
+              "mean_return": 0.255,
+              "wins": 1
+            },
+            "strength_overgrowth_bygone_effigy": {
+              "cases": 4,
+              "mean_return": 1.08125,
+              "wins": 4
+            },
+            "strength_overgrowth_slimes": {
+              "cases": 4,
+              "mean_return": 1.1,
+              "wins": 4
+            },
+            "strength_overgrowth_vantom": {
+              "cases": 4,
+              "mean_return": 0.7796875000000001,
+              "wins": 3
+            },
+            "strength_underdocks_lagavulin_matriarch": {
+              "cases": 4,
+              "mean_return": 1.0559374999999998,
+              "wins": 4
+            }
+          },
+          "challenge_cases": 32,
+          "challenge_return": 0.8213671874999999,
+          "challenge_wins": 25,
+          "controls_won": 16,
+          "healthy": true,
+          "paired_vs_network": {
+            "cases": 32,
+            "interpretation": "Percentile bootstrap over paired independent source fights; exploratory if used for development selection.",
+            "mean_hp_on_candidate_wins": 41.08,
+            "return_difference": 0.06539062500000001,
+            "return_interval_95": [
+              -0.06140625000000001,
+              0.19308593749999997
+            ],
+            "source_fights": 32,
+            "win_difference": 0.0625,
+            "win_interval_95": [
+              -0.0625,
+              0.1875
+            ],
+            "wins_only_baseline": 1,
+            "wins_only_candidate": 3
+          },
+          "potion_uses": 48,
+          "timing": {
+            "coverage": 1.0,
+            "cutoffs": {},
+            "eligible": 886,
+            "fallbacks": {},
+            "leaf_work": {
+              "bootstraps": 16208,
+              "steps": 72664,
+              "terminals": 3360,
+              "time_bootstraps": 0
+            },
+            "max_seconds": 2.1936334166675806,
+            "mean_seconds": 1.3565445703572045,
+            "p95_seconds": 1.8671498127514496,
+            "searched": 886,
+            "simulation_histogram": {
+              "24": 886
+            }
+          },
+          "within_latency": true
+        },
+        "network": {
+          "by_scenario": {
+            "block_conversion_overgrowth_bygone_effigy": {
+              "cases": 4,
+              "mean_return": 1.038125,
+              "wins": 4
+            },
+            "block_conversion_overgrowth_slimes": {
+              "cases": 4,
+              "mean_return": 1.0971875,
+              "wins": 4
+            },
+            "block_conversion_overgrowth_vantom": {
+              "cases": 4,
+              "mean_return": 0.0,
+              "wins": 0
+            },
+            "draw_order_overgrowth_bygone_effigy": {
+              "cases": 4,
+              "mean_return": 1.0428125,
+              "wins": 4
+            },
+            "draw_order_overgrowth_slimes": {
+              "cases": 4,
+              "mean_return": 1.0975000000000001,
+              "wins": 4
+            },
+            "exhaust_draw_overgrowth_bygone_effigy": {
+              "cases": 4,
+              "mean_return": 1.0678125,
+              "wins": 4
+            },
+            "exhaust_draw_overgrowth_slimes": {
+              "cases": 4,
+              "mean_return": 1.0953125,
+              "wins": 4
+            },
+            "exhaust_draw_overgrowth_vantom": {
+              "cases": 4,
+              "mean_return": 0.0,
+              "wins": 0
+            },
+            "strength_overgrowth_bygone_effigy": {
+              "cases": 4,
+              "mean_return": 1.08125,
+              "wins": 4
+            },
+            "strength_overgrowth_slimes": {
+              "cases": 4,
+              "mean_return": 1.0975000000000001,
+              "wins": 4
+            },
+            "strength_overgrowth_vantom": {
+              "cases": 4,
+              "mean_return": 1.024375,
+              "wins": 4
+            },
+            "strength_underdocks_lagavulin_matriarch": {
+              "cases": 4,
+              "mean_return": 0.7934375,
+              "wins": 3
+            }
+          },
+          "challenge_cases": 32,
+          "challenge_return": 0.7559765624999999,
+          "challenge_wins": 23,
+          "controls_won": 16,
+          "potion_uses": 48
+        }
+      },
+      "recorded_work": {
+        "below_actor_maximum": 154,
+        "below_target_maximum": 26,
+        "critic_bootstraps": 16208,
+        "decisions": 886,
+        "first_eliminated_visit_histogram": {
+          "1": 2124,
+          "3": 262,
+          "4": 106
+        },
+        "interpretation": "Descriptive statistics of each controller's visited positions; ties do not count as disagreements, and disagreements alone are not errors.",
+        "leaf_terminals": 3360,
+        "lower_q_than_finalist": 254,
+        "simulations": 21264,
+        "terminal_fraction": 0.23777276147479307,
+        "tree_terminals": 1696
+      },
+      "report_sha256": "8439fccd1d052a8558c998db2a44ff3d0cdadaffdaa9046b4ccff3d12053efa9",
+      "status": "complete"
+    },
+    "final_max_value": {
+      "controllers": {
+        "gumbel": {
+          "by_scenario": {
+            "block_conversion_overgrowth_bygone_effigy": {
+              "cases": 4,
+              "mean_return": 1.0393750000000002,
+              "wins": 4
+            },
+            "block_conversion_overgrowth_slimes": {
+              "cases": 4,
+              "mean_return": 1.0959375,
+              "wins": 4
+            },
+            "block_conversion_overgrowth_vantom": {
+              "cases": 4,
+              "mean_return": 0.0,
+              "wins": 0
+            },
+            "draw_order_overgrowth_bygone_effigy": {
+              "cases": 4,
+              "mean_return": 1.0587499999999999,
+              "wins": 4
+            },
+            "draw_order_overgrowth_slimes": {
+              "cases": 4,
+              "mean_return": 1.0990625,
+              "wins": 4
+            },
+            "exhaust_draw_overgrowth_bygone_effigy": {
+              "cases": 4,
+              "mean_return": 1.045,
+              "wins": 4
+            },
+            "exhaust_draw_overgrowth_slimes": {
+              "cases": 4,
+              "mean_return": 1.0984375000000002,
+              "wins": 4
+            },
+            "exhaust_draw_overgrowth_vantom": {
+              "cases": 4,
+              "mean_return": 0.2534375,
+              "wins": 1
+            },
+            "strength_overgrowth_bygone_effigy": {
+              "cases": 4,
+              "mean_return": 1.0609375,
+              "wins": 4
+            },
+            "strength_overgrowth_slimes": {
+              "cases": 4,
+              "mean_return": 1.096875,
+              "wins": 4
+            },
+            "strength_overgrowth_vantom": {
+              "cases": 4,
+              "mean_return": 1.0325,
+              "wins": 4
+            },
+            "strength_underdocks_lagavulin_matriarch": {
+              "cases": 4,
+              "mean_return": 1.0225,
+              "wins": 4
+            }
+          },
+          "challenge_cases": 32,
+          "challenge_return": 0.8140624999999999,
+          "challenge_wins": 25,
+          "controls_won": 16,
+          "healthy": true,
+          "paired_vs_network": {
+            "cases": 32,
+            "interpretation": "Percentile bootstrap over paired independent source fights; exploratory if used for development selection.",
+            "mean_hp_on_candidate_wins": 33.6,
+            "return_difference": 0.0580859375,
+            "return_interval_95": [
+              -0.008946289062500001,
+              0.15570312499999994
+            ],
+            "source_fights": 32,
+            "win_difference": 0.0625,
+            "win_interval_95": [
+              0.0,
+              0.15625
+            ],
+            "wins_only_baseline": 0,
+            "wins_only_candidate": 2
+          },
+          "potion_uses": 43,
+          "timing": {
+            "coverage": 1.0,
+            "cutoffs": {},
+            "eligible": 908,
+            "fallbacks": {},
+            "leaf_work": {
+              "bootstraps": 17022,
+              "steps": 75647,
+              "terminals": 3287,
+              "time_bootstraps": 0
+            },
+            "max_seconds": 2.0083007076755166,
+            "mean_seconds": 1.3565555197301644,
+            "p95_seconds": 1.7946841750992462,
+            "searched": 908,
+            "simulation_histogram": {
+              "24": 908
+            }
+          },
+          "within_latency": true
+        },
+        "network": {
+          "by_scenario": {
+            "block_conversion_overgrowth_bygone_effigy": {
+              "cases": 4,
+              "mean_return": 1.038125,
+              "wins": 4
+            },
+            "block_conversion_overgrowth_slimes": {
+              "cases": 4,
+              "mean_return": 1.0971875,
+              "wins": 4
+            },
+            "block_conversion_overgrowth_vantom": {
+              "cases": 4,
+              "mean_return": 0.0,
+              "wins": 0
+            },
+            "draw_order_overgrowth_bygone_effigy": {
+              "cases": 4,
+              "mean_return": 1.0428125,
+              "wins": 4
+            },
+            "draw_order_overgrowth_slimes": {
+              "cases": 4,
+              "mean_return": 1.0975000000000001,
+              "wins": 4
+            },
+            "exhaust_draw_overgrowth_bygone_effigy": {
+              "cases": 4,
+              "mean_return": 1.0678125,
+              "wins": 4
+            },
+            "exhaust_draw_overgrowth_slimes": {
+              "cases": 4,
+              "mean_return": 1.0953125,
+              "wins": 4
+            },
+            "exhaust_draw_overgrowth_vantom": {
+              "cases": 4,
+              "mean_return": 0.0,
+              "wins": 0
+            },
+            "strength_overgrowth_bygone_effigy": {
+              "cases": 4,
+              "mean_return": 1.08125,
+              "wins": 4
+            },
+            "strength_overgrowth_slimes": {
+              "cases": 4,
+              "mean_return": 1.0975000000000001,
+              "wins": 4
+            },
+            "strength_overgrowth_vantom": {
+              "cases": 4,
+              "mean_return": 1.024375,
+              "wins": 4
+            },
+            "strength_underdocks_lagavulin_matriarch": {
+              "cases": 4,
+              "mean_return": 0.7934375,
+              "wins": 3
+            }
+          },
+          "challenge_cases": 32,
+          "challenge_return": 0.7559765624999999,
+          "challenge_wins": 23,
+          "controls_won": 16,
+          "potion_uses": 48
+        }
+      },
+      "recorded_work": {
+        "below_actor_maximum": 407,
+        "below_target_maximum": 324,
+        "critic_bootstraps": 17022,
+        "decisions": 908,
+        "first_eliminated_visit_histogram": {
+          "1": 2174,
+          "3": 284,
+          "4": 101
+        },
+        "interpretation": "Descriptive statistics of each controller's visited positions; ties do not count as disagreements, and disagreements alone are not errors.",
+        "leaf_terminals": 3287,
+        "lower_q_than_finalist": 0,
+        "simulations": 21792,
+        "terminal_fraction": 0.21888766519823788,
+        "tree_terminals": 1483
+      },
+      "report_sha256": "743ecf691b1aa2dcc5dae49946e9cf3b95da9f65e19a27c12e6f87d1be46d121",
+      "status": "complete"
+    },
+    "fresh-candidate": {
+      "controllers": {
+        "gumbel": {
+          "by_scenario": {
+            "block_conversion_overgrowth_bygone_effigy": {
+              "cases": 8,
+              "mean_return": 1.0382812499999998,
+              "wins": 8
+            },
+            "block_conversion_overgrowth_slimes": {
+              "cases": 8,
+              "mean_return": 1.09875,
+              "wins": 8
+            },
+            "block_conversion_overgrowth_vantom": {
+              "cases": 8,
+              "mean_return": 0.0,
+              "wins": 0
+            },
+            "draw_order_overgrowth_bygone_effigy": {
+              "cases": 8,
+              "mean_return": 1.0543749999999998,
+              "wins": 8
+            },
+            "draw_order_overgrowth_slimes": {
+              "cases": 8,
+              "mean_return": 1.0993749999999998,
+              "wins": 8
+            },
+            "exhaust_draw_overgrowth_bygone_effigy": {
+              "cases": 8,
+              "mean_return": 1.0540625000000001,
+              "wins": 8
+            },
+            "exhaust_draw_overgrowth_slimes": {
+              "cases": 8,
+              "mean_return": 1.099375,
+              "wins": 8
+            },
+            "exhaust_draw_overgrowth_vantom": {
+              "cases": 8,
+              "mean_return": 0.1265625,
+              "wins": 1
+            },
+            "strength_overgrowth_bygone_effigy": {
+              "cases": 8,
+              "mean_return": 1.07703125,
+              "wins": 8
+            },
+            "strength_overgrowth_slimes": {
+              "cases": 8,
+              "mean_return": 1.0999999999999999,
+              "wins": 8
+            },
+            "strength_overgrowth_vantom": {
+              "cases": 8,
+              "mean_return": 0.8960937499999999,
+              "wins": 7
+            },
+            "strength_underdocks_lagavulin_matriarch": {
+              "cases": 8,
+              "mean_return": 0.91140625,
+              "wins": 7
+            }
+          },
+          "challenge_cases": 64,
+          "challenge_return": 0.7697265624999999,
+          "challenge_wins": 47,
+          "controls_won": 32,
+          "healthy": true,
+          "paired_vs_network": {
+            "cases": 64,
+            "interpretation": "Percentile bootstrap over paired independent source fights; exploratory if used for development selection.",
+            "mean_hp_on_candidate_wins": 38.51063829787234,
+            "return_difference": 0.0032421875000000037,
+            "return_interval_95": [
+              -0.044707519531249997,
+              0.05029296875
+            ],
+            "source_fights": 64,
+            "win_difference": 0.0,
+            "win_interval_95": [
+              -0.046875,
+              0.046875
+            ],
+            "wins_only_baseline": 1,
+            "wins_only_candidate": 1
+          },
+          "potion_uses": 96,
+          "timing": {
+            "coverage": 1.0,
+            "cutoffs": {},
+            "eligible": 1713,
+            "fallbacks": {},
+            "leaf_work": {
+              "bootstraps": 13342,
+              "steps": 407865,
+              "terminals": 24690,
+              "time_bootstraps": 0
+            },
+            "max_seconds": 5.7433371669612825,
+            "mean_seconds": 2.953263791692832,
+            "p95_seconds": 5.068131100200117,
+            "searched": 1713,
+            "simulation_histogram": {
+              "24": 1713
+            }
+          },
+          "within_latency": false
+        },
+        "network": {
+          "by_scenario": {
+            "block_conversion_overgrowth_bygone_effigy": {
+              "cases": 8,
+              "mean_return": 1.0328125,
+              "wins": 8
+            },
+            "block_conversion_overgrowth_slimes": {
+              "cases": 8,
+              "mean_return": 1.0984375,
+              "wins": 8
+            },
+            "block_conversion_overgrowth_vantom": {
+              "cases": 8,
+              "mean_return": 0.0,
+              "wins": 0
+            },
+            "draw_order_overgrowth_bygone_effigy": {
+              "cases": 8,
+              "mean_return": 1.0495312499999998,
+              "wins": 8
+            },
+            "draw_order_overgrowth_slimes": {
+              "cases": 8,
+              "mean_return": 1.0956249999999998,
+              "wins": 8
+            },
+            "exhaust_draw_overgrowth_bygone_effigy": {
+              "cases": 8,
+              "mean_return": 1.0490625,
+              "wins": 8
+            },
+            "exhaust_draw_overgrowth_slimes": {
+              "cases": 8,
+              "mean_return": 1.09671875,
+              "wins": 8
+            },
+            "exhaust_draw_overgrowth_vantom": {
+              "cases": 8,
+              "mean_return": 0.0,
+              "wins": 0
+            },
+            "strength_overgrowth_bygone_effigy": {
+              "cases": 8,
+              "mean_return": 1.0721875,
+              "wins": 8
+            },
+            "strength_overgrowth_slimes": {
+              "cases": 8,
+              "mean_return": 1.0968749999999998,
+              "wins": 8
+            },
+            "strength_overgrowth_vantom": {
+              "cases": 8,
+              "mean_return": 0.89515625,
+              "wins": 7
+            },
+            "strength_underdocks_lagavulin_matriarch": {
+              "cases": 8,
+              "mean_return": 1.033125,
+              "wins": 8
+            }
+          },
+          "challenge_cases": 64,
+          "challenge_return": 0.7664843749999999,
+          "challenge_wins": 47,
+          "controls_won": 32,
+          "potion_uses": 96
+        }
+      },
+      "recorded_work": {
+        "below_actor_maximum": 302,
+        "below_target_maximum": 31,
+        "critic_bootstraps": 13342,
+        "decisions": 1713,
+        "first_eliminated_visit_histogram": {
+          "1": 4245,
+          "3": 528,
+          "4": 156
+        },
+        "interpretation": "Descriptive statistics of each controller's visited positions; ties do not count as disagreements, and disagreements alone are not errors.",
+        "leaf_terminals": 24690,
+        "lower_q_than_finalist": 434,
+        "simulations": 41112,
+        "terminal_fraction": 0.6754718816890446,
+        "tree_terminals": 3080
+      },
+      "report_sha256": "a2340c8867cb488728a8c5362725e545111ba07f288de7bf278e86e9443c0020",
+      "status": "complete"
+    },
+    "fresh-control": {
+      "controllers": {
+        "gumbel": {
+          "by_scenario": {
+            "block_conversion_overgrowth_bygone_effigy": {
+              "cases": 8,
+              "mean_return": 1.03359375,
+              "wins": 8
+            },
+            "block_conversion_overgrowth_slimes": {
+              "cases": 8,
+              "mean_return": 1.09875,
+              "wins": 8
+            },
+            "block_conversion_overgrowth_vantom": {
+              "cases": 8,
+              "mean_return": 0.0,
+              "wins": 0
+            },
+            "draw_order_overgrowth_bygone_effigy": {
+              "cases": 8,
+              "mean_return": 1.0489062500000002,
+              "wins": 8
+            },
+            "draw_order_overgrowth_slimes": {
+              "cases": 8,
+              "mean_return": 1.0954687499999998,
+              "wins": 8
+            },
+            "exhaust_draw_overgrowth_bygone_effigy": {
+              "cases": 8,
+              "mean_return": 1.0478125,
+              "wins": 8
+            },
+            "exhaust_draw_overgrowth_slimes": {
+              "cases": 8,
+              "mean_return": 1.09875,
+              "wins": 8
+            },
+            "exhaust_draw_overgrowth_vantom": {
+              "cases": 8,
+              "mean_return": 0.126875,
+              "wins": 1
+            },
+            "strength_overgrowth_bygone_effigy": {
+              "cases": 8,
+              "mean_return": 1.0775000000000001,
+              "wins": 8
+            },
+            "strength_overgrowth_slimes": {
+              "cases": 8,
+              "mean_return": 1.0973437499999998,
+              "wins": 8
+            },
+            "strength_overgrowth_vantom": {
+              "cases": 8,
+              "mean_return": 1.0231249999999998,
+              "wins": 8
+            },
+            "strength_underdocks_lagavulin_matriarch": {
+              "cases": 8,
+              "mean_return": 1.0403125,
+              "wins": 8
+            }
+          },
+          "challenge_cases": 64,
+          "challenge_return": 0.7997656249999999,
+          "challenge_wins": 49,
+          "controls_won": 32,
+          "healthy": true,
+          "paired_vs_network": {
+            "cases": 64,
+            "interpretation": "Percentile bootstrap over paired independent source fights; exploratory if used for development selection.",
+            "mean_hp_on_candidate_wins": 35.673469387755105,
+            "return_difference": 0.03328125,
+            "return_interval_95": [
+              0.0005078125000000065,
+              0.08146484374999999
+            ],
+            "source_fights": 64,
+            "win_difference": 0.03125,
+            "win_interval_95": [
+              0.0,
+              0.078125
+            ],
+            "wins_only_baseline": 0,
+            "wins_only_candidate": 2
+          },
+          "potion_uses": 96,
+          "timing": {
+            "coverage": 1.0,
+            "cutoffs": {},
+            "eligible": 1729,
+            "fallbacks": {},
+            "leaf_work": {
+              "bootstraps": 31435,
+              "steps": 141757,
+              "terminals": 6731,
+              "time_bootstraps": 0
+            },
+            "max_seconds": 2.11694262502715,
+            "mean_seconds": 1.3396171123153509,
+            "p95_seconds": 1.7907426419667898,
+            "searched": 1729,
+            "simulation_histogram": {
+              "24": 1729
+            }
+          },
+          "within_latency": true
+        },
+        "network": {
+          "by_scenario": {
+            "block_conversion_overgrowth_bygone_effigy": {
+              "cases": 8,
+              "mean_return": 1.0328125,
+              "wins": 8
+            },
+            "block_conversion_overgrowth_slimes": {
+              "cases": 8,
+              "mean_return": 1.0984375,
+              "wins": 8
+            },
+            "block_conversion_overgrowth_vantom": {
+              "cases": 8,
+              "mean_return": 0.0,
+              "wins": 0
+            },
+            "draw_order_overgrowth_bygone_effigy": {
+              "cases": 8,
+              "mean_return": 1.0495312499999998,
+              "wins": 8
+            },
+            "draw_order_overgrowth_slimes": {
+              "cases": 8,
+              "mean_return": 1.0956249999999998,
+              "wins": 8
+            },
+            "exhaust_draw_overgrowth_bygone_effigy": {
+              "cases": 8,
+              "mean_return": 1.0490625,
+              "wins": 8
+            },
+            "exhaust_draw_overgrowth_slimes": {
+              "cases": 8,
+              "mean_return": 1.09671875,
+              "wins": 8
+            },
+            "exhaust_draw_overgrowth_vantom": {
+              "cases": 8,
+              "mean_return": 0.0,
+              "wins": 0
+            },
+            "strength_overgrowth_bygone_effigy": {
+              "cases": 8,
+              "mean_return": 1.0721875,
+              "wins": 8
+            },
+            "strength_overgrowth_slimes": {
+              "cases": 8,
+              "mean_return": 1.0968749999999998,
+              "wins": 8
+            },
+            "strength_overgrowth_vantom": {
+              "cases": 8,
+              "mean_return": 0.89515625,
+              "wins": 7
+            },
+            "strength_underdocks_lagavulin_matriarch": {
+              "cases": 8,
+              "mean_return": 1.033125,
+              "wins": 8
+            }
+          },
+          "challenge_cases": 64,
+          "challenge_return": 0.7664843749999999,
+          "challenge_wins": 47,
+          "controls_won": 32,
+          "potion_uses": 96
+        }
+      },
+      "recorded_work": {
+        "below_actor_maximum": 319,
+        "below_target_maximum": 71,
+        "critic_bootstraps": 31435,
+        "decisions": 1729,
+        "first_eliminated_visit_histogram": {
+          "1": 4282,
+          "3": 538,
+          "4": 168
+        },
+        "interpretation": "Descriptive statistics of each controller's visited positions; ties do not count as disagreements, and disagreements alone are not errors.",
+        "leaf_terminals": 6731,
+        "lower_q_than_finalist": 493,
+        "simulations": 41496,
+        "terminal_fraction": 0.24245710429920955,
+        "tree_terminals": 3330
+      },
+      "report_sha256": "3c8530b2d1bcd9e74883f0c8922694d2ad00045a7b5c2c98d70359816ab67972",
+      "status": "complete"
+    },
+    "leaf_16": {
+      "controllers": {
+        "gumbel": {
+          "by_scenario": {
+            "block_conversion_overgrowth_bygone_effigy": {
+              "cases": 4,
+              "mean_return": 1.040625,
+              "wins": 4
+            },
+            "block_conversion_overgrowth_slimes": {
+              "cases": 4,
+              "mean_return": 1.0971875,
+              "wins": 4
+            },
+            "block_conversion_overgrowth_vantom": {
+              "cases": 4,
+              "mean_return": 0.2525,
+              "wins": 1
+            },
+            "draw_order_overgrowth_bygone_effigy": {
+              "cases": 4,
+              "mean_return": 1.0509375,
+              "wins": 4
+            },
+            "draw_order_overgrowth_slimes": {
+              "cases": 4,
+              "mean_return": 1.1,
+              "wins": 4
+            },
+            "exhaust_draw_overgrowth_bygone_effigy": {
+              "cases": 4,
+              "mean_return": 1.0696875000000001,
+              "wins": 4
+            },
+            "exhaust_draw_overgrowth_slimes": {
+              "cases": 4,
+              "mean_return": 1.099375,
+              "wins": 4
+            },
+            "exhaust_draw_overgrowth_vantom": {
+              "cases": 4,
+              "mean_return": 0.2584375,
+              "wins": 1
+            },
+            "strength_overgrowth_bygone_effigy": {
+              "cases": 4,
+              "mean_return": 1.08125,
+              "wins": 4
+            },
+            "strength_overgrowth_slimes": {
+              "cases": 4,
+              "mean_return": 1.099375,
+              "wins": 4
+            },
+            "strength_overgrowth_vantom": {
+              "cases": 4,
+              "mean_return": 1.0271875000000001,
+              "wins": 4
+            },
+            "strength_underdocks_lagavulin_matriarch": {
+              "cases": 4,
+              "mean_return": 1.051875,
+              "wins": 4
+            }
+          },
+          "challenge_cases": 32,
+          "challenge_return": 0.8540625000000002,
+          "challenge_wins": 26,
+          "controls_won": 16,
+          "healthy": true,
+          "paired_vs_network": {
+            "cases": 32,
+            "interpretation": "Percentile bootstrap over paired independent source fights; exploratory if used for development selection.",
+            "mean_hp_on_candidate_wins": 40.92307692307692,
+            "return_difference": 0.0980859375,
+            "return_interval_95": [
+              0.0023046874999999994,
+              0.19866699218749093
+            ],
+            "source_fights": 32,
+            "win_difference": 0.09375,
+            "win_interval_95": [
+              0.0,
+              0.18828124999998863
+            ],
+            "wins_only_baseline": 0,
+            "wins_only_candidate": 3
+          },
+          "potion_uses": 48,
+          "timing": {
+            "coverage": 1.0,
+            "cutoffs": {},
+            "eligible": 853,
+            "fallbacks": {},
+            "leaf_work": {
+              "bootstraps": 6551,
+              "steps": 202736,
+              "terminals": 12385,
+              "time_bootstraps": 0
+            },
+            "max_seconds": 5.5111564989201725,
+            "mean_seconds": 2.9370119226141096,
+            "p95_seconds": 4.970522016566247,
+            "searched": 853,
+            "simulation_histogram": {
+              "24": 853
+            }
+          },
+          "within_latency": true
+        },
+        "network": {
+          "by_scenario": {
+            "block_conversion_overgrowth_bygone_effigy": {
+              "cases": 4,
+              "mean_return": 1.038125,
+              "wins": 4
+            },
+            "block_conversion_overgrowth_slimes": {
+              "cases": 4,
+              "mean_return": 1.0971875,
+              "wins": 4
+            },
+            "block_conversion_overgrowth_vantom": {
+              "cases": 4,
+              "mean_return": 0.0,
+              "wins": 0
+            },
+            "draw_order_overgrowth_bygone_effigy": {
+              "cases": 4,
+              "mean_return": 1.0428125,
+              "wins": 4
+            },
+            "draw_order_overgrowth_slimes": {
+              "cases": 4,
+              "mean_return": 1.0975000000000001,
+              "wins": 4
+            },
+            "exhaust_draw_overgrowth_bygone_effigy": {
+              "cases": 4,
+              "mean_return": 1.0678125,
+              "wins": 4
+            },
+            "exhaust_draw_overgrowth_slimes": {
+              "cases": 4,
+              "mean_return": 1.0953125,
+              "wins": 4
+            },
+            "exhaust_draw_overgrowth_vantom": {
+              "cases": 4,
+              "mean_return": 0.0,
+              "wins": 0
+            },
+            "strength_overgrowth_bygone_effigy": {
+              "cases": 4,
+              "mean_return": 1.08125,
+              "wins": 4
+            },
+            "strength_overgrowth_slimes": {
+              "cases": 4,
+              "mean_return": 1.0975000000000001,
+              "wins": 4
+            },
+            "strength_overgrowth_vantom": {
+              "cases": 4,
+              "mean_return": 1.024375,
+              "wins": 4
+            },
+            "strength_underdocks_lagavulin_matriarch": {
+              "cases": 4,
+              "mean_return": 0.7934375,
+              "wins": 3
+            }
+          },
+          "challenge_cases": 32,
+          "challenge_return": 0.7559765624999999,
+          "challenge_wins": 23,
+          "controls_won": 16,
+          "potion_uses": 48
+        }
+      },
+      "recorded_work": {
+        "below_actor_maximum": 139,
+        "below_target_maximum": 15,
+        "critic_bootstraps": 6551,
+        "decisions": 853,
+        "first_eliminated_visit_histogram": {
+          "1": 2072,
+          "3": 258,
+          "4": 96
+        },
+        "interpretation": "Descriptive statistics of each controller's visited positions; ties do not count as disagreements, and disagreements alone are not errors.",
+        "leaf_terminals": 12385,
+        "lower_q_than_finalist": 245,
+        "simulations": 20472,
+        "terminal_fraction": 0.6800019538882376,
+        "tree_terminals": 1536
+      },
+      "report_sha256": "5033fde758f579ba950055d8e47f9af8ae4e90692df7775bf142693269606eac",
+      "status": "complete"
+    },
+    "q_scale_1": {
+      "controllers": {
+        "gumbel": {
+          "by_scenario": {
+            "block_conversion_overgrowth_bygone_effigy": {
+              "cases": 4,
+              "mean_return": 1.0525,
+              "wins": 4
+            },
+            "block_conversion_overgrowth_slimes": {
+              "cases": 4,
+              "mean_return": 1.0909375,
+              "wins": 4
+            },
+            "block_conversion_overgrowth_vantom": {
+              "cases": 4,
+              "mean_return": 0.2559375,
+              "wins": 1
+            },
+            "draw_order_overgrowth_bygone_effigy": {
+              "cases": 4,
+              "mean_return": 1.03625,
+              "wins": 4
+            },
+            "draw_order_overgrowth_slimes": {
+              "cases": 4,
+              "mean_return": 1.0990625,
+              "wins": 4
+            },
+            "exhaust_draw_overgrowth_bygone_effigy": {
+              "cases": 4,
+              "mean_return": 1.0559375,
+              "wins": 4
+            },
+            "exhaust_draw_overgrowth_slimes": {
+              "cases": 4,
+              "mean_return": 1.096875,
+              "wins": 4
+            },
+            "exhaust_draw_overgrowth_vantom": {
+              "cases": 4,
+              "mean_return": 0.0,
+              "wins": 0
+            },
+            "strength_overgrowth_bygone_effigy": {
+              "cases": 4,
+              "mean_return": 1.06,
+              "wins": 4
+            },
+            "strength_overgrowth_slimes": {
+              "cases": 4,
+              "mean_return": 1.095625,
+              "wins": 4
+            },
+            "strength_overgrowth_vantom": {
+              "cases": 4,
+              "mean_return": 0.7753125000000001,
+              "wins": 3
+            },
+            "strength_underdocks_lagavulin_matriarch": {
+              "cases": 4,
+              "mean_return": 1.0250000000000001,
+              "wins": 4
+            }
+          },
+          "challenge_cases": 32,
+          "challenge_return": 0.7826171875,
+          "challenge_wins": 24,
+          "controls_won": 16,
+          "healthy": true,
+          "paired_vs_network": {
+            "cases": 32,
+            "interpretation": "Percentile bootstrap over paired independent source fights; exploratory if used for development selection.",
+            "mean_hp_on_candidate_wins": 34.791666666666664,
+            "return_difference": 0.026640625000000015,
+            "return_interval_95": [
+              -0.073205078125,
+              0.13069921874999382
+            ],
+            "source_fights": 32,
+            "win_difference": 0.03125,
+            "win_interval_95": [
+              -0.0625,
+              0.12578124999998863
+            ],
+            "wins_only_baseline": 1,
+            "wins_only_candidate": 2
+          },
+          "potion_uses": 38,
+          "timing": {
+            "coverage": 1.0,
+            "cutoffs": {},
+            "eligible": 973,
+            "fallbacks": {},
+            "leaf_work": {
+              "bootstraps": 18620,
+              "steps": 82075,
+              "terminals": 3142,
+              "time_bootstraps": 0
+            },
+            "max_seconds": 2.139582166913897,
+            "mean_seconds": 1.3828509765981534,
+            "p95_seconds": 1.81901816688478,
+            "searched": 973,
+            "simulation_histogram": {
+              "24": 973
+            }
+          },
+          "within_latency": true
+        },
+        "network": {
+          "by_scenario": {
+            "block_conversion_overgrowth_bygone_effigy": {
+              "cases": 4,
+              "mean_return": 1.038125,
+              "wins": 4
+            },
+            "block_conversion_overgrowth_slimes": {
+              "cases": 4,
+              "mean_return": 1.0971875,
+              "wins": 4
+            },
+            "block_conversion_overgrowth_vantom": {
+              "cases": 4,
+              "mean_return": 0.0,
+              "wins": 0
+            },
+            "draw_order_overgrowth_bygone_effigy": {
+              "cases": 4,
+              "mean_return": 1.0428125,
+              "wins": 4
+            },
+            "draw_order_overgrowth_slimes": {
+              "cases": 4,
+              "mean_return": 1.0975000000000001,
+              "wins": 4
+            },
+            "exhaust_draw_overgrowth_bygone_effigy": {
+              "cases": 4,
+              "mean_return": 1.0678125,
+              "wins": 4
+            },
+            "exhaust_draw_overgrowth_slimes": {
+              "cases": 4,
+              "mean_return": 1.0953125,
+              "wins": 4
+            },
+            "exhaust_draw_overgrowth_vantom": {
+              "cases": 4,
+              "mean_return": 0.0,
+              "wins": 0
+            },
+            "strength_overgrowth_bygone_effigy": {
+              "cases": 4,
+              "mean_return": 1.08125,
+              "wins": 4
+            },
+            "strength_overgrowth_slimes": {
+              "cases": 4,
+              "mean_return": 1.0975000000000001,
+              "wins": 4
+            },
+            "strength_overgrowth_vantom": {
+              "cases": 4,
+              "mean_return": 1.024375,
+              "wins": 4
+            },
+            "strength_underdocks_lagavulin_matriarch": {
+              "cases": 4,
+              "mean_return": 0.7934375,
+              "wins": 3
+            }
+          },
+          "challenge_cases": 32,
+          "challenge_return": 0.7559765624999999,
+          "challenge_wins": 23,
+          "controls_won": 16,
+          "potion_uses": 48
+        }
+      },
+      "recorded_work": {
+        "below_actor_maximum": 422,
+        "below_target_maximum": 174,
+        "critic_bootstraps": 18620,
+        "decisions": 973,
+        "first_eliminated_visit_histogram": {
+          "1": 2405,
+          "3": 292,
+          "4": 108
+        },
+        "interpretation": "Descriptive statistics of each controller's visited positions; ties do not count as disagreements, and disagreements alone are not errors.",
+        "leaf_terminals": 3142,
+        "lower_q_than_finalist": 116,
+        "simulations": 23352,
+        "terminal_fraction": 0.2026378896882494,
+        "tree_terminals": 1590
+      },
+      "report_sha256": "3260d2f842630ec95e05488f4442ec4b62adab983a13bf5dd47bc86de011758d",
+      "status": "complete"
+    }
+  },
+  "promotion": "experimental_only; no held-out or Act 1 claim",
+  "protocol": {
+    "audit": {
+      "candidates": "Distinct recorded played, target argmax, best visited Q, actor favorite and each new variant recommendation.",
+      "continuation": "Frozen greedy public policy. Completed hypothetical returns only; missing returns for cutoff/unsupported. Common sampled public-belief worlds per first action. Greedy continuations do not bound optimal values.",
+      "horizons": [
+        1,
+        4,
+        16,
+        32
+      ],
+      "interpretation": "New analyses use a fixed independent planner seed, not the original per-episode RNG progression. Viewer opening additionally reruns original heavy settings with its original initial seed and verifies the recorded action/value/visit/target fields.",
+      "max_actions": 160,
+      "planner_seed": 19726,
+      "positions": [
+        {
+          "case_index": 71000,
+          "episode_id": "f5547539ba8f46bfbc52eb73854918e7",
+          "outcome": "victory",
+          "scenario_id": "draw_order_overgrowth_slimes",
+          "selection_reason": "first_actor_chosen_disagreement",
+          "step": 0,
+          "targets_sha256": "ab19846b6ffde232e9b7b72f9b987197f465fb60af3854e1b790277ab3cebe74",
+          "trajectory_sha256": "bdd4445403e7bd81a08d74ca33fc486b6e7644bb497b6a126b1e9ae224e53d56"
+        },
+        {
+          "case_index": 71001,
+          "episode_id": "e439a4b4cf3b4b2c94182aaff296f056",
+          "outcome": "victory",
+          "scenario_id": "draw_order_overgrowth_bygone_effigy",
+          "selection_reason": "nearest_eligible_midpoint",
+          "step": 9,
+          "targets_sha256": "9bd5023dd1ccaa37c466a069d2a1fc88c9651da24e06e8cbff2aba663d68948a",
+          "trajectory_sha256": "89fb6177acdb84acf399cc9148f63ccb93557d8b3d57ae394900aa7e4f14f2f5"
+        },
+        {
+          "case_index": 71002,
+          "episode_id": "60a2ba237de646669c13150f353af0c8",
+          "outcome": "victory",
+          "scenario_id": "block_conversion_overgrowth_slimes",
+          "selection_reason": "first_actor_chosen_disagreement",
+          "step": 2,
+          "targets_sha256": "73a2c8bd65ea1e8fd1546d22a2fd389b044d728629ae6b4b0e659d02f4b50984",
+          "trajectory_sha256": "7984273c8cf0d3302edb11c4ecc4efe0d637ee9b9f65ae419f8fc636caf3f740"
+        },
+        {
+          "case_index": 71003,
+          "episode_id": "577759ba59f14ae4b95675cdccf7ea9d",
+          "outcome": "victory",
+          "scenario_id": "block_conversion_overgrowth_bygone_effigy",
+          "selection_reason": "first_actor_chosen_disagreement",
+          "step": 1,
+          "targets_sha256": "56a9490a95a6a273c9973ab6da66fec09f1345b2ab46e3145656166203c6de7b",
+          "trajectory_sha256": "494f6f4dedcbbf608165c721b6527e056aa6f90bdd5e9674d4c13bdeb0bd945f"
+        },
+        {
+          "case_index": 71004,
+          "episode_id": "1531cace56154cc6ad33bc668ec225a6",
+          "outcome": "defeat",
+          "scenario_id": "block_conversion_overgrowth_vantom",
+          "selection_reason": "first_actor_chosen_disagreement",
+          "step": 2,
+          "targets_sha256": "8f15c01d06810bd8e0baa2265e3742a0fd077a9218a7853b71e9e01fb1826b67",
+          "trajectory_sha256": "bda299c65d19d0f63d89e2a34c0f7c550d10511a62a0e40422c1bed427a0cb0c"
+        },
+        {
+          "case_index": 71005,
+          "episode_id": "848f3160d4754815ae78cf532e573066",
+          "outcome": "victory",
+          "scenario_id": "strength_overgrowth_slimes",
+          "selection_reason": "first_target_chosen_disagreement",
+          "step": 5,
+          "targets_sha256": "83b2da62120e5bd07e29b70c689a3cb1583985305f55c6c989cde9d8c5cdfaed",
+          "trajectory_sha256": "5d69e67292e687777c3173631c159f6aa85df77a09d2e3ac7a8c0ba832a9d2d2"
+        },
+        {
+          "case_index": 71006,
+          "episode_id": "b0bff7d51493442a81f71ac0aaf0bb83",
+          "outcome": "victory",
+          "scenario_id": "strength_overgrowth_bygone_effigy",
+          "selection_reason": "first_target_chosen_disagreement",
+          "step": 9,
+          "targets_sha256": "6e36096f3edb58ebd3917ab91077744f42708c142733f702c6312bf3cf3b958a",
+          "trajectory_sha256": "9d5fd56c9e6c8610969bd3c5491062157f24a916b2ac134d5e6c6622f8174cd6"
+        },
+        {
+          "case_index": 71007,
+          "episode_id": "029446cc2e1c49c78f600addb3ac136b",
+          "outcome": "victory",
+          "scenario_id": "strength_overgrowth_vantom",
+          "selection_reason": "first_target_chosen_disagreement",
+          "step": 26,
+          "targets_sha256": "aad7e7e2538e56757e18800c9f65ef5590493bdd44ea8adfc32bc0c07d1c5413",
+          "trajectory_sha256": "291533715f8daa99cdc798decd3aaf35acdf455b3c6cb4b9185098efa1540fd8"
+        },
+        {
+          "case_index": 71008,
+          "episode_id": "5481741a57e84a35a75279e1ce67c27d",
+          "outcome": "victory",
+          "scenario_id": "strength_underdocks_lagavulin_matriarch",
+          "selection_reason": "nearest_eligible_midpoint",
+          "step": 11,
+          "targets_sha256": "4709b325ce33b11f362ae51bacc3f4d6f87e87690b9a52684e8fc1a83f2617f1",
+          "trajectory_sha256": "d2ab3017ef18fb740172775c4a8a5ecd064df008adf480bf90791312c5261b93"
+        },
+        {
+          "case_index": 71009,
+          "episode_id": "2ce913e6354d42c8be30eda9b73eacda",
+          "outcome": "victory",
+          "scenario_id": "exhaust_draw_overgrowth_slimes",
+          "selection_reason": "first_actor_chosen_disagreement",
+          "step": 0,
+          "targets_sha256": "89ce4c0810c59ab2cbcc58fc80f5f32bb9685204f226d2778b340a0dd7f0376b",
+          "trajectory_sha256": "0a4c2262849c0179b3a7f7ff02e56a320ba8a031d1c83a1d2c5840343cc722a7"
+        },
+        {
+          "case_index": 71010,
+          "episode_id": "4f3b9541873a4e52b0e703ac9331e25f",
+          "outcome": "victory",
+          "scenario_id": "exhaust_draw_overgrowth_bygone_effigy",
+          "selection_reason": "first_target_chosen_disagreement",
+          "step": 3,
+          "targets_sha256": "fd6ff5a1e99ebcee8a9bac5e1eadebe8afcddf01c558103a1a602f28a5c2ee9a",
+          "trajectory_sha256": "6394d9f8a64ce8a244556ac39a459308483d1bb88c711bd32c47e84a410fcce6"
+        },
+        {
+          "case_index": 71011,
+          "episode_id": "80394402596c4023ab25006b5c0f06e6",
+          "outcome": "victory",
+          "scenario_id": "exhaust_draw_overgrowth_vantom",
+          "selection_reason": "first_target_chosen_disagreement",
+          "step": 0,
+          "targets_sha256": "f5fba8c6c29324d509de7cf0b308ba6ce8697c3ab5f1bcdd0a035c8edba56586",
+          "trajectory_sha256": "128c5fac4bba01bf84dbb4275c021b3822bad459f1f9e3c6353ecdafb05e055d"
+        },
+        {
+          "case_index": 71023,
+          "episode_id": "84a74e5b9e444a438cf1f43fbce662ab",
+          "outcome": "defeat",
+          "scenario_id": "exhaust_draw_overgrowth_vantom",
+          "selection_reason": "first_target_chosen_disagreement",
+          "step": 4,
+          "targets_sha256": "cedee8943c2b913bc2156cb09bddfdcc50ee5b3a115543dcc46503ea3d7c15e1",
+          "trajectory_sha256": "24f49acd4b7cf5cacf4a4a1d26a0cf3e652d6e0af2c51f5df23ce70975fedc88"
+        },
+        {
+          "case_index": 71064,
+          "episode_id": "200c78f1e629441c91483ef0db2b74a8",
+          "outcome": "victory",
+          "scenario_id": "block_conversion_overgrowth_vantom",
+          "selection_reason": "first_target_chosen_disagreement",
+          "step": 6,
+          "targets_sha256": "43d6186880994c986c2df9418f4f6c920bea2b4960338c7a12723ad8bb67c9d7",
+          "trajectory_sha256": "5a6b7462fa7ce026660d21221c79c4242a1da20498aeab4a93373f2e8f4677ea"
+        }
+      ],
+      "rollouts": 32,
+      "seconds_per_position": 1200,
+      "selection": "First completed win and loss when available per scenario, then prioritized disagreement or midpoint; viewer opening appended. Diagnostic stratification, not a representative frequency estimate.",
+      "world_seed": 710726
+    },
+    "bindings": [
+      {
+        "path": "runs/direct-search-learning-student-20261004/initial.sts-model",
+        "sha256": "e22bd23bc0783d67e081816c4066f04a65f2eb1d22be96b19677e0634dbc4862"
+      },
+      {
+        "path": "configs/training/search_developed_decks.json",
+        "sha256": "c3c3aceb01e337659e47035bbdda39ef2c142726b289fe98ca0f8a38a50d4d68"
+      },
+      {
+        "path": "runs/search-strength-20261006/fresh-candidate/search.json",
+        "sha256": "13ebf3689368eecc682b0cec80bd8e8019a0eef8dc9cd83bbc55692286800f94"
+      },
+      {
+        "path": "runs/search-learning-20261006/analyse.py",
+        "sha256": "efd91a8ca7233e30c93edd4af97270c3c81c23757fdadb7fbece806191d2dc4e"
+      },
+      {
+        "path": "runs/search-selection-20261007/study.py",
+        "sha256": "9c4a0727774406012d90b0349cfd36fef269ec6f01b7c2bd23be2506c2ab5774"
+      },
+      {
+        "path": "tests/agent/test_search_selection.py",
+        "sha256": "101a0eb6e077f01ed0de115bfe4657995f980d66b73694f6542faf0f64c86316"
+      },
+      {
+        "path": "tests/agent/test_analysis_search.py",
+        "sha256": "cb86ee00632a16d34308e8b3a0d59889e6f29a3bb6733634eb59031707c61577"
+      }
+    ],
+    "checkpoint_sha256": "e22bd23bc0783d67e081816c4066f04a65f2eb1d22be96b19677e0634dbc4862",
+    "confirmation": {
+      "cases": 96,
+      "selection": "Healthy variant with mean and p95 thinking <=5s, no control-win loss, strictly more challenge wins or equal wins with positive paired return CI lower bound. Rank by challenge wins, return, then lower mean latency. Freeze one candidate before confirmation.",
+      "start_index": 81000,
+      "teacher_gate": "Fresh development: strictly positive paired win CI lower bound, nonnegative paired return CI lower bound, no control-win loss, full coverage/no cutoff, mean and p95 <=5s. No automatic play-default or campaign promotion.",
+      "workers": 4
+    },
+    "created_unix": 1791368344.7053251,
+    "implementation": {
+      "build": "039c92c06c04f9269742d20510ba704b40cd8cfb5448b8002a39793e0ba18989",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "237b89973ceeeab4b02962ddc69876cd08a57be27ae6f7c1b52ea371e5bceaea",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "objective": {
+      "schema": "sts_training_reward_v1",
+      "weights": {
+        "combat_loss": 0.0,
+        "combat_win": 1.0,
+        "end_turn_action": 0.0,
+        "potion_use_action": 0.0,
+        "win_hp_fraction": 0.1
+      }
+    },
+    "panel": {
+      "cases": 48,
+      "episode_seconds": 1800,
+      "max_decisions": 160,
+      "start_index": 80000,
+      "workers": 4
+    },
+    "restrictions": [
+      "No held-out test or native data",
+      "Public declarations and accepted prefixes only",
+      "No source-side private audits read",
+      "No new training without fresh teacher gate",
+      "No PPO from search data"
+    ],
+    "schema": "sts_search_selection_study_v1",
+    "settings": {
+      "control": {
+        "belief_particles": 2,
+        "belief_proposals": 1024,
+        "belief_replay_proposals": 2048,
+        "belief_replay_steps": 16384,
+        "belief_seconds": 5,
+        "considered_actions": 16,
+        "exploration": false,
+        "final_selection": "prior_value",
+        "leaf_rollout_steps": 4,
+        "max_depth": 16,
+        "method": "gumbel",
+        "model_version": "direct_belief_v1",
+        "q_scale": 0.1,
+        "seed": 0,
+        "simulations": 24,
+        "time_limit": 120
+      },
+      "final_max_value": {
+        "belief_particles": 2,
+        "belief_proposals": 1024,
+        "belief_replay_proposals": 2048,
+        "belief_replay_steps": 16384,
+        "belief_seconds": 5,
+        "considered_actions": 16,
+        "exploration": false,
+        "final_selection": "max_value",
+        "leaf_rollout_steps": 4,
+        "max_depth": 16,
+        "method": "gumbel",
+        "model_version": "direct_belief_v1",
+        "q_scale": 0.1,
+        "seed": 0,
+        "simulations": 24,
+        "time_limit": 120
+      },
+      "leaf_16": {
+        "belief_particles": 2,
+        "belief_proposals": 1024,
+        "belief_replay_proposals": 2048,
+        "belief_replay_steps": 16384,
+        "belief_seconds": 5,
+        "considered_actions": 16,
+        "exploration": false,
+        "final_selection": "prior_value",
+        "leaf_rollout_steps": 16,
+        "max_depth": 16,
+        "method": "gumbel",
+        "model_version": "direct_belief_v1",
+        "q_scale": 0.1,
+        "seed": 0,
+        "simulations": 24,
+        "time_limit": 120
+      },
+      "q_scale_1": {
+        "belief_particles": 2,
+        "belief_proposals": 1024,
+        "belief_replay_proposals": 2048,
+        "belief_replay_steps": 16384,
+        "belief_seconds": 5,
+        "considered_actions": 16,
+        "exploration": false,
+        "final_selection": "prior_value",
+        "leaf_rollout_steps": 4,
+        "max_depth": 16,
+        "method": "gumbel",
+        "model_version": "direct_belief_v1",
+        "q_scale": 1.0,
+        "seed": 0,
+        "simulations": 24,
+        "time_limit": 120
+      }
+    },
+    "statistics": "10000 paired source-fight percentile bootstrap samples. One observation per case/scenario per controller. Conditional action-rollout uncertainty is separate from real-fight evaluation; development intervals are exploratory."
+  },
+  "schema": "sts_search_selection_findings_v1",
+  "selection": {
+    "control_pairs": {
+      "control": {
+        "cases": 16,
+        "interpretation": "Percentile bootstrap over paired independent source fights; exploratory if used for development selection.",
+        "mean_hp_on_candidate_wins": 77.5625,
+        "return_difference": 0.0,
+        "return_interval_95": [
+          0.0,
+          0.0
+        ],
+        "source_fights": 16,
+        "win_difference": 0.0,
+        "win_interval_95": [
+          0.0,
+          0.0
+        ],
+        "wins_only_baseline": 0,
+        "wins_only_candidate": 0
+      },
+      "final_max_value": {
+        "cases": 16,
+        "interpretation": "Percentile bootstrap over paired independent source fights; exploratory if used for development selection.",
+        "mean_hp_on_candidate_wins": 78.0625,
+        "return_difference": 0.0006249999999999728,
+        "return_interval_95": [
+          -0.001796875000000031,
+          0.002890624999999966
+        ],
+        "source_fights": 16,
+        "win_difference": 0.0,
+        "win_interval_95": [
+          0.0,
+          0.0
+        ],
+        "wins_only_baseline": 0,
+        "wins_only_candidate": 0
+      },
+      "leaf_16": {
+        "cases": 16,
+        "interpretation": "Percentile bootstrap over paired independent source fights; exploratory if used for development selection.",
+        "mean_hp_on_candidate_wins": 79.1875,
+        "return_difference": 0.0020312499999999983,
+        "return_interval_95": [
+          0.0003125000000000072,
+          0.003984374999999998
+        ],
+        "source_fights": 16,
+        "win_difference": 0.0,
+        "win_interval_95": [
+          0.0,
+          0.0
+        ],
+        "wins_only_baseline": 0,
+        "wins_only_candidate": 0
+      },
+      "q_scale_1": {
+        "cases": 16,
+        "interpretation": "Percentile bootstrap over paired independent source fights; exploratory if used for development selection.",
+        "mean_hp_on_candidate_wins": 76.5,
+        "return_difference": -0.0013281250000000272,
+        "return_interval_95": [
+          -0.005939453125000065,
+          0.002578124999999973
+        ],
+        "source_fights": 16,
+        "win_difference": 0.0,
+        "win_interval_95": [
+          0.0,
+          0.0
+        ],
+        "wins_only_baseline": 0,
+        "wins_only_candidate": 0
+      }
+    },
+    "paired_vs_control": {
+      "control": {
+        "cases": 32,
+        "interpretation": "Percentile bootstrap over paired independent source fights; exploratory if used for development selection.",
+        "mean_hp_on_candidate_wins": 41.08,
+        "return_difference": 0.0,
+        "return_interval_95": [
+          0.0,
+          0.0
+        ],
+        "source_fights": 32,
+        "win_difference": 0.0,
+        "win_interval_95": [
+          0.0,
+          0.0
+        ],
+        "wins_only_baseline": 0,
+        "wins_only_candidate": 0
+      },
+      "final_max_value": {
+        "cases": 32,
+        "interpretation": "Percentile bootstrap over paired independent source fights; exploratory if used for development selection.",
+        "mean_hp_on_candidate_wins": 33.6,
+        "return_difference": -0.007304687500000004,
+        "return_interval_95": [
+          -0.13437597656250003,
+          0.12136718749999999
+        ],
+        "source_fights": 32,
+        "win_difference": 0.0,
+        "win_interval_95": [
+          -0.125,
+          0.125
+        ],
+        "wins_only_baseline": 2,
+        "wins_only_candidate": 2
+      },
+      "leaf_16": {
+        "cases": 32,
+        "interpretation": "Percentile bootstrap over paired independent source fights; exploratory if used for development selection.",
+        "mean_hp_on_candidate_wins": 40.92307692307692,
+        "return_difference": 0.0326953125,
+        "return_interval_95": [
+          -0.0018359375000000235,
+          0.09929687500000003
+        ],
+        "source_fights": 32,
+        "win_difference": 0.03125,
+        "win_interval_95": [
+          0.0,
+          0.09375
+        ],
+        "wins_only_baseline": 0,
+        "wins_only_candidate": 1
+      },
+      "q_scale_1": {
+        "cases": 32,
+        "interpretation": "Percentile bootstrap over paired independent source fights; exploratory if used for development selection.",
+        "mean_hp_on_candidate_wins": 34.791666666666664,
+        "return_difference": -0.038749999999999986,
+        "return_interval_95": [
+          -0.1452089843749997,
+          0.060234374999999965
+        ],
+        "source_fights": 32,
+        "win_difference": -0.03125,
+        "win_interval_95": [
+          -0.1257812499999993,
+          0.0625
+        ],
+        "wins_only_baseline": 2,
+        "wins_only_candidate": 1
+      }
+    },
+    "protocol_sha256": "6321d77dead4e21427d882c319ef6a707adcab015695d8f17b81b9114a055d31",
+    "search": {
+      "belief_particles": 2,
+      "belief_proposals": 1024,
+      "belief_replay_proposals": 2048,
+      "belief_replay_steps": 16384,
+      "belief_seconds": 5,
+      "considered_actions": 16,
+      "exploration": false,
+      "final_selection": "prior_value",
+      "leaf_rollout_steps": 16,
+      "max_depth": 16,
+      "method": "gumbel",
+      "model_version": "direct_belief_v1",
+      "q_scale": 0.1,
+      "seed": 0,
+      "simulations": 24,
+      "time_limit": 120
+    },
+    "selected": "leaf_16"
+  },
+  "validation": {
+    "browser_checks": {
+      "command": "bundled node --test tests/agent/analysis_client.test.cjs",
+      "passed": 18
+    },
+    "focused_checks": {
+      "command": ".venv/bin/python -m pytest -q tests/agent/test_search_selection.py tests/agent/test_search.py tests/agent/test_search_reference.py tests/agent/test_search_rollouts.py tests/agent/test_direct_belief.py tests/agent/test_analysis_search.py tests/agent/test_search_training.py tests/agent/test_search_benchmark.py tests/agent/test_search_audit.py",
+      "passed": 174,
+      "seconds": 30.53
+    },
+    "implementation": {
+      "build": "039c92c06c04f9269742d20510ba704b40cd8cfb5448b8002a39793e0ba18989",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "237b89973ceeeab4b02962ddc69876cd08a57be27ae6f7c1b52ea371e5bceaea",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "independent_review": {
+      "agent": "selection_semantic_review",
+      "boundary_result": "No actual hidden state or game RNG enters planning or public diagnostics; original-heavy opening reproduced action/value/visit/target fields exactly.",
+      "findings_resolved": [
+        "Require zero paired control losses, not aggregate control-win counts",
+        "Require healthy baseline",
+        "Correct exporter duplicate-key construction"
+      ],
+      "scope": [
+        "public information and RNG",
+        "default teacher identity and selection isolation",
+        "public-prefix audit",
+        "paired development gates and provenance"
+      ],
+      "status": "closed"
+    },
+    "python": "3.11.15",
+    "review": "Independent selection_semantic_review found two experiment gate conditions to tighten before panel gameplay; production selection/public-RNG semantics had no blocker.",
+    "source_diff_check": "git diff --check passed before audit",
+    "torch": "2.13.0"
+  }
+}

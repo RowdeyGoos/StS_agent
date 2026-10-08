@@ -52,7 +52,7 @@ def souls(p, count, *, upgraded=False, destination='draw_pile'):
         pile = getattr(p.deck, destination)
         if destination == 'draw_pile':
             # Native index is top-first; the simulator stores top at the end.
-            pile.insert(len(pile) - p.deck.rng.randrange(len(pile) + 1), card)
+            p.deck.insert_into_draw(len(pile) - p.deck.rng.randrange(len(pile) + 1), card)
         else:
             (p.deck.discard_pile if destination == 'hand' and len(p.hand) >= 10 else pile).append(card)
         after_generated_entry(p, card)

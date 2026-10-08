@@ -53,6 +53,9 @@ def hook(p, relic, event, identity):
             stable_shuffle(cards, p.deck.selection_rng)
             for card in cards[:2]:
                 p.deck.draw_pile.remove(card)
+                knowledge = getattr(p.deck.rng, 'draw_knowledge', None)
+                if knowledge is not None:
+                    knowledge.removed(card)
                 (p.hand if len(p.hand) < 10 else p.deck.discard_pile).append(card)
         elif name == 'twisted_funnel':
             for enemy in p.combat_enemies:
@@ -76,7 +79,7 @@ def hook(p, relic, event, identity):
                 from game.headless.cards.colorless_effects import pool, create
                 from game.headless.generation.combat import select_cards
                 choices = [d for d in pool(p) if d.levels[0].ethereal]
-                for definition in select_cards(choices, p.deck.generation_rng, 2, distinct=True):
+                for definition in select_cards(choices, p.deck.generation_rng, 2, distinct=True, revealed=True):
                     create(p, definition)
             elif name == 'runic_capacitor':
                 from game.headless.core.orbs import add_slots

@@ -1,0 +1,1110 @@
+{
+  "schema": "sts_declared_search_benchmark_v1",
+  "name": "ironclad_developed_decks_v1",
+  "scenarios": [
+    {
+      "id": "draw_order_overgrowth_slimes",
+      "deck_profile": "draw_order",
+      "role": "control",
+      "start": {
+        "schema": "sts_declared_combat_start_v1",
+        "provenance": "declared_fresh_inventory",
+        "card_catalog": "e82d1bc876c9b87b123418239a185550e803504d8816d0ff0da5338303d72ee1",
+        "character": "ironclad",
+        "ascension": 0,
+        "encounter_id": "overgrowth_slimes",
+        "hp": 80,
+        "max_hp": 80,
+        "gold": 99,
+        "deck": [
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "bash",
+            "upgrade_level": 1
+          },
+          {
+            "definition_id": "pommel_strike",
+            "upgrade_level": 1
+          },
+          {
+            "definition_id": "shrug_it_off",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "headbutt",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "iron_wave",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "thunderclap",
+            "upgrade_level": 0
+          }
+        ],
+        "relics": [
+          {
+            "definition_id": "burning_blood",
+            "counter": 0
+          },
+          {
+            "definition_id": "bag_of_preparation",
+            "counter": 0
+          }
+        ],
+        "potions": [
+          "swift_potion",
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "id": "draw_order_overgrowth_bygone_effigy",
+      "deck_profile": "draw_order",
+      "role": "challenge",
+      "start": {
+        "schema": "sts_declared_combat_start_v1",
+        "provenance": "declared_fresh_inventory",
+        "card_catalog": "e82d1bc876c9b87b123418239a185550e803504d8816d0ff0da5338303d72ee1",
+        "character": "ironclad",
+        "ascension": 0,
+        "encounter_id": "overgrowth_bygone_effigy",
+        "hp": 80,
+        "max_hp": 80,
+        "gold": 99,
+        "deck": [
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "bash",
+            "upgrade_level": 1
+          },
+          {
+            "definition_id": "pommel_strike",
+            "upgrade_level": 1
+          },
+          {
+            "definition_id": "shrug_it_off",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "headbutt",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "iron_wave",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "thunderclap",
+            "upgrade_level": 0
+          }
+        ],
+        "relics": [
+          {
+            "definition_id": "burning_blood",
+            "counter": 0
+          },
+          {
+            "definition_id": "bag_of_preparation",
+            "counter": 0
+          }
+        ],
+        "potions": [
+          "swift_potion",
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "id": "block_conversion_overgrowth_slimes",
+      "deck_profile": "block_conversion",
+      "role": "control",
+      "start": {
+        "schema": "sts_declared_combat_start_v1",
+        "provenance": "declared_fresh_inventory",
+        "card_catalog": "e82d1bc876c9b87b123418239a185550e803504d8816d0ff0da5338303d72ee1",
+        "character": "ironclad",
+        "ascension": 0,
+        "encounter_id": "overgrowth_slimes",
+        "hp": 80,
+        "max_hp": 80,
+        "gold": 99,
+        "deck": [
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "bash",
+            "upgrade_level": 1
+          },
+          {
+            "definition_id": "shrug_it_off",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "body_slam",
+            "upgrade_level": 1
+          },
+          {
+            "definition_id": "flame_barrier",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "impervious",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "iron_wave",
+            "upgrade_level": 0
+          }
+        ],
+        "relics": [
+          {
+            "definition_id": "burning_blood",
+            "counter": 0
+          },
+          {
+            "definition_id": "anchor",
+            "counter": 0
+          }
+        ],
+        "potions": [
+          "block_potion",
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "id": "block_conversion_overgrowth_bygone_effigy",
+      "deck_profile": "block_conversion",
+      "role": "challenge",
+      "start": {
+        "schema": "sts_declared_combat_start_v1",
+        "provenance": "declared_fresh_inventory",
+        "card_catalog": "e82d1bc876c9b87b123418239a185550e803504d8816d0ff0da5338303d72ee1",
+        "character": "ironclad",
+        "ascension": 0,
+        "encounter_id": "overgrowth_bygone_effigy",
+        "hp": 80,
+        "max_hp": 80,
+        "gold": 99,
+        "deck": [
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "bash",
+            "upgrade_level": 1
+          },
+          {
+            "definition_id": "shrug_it_off",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "body_slam",
+            "upgrade_level": 1
+          },
+          {
+            "definition_id": "flame_barrier",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "impervious",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "iron_wave",
+            "upgrade_level": 0
+          }
+        ],
+        "relics": [
+          {
+            "definition_id": "burning_blood",
+            "counter": 0
+          },
+          {
+            "definition_id": "anchor",
+            "counter": 0
+          }
+        ],
+        "potions": [
+          "block_potion",
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "id": "block_conversion_overgrowth_vantom",
+      "deck_profile": "block_conversion",
+      "role": "challenge",
+      "start": {
+        "schema": "sts_declared_combat_start_v1",
+        "provenance": "declared_fresh_inventory",
+        "card_catalog": "e82d1bc876c9b87b123418239a185550e803504d8816d0ff0da5338303d72ee1",
+        "character": "ironclad",
+        "ascension": 0,
+        "encounter_id": "overgrowth_vantom",
+        "hp": 80,
+        "max_hp": 80,
+        "gold": 99,
+        "deck": [
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "bash",
+            "upgrade_level": 1
+          },
+          {
+            "definition_id": "shrug_it_off",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "body_slam",
+            "upgrade_level": 1
+          },
+          {
+            "definition_id": "flame_barrier",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "impervious",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "iron_wave",
+            "upgrade_level": 0
+          }
+        ],
+        "relics": [
+          {
+            "definition_id": "burning_blood",
+            "counter": 0
+          },
+          {
+            "definition_id": "anchor",
+            "counter": 0
+          }
+        ],
+        "potions": [
+          "block_potion",
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "id": "strength_overgrowth_slimes",
+      "deck_profile": "strength",
+      "role": "control",
+      "start": {
+        "schema": "sts_declared_combat_start_v1",
+        "provenance": "declared_fresh_inventory",
+        "card_catalog": "e82d1bc876c9b87b123418239a185550e803504d8816d0ff0da5338303d72ee1",
+        "character": "ironclad",
+        "ascension": 0,
+        "encounter_id": "overgrowth_slimes",
+        "hp": 80,
+        "max_hp": 80,
+        "gold": 99,
+        "deck": [
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "bash",
+            "upgrade_level": 1
+          },
+          {
+            "definition_id": "inflame",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "twin_strike",
+            "upgrade_level": 1
+          },
+          {
+            "definition_id": "pommel_strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "shrug_it_off",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "uppercut",
+            "upgrade_level": 0
+          }
+        ],
+        "relics": [
+          {
+            "definition_id": "burning_blood",
+            "counter": 0
+          },
+          {
+            "definition_id": "nunchaku",
+            "counter": 0
+          }
+        ],
+        "potions": [
+          "strength_potion",
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "id": "strength_overgrowth_bygone_effigy",
+      "deck_profile": "strength",
+      "role": "challenge",
+      "start": {
+        "schema": "sts_declared_combat_start_v1",
+        "provenance": "declared_fresh_inventory",
+        "card_catalog": "e82d1bc876c9b87b123418239a185550e803504d8816d0ff0da5338303d72ee1",
+        "character": "ironclad",
+        "ascension": 0,
+        "encounter_id": "overgrowth_bygone_effigy",
+        "hp": 80,
+        "max_hp": 80,
+        "gold": 99,
+        "deck": [
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "bash",
+            "upgrade_level": 1
+          },
+          {
+            "definition_id": "inflame",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "twin_strike",
+            "upgrade_level": 1
+          },
+          {
+            "definition_id": "pommel_strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "shrug_it_off",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "uppercut",
+            "upgrade_level": 0
+          }
+        ],
+        "relics": [
+          {
+            "definition_id": "burning_blood",
+            "counter": 0
+          },
+          {
+            "definition_id": "nunchaku",
+            "counter": 0
+          }
+        ],
+        "potions": [
+          "strength_potion",
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "id": "strength_overgrowth_vantom",
+      "deck_profile": "strength",
+      "role": "challenge",
+      "start": {
+        "schema": "sts_declared_combat_start_v1",
+        "provenance": "declared_fresh_inventory",
+        "card_catalog": "e82d1bc876c9b87b123418239a185550e803504d8816d0ff0da5338303d72ee1",
+        "character": "ironclad",
+        "ascension": 0,
+        "encounter_id": "overgrowth_vantom",
+        "hp": 80,
+        "max_hp": 80,
+        "gold": 99,
+        "deck": [
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "bash",
+            "upgrade_level": 1
+          },
+          {
+            "definition_id": "inflame",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "twin_strike",
+            "upgrade_level": 1
+          },
+          {
+            "definition_id": "pommel_strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "shrug_it_off",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "uppercut",
+            "upgrade_level": 0
+          }
+        ],
+        "relics": [
+          {
+            "definition_id": "burning_blood",
+            "counter": 0
+          },
+          {
+            "definition_id": "nunchaku",
+            "counter": 0
+          }
+        ],
+        "potions": [
+          "strength_potion",
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "id": "strength_underdocks_lagavulin_matriarch",
+      "deck_profile": "strength",
+      "role": "challenge",
+      "start": {
+        "schema": "sts_declared_combat_start_v1",
+        "provenance": "declared_fresh_inventory",
+        "card_catalog": "e82d1bc876c9b87b123418239a185550e803504d8816d0ff0da5338303d72ee1",
+        "character": "ironclad",
+        "ascension": 0,
+        "encounter_id": "underdocks_lagavulin_matriarch",
+        "hp": 80,
+        "max_hp": 80,
+        "gold": 99,
+        "deck": [
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "bash",
+            "upgrade_level": 1
+          },
+          {
+            "definition_id": "inflame",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "twin_strike",
+            "upgrade_level": 1
+          },
+          {
+            "definition_id": "pommel_strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "shrug_it_off",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "uppercut",
+            "upgrade_level": 0
+          }
+        ],
+        "relics": [
+          {
+            "definition_id": "burning_blood",
+            "counter": 0
+          },
+          {
+            "definition_id": "nunchaku",
+            "counter": 0
+          }
+        ],
+        "potions": [
+          "strength_potion",
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "id": "exhaust_draw_overgrowth_slimes",
+      "deck_profile": "exhaust_draw",
+      "role": "control",
+      "start": {
+        "schema": "sts_declared_combat_start_v1",
+        "provenance": "declared_fresh_inventory",
+        "card_catalog": "e82d1bc876c9b87b123418239a185550e803504d8816d0ff0da5338303d72ee1",
+        "character": "ironclad",
+        "ascension": 0,
+        "encounter_id": "overgrowth_slimes",
+        "hp": 80,
+        "max_hp": 80,
+        "gold": 99,
+        "deck": [
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "bash",
+            "upgrade_level": 1
+          },
+          {
+            "definition_id": "burning_pact",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "true_grit",
+            "upgrade_level": 1
+          },
+          {
+            "definition_id": "pommel_strike",
+            "upgrade_level": 1
+          },
+          {
+            "definition_id": "hemokinesis",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "shrug_it_off",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "headbutt",
+            "upgrade_level": 0
+          }
+        ],
+        "relics": [
+          {
+            "definition_id": "burning_blood",
+            "counter": 0
+          },
+          {
+            "definition_id": "anchor",
+            "counter": 0
+          }
+        ],
+        "potions": [
+          "energy_potion",
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "id": "exhaust_draw_overgrowth_bygone_effigy",
+      "deck_profile": "exhaust_draw",
+      "role": "challenge",
+      "start": {
+        "schema": "sts_declared_combat_start_v1",
+        "provenance": "declared_fresh_inventory",
+        "card_catalog": "e82d1bc876c9b87b123418239a185550e803504d8816d0ff0da5338303d72ee1",
+        "character": "ironclad",
+        "ascension": 0,
+        "encounter_id": "overgrowth_bygone_effigy",
+        "hp": 80,
+        "max_hp": 80,
+        "gold": 99,
+        "deck": [
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "bash",
+            "upgrade_level": 1
+          },
+          {
+            "definition_id": "burning_pact",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "true_grit",
+            "upgrade_level": 1
+          },
+          {
+            "definition_id": "pommel_strike",
+            "upgrade_level": 1
+          },
+          {
+            "definition_id": "hemokinesis",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "shrug_it_off",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "headbutt",
+            "upgrade_level": 0
+          }
+        ],
+        "relics": [
+          {
+            "definition_id": "burning_blood",
+            "counter": 0
+          },
+          {
+            "definition_id": "anchor",
+            "counter": 0
+          }
+        ],
+        "potions": [
+          "energy_potion",
+          null,
+          null
+        ]
+      }
+    },
+    {
+      "id": "exhaust_draw_overgrowth_vantom",
+      "deck_profile": "exhaust_draw",
+      "role": "challenge",
+      "start": {
+        "schema": "sts_declared_combat_start_v1",
+        "provenance": "declared_fresh_inventory",
+        "card_catalog": "e82d1bc876c9b87b123418239a185550e803504d8816d0ff0da5338303d72ee1",
+        "character": "ironclad",
+        "ascension": 0,
+        "encounter_id": "overgrowth_vantom",
+        "hp": 80,
+        "max_hp": 80,
+        "gold": 99,
+        "deck": [
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "strike",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "defend",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "bash",
+            "upgrade_level": 1
+          },
+          {
+            "definition_id": "burning_pact",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "true_grit",
+            "upgrade_level": 1
+          },
+          {
+            "definition_id": "pommel_strike",
+            "upgrade_level": 1
+          },
+          {
+            "definition_id": "hemokinesis",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "shrug_it_off",
+            "upgrade_level": 0
+          },
+          {
+            "definition_id": "headbutt",
+            "upgrade_level": 0
+          }
+        ],
+        "relics": [
+          {
+            "definition_id": "burning_blood",
+            "counter": 0
+          },
+          {
+            "definition_id": "anchor",
+            "counter": 0
+          }
+        ],
+        "potions": [
+          "energy_potion",
+          null,
+          null
+        ]
+      }
+    }
+  ]
+}

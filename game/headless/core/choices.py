@@ -123,7 +123,10 @@ def resolve(p, identity, operation, destination, free):
             setattr(card.combat_state, free, True)
         if destination == "hand" and len(p.hand) >= 10:
             destination = "discard_pile"
-        getattr(p.deck, destination).append(card)
+        if destination == 'draw_pile':
+            p.deck.put_on_draw(card)
+        else:
+            getattr(p.deck, destination).append(card)
         if generated:
             from game.headless.core.piles import after_generated_entry
             after_generated_entry(p, card)

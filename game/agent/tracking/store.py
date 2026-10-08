@@ -211,7 +211,7 @@ class TrackingStore:
                     previous['status'] not in ('running', 'sync_pending:running')):
                 raise ValueError('A completed report changed; keep historical sources immutable')
             schema = report.get('schema')
-            if schema in ('sts_ppo_report_v1', 'sts_imitation_report_v1'):
+            if schema in ('sts_ppo_report_v1', 'sts_imitation_report_v1', 'sts_search_distillation_v1'):
                 result = self._training(path, report, key, source_sha, previous)
             else:
                 normalized = r.prepare_evaluation(path, report)
@@ -319,6 +319,9 @@ class TrackingStore:
             'runtime': report.get('runtime'), 'collection': report.get('collection'),
             'experiment': report.get('experiment'), 'learner_config': report.get('learner_config'),
             'corpus_identity': report.get('corpus_identity'), 'validation_identity': report.get('validation_identity')}
+        if report['schema'] == 'sts_search_distillation_v1':
+            config.update(policy_targets=report['policy_targets'], value_targets=report['value_targets'],
+                          search_teacher=report['teacher'])
         signature = r.identity(config)
         start = report.get('start_decisions', report.get('start_update', 0))
         points = list(r.training_points(report))

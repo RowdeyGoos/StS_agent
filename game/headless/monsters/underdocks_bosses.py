@@ -75,7 +75,7 @@ class SoulFysh(ScriptedEnemy):
                     position = player.deck.rng.randrange(len(player.deck.draw_pile) + 1)
                     if isinstance(player.deck.rng, NativeRng):
                         position = len(player.deck.draw_pile) - position
-                    player.deck.draw_pile.insert(position, card)
+                    player.deck.insert_into_draw(position, card)
                 else:
                     player.deck.discard_pile.append(card)
                 after_generated_entry(player, card)

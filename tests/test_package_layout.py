@@ -14,7 +14,7 @@ def test_package_has_only_current_engine_agent_cli_and_bridge_wire_codec():
                 if len(p.relative_to(root / "game").parts) > 1}
     assert packages == {"headless", "agent", "cli", "backends"}
     assert {p.stem for p in (root / "game/cli").glob("*.py")} == {
-        "__init__", "headless_play", "agent_play", "agent_evaluate", "agent_train", "agent_analyze", "agent_track"}
+        "__init__", "headless_play", "agent_play", "agent_evaluate", "agent_train", "agent_analyze", "agent_track", "search_args"}
 
 
 def test_direct_cli_help_works_without_optional_dependencies():

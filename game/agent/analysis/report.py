@@ -19,13 +19,14 @@ from game.agent.trace_storage import open_trajectory
 from game.agent.training.rewards import strict_json
 from .decisions import json_bytes, state_digest, summarize
 from .sources import collect_metadata, discover, identity, validate_overlay
+from .search import collect_search, validate_search
 
 SCHEMA = 'sts_analysis_report_v1'
 CHUNK_SIZE = 16
 
 
 def _export_episode(job):
-    path, key, annotated, overlay, goal, output = job
+    path, key, annotated, overlay, search_binding, goal, output = job
     started = time.perf_counter()
     trajectory = load_trajectory(path, expected={'episode_id': key})
     loaded = time.perf_counter()
@@ -57,14 +58,20 @@ def _export_episode(job):
         signature = (state_digest(trajectory.initial), trajectory.metadata.build, trajectory.metadata.rules)
     summarized = time.perf_counter()
     diagnostics = validate_overlay(trajectory, overlay) if overlay else []
+    search, search_rows = validate_search(trajectory, search_binding) if search_binding else (None, [])
+    if search and overlay:
+        raise ValueError('Search behavior cannot be joined as on-policy PPO diagnostics')
     validated = time.perf_counter()
     label = annotated['policy'] if annotated else overlay['policy'] if overlay else path.parent.name
+    if search and search['policy_label']:
+        label = (f'Original behavior · {trajectory.metadata.policy.split(":")[-1][:8]}'
+                 if search['purpose'] == 'reanalysis' else search['policy_label'])
     row = {'id': key, 'source': path.name, 'sha256': trajectory.sha256, 'policy': label,
            'metadata': asdict(trajectory.metadata), 'goal': episode_goal, 'status': status,
            'task_success': success, 'act1_cleared': act1, 'outcome': c.to_dict(trajectory.outcome),
            'steps': len(trajectory.transitions), 'canonical_return': sum(t.reward for t in trajectory.transitions),
            'case_id': annotated['case_id'] if annotated else None, 'chunks': [], **data,
-           'training': None}
+           'training': None, 'search': search}
     if overlay:
         components = Counter()
         for item in diagnostics:
@@ -85,7 +92,8 @@ def _export_episode(job):
             values.append({'step': index, 'observation': current_wire,
                            'action': asdict(transition.action), 'execution': c.to_dict(transition.execution),
                            'successor': next_wire, 'canonical_reward': transition.reward,
-                           'training': diagnostics[index] if overlay else None})
+                           'training': diagnostics[index] if overlay else None,
+                           'search': search_rows[index] if search else None})
             current_wire = next_wire
             if overlay:
                 row['timeline'][index]['training_reward'] = diagnostics[index]['reward']
@@ -109,6 +117,9 @@ def build_report(inputs, output_dir, *, title='Act 1 · Decision lab', goal=None
     if not trajectories:
         raise ValueError('No completed public trajectories found')
     annotations, overlays, jobs, pending, sources = collect_metadata(paths)
+    search_bindings, search_sources, search_pending = collect_search(paths)
+    sources.extend(search_sources)
+    pending.extend(search_pending)
     output = Path(output_dir).absolute()
     # Reserve identities before any worker writes a chunk. Filenames need not
     # equal episode IDs; each worker rechecks its reservation in the full loader.
@@ -119,7 +130,7 @@ def build_report(inputs, output_dir, *, title='Act 1 · Decision lab', goal=None
         if key in reserved:
             raise ValueError('Duplicate trajectory episode identity')
         reserved.add(key)
-        jobs_to_export.append((path, key, annotations.get(key), overlays.get(key), goal, output))
+        jobs_to_export.append((path, key, annotations.get(key), overlays.get(key), search_bindings.get(path), goal, output))
     prepared = time.perf_counter()
     # A failed export remains visibly incomplete; it never replaces a report.
     output.mkdir(parents=True, exist_ok=False)
@@ -131,6 +142,7 @@ def build_report(inputs, output_dir, *, title='Act 1 · Decision lab', goal=None
                   'Review flags describe behavior; they do not prove a strategic mistake.',
                   'Net HP change includes healing. Terminal HUD values are unavailable without a measurement.',
                   'Checkpoint preferences are recomputed on the displayed state. Critic values predict shaped return, not Act 1 clear probability.',
+                  'Search diagnostics are recorded root statistics, not a replay of the simulation tree. Zero-visit values are completed estimates. Reanalysis targets are separate from the actions actually played.',
                   'Training and evaluation, evidence kinds, objectives and source identities must be compared separately.']}
     seen, paired_starts, paired_policies = set(), {}, {}
     worker_seconds = Counter()

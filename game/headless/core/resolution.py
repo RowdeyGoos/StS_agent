@@ -25,6 +25,10 @@ def move_out(player, card):
     for name in ("hand", "draw_pile", "discard_pile", "exhaust_pile", "in_play", "powers", "offered"):
         pile = getattr(player.deck, name)
         if card in pile:
+            if name == 'draw_pile':
+                knowledge = getattr(player.deck.rng, 'draw_knowledge', None)
+                if knowledge is not None:
+                    knowledge.removed(card)
             pile.remove(card)
             return
 
@@ -284,7 +288,7 @@ def execute(p, task):
         elif context["destination"] == "hand":
             (p.hand if len(p.hand) < 10 else p.deck.discard_pile).append(card)
         elif context["destination"] == "draw_pile":
-            p.deck.draw_pile.append(card)
+            p.deck.put_on_draw(card)
         else:
             p.deck.discard_card(card)
         from game.headless.relics.plays import hand_emptied
@@ -301,6 +305,9 @@ def execute(p, task):
             imbued = [c for c in reversed(p.deck.draw_pile) if c.enchantment and c.enchantment.definition_id == 'imbued']
             innate = [c for c in reversed(p.deck.draw_pile) if c.spec.innate and c not in imbued]
             p.deck.draw_pile = list(reversed(imbued)) + [c for c in p.deck.draw_pile if c not in imbued and c not in innate] + innate
+            knowledge = getattr(p.deck.rng, 'draw_knowledge', None)
+            if knowledge is not None:
+                knowledge.arranged(top=list(reversed(innate)), bottom=list(reversed(imbued)))
             count = min(10, max(count, len(innate)))
         push(p, ['draw', count, True])
     elif op in ("draw", "draw_next", "draw_after_shuffle"):

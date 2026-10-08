@@ -195,7 +195,7 @@ def test_full_encoding_revalidates_every_input_after_warming(kind):
     public = decision()
     features = FeatureEncoder(Vocabulary.fit([public], split='train'))
     fixed = FullRunEncoder()
-    for encode in (fixed.pack, fixed.encode, features.encode):
+    for encode in (fixed.pack, fixed.encode, features.encode, features.encode_inference):
         encode(public)
         if kind == 'primitive':
             bad = replace(public, run=replace(public.run, fields=(f.Field('hp', 1.5),)))

@@ -92,8 +92,47 @@ def main(argv=None):
     curriculum.add_argument('--config', required=True)
     curriculum.add_argument('--output-dir', required=True)
     curriculum.add_argument('--seeds', nargs='+', type=int, default=[17,23,41], help='Three to five private learner seeds')
+    from game.cli.search_args import add_search_arguments
+    search_collect = sub.add_parser('search-collect', help='Collect a frozen search teacher on public training combats')
+    search_collect.add_argument('--checkpoint', required=True)
+    search_collect.add_argument('--output-dir', required=True)
+    search_collect.add_argument('--combat-corpus', help='Use opening states from the training partition')
+    search_collect.add_argument('--search-benchmark', help='Public developed-inventory JSON for balanced training collection')
+    search_collect.add_argument('--encounter', action='append', dest='encounters')
+    search_collect.add_argument('--cases', type=int, default=8)
+    search_collect.add_argument('--start-index', type=int, default=0)
+    search_collect.add_argument('--max-decisions', type=int, default=256)
+    search_collect.add_argument('--time-limit', type=float, default=600., help='Total episode wall-clock limit')
+    search_collect.add_argument('--workers', type=int, default=1)
+    add_search_arguments(search_collect, collection=True)
+    search_collect.set_defaults(search=True)
+    search_distill = sub.add_parser('search-distill', help='Fit search distributions and completed combat returns')
+    search_distill.add_argument('--checkpoint', required=True)
+    search_distill.add_argument('--training-report', required=True, action='append',
+                               help='Training search report; repeat for disjoint fresh/reanalysed fights')
+    search_distill.add_argument('--output-dir', required=True)
+    distill_budget = search_distill.add_mutually_exclusive_group()
+    distill_budget.add_argument('--updates', type=int, help='Optimizer updates; defaults to 128')
+    distill_budget.add_argument('--epochs', type=int, help='Complete passes over searched training decisions')
+    search_distill.add_argument('--seed', type=int, default=0)
+    reanalyse = sub.add_parser('search-reanalyse', help='Refresh public training targets without changing outcome provenance')
+    reanalyse.add_argument('--checkpoint', required=True)
+    reanalyse.add_argument('--training-report', required=True)
+    reanalyse.add_argument('--output-dir', required=True)
+    reanalyse.add_argument('--max-episodes', type=int, help='Refresh a bounded recorded prefix; balanced for declared inventories')
+    add_search_arguments(reanalyse, collection=True)
+    reanalyse.set_defaults(search=True)
+    search_audit = sub.add_parser('search-audit', help='Check the critic against completed development fights and bounded policy rollouts')
+    search_audit.add_argument('--checkpoint', required=True)
+    search_audit.add_argument('--report', required=True)
+    search_audit.add_argument('--output', required=True)
+    search_audit.add_argument('--positions', type=int, default=8)
+    search_audit.add_argument('--rollouts', type=int, default=4)
+    search_audit.add_argument('--depth', type=int, default=64)
+    search_audit.add_argument('--rollout-seconds', type=float, default=30.,
+                              help='Shared per-position ceiling for hypothetical paired continuations')
     from game.cli.agent_track import add_tracking_arguments, cli_session
-    for command in (imitate, ppo, curriculum):
+    for command in (imitate, ppo, curriculum, search_collect, search_distill, reanalyse):
         add_tracking_arguments(command)
     args = parser.parse_args(argv)
     with cli_session(args, parser):
@@ -119,6 +158,41 @@ def _run(args, parser):
                     torch.is_deterministic_algorithms_warn_only_enabled())
     try:
         torch.set_num_threads(1)
+        if args.command.startswith('search-'):
+            from game.cli.search_args import search_config
+            from game.agent.training.search_run import run_search, distill_search, reanalyse_search, audit_critic
+            import signal
+            import threading
+            stopped = threading.Event()
+            previous = {sig: signal.getsignal(sig) for sig in (signal.SIGINT, signal.SIGTERM)}
+            for sig in previous:
+                signal.signal(sig, lambda *_: stopped.set())
+            try:
+                if args.command == 'search-collect':
+                    path, report = run_search(checkpoint=args.checkpoint, output_dir=args.output_dir,
+                        search=search_config(args, collection=True), corpus_path=args.combat_corpus,
+                        benchmark_path=args.search_benchmark,
+                        cases=args.cases, split='train', start_index=args.start_index,
+                        max_decisions=args.max_decisions, time_limit_seconds=args.time_limit,
+                        workers=args.workers, collect=True, cancel=stopped,
+                        encounters=tuple(args.encounters or ('overgrowth_vantom',)))
+                elif args.command == 'search-distill':
+                    path, report = distill_search(checkpoint=args.checkpoint, report_path=args.training_report,
+                        output_dir=args.output_dir, updates=args.updates, epochs=args.epochs, seed=args.seed, cancel=stopped)
+                elif args.command == 'search-reanalyse':
+                    path, report = reanalyse_search(checkpoint=args.checkpoint, report_path=args.training_report,
+                        output_dir=args.output_dir, search=search_config(args, collection=True),
+                        max_episodes=args.max_episodes, cancel=stopped)
+                else:
+                    path, report = audit_critic(checkpoint=args.checkpoint, report_path=args.report,
+                        output_path=args.output, positions=args.positions, rollouts=args.rollouts, depth=args.depth,
+                        rollout_seconds=args.rollout_seconds, cancel=stopped)
+            finally:
+                for sig, handler in previous.items():
+                    signal.signal(sig, handler)
+            print(json.dumps({'report': str(path), 'status': report['status'],
+                              'summary': report.get('summary'), 'promotion': report.get('promotion')}, indent=2))
+            return 130 if report['status'] == 'interrupted' else 0 if report['status'] == 'complete' else 1
         if args.command == 'audit-representation':
             from game.agent.training.features import Vocabulary
             from game.agent.training.coverage import audit_paths
@@ -218,6 +292,8 @@ def _run(args, parser):
         if resumed and action_policy != resumed.model.action_policy:
             raise ValueError('Exact resume cannot change its policy-action version')
         source = load_policy(args.initialize_combat, task='combat') if args.initialize_combat else None
+        from game.agent.input_views import RAW
+        input_view = (resumed or source).model.input_view if resumed or source else RAW
         inherited = (resumed or source).model.architecture.schema if resumed or source else GRAPH
         from game.agent.training.combat_features import SET_MLP, SET_ATTENTION
         representation = {'graph': GRAPH, 'combat': COMBAT, 'set-mlp': SET_MLP, 'set-attention': SET_ATTENTION, 'action-control': CONTROL,
@@ -230,14 +306,14 @@ def _run(args, parser):
             from game.agent.training.run_demonstrations import corpus_paths
             train = load_run_corpus(corpus_paths(args.train_dir, split='train', retain=True), split='train', vocabulary=frozen,
                 base_vocabulary=source.model.vocabulary if source else None, action_policy=action_policy,
-                representation=representation, include_catalog=include_catalog)
+                representation=representation, include_catalog=include_catalog, input_view=input_view)
             validation = load_run_corpus(corpus_paths(args.validation_dir, split='validation', retain=True),
-                split='validation', vocabulary=train.vocabulary, action_policy=action_policy, representation=representation)
+                split='validation', vocabulary=train.vocabulary, action_policy=action_policy, representation=representation, input_view=input_view)
         else:
             train = load_corpus(corpus_pairs(args.train_dir, split='train'), split='train', vocabulary=frozen,
-                                action_policy=action_policy, representation=representation, include_catalog=include_catalog)
+                                action_policy=action_policy, representation=representation, include_catalog=include_catalog, input_view=input_view)
             validation = load_corpus(corpus_pairs(args.validation_dir, split='validation'), split='validation',
-                                     vocabulary=train.vocabulary, action_policy=action_policy, representation=representation)
+                                     vocabulary=train.vocabulary, action_policy=action_policy, representation=representation, input_view=input_view)
         if train.reward_spec != validation.reward_spec:
             raise ValueError('Training and validation objectives differ')
         if args.resume_bundle:
@@ -262,7 +338,7 @@ def _run(args, parser):
                         raise ValueError('Actor transfer cannot change '+name)
                 model, lineage = transfer_combat(source, train.vocabulary, seed=seed, action_policy=action_policy)
             else:
-                model = ActorCritic(train.vocabulary, architecture, seed=seed, action_policy=action_policy)
+                model = ActorCritic(train.vocabulary, architecture, seed=seed, action_policy=action_policy, input_view=input_view)
             learner = ImitationLearner(model, train, settings, seed=seed)
         report = {'schema': 'sts_imitation_report_v1', 'status': 'running', 'runtime': runtime(),
                   'architecture': asdict(learner.model.architecture), 'learner_config': asdict(learner.config),
@@ -272,6 +348,7 @@ def _run(args, parser):
                   'packed_corpus_bytes': train.nbytes, 'corpus_encoding_seconds': train.encoding_seconds,
                   'start_update': learner.updates, 'updates': [], 'task':task, 'transfer':lineage}
         report['action_policy'] = action_policy
+        report['input_view'] = input_view
         report['initialization'] = {'resumed': resumed is not None,
                                     'checkpoint': resumed.identity if resumed else None}
         report['before'] = {'train': evaluate_imitation(learner.model, train),

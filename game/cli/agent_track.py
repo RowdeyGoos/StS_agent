@@ -44,7 +44,7 @@ def import_reports(store, inputs):
         try:
             report = r.read_json(path)
             schema = report.get('schema')
-            training = schema in ('sts_ppo_report_v1', 'sts_imitation_report_v1')
+            training = schema in ('sts_ppo_report_v1', 'sts_imitation_report_v1', 'sts_search_distillation_v1')
             diagnostic = path.name in ('diagnosis.json', 'tiny.json', 'smoke.json') and 'stage_sha256' in report
             if not training and schema not in r.EVALUATION_SCHEMAS and not diagnostic:
                 skipped.append({'path': str(path), 'reason': 'unsupported schema', 'schema': schema})

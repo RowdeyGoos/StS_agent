@@ -10,12 +10,12 @@ import zipfile
 
 REPORT_NAMES = {'ppo.json', 'imitation.json', 'combat-benchmark.json', 'benchmark.json',
                 'act1.json', 'full-run.json', 'baseline.json', 'evaluation.json',
-                'diagnosis.json', 'tiny.json', 'smoke.json', 'hybrid.json'}
+                'diagnosis.json', 'tiny.json', 'smoke.json', 'hybrid.json', 'search.json', 'search-distillation.json'}
 EVALUATION_SCHEMAS = {'sts_combat_corpus_comparison_v1', 'sts_combat_corpus_comparison_v2',
                       'sts_combat_comparison_v1', 'sts_act1_evaluation_v1',
                       'sts_full_run_evaluation_v1', 'sts_act1_pilot_panel_v1',
                       'sts_combat_baseline_v1', 'sts_combat_baseline_v2', 'sts_hybrid_campaign_v1',
-                      'sts_training_readiness_campaigns_v1'}
+                      'sts_training_readiness_campaigns_v1', 'sts_search_report_v1', 'sts_search_report_v2'}
 
 
 def data(value):
@@ -101,7 +101,7 @@ def bundle(path, expected):
             result = json.loads(archive.read(entry))
     except zipfile.BadZipFile as error:
         raise ValueError('Invalid checkpoint archive') from error
-    if result.get('schema') not in ('sts_inference_bundle_v1', 'sts_inference_bundle_v2', 'sts_inference_bundle_v3'):
+    if result.get('schema') not in ('sts_inference_bundle_v1', 'sts_inference_bundle_v2', 'sts_inference_bundle_v3', 'sts_inference_bundle_v4'):
         raise ValueError('Unsupported checkpoint manifest')
     return result
 
@@ -191,7 +191,7 @@ def training_points(report):
         yield step, elapsed, metrics
     for entry in report.get('updates', []):
         step = entry.get('update', entry.get('updates', step+1))
-        yield step, None, numbers(entry, 'imitation/')
+        yield step, None, numbers(entry, 'search_distillation/' if report.get('schema') == 'sts_search_distillation_v1' else 'imitation/')
 
 
 def prepare_evaluation(path, report):
@@ -238,6 +238,19 @@ def evaluations(report):
     schema = report.get('schema', '')
     if schema not in EVALUATION_SCHEMAS | {'sts_tracking_diagnostic_v1'}:
         raise ValueError('Unsupported report schema: '+str(schema))
+    if schema in ('sts_search_report_v1', 'sts_search_report_v2') and report.get('purpose') == 'reanalysis':
+        population = {'source_report': report['source_report_sha256'], 'search': report['search_configs'],
+                      'implementation': report['implementation']}
+        if 'selection' in report:
+            population['selection'] = report['selection']
+        if len(report['policies']) != 1 or set(report['policies']) != set(report['search_configs']):
+            raise ValueError('Reanalysis requires one declared search teacher')
+        yield dict(label='reanalysis', split='train', mode='target_refresh', panel='default', goal='combat',
+                   population=population, population_id=identity(population),
+                   metrics=numbers(report['target_refresh'], 'reanalysis/'),
+                   checkpoint=report['checkpoint'].rsplit(':', 1)[-1],
+                   policy_identity=next(iter(report['policies'].values())), episodes=[])
+        return
     goal = report.get('goal', 'act1' if 'act1' in schema else
                       'full_run' if 'full_run' in schema or schema == 'sts_hybrid_campaign_v1' else 'combat')
     if schema == 'sts_hybrid_campaign_v1':
@@ -249,8 +262,9 @@ def evaluations(report):
     groups = defaultdict(list)
     for row in report.get('episodes', []):
         label = row.get('policy', row.get('model'))
+        inference_mode = ('greedy' if label == 'network' else 'search_' + label) if schema in ('sts_search_report_v1', 'sts_search_report_v2') else None
         groups[(label, row.get('split', report.get('split', 'unknown')),
-                row.get('mode', 'greedy' if label not in ('random', 'random_legal') else 'random'),
+                row.get('mode', inference_mode or ('greedy' if label not in ('random', 'random_legal') else 'random')),
                 row.get('panel', 'default'))].append(row)
     legacy = schema in ('sts_combat_baseline_v1', 'sts_combat_baseline_v2', 'sts_hybrid_campaign_v1')
     if legacy:
@@ -283,9 +297,13 @@ def evaluations(report):
             population['planned'] = planned
             population['legacy_baseline_report'] = identity(report)
         metrics = numbers(episode_metrics(rows, goal, planned=planned), 'eval/')
+        if schema in ('sts_search_report_v1', 'sts_search_report_v2'):
+            metrics.update(numbers(report.get('summary', {}).get(label, {}).get('search', {}), 'search/'))
         # Incomplete legacy reports omit identities of unattempted cases. Do
         # not fabricate the per-encounter/category planned denominator.
         fields = () if legacy and planned > len(rows) else ('room_kind', 'encounter', 'start_kind', 'threat', 'hp_band')
+        if 'benchmark_identity' in report:
+            fields += ('deck_profile', 'benchmark_role')
         for field in fields:
             for category in sorted({str(r[field]) for r in rows if field in r}):
                 metrics.update(numbers(episode_metrics([r for r in rows if str(r.get(field)) == category], goal),
@@ -300,6 +318,14 @@ def evaluations(report):
         elif len(pieces) >= 4 and pieces[0] == 'hybrid_v1':
             checkpoint = pieces[1]
             population['fixed_controller'] = ':'.join(pieces[2:])
+        if schema in ('sts_search_report_v1', 'sts_search_report_v2'):
+            checkpoint = report['checkpoint'].rsplit(':', 1)[-1]
+            if 'benchmark_identity' in report:
+                population['benchmark'] = report['benchmark_identity']
+            population['fixed_controller'] = report.get('noncombat_policy')
+            population['search'] = report.get('search_configs', {}).get(label)
+            if 'planning_view' in report:
+                population['planning_view'] = report['planning_view']
         yield {'label': label, 'split': split, 'mode': mode, 'panel': panel, 'goal': goal,
                'population': population, 'population_id': identity(population), 'metrics': metrics,
                'checkpoint': checkpoint, 'policy_identity': policy, 'episodes': rows}

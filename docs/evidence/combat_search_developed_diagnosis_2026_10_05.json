@@ -1,0 +1,3296 @@
+{
+  "algorithm_changed": false,
+  "artifacts": {
+    "directory": "runs/search-developed-benchmark-20261005/diagnosis",
+    "files": {
+      "extract_evidence.py": "f8df2a64d98328012978c8a7b6b93a2f643dc43405302c231ac5d2bc397f56f7",
+      "freeze.py": "578b76c7ff7843d3c94e4230f504bc980cb1b4bd2d982594d4280cc7673c4ee0",
+      "inspect_cases.py": "83eb716959b2547c5a48dfb5f3c80e52e7d969d39707ecbecc3b7ef4def2c306",
+      "inspection.json": "ff0f89eddbc4d52794c0701b54526e4d89f46903e4d02292fb363aef00cbe202",
+      "intervene.py": "090ee886ffa93ddff44e6863fd3dc59bfb5ef18e9c061c7fb71f8c54b52eb347",
+      "intervene_initial.py": "15e7dd8afe803440c52d38f3c1a7a17902928cfdd734f77fd4aa2094ffde4022",
+      "intervention-plan.json": "3585cdbf7f15bcc56e52fafb6a1a00b50d66fc5a626927459e70a39aa0936f1b",
+      "intervention-retry-plan.json": "7ce147f47db43018fd80610aa7ac5eca52f8835d0ac3b40b0dab5869055810cd",
+      "interventions.json": "7a5304a52a78b194b8c61158e07d70c600f9cb81a1e8b9de259698f7abf701af",
+      "protocol.json": "16ba8fff8abb063db8a26122bc797cebe2ec2969c494ce1dcb1d4a332e514118",
+      "public-audit.json": "c0542d47dd526be96a4b5b0a0f54b1e99e36cb42ff0103d92ba2ac66d1fd02c7",
+      "public_audit.py": "ec2a350b948490043275b0e63d9d58d4ae00c9a4c7e625629a394148b4e67c9b",
+      "retry_interventions.py": "a3f02f5aa44435a4cc90556625d5806de396f57b2af2033ad188463f2fadea17",
+      "retry_interventions_executed.py": "ae1894988a2234432ff66397068d8547884eb755af01ff0a081d0a886c3e4eba",
+      "validate_diagnosis.py": "22b90437a1cbd1fe52f3206231e43152f3e11b730ae2bd737ef1aff7915c98a6",
+      "validation.json": "dca226f0d5ae581169caf6216d9745818d39390cce872416186c245190ed7dfb"
+    }
+  },
+  "date": "2026-10-05",
+  "elapsed_seconds": {
+    "corrected_greedy_retries": 5.457792999688536,
+    "episode_duration_sum_is_wall_time": false,
+    "implementation": null,
+    "initial_intervention_wall_time": null,
+    "public_audit": 184.8407802078873,
+    "release_preparation": null,
+    "review": null,
+    "sum_episode_durations": 327.16506812069565,
+    "user_wait": null,
+    "validation": 3.7030521668493748
+  },
+  "held_out_opened": false,
+  "independent_semantic_review": {
+    "final_artifact_check_seconds": 1.62,
+    "result": "no_remaining_blockers",
+    "scope": "Public/private RNG boundary, candidate ownership, frozen protocol, completed artifact bindings and intervention provenance",
+    "verified_episodes": 27,
+    "verified_transitions": 810
+  },
+  "initial_harness_failures": [
+    {
+      "failure": "decoded_candidate_owner_mismatch_before_dispatch",
+      "initial_partial": "interventions/ddbb36896db28cef9075b8a99c72704b.trajectory.jsonl.partial",
+      "job": {
+        "continuation": "greedy",
+        "episode_id": "ddbb36896db28cef9075b8a99c72704b",
+        "first_action": "recorded",
+        "name": "recorded_once_then_greedy",
+        "source_episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+        "step": 0
+      },
+      "partial_records": 1,
+      "partial_sha256": "28ce06d41947d0961c8f832f04d0d48f7651092de5c749f13bc7dd73925c138d"
+    },
+    {
+      "failure": "decoded_candidate_owner_mismatch_before_dispatch",
+      "initial_partial": "interventions/ebe120fe4e06d4944344b41d471277af.trajectory.jsonl.partial",
+      "job": {
+        "continuation": "greedy",
+        "episode_id": "ebe120fe4e06d4944344b41d471277af",
+        "first_action": "recorded",
+        "name": "recorded_once_then_greedy",
+        "source_episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+        "step": 1
+      },
+      "partial_records": 1,
+      "partial_sha256": "f3aa0a6ff11f62b54f0ca46ab309dd4bfa8145ae7cee6d073bb6d78ee31453c0"
+    },
+    {
+      "failure": "decoded_candidate_owner_mismatch_before_dispatch",
+      "initial_partial": "interventions/027deb2ec6011311f58539a0ff0c016b.trajectory.jsonl.partial",
+      "job": {
+        "continuation": "greedy",
+        "episode_id": "027deb2ec6011311f58539a0ff0c016b",
+        "first_action": "actor",
+        "name": "actor_once_then_greedy",
+        "source_episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+        "step": 1
+      },
+      "partial_records": 1,
+      "partial_sha256": "7cffaceb5bb48c480abbf11d6463a6a19ea4a9e6a662e2a0e22ee317b5d19944"
+    },
+    {
+      "failure": "decoded_candidate_owner_mismatch_before_dispatch",
+      "initial_partial": "interventions/d160d757465adc2aa13cf1cc4b9d646f.trajectory.jsonl.partial",
+      "job": {
+        "continuation": "greedy",
+        "episode_id": "d160d757465adc2aa13cf1cc4b9d646f",
+        "first_action": "recorded",
+        "name": "recorded_once_then_greedy",
+        "source_episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+        "step": 5
+      },
+      "partial_records": 1,
+      "partial_sha256": "e82cfec2cf273f8d0217b10ee42e8b2dbab1e0cef96278edcc32ce226e2b229e"
+    },
+    {
+      "failure": "decoded_candidate_owner_mismatch_before_dispatch",
+      "initial_partial": "interventions/bbb2759029f97d5e7f28b2fdc0250f35.trajectory.jsonl.partial",
+      "job": {
+        "continuation": "greedy",
+        "episode_id": "bbb2759029f97d5e7f28b2fdc0250f35",
+        "first_action": "actor",
+        "name": "actor_once_then_greedy",
+        "source_episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+        "step": 5
+      },
+      "partial_records": 1,
+      "partial_sha256": "dafe7d7357df3b227ca1ab10e72ee45feb40e6c029346decc672212513404d6e"
+    },
+    {
+      "failure": "decoded_candidate_owner_mismatch_before_dispatch",
+      "initial_partial": "interventions/7ddb58e1d5bd1a946db3f669c0cfee18.trajectory.jsonl.partial",
+      "job": {
+        "continuation": "greedy",
+        "episode_id": "7ddb58e1d5bd1a946db3f669c0cfee18",
+        "first_action": "recorded",
+        "name": "recorded_once_then_greedy",
+        "source_episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+        "step": 22
+      },
+      "partial_records": 1,
+      "partial_sha256": "3585a0aaeb6725a710d0587c5e74c7ac347c99a0ca36a426769e8d78923e8993"
+    },
+    {
+      "failure": "decoded_candidate_owner_mismatch_before_dispatch",
+      "initial_partial": "interventions/08ca96f1b0fb757a8814a3e48e129963.trajectory.jsonl.partial",
+      "job": {
+        "continuation": "greedy",
+        "episode_id": "08ca96f1b0fb757a8814a3e48e129963",
+        "first_action": "actor",
+        "name": "actor_once_then_greedy",
+        "source_episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+        "step": 22
+      },
+      "partial_records": 1,
+      "partial_sha256": "abcb459ff83fc01815b98479627b50b829e7914cb651758e1bdace13138b3baa"
+    },
+    {
+      "failure": "decoded_candidate_owner_mismatch_before_dispatch",
+      "initial_partial": "interventions/e0a6d09808373729fe1b240d885af143.trajectory.jsonl.partial",
+      "job": {
+        "continuation": "greedy",
+        "episode_id": "e0a6d09808373729fe1b240d885af143",
+        "first_action": "recorded",
+        "name": "recorded_once_then_greedy",
+        "source_episode_id": "447df2153bcb4f4cba9838c23cfb85e3",
+        "step": 0
+      },
+      "partial_records": 1,
+      "partial_sha256": "3056d2bdd8244e0001e3f94ae78a50ebd9b427fe9834735ebefd718bdbc5a3d3"
+    },
+    {
+      "failure": "decoded_candidate_owner_mismatch_before_dispatch",
+      "initial_partial": "interventions/fd85f4e93c3dbf797e7da5b9da14f3d2.trajectory.jsonl.partial",
+      "job": {
+        "continuation": "greedy",
+        "episode_id": "fd85f4e93c3dbf797e7da5b9da14f3d2",
+        "first_action": "recorded",
+        "name": "recorded_once_then_greedy",
+        "source_episode_id": "447df2153bcb4f4cba9838c23cfb85e3",
+        "step": 28
+      },
+      "partial_records": 1,
+      "partial_sha256": "3bc35d0178a6ea97deb0300cb13c892b73171da32579d808aa0f70b8366ca1bc"
+    },
+    {
+      "failure": "decoded_candidate_owner_mismatch_before_dispatch",
+      "initial_partial": "interventions/6fe9a9ebc5097d122a33b4471ccfa237.trajectory.jsonl.partial",
+      "job": {
+        "continuation": "greedy",
+        "episode_id": "6fe9a9ebc5097d122a33b4471ccfa237",
+        "first_action": "actor",
+        "name": "actor_once_then_greedy",
+        "source_episode_id": "447df2153bcb4f4cba9838c23cfb85e3",
+        "step": 28
+      },
+      "partial_records": 1,
+      "partial_sha256": "9c2e2810b058d9afcdbb09ea065f1aa376dce3b816bf4d32aa4d2558fcebc9d4"
+    },
+    {
+      "failure": "decoded_candidate_owner_mismatch_before_dispatch",
+      "initial_partial": "interventions/d2e4af2ad496203e133fe7ce95b4f84c.trajectory.jsonl.partial",
+      "job": {
+        "continuation": "greedy",
+        "episode_id": "d2e4af2ad496203e133fe7ce95b4f84c",
+        "first_action": "recorded",
+        "name": "recorded_once_then_greedy",
+        "source_episode_id": "4fbcdb22736d4f3cac5bccfb2a8a3ff6",
+        "step": 15
+      },
+      "partial_records": 1,
+      "partial_sha256": "783219958530ac2bf2f496b6d7f0a94e4104e1d3c4607877129e4c5e86dd2df3"
+    },
+    {
+      "failure": "decoded_candidate_owner_mismatch_before_dispatch",
+      "initial_partial": "interventions/1400edcfd0eeb3dd1013e670daad1553.trajectory.jsonl.partial",
+      "job": {
+        "continuation": "greedy",
+        "episode_id": "1400edcfd0eeb3dd1013e670daad1553",
+        "first_action": "actor",
+        "name": "actor_once_then_greedy",
+        "source_episode_id": "4fbcdb22736d4f3cac5bccfb2a8a3ff6",
+        "step": 15
+      },
+      "partial_records": 1,
+      "partial_sha256": "50563dbc6fb9db5aa72946b90732d68535319b6d866356cf87279d5b16825a74"
+    },
+    {
+      "failure": "decoded_candidate_owner_mismatch_before_dispatch",
+      "initial_partial": "interventions/a33d6621c0c28c40abce94cdd385fbf6.trajectory.jsonl.partial",
+      "job": {
+        "continuation": "greedy",
+        "episode_id": "a33d6621c0c28c40abce94cdd385fbf6",
+        "first_action": "recorded",
+        "name": "recorded_once_then_greedy",
+        "source_episode_id": "4fbcdb22736d4f3cac5bccfb2a8a3ff6",
+        "step": 27
+      },
+      "partial_records": 1,
+      "partial_sha256": "2702a8c6300debe36044810e74cc82988495f224ec6c7a9b815a32880c9f96e0"
+    },
+    {
+      "failure": "decoded_candidate_owner_mismatch_before_dispatch",
+      "initial_partial": "interventions/9745689df38ec3eafe62245872daad41.trajectory.jsonl.partial",
+      "job": {
+        "continuation": "greedy",
+        "episode_id": "9745689df38ec3eafe62245872daad41",
+        "first_action": "actor",
+        "name": "actor_once_then_greedy",
+        "source_episode_id": "4fbcdb22736d4f3cac5bccfb2a8a3ff6",
+        "step": 27
+      },
+      "partial_records": 1,
+      "partial_sha256": "d11b1987891db7dd893f746d484d153d0b1b87f43c4adb18948c2bc27f4fc078"
+    }
+  ],
+  "level": "post_hoc_development_diagnosis",
+  "limits": [
+    "Three selected outcome-discordant development fights, not a new win-rate sample or an Act 1 claim.",
+    "Fixed-seed one-action causal contrasts apply to the specified continuation policy; they do not establish a globally optimal action.",
+    "Public sampled-world returns follow greedy continuation; tree Q values describe searched/bootstrapped continuation and have a different target.",
+    "The 768 arm records share 544 distinct sampled action continuations; repeated arm recommendations are not additional observations.",
+    "Samples come from the existing approximate public belief, not a certified exact posterior or the true hidden state.",
+    "No changed default, learned update, new holdout evaluation, PPO behavior claim, or bridge demonstration."
+  ],
+  "next_experiment": "Test bounded policy rollouts for leaf evaluation on development data at a fixed total time budget; retain frozen greedy, root-only and current Gumbel controls, then run a fresh frozen paired confirmation.",
+  "original_benchmark_evidence": {
+    "path": "docs/evidence/combat_search_developed_benchmark_2026_10_05.json",
+    "sha256": "64df464331ba50f270b4d0db6167f67d80897441a07beb3a4bb49328087cf3e3"
+  },
+  "original_outcomes": [
+    {
+      "case_id": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+      "outcomes": {
+        "gumbel": {
+          "episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+          "outcome": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 7
+          },
+          "steps": 25,
+          "task_return": 0.0
+        },
+        "network": {
+          "episode_id": "65fdba6d19bb4abb949d18cdd72ef692",
+          "outcome": {
+            "combat_ref": "combat:0",
+            "hp": 8,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 8
+          },
+          "steps": 25,
+          "task_return": 1.01
+        },
+        "root": {
+          "episode_id": "4f55b3f5362e482eba7e7576e45dd147",
+          "outcome": {
+            "combat_ref": "combat:0",
+            "hp": 19,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 7
+          },
+          "steps": 23,
+          "task_return": 1.02375
+        }
+      },
+      "scenario_id": "strength_underdocks_lagavulin_matriarch",
+      "source_bindings": {
+        "gumbel": {
+          "episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+          "targets_sha256": "0277f3358f8b6bcd91001b9e92bbde37d3e20209236e3aeefda06fd70699f211",
+          "training_sha256": "f2179160638972900ce6c1f02da6a7f69f87c91215370a89e5877a72a4ec694c",
+          "trajectory_sha256": "e03bae573c8c341709f0d18921e1c58ef0a23d1560e289fb7d51936d59b2276e"
+        },
+        "network": {
+          "episode_id": "65fdba6d19bb4abb949d18cdd72ef692",
+          "training_sha256": "9fd45afa238c2958e4b44c06d06ede13e34a544260cd90b971c01494be2f5aa0",
+          "trajectory_sha256": "a7cafad835fa2c98832b63684ac01c48b80447d5a6b73405906f8f96609b3917"
+        },
+        "root": {
+          "episode_id": "4f55b3f5362e482eba7e7576e45dd147",
+          "targets_sha256": "0a118e4e965ea72046917375d195d8d2ce01d6add1153a11cedc617099090645",
+          "training_sha256": "d7fba1c1e8e0cb9a1445a5bdd80e012031c33178cd8a15935f0133f246ab0a4e",
+          "trajectory_sha256": "71742b74ee1a0202cec7091cdc0cb381f01933c9dd70e8bf5087c366056fd68b"
+        }
+      },
+      "source_group": "fcdc1ac17bbb47008cca0e8f2eeedd7f"
+    },
+    {
+      "case_id": "c249e603d0cc42108b234810d33cbaff",
+      "outcomes": {
+        "gumbel": {
+          "episode_id": "447df2153bcb4f4cba9838c23cfb85e3",
+          "outcome": {
+            "combat_ref": "combat:0",
+            "hp": 9,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 8
+          },
+          "steps": 30,
+          "task_return": 1.01125
+        },
+        "network": {
+          "episode_id": "e0b088619d2e4dedb222e01387771268",
+          "outcome": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 8
+          },
+          "steps": 33,
+          "task_return": 0.0
+        },
+        "root": {
+          "episode_id": "e650fb5ec68e4a23ae3be235e92609bf",
+          "outcome": {
+            "combat_ref": "combat:0",
+            "hp": 9,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 8
+          },
+          "steps": 30,
+          "task_return": 1.01125
+        }
+      },
+      "scenario_id": "block_conversion_overgrowth_bygone_effigy",
+      "source_bindings": {
+        "gumbel": {
+          "episode_id": "447df2153bcb4f4cba9838c23cfb85e3",
+          "targets_sha256": "a5996bbd1598f81c13e1b1acf0eafaa4dc5af4216b62ff9cb015befadf1a2d54",
+          "training_sha256": "6856daea382b4fb1878bee3d6ef258410f8d85a858961ddcf211597b978b2aca",
+          "trajectory_sha256": "9a64d619ed32e9bfa8be8b67a02e49aae60ce7975941c679e6f9e7194615e18c"
+        },
+        "network": {
+          "episode_id": "e0b088619d2e4dedb222e01387771268",
+          "training_sha256": "84cec2f14a62e808624ee24486f47db7875152215273ba76025a48ec60c1c2d7",
+          "trajectory_sha256": "84ec321fcd59824717317f45cd2a0a1900c31f8650f6d18b3ebff48342f13f61"
+        },
+        "root": {
+          "episode_id": "e650fb5ec68e4a23ae3be235e92609bf",
+          "targets_sha256": "c31f45ea3ec004f18b0a4166d1dec987f3078ffb445311b6400dd8adff2418c9",
+          "training_sha256": "39c8a095f9ef9c185b7604091ab3fe820bc865913ba6dda696ef666126f28745",
+          "trajectory_sha256": "e205586c62c7a18ad3864c74637717cd8695ff5c46c2e74ee2d76a552c9f317a"
+        }
+      },
+      "source_group": "c249e603d0cc42108b234810d33cbaff"
+    },
+    {
+      "case_id": "f21ccf8f6475480ba7d9f5cf141d06ee",
+      "outcomes": {
+        "gumbel": {
+          "episode_id": "4fbcdb22736d4f3cac5bccfb2a8a3ff6",
+          "outcome": {
+            "combat_ref": "combat:0",
+            "hp": 13,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 11
+          },
+          "steps": 37,
+          "task_return": 1.01625
+        },
+        "network": {
+          "episode_id": "c4d67e67185a4e5e8a26815c994314f9",
+          "outcome": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 11
+          },
+          "steps": 40,
+          "task_return": 0.0
+        },
+        "root": {
+          "episode_id": "9340485469fa4f4e8eaace047793f150",
+          "outcome": {
+            "combat_ref": "combat:0",
+            "hp": 13,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 11
+          },
+          "steps": 37,
+          "task_return": 1.01625
+        }
+      },
+      "scenario_id": "strength_overgrowth_vantom",
+      "source_bindings": {
+        "gumbel": {
+          "episode_id": "4fbcdb22736d4f3cac5bccfb2a8a3ff6",
+          "targets_sha256": "5c02b185fecb9b2f119150043d6be2778bf1c6db7a16e3cef15ef1d4bf899d03",
+          "training_sha256": "ed651bb357a1bffe4129c27eabd453cdbb57a93b750694844390f39f84c05a3d",
+          "trajectory_sha256": "cca09e9d8714265ebdadd4f9d6a5d2ec3a18a794b951dd2339803a454671b4c6"
+        },
+        "network": {
+          "episode_id": "c4d67e67185a4e5e8a26815c994314f9",
+          "training_sha256": "58ad9131f872bc4a710488c0aef163473f8371512a28f20d7f882dee8198636b",
+          "trajectory_sha256": "798a7dff3309a42f777e700a5883d0932bafa7f87b14ec144effd7885e56703d"
+        },
+        "root": {
+          "episode_id": "9340485469fa4f4e8eaace047793f150",
+          "targets_sha256": "da656b91e5d3aa3b5947b1a6e57cd7b77361c4aa3f187223c82090d0aa492506",
+          "training_sha256": "2e3e23d08720bd2aea4beab94791e96e7c5fa970ab903e1dda2af3ad66595067",
+          "trajectory_sha256": "a18a3106fcc2289c96e02e09ad48c440b5761e2a8f61607ffb6f7fb4720ff59e"
+        }
+      },
+      "source_group": "f21ccf8f6475480ba7d9f5cf141d06ee"
+    }
+  ],
+  "positions": [
+    {
+      "actions": {
+        "greedy": {
+          "kind": "play_card",
+          "subject": "shrug_it_off",
+          "target": null,
+          "target_slot": null,
+          "upgrade": 0
+        },
+        "gumbel": {
+          "kind": "play_card",
+          "subject": "uppercut",
+          "target": "LagavulinMatriarch",
+          "target_slot": 0,
+          "upgrade": 0
+        },
+        "root": {
+          "kind": "use_potion",
+          "subject": "strength_potion",
+          "target": null,
+          "target_slot": null,
+          "upgrade": null
+        }
+      },
+      "actual_interventions": [
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 7
+          },
+          "job": {
+            "continuation": "gumbel",
+            "episode_id": "938e44c1d18664ba0c204c4c29ac5647",
+            "first_action": "actor",
+            "name": "actor_once_then_gumbel",
+            "source_episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+            "step": 0
+          },
+          "policy_identity": "sts_decision_intervention_v1:322bf8e643604018dc465c515b78dcd6787c635e406a93f2d66fc5386d425947",
+          "task_return": 0.0,
+          "trajectory_sha256": "e669a5fa5aeca21b8c75421a67aebfd3083371b98276455794c3023d4ed91d0b",
+          "verified_prefix_actions": 0
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 8,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 8
+          },
+          "job": {
+            "continuation": "greedy",
+            "episode_id": "ddbb36896db28cef9075b8a99c72704b",
+            "first_action": "recorded",
+            "name": "recorded_once_then_greedy",
+            "source_episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+            "step": 0
+          },
+          "policy_identity": "sts_decision_intervention_v1:8b285cfb28f55ca7cf57d7075778d9ed0e75aa87b5d62ff38c3f25f706d8088f",
+          "task_return": 1.01,
+          "trajectory_sha256": "66840da17ee02d2fa1c1a5bbd2ef7965f6bc8d665f820012938bab165a62e1f8",
+          "verified_prefix_actions": 0
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 8,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 8
+          },
+          "job": {
+            "continuation": "greedy",
+            "episode_id": "9d6e2949b833670096e82d3cb3884024",
+            "first_action": "actor",
+            "name": "actor_once_then_greedy",
+            "source_episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+            "step": 0
+          },
+          "policy_identity": "sts_decision_intervention_v1:f6d2cb47dbaa0828b09ab8ed7a98dc2696f6c31e22d2967bd4f95206bd8fede0",
+          "task_return": 1.01,
+          "trajectory_sha256": "4788ae2dcb3dd7b49656e38c6b512034750c834f9523cac5d9802d737c159aee",
+          "verified_prefix_actions": 0
+        }
+      ],
+      "case_id": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+      "context": {
+        "block": 0,
+        "enemies": [
+          {
+            "children": [
+              {
+                "fields": {
+                  "amount": 12
+                },
+                "kind": "power_counter",
+                "name": "plating"
+              },
+              {
+                "fields": {
+                  "amount": 3
+                },
+                "kind": "power_counter",
+                "name": "asleep"
+              },
+              {
+                "fields": {
+                  "damage": null,
+                  "hits": null
+                },
+                "kind": "intent",
+                "name": "sleep"
+              }
+            ],
+            "fields": {
+              "alive": true,
+              "block": 12,
+              "hp": 222,
+              "infinite_hp": false,
+              "max_hp": 222,
+              "slot": 0,
+              "strength": 0
+            },
+            "name": "LagavulinMatriarch"
+          }
+        ],
+        "energy": 3,
+        "hand": [
+          {
+            "card": "defend",
+            "energy": 1,
+            "upgrade": 0
+          },
+          {
+            "card": "strike",
+            "energy": 1,
+            "upgrade": 0
+          },
+          {
+            "card": "shrug_it_off",
+            "energy": 1,
+            "upgrade": 0
+          },
+          {
+            "card": "twin_strike",
+            "energy": 1,
+            "upgrade": 1
+          },
+          {
+            "card": "uppercut",
+            "energy": 2,
+            "upgrade": 0
+          }
+        ],
+        "hp": 80,
+        "round": 1,
+        "strength": 0
+      },
+      "critic": 0.8194548487663269,
+      "episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+      "priors": {
+        "greedy": 0.7875779867172241,
+        "gumbel": 0.1373216211795807,
+        "root": 0.06531048566102982
+      },
+      "public_pairing": {
+        "samples": 32,
+        "wins_only_actor": 3,
+        "wins_only_gumbel": 0
+      },
+      "recorded_search": {
+        "greedy": {
+          "q": 0.8171309913907733,
+          "visits": 7
+        },
+        "gumbel": {
+          "q": 0.9163278269767762,
+          "visits": 25
+        },
+        "root": {
+          "q": 0.8989739242722007,
+          "visits": 17
+        }
+      },
+      "root_diagnostic": {
+        "greedy": {
+          "q": 0.8214489817619324,
+          "visits": 8
+        },
+        "gumbel": {
+          "q": 0.828252375125885,
+          "visits": 8
+        },
+        "root": {
+          "q": 0.8809794187545776,
+          "visits": 8
+        }
+      },
+      "scenario_id": "strength_underdocks_lagavulin_matriarch",
+      "source_group": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+      "step": 0,
+      "summary": {
+        "greedy": {
+          "mean_first_successor_critic": 0.8186143301427364,
+          "mean_return": 0.9257031250000001,
+          "statuses": {
+            "completed": 32
+          },
+          "wins": 29
+        },
+        "gumbel": {
+          "mean_first_successor_critic": 0.828252375125885,
+          "mean_return": 0.8292578124999999,
+          "statuses": {
+            "completed": 32
+          },
+          "wins": 26
+        },
+        "root": {
+          "mean_first_successor_critic": 0.8809794187545776,
+          "mean_return": 0.9580859375000002,
+          "statuses": {
+            "completed": 32
+          },
+          "wins": 30
+        }
+      }
+    },
+    {
+      "actions": {
+        "greedy": {
+          "kind": "play_card",
+          "subject": "shrug_it_off",
+          "target": null,
+          "target_slot": null,
+          "upgrade": 0
+        },
+        "gumbel": {
+          "kind": "play_card",
+          "subject": "twin_strike",
+          "target": "LagavulinMatriarch",
+          "target_slot": 0,
+          "upgrade": 1
+        },
+        "root": {
+          "kind": "play_card",
+          "subject": "shrug_it_off",
+          "target": null,
+          "target_slot": null,
+          "upgrade": 0
+        }
+      },
+      "actual_interventions": [
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 7
+          },
+          "job": {
+            "continuation": "gumbel",
+            "episode_id": "6dd02ec3d753125a519e98495ef420ac",
+            "first_action": "actor",
+            "name": "actor_once_then_gumbel",
+            "source_episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+            "step": 1
+          },
+          "policy_identity": "sts_decision_intervention_v1:24175af2a1ec4d097582dd2161d091a76640873c08d8e5e7c2b7b1931042970f",
+          "task_return": 0.0,
+          "trajectory_sha256": "700f3193b9a3bca730914cf97ac14ea9f93edad8b8dff35009768c2ff66013e1",
+          "verified_prefix_actions": 1
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 27,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 7
+          },
+          "job": {
+            "continuation": "greedy",
+            "episode_id": "ebe120fe4e06d4944344b41d471277af",
+            "first_action": "recorded",
+            "name": "recorded_once_then_greedy",
+            "source_episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+            "step": 1
+          },
+          "policy_identity": "sts_decision_intervention_v1:63736ed6f4001b502545c69522e4be7c281e4238664c6650130121c2f40de7d8",
+          "task_return": 1.03375,
+          "trajectory_sha256": "835674d9fa177f9b155b76b0fb321e6f32f63cb115abaa275f76279247a15985",
+          "verified_prefix_actions": 1
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 8,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 8
+          },
+          "job": {
+            "continuation": "greedy",
+            "episode_id": "027deb2ec6011311f58539a0ff0c016b",
+            "first_action": "actor",
+            "name": "actor_once_then_greedy",
+            "source_episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+            "step": 1
+          },
+          "policy_identity": "sts_decision_intervention_v1:e955371b164ea789cd4bb892e9d22a9bd304da018c26c4f15a7c4ba648504392",
+          "task_return": 1.01,
+          "trajectory_sha256": "913aa2adf1925e96c5cc01926c2b3450cf6ec90efad268614a86703b7bd09a88",
+          "verified_prefix_actions": 1
+        }
+      ],
+      "case_id": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+      "context": {
+        "block": 0,
+        "enemies": [
+          {
+            "children": [
+              {
+                "fields": {
+                  "amount": 1
+                },
+                "kind": "power",
+                "name": "vulnerable"
+              },
+              {
+                "fields": {
+                  "amount": 1
+                },
+                "kind": "power",
+                "name": "weak"
+              },
+              {
+                "fields": {
+                  "amount": 0
+                },
+                "kind": "power_counter",
+                "name": "plating"
+              },
+              {
+                "fields": {
+                  "amount": 0
+                },
+                "kind": "power_counter",
+                "name": "asleep"
+              },
+              {
+                "fields": {
+                  "damage": null,
+                  "hits": null
+                },
+                "kind": "intent",
+                "name": "stun"
+              }
+            ],
+            "fields": {
+              "alive": true,
+              "block": 0,
+              "hp": 221,
+              "infinite_hp": false,
+              "max_hp": 222,
+              "slot": 0,
+              "strength": 0
+            },
+            "name": "LagavulinMatriarch"
+          }
+        ],
+        "energy": 1,
+        "hand": [
+          {
+            "card": "defend",
+            "energy": 1,
+            "upgrade": 0
+          },
+          {
+            "card": "strike",
+            "energy": 1,
+            "upgrade": 0
+          },
+          {
+            "card": "shrug_it_off",
+            "energy": 1,
+            "upgrade": 0
+          },
+          {
+            "card": "twin_strike",
+            "energy": 1,
+            "upgrade": 1
+          }
+        ],
+        "hp": 80,
+        "round": 1,
+        "strength": 0
+      },
+      "critic": 0.828252375125885,
+      "episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+      "priors": {
+        "greedy": 0.9171969294548035,
+        "gumbel": 0.056231629103422165,
+        "root": 0.9171969294548035
+      },
+      "public_pairing": {
+        "samples": 32,
+        "wins_only_actor": 1,
+        "wins_only_gumbel": 9
+      },
+      "recorded_search": {
+        "greedy": {
+          "q": 0.8636302530765534,
+          "visits": 20
+        },
+        "gumbel": {
+          "q": 0.9318346381187439,
+          "visits": 22
+        },
+        "root": {
+          "q": 0.8636302530765534,
+          "visits": 20
+        }
+      },
+      "root_diagnostic": {
+        "greedy": {
+          "q": 0.8324013829231263,
+          "visits": 10
+        },
+        "gumbel": {
+          "q": 0.8175923228263855,
+          "visits": 9
+        },
+        "root": {
+          "q": 0.8324013829231263,
+          "visits": 10
+        }
+      },
+      "scenario_id": "strength_underdocks_lagavulin_matriarch",
+      "source_group": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+      "step": 1,
+      "summary": {
+        "greedy": {
+          "mean_first_successor_critic": 0.8298018053174019,
+          "mean_return": 0.7016406250000001,
+          "statuses": {
+            "completed": 32
+          },
+          "wins": 22
+        },
+        "gumbel": {
+          "mean_first_successor_critic": 0.8175923228263855,
+          "mean_return": 0.9599609374999999,
+          "statuses": {
+            "completed": 32
+          },
+          "wins": 30
+        },
+        "root": {
+          "mean_first_successor_critic": 0.8298018053174019,
+          "mean_return": 0.7016406250000001,
+          "statuses": {
+            "completed": 32
+          },
+          "wins": 22
+        }
+      }
+    },
+    {
+      "actions": {
+        "greedy": {
+          "kind": "play_card",
+          "subject": "inflame",
+          "target": null,
+          "target_slot": null,
+          "upgrade": 0
+        },
+        "gumbel": {
+          "kind": "play_card",
+          "subject": "pommel_strike",
+          "target": "LagavulinMatriarch",
+          "target_slot": 0,
+          "upgrade": 0
+        },
+        "root": {
+          "kind": "play_card",
+          "subject": "inflame",
+          "target": null,
+          "target_slot": null,
+          "upgrade": 0
+        }
+      },
+      "actual_interventions": [
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 22,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 7
+          },
+          "job": {
+            "continuation": "gumbel",
+            "episode_id": "4160818a980bbfea60388979231176e6",
+            "first_action": "actor",
+            "name": "actor_once_then_gumbel",
+            "source_episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+            "step": 5
+          },
+          "policy_identity": "sts_decision_intervention_v1:3ec5a99c7f43922439bb1d060c5e0c4e50a7995a4aecddf118129ddb17fb2d3a",
+          "task_return": 1.0275,
+          "trajectory_sha256": "7dc6d93b5315166f5286ed7fbb0449939c03485100b8fc2ca9e39206f90d8198",
+          "verified_prefix_actions": 5
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 7
+          },
+          "job": {
+            "continuation": "greedy",
+            "episode_id": "d160d757465adc2aa13cf1cc4b9d646f",
+            "first_action": "recorded",
+            "name": "recorded_once_then_greedy",
+            "source_episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+            "step": 5
+          },
+          "policy_identity": "sts_decision_intervention_v1:0ead377d286e67016b6c6cf23a9b43ae6c4e40b74f566d3f273edff2384e8135",
+          "task_return": 0.0,
+          "trajectory_sha256": "7b01f712a304e20001252d2a7defef82e36e38bc347417a9d92016a27c25a1d3",
+          "verified_prefix_actions": 5
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 27,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 7
+          },
+          "job": {
+            "continuation": "greedy",
+            "episode_id": "bbb2759029f97d5e7f28b2fdc0250f35",
+            "first_action": "actor",
+            "name": "actor_once_then_greedy",
+            "source_episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+            "step": 5
+          },
+          "policy_identity": "sts_decision_intervention_v1:6f3fa43f87534bac51e106d0ac52e43f747a23205e1b15bdd8501ce7592d204e",
+          "task_return": 1.03375,
+          "trajectory_sha256": "480656b209a2ef29ead0b8b61839b6ace5192858c43655acf69cd6e375c43b06",
+          "verified_prefix_actions": 5
+        }
+      ],
+      "case_id": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+      "context": {
+        "block": 0,
+        "enemies": [
+          {
+            "children": [
+              {
+                "fields": {
+                  "amount": 3
+                },
+                "kind": "power",
+                "name": "vulnerable"
+              },
+              {
+                "fields": {
+                  "amount": 0
+                },
+                "kind": "power_counter",
+                "name": "plating"
+              },
+              {
+                "fields": {
+                  "amount": 0
+                },
+                "kind": "power_counter",
+                "name": "asleep"
+              },
+              {
+                "fields": {
+                  "damage": 19,
+                  "hits": 1
+                },
+                "kind": "intent",
+                "name": "attack"
+              }
+            ],
+            "fields": {
+              "alive": true,
+              "block": 0,
+              "hp": 189,
+              "infinite_hp": false,
+              "max_hp": 222,
+              "slot": 0,
+              "strength": 0
+            },
+            "name": "LagavulinMatriarch"
+          }
+        ],
+        "energy": 1,
+        "hand": [
+          {
+            "card": "strike",
+            "energy": 1,
+            "upgrade": 0
+          },
+          {
+            "card": "defend",
+            "energy": 1,
+            "upgrade": 0
+          },
+          {
+            "card": "pommel_strike",
+            "energy": 1,
+            "upgrade": 0
+          },
+          {
+            "card": "inflame",
+            "energy": 1,
+            "upgrade": 0
+          }
+        ],
+        "hp": 80,
+        "round": 2,
+        "strength": 2
+      },
+      "critic": 0.9409603476524353,
+      "episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+      "priors": {
+        "greedy": 0.7270240783691406,
+        "gumbel": 0.272962749004364,
+        "root": 0.7270240783691406
+      },
+      "public_pairing": {
+        "samples": 32,
+        "wins_only_actor": 9,
+        "wins_only_gumbel": 0
+      },
+      "recorded_search": {
+        "greedy": {
+          "q": 0.9779761135578156,
+          "visits": 24
+        },
+        "gumbel": {
+          "q": 1.0091110872370856,
+          "visits": 28
+        },
+        "root": {
+          "q": 0.9779761135578156,
+          "visits": 24
+        }
+      },
+      "root_diagnostic": {
+        "greedy": {
+          "q": 0.9609765410423279,
+          "visits": 13
+        },
+        "gumbel": {
+          "q": 0.9413547561718867,
+          "visits": 13
+        },
+        "root": {
+          "q": 0.9609765410423279,
+          "visits": 13
+        }
+      },
+      "scenario_id": "strength_underdocks_lagavulin_matriarch",
+      "source_group": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+      "step": 5,
+      "summary": {
+        "greedy": {
+          "mean_first_successor_critic": 0.9609765410423279,
+          "mean_return": 0.958359375,
+          "statuses": {
+            "completed": 32
+          },
+          "wins": 30
+        },
+        "gumbel": {
+          "mean_first_successor_critic": 0.9414669182151556,
+          "mean_return": 0.6712109374999998,
+          "statuses": {
+            "completed": 32
+          },
+          "wins": 21
+        },
+        "root": {
+          "mean_first_successor_critic": 0.9609765410423279,
+          "mean_return": 0.958359375,
+          "statuses": {
+            "completed": 32
+          },
+          "wins": 30
+        }
+      }
+    },
+    {
+      "actions": {
+        "greedy": {
+          "kind": "play_card",
+          "subject": "bash",
+          "target": "LagavulinMatriarch",
+          "target_slot": 0,
+          "upgrade": 1
+        },
+        "gumbel": {
+          "kind": "play_card",
+          "subject": "pommel_strike",
+          "target": "LagavulinMatriarch",
+          "target_slot": 0,
+          "upgrade": 0
+        },
+        "root": {
+          "kind": "play_card",
+          "subject": "pommel_strike",
+          "target": "LagavulinMatriarch",
+          "target_slot": 0,
+          "upgrade": 0
+        }
+      },
+      "actual_interventions": [
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 7
+          },
+          "job": {
+            "continuation": "gumbel",
+            "episode_id": "8cbdcec2c3ea9ee3394944be58d8735e",
+            "first_action": "actor",
+            "name": "actor_once_then_gumbel",
+            "source_episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+            "step": 22
+          },
+          "policy_identity": "sts_decision_intervention_v1:ace6510cca45c8070294b4d18e55fbcec97aa3bad208a700fd9c0f641582c864",
+          "task_return": 0.0,
+          "trajectory_sha256": "21d60f651da20fa7587de75150e0d9bead2e63f5587173e7de618a73ce07abc4",
+          "verified_prefix_actions": 22
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 7
+          },
+          "job": {
+            "continuation": "greedy",
+            "episode_id": "7ddb58e1d5bd1a946db3f669c0cfee18",
+            "first_action": "recorded",
+            "name": "recorded_once_then_greedy",
+            "source_episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+            "step": 22
+          },
+          "policy_identity": "sts_decision_intervention_v1:92a30c766c36f11e35f9c0565ac7e82c11e433d9a637b24d0e6890a8658332fe",
+          "task_return": 0.0,
+          "trajectory_sha256": "8d82dc4517d21a423b1aa214b3b1f7ccb41e7f6caaf90653dd4356ec623f526c",
+          "verified_prefix_actions": 22
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 7
+          },
+          "job": {
+            "continuation": "greedy",
+            "episode_id": "08ca96f1b0fb757a8814a3e48e129963",
+            "first_action": "actor",
+            "name": "actor_once_then_greedy",
+            "source_episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+            "step": 22
+          },
+          "policy_identity": "sts_decision_intervention_v1:7872cd4bad2cfb5a6e6c25d0ce871f3ac3d7242ceb23dea6aae3eb54b3211946",
+          "task_return": 0.0,
+          "trajectory_sha256": "e28733a8065e4bff80730bb90d1e2e62d703a764b93f99b941449f33620b5006",
+          "verified_prefix_actions": 22
+        }
+      ],
+      "case_id": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+      "context": {
+        "block": 0,
+        "enemies": [
+          {
+            "children": [
+              {
+                "fields": {
+                  "amount": 2
+                },
+                "kind": "power",
+                "name": "vulnerable"
+              },
+              {
+                "fields": {
+                  "amount": 0
+                },
+                "kind": "power_counter",
+                "name": "plating"
+              },
+              {
+                "fields": {
+                  "amount": 0
+                },
+                "kind": "power_counter",
+                "name": "asleep"
+              },
+              {
+                "fields": {
+                  "damage": 11,
+                  "hits": 2
+                },
+                "kind": "intent",
+                "name": "attack"
+              }
+            ],
+            "fields": {
+              "alive": true,
+              "block": 0,
+              "hp": 39,
+              "infinite_hp": false,
+              "max_hp": 222,
+              "slot": 0,
+              "strength": 2
+            },
+            "name": "LagavulinMatriarch"
+          }
+        ],
+        "energy": 3,
+        "hand": [
+          {
+            "card": "bash",
+            "energy": 2,
+            "upgrade": 1
+          },
+          {
+            "card": "strike",
+            "energy": 1,
+            "upgrade": 0
+          },
+          {
+            "card": "strike",
+            "energy": 1,
+            "upgrade": 0
+          },
+          {
+            "card": "pommel_strike",
+            "energy": 1,
+            "upgrade": 0
+          },
+          {
+            "card": "defend",
+            "energy": 1,
+            "upgrade": 0
+          }
+        ],
+        "hp": 10,
+        "round": 7,
+        "strength": 2
+      },
+      "critic": 0.35495516657829285,
+      "episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+      "priors": {
+        "greedy": 0.5400363802909851,
+        "gumbel": 0.4599055349826813,
+        "root": 0.4599055349826813
+      },
+      "public_pairing": {
+        "samples": 32,
+        "wins_only_actor": 0,
+        "wins_only_gumbel": 6
+      },
+      "recorded_search": {
+        "greedy": {
+          "q": 0.03745970665477216,
+          "visits": 20
+        },
+        "gumbel": {
+          "q": 0.1002584395930171,
+          "visits": 25
+        },
+        "root": {
+          "q": 0.1002584395930171,
+          "visits": 25
+        }
+      },
+      "root_diagnostic": {
+        "greedy": {
+          "q": 0.2264881581068039,
+          "visits": 11
+        },
+        "gumbel": {
+          "q": 0.4335380792617798,
+          "visits": 11
+        },
+        "root": {
+          "q": 0.4335380792617798,
+          "visits": 11
+        }
+      },
+      "scenario_id": "strength_underdocks_lagavulin_matriarch",
+      "source_group": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+      "step": 22,
+      "summary": {
+        "greedy": {
+          "mean_first_successor_critic": 0.2264881581068039,
+          "mean_return": 0.0,
+          "statuses": {
+            "completed": 32
+          },
+          "wins": 0
+        },
+        "gumbel": {
+          "mean_first_successor_critic": 0.44531085435301065,
+          "mean_return": 0.19124999999999998,
+          "statuses": {
+            "completed": 32
+          },
+          "wins": 6
+        },
+        "root": {
+          "mean_first_successor_critic": 0.44531085435301065,
+          "mean_return": 0.19124999999999998,
+          "statuses": {
+            "completed": 32
+          },
+          "wins": 6
+        }
+      }
+    },
+    {
+      "actions": {
+        "greedy": {
+          "kind": "play_card",
+          "subject": "shrug_it_off",
+          "target": null,
+          "target_slot": null,
+          "upgrade": 0
+        },
+        "gumbel": {
+          "kind": "use_potion",
+          "subject": "block_potion",
+          "target": null,
+          "target_slot": null,
+          "upgrade": null
+        },
+        "root": {
+          "kind": "use_potion",
+          "subject": "block_potion",
+          "target": null,
+          "target_slot": null,
+          "upgrade": null
+        }
+      },
+      "actual_interventions": [
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 9,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 8
+          },
+          "job": {
+            "continuation": "gumbel",
+            "episode_id": "7a58b2c6e1a9313d6a83f39e44efe7ba",
+            "first_action": "actor",
+            "name": "actor_once_then_gumbel",
+            "source_episode_id": "447df2153bcb4f4cba9838c23cfb85e3",
+            "step": 0
+          },
+          "policy_identity": "sts_decision_intervention_v1:5d44c2423c876b0753b8ab0691adc2edfb735364b87114094da28d4fcfde31ec",
+          "task_return": 1.01125,
+          "trajectory_sha256": "7f17cf5efc7116a3948a26c91b8a4562d68aead5c1df95c48b0d53c936534716",
+          "verified_prefix_actions": 0
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 8
+          },
+          "job": {
+            "continuation": "greedy",
+            "episode_id": "e0a6d09808373729fe1b240d885af143",
+            "first_action": "recorded",
+            "name": "recorded_once_then_greedy",
+            "source_episode_id": "447df2153bcb4f4cba9838c23cfb85e3",
+            "step": 0
+          },
+          "policy_identity": "sts_decision_intervention_v1:385e45be3746c20a0440df5fea669b1cd9fe5a455e1ee30df82e090cbbffa3be",
+          "task_return": 0.0,
+          "trajectory_sha256": "2241a1ae5118d5b43f2c1180053173da8e54245dc67a5aae4a86bb51e21eef8b",
+          "verified_prefix_actions": 0
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 8
+          },
+          "job": {
+            "continuation": "greedy",
+            "episode_id": "c9ce7196debab7231a87b9cfd279efe1",
+            "first_action": "actor",
+            "name": "actor_once_then_greedy",
+            "source_episode_id": "447df2153bcb4f4cba9838c23cfb85e3",
+            "step": 0
+          },
+          "policy_identity": "sts_decision_intervention_v1:2d96b17e896071267f17ef32e792951646a478d3da6eea0cd7ba5c502d259a08",
+          "task_return": 0.0,
+          "trajectory_sha256": "3ee9647011151a23535bc3434f2bd88a7e152327f9160613eb2ddddf064e23dd",
+          "verified_prefix_actions": 0
+        }
+      ],
+      "case_id": "c249e603d0cc42108b234810d33cbaff",
+      "context": {
+        "block": 10,
+        "enemies": [
+          {
+            "children": [
+              {
+                "fields": {
+                  "amount": 1
+                },
+                "kind": "power",
+                "name": "slow"
+              },
+              {
+                "fields": {
+                  "amount": 0
+                },
+                "kind": "power_counter",
+                "name": "slow_damage_percent"
+              },
+              {
+                "fields": {
+                  "damage": null,
+                  "hits": null
+                },
+                "kind": "intent",
+                "name": "buff"
+              }
+            ],
+            "fields": {
+              "alive": true,
+              "block": 0,
+              "hp": 127,
+              "infinite_hp": false,
+              "max_hp": 127,
+              "slot": 0,
+              "strength": 0
+            },
+            "name": "BygoneEffigy"
+          }
+        ],
+        "energy": 3,
+        "hand": [
+          {
+            "card": "shrug_it_off",
+            "energy": 1,
+            "upgrade": 0
+          },
+          {
+            "card": "strike",
+            "energy": 1,
+            "upgrade": 0
+          },
+          {
+            "card": "strike",
+            "energy": 1,
+            "upgrade": 0
+          },
+          {
+            "card": "strike",
+            "energy": 1,
+            "upgrade": 0
+          },
+          {
+            "card": "defend",
+            "energy": 1,
+            "upgrade": 0
+          }
+        ],
+        "hp": 80,
+        "round": 1,
+        "strength": 0
+      },
+      "critic": 0.9592157006263733,
+      "episode_id": "447df2153bcb4f4cba9838c23cfb85e3",
+      "priors": {
+        "greedy": 0.5536469221115112,
+        "gumbel": 0.36105790734291077,
+        "root": 0.36105790734291077
+      },
+      "public_pairing": {
+        "samples": 32,
+        "wins_only_actor": 0,
+        "wins_only_gumbel": 0
+      },
+      "recorded_search": {
+        "greedy": {
+          "q": 1.0013671342064352,
+          "visits": 17
+        },
+        "gumbel": {
+          "q": 1.049510998725891,
+          "visits": 25
+        },
+        "root": {
+          "q": 1.049510998725891,
+          "visits": 25
+        }
+      },
+      "root_diagnostic": {
+        "greedy": {
+          "q": 0.9762240052223206,
+          "visits": 8
+        },
+        "gumbel": {
+          "q": 1.012665867805481,
+          "visits": 8
+        },
+        "root": {
+          "q": 1.012665867805481,
+          "visits": 8
+        }
+      },
+      "scenario_id": "block_conversion_overgrowth_bygone_effigy",
+      "source_group": "c249e603d0cc42108b234810d33cbaff",
+      "step": 0,
+      "summary": {
+        "greedy": {
+          "mean_first_successor_critic": 0.9770771525800228,
+          "mean_return": 0.9342187500000002,
+          "statuses": {
+            "completed": 32
+          },
+          "wins": 29
+        },
+        "gumbel": {
+          "mean_first_successor_critic": 1.012665867805481,
+          "mean_return": 0.9369921875000001,
+          "statuses": {
+            "completed": 32
+          },
+          "wins": 29
+        },
+        "root": {
+          "mean_first_successor_critic": 1.012665867805481,
+          "mean_return": 0.9369921875000001,
+          "statuses": {
+            "completed": 32
+          },
+          "wins": 29
+        }
+      }
+    },
+    {
+      "actions": {
+        "greedy": {
+          "kind": "play_card",
+          "subject": "body_slam",
+          "target": "BygoneEffigy",
+          "target_slot": 0,
+          "upgrade": 1
+        },
+        "gumbel": {
+          "kind": "play_card",
+          "subject": "shrug_it_off",
+          "target": null,
+          "target_slot": null,
+          "upgrade": 0
+        },
+        "root": {
+          "kind": "play_card",
+          "subject": "shrug_it_off",
+          "target": null,
+          "target_slot": null,
+          "upgrade": 0
+        }
+      },
+      "actual_interventions": [
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 8
+          },
+          "job": {
+            "continuation": "gumbel",
+            "episode_id": "b78db336c36ac5619c8c4a5f452fbfdd",
+            "first_action": "actor",
+            "name": "actor_once_then_gumbel",
+            "source_episode_id": "447df2153bcb4f4cba9838c23cfb85e3",
+            "step": 28
+          },
+          "policy_identity": "sts_decision_intervention_v1:aeb0d8d70d4a362f7667c75d68b2b7df6939e53af6dbd27df4c7725ad0e2ded2",
+          "task_return": 0.0,
+          "trajectory_sha256": "1700120ce110eaf89950c9c58b357abbf22c273a80327c16011366d2bf132fe1",
+          "verified_prefix_actions": 28
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 9,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 8
+          },
+          "job": {
+            "continuation": "greedy",
+            "episode_id": "fd85f4e93c3dbf797e7da5b9da14f3d2",
+            "first_action": "recorded",
+            "name": "recorded_once_then_greedy",
+            "source_episode_id": "447df2153bcb4f4cba9838c23cfb85e3",
+            "step": 28
+          },
+          "policy_identity": "sts_decision_intervention_v1:249ff39ff381b2aa5cb4829bb4e80399d514e7354055a4da8b9f2a080531b9d3",
+          "task_return": 1.01125,
+          "trajectory_sha256": "0c14baf8dae9e219cfc873c06f3f32bc25354d83168b698f99d7e0f6215f9a32",
+          "verified_prefix_actions": 28
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 8
+          },
+          "job": {
+            "continuation": "greedy",
+            "episode_id": "6fe9a9ebc5097d122a33b4471ccfa237",
+            "first_action": "actor",
+            "name": "actor_once_then_greedy",
+            "source_episode_id": "447df2153bcb4f4cba9838c23cfb85e3",
+            "step": 28
+          },
+          "policy_identity": "sts_decision_intervention_v1:47ca388ac352dd23861e2e16112691819f075af3645ea935e7570647e549bf2c",
+          "task_return": 0.0,
+          "trajectory_sha256": "c7b3421e1178844da456b6e96c5f8b72914b2eb7d024ab4712a22c19a97dd2d2",
+          "verified_prefix_actions": 28
+        }
+      ],
+      "case_id": "c249e603d0cc42108b234810d33cbaff",
+      "context": {
+        "block": 0,
+        "enemies": [
+          {
+            "children": [
+              {
+                "fields": {
+                  "amount": 3
+                },
+                "kind": "power",
+                "name": "vulnerable"
+              },
+              {
+                "fields": {
+                  "amount": 1
+                },
+                "kind": "power",
+                "name": "slow"
+              },
+              {
+                "fields": {
+                  "amount": 0
+                },
+                "kind": "power_counter",
+                "name": "slow_damage_percent"
+              },
+              {
+                "fields": {
+                  "damage": 23,
+                  "hits": 1
+                },
+                "kind": "intent",
+                "name": "attack"
+              }
+            ],
+            "fields": {
+              "alive": true,
+              "block": 0,
+              "hp": 11,
+              "infinite_hp": false,
+              "max_hp": 127,
+              "slot": 0,
+              "strength": 10
+            },
+            "name": "BygoneEffigy"
+          }
+        ],
+        "energy": 3,
+        "hand": [
+          {
+            "card": "body_slam",
+            "energy": 0,
+            "upgrade": 1
+          },
+          {
+            "card": "defend",
+            "energy": 1,
+            "upgrade": 0
+          },
+          {
+            "card": "defend",
+            "energy": 1,
+            "upgrade": 0
+          },
+          {
+            "card": "defend",
+            "energy": 1,
+            "upgrade": 0
+          },
+          {
+            "card": "shrug_it_off",
+            "energy": 1,
+            "upgrade": 0
+          }
+        ],
+        "hp": 3,
+        "round": 8,
+        "strength": 0
+      },
+      "critic": 0.7110233902931213,
+      "episode_id": "447df2153bcb4f4cba9838c23cfb85e3",
+      "priors": {
+        "greedy": 0.5309268236160278,
+        "gumbel": 0.4690551459789276,
+        "root": 0.4690551459789276
+      },
+      "public_pairing": {
+        "samples": 32,
+        "wins_only_actor": 0,
+        "wins_only_gumbel": 21
+      },
+      "recorded_search": {
+        "greedy": {
+          "q": 0.602174238562584,
+          "visits": 20
+        },
+        "gumbel": {
+          "q": 0.9837443398475649,
+          "visits": 25
+        },
+        "root": {
+          "q": 0.9837443398475649,
+          "visits": 25
+        }
+      },
+      "root_diagnostic": {
+        "greedy": {
+          "q": 0.6950857043266296,
+          "visits": 11
+        },
+        "gumbel": {
+          "q": 0.7815575762228533,
+          "visits": 11
+        },
+        "root": {
+          "q": 0.7815575762228533,
+          "visits": 11
+        }
+      },
+      "scenario_id": "block_conversion_overgrowth_bygone_effigy",
+      "source_group": "c249e603d0cc42108b234810d33cbaff",
+      "step": 28,
+      "summary": {
+        "greedy": {
+          "mean_first_successor_critic": 0.6950857043266296,
+          "mean_return": 0.3476171875000001,
+          "statuses": {
+            "completed": 32
+          },
+          "wins": 11
+        },
+        "gumbel": {
+          "mean_first_successor_critic": 0.7821184229105711,
+          "mean_return": 1.0112500000000002,
+          "statuses": {
+            "completed": 32
+          },
+          "wins": 32
+        },
+        "root": {
+          "mean_first_successor_critic": 0.7821184229105711,
+          "mean_return": 1.0112500000000002,
+          "statuses": {
+            "completed": 32
+          },
+          "wins": 32
+        }
+      }
+    },
+    {
+      "actions": {
+        "greedy": {
+          "kind": "play_card",
+          "subject": "defend",
+          "target": null,
+          "target_slot": null,
+          "upgrade": 0
+        },
+        "gumbel": {
+          "kind": "play_card",
+          "subject": "strike",
+          "target": "Vantom",
+          "target_slot": 0,
+          "upgrade": 0
+        },
+        "root": {
+          "kind": "play_card",
+          "subject": "strike",
+          "target": "Vantom",
+          "target_slot": 0,
+          "upgrade": 0
+        }
+      },
+      "actual_interventions": [
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 11
+          },
+          "job": {
+            "continuation": "gumbel",
+            "episode_id": "e1744d2d0325afde5a293cc51925adc8",
+            "first_action": "actor",
+            "name": "actor_once_then_gumbel",
+            "source_episode_id": "4fbcdb22736d4f3cac5bccfb2a8a3ff6",
+            "step": 15
+          },
+          "policy_identity": "sts_decision_intervention_v1:6296ea5d3ee99c6c0eb40d0ef681ad7140a0ddbf5b7940006237d7a42fb883ba",
+          "task_return": 0.0,
+          "trajectory_sha256": "4e4cd1f660adb4008ad6e713d2f22c372ceb7488cff6af2746663ff1200789ea",
+          "verified_prefix_actions": 15
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 13,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 11
+          },
+          "job": {
+            "continuation": "greedy",
+            "episode_id": "d2e4af2ad496203e133fe7ce95b4f84c",
+            "first_action": "recorded",
+            "name": "recorded_once_then_greedy",
+            "source_episode_id": "4fbcdb22736d4f3cac5bccfb2a8a3ff6",
+            "step": 15
+          },
+          "policy_identity": "sts_decision_intervention_v1:0fb32eb1fd9ab4c0ea037abe4cc049816c817630c597c77baaa421f62f571915",
+          "task_return": 1.01625,
+          "trajectory_sha256": "9351d3e355c75f504dd176715ffd665fee1ad90723da9e206b71c93d571c1314",
+          "verified_prefix_actions": 15
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 11
+          },
+          "job": {
+            "continuation": "greedy",
+            "episode_id": "1400edcfd0eeb3dd1013e670daad1553",
+            "first_action": "actor",
+            "name": "actor_once_then_greedy",
+            "source_episode_id": "4fbcdb22736d4f3cac5bccfb2a8a3ff6",
+            "step": 15
+          },
+          "policy_identity": "sts_decision_intervention_v1:8b36fa22922d14237cd7b792e9f1b026dcd57693d9982a00dce1dea84401c786",
+          "task_return": 0.0,
+          "trajectory_sha256": "22cbfd0723a5156997dc63d3322f784f48f5b5bf9bb76171f683a1acb685278a",
+          "verified_prefix_actions": 15
+        }
+      ],
+      "case_id": "f21ccf8f6475480ba7d9f5cf141d06ee",
+      "context": {
+        "block": 0,
+        "enemies": [
+          {
+            "children": [
+              {
+                "fields": {
+                  "amount": 5
+                },
+                "kind": "power",
+                "name": "vulnerable"
+              },
+              {
+                "fields": {
+                  "amount": 2
+                },
+                "kind": "power",
+                "name": "slippery"
+              },
+              {
+                "fields": {
+                  "damage": 9,
+                  "hits": 1
+                },
+                "kind": "intent",
+                "name": "attack"
+              }
+            ],
+            "fields": {
+              "alive": true,
+              "block": 0,
+              "hp": 167,
+              "infinite_hp": false,
+              "max_hp": 173,
+              "slot": 0,
+              "strength": 2
+            },
+            "name": "Vantom"
+          }
+        ],
+        "energy": 1,
+        "hand": [
+          {
+            "card": "defend",
+            "energy": 1,
+            "upgrade": 0
+          },
+          {
+            "card": "strike",
+            "energy": 1,
+            "upgrade": 0
+          },
+          {
+            "card": "defend",
+            "energy": 1,
+            "upgrade": 0
+          },
+          {
+            "card": "uppercut",
+            "energy": 2,
+            "upgrade": 0
+          }
+        ],
+        "hp": 62,
+        "round": 5,
+        "strength": 4
+      },
+      "critic": 0.8537536263465881,
+      "episode_id": "4fbcdb22736d4f3cac5bccfb2a8a3ff6",
+      "priors": {
+        "greedy": 0.3740808069705963,
+        "gumbel": 0.3492838740348816,
+        "root": 0.3492838740348816
+      },
+      "public_pairing": {
+        "samples": 32,
+        "wins_only_actor": 2,
+        "wins_only_gumbel": 4
+      },
+      "recorded_search": {
+        "greedy": {
+          "q": 0.8798162639141083,
+          "visits": 8
+        },
+        "gumbel": {
+          "q": 0.9190458084146181,
+          "visits": 24
+        },
+        "root": {
+          "q": 0.9190458084146181,
+          "visits": 24
+        }
+      },
+      "root_diagnostic": {
+        "greedy": {
+          "q": 0.7898213863372803,
+          "visits": 16
+        },
+        "gumbel": {
+          "q": 0.860680103302002,
+          "visits": 16
+        },
+        "root": {
+          "q": 0.860680103302002,
+          "visits": 16
+        }
+      },
+      "scenario_id": "strength_overgrowth_vantom",
+      "source_group": "f21ccf8f6475480ba7d9f5cf141d06ee",
+      "step": 15,
+      "summary": {
+        "greedy": {
+          "mean_first_successor_critic": 0.7898213863372803,
+          "mean_return": 0.8312109375000001,
+          "statuses": {
+            "completed": 32
+          },
+          "wins": 26
+        },
+        "gumbel": {
+          "mean_first_successor_critic": 0.860680103302002,
+          "mean_return": 0.897421875,
+          "statuses": {
+            "completed": 32
+          },
+          "wins": 28
+        },
+        "root": {
+          "mean_first_successor_critic": 0.860680103302002,
+          "mean_return": 0.897421875,
+          "statuses": {
+            "completed": 32
+          },
+          "wins": 28
+        }
+      }
+    },
+    {
+      "actions": {
+        "greedy": {
+          "kind": "play_card",
+          "subject": "strike",
+          "target": "Vantom",
+          "target_slot": 0,
+          "upgrade": 0
+        },
+        "gumbel": {
+          "kind": "play_card",
+          "subject": "shrug_it_off",
+          "target": null,
+          "target_slot": null,
+          "upgrade": 0
+        },
+        "root": {
+          "kind": "play_card",
+          "subject": "shrug_it_off",
+          "target": null,
+          "target_slot": null,
+          "upgrade": 0
+        }
+      },
+      "actual_interventions": [
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 13,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 11
+          },
+          "job": {
+            "continuation": "gumbel",
+            "episode_id": "f9a14aa411e684772bf423250739a602",
+            "first_action": "actor",
+            "name": "actor_once_then_gumbel",
+            "source_episode_id": "4fbcdb22736d4f3cac5bccfb2a8a3ff6",
+            "step": 27
+          },
+          "policy_identity": "sts_decision_intervention_v1:c83867bd6e9e6a3ee4b0f92d23b78d174dcab288dc1e2c7a79bcbe9410a68afe",
+          "task_return": 1.01625,
+          "trajectory_sha256": "f632688176359a2ae559c97b33f5abf5bedf1ec4712f934bdcb597d74f17dfc9",
+          "verified_prefix_actions": 27
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 13,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 11
+          },
+          "job": {
+            "continuation": "greedy",
+            "episode_id": "a33d6621c0c28c40abce94cdd385fbf6",
+            "first_action": "recorded",
+            "name": "recorded_once_then_greedy",
+            "source_episode_id": "4fbcdb22736d4f3cac5bccfb2a8a3ff6",
+            "step": 27
+          },
+          "policy_identity": "sts_decision_intervention_v1:5692fba6684f84bc945d295011853e9edef3fb3489cc8ba4fbf43eda843f77f9",
+          "task_return": 1.01625,
+          "trajectory_sha256": "559c637719a587d60de065b44b50d95ebbc142dea9b23f2f79f27a4b4dc4c471",
+          "verified_prefix_actions": 27
+        },
+        {
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 13,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 11
+          },
+          "job": {
+            "continuation": "greedy",
+            "episode_id": "9745689df38ec3eafe62245872daad41",
+            "first_action": "actor",
+            "name": "actor_once_then_greedy",
+            "source_episode_id": "4fbcdb22736d4f3cac5bccfb2a8a3ff6",
+            "step": 27
+          },
+          "policy_identity": "sts_decision_intervention_v1:81420e6eb273585bbae9fe3a22e868b8d212b4dc94f78fa4203e3b6cd75f70e0",
+          "task_return": 1.01625,
+          "trajectory_sha256": "43c57fe0cf85d2b189833ea7c78916072870139d9f1b520ec4737dc6e44e6330",
+          "verified_prefix_actions": 27
+        }
+      ],
+      "case_id": "f21ccf8f6475480ba7d9f5cf141d06ee",
+      "context": {
+        "block": 0,
+        "enemies": [
+          {
+            "children": [
+              {
+                "fields": {
+                  "amount": 2
+                },
+                "kind": "power",
+                "name": "vulnerable"
+              },
+              {
+                "fields": {
+                  "damage": null,
+                  "hits": null
+                },
+                "kind": "intent",
+                "name": "buff"
+              }
+            ],
+            "fields": {
+              "alive": true,
+              "block": 0,
+              "hp": 68,
+              "infinite_hp": false,
+              "max_hp": 173,
+              "slot": 0,
+              "strength": 2
+            },
+            "name": "Vantom"
+          }
+        ],
+        "energy": 2,
+        "hand": [
+          {
+            "card": "defend",
+            "energy": 1,
+            "upgrade": 0
+          },
+          {
+            "card": "wound",
+            "energy": -1,
+            "upgrade": 0
+          },
+          {
+            "card": "shrug_it_off",
+            "energy": 1,
+            "upgrade": 0
+          },
+          {
+            "card": "strike",
+            "energy": 1,
+            "upgrade": 0
+          }
+        ],
+        "hp": 27,
+        "round": 8,
+        "strength": 4
+      },
+      "critic": 0.9277095198631287,
+      "episode_id": "4fbcdb22736d4f3cac5bccfb2a8a3ff6",
+      "priors": {
+        "greedy": 0.5688519477844238,
+        "gumbel": 0.43108808994293213,
+        "root": 0.43108808994293213
+      },
+      "public_pairing": {
+        "samples": 32,
+        "wins_only_actor": 0,
+        "wins_only_gumbel": 0
+      },
+      "recorded_search": {
+        "greedy": {
+          "q": 0.8859891071915627,
+          "visits": 24
+        },
+        "gumbel": {
+          "q": 0.8938555295268694,
+          "visits": 24
+        },
+        "root": {
+          "q": 0.8938555295268694,
+          "visits": 24
+        }
+      },
+      "root_diagnostic": {
+        "greedy": {
+          "q": 0.9137241244316101,
+          "visits": 16
+        },
+        "gumbel": {
+          "q": 0.926839642226696,
+          "visits": 16
+        },
+        "root": {
+          "q": 0.926839642226696,
+          "visits": 16
+        }
+      },
+      "scenario_id": "strength_overgrowth_vantom",
+      "source_group": "f21ccf8f6475480ba7d9f5cf141d06ee",
+      "step": 27,
+      "summary": {
+        "greedy": {
+          "mean_first_successor_critic": 0.9137241244316101,
+          "mean_return": 1.0286718750000001,
+          "statuses": {
+            "completed": 32
+          },
+          "wins": 32
+        },
+        "gumbel": {
+          "mean_first_successor_critic": 0.9251208789646626,
+          "mean_return": 1.0286718750000001,
+          "statuses": {
+            "completed": 32
+          },
+          "wins": 32
+        },
+        "root": {
+          "mean_first_successor_critic": 0.9251208789646626,
+          "mean_return": 1.0286718750000001,
+          "statuses": {
+            "completed": 32
+          },
+          "wins": 32
+        }
+      }
+    }
+  ],
+  "promotion": false,
+  "protocol": {
+    "algorithm_changed": false,
+    "checkpoint": {
+      "path": "runs/direct-search-learning-student-20261004/initial.sts-model",
+      "sha256": "e22bd23bc0783d67e081816c4066f04a65f2eb1d22be96b19677e0634dbc4862"
+    },
+    "frozen_at_utc": "2026-10-05T12:17:38.251191+00:00",
+    "held_out_opened": false,
+    "implementation": {
+      "build": "97fec423ce0a860b6da1d9483455b003382f63f093d13cf4816f0d0fff08afdf",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "8eaf44ce4600e6b25a1675aa41e181027aed519f1bebfbeb5089b74406b77e8a",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "interpretation": "Post-hoc causal/critic diagnosis on selected development examples; no new win-rate estimate, promotion or held-out evidence.",
+    "positions": [
+      {
+        "case_id": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+        "episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+        "step": 0
+      },
+      {
+        "case_id": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+        "episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+        "step": 1
+      },
+      {
+        "case_id": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+        "episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+        "step": 5
+      },
+      {
+        "case_id": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+        "episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+        "step": 22
+      },
+      {
+        "case_id": "c249e603d0cc42108b234810d33cbaff",
+        "episode_id": "447df2153bcb4f4cba9838c23cfb85e3",
+        "step": 0
+      },
+      {
+        "case_id": "c249e603d0cc42108b234810d33cbaff",
+        "episode_id": "447df2153bcb4f4cba9838c23cfb85e3",
+        "step": 28
+      },
+      {
+        "case_id": "f21ccf8f6475480ba7d9f5cf141d06ee",
+        "episode_id": "4fbcdb22736d4f3cac5bccfb2a8a3ff6",
+        "step": 15
+      },
+      {
+        "case_id": "f21ccf8f6475480ba7d9f5cf141d06ee",
+        "episode_id": "4fbcdb22736d4f3cac5bccfb2a8a3ff6",
+        "step": 27
+      }
+    ],
+    "public_continuations": {
+      "arms": [
+        "greedy_first_then_greedy",
+        "recorded_gumbel_first_then_greedy",
+        "root_search_first_then_greedy"
+      ],
+      "depth": 160,
+      "pairing": "Identical sampled-world seeds per first action, identical recommendations share a rollout. No actual game state or RNG is read.",
+      "samples_per_position": 32,
+      "seconds_per_position": 180,
+      "seed": 71005
+    },
+    "real_interventions": {
+      "boundary": "Only the evaluator reads its private replay seed; policies receive public declarations/observations. Diagnostic interventions are not search targets or training data.",
+      "controls": "Replay each original Gumbel fight and assert public trajectory equality.",
+      "diagnostic": "At each position also compare recorded Gumbel vs actor first action followed by greedy continuation in the same original actual world.",
+      "limits": {
+        "max_decisions": 160,
+        "time_limit_seconds": 600.0
+      },
+      "variants": "At each of the eight selected positions, replace exactly the recorded Gumbel action with the actor action, keep the prefix identical, then resume unchanged Gumbel search."
+    },
+    "reward_spec": {
+      "schema": "sts_training_reward_v1",
+      "weights": {
+        "combat_loss": 0.0,
+        "combat_win": 1.0,
+        "end_turn_action": 0.0,
+        "potion_use_action": 0.0,
+        "win_hp_fraction": 0.1
+      }
+    },
+    "schema": "sts_search_decision_diagnosis_protocol_v1",
+    "search": {
+      "belief_particles": 2,
+      "belief_proposals": 1024,
+      "belief_replay_proposals": 2048,
+      "belief_replay_steps": 16384,
+      "belief_seconds": 5.0,
+      "considered_actions": 16,
+      "exploration": false,
+      "max_depth": 16,
+      "method": "gumbel",
+      "model_version": "direct_belief_v1",
+      "seed": 0,
+      "simulations": 64,
+      "time_limit": 5
+    },
+    "selection": "All three Gumbel/greedy outcome-discordant development cases; all eight non-duplicate semantic disagreements with the actor along their Gumbel public trajectories.",
+    "source_bindings": {
+      "c249e603d0cc42108b234810d33cbaff": {
+        "gumbel": {
+          "episode_id": "447df2153bcb4f4cba9838c23cfb85e3",
+          "targets_sha256": "a5996bbd1598f81c13e1b1acf0eafaa4dc5af4216b62ff9cb015befadf1a2d54",
+          "training_sha256": "6856daea382b4fb1878bee3d6ef258410f8d85a858961ddcf211597b978b2aca",
+          "trajectory_sha256": "9a64d619ed32e9bfa8be8b67a02e49aae60ce7975941c679e6f9e7194615e18c"
+        },
+        "network": {
+          "episode_id": "e0b088619d2e4dedb222e01387771268",
+          "training_sha256": "84cec2f14a62e808624ee24486f47db7875152215273ba76025a48ec60c1c2d7",
+          "trajectory_sha256": "84ec321fcd59824717317f45cd2a0a1900c31f8650f6d18b3ebff48342f13f61"
+        },
+        "root": {
+          "episode_id": "e650fb5ec68e4a23ae3be235e92609bf",
+          "targets_sha256": "c31f45ea3ec004f18b0a4166d1dec987f3078ffb445311b6400dd8adff2418c9",
+          "training_sha256": "39c8a095f9ef9c185b7604091ab3fe820bc865913ba6dda696ef666126f28745",
+          "trajectory_sha256": "e205586c62c7a18ad3864c74637717cd8695ff5c46c2e74ee2d76a552c9f317a"
+        }
+      },
+      "f21ccf8f6475480ba7d9f5cf141d06ee": {
+        "gumbel": {
+          "episode_id": "4fbcdb22736d4f3cac5bccfb2a8a3ff6",
+          "targets_sha256": "5c02b185fecb9b2f119150043d6be2778bf1c6db7a16e3cef15ef1d4bf899d03",
+          "training_sha256": "ed651bb357a1bffe4129c27eabd453cdbb57a93b750694844390f39f84c05a3d",
+          "trajectory_sha256": "cca09e9d8714265ebdadd4f9d6a5d2ec3a18a794b951dd2339803a454671b4c6"
+        },
+        "network": {
+          "episode_id": "c4d67e67185a4e5e8a26815c994314f9",
+          "training_sha256": "58ad9131f872bc4a710488c0aef163473f8371512a28f20d7f882dee8198636b",
+          "trajectory_sha256": "798a7dff3309a42f777e700a5883d0932bafa7f87b14ec144effd7885e56703d"
+        },
+        "root": {
+          "episode_id": "9340485469fa4f4e8eaace047793f150",
+          "targets_sha256": "da656b91e5d3aa3b5947b1a6e57cd7b77361c4aa3f187223c82090d0aa492506",
+          "training_sha256": "2e3e23d08720bd2aea4beab94791e96e7c5fa970ab903e1dda2af3ad66595067",
+          "trajectory_sha256": "a18a3106fcc2289c96e02e09ad48c440b5761e2a8f61607ffb6f7fb4720ff59e"
+        }
+      },
+      "fcdc1ac17bbb47008cca0e8f2eeedd7f": {
+        "gumbel": {
+          "episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+          "targets_sha256": "0277f3358f8b6bcd91001b9e92bbde37d3e20209236e3aeefda06fd70699f211",
+          "training_sha256": "f2179160638972900ce6c1f02da6a7f69f87c91215370a89e5877a72a4ec694c",
+          "trajectory_sha256": "e03bae573c8c341709f0d18921e1c58ef0a23d1560e289fb7d51936d59b2276e"
+        },
+        "network": {
+          "episode_id": "65fdba6d19bb4abb949d18cdd72ef692",
+          "training_sha256": "9fd45afa238c2958e4b44c06d06ede13e34a544260cd90b971c01494be2f5aa0",
+          "trajectory_sha256": "a7cafad835fa2c98832b63684ac01c48b80447d5a6b73405906f8f96609b3917"
+        },
+        "root": {
+          "episode_id": "4f55b3f5362e482eba7e7576e45dd147",
+          "targets_sha256": "0a118e4e965ea72046917375d195d8d2ce01d6add1153a11cedc617099090645",
+          "training_sha256": "d7fba1c1e8e0cb9a1445a5bdd80e012031c33178cd8a15935f0133f246ab0a4e",
+          "trajectory_sha256": "71742b74ee1a0202cec7091cdc0cb381f01933c9dd70e8bf5087c366056fd68b"
+        }
+      }
+    },
+    "source_report_sha256": "220d22ad9a8e0ef5df57398ab9e96f6b18552e1ed43467b8af01a04ed73065e5",
+    "training_updates": 0
+  },
+  "schema": "sts_developed_search_decision_diagnosis_v1",
+  "training_updates": 0,
+  "validation": {
+    "actor_continuation_variants": 16,
+    "actor_once_search_continuations": 8,
+    "bindings": [
+      {
+        "case_id": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 0,
+          "max_hp": 80,
+          "outcome": "defeat",
+          "schema": "sts_combat_summary_v1",
+          "turn": 7
+        },
+        "directory": "interventions",
+        "job": {
+          "continuation": "gumbel",
+          "episode_id": "ac0b2bd56e4197158407fcd9456f783d",
+          "first_action": "recorded",
+          "name": "original_gumbel_replay",
+          "source_episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+          "step": null
+        },
+        "policy_identity": "sts_decision_intervention_v1:636924f8c9d1507cdc3aa32f65cc686e304df62d41a2da7a30e725cfc095c5de",
+        "source_audit_sha256": "035eff3bb05cbe90345bf6113492e835e4a7a1cf66caa6896117fbe2c5fc1a7f",
+        "source_group": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+        "training": "ac0b2bd56e4197158407fcd9456f783d.training.json",
+        "training_sha256": "03733f976dce9fdfc2807f957285cc2ab61e7f33b792b43aa18871e00a2a9b24",
+        "trajectory": "ac0b2bd56e4197158407fcd9456f783d.trajectory.jsonl.gz",
+        "trajectory_file_sha256": "e49c3b5be17b5f2a1b56afab3be44faa5258a22b894c63ddaa72b0561d9ef67a",
+        "trajectory_sha256": "452fd7f2a99468c69d36750507e8e3021b43f73afd2e04ffadbe7bc4b0a0509b"
+      },
+      {
+        "case_id": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 0,
+          "max_hp": 80,
+          "outcome": "defeat",
+          "schema": "sts_combat_summary_v1",
+          "turn": 7
+        },
+        "directory": "interventions",
+        "job": {
+          "continuation": "gumbel",
+          "episode_id": "938e44c1d18664ba0c204c4c29ac5647",
+          "first_action": "actor",
+          "name": "actor_once_then_gumbel",
+          "source_episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+          "step": 0
+        },
+        "policy_identity": "sts_decision_intervention_v1:322bf8e643604018dc465c515b78dcd6787c635e406a93f2d66fc5386d425947",
+        "source_audit_sha256": "035eff3bb05cbe90345bf6113492e835e4a7a1cf66caa6896117fbe2c5fc1a7f",
+        "source_group": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+        "training": "938e44c1d18664ba0c204c4c29ac5647.training.json",
+        "training_sha256": "ffcbc925f2da87ed384c64e7402ba70b6be9d1fa3d9788250123673896284ce6",
+        "trajectory": "938e44c1d18664ba0c204c4c29ac5647.trajectory.jsonl.gz",
+        "trajectory_file_sha256": "47e02137d7ef901e2481b6a753f3b636915cd7999c78fb2ba9f582799f7c99af",
+        "trajectory_sha256": "e669a5fa5aeca21b8c75421a67aebfd3083371b98276455794c3023d4ed91d0b"
+      },
+      {
+        "case_id": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 8,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 8
+        },
+        "directory": "interventions-corrected",
+        "job": {
+          "continuation": "greedy",
+          "episode_id": "ddbb36896db28cef9075b8a99c72704b",
+          "first_action": "recorded",
+          "name": "recorded_once_then_greedy",
+          "source_episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+          "step": 0
+        },
+        "policy_identity": "sts_decision_intervention_v1:8b285cfb28f55ca7cf57d7075778d9ed0e75aa87b5d62ff38c3f25f706d8088f",
+        "source_audit_sha256": "035eff3bb05cbe90345bf6113492e835e4a7a1cf66caa6896117fbe2c5fc1a7f",
+        "source_group": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+        "training": "ddbb36896db28cef9075b8a99c72704b.training.json",
+        "training_sha256": "ab115cc235e29aed683fc30e9faf84963016127d396cd0f3b10da9d09c238e17",
+        "trajectory": "ddbb36896db28cef9075b8a99c72704b.trajectory.jsonl.gz",
+        "trajectory_file_sha256": "b3a1dd15a26397f6f0f134d24d2143daf6141c1a5a0dc1352df704c89a7024a0",
+        "trajectory_sha256": "66840da17ee02d2fa1c1a5bbd2ef7965f6bc8d665f820012938bab165a62e1f8"
+      },
+      {
+        "case_id": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 8,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 8
+        },
+        "directory": "interventions",
+        "job": {
+          "continuation": "greedy",
+          "episode_id": "9d6e2949b833670096e82d3cb3884024",
+          "first_action": "actor",
+          "name": "actor_once_then_greedy",
+          "source_episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+          "step": 0
+        },
+        "policy_identity": "sts_decision_intervention_v1:f6d2cb47dbaa0828b09ab8ed7a98dc2696f6c31e22d2967bd4f95206bd8fede0",
+        "source_audit_sha256": "035eff3bb05cbe90345bf6113492e835e4a7a1cf66caa6896117fbe2c5fc1a7f",
+        "source_group": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+        "training": "9d6e2949b833670096e82d3cb3884024.training.json",
+        "training_sha256": "bfec3b2ca9d774ca7a2c49d1c3da5b9a8bb70cfb220424ac2b906f01fcaf2ee3",
+        "trajectory": "9d6e2949b833670096e82d3cb3884024.trajectory.jsonl.gz",
+        "trajectory_file_sha256": "61a35112b755351a9180d15efcfc49a8be1f600309abcd367cd896aade351ab6",
+        "trajectory_sha256": "4788ae2dcb3dd7b49656e38c6b512034750c834f9523cac5d9802d737c159aee"
+      },
+      {
+        "case_id": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 0,
+          "max_hp": 80,
+          "outcome": "defeat",
+          "schema": "sts_combat_summary_v1",
+          "turn": 7
+        },
+        "directory": "interventions",
+        "job": {
+          "continuation": "gumbel",
+          "episode_id": "6dd02ec3d753125a519e98495ef420ac",
+          "first_action": "actor",
+          "name": "actor_once_then_gumbel",
+          "source_episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+          "step": 1
+        },
+        "policy_identity": "sts_decision_intervention_v1:24175af2a1ec4d097582dd2161d091a76640873c08d8e5e7c2b7b1931042970f",
+        "source_audit_sha256": "035eff3bb05cbe90345bf6113492e835e4a7a1cf66caa6896117fbe2c5fc1a7f",
+        "source_group": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+        "training": "6dd02ec3d753125a519e98495ef420ac.training.json",
+        "training_sha256": "a46bee90c44efc7c7dfd06b8a37b52c712348b792cfd9eff390eff561d740aa9",
+        "trajectory": "6dd02ec3d753125a519e98495ef420ac.trajectory.jsonl.gz",
+        "trajectory_file_sha256": "119f04a6da4b18b3729b69668a93d21155deb52821b7003ff1de9d269a1db779",
+        "trajectory_sha256": "700f3193b9a3bca730914cf97ac14ea9f93edad8b8dff35009768c2ff66013e1"
+      },
+      {
+        "case_id": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 27,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 7
+        },
+        "directory": "interventions-corrected",
+        "job": {
+          "continuation": "greedy",
+          "episode_id": "ebe120fe4e06d4944344b41d471277af",
+          "first_action": "recorded",
+          "name": "recorded_once_then_greedy",
+          "source_episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+          "step": 1
+        },
+        "policy_identity": "sts_decision_intervention_v1:63736ed6f4001b502545c69522e4be7c281e4238664c6650130121c2f40de7d8",
+        "source_audit_sha256": "035eff3bb05cbe90345bf6113492e835e4a7a1cf66caa6896117fbe2c5fc1a7f",
+        "source_group": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+        "training": "ebe120fe4e06d4944344b41d471277af.training.json",
+        "training_sha256": "8388b359dfed8e80d971154ad24417cfabdf8e283dedc633e3051240992d933a",
+        "trajectory": "ebe120fe4e06d4944344b41d471277af.trajectory.jsonl.gz",
+        "trajectory_file_sha256": "57353e2aeb2eb6f371825de8d850643fafcc7a777d61816801d6345e5974c4e2",
+        "trajectory_sha256": "835674d9fa177f9b155b76b0fb321e6f32f63cb115abaa275f76279247a15985"
+      },
+      {
+        "case_id": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 8,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 8
+        },
+        "directory": "interventions-corrected",
+        "job": {
+          "continuation": "greedy",
+          "episode_id": "027deb2ec6011311f58539a0ff0c016b",
+          "first_action": "actor",
+          "name": "actor_once_then_greedy",
+          "source_episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+          "step": 1
+        },
+        "policy_identity": "sts_decision_intervention_v1:e955371b164ea789cd4bb892e9d22a9bd304da018c26c4f15a7c4ba648504392",
+        "source_audit_sha256": "035eff3bb05cbe90345bf6113492e835e4a7a1cf66caa6896117fbe2c5fc1a7f",
+        "source_group": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+        "training": "027deb2ec6011311f58539a0ff0c016b.training.json",
+        "training_sha256": "cc007bad782e508237ee478001534921971481e637bc9e038de6779940494be5",
+        "trajectory": "027deb2ec6011311f58539a0ff0c016b.trajectory.jsonl.gz",
+        "trajectory_file_sha256": "482b6c099da0b7a2e44458dfbd3dfd79e30f364e2e6c61952862a206521327d7",
+        "trajectory_sha256": "913aa2adf1925e96c5cc01926c2b3450cf6ec90efad268614a86703b7bd09a88"
+      },
+      {
+        "case_id": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 22,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 7
+        },
+        "directory": "interventions",
+        "job": {
+          "continuation": "gumbel",
+          "episode_id": "4160818a980bbfea60388979231176e6",
+          "first_action": "actor",
+          "name": "actor_once_then_gumbel",
+          "source_episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+          "step": 5
+        },
+        "policy_identity": "sts_decision_intervention_v1:3ec5a99c7f43922439bb1d060c5e0c4e50a7995a4aecddf118129ddb17fb2d3a",
+        "source_audit_sha256": "035eff3bb05cbe90345bf6113492e835e4a7a1cf66caa6896117fbe2c5fc1a7f",
+        "source_group": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+        "training": "4160818a980bbfea60388979231176e6.training.json",
+        "training_sha256": "1e94504ea1d7a5cb9307f5be46e18b1bad2a205ebfe955d343de4747a8cb54e0",
+        "trajectory": "4160818a980bbfea60388979231176e6.trajectory.jsonl.gz",
+        "trajectory_file_sha256": "2a2322e848796279c671764dd73a182e3c7a08a4711e338489cf1b3c4babb9c6",
+        "trajectory_sha256": "7dc6d93b5315166f5286ed7fbb0449939c03485100b8fc2ca9e39206f90d8198"
+      },
+      {
+        "case_id": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 0,
+          "max_hp": 80,
+          "outcome": "defeat",
+          "schema": "sts_combat_summary_v1",
+          "turn": 7
+        },
+        "directory": "interventions-corrected",
+        "job": {
+          "continuation": "greedy",
+          "episode_id": "d160d757465adc2aa13cf1cc4b9d646f",
+          "first_action": "recorded",
+          "name": "recorded_once_then_greedy",
+          "source_episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+          "step": 5
+        },
+        "policy_identity": "sts_decision_intervention_v1:0ead377d286e67016b6c6cf23a9b43ae6c4e40b74f566d3f273edff2384e8135",
+        "source_audit_sha256": "035eff3bb05cbe90345bf6113492e835e4a7a1cf66caa6896117fbe2c5fc1a7f",
+        "source_group": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+        "training": "d160d757465adc2aa13cf1cc4b9d646f.training.json",
+        "training_sha256": "90f22844ea9396d6d62f9e989618dd593377384a12d8377d9a3040ade5321f72",
+        "trajectory": "d160d757465adc2aa13cf1cc4b9d646f.trajectory.jsonl.gz",
+        "trajectory_file_sha256": "34f4b97959afba038b81010caa947175988147a168599757ed0f5b4c811aac77",
+        "trajectory_sha256": "7b01f712a304e20001252d2a7defef82e36e38bc347417a9d92016a27c25a1d3"
+      },
+      {
+        "case_id": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 27,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 7
+        },
+        "directory": "interventions-corrected",
+        "job": {
+          "continuation": "greedy",
+          "episode_id": "bbb2759029f97d5e7f28b2fdc0250f35",
+          "first_action": "actor",
+          "name": "actor_once_then_greedy",
+          "source_episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+          "step": 5
+        },
+        "policy_identity": "sts_decision_intervention_v1:6f3fa43f87534bac51e106d0ac52e43f747a23205e1b15bdd8501ce7592d204e",
+        "source_audit_sha256": "035eff3bb05cbe90345bf6113492e835e4a7a1cf66caa6896117fbe2c5fc1a7f",
+        "source_group": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+        "training": "bbb2759029f97d5e7f28b2fdc0250f35.training.json",
+        "training_sha256": "509682d530dbaf236c5b69a22e9259e386108fd759951e0918c7b0556527a8aa",
+        "trajectory": "bbb2759029f97d5e7f28b2fdc0250f35.trajectory.jsonl.gz",
+        "trajectory_file_sha256": "65368269079257e640bf289d2a9abea041306641e43104df62a5df15d0c9b02d",
+        "trajectory_sha256": "480656b209a2ef29ead0b8b61839b6ace5192858c43655acf69cd6e375c43b06"
+      },
+      {
+        "case_id": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 0,
+          "max_hp": 80,
+          "outcome": "defeat",
+          "schema": "sts_combat_summary_v1",
+          "turn": 7
+        },
+        "directory": "interventions",
+        "job": {
+          "continuation": "gumbel",
+          "episode_id": "8cbdcec2c3ea9ee3394944be58d8735e",
+          "first_action": "actor",
+          "name": "actor_once_then_gumbel",
+          "source_episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+          "step": 22
+        },
+        "policy_identity": "sts_decision_intervention_v1:ace6510cca45c8070294b4d18e55fbcec97aa3bad208a700fd9c0f641582c864",
+        "source_audit_sha256": "035eff3bb05cbe90345bf6113492e835e4a7a1cf66caa6896117fbe2c5fc1a7f",
+        "source_group": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+        "training": "8cbdcec2c3ea9ee3394944be58d8735e.training.json",
+        "training_sha256": "595107bc88342ba07e61233e749b65af27bd2c29cbde70231f4cb847f9d56500",
+        "trajectory": "8cbdcec2c3ea9ee3394944be58d8735e.trajectory.jsonl.gz",
+        "trajectory_file_sha256": "48b2092133f8fee6e2a0599cc09c15a81fb988229072483b658f72b4c935b7ab",
+        "trajectory_sha256": "21d60f651da20fa7587de75150e0d9bead2e63f5587173e7de618a73ce07abc4"
+      },
+      {
+        "case_id": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 0,
+          "max_hp": 80,
+          "outcome": "defeat",
+          "schema": "sts_combat_summary_v1",
+          "turn": 7
+        },
+        "directory": "interventions-corrected",
+        "job": {
+          "continuation": "greedy",
+          "episode_id": "7ddb58e1d5bd1a946db3f669c0cfee18",
+          "first_action": "recorded",
+          "name": "recorded_once_then_greedy",
+          "source_episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+          "step": 22
+        },
+        "policy_identity": "sts_decision_intervention_v1:92a30c766c36f11e35f9c0565ac7e82c11e433d9a637b24d0e6890a8658332fe",
+        "source_audit_sha256": "035eff3bb05cbe90345bf6113492e835e4a7a1cf66caa6896117fbe2c5fc1a7f",
+        "source_group": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+        "training": "7ddb58e1d5bd1a946db3f669c0cfee18.training.json",
+        "training_sha256": "891728a84aa91c577f2509f40c04d7633d5e910e76aba76e18e27c6bd0505eb6",
+        "trajectory": "7ddb58e1d5bd1a946db3f669c0cfee18.trajectory.jsonl.gz",
+        "trajectory_file_sha256": "6da0de095393081bc5b0c382e1e084f016cb01dcb541db576840493a96f9f636",
+        "trajectory_sha256": "8d82dc4517d21a423b1aa214b3b1f7ccb41e7f6caaf90653dd4356ec623f526c"
+      },
+      {
+        "case_id": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 0,
+          "max_hp": 80,
+          "outcome": "defeat",
+          "schema": "sts_combat_summary_v1",
+          "turn": 7
+        },
+        "directory": "interventions-corrected",
+        "job": {
+          "continuation": "greedy",
+          "episode_id": "08ca96f1b0fb757a8814a3e48e129963",
+          "first_action": "actor",
+          "name": "actor_once_then_greedy",
+          "source_episode_id": "de3014efd57d46cc8eb67b0ee4c67abc",
+          "step": 22
+        },
+        "policy_identity": "sts_decision_intervention_v1:7872cd4bad2cfb5a6e6c25d0ce871f3ac3d7242ceb23dea6aae3eb54b3211946",
+        "source_audit_sha256": "035eff3bb05cbe90345bf6113492e835e4a7a1cf66caa6896117fbe2c5fc1a7f",
+        "source_group": "fcdc1ac17bbb47008cca0e8f2eeedd7f",
+        "training": "08ca96f1b0fb757a8814a3e48e129963.training.json",
+        "training_sha256": "2e3908a6ac67fb9907bab66e37d4d6e3dfe032c3927841fac30c25d3b31584e8",
+        "trajectory": "08ca96f1b0fb757a8814a3e48e129963.trajectory.jsonl.gz",
+        "trajectory_file_sha256": "49a608fcdddb261e2a7db76a9d06b482ee0259f819c0c1223b1725575a26635b",
+        "trajectory_sha256": "e28733a8065e4bff80730bb90d1e2e62d703a764b93f99b941449f33620b5006"
+      },
+      {
+        "case_id": "c249e603d0cc42108b234810d33cbaff",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 9,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 8
+        },
+        "directory": "interventions",
+        "job": {
+          "continuation": "gumbel",
+          "episode_id": "88d601edb4eb407b9de57fac45247bf0",
+          "first_action": "recorded",
+          "name": "original_gumbel_replay",
+          "source_episode_id": "447df2153bcb4f4cba9838c23cfb85e3",
+          "step": null
+        },
+        "policy_identity": "sts_decision_intervention_v1:e5faca58d238acdcd7b0decf540d3267ff1081c125876091e671529b0bd0728f",
+        "source_audit_sha256": "570eb550696e8b2f3550923d7a24f4b564e766f0d1075c1bae5023081e0513d6",
+        "source_group": "c249e603d0cc42108b234810d33cbaff",
+        "training": "88d601edb4eb407b9de57fac45247bf0.training.json",
+        "training_sha256": "42b2aaa722c09afb9da89372699213a388404fa742e47ecb0547a58026273748",
+        "trajectory": "88d601edb4eb407b9de57fac45247bf0.trajectory.jsonl.gz",
+        "trajectory_file_sha256": "e6c0a46f1698b21571e8b978de6c200c7734b1156c24fafdcd533be667c57f2d",
+        "trajectory_sha256": "35e05d0617ddbfcdbaed4300acdfe4ed50531b98706af9d7a1582733a79bd1aa"
+      },
+      {
+        "case_id": "c249e603d0cc42108b234810d33cbaff",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 9,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 8
+        },
+        "directory": "interventions",
+        "job": {
+          "continuation": "gumbel",
+          "episode_id": "7a58b2c6e1a9313d6a83f39e44efe7ba",
+          "first_action": "actor",
+          "name": "actor_once_then_gumbel",
+          "source_episode_id": "447df2153bcb4f4cba9838c23cfb85e3",
+          "step": 0
+        },
+        "policy_identity": "sts_decision_intervention_v1:5d44c2423c876b0753b8ab0691adc2edfb735364b87114094da28d4fcfde31ec",
+        "source_audit_sha256": "570eb550696e8b2f3550923d7a24f4b564e766f0d1075c1bae5023081e0513d6",
+        "source_group": "c249e603d0cc42108b234810d33cbaff",
+        "training": "7a58b2c6e1a9313d6a83f39e44efe7ba.training.json",
+        "training_sha256": "bdc2d95a2dc655a3da5e9d34d1fba9164fe8b0ee81d8c590561c677af2bdb55a",
+        "trajectory": "7a58b2c6e1a9313d6a83f39e44efe7ba.trajectory.jsonl.gz",
+        "trajectory_file_sha256": "d967320e02042f3b0fc007e256cacee4875770a83a085214957d44d7ea386221",
+        "trajectory_sha256": "7f17cf5efc7116a3948a26c91b8a4562d68aead5c1df95c48b0d53c936534716"
+      },
+      {
+        "case_id": "c249e603d0cc42108b234810d33cbaff",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 0,
+          "max_hp": 80,
+          "outcome": "defeat",
+          "schema": "sts_combat_summary_v1",
+          "turn": 8
+        },
+        "directory": "interventions-corrected",
+        "job": {
+          "continuation": "greedy",
+          "episode_id": "e0a6d09808373729fe1b240d885af143",
+          "first_action": "recorded",
+          "name": "recorded_once_then_greedy",
+          "source_episode_id": "447df2153bcb4f4cba9838c23cfb85e3",
+          "step": 0
+        },
+        "policy_identity": "sts_decision_intervention_v1:385e45be3746c20a0440df5fea669b1cd9fe5a455e1ee30df82e090cbbffa3be",
+        "source_audit_sha256": "570eb550696e8b2f3550923d7a24f4b564e766f0d1075c1bae5023081e0513d6",
+        "source_group": "c249e603d0cc42108b234810d33cbaff",
+        "training": "e0a6d09808373729fe1b240d885af143.training.json",
+        "training_sha256": "eced48d967500d26ebfe0e2823ee7c63d4a4cd6301836d48be1105e6092c9669",
+        "trajectory": "e0a6d09808373729fe1b240d885af143.trajectory.jsonl.gz",
+        "trajectory_file_sha256": "d04a12ac09b00e32a4527fb6f68efe409f8f39321387732ea6b3a59317e31f29",
+        "trajectory_sha256": "2241a1ae5118d5b43f2c1180053173da8e54245dc67a5aae4a86bb51e21eef8b"
+      },
+      {
+        "case_id": "c249e603d0cc42108b234810d33cbaff",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 0,
+          "max_hp": 80,
+          "outcome": "defeat",
+          "schema": "sts_combat_summary_v1",
+          "turn": 8
+        },
+        "directory": "interventions",
+        "job": {
+          "continuation": "greedy",
+          "episode_id": "c9ce7196debab7231a87b9cfd279efe1",
+          "first_action": "actor",
+          "name": "actor_once_then_greedy",
+          "source_episode_id": "447df2153bcb4f4cba9838c23cfb85e3",
+          "step": 0
+        },
+        "policy_identity": "sts_decision_intervention_v1:2d96b17e896071267f17ef32e792951646a478d3da6eea0cd7ba5c502d259a08",
+        "source_audit_sha256": "570eb550696e8b2f3550923d7a24f4b564e766f0d1075c1bae5023081e0513d6",
+        "source_group": "c249e603d0cc42108b234810d33cbaff",
+        "training": "c9ce7196debab7231a87b9cfd279efe1.training.json",
+        "training_sha256": "6d2cbe2f97a46e44752df9ef0c82bd3344ac7d8e862bd21deba0452ba70e576d",
+        "trajectory": "c9ce7196debab7231a87b9cfd279efe1.trajectory.jsonl.gz",
+        "trajectory_file_sha256": "ea067fb2843ef8e4e27c443325cf7f670e745fd388e377bc9d42f4ac24b312db",
+        "trajectory_sha256": "3ee9647011151a23535bc3434f2bd88a7e152327f9160613eb2ddddf064e23dd"
+      },
+      {
+        "case_id": "c249e603d0cc42108b234810d33cbaff",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 0,
+          "max_hp": 80,
+          "outcome": "defeat",
+          "schema": "sts_combat_summary_v1",
+          "turn": 8
+        },
+        "directory": "interventions",
+        "job": {
+          "continuation": "gumbel",
+          "episode_id": "b78db336c36ac5619c8c4a5f452fbfdd",
+          "first_action": "actor",
+          "name": "actor_once_then_gumbel",
+          "source_episode_id": "447df2153bcb4f4cba9838c23cfb85e3",
+          "step": 28
+        },
+        "policy_identity": "sts_decision_intervention_v1:aeb0d8d70d4a362f7667c75d68b2b7df6939e53af6dbd27df4c7725ad0e2ded2",
+        "source_audit_sha256": "570eb550696e8b2f3550923d7a24f4b564e766f0d1075c1bae5023081e0513d6",
+        "source_group": "c249e603d0cc42108b234810d33cbaff",
+        "training": "b78db336c36ac5619c8c4a5f452fbfdd.training.json",
+        "training_sha256": "90dca72c3be2b21937148d9092af03da5c21edbf51bc08e73ca835416855a469",
+        "trajectory": "b78db336c36ac5619c8c4a5f452fbfdd.trajectory.jsonl.gz",
+        "trajectory_file_sha256": "d24bb9bd4e89f3d113d1f049379146cf260744c347de89175aa853ee3c4a5126",
+        "trajectory_sha256": "1700120ce110eaf89950c9c58b357abbf22c273a80327c16011366d2bf132fe1"
+      },
+      {
+        "case_id": "c249e603d0cc42108b234810d33cbaff",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 9,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 8
+        },
+        "directory": "interventions-corrected",
+        "job": {
+          "continuation": "greedy",
+          "episode_id": "fd85f4e93c3dbf797e7da5b9da14f3d2",
+          "first_action": "recorded",
+          "name": "recorded_once_then_greedy",
+          "source_episode_id": "447df2153bcb4f4cba9838c23cfb85e3",
+          "step": 28
+        },
+        "policy_identity": "sts_decision_intervention_v1:249ff39ff381b2aa5cb4829bb4e80399d514e7354055a4da8b9f2a080531b9d3",
+        "source_audit_sha256": "570eb550696e8b2f3550923d7a24f4b564e766f0d1075c1bae5023081e0513d6",
+        "source_group": "c249e603d0cc42108b234810d33cbaff",
+        "training": "fd85f4e93c3dbf797e7da5b9da14f3d2.training.json",
+        "training_sha256": "66f3bec7a44e6388770a161e0cc473cf691765961f0a83deaf0fc0ed57643c51",
+        "trajectory": "fd85f4e93c3dbf797e7da5b9da14f3d2.trajectory.jsonl.gz",
+        "trajectory_file_sha256": "b7517c81bdeeaf5b3bf46eb82112e5bdfec688e27f78ff8899b8c22bd638f63f",
+        "trajectory_sha256": "0c14baf8dae9e219cfc873c06f3f32bc25354d83168b698f99d7e0f6215f9a32"
+      },
+      {
+        "case_id": "c249e603d0cc42108b234810d33cbaff",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 0,
+          "max_hp": 80,
+          "outcome": "defeat",
+          "schema": "sts_combat_summary_v1",
+          "turn": 8
+        },
+        "directory": "interventions-corrected",
+        "job": {
+          "continuation": "greedy",
+          "episode_id": "6fe9a9ebc5097d122a33b4471ccfa237",
+          "first_action": "actor",
+          "name": "actor_once_then_greedy",
+          "source_episode_id": "447df2153bcb4f4cba9838c23cfb85e3",
+          "step": 28
+        },
+        "policy_identity": "sts_decision_intervention_v1:47ca388ac352dd23861e2e16112691819f075af3645ea935e7570647e549bf2c",
+        "source_audit_sha256": "570eb550696e8b2f3550923d7a24f4b564e766f0d1075c1bae5023081e0513d6",
+        "source_group": "c249e603d0cc42108b234810d33cbaff",
+        "training": "6fe9a9ebc5097d122a33b4471ccfa237.training.json",
+        "training_sha256": "c01e935d12c36146e0c471b212bc028cb8c2b85c4b19cc4d06c4584b12e567f5",
+        "trajectory": "6fe9a9ebc5097d122a33b4471ccfa237.trajectory.jsonl.gz",
+        "trajectory_file_sha256": "59b370fde14fa246cb61e5fc2214f7ce227b34dc5abacf3a168f5e28f0720f15",
+        "trajectory_sha256": "c7b3421e1178844da456b6e96c5f8b72914b2eb7d024ab4712a22c19a97dd2d2"
+      },
+      {
+        "case_id": "f21ccf8f6475480ba7d9f5cf141d06ee",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 13,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 11
+        },
+        "directory": "interventions",
+        "job": {
+          "continuation": "gumbel",
+          "episode_id": "0ed99f7db8c808efc3984f0743df70a4",
+          "first_action": "recorded",
+          "name": "original_gumbel_replay",
+          "source_episode_id": "4fbcdb22736d4f3cac5bccfb2a8a3ff6",
+          "step": null
+        },
+        "policy_identity": "sts_decision_intervention_v1:e3b0c1239fcc365b271a0af1d4bc76467ef7700fcda1e6a19dd027e8a0dfbcf8",
+        "source_audit_sha256": "972ae8b3ea9d37c646e9782af9af12a053048b7714def5ce565b71f6b819f7a7",
+        "source_group": "f21ccf8f6475480ba7d9f5cf141d06ee",
+        "training": "0ed99f7db8c808efc3984f0743df70a4.training.json",
+        "training_sha256": "2ce6eaf06adcdc1c6d9035f1e9ef79ab7a242f7fdce7696ad065c57a96eec12d",
+        "trajectory": "0ed99f7db8c808efc3984f0743df70a4.trajectory.jsonl.gz",
+        "trajectory_file_sha256": "d74b4feefc2a694506d18eb77c4fa8c78937c834be12ce888f28647db4ec6230",
+        "trajectory_sha256": "bb7ff59ec34ea5754e3e11d3fa1abec3e11ccb3eb0e691cf04c51b42adbab1d0"
+      },
+      {
+        "case_id": "f21ccf8f6475480ba7d9f5cf141d06ee",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 0,
+          "max_hp": 80,
+          "outcome": "defeat",
+          "schema": "sts_combat_summary_v1",
+          "turn": 11
+        },
+        "directory": "interventions",
+        "job": {
+          "continuation": "gumbel",
+          "episode_id": "e1744d2d0325afde5a293cc51925adc8",
+          "first_action": "actor",
+          "name": "actor_once_then_gumbel",
+          "source_episode_id": "4fbcdb22736d4f3cac5bccfb2a8a3ff6",
+          "step": 15
+        },
+        "policy_identity": "sts_decision_intervention_v1:6296ea5d3ee99c6c0eb40d0ef681ad7140a0ddbf5b7940006237d7a42fb883ba",
+        "source_audit_sha256": "972ae8b3ea9d37c646e9782af9af12a053048b7714def5ce565b71f6b819f7a7",
+        "source_group": "f21ccf8f6475480ba7d9f5cf141d06ee",
+        "training": "e1744d2d0325afde5a293cc51925adc8.training.json",
+        "training_sha256": "f4dc93520e5e2a1ed58d19dab38686b95aa10d6dd6f9ad323a6393bc191d3812",
+        "trajectory": "e1744d2d0325afde5a293cc51925adc8.trajectory.jsonl.gz",
+        "trajectory_file_sha256": "2724cb49d1ba948272be8c84597fde8272307cd8849f2a551043553498a90813",
+        "trajectory_sha256": "4e4cd1f660adb4008ad6e713d2f22c372ceb7488cff6af2746663ff1200789ea"
+      },
+      {
+        "case_id": "f21ccf8f6475480ba7d9f5cf141d06ee",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 13,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 11
+        },
+        "directory": "interventions-corrected",
+        "job": {
+          "continuation": "greedy",
+          "episode_id": "d2e4af2ad496203e133fe7ce95b4f84c",
+          "first_action": "recorded",
+          "name": "recorded_once_then_greedy",
+          "source_episode_id": "4fbcdb22736d4f3cac5bccfb2a8a3ff6",
+          "step": 15
+        },
+        "policy_identity": "sts_decision_intervention_v1:0fb32eb1fd9ab4c0ea037abe4cc049816c817630c597c77baaa421f62f571915",
+        "source_audit_sha256": "972ae8b3ea9d37c646e9782af9af12a053048b7714def5ce565b71f6b819f7a7",
+        "source_group": "f21ccf8f6475480ba7d9f5cf141d06ee",
+        "training": "d2e4af2ad496203e133fe7ce95b4f84c.training.json",
+        "training_sha256": "f59080868e8bf9d6a00c7272ddc8ab6cb1d3e1d7dd53392a4e18eb8a24c27a92",
+        "trajectory": "d2e4af2ad496203e133fe7ce95b4f84c.trajectory.jsonl.gz",
+        "trajectory_file_sha256": "268781c8b0d2fbc8624893c890e84b07e8723305148b62452a701dc743dd6d2c",
+        "trajectory_sha256": "9351d3e355c75f504dd176715ffd665fee1ad90723da9e206b71c93d571c1314"
+      },
+      {
+        "case_id": "f21ccf8f6475480ba7d9f5cf141d06ee",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 0,
+          "max_hp": 80,
+          "outcome": "defeat",
+          "schema": "sts_combat_summary_v1",
+          "turn": 11
+        },
+        "directory": "interventions-corrected",
+        "job": {
+          "continuation": "greedy",
+          "episode_id": "1400edcfd0eeb3dd1013e670daad1553",
+          "first_action": "actor",
+          "name": "actor_once_then_greedy",
+          "source_episode_id": "4fbcdb22736d4f3cac5bccfb2a8a3ff6",
+          "step": 15
+        },
+        "policy_identity": "sts_decision_intervention_v1:8b36fa22922d14237cd7b792e9f1b026dcd57693d9982a00dce1dea84401c786",
+        "source_audit_sha256": "972ae8b3ea9d37c646e9782af9af12a053048b7714def5ce565b71f6b819f7a7",
+        "source_group": "f21ccf8f6475480ba7d9f5cf141d06ee",
+        "training": "1400edcfd0eeb3dd1013e670daad1553.training.json",
+        "training_sha256": "96e170e0de38b412d1b1d035b6e447d20514f08c957b2664313580b5a3714eb6",
+        "trajectory": "1400edcfd0eeb3dd1013e670daad1553.trajectory.jsonl.gz",
+        "trajectory_file_sha256": "aef8b2016845126090eedf7db56722aff85eb8943b670d80675f9a33371f319b",
+        "trajectory_sha256": "22cbfd0723a5156997dc63d3322f784f48f5b5bf9bb76171f683a1acb685278a"
+      },
+      {
+        "case_id": "f21ccf8f6475480ba7d9f5cf141d06ee",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 13,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 11
+        },
+        "directory": "interventions",
+        "job": {
+          "continuation": "gumbel",
+          "episode_id": "f9a14aa411e684772bf423250739a602",
+          "first_action": "actor",
+          "name": "actor_once_then_gumbel",
+          "source_episode_id": "4fbcdb22736d4f3cac5bccfb2a8a3ff6",
+          "step": 27
+        },
+        "policy_identity": "sts_decision_intervention_v1:c83867bd6e9e6a3ee4b0f92d23b78d174dcab288dc1e2c7a79bcbe9410a68afe",
+        "source_audit_sha256": "972ae8b3ea9d37c646e9782af9af12a053048b7714def5ce565b71f6b819f7a7",
+        "source_group": "f21ccf8f6475480ba7d9f5cf141d06ee",
+        "training": "f9a14aa411e684772bf423250739a602.training.json",
+        "training_sha256": "1caacc7d642f4f6e526b84cf6dc2eaceb4c2e99ed712c372f8bdcc2e46616279",
+        "trajectory": "f9a14aa411e684772bf423250739a602.trajectory.jsonl.gz",
+        "trajectory_file_sha256": "ba8fc04f6ff90dccf65e51a59323dd78d32c25f331f7d34abadd60bdb970725b",
+        "trajectory_sha256": "f632688176359a2ae559c97b33f5abf5bedf1ec4712f934bdcb597d74f17dfc9"
+      },
+      {
+        "case_id": "f21ccf8f6475480ba7d9f5cf141d06ee",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 13,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 11
+        },
+        "directory": "interventions-corrected",
+        "job": {
+          "continuation": "greedy",
+          "episode_id": "a33d6621c0c28c40abce94cdd385fbf6",
+          "first_action": "recorded",
+          "name": "recorded_once_then_greedy",
+          "source_episode_id": "4fbcdb22736d4f3cac5bccfb2a8a3ff6",
+          "step": 27
+        },
+        "policy_identity": "sts_decision_intervention_v1:5692fba6684f84bc945d295011853e9edef3fb3489cc8ba4fbf43eda843f77f9",
+        "source_audit_sha256": "972ae8b3ea9d37c646e9782af9af12a053048b7714def5ce565b71f6b819f7a7",
+        "source_group": "f21ccf8f6475480ba7d9f5cf141d06ee",
+        "training": "a33d6621c0c28c40abce94cdd385fbf6.training.json",
+        "training_sha256": "32d9258e1f8071025587ec77b7c4557f16b169695139f5c9afb7ae67163a1a72",
+        "trajectory": "a33d6621c0c28c40abce94cdd385fbf6.trajectory.jsonl.gz",
+        "trajectory_file_sha256": "553fb6774ea4c273b5f6874d53fdc9387e8cac4bcab7a8e7fafc984ba1a7f894",
+        "trajectory_sha256": "559c637719a587d60de065b44b50d95ebbc142dea9b23f2f79f27a4b4dc4c471"
+      },
+      {
+        "case_id": "f21ccf8f6475480ba7d9f5cf141d06ee",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 13,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 11
+        },
+        "directory": "interventions-corrected",
+        "job": {
+          "continuation": "greedy",
+          "episode_id": "9745689df38ec3eafe62245872daad41",
+          "first_action": "actor",
+          "name": "actor_once_then_greedy",
+          "source_episode_id": "4fbcdb22736d4f3cac5bccfb2a8a3ff6",
+          "step": 27
+        },
+        "policy_identity": "sts_decision_intervention_v1:81420e6eb273585bbae9fe3a22e868b8d212b4dc94f78fa4203e3b6cd75f70e0",
+        "source_audit_sha256": "972ae8b3ea9d37c646e9782af9af12a053048b7714def5ce565b71f6b819f7a7",
+        "source_group": "f21ccf8f6475480ba7d9f5cf141d06ee",
+        "training": "9745689df38ec3eafe62245872daad41.training.json",
+        "training_sha256": "6330a3f92662b42f081ba2135b268d006b56ee29d4afeacaef53ec48ba13c021",
+        "trajectory": "9745689df38ec3eafe62245872daad41.trajectory.jsonl.gz",
+        "trajectory_file_sha256": "1ccee1067ba1dcd4a68b6e42dc124f03c4e9f2b004fc2a4abf98eebd386ca927",
+        "trajectory_sha256": "43c57fe0cf85d2b189833ea7c78916072870139d9f1b520ec4737dc6e44e6330"
+      }
+    ],
+    "complete": true,
+    "distinct_sampled_action_continuations": 544,
+    "eligible_search_decisions": 245,
+    "episodes": 27,
+    "forced_actions": 87,
+    "identical_controls": 3,
+    "implementation": {
+      "build": "97fec423ce0a860b6da1d9483455b003382f63f093d13cf4816f0d0fff08afdf",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "8eaf44ce4600e6b25a1675aa41e181027aed519f1bebfbeb5089b74406b77e8a",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "initial_pre_dispatch_failures": 14,
+    "protocol_sha256": "16ba8fff8abb063db8a26122bc797cebe2ec2969c494ce1dcb1d4a332e514118",
+    "public_arm_records": 768,
+    "schema": "sts_search_diagnosis_validation_v1",
+    "search_recommendations": 332,
+    "seconds": 3.7030521668493748,
+    "transitions": 810
+  }
+}

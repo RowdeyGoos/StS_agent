@@ -104,8 +104,8 @@ def effect(p, identity, index):
 
         while r.potion_slots:
             # Entropic Brew deliberately uses the OUT-of-combat factory even in combat.
-            potion = generate(r.potion_pool, p.deck.potion_rng)
             from game.headless.relics.combat import has
+            potion = generate(r.potion_pool, p.deck.potion_rng, revealed=not has(p, "sozu"))
             if has(p, "sozu"):
                 break
             r.potions_generated.append(potion)
@@ -125,7 +125,7 @@ def effect(p, identity, index):
         options = pool(p, family, kind)
         offered = [
             create(p, d, destination="offered")
-            for d in select_cards(options, p.deck.generation_rng, 3, distinct=True)
+            for d in select_cards(options, p.deck.generation_rng, 3, distinct=True, revealed=True)
         ]
         begin(p, identity, offered, minimum=0, free="free_this_turn")
     elif op == "generate_types":
@@ -134,7 +134,7 @@ def effect(p, identity, index):
         generated = []
         for kind in ("attack", "skill", "power"):
             options = pool(p, p.rules.character, kind)
-            for definition in select_cards(options, p.deck.generation_rng, 1, distinct=True):
+            for definition in select_cards(options, p.deck.generation_rng, 1, distinct=True, revealed=True):
                 card = create(p, definition, destination="offered")
                 free_this_turn(card)
                 generated.append(card)
@@ -156,6 +156,8 @@ def effect(p, identity, index):
                 v.override_turn_baseline = v.cost_change + v.turn_cost_change
                 v.override_combat_baseline = v.combat_cost_change
                 v.free_this_turn = False
+                from game.headless.reveals import observe_random_cost
+                observe_random_cost(card, p.deck, 'turn')
     elif op == "exhaust_hand":
         push(p, *[["exhaust", c.instance_id] for c in tuple(p.hand)])
     else:

@@ -48,7 +48,7 @@ def enter_combat(p):
             for _ in range(2):
                 card = catalog(p).create("dazed")
                 p.deck._ensure_identity(card)
-                p.deck.draw_pile.insert(p.deck.rng.randint(0, len(p.deck.draw_pile)), card)
+                p.deck.insert_into_draw(p.deck.rng.randint(0, len(p.deck.draw_pile)), card)
         elif name == "petrified_toad" and p.rules.potion_slots and not has(p, "sozu"):
             p.rules.potions_generated.append("potion_shaped_rock")
             p.rules.potion_slots -= 1
@@ -183,7 +183,8 @@ def hook(p, relic, event, identity):
             elif name == "vexing_puzzlebox":
                 from game.headless.cards.colorless_effects import pool, create
 
-                card = create(p, p.deck.generation_rng.choice(pool(p)))
+                from game.headless.generation.combat import select_cards
+                card = create(p, select_cards(pool(p), p.deck.generation_rng, 1, distinct=False, revealed=True)[0])
                 card.combat_state.combat_cost_change = -max(0, card.cost)
     elif event == "before_end":
         if name == "orichalcum" and m.pop("orichalcum_ready", False):

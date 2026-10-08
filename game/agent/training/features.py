@@ -14,6 +14,7 @@ from game.agent.contracts import full as f
 from game.agent.action_policy import ALL_LEGAL, action_mask, validate_policy
 from game.agent.encoding.full import FullRunEncoder
 from .combat_features import GRAPH, COMBAT_REPRESENTATIONS, feature_identity
+from game.agent.input_views import RAW, apply_view, validate_view
 from .catalog import ENTITY_KINDS, PublicCatalog
 
 SCHEMA = 'sts_learned_public_graph_v1'
@@ -119,6 +120,7 @@ class RolloutFeatures:
     roles: np.ndarray | None = None
     action_previews: np.ndarray | None = None
     preview_mode: int = 0
+    input_view: str = RAW
 
     @property
     def nbytes(self):
@@ -146,6 +148,7 @@ class GraphFeatures:
     roles: np.ndarray | None = None
     action_previews: np.ndarray | None = None
     preview_mode: int = 0
+    input_view: str = RAW
 
     @property
     def nbytes(self):
@@ -159,15 +162,28 @@ class GraphFeatures:
             *(getattr(self, key) for key in _FEATURE_ARRAYS),
             self.roots, self.action_policy, self.policy_mask, self.graph.candidate_refs,
             tuple(bool(v) for v in self.graph.observation['action_mask']), self.combat, self.roles,
-            self.action_previews, self.preview_mode)
+            self.action_previews, self.preview_mode, self.input_view)
+
+
+def canonical_records(decision):
+    """Whether canonical traversal can preserve this caller's reference order."""
+    def canonical(node, depth=0):
+        return (depth <= 24 and type(node) is f.Node
+            and type(node.fields) is tuple and type(node.links) is tuple and type(node.children) is tuple
+            and all(type(v) is f.Field for v in node.fields)
+            and all(type(v) is f.Link for v in node.links)
+            and all(canonical(v, depth + 1) for v in node.children))
+    return (type(decision) is f.PublicDecision and canonical(decision.run) and canonical(decision.context)
+            and type(decision.candidates) is tuple and all(type(v) is f.Candidate for v in decision.candidates))
 
 
 class FeatureEncoder:
-    def __init__(self, vocabulary, *, action_policy=ALL_LEGAL, representation=GRAPH):
+    def __init__(self, vocabulary, *, action_policy=ALL_LEGAL, representation=GRAPH, input_view=RAW):
         if type(vocabulary) is not Vocabulary:
             raise ValueError('Expected frozen Vocabulary')
         self.vocabulary = vocabulary
-        self.identity = feature_identity(vocabulary, representation)
+        self.input_view = validate_view(input_view, action_policy=action_policy)
+        self.identity = feature_identity(vocabulary, representation, self.input_view)
         self.representation = representation
         self.action_policy = validate_policy(action_policy)
         self.names = {name: i + 1 for i, name in enumerate(vocabulary.names)}
@@ -176,17 +192,59 @@ class FeatureEncoder:
         self.public = FullRunEncoder()
 
     def encode(self, decision):
+        if type(decision) is not f.PublicDecision:
+            raise f.ContractError('Terminal observations have no policy features')
+        decision = apply_view(decision, self.input_view)
         return self._features(decision, self.public.pack(decision))
+
+    def encode_inference(self, decision):
+        """Validated learned inputs with exactly the ordinary encoder's mapping.
+
+        Keep lossless tables for their existing consumers. Structural caller
+        records can declare fields in a different order, so they retain the
+        original wire traversal rather than silently changing reference order.
+        """
+        if type(decision) is not f.PublicDecision:
+            raise f.ContractError('Terminal observations have no policy features')
+        if (type(self) is not FeatureEncoder or type(self.public) is not FullRunEncoder
+                or 'encode' in vars(self) or '_features' in vars(self)
+                or set(vars(self.public)) != {'profile'}
+                or not canonical_records(decision)):
+            return self.encode(decision).for_rollout()
+        owner = f.PreparedPublic(apply_view(decision, self.input_view))
+        mapping = self.public.mapping_prepared(owner.value, owner)
+        return self._features(owner.value, mapping, compact=True)
+
+    def encode_prepared(self, decision, owner):
+        """Reuse exact immutable public ownership; never trust an equal copy."""
+        if type(owner) is not f.PreparedPublic:
+            raise f.ContractError('Expected a prepared public observation')
+        owner.require(decision)
+        if (type(self) is not FeatureEncoder or type(self.public) is not FullRunEncoder
+                or 'encode' in vars(self) or 'encode_inference' in vars(self) or '_features' in vars(self)
+                or set(vars(self.public)) != {'profile'}):
+            return self.encode_inference(decision)
+        viewed = apply_view(decision, self.input_view)
+        if viewed is not decision:
+            owner = f.PreparedPublic(viewed)
+        mapping = self.public.mapping_prepared(owner.value, owner)
+        return self._features(owner.value, mapping, compact=True)
 
     def from_fixed(self, observation):
         decision = self.public.decode(observation)
         return self.encode(decision)
 
-    def _features(self, decision, graph):
+    def validate_entity(self, node):
+        if (self.vocabulary.catalog is not None and node.kind in ENTITY_KINDS
+                and node.definition_id not in self.names):
+            raise ValueError('Unknown learned entity identity: ' + node.kind + '/' + node.definition_id +
+                             '; audit representation coverage before training')
+
+    def _features(self, decision, graph, *, compact=False):
         if type(decision) is not f.PublicDecision:
             raise f.ContractError('Terminal observations have no policy features')
-        # encode() supplies the graph from pack(), which fully validates this
-        # decision before feature extraction. Do not repeat that round trip.
+        # Both entry points validate before feature extraction: pack() for
+        # lossless encoding, PreparedPublic plus bounded mapping for inference.
         nodes, parents, positions, refs = [], [], [], {}
         fields, numbers, links, link_positions = [], [], [], []
 
@@ -204,10 +262,7 @@ class FeatureEncoder:
         roots = (visit(decision.run, -1, 0), visit(decision.context, -1, 1))
         token = lambda name: self.names.get(name, 0)
         for index, node in enumerate(nodes):
-            if self.vocabulary.catalog is not None:
-                if node.kind in ENTITY_KINDS and node.definition_id not in self.names:
-                    raise ValueError('Unknown learned entity identity: ' + node.kind + '/' + node.definition_id +
-                                     '; audit representation coverage before training')
+            self.validate_entity(node)
             # Learned enrichment only. The canonical graph/observation and all
             # physical references remain unchanged, including for recordings.
             metadata = self.catalog_fields.get((node.kind, node.definition_id), ())
@@ -238,12 +293,16 @@ class FeatureEncoder:
         from .action_features import channels as action_channels, mode
         preview_mode = mode(self.representation)
         previews = action_channels(decision, graph.candidate_refs, self.representation) if preview_mode else None
-        return GraphFeatures(self.vocabulary.identity, graph,
+        common = (self.vocabulary.identity,
             array([(token(n.kind), token(n.definition_id)) for n in nodes], 2),
             array(parents, 1), array(positions, 2, np.float32), array(fields, 4),
             array(numbers, 2, np.float32), array(links, 4), array(link_positions, 3, np.float32),
             array(candidates, 3), roots, self.action_policy,
-            tuple(permissions[ref] for ref in graph.candidate_refs), combat, roles, previews, preview_mode)
+            tuple(permissions[ref] for ref in graph.candidate_refs))
+        extra = (combat, roles, previews, preview_mode, self.input_view)
+        if compact:
+            return RolloutFeatures(*common, graph.candidate_refs, graph.legal_mask, *extra)
+        return GraphFeatures(common[0], graph, *common[1:], *extra)
 
 
 class _RolloutEncoder(FullRunEncoder):
@@ -282,4 +341,7 @@ class _RolloutEncoder(FullRunEncoder):
     def features_for(self, decision):
         if self._decision is None or decision is not self._decision:
             raise f.ContractError('Prepared graph does not belong to this decision')
+        if self._features.input_view != RAW:
+            # The cached graph describes the original recorded observation.
+            return self._features.encode(decision)
         return self._features._features(decision, self._graph)

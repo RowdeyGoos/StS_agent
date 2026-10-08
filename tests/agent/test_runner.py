@@ -77,6 +77,19 @@ def test_real_defeat_is_a_terminal_transition(tmp_path):
     assert trace.outcome.kind == 'defeat' and run.state.hp == 0
     assert trace.transitions[-1].successor == trace.outcome
     assert all(step.reward == 0 for step in trace.transitions)
+    assert result.combats[-1]['outcome'] == 'defeat'
+    assert result.combats[-1]['hp'] == 0
+
+
+def test_combat_metrics_capture_post_cleanup_victory_once(tmp_path):
+    from .test_search import fixture, card_action
+    run, _ = fixture(('strike',), enemy_hp=1)
+    result = run_episode(RunConfig(evidence='controlled_fixture', max_decisions=2),
+        output_dir=tmp_path/'public', audit_dir=tmp_path/'private', engine_factory=lambda _: run,
+        combat_policy=lambda d: card_action(d, 'strike'), policy_identity='controlled_lethal_v1')
+    assert len(result.combats) == 1
+    assert result.combats[0]['outcome'] == 'victory'
+    assert result.combats[0]['hp'] == 46  # Includes Burning Blood's end-of-combat heal.
 
 
 def test_controlled_multi_act_trajectory_round_trips_with_victory_and_training(tmp_path):

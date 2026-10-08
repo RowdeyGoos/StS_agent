@@ -204,13 +204,9 @@ def validate_selection(r, p, *, deferred=False, shared_offers=False):
     candidates = [c.instance_id for c in available]
     if operation == "dual_wield":
         candidates = [c.instance_id for c in available if c.spec.kind in ("attack", "power")]
-    if operation in ("secret_technique", "secret_weapon"):
-        kinds = ("skill", "block") if operation == "secret_technique" else ("attack",)
-        candidates = [c.instance_id for c in available if c.spec.kind in kinds]
-    if operation in ("stratagem", "seeker_strike"):
-        from game.headless.core.piles import stratagem_cards
-        candidates = [c.instance_id for c in stratagem_cards(p)
-                      if whitelist is None or c.instance_id in whitelist]
+    if operation in ("secret_technique", "secret_weapon", "stratagem", "seeker_strike"):
+        from game.headless.core.piles import draw_choice_cards
+        candidates = [c.instance_id for c in draw_choice_cards(p, operation, whitelist)]
     if not deferred_live and s["candidates"] != candidates:
         raise ValueError("Selection differs from eligible cards.")
     expected_max = (

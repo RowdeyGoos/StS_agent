@@ -25,13 +25,17 @@ def main(argv=None):
     parser.add_argument('--workers', type=int, default=performance.game_workers(),
         help=f'1–32 game workers; defaults to min(16, CPUs), currently {performance.game_workers()}, limited by episode count')
     parser.add_argument('--max-decisions', type=int, default=4096)
-    parser.add_argument('--time-limit', type=float, default=300.0, help='Seconds per episode; expiration is an explicit cutoff.')
+    parser.add_argument('--time-limit', type=float, help='Seconds per episode; default 3600 with search, otherwise 300. Expiration is a cutoff.')
     parser.add_argument('--scenario', default='generated_campaign_all_unlocked_v1', help='Public scenario reference, without private replay data.')
     parser.add_argument('--split', choices=('train', 'validation', 'test'), default='train')
     policy = parser.add_mutually_exclusive_group()
     policy.add_argument('--combat-checkpoint', type=Path, help='Frozen combat model; heuristic handles other run decisions')
     policy.add_argument('--checkpoint', type=Path, help='Frozen full-run model handles every public decision')
+    from game.cli.search_args import add_search_arguments, search_config
+    add_search_arguments(parser)
     args = parser.parse_args(argv)
+    if args.time_limit is None:
+        args.time_limit = 3600. if args.search else 300.
     output = args.output_dir.resolve()
     audit = args.audit_dir or output.with_name(output.name + '-private')
     config = RunConfig(seed=args.seed, character=args.character, first_act=args.first_act,
@@ -47,7 +51,8 @@ def main(argv=None):
     try:
         result = run_batch(config, output_dir=output, audit_dir=audit,
                            episodes=args.episodes, workers=args.workers, cancel=stopped,
-                           combat_checkpoint=args.combat_checkpoint, run_checkpoint=args.checkpoint)
+                           combat_checkpoint=args.combat_checkpoint, run_checkpoint=args.checkpoint,
+                           search=search_config(args))
     except (KeyboardInterrupt, RunCancelled):
         print(json.dumps({'status': 'cancelled', 'unfinished': 'partial'}), file=sys.stderr)
         return 130

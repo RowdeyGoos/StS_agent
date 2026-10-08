@@ -1,6 +1,6 @@
 # Agent training guide
 
-Prepared 2026-09-28; current workflow updated 2026-10-02.
+Prepared 2026-09-28; current workflow updated 2026-10-08.
 **Status: milestones 1–7 implemented and validated.**
 **Current training goal: clear Act 1 with Ironclad at A0.** Measure improvement
 by paired Act 1 clear rate across Overgrowth and Underdocks. Training all three
@@ -55,6 +55,470 @@ performance settings. See the [collector benchmark](#cpu-collector-scaling-8-12-
 [higher-worker comparison](#cpu-collector-scaling-above-16-workers-2026-10-02),
 [evaluation benchmark](#vantom-evaluation-worker-scaling-2026-10-02) and
 [CPU update benchmark](#cpu-ppo-update-threads-and-profiling-2026-10-01).
+
+Checkpoint inference, including search and greedy play, now uses the
+[compact public feature path](AGENT_ENCODING.md). This avoids constructing
+lossless tables that the network does not consume and extracts only populated
+combat channels, with unchanged model inputs, action mappings and validation.
+Existing checkpoints use it automatically. The
+[search inference benchmark](evidence/SEARCH_INFERENCE_2026_10_08.md) measures
+the combined effect at 16 workers against the same fixed search work.
+
+Search also reuses the exact prepared public observation through branch
+projection and inference. A bounded cache within each search decision reuses
+predictions only for identical typed public inputs and a frozen built-in model;
+worlds, transitions and rollout returns remain independent. Immutable public
+card descriptions are cached separately from dynamic card state. Distillation
+loads each public trajectory once and omits feature arrays for forced/fallback
+decisions while retaining their validation, rewards and episode bindings. See the
+[follow-up speed benchmark](evidence/SEARCH_TRAINING_SPEED_2026_10_08.md) for
+individual ablations and combined measurements. Search budgets and checkpoint
+inputs are unchanged; no additional CLI settings are required.
+
+## Experimental combat search
+
+Combat search is an **opt-in Ironclad A0 capability**. It uses the existing
+headless rules, a frozen checkpoint's action probabilities and combat critic,
+and public observation/action history. The actor and fallback remain the same
+checkpoint. Implementation and initial measurements are recorded in
+[the search evidence](evidence/COMBAT_SEARCH_2026_10_04.md). Those measurements
+do not promote search to the default controller.
+
+The [search architecture redesign](COMBAT_SEARCH_ARCHITECTURE.md) adds the
+`public_belief_v1` model, using shared engine construction, maintained hypothetical
+worlds and bounded public-prefix recovery. Controlled tests cover generated
+cards, temporary cost expiry, persistent counters, duplicate draws, placements,
+reshuffles, card/potion selectors and settlement. Declared starts now accept the
+42 registered ordinary encounters across Overgrowth and Underdocks, including
+elites and bosses. This is permission to attempt bounded belief construction,
+not a guarantee that every encounter/history fits the rejection budget. See the
+[coverage audit](evidence/COMBAT_BELIEF_COVERAGE_2026_10_04.md) for the tested panel
+and remaining constraints. The default remains
+`reconstruction_v1`; the coverage below describes that restricted model unless
+stated otherwise.
+
+Select the maintained model for controlled starts (Vantom remains the default
+encounter when `--encounter` is omitted):
+
+```bash
+sts-agent-evaluate --checkpoint runs/combat-model/final.sts-model \
+  --search --search-model public_belief_v1 --search-cases 8 --workers 1 \
+  --encounter overgrowth_nibbit --encounter underdocks_sewer_clam \
+  --output-dir runs/belief-development
+```
+
+The same `--search-model public_belief_v1` option works for `search-collect` and
+`search-reanalyse`. Collection records the explicit public setup and immutable
+cleanup result. Reanalysis requires that recorded setup; it never retrieves missing
+facts from private snapshots. Campaign play, Act 1 evaluation and corpus starts
+reject this model until compatible public anchors exist. Native execution remains
+unsupported. `search-audit` also accepts maintained-belief reports with their
+recorded public planning anchors; it preserves the report's simulation model.
+In programmatic use, call `SearchPolicy.begin_combat(setup, opening)`
+after reset and pass verified transitions, including public selector progress.
+
+Defaults are four particles, `--belief-proposals 1024`,
+`--belief-replay-proposals 2048`, `--belief-replay-steps 16384` and
+`--belief-seconds 5`. Set replay proposals to zero to disable recovery while
+retaining opening initialization. Filtering samples weighted parents and accepts
+complete public matches; full-prefix replay replenishes collapsed populations.
+This preserves observed placements without hand-editing piles. Long or rare
+prefixes can still exhaust rejection budgets. The separate direct model below
+uses guided draws and opening HP with their likelihood corrections.
+Validated engine-owned choices are supported during setup, ordinary play,
+end-turn cleanup and enemy turns. The existing snapshot validation retains
+materialized offers, pending effects and captured enemy hit/turn cursors before
+refreshing future chance. Event fights and arbitrary continuation attachments
+remain unsupported. No new card/enemy rule implementation lives in the filter.
+
+For the bounded direct-sampling experiment, select
+`--search-model direct_belief_v1` with evaluation, `search-collect` and
+`search-reanalyse`. It uses the
+same budgets and declaration, but samples unknown remaining card order directly
+and conditions observed draws and initial enemy HP. Other latent variables still
+use weighted particles and bounded recovery. The capability guards in
+[`direct.py`](../game/agent/search/direct.py) cover the eight encounters in the
+[direct-sampling evidence](evidence/COMBAT_DIRECT_SAMPLING_2026_10_04.md), starter
+inventories and selected draw/placement/selection/potion effects. Unsupported
+sources fall back explicitly; this does not inherit all 42-encounter coverage.
+
+Direct evaluation normalizes uncertain historical card-to-current-copy links in
+both the greedy baseline and searched network inputs. The report records
+`planning_view: detached_combat_history_cards_v1` and a distinct greedy policy
+identity; the frozen checkpoint remains unchanged. Original public trajectories
+and the full journal are retained. The same versioned input view now reaches
+distillation features and saved student inference. Campaign, corpus and native
+attachments remain unsupported. The default model is unchanged.
+
+For developed inventories, use the authored development benchmark. Its public
+JSON declares fresh cards/upgrades, starting HP, relic counters and potion slots;
+the evaluator and planner use the same declaration through the existing engine.
+These are synthetic inventories, not restored campaign starts. The current file
+has four deck profiles and 12 deck/encounter combinations. `--search-cases` must
+be a multiple of 12, so every scenario receives the same number of fresh starts.
+
+```bash
+sts-agent-evaluate \
+  --checkpoint runs/direct-search-learning-student-20261004/initial.sts-model \
+  --search --search-model direct_belief_v1 \
+  --search-benchmark configs/training/search_developed_decks.json \
+  --search-cases 48 --start-index 21000 --split validation \
+  --search-simulations 64 --search-depth 16 --belief-particles 2 \
+  --workers 4 --max-decisions 160 --time-limit 600 \
+  --output-dir runs/search-developed-repeat
+```
+
+Use a fresh output directory. The plan embeds the complete benchmark definition,
+its identity, checkpoint, search settings and all planned pairs before gameplay.
+Reports include overall results and `benchmark_breakdown` by deck, scenario and
+predeclared control/challenge role; tracking binds the benchmark identity too.
+Declared inventories require a public belief model. They support training
+collection, development evaluation and fresh held-out evaluation; corpus and
+campaign combinations remain unsupported. Collection accepts only `train`.
+Freeze checkpoint, search settings and case allocation before opening `test`;
+the generic declared-inventory command does not enforce a study selection lock.
+Across separate reports, pair by benchmark identity, split, `case_index` and
+scenario, and verify equal public openings; generated case UUIDs are local to
+each report. This does not supply the missing campaign/bridge history anchors. The
+[developed-deck evidence](evidence/COMBAT_SEARCH_DEVELOPED_BENCHMARK_2026_10_05.md)
+records the separate calibration, tactical ordering witness and frozen comparison.
+Do not interpret this selected challenge population as a natural Act 1 win rate.
+
+The [October 6 frozen study](evidence/COMBAT_SEARCH_LEARNING_2026_10_06.md)
+validated `--search-simulations 24 --search-leaf-rollout-steps 4` on this population,
+with depth 16, two belief particles, a five-second search limit, four workers and
+`direct_belief_v1`. Keep the original compatible checkpoint as the benchmark teacher;
+the study's learned student did not improve searched wins on confirmation.
+These experimental settings do not change the defaults or supply campaign and
+bridge anchors. The [strength diagnosis](evidence/COMBAT_SEARCH_STRENGTH_2026_10_06.md)
+compares larger search budgets, longer continuations and 4/16/32 passes over the
+same labels. Heavy search improved fresh combat return but averaged 29.8 seconds
+per decision; retain 24-by-4 as the practical experimental reference. Extra passes
+improved fit without establishing a further searched win-rate gain. The report
+also records a limitation in how priors affect final selection and measured
+encoding costs; no new setting or student was promoted.
+The [selection diagnosis](evidence/COMBAT_SEARCH_SELECTION_2026_10_07.md) then
+compared Q weighting, final empirical-value selection and 16-action continuations
+at 24 simulations. The horizon candidate failed fresh confirmation and its
+latency gate; the original checkpoint with 24-by-4 search remains the practical
+experimental reference. Further collection waits for a stronger verified teacher.
+
+Search reports and target sidecars now use v2 with explicit `planning_view`.
+Raw-input v1 training artifacts remain readable; a direct target without its
+view declaration is rejected. A student trained from direct targets saves a
+`sts_inference_bundle_v4` manifest with `input_view`, a bound feature identity
+and its action restriction. Network-only evaluation automatically applies that
+view. For searched evaluation or a later teacher round, specify
+`--search-model direct_belief_v1`; selecting a model with an incompatible view
+fails explicitly. Older inference bundles retain their raw input semantics.
+
+Distillation can initialize the normalized student from raw checkpoint weights;
+the report records that input-view change and starts a fresh optimizer. It cannot
+silently restore raw historical links to a normalized student. Reanalysis may
+refresh older raw targets into the direct view when their original public anchor
+is available, retaining the original trajectory and completed-behavior returns.
+Cutoffs retain absent critic labels. A refreshed recommendation never relabels
+the action that was actually played, and reanalysis is tracked as target refresh,
+not a new evaluation result.
+
+The legacy `commit_single_card_v1` restriction requires the historical card link
+that this view removes, so that pairing rejects explicitly. `all_legal_v1`,
+`commit_card_selection_v1` and the specialist's `commit_decisions_v1` remain
+supported. No action restriction is silently widened. Ordinary PPO may continue
+from a normalized checkpoint using newly collected on-policy trajectories;
+search sidecars are not PPO rollouts. Serial and worker collection, behavior
+identity and exact resume retain the input view. See the
+[learning verification](evidence/COMBAT_SEARCH_LEARNING_2026_10_04.md) for the
+bounded end-to-end experiment and remaining strength gate.
+
+`--search-seconds` bounds search plus its associated post-action belief update:
+conditioning uses the remaining budget, capped by `--belief-seconds`. If no time
+remains, it records public progress and defers reconstruction to the next decision.
+Work checks occur between indivisible engine operations. Search reports include
+conditioning in action durations and expose proposal/replay/recovery diagnostics.
+This is not evidence that every supported fight meets the 1–5 second target.
+
+The supported objective is exactly `victory + 0.1 × final HP / max HP`, defeat
+zero, including combat cleanup healing. Checkpoints with another reward identity,
+shaping, a campaign critic, or PPO discount below one are rejected. This combat
+proxy does not replace Act 1 completion as the promotion criterion.
+
+### Public model and current coverage
+
+The experimental `revealed_belief_v1` model extends conditional sampling to the
+verified Vantom corpus. Its public anchor contains the pre-combat inventory,
+opening, and any accepted public prefix before attachment. The producer must
+certify fresh card templates and sufficient public relic state. A saved private
+continuation alone is still insufficient. The Vantom experiment recovers these
+prefixes by replaying the original collector and checking exact saved states;
+only public observations, actions and reveal receipts enter the planner.
+
+An ephemeral engine observer records drawn/autoplayed card descriptions, visibly
+generated offers/potions and displayed random energy costs. It never exports
+private identities, draw order, seeds or raw masked cost setters. Conditional
+proposals reuse normal engine rules, including selectors, retention, generation,
+potions and combat cleanup. Draw and generation likelihoods retain duplicate
+multiplicity; randomized costs sum the probabilities of all hidden setters with
+the same displayed cost. Unrevealed outcomes still require public matching.
+
+Programmatic callers supply `begin_combat(anchor, public_attachment)` and feed
+`observe_reveals(receipt)` before each `observe_transition(...)`. The combat
+evaluation runner handles these hooks automatically. Observed collections use a
+v2 public planning supplement containing those receipts; distillation and
+reanalysis retain the existing objective and truncation checks. Converting an
+observed trace into a legacy model during reanalysis is refused. Offline search
+learning uses the same compact learned features as inference to avoid retaining
+duplicate lossless arrays for every training example.
+
+This is a verified headless producer, not a general corpus-attachment or native
+bridge capability. The generic CLI producers still expose their existing
+models. A future bridge must provide equivalent public inventory/history and
+ordered reveal receipts. Beliefs remain finite-particle approximations, and
+simulated tree child keys currently use successor observations without the
+intermediate reveal journal; this can merge histories with useful distinctions.
+Inspect fallback and budget reports before claiming coverage beyond the tested
+population. Forced actions need no search.
+
+The [50k-decision Vantom study](evidence/VANTOM_SEARCH_TRAINING_2026_10_08.md)
+records complete eligible collection coverage, same-initializer distillation,
+and the paired comparison with the 250k PPO specialist. It retains the original
+evaluation and a separately frozen rerun after fixing hypothetical draw-selector
+ordering. The student remains experimental; these are reused validation fights.
+
+All search models accept public decisions and reconciled transitions. They never
+accept the actual engine, a dispatch binding, a private snapshot or the game's
+RNG. For the older `reconstruction_v1` model, `game.headless.planning` constructs
+a fresh synthetic engine from plain
+facts. Unknown draw order is sampled independently; observed Headbutt placements
+are retained by public card description, including indistinguishable copies.
+The reconstruction helper also preserves explicit bottom-position facts; no
+source for that restricted model introduces a bottom placement. Enemy
+phases must be uniquely consistent with the displayed intent. Future chance
+outcomes use the engine's rules and random distributions, including Sludge
+Spinner's random move selection.
+
+The initial monster set is Vantom, Nibbit, Leaf Slime Medium, Twig Slime Small,
+Seapunk, Sludge Spinner and the controlled SimpleEnemy. The explicit card, relic,
+potion and power allowlists in `game/headless/planning.py` describe complete
+future-transition support, not just immediate attack previews. Tests include
+draws and reshuffles, multiple enemies and dead slots, Burning Pact selection,
+Headbutt, powers, potions, lethal ordering, blocking and cleanup. Unlisted
+content, hidden cost provenance, ambiguous enemy phases, unsupported ongoing
+effects and the Headbutt/Dark Embrace interaction produce a named fallback.
+An opening dependency remains relevant after a potion is consumed or a card
+exhausts. This is restricted reconstruction coverage, not all Act 1 content.
+The completed pickup effects of Golden Pearl, Nutritious Oyster and Neow's
+Talisman are supported. Other common campaign content can leave entire runs
+using fallback; inspect the coverage and fallback report before scaling a run.
+
+The history must begin at the combat opening. A late attachment or an old
+continuation snapshot without its public prefix cannot provide that history.
+The planner reconstructs pending selectors by replaying their public prefix.
+Missing, unreconciled or inconsistent history falls back explicitly. Search
+rebuilds its tree for each real action; the public history survives until combat
+ends. Unsupported or forced decisions still record reconciled transitions.
+
+### Play and compare
+
+```bash
+sts-agent-play --combat-checkpoint runs/combat-model/final.sts-model \
+  --search --act1 --output-dir runs/searched-play --workers 1
+
+sts-agent-evaluate --checkpoint runs/combat-model/final.sts-model \
+  --search --output-dir runs/search-development --search-cases 8 --workers 1
+
+sts-agent-evaluate --checkpoint runs/combat-model/final.sts-model \
+  --search --act1 --campaign-cases 8 --workers 4 \
+  --output-dir runs/search-act1-development
+```
+
+Combat evaluation defaults to controlled Vantom starts. Use repeatable
+`--encounter` arguments for other controlled encounters, or `--combat-corpus
+PATH/corpus.json` for genuine opening states from an existing **compatible**
+corpus. Corpus implementation/split/seal checks remain enforced. Source changes
+require a fresh compatible corpus; do not repin an old report's implementation
+hashes. `--start-index` selects the case offset and `--search-cases` limits its
+opening population. Continuations without public prefixes are excluded.
+
+Each comparison freezes one checkpoint and pairs its greedy decisions, a simple
+one-action simulation/critic baseline, and the Gumbel tree policy on the same
+starts. Campaign comparisons keep the public noncombat heuristic fixed and
+alternate Overgrowth and Underdocks. Each fight has one owner; `--workers` runs
+independent episodes through the existing process pool. Reports retain every
+planned case, source group, failure and cutoff, and group-dependent paired 95%
+confidence bounds. Search policy/configuration has its own tracking key so its
+results cannot overwrite greedy checkpoint results.
+
+Defaults are **64 simulations for play/evaluation**, **16 for collection and
+reanalysis**, depth 64, and a five-second per-action work ceiling. Use
+`--search-simulations 256` for a research budget, `--search-seconds`,
+`--search-depth` and `--search-seed` for explicit limits. Planner seeds are
+independent of game seeds. Fixed-budget comparisons are reproducible when the
+wall deadline does not interrupt work. `--search-method root` selects the simple
+baseline for play, collection or reanalysis; evaluation then pairs it with the
+same network. Gumbel evaluation includes the root baseline by default.
+`--search-skip-root-baseline` compares only network and Gumbel once that baseline
+has been established.
+
+Two explicit experimental options isolate selection choices.
+`--search-q-scale 1.0` increases the value term from its default `0.1` in root
+allocation, interior selection and completed-value policy targets.
+`--search-final-selection max_value` changes only the action returned after
+search: it takes the highest empirical value among visited actions in the last
+recorded contender round, breaking ties with the existing ranking. It does not
+resurrect eliminated actions, use unvisited imputed values, change simulation
+allocation or change the training distribution. This is a selection ablation;
+the default remains `prior_value`. Nondefault options have distinct teacher
+identities; default settings preserve historical identities. A higher empirical
+value is not proof of a better action when estimates are noisy or bootstrapped.
+
+`--search-leaf-rollout-steps N` optionally continues a sampled leaf with up to
+`N` greedy public-observation actions through the existing engine. A completed
+fight supplies its settled return; a depth/time cutoff supplies the final public
+critic estimate. These hypothetical estimates guide search; they never become
+completed-fight training labels. The default `0` retains critic-only evaluation
+and historical teacher identities. Reports record extra steps, terminal returns,
+critic bootstraps and time cutoffs in `leaf_work`. Rollout work shares the existing
+thinking ceiling. Measure cost before choosing a simulation count.
+
+Target sidecars also record `tree_work`: simulation-depth counts, expanded
+nodes, exact tree terminals and each root halving round's public candidates and
+visit counts. New recordings also retain the values and selection scores at
+each round, plus root priors and per-action counts of tree terminals, leaf
+terminals and critic bootstraps. Per-action squared-return sums describe the
+dispersion of completed simulation backups; dependent tree samples do not
+justify treating them as independent-sample confidence intervals.
+These diagnostics do not affect selection or RNG. Work counters describe
+attempted work, so a failed or interrupted simulation can contribute work
+without contributing a completed backup; per-action evidence counts only
+completed backups. Older sidecars may omit these fields.
+The existing [decision viewer](#decision-analysis-tools) can inspect these
+records alongside the actual action and public state; no search rerun is needed.
+
+For a paired leaf-evaluation ablation, combine a nonzero rollout setting with
+`--search-critic-baseline-simulations 64`. The report includes network, root and
+critic-only Gumbel at 64 simulations, plus the rollout Gumbel at
+`--search-simulations`. A matched simulation count is not a matched runtime budget.
+
+The root uses Gumbel candidate ranking and sequential halving; Gumbel noise is
+enabled during collection/reanalysis, with deterministic ranking for evaluation.
+Soft targets use completed action values and the non-root rule targets the
+improved policy. Decision statistics are shared only along matching observable
+action/observation histories. Enemy turns are chance transitions in a
+single-player objective; backups never alternate signs. Network inputs and
+action matching contain only projected public facts. The declared bounded
+objective clips critic estimates to `[0, 1.1]` inside search; realized returns are
+never clipped or relabeled.
+
+`--time-limit` is the separate **whole-episode wall-clock** budget, including
+thinking. Search campaigns default to 3,600 seconds / 1,024 decisions in
+evaluation; searched play retains its usual 4,096-decision cap with a 3,600-second
+default. Search fights default to 600 seconds / 256 decisions. Explicit overrides
+are honored. A search deadline returns a legal decision; an episode deadline is
+a recorded truncation, never a defeat. Timings separate reconstruction, world
+sampling, transitions, public projection and network inference. Branches are
+rebuilt from facts rather than cloned from the actual game. The 1–5 second action
+target must be measured for each intended checkpoint/content/workload.
+
+### Collect, distill and reanalyse
+
+```bash
+sts-agent-train search-collect --checkpoint runs/combat-model/final.sts-model \
+  --output-dir runs/search-round1 --cases 8 --workers 4
+
+sts-agent-train search-distill --checkpoint runs/combat-model/final.sts-model \
+  --training-report runs/search-round1/search.json \
+  --output-dir runs/search-student1 --updates 128
+
+sts-agent-train search-reanalyse --checkpoint runs/search-student1/final.sts-model \
+  --training-report runs/search-round1/search.json \
+  --output-dir runs/search-reanalysis1
+
+sts-agent-train search-audit --checkpoint runs/combat-model/final.sts-model \
+  --report runs/search-development/search.json \
+  --output runs/search-development/critic-audit.json --positions 8 --rollouts 4
+```
+
+Collection freezes the teacher for the entire round and accepts only training
+starts. Public trajectories retain observation/action/successor prefixes; a
+digest-bound `.search.json.gz` sidecar adds candidate probability targets, work,
+fallbacks, values, configuration and teacher identity. The existing imitation
+learner accepts these legal probability distributions and minimizes their cross
+entropy. The critic receives actual completed episode returns. A truncated fight
+may supply actor targets, but supplies **no terminal value label**. Forced and
+unsupported fallback decisions do not become search-improvement targets. Search
+trajectories never enter the ordinary on-policy PPO collector or updates.
+
+Distillation creates a separate student and retains the initial/final bundles,
+private optimizer state and a report marked `not_evaluated`. It does not replace
+the serving checkpoint. Reanalysis follows the originally recorded actions while
+refreshing targets with the new frozen teacher. Original trajectory/return bytes
+and behavior-policy provenance are preserved; old outcomes are not logged as
+new-teacher wins. New behavior needs newly completed fights for fresh value
+labels. Collection, distillation and reanalysis support the existing opt-in
+tracking arguments.
+
+Developed-deck collection uses the same public declaration as evaluation:
+
+```bash
+sts-agent-train search-collect \
+  --checkpoint runs/direct-search-learning-student-20261004/initial.sts-model \
+  --search-model direct_belief_v1 \
+  --search-benchmark configs/training/search_developed_decks.json \
+  --cases 480 --start-index 40000 --workers 4 \
+  --search-simulations 64 --search-depth 16 --belief-particles 2 \
+  --max-decisions 160 --time-limit 600 --output-dir runs/developed-collection
+
+sts-agent-train search-distill \
+  --checkpoint runs/direct-search-learning-student-20261004/initial.sts-model \
+  --training-report runs/developed-collection/search.json \
+  --epochs 4 --seed 17 --output-dir runs/developed-student
+```
+
+Use a tested teacher configuration; the command above illustrates critic-only
+search. `--epochs 4` makes exactly four passes, including each short final batch;
+it is mutually exclusive with `--updates`. Repeat `--training-report` to combine
+disjoint fresh and refreshed training fights. The loader validates each report,
+rejects repeated source fights or incompatible input views, and binds every source
+report and corpus in the student report. Reanalysis accepts `--max-episodes` to
+refresh a recorded prefix; declared inventories require complete balanced rounds.
+Its selection lists original episode IDs and retains the source-report hash.
+
+The critic audit uses completed training/development fights and bounded policy
+rollouts. It inherits the source report's search model/configuration, disables
+root exploration, and audits the opening and midpoint of completed episodes in
+report order. Maintained-belief reports use their anchored Gumbel trajectories;
+older reconstruction reports prefer the recorded greedy behavior. The audit
+replays only the recorded public prefix, even when its recommendation differs.
+
+For each sampled seed it compares greedy play with the search first action
+followed by greedy play. These are model estimates, not newly played fights or
+the value of continued tree search. Identical first actions share one rollout.
+`--depth` limits continuation actions; `--rollout-seconds` (default 30) is the
+shared per-position continuation ceiling. Search keeps its own recorded limits.
+The v2 audit records raw/clipped critic values, search values/visits, both
+continuations and source groups. Cutoffs and unsupported branches have no return.
+Original completed returns retain their behavior-policy and build/rules identity,
+including when the input report is a reanalysis from a newer implementation.
+Group correlated positions by source fight rather than treating them as
+independent outcome samples. Do not tune against held-out tests.
+The [128-start benefit and critic experiment](evidence/COMBAT_SEARCH_BENEFIT_2026_10_04.md)
+records full eligible coverage at 64 simulations, the bounded serial latency,
+identical win outcomes and the remaining value-estimation questions. Its starter
+inventory largely produced easy wins and hard losses, limiting what it could
+say about strategic benefit. Developed-inventory comparisons above address that
+benchmark limitation before any change to leaf evaluation or training.
+A corpus search test freezes its checkpoint,
+configuration and cases before snapshot access and seals that corpus against
+later ordinary or search development evaluation.
+
+Require credible paired combat improvement before scaling search collection or
+training. Freeze settings before held-out evaluation. Enable searched play by
+default only after a positive paired Act 1 result whose 95% interval excludes
+zero. An inconclusive or worse result leaves it experimental. The next value
+extension is a campaign-aware combat exit value for HP, potions and future
+encounters. Learned transitions remain deferred unless measured simulation cost
+justifies them; reanalysis already supplies the useful data-reuse part of MuZero.
 
 ## Campaign-derived combat training
 
@@ -1635,6 +2099,11 @@ provides:
 - Up to four explicitly supplied checkpoints compared on the **same recorded
   public state**. Native legality and the checkpoint's policy mask remain
   distinct. A forced confirmation is labelled as the only policy-allowed action.
+- A Search panel with recorded root values, visits, probability targets,
+  selection/elimination rounds, budgets, fallback/cutoff reasons and aggregate
+  tree/leaf/timing work. Its actor column is recomputed separately using the
+  exact recorded checkpoint and planning view. Reanalysis suggestions remain
+  separate from the actions actually played.
 
 Get the reported experiment results immediately, without building the viewer:
 
@@ -1679,6 +2148,51 @@ not a replacement for the planned-population evaluation metrics. Distinct policy
 identities, splits, evidence, source builds/rules and training objectives stay in
 separate comparison groups. Paired cases require at least two distinct policy
 identities with identical public initial state and source identities.
+
+To inspect combat search, build from its public output directory and load the
+recorded base checkpoint (the example uses the completed strength experiment):
+
+```bash
+sts-agent-analyze build \
+  --input runs/search-strength-20261006/fresh-candidate \
+  --output-dir runs/search-inspection-20261006 --title 'Combat search · Decision lab'
+
+sts-agent-analyze serve runs/search-inspection-20261006 \
+  --checkpoint teacher=runs/direct-search-learning-student-20261004/initial.sts-model
+```
+
+Open a run, select a decision and click **Inspect search**. Use **Recompute search
+actor** to fill the prior column; sorting by actor prior, search probability,
+completed value or visits helps reveal disagreements. Expand **Root selection
+rounds** to see recorded rankings and which actions continued into the next
+round. The action table shows final statistics, not values at each earlier round.
+
+Discovery recognizes `search.json` and `*.search.json.gz` alongside canonical
+trajectories. For a single fight, supply the trajectory and its same-named
+sidecar with two `--input` arguments. A standalone sidecar must match recorded
+behavior; reanalysis requires its report to bind the newer teacher separately.
+The builder verifies trajectory digest, step/action mapping, native candidate
+support, normalized probabilities, visit counts, teacher/checkpoint/configuration
+identity, objective and input view. With a report, it also verifies the pinned
+sidecar digest and declared behavior. Only presentation fields are exported;
+the planning supplement is not copied or executed. Unknown/missing older work
+diagnostics display as unavailable rather than zero.
+
+The actor column requires the exact checkpoint identity, objective and legal
+support. Direct-search recordings use `detached_combat_history_cards_v1`, even
+when the checkpoint itself was trained on the raw view. This differs from the
+general checkpoint-comparison table, where each checkpoint applies its own view.
+Both are fresh inference, not recorded priors or a new search. A missing or
+incompatible checkpoint leaves the search actor unavailable.
+
+Search probability targets are not visit fractions or calibrated win estimates.
+Zero-visit Q values are mixed estimates; fallback distributions are actor
+probabilities, not improved targets. Full simulated paths, hidden worlds and
+counterfactual state playback were not retained. Search report joins do not
+establish report-wide completion, paired benchmark validity or combat task
+outcomes: canonical combat external stops remain cutoffs in the overview.
+Reported failed/interrupted/unattempted search rows remain visible in provenance.
+Use the source benchmark report for combat wins and confidence intervals.
 
 The builder validates each complete canonical artifact, including its digest,
 before export. Full-run PPO joins verify the trajectory identity, episode step,

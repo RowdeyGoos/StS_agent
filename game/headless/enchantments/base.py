@@ -132,3 +132,5 @@ def randomize_cost(card, deck):
     v.played_cost_baselines[:2]=[0, 0]
     v.free_this_turn=v.free_this_combat=v.free_until_played=False
     v.turn_cost_override=None
+    from game.headless.reveals import observe_random_cost
+    observe_random_cost(card, deck, 'combat')

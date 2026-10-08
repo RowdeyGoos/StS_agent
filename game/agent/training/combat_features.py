@@ -38,7 +38,12 @@ ROLES = ('player', 'enemy', 'hand_card', 'potion', 'selection')
 WIDTH = len(CHANNELS) * 3
 
 
-def feature_identity(vocabulary, representation):
+def feature_identity(vocabulary, representation, input_view='public_observation_v1'):
+    from game.agent.input_views import RAW, validate_view
+    validate_view(input_view)
+    if input_view != RAW:
+        payload = [input_view, feature_identity(vocabulary, representation)]
+        return 'sts_view_features_v1:' + hashlib.sha256(json.dumps(payload, separators=(',', ':')).encode()).hexdigest()
     # Set and graph networks consume identical public feature tables. Their
     # different processing is versioned by Architecture, not the input schema.
     if representation not in REPRESENTATIONS:
@@ -68,6 +73,7 @@ def channels(nodes, parents):
     values = np.zeros((len(nodes), WIDTH), dtype=np.float32)
     roles = np.full(len(nodes), -1, dtype=np.int64)
     roots = []
+    columns = {name: i for i, name in enumerate(CHANNELS)}
     for index, node in enumerate(nodes):
         root = index if parents[index] < 0 else roots[parents[index]]
         roots.append(root)
@@ -115,9 +121,9 @@ def channels(nodes, parents):
         hp, maximum = node.get('hp'), node.get('max_hp')
         if type(hp) is int and type(maximum) is int and maximum > 0:
             data['hp_fraction'] = hp / maximum
-        for column, name in enumerate(CHANNELS):
-            value = data.get(name)
-            if type(value) in (int, bool, float):
+        for name, value in data.items():
+            column = columns.get(name)
+            if column is not None and type(value) in (int, bool, float):
                 values[index, 3 * column:3 * column + 3] = (
                     1., float(value) / 100., math.copysign(math.log1p(abs(value)), value))
     values.flags.writeable = roles.flags.writeable = False

@@ -37,6 +37,10 @@ class DamagePreview:
 
 
 class _PublicRandom:
+    # Deck construction queries this optional simulation observer. A public
+    # preview has no sampled draw history; the query is not a random operation.
+    draw_knowledge = None
+
     def choice(self, values):
         if len(values) != 1:
             raise UnknownPreview('random_target')

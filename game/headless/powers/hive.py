@@ -24,7 +24,10 @@ def generate(p, name, pile, count, *, random_position=False):
             position = p.deck.rng.randrange(len(cards) + 1)
             if destination == 'draw_pile' and isinstance(p.deck.rng, NativeRng):
                 position = len(cards) - position
-            cards.insert(position, card)
+            if destination == 'draw_pile':
+                p.deck.insert_into_draw(position, card)
+            else:
+                cards.insert(position, card)
         else:
             cards.append(card)
         after_generated_entry(p, card)

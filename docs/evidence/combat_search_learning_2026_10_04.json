@@ -1,0 +1,4521 @@
+{
+  "base_git_commit": "c09506f985fc3155e208cabba8d2d7e2b31c9c5e",
+  "checkpoints": {
+    "initializer": {
+      "path": "runs/direct-search-learning-student-20261004/initial.sts-model",
+      "sha256": "e22bd23bc0783d67e081816c4066f04a65f2eb1d22be96b19677e0634dbc4862"
+    },
+    "student": {
+      "path": "runs/direct-search-learning-student-20261004/final.sts-model",
+      "sha256": "d0c1e9d6bcb628d1bd98b5e27840845d861dd74efc49d3ef50a2dda69f9e87bf"
+    },
+    "teacher": {
+      "path": "runs/vantom-specialist-training-20261002/ppo/chunk-15/final.sts-model",
+      "sha256": "4f06f6566a83bf658685ddbf799e0e4c2856d00eb979a7b7d35b890c25562595"
+    }
+  },
+  "date": "2026-10-04",
+  "distillation": {
+    "corpus": "sts_search_corpus_v1:7e82fcb4ba84ab0bf2707488e2ade190b48ae202a4c8c7e2f2121285c0e9753f",
+    "corpus_identity": "sts_search_corpus_v1:7e82fcb4ba84ab0bf2707488e2ade190b48ae202a4c8c7e2f2121285c0e9753f",
+    "episodes": 8,
+    "examples": 115,
+    "feature_identity": "sts_view_features_v1:bfa472d403a7ff2766c3660ea800e74d7939115656fd62f76bb7ccd5fd95b48e",
+    "final_sha256": "d0c1e9d6bcb628d1bd98b5e27840845d861dd74efc49d3ef50a2dda69f9e87bf",
+    "implementation": {
+      "build": "19985f63736ec0e5be2a391f495cb9667941663b3c9f720469c05dbf9cfb469e",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "8eaf44ce4600e6b25a1675aa41e181027aed519f1bebfbeb5089b74406b77e8a",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "initial_sha256": "e22bd23bc0783d67e081816c4066f04a65f2eb1d22be96b19677e0634dbc4862",
+    "initialization": {
+      "checkpoint": "ppo_v1:4f06f6566a83bf658685ddbf799e0e4c2856d00eb979a7b7d35b890c25562595",
+      "input_view": "detached_combat_history_cards_v1",
+      "resumed": false,
+      "source_input_view": "public_observation_v1"
+    },
+    "input_view": "detached_combat_history_cards_v1",
+    "learner_config": {
+      "batch_size": 32,
+      "gradient_clip": 1.0,
+      "learning_rate": 0.0001,
+      "value_weight": 0.25
+    },
+    "policy_targets": "search_distribution",
+    "promotion": "not_evaluated",
+    "report": {
+      "path": "runs/direct-search-learning-student-20261004/search-distillation.json",
+      "sha256": "0abe49d7828e78b0d7b1e5ea7ddc981d893cc1cd52806df1c595dfa8a54818b5"
+    },
+    "reward_spec": {
+      "schema": "sts_training_reward_v1",
+      "weights": {
+        "combat_loss": 0.0,
+        "combat_win": 1.0,
+        "end_turn_action": 0.0,
+        "potion_use_action": 0.0,
+        "win_hp_fraction": 0.1
+      }
+    },
+    "schema": "sts_search_distillation_v1",
+    "split": "train",
+    "status": "complete",
+    "teacher": "ppo_v1:4f06f6566a83bf658685ddbf799e0e4c2856d00eb979a7b7d35b890c25562595",
+    "total_seconds": 0.224051957949996,
+    "updates": [
+      {
+        "batch_tensor_bytes": 3100344,
+        "entropy": 0.7675501704216003,
+        "gradient_norm": 0.8954843282699585,
+        "imitation_loss": 0.9421947598457336,
+        "loss": 0.9799624085426331,
+        "samples": 32,
+        "seconds": 0.024211375042796135,
+        "update": 1,
+        "value_loss": 0.1510704904794693
+      },
+      {
+        "batch_tensor_bytes": 3057600,
+        "entropy": 0.6761021018028259,
+        "gradient_norm": 1.7706977128982544,
+        "imitation_loss": 1.0051792860031128,
+        "loss": 1.05833101272583,
+        "samples": 32,
+        "seconds": 0.012572790961712599,
+        "update": 2,
+        "value_loss": 0.21260690689086914
+      },
+      {
+        "batch_tensor_bytes": 3042896,
+        "entropy": 0.6319503784179688,
+        "gradient_norm": 0.9673866033554077,
+        "imitation_loss": 0.7867180109024048,
+        "loss": 0.8167460560798645,
+        "samples": 32,
+        "seconds": 0.012565791606903076,
+        "update": 3,
+        "value_loss": 0.1201120913028717
+      },
+      {
+        "batch_tensor_bytes": 1763782,
+        "entropy": 0.7038471102714539,
+        "gradient_norm": 1.6037037372589111,
+        "imitation_loss": 0.9554116129875183,
+        "loss": 0.9877203106880188,
+        "samples": 19,
+        "seconds": 0.007878541946411133,
+        "update": 4,
+        "value_loss": 0.12923486530780792
+      },
+      {
+        "batch_tensor_bytes": 3012240,
+        "entropy": 0.914884626865387,
+        "gradient_norm": 1.4388288259506226,
+        "imitation_loss": 1.1554179191589355,
+        "loss": 1.1952344179153442,
+        "samples": 32,
+        "seconds": 0.012031790800392628,
+        "update": 5,
+        "value_loss": 0.15926602482795715
+      },
+      {
+        "batch_tensor_bytes": 3013328,
+        "entropy": 0.7001833915710449,
+        "gradient_norm": 1.4536409378051758,
+        "imitation_loss": 0.8838978409767151,
+        "loss": 0.9237044453620911,
+        "samples": 32,
+        "seconds": 0.012084290850907564,
+        "update": 6,
+        "value_loss": 0.15922634303569794
+      },
+      {
+        "batch_tensor_bytes": 3197616,
+        "entropy": 0.5810207724571228,
+        "gradient_norm": 0.698687732219696,
+        "imitation_loss": 0.6954295039176941,
+        "loss": 0.7146282196044922,
+        "samples": 32,
+        "seconds": 0.013700165785849094,
+        "update": 7,
+        "value_loss": 0.07679478824138641
+      },
+      {
+        "batch_tensor_bytes": 1742413,
+        "entropy": 0.5979337096214294,
+        "gradient_norm": 0.9198477268218994,
+        "imitation_loss": 0.8151329159736633,
+        "loss": 0.8593273162841797,
+        "samples": 19,
+        "seconds": 0.007677291054278612,
+        "update": 8,
+        "value_loss": 0.1767776906490326
+      },
+      {
+        "batch_tensor_bytes": 2928200,
+        "entropy": 0.8048700094223022,
+        "gradient_norm": 1.3993744850158691,
+        "imitation_loss": 0.9526618123054504,
+        "loss": 0.9843188524246216,
+        "samples": 32,
+        "seconds": 0.01185704069212079,
+        "update": 9,
+        "value_loss": 0.1266281008720398
+      },
+      {
+        "batch_tensor_bytes": 3167688,
+        "entropy": 0.6362085938453674,
+        "gradient_norm": 0.9089520573616028,
+        "imitation_loss": 0.7273589968681335,
+        "loss": 0.7567680478096008,
+        "samples": 32,
+        "seconds": 0.012811082880944014,
+        "update": 10,
+        "value_loss": 0.11763612926006317
+      },
+      {
+        "batch_tensor_bytes": 3069120,
+        "entropy": 0.6950655579566956,
+        "gradient_norm": 0.9407695531845093,
+        "imitation_loss": 0.872725248336792,
+        "loss": 0.9152846336364746,
+        "samples": 32,
+        "seconds": 0.012070625089108944,
+        "update": 11,
+        "value_loss": 0.17023766040802002
+      },
+      {
+        "batch_tensor_bytes": 1796414,
+        "entropy": 0.7789472341537476,
+        "gradient_norm": 1.9458250999450684,
+        "imitation_loss": 1.0088125467300415,
+        "loss": 1.0289368629455566,
+        "samples": 19,
+        "seconds": 0.007968416903167963,
+        "update": 12,
+        "value_loss": 0.08049704134464264
+      },
+      {
+        "batch_tensor_bytes": 3015512,
+        "entropy": 0.6325108408927917,
+        "gradient_norm": 0.973555862903595,
+        "imitation_loss": 0.7857809066772461,
+        "loss": 0.8306110501289368,
+        "samples": 32,
+        "seconds": 0.012023792136460543,
+        "update": 13,
+        "value_loss": 0.1793205887079239
+      },
+      {
+        "batch_tensor_bytes": 3099680,
+        "entropy": 0.6734786033630371,
+        "gradient_norm": 0.8339076042175293,
+        "imitation_loss": 0.7866281867027283,
+        "loss": 0.8235421180725098,
+        "samples": 32,
+        "seconds": 0.012099625077098608,
+        "update": 14,
+        "value_loss": 0.14765579998493195
+      },
+      {
+        "batch_tensor_bytes": 3043176,
+        "entropy": 0.8891666531562805,
+        "gradient_norm": 0.9818173050880432,
+        "imitation_loss": 1.0005691051483154,
+        "loss": 1.0170130729675293,
+        "samples": 32,
+        "seconds": 0.01212479081004858,
+        "update": 15,
+        "value_loss": 0.06577567756175995
+      },
+      {
+        "batch_tensor_bytes": 1806404,
+        "entropy": 0.7500011920928955,
+        "gradient_norm": 1.1049354076385498,
+        "imitation_loss": 0.880723774433136,
+        "loss": 0.8999316692352295,
+        "samples": 19,
+        "seconds": 0.007835417054593563,
+        "update": 16,
+        "value_loss": 0.07683151960372925
+      }
+    ],
+    "value_targets": "completed_behavior_returns"
+  },
+  "environment": {
+    "machine": "arm64",
+    "macos": "26.6.2",
+    "python": "3.11.15",
+    "torch": "2.13.0",
+    "torch_threads_per_worker": 1
+  },
+  "implementation": {
+    "build": "19985f63736ec0e5be2a391f495cb9667941663b3c9f720469c05dbf9cfb469e",
+    "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+    "rules": "8eaf44ce4600e6b25a1675aa41e181027aed519f1bebfbeb5089b74406b77e8a",
+    "target": "sts2-v0.107.1-steam-23811903"
+  },
+  "limits": [
+    "Eight development starts cannot establish a strength gain.",
+    "Direct content/declared-start guards remain; campaign/corpus/native anchors still unsupported.",
+    "Detached view rejects legacy commit_single_card_v1 rather than widening its mask.",
+    "No student promotion, held-out test, bridge build/install or live run."
+  ],
+  "paired_student_vs_initializer": {
+    "gumbel": {
+      "cases": 8,
+      "difference_group_hoeffding_95": [
+        -0.9603227913199207,
+        0.9603227913199207
+      ],
+      "win_rate_difference": 0.0,
+      "wins_only_candidate": 0,
+      "wins_only_initializer": 0
+    },
+    "network": {
+      "cases": 8,
+      "difference_group_hoeffding_95": [
+        -0.9603227913199207,
+        0.9603227913199207
+      ],
+      "win_rate_difference": 0.0,
+      "wins_only_candidate": 0,
+      "wins_only_initializer": 0
+    },
+    "root": {
+      "cases": 8,
+      "difference_group_hoeffding_95": [
+        -0.9603227913199207,
+        0.9603227913199207
+      ],
+      "win_rate_difference": 0.0,
+      "wins_only_candidate": 0,
+      "wins_only_initializer": 0
+    }
+  },
+  "promotion": "not_promoted",
+  "protocol": {
+    "automatic_promotion": false,
+    "batch_size": 32,
+    "comparison_pairing": "Same declared validation index and encounter; public opening hashes verified; original reports unchanged.",
+    "encounter_order": [
+      "overgrowth_nibbit",
+      "overgrowth_slimes",
+      "overgrowth_bygone_effigy",
+      "overgrowth_vantom",
+      "underdocks_corpse_slugs_weak",
+      "underdocks_living_fog",
+      "underdocks_skulking_colony",
+      "underdocks_lagavulin_matriarch"
+    ],
+    "held_out_test_opened": false,
+    "learner_seed": 0,
+    "learning_rate": 0.0001,
+    "training_indices": [
+      400,
+      401,
+      402,
+      403,
+      404,
+      405,
+      406,
+      407
+    ],
+    "updates": 16,
+    "validation_indices": [
+      200,
+      201,
+      202,
+      203,
+      204,
+      205,
+      206,
+      207
+    ]
+  },
+  "reports": {
+    "collection": {
+      "checkpoint": "ppo_v1:4f06f6566a83bf658685ddbf799e0e4c2856d00eb979a7b7d35b890c25562595",
+      "corpus": null,
+      "episodes": [
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-collect-20261004/8bed313f28104368ac4ece4216f7aacc.search.json.gz",
+              "sha256": "86a245ab4190bca4f97395b0d53c4f5eabb5ec87a3eb1ee49b522fd61907d58e"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-collect-20261004/8bed313f28104368ac4ece4216f7aacc.training.json",
+              "sha256": "55ae1acd97fe3116ace4ea12d4f6c681a1241ed1b33f00c88c1b611ae6e09463"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "a7c081a61326973594f4560633a1ccda84174a1299eade5d195b64027c1b2d11",
+              "path": "runs/direct-search-learning-collect-20261004/8bed313f28104368ac4ece4216f7aacc.trajectory.jsonl.gz",
+              "sha256": "aae67e14d173a55581bb3b655862e845cfbf05375496e6c833c3d323f1a78232"
+            }
+          },
+          "case_id": "b457178f874a49969853cb50ee2c8572",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 73,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 3
+          },
+          "encounter": "overgrowth_nibbit",
+          "episode_id": "8bed313f28104368ac4ece4216f7aacc",
+          "max_action_seconds": 0.24676308408379555,
+          "policy": "gumbel",
+          "public_opening_sha256": "e1576379f90d6c81e7bf6e82af6cb6b6802f74efd03e6f7c1e3e3157246d5d7e",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 20,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.1072807926684618,
+              "updates": 10
+            },
+            "cutoffs": {},
+            "decisions": 9,
+            "fallbacks": {
+              "forced_action": 2
+            },
+            "p95_seconds": 0.24676308408379555,
+            "searched": 7,
+            "seconds": 1.4677774608135223,
+            "simulations": 112,
+            "timings": {
+              "conditioning": 0.1284867087379098,
+              "inference": 0.4578653792850673,
+              "projection": 0.45326182106509805,
+              "reconstruction": 0.006559833884239197,
+              "sampling": 0.2975067957304418,
+              "transition": 0.07593795796856284
+            }
+          },
+          "source_group": "b457178f874a49969853cb50ee2c8572",
+          "status": "terminated",
+          "steps": 9,
+          "task_return": 1.09125
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-collect-20261004/63027fb044ea478cb436bc7bc85cedad.search.json.gz",
+              "sha256": "075a6a188aeb6e4a2e57857b80c6bb906cc4d9cc943994fc5d8eb428ed5da083"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-collect-20261004/63027fb044ea478cb436bc7bc85cedad.training.json",
+              "sha256": "20e8dca8c7972612e1cd0255341f3d194b0a575b85c932221a2add2b12440f55"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "b7ee0dd8377c99fdccc11e28519bc3a29f4addf148de1968914b7a5d57272ec1",
+              "path": "runs/direct-search-learning-collect-20261004/63027fb044ea478cb436bc7bc85cedad.trajectory.jsonl.gz",
+              "sha256": "f8c7747ed81755f3d4500905d1fa2a19be092792a1e2a9840091308b82096d71"
+            }
+          },
+          "case_id": "4f4d2182d2a8472ca21c256a35811bef",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 68,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 5
+          },
+          "encounter": "overgrowth_slimes",
+          "episode_id": "63027fb044ea478cb436bc7bc85cedad",
+          "max_action_seconds": 0.299430042039603,
+          "policy": "gumbel",
+          "public_opening_sha256": "8aeb5f87f7deb7180f133abd84996fad3e96493a1b2e462139ba4345208f82dd",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 44,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.22295162733644247,
+              "updates": 17
+            },
+            "cutoffs": {},
+            "decisions": 16,
+            "fallbacks": {
+              "forced_action": 4
+            },
+            "p95_seconds": 0.299430042039603,
+            "searched": 12,
+            "seconds": 2.969526709523052,
+            "simulations": 192,
+            "timings": {
+              "conditioning": 0.2863566670566797,
+              "inference": 0.9646459580399096,
+              "projection": 0.8123543816618621,
+              "reconstruction": 0.02076541632413864,
+              "sampling": 0.6958086672239006,
+              "transition": 0.09992761723697186
+            }
+          },
+          "source_group": "4f4d2182d2a8472ca21c256a35811bef",
+          "status": "terminated",
+          "steps": 16,
+          "task_return": 1.085
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-collect-20261004/733e169e635a4c8bb84389e87155166c.search.json.gz",
+              "sha256": "0354c8112b710c31f6e447d17629a1a149c18766aa400e5951719df16dff1639"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-collect-20261004/733e169e635a4c8bb84389e87155166c.training.json",
+              "sha256": "086b86420b1af19f355b18ab6048063e30b573ade27be4703aaccd794b86f709"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "e451a9360adf762176089be24292f72e07d4a76682254e8742ef672575312a9b",
+              "path": "runs/direct-search-learning-collect-20261004/733e169e635a4c8bb84389e87155166c.trajectory.jsonl.gz",
+              "sha256": "59c9117daa894ee2c9d5b2f1811de60d7e9b0f0f3b2faa85793c21d1c1468363"
+            }
+          },
+          "case_id": "34286aed6951406d961c3ddf0549d9fd",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 7
+          },
+          "encounter": "overgrowth_bygone_effigy",
+          "episode_id": "733e169e635a4c8bb84389e87155166c",
+          "max_action_seconds": 0.24929954204708338,
+          "policy": "gumbel",
+          "public_opening_sha256": "2cd4b33a89025f1f5bacdb33c5c37b73191fb642e1dd6faa8cd6fe6a83bf6159",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 52,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.3213533326052129,
+              "updates": 26
+            },
+            "cutoffs": {},
+            "decisions": 25,
+            "fallbacks": {
+              "forced_action": 7
+            },
+            "p95_seconds": 0.24747954215854406,
+            "searched": 18,
+            "seconds": 4.311823460739106,
+            "simulations": 288,
+            "timings": {
+              "conditioning": 0.42897391598671675,
+              "inference": 1.4288248857483268,
+              "projection": 1.3544814991764724,
+              "reconstruction": 0.007211043033748865,
+              "sampling": 0.811440181452781,
+              "transition": 0.14757174719125032
+            }
+          },
+          "source_group": "34286aed6951406d961c3ddf0549d9fd",
+          "status": "terminated",
+          "steps": 25,
+          "task_return": 0.0
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-collect-20261004/182d5fbb43be44b7a151c7b8e97e59a5.search.json.gz",
+              "sha256": "e6d71b991564c87070b9a7a4e728659472b9472514540d895f6cf1367a74c241"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-collect-20261004/182d5fbb43be44b7a151c7b8e97e59a5.training.json",
+              "sha256": "7c3d669bed11c6e22b31ec536a8a6ed70d83dcc3119c9a3bb82920965de93017"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "30b70aa4bfba0ba98e780c80d6e2354ac68ebeff6156ac296c4013bd0414b1bb",
+              "path": "runs/direct-search-learning-collect-20261004/182d5fbb43be44b7a151c7b8e97e59a5.trajectory.jsonl.gz",
+              "sha256": "1c802886c185447c87f3a606c4afc34ca61adc1f0231d6bbcfc5a8b7c082c685"
+            }
+          },
+          "case_id": "4aa21b5e4a764817a7f28e888f627f8c",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 10
+          },
+          "encounter": "overgrowth_vantom",
+          "episode_id": "182d5fbb43be44b7a151c7b8e97e59a5",
+          "max_action_seconds": 0.32873637415468693,
+          "policy": "gumbel",
+          "public_opening_sha256": "7a21a771331413148a383007871731e5c9adfe640278aabfb68a53b9bc5168e2",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 70,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.4528981214389205,
+              "updates": 35
+            },
+            "cutoffs": {},
+            "decisions": 34,
+            "fallbacks": {
+              "forced_action": 9
+            },
+            "p95_seconds": 0.2970622079446912,
+            "searched": 25,
+            "seconds": 6.575515497941524,
+            "simulations": 400,
+            "timings": {
+              "conditioning": 0.6335523333400488,
+              "inference": 2.1983159412629902,
+              "projection": 2.1081539881415665,
+              "reconstruction": 0.007698999717831612,
+              "sampling": 1.2228203164413571,
+              "transition": 0.2088797139003873
+            }
+          },
+          "source_group": "4aa21b5e4a764817a7f28e888f627f8c",
+          "status": "terminated",
+          "steps": 34,
+          "task_return": 0.0
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-collect-20261004/38e5bb285b734d178c0015a7ace9f4f4.search.json.gz",
+              "sha256": "ed417bc8fd28eb47f33138d0165cdda18194aa23007b7c7d5fec4451de297512"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-collect-20261004/38e5bb285b734d178c0015a7ace9f4f4.training.json",
+              "sha256": "0b105f8cdfa11c27277f364ca04164453ed8a16ae7ef4ecd31eb9b80d9820a54"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "0a7592ee200e9c5f9d3657469d2f28558bac2557a56c3744c3cbb53b60bae163",
+              "path": "runs/direct-search-learning-collect-20261004/38e5bb285b734d178c0015a7ace9f4f4.trajectory.jsonl.gz",
+              "sha256": "0f4a75990dc23fa84489143a57f431b40dfe2566cbff7cbfb22d46d04fea99ee"
+            }
+          },
+          "case_id": "2e84d5854a6f4735997558b2ef1daf54",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 78,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 3
+          },
+          "encounter": "underdocks_corpse_slugs_weak",
+          "episode_id": "38e5bb285b734d178c0015a7ace9f4f4",
+          "max_action_seconds": 0.23701966553926468,
+          "policy": "gumbel",
+          "public_opening_sha256": "94951b06dfb00416a34a07394d47daf0d69d97da54f799098faa179cc63d0bee",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 20,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.10858849948272109,
+              "updates": 10
+            },
+            "cutoffs": {},
+            "decisions": 9,
+            "fallbacks": {
+              "forced_action": 2
+            },
+            "p95_seconds": 0.23701966553926468,
+            "searched": 7,
+            "seconds": 1.4644269542768598,
+            "simulations": 112,
+            "timings": {
+              "conditioning": 0.13009516429156065,
+              "inference": 0.46532512828707695,
+              "projection": 0.41258796164765954,
+              "reconstruction": 0.006667833309620619,
+              "sampling": 0.32782270619645715,
+              "transition": 0.07234500208869576
+            }
+          },
+          "source_group": "2e84d5854a6f4735997558b2ef1daf54",
+          "status": "terminated",
+          "steps": 9,
+          "task_return": 1.0975
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-collect-20261004/97d7c7c0a6974ff0a6b3b83f232d49b9.search.json.gz",
+              "sha256": "e45ace5ff58a97afb33600f57de6a0a2b4cbfe430fdc6f7f267788211ca670d5"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-collect-20261004/97d7c7c0a6974ff0a6b3b83f232d49b9.training.json",
+              "sha256": "e05c7d97f612e7a240d7e3413794ce5a27e59e2f2fc5605b40fb646fdfdaaf58"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "25f3b218ebd46fc9b45126b1e7b1e66d2a134f5ecd991521a808c45632805ef1",
+              "path": "runs/direct-search-learning-collect-20261004/97d7c7c0a6974ff0a6b3b83f232d49b9.trajectory.jsonl.gz",
+              "sha256": "339d088659775686e14c5c9219259a0d573d1fe12a085417fa906c335db5a9ee"
+            }
+          },
+          "case_id": "117f7921f5ca49cc92acd4fe00dcb6e7",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 49,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 6
+          },
+          "encounter": "underdocks_living_fog",
+          "episode_id": "97d7c7c0a6974ff0a6b3b83f232d49b9",
+          "max_action_seconds": 0.25540824979543686,
+          "policy": "gumbel",
+          "public_opening_sha256": "65b8368ce6ca3113cfedd87439ea5763203cc68b1830c641691e7116af61f306",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 38,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.2451344160363078,
+              "updates": 19
+            },
+            "cutoffs": {},
+            "decisions": 18,
+            "fallbacks": {
+              "forced_action": 5
+            },
+            "p95_seconds": 0.25540824979543686,
+            "searched": 13,
+            "seconds": 3.021277583669871,
+            "simulations": 208,
+            "timings": {
+              "conditioning": 0.2992476695217192,
+              "inference": 1.006427168380469,
+              "projection": 0.8804157176055014,
+              "reconstruction": 0.007247669156640768,
+              "sampling": 0.6219022395089269,
+              "transition": 0.11487897019833326
+            }
+          },
+          "source_group": "117f7921f5ca49cc92acd4fe00dcb6e7",
+          "status": "terminated",
+          "steps": 18,
+          "task_return": 1.06125
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-collect-20261004/4c98016db9f5454bba6c3cdda2c8a8c5.search.json.gz",
+              "sha256": "4b134e1e47d197d13d3e9ca9ee0db5db0ca570c4a532dab8b280547f05e9be2a"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-collect-20261004/4c98016db9f5454bba6c3cdda2c8a8c5.training.json",
+              "sha256": "48b7df26b88a51b69612c920dcb3bbdbd97b24739a9952489ca3616938ca7c97"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "6ab4309d69e1ccf253c9dfe5bbdf7c9bfea92133af727dc7c4d3f95fe4dfaba2",
+              "path": "runs/direct-search-learning-collect-20261004/4c98016db9f5454bba6c3cdda2c8a8c5.trajectory.jsonl.gz",
+              "sha256": "77442ac68af11bad3cb2aafa4247ac9f8db26da1ce229565047345c8b56f506f"
+            }
+          },
+          "case_id": "0b7950ec35214d93a167db69e35ccd46",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 41,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 5
+          },
+          "encounter": "underdocks_skulking_colony",
+          "episode_id": "4c98016db9f5454bba6c3cdda2c8a8c5",
+          "max_action_seconds": 0.24083387479186058,
+          "policy": "gumbel",
+          "public_opening_sha256": "37fb52f3445ea17782fbc098ee1daa84e5536cd032efb9bafa056ae5115c9eb5",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 32,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.18053970858454704,
+              "updates": 16
+            },
+            "cutoffs": {},
+            "decisions": 15,
+            "fallbacks": {
+              "forced_action": 4
+            },
+            "p95_seconds": 0.24083387479186058,
+            "searched": 11,
+            "seconds": 2.519048247486353,
+            "simulations": 176,
+            "timings": {
+              "conditioning": 0.22359554143622518,
+              "inference": 0.877185080666095,
+              "projection": 0.7022915086708963,
+              "reconstruction": 0.006851164624094963,
+              "sampling": 0.5321066854521632,
+              "transition": 0.0996211632154882
+            }
+          },
+          "source_group": "0b7950ec35214d93a167db69e35ccd46",
+          "status": "terminated",
+          "steps": 15,
+          "task_return": 1.05125
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-collect-20261004/f72dfefc5b11497f9ff92856de47649c.search.json.gz",
+              "sha256": "4b33a23410f0ebf82216793891ea99b882a3a45d68e64924d22a8bf851301685"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-collect-20261004/f72dfefc5b11497f9ff92856de47649c.training.json",
+              "sha256": "2052271f1b87ab79adf5739cf88b3eac4871539e5badb82fbea520e7467d9ee6"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "a55a4e3228a323ba23c1d659c885002223df0ee5eca81e106bf9f05b9e351100",
+              "path": "runs/direct-search-learning-collect-20261004/f72dfefc5b11497f9ff92856de47649c.trajectory.jsonl.gz",
+              "sha256": "a60520bba30c28a57145a3e65b6cd95015a8a10539e5367b4ce8b652beb96ea4"
+            }
+          },
+          "case_id": "c375f8b4eea847d19cb8b70b4a4cd76e",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 9
+          },
+          "encounter": "underdocks_lagavulin_matriarch",
+          "episode_id": "f72dfefc5b11497f9ff92856de47649c",
+          "max_action_seconds": 0.23604558315128088,
+          "policy": "gumbel",
+          "public_opening_sha256": "7df9a5785de6f8dc59e9ebe6d50cc70c9b8b308994673205c808841e4ff68269",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 64,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.3555607879534364,
+              "updates": 32
+            },
+            "cutoffs": {},
+            "decisions": 31,
+            "fallbacks": {
+              "forced_action": 9
+            },
+            "p95_seconds": 0.23494387604296207,
+            "searched": 22,
+            "seconds": 5.03512178407982,
+            "simulations": 352,
+            "timings": {
+              "conditioning": 0.45513874432072043,
+              "inference": 1.626314993482083,
+              "projection": 1.630967644508928,
+              "reconstruction": 0.007135295309126377,
+              "sampling": 0.9953385889530182,
+              "transition": 0.16441234573721886
+            }
+          },
+          "source_group": "c375f8b4eea847d19cb8b70b4a4cd76e",
+          "status": "terminated",
+          "steps": 31,
+          "task_return": 0.0
+        }
+      ],
+      "execution": {
+        "schedule": "parallel_episodes_v1",
+        "workers": 4
+      },
+      "goal": "combat",
+      "implementation": {
+        "build": "19985f63736ec0e5be2a391f495cb9667941663b3c9f720469c05dbf9cfb469e",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "8eaf44ce4600e6b25a1675aa41e181027aed519f1bebfbeb5089b74406b77e8a",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "limits": {
+        "max_decisions": 48,
+        "time_limit_seconds": 90.0
+      },
+      "plan": {
+        "path": "runs/direct-search-learning-collect-20261004/search-plan.json",
+        "sha256": "e4bc912823b7035120ee8e28d930e801fbb13b7d83a94215bdef1f4cb06f6a6d"
+      },
+      "planning_view": "detached_combat_history_cards_v1",
+      "policies": {
+        "gumbel": "sts_combat_search_v1:a670d200bc4c58f2985d4e03196744076eaf6ea852e8ada8c804e65a942db9c1"
+      },
+      "promotion": "experimental_only",
+      "purpose": "collection",
+      "report": {
+        "path": "runs/direct-search-learning-collect-20261004/search.json",
+        "sha256": "f6aa82dbff055b921577b932900b35365d31925006cd9f236aea78a3cf2f8b01"
+      },
+      "reward_spec": {
+        "schema": "sts_training_reward_v1",
+        "weights": {
+          "combat_loss": 0.0,
+          "combat_win": 1.0,
+          "end_turn_action": 0.0,
+          "potion_use_action": 0.0,
+          "win_hp_fraction": 0.1
+        }
+      },
+      "schema": "sts_search_report_v2",
+      "search_configs": {
+        "gumbel": {
+          "belief_particles": 2,
+          "belief_proposals": 1024,
+          "belief_replay_proposals": 2048,
+          "belief_replay_steps": 16384,
+          "belief_seconds": 5.0,
+          "considered_actions": 16,
+          "exploration": true,
+          "max_depth": 16,
+          "method": "gumbel",
+          "model_version": "direct_belief_v1",
+          "seed": 0,
+          "simulations": 16,
+          "time_limit": 5.0
+        }
+      },
+      "split": "train",
+      "start_kind": "opening",
+      "status": "complete",
+      "summary": {
+        "gumbel": {
+          "attempted": 8,
+          "cutoffs": 0,
+          "failures": 0,
+          "hp_change_observations": 8,
+          "losses": 3,
+          "mean_final_turn_observed": 6.0,
+          "mean_hp_change_observed": -41.375,
+          "mean_hp_fraction_on_win": 0.7725,
+          "mean_hp_on_win": 61.8,
+          "mean_task_return": 0.67328125,
+          "planned": 8,
+          "potion_use_actions": 0,
+          "search": {
+            "coverage": 0.732484076433121,
+            "cutoffs": {},
+            "decisions": 157,
+            "fallbacks": {
+              "forced_action": 42
+            },
+            "max_episode_p95_seconds": 0.299430042039603,
+            "searched": 115,
+            "seconds": 27.364517698530108,
+            "simulations": 1840,
+            "timings": {
+              "conditioning": 2.5854467446915805,
+              "inference": 9.024904535152018,
+              "projection": 8.354514522477984,
+              "reconstruction": 0.07013725535944104,
+              "sampling": 5.504746180959046,
+              "transition": 0.9835745175369084
+            }
+          },
+          "source_groups": 8,
+          "steps": 157,
+          "unattempted": 0,
+          "win_rate": 0.625,
+          "win_rate_group_hoeffding_95": [
+            0.14483860434003965,
+            1
+          ],
+          "wins": 5
+        }
+      },
+      "total_seconds": 10.870349208358675
+    },
+    "initial_evaluation": {
+      "checkpoint": "imitation_v1:e22bd23bc0783d67e081816c4066f04a65f2eb1d22be96b19677e0634dbc4862",
+      "corpus": null,
+      "episodes": [
+        {
+          "artifacts": {
+            "training": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/e6fab90998f34cfa93d633f222427850.training.json",
+              "sha256": "5643c1c1be094fc2e0565eb3a5e9e423faad674bd543e750e52594eb24f57bd0"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "0f5ce0555b39c9cf07f5d2c3e1e94ee126d5099aa46f9fb9fb10eaa4487b9ecd",
+              "path": "runs/direct-search-learning-initial-eval-20261004/e6fab90998f34cfa93d633f222427850.trajectory.jsonl.gz",
+              "sha256": "b4902153104daad81995617cadbcadc8e42bd29b0630730b9faf6dd3fabb1ff9"
+            }
+          },
+          "case_id": "f2f6aa7273bf45828d5ece788805953a",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 74,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 2
+          },
+          "encounter": "overgrowth_nibbit",
+          "episode_id": "e6fab90998f34cfa93d633f222427850",
+          "policy": "network",
+          "public_opening_sha256": "3eac74dbc5b438823de16cd2b3b88df1178a476d7230095654ad719927e4c91d",
+          "source_group": "f2f6aa7273bf45828d5ece788805953a",
+          "status": "terminated",
+          "steps": 6,
+          "task_return": 1.0925
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/1018e48e74434a889773c4a926d86abf.search.json.gz",
+              "sha256": "4b94dd0960266ab327dcd85a2714d3ab2dc50d7665e564c1176ee440286a7a42"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/1018e48e74434a889773c4a926d86abf.training.json",
+              "sha256": "3b7f62ee4cc7e522d8531a910510d47274467a484c357d9bf3a3631a214c88ca"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "c98a6b81f394857e1089ce410b163ce79dda8c62880ad26f6370f41904167d4f",
+              "path": "runs/direct-search-learning-initial-eval-20261004/1018e48e74434a889773c4a926d86abf.trajectory.jsonl.gz",
+              "sha256": "6ed02dda83b0531ae9a7cbffcd6a11a6e322c9c4f2447518681fb70db5e960ce"
+            }
+          },
+          "case_id": "f2f6aa7273bf45828d5ece788805953a",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 74,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 2
+          },
+          "encounter": "overgrowth_nibbit",
+          "episode_id": "1018e48e74434a889773c4a926d86abf",
+          "max_action_seconds": 0.1760484166443348,
+          "policy": "root",
+          "public_opening_sha256": "3eac74dbc5b438823de16cd2b3b88df1178a476d7230095654ad719927e4c91d",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 14,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.07265629060566425,
+              "updates": 7
+            },
+            "cutoffs": {},
+            "decisions": 6,
+            "fallbacks": {
+              "forced_action": 1
+            },
+            "p95_seconds": 0.1760484166443348,
+            "searched": 5,
+            "seconds": 0.749263625126332,
+            "simulations": 80,
+            "timings": {
+              "conditioning": 0.08366649923846126,
+              "inference": 0.14186116447672248,
+              "projection": 0.2604298726655543,
+              "reconstruction": 0.006825667340308428,
+              "sampling": 0.20694962749257684,
+              "transition": 0.02983608515933156
+            }
+          },
+          "source_group": "f2f6aa7273bf45828d5ece788805953a",
+          "status": "terminated",
+          "steps": 6,
+          "task_return": 1.0925
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/f3d9313852304fc8b0da2be03e641450.search.json.gz",
+              "sha256": "83b0a2c2a50267be1dc16c9f7e61c4af8cf14d8c6d0535a8aa41538490e603cb"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/f3d9313852304fc8b0da2be03e641450.training.json",
+              "sha256": "d2abcdb6c45b6fa22f265d194c928d03cc26d9334144279943c954d20735340e"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "6172fe237bbffed6df9b1a88f8da71ed495241e542604a273575dd37c049abf7",
+              "path": "runs/direct-search-learning-initial-eval-20261004/f3d9313852304fc8b0da2be03e641450.trajectory.jsonl.gz",
+              "sha256": "7f0713ed4d088aff881590652c7ae53192ac9040c7380af65080e434e1c1b85f"
+            }
+          },
+          "case_id": "f2f6aa7273bf45828d5ece788805953a",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 74,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 2
+          },
+          "encounter": "overgrowth_nibbit",
+          "episode_id": "f3d9313852304fc8b0da2be03e641450",
+          "max_action_seconds": 0.2481265002861619,
+          "policy": "gumbel",
+          "public_opening_sha256": "3eac74dbc5b438823de16cd2b3b88df1178a476d7230095654ad719927e4c91d",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 14,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.07412866782397032,
+              "updates": 7
+            },
+            "cutoffs": {},
+            "decisions": 6,
+            "fallbacks": {
+              "forced_action": 1
+            },
+            "p95_seconds": 0.2481265002861619,
+            "searched": 5,
+            "seconds": 0.9556467509828508,
+            "simulations": 80,
+            "timings": {
+              "conditioning": 0.08477387623861432,
+              "inference": 0.23394512571394444,
+              "projection": 0.3157725506462157,
+              "reconstruction": 0.006931959185749292,
+              "sampling": 0.2111607762053609,
+              "transition": 0.06549708219245076
+            }
+          },
+          "source_group": "f2f6aa7273bf45828d5ece788805953a",
+          "status": "terminated",
+          "steps": 6,
+          "task_return": 1.0925
+        },
+        {
+          "artifacts": {
+            "training": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/155ddd6db17d467d82d52496ff766668.training.json",
+              "sha256": "8df583c9b0bb42c550ae4a44c3c96f16c8e66e3412fc50752e6e11a0e16f61be"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "11a9b6414d0ac3819d48ad5a00e046ee565a929b10be9ffa060383715662178d",
+              "path": "runs/direct-search-learning-initial-eval-20261004/155ddd6db17d467d82d52496ff766668.trajectory.jsonl.gz",
+              "sha256": "3e020959c78c4add097d5619808235ed9e2ccb37b0ac33ff4539431e33e1a337"
+            }
+          },
+          "case_id": "8e7036eee350411e8e914ee32e5d593b",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 66,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 6
+          },
+          "encounter": "overgrowth_slimes",
+          "episode_id": "155ddd6db17d467d82d52496ff766668",
+          "policy": "network",
+          "public_opening_sha256": "ac4aeb2823420c1455205afdab1fdf98e50bfe311527b4fe03566a220960e760",
+          "source_group": "8e7036eee350411e8e914ee32e5d593b",
+          "status": "terminated",
+          "steps": 19,
+          "task_return": 1.0825
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/bd05475915ff4539adbc894feada0954.search.json.gz",
+              "sha256": "5cc2e6b962363282a9ff6712f2ab189375f3202d211b8edf87e274869a09db93"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/bd05475915ff4539adbc894feada0954.training.json",
+              "sha256": "d40c3c36987a8e95d058904a20ee96aa207e1009af68cb6f1e24d056f6e3d5c7"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "e6a81824c7bcd5716a8ef2a6234c2cd4587d33f3b07619730e67f746f4f6c8d7",
+              "path": "runs/direct-search-learning-initial-eval-20261004/bd05475915ff4539adbc894feada0954.trajectory.jsonl.gz",
+              "sha256": "36c8d01b351be31880d573e5eef2bcf6447632c36a51ec83a07837d48da21eb6"
+            }
+          },
+          "case_id": "8e7036eee350411e8e914ee32e5d593b",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 75,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 4
+          },
+          "encounter": "overgrowth_slimes",
+          "episode_id": "bd05475915ff4539adbc894feada0954",
+          "max_action_seconds": 0.2147928331978619,
+          "policy": "root",
+          "public_opening_sha256": "ac4aeb2823420c1455205afdab1fdf98e50bfe311527b4fe03566a220960e760",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 36,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.22356883203610778,
+              "updates": 13
+            },
+            "cutoffs": {},
+            "decisions": 12,
+            "fallbacks": {
+              "forced_action": 3
+            },
+            "p95_seconds": 0.2147928331978619,
+            "searched": 9,
+            "seconds": 1.6837187921628356,
+            "simulations": 144,
+            "timings": {
+              "conditioning": 0.2433692505583167,
+              "inference": 0.4080589171499014,
+              "projection": 0.4681346286088228,
+              "reconstruction": 0.04713637521490455,
+              "sampling": 0.42551265517249703,
+              "transition": 0.0481522879563272
+            }
+          },
+          "source_group": "8e7036eee350411e8e914ee32e5d593b",
+          "status": "terminated",
+          "steps": 12,
+          "task_return": 1.09375
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/28b03a5ddfca4843990ebf7d4e15c52b.search.json.gz",
+              "sha256": "9d4e5b83642d4f4d183e65a9837ce37b946d3a993662c277308efe4b94e6d43f"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/28b03a5ddfca4843990ebf7d4e15c52b.training.json",
+              "sha256": "3316033eb2a77102a3c21e9abed1e33ce7d8ebe704d4b6419c0a343ac4bea44c"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "4feb59ec97ea40aa802422f8224910292a0399964b89f293fd28088d1aabed4b",
+              "path": "runs/direct-search-learning-initial-eval-20261004/28b03a5ddfca4843990ebf7d4e15c52b.trajectory.jsonl.gz",
+              "sha256": "bfd1cdcee3a049263208edad725947c2f89397e7b76e1adc872bc80bf5a9d275"
+            }
+          },
+          "case_id": "8e7036eee350411e8e914ee32e5d593b",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 66,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 4
+          },
+          "encounter": "overgrowth_slimes",
+          "episode_id": "28b03a5ddfca4843990ebf7d4e15c52b",
+          "max_action_seconds": 0.269530626013875,
+          "policy": "gumbel",
+          "public_opening_sha256": "ac4aeb2823420c1455205afdab1fdf98e50bfe311527b4fe03566a220960e760",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 36,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.1911617903970182,
+              "updates": 13
+            },
+            "cutoffs": {},
+            "decisions": 12,
+            "fallbacks": {
+              "forced_action": 3
+            },
+            "p95_seconds": 0.269530626013875,
+            "searched": 9,
+            "seconds": 2.1290703332051635,
+            "simulations": 144,
+            "timings": {
+              "conditioning": 0.2130230818875134,
+              "inference": 0.6880586268380284,
+              "projection": 0.5849603335373104,
+              "reconstruction": 0.02062708418816328,
+              "sampling": 0.48807503283023834,
+              "transition": 0.07214784529060125
+            }
+          },
+          "source_group": "8e7036eee350411e8e914ee32e5d593b",
+          "status": "terminated",
+          "steps": 12,
+          "task_return": 1.0825
+        },
+        {
+          "artifacts": {
+            "training": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/ecf626fc56aa46668f601e27e88dcce3.training.json",
+              "sha256": "444eceee9e9f9774ff95eaf4381937c7213da44ab90c2b72aaedde396bbba077"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "15d9ca52ea08467e715011e1b1147fb6e5c58bc729e0b19e1e8c4df48813df4b",
+              "path": "runs/direct-search-learning-initial-eval-20261004/ecf626fc56aa46668f601e27e88dcce3.trajectory.jsonl.gz",
+              "sha256": "94b5b5bc091c63e4c92c4166c9f59d29244f917aba32cadc2146dc323d361d7a"
+            }
+          },
+          "case_id": "d2234b2b950940d6bde3798209ea3f1c",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 17,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 6
+          },
+          "encounter": "overgrowth_bygone_effigy",
+          "episode_id": "ecf626fc56aa46668f601e27e88dcce3",
+          "policy": "network",
+          "public_opening_sha256": "7684d7da85c7da86ae014c33e8668e905e6c998ff456e2c18910dadbb773482f",
+          "source_group": "d2234b2b950940d6bde3798209ea3f1c",
+          "status": "terminated",
+          "steps": 20,
+          "task_return": 1.02125
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/aa1beee55bc5433996eb435afe15985f.search.json.gz",
+              "sha256": "43a711a10284873a3a1473c86a2fe974391a5fbafb6146857a6785df42223f22"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/aa1beee55bc5433996eb435afe15985f.training.json",
+              "sha256": "d02990aba75d5c1ce0416423225f5ebeeb8d8be32c948bfedf4cceb6d2c58b8f"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "324d4d5ac2b3fac87e83ac50d6b2201775b55ca777d53ab91b8545775d9efccd",
+              "path": "runs/direct-search-learning-initial-eval-20261004/aa1beee55bc5433996eb435afe15985f.trajectory.jsonl.gz",
+              "sha256": "ee84bbd157041c8d929e6b3b2393a015ba7d3e4aef74e12ec099086b6b4b534f"
+            }
+          },
+          "case_id": "d2234b2b950940d6bde3798209ea3f1c",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 17,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 6
+          },
+          "encounter": "overgrowth_bygone_effigy",
+          "episode_id": "aa1beee55bc5433996eb435afe15985f",
+          "max_action_seconds": 0.17922045895829797,
+          "policy": "root",
+          "public_opening_sha256": "7684d7da85c7da86ae014c33e8668e905e6c998ff456e2c18910dadbb773482f",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 42,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.2639189576730132,
+              "updates": 21
+            },
+            "cutoffs": {},
+            "decisions": 20,
+            "fallbacks": {
+              "forced_action": 5
+            },
+            "p95_seconds": 0.17899166652932763,
+            "searched": 15,
+            "seconds": 2.453919959720224,
+            "simulations": 240,
+            "timings": {
+              "conditioning": 0.32591337710618973,
+              "inference": 0.5321021778509021,
+              "projection": 0.7005003509111702,
+              "reconstruction": 0.007031250279396772,
+              "sampling": 0.7577657764777541,
+              "transition": 0.0692805084399879
+            }
+          },
+          "source_group": "d2234b2b950940d6bde3798209ea3f1c",
+          "status": "terminated",
+          "steps": 20,
+          "task_return": 1.02125
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/2253d035362d4edfa54f5c8d3b0caa99.search.json.gz",
+              "sha256": "e559b5edaa34cbb5e3124b98ae2ffb60d6b91de61863b62258c8775357db66c3"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/2253d035362d4edfa54f5c8d3b0caa99.training.json",
+              "sha256": "040674bf646a8eb4c9e072cb32c16d79878c7ce32ff13ed11ab59d725084c85e"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "2c1bf6c5e1d91076b5647d3bc434a0087988fa23d8411669c2fa2bc2d0ab9c15",
+              "path": "runs/direct-search-learning-initial-eval-20261004/2253d035362d4edfa54f5c8d3b0caa99.trajectory.jsonl.gz",
+              "sha256": "e32cbd848abe0e2579f23575d34b3274c1552ff52d167d6a4314bc21da438188"
+            }
+          },
+          "case_id": "d2234b2b950940d6bde3798209ea3f1c",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 17,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 6
+          },
+          "encounter": "overgrowth_bygone_effigy",
+          "episode_id": "2253d035362d4edfa54f5c8d3b0caa99",
+          "max_action_seconds": 0.25321695767343044,
+          "policy": "gumbel",
+          "public_opening_sha256": "7684d7da85c7da86ae014c33e8668e905e6c998ff456e2c18910dadbb773482f",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 42,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.29857858130708337,
+              "updates": 21
+            },
+            "cutoffs": {},
+            "decisions": 20,
+            "fallbacks": {
+              "forced_action": 5
+            },
+            "p95_seconds": 0.2506969580426812,
+            "searched": 15,
+            "seconds": 3.4749513752758503,
+            "simulations": 240,
+            "timings": {
+              "conditioning": 0.36051841266453266,
+              "inference": 1.1798773659393191,
+              "projection": 0.9960491573438048,
+              "reconstruction": 0.007085333578288555,
+              "sampling": 0.6744853374548256,
+              "transition": 0.14389254711568356
+            }
+          },
+          "source_group": "d2234b2b950940d6bde3798209ea3f1c",
+          "status": "terminated",
+          "steps": 20,
+          "task_return": 1.02125
+        },
+        {
+          "artifacts": {
+            "training": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/613990cff31a4a5daab5ee3a7212168b.training.json",
+              "sha256": "63abdf679a0b242914e67a2ad9c61f27bd1b67e493997f87e23d08a02bbeebb4"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "2fa75b015bf06907b8c939f7e1a6ab87443af5247220c3ebe697d20cc25b3a66",
+              "path": "runs/direct-search-learning-initial-eval-20261004/613990cff31a4a5daab5ee3a7212168b.trajectory.jsonl.gz",
+              "sha256": "5139dd007be1618dd0d970017dd7bd5cd433f705d3b14a7211dc409ab2ec66e6"
+            }
+          },
+          "case_id": "1def51e4238a4598b9b1d6337820335f",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 10
+          },
+          "encounter": "overgrowth_vantom",
+          "episode_id": "613990cff31a4a5daab5ee3a7212168b",
+          "policy": "network",
+          "public_opening_sha256": "86230cbfb1d0bbfd5fc8c61baf58c1cedfda3fac6e107a74ec44b9acd4ab3776",
+          "source_group": "1def51e4238a4598b9b1d6337820335f",
+          "status": "terminated",
+          "steps": 34,
+          "task_return": 0.0
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/0bb57fa39cdd4e6ebdf4a22ab7e5333d.search.json.gz",
+              "sha256": "efa97f7306c9060ddfcbff5961e9b111dd3d13df2d105bd1474b77e9b1489ed2"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/0bb57fa39cdd4e6ebdf4a22ab7e5333d.training.json",
+              "sha256": "968c9517eb69cbe24a66ba07fc87c2497950916bdcd62fa2fde03bbbddc67c22"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "92fd020eec3aff6cb1d21af1b14920c0d0952171df94ce2aa1d8fe1aece2d8ed",
+              "path": "runs/direct-search-learning-initial-eval-20261004/0bb57fa39cdd4e6ebdf4a22ab7e5333d.trajectory.jsonl.gz",
+              "sha256": "e8ef65f8c5b74f178c2cc9bf870b1a57fa7fb4623215565f3366585ba30e52b0"
+            }
+          },
+          "case_id": "1def51e4238a4598b9b1d6337820335f",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 10
+          },
+          "encounter": "overgrowth_vantom",
+          "episode_id": "0bb57fa39cdd4e6ebdf4a22ab7e5333d",
+          "max_action_seconds": 0.21447666734457016,
+          "policy": "root",
+          "public_opening_sha256": "86230cbfb1d0bbfd5fc8c61baf58c1cedfda3fac6e107a74ec44b9acd4ab3776",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 68,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.5312086623162031,
+              "updates": 34
+            },
+            "cutoffs": {},
+            "decisions": 33,
+            "fallbacks": {
+              "forced_action": 9
+            },
+            "p95_seconds": 0.2085182499140501,
+            "searched": 24,
+            "seconds": 4.439381130039692,
+            "simulations": 384,
+            "timings": {
+              "conditioning": 0.6526186275295913,
+              "inference": 1.0292463703081012,
+              "projection": 1.361596854403615,
+              "reconstruction": 0.007801583502441645,
+              "sampling": 1.1782139698043466,
+              "transition": 0.10719684371724725
+            }
+          },
+          "source_group": "1def51e4238a4598b9b1d6337820335f",
+          "status": "terminated",
+          "steps": 33,
+          "task_return": 0.0
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/cdbaa7a23a8147c6b199fe9f13db837b.search.json.gz",
+              "sha256": "0af035b37a6a01706fc3de2040f5806b415a5060e0c57cfab840c5b12d0022eb"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/cdbaa7a23a8147c6b199fe9f13db837b.training.json",
+              "sha256": "b9ba37860165eeb5bc83fd88d01d2b3b1e29a84b5825c71a3f4158c400a7bfe3"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "a92fd43cd5a3685a064f2078205a3839a8b364fa34fc5289f00b8178cd69d5e4",
+              "path": "runs/direct-search-learning-initial-eval-20261004/cdbaa7a23a8147c6b199fe9f13db837b.trajectory.jsonl.gz",
+              "sha256": "5bca20c9ff0bac29af75acff648e8922c352b97ca96b787d6372cf31a5979bd2"
+            }
+          },
+          "case_id": "1def51e4238a4598b9b1d6337820335f",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 10
+          },
+          "encounter": "overgrowth_vantom",
+          "episode_id": "cdbaa7a23a8147c6b199fe9f13db837b",
+          "max_action_seconds": 0.337352582719177,
+          "policy": "gumbel",
+          "public_opening_sha256": "86230cbfb1d0bbfd5fc8c61baf58c1cedfda3fac6e107a74ec44b9acd4ab3776",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 68,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.4256106661632657,
+              "updates": 34
+            },
+            "cutoffs": {},
+            "decisions": 33,
+            "fallbacks": {
+              "forced_action": 9
+            },
+            "p95_seconds": 0.3155111246742308,
+            "searched": 24,
+            "seconds": 6.42109870351851,
+            "simulations": 384,
+            "timings": {
+              "conditioning": 0.6057260348461568,
+              "inference": 2.1552882031537592,
+              "projection": 2.0400839396752417,
+              "reconstruction": 0.007870960049331188,
+              "sampling": 1.2169664171524346,
+              "transition": 0.2016713283956051
+            }
+          },
+          "source_group": "1def51e4238a4598b9b1d6337820335f",
+          "status": "terminated",
+          "steps": 33,
+          "task_return": 0.0
+        },
+        {
+          "artifacts": {
+            "training": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/a884754eeaf64fdf96223f641bb92881.training.json",
+              "sha256": "d90d8efab6fe2a427a976a0a25667ad0ca76f9c7cd7dc85171d02377cfe525e8"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "12ffb449a96567d044fe46c8bc80fc7bf4464555309f3901d0f20f42736c7364",
+              "path": "runs/direct-search-learning-initial-eval-20261004/a884754eeaf64fdf96223f641bb92881.trajectory.jsonl.gz",
+              "sha256": "a07afff90e0837efc351a8b9ebc5239846ba0fbc58fc56b00bde2c3c43d61721"
+            }
+          },
+          "case_id": "39cfb8ad04bf4ae5947b8aab19da8cd2",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 77,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 4
+          },
+          "encounter": "underdocks_corpse_slugs_weak",
+          "episode_id": "a884754eeaf64fdf96223f641bb92881",
+          "policy": "network",
+          "public_opening_sha256": "b396ea338ae5a0e420ae531ced27046888aa63d98d0f16c206abf92a506216c3",
+          "source_group": "39cfb8ad04bf4ae5947b8aab19da8cd2",
+          "status": "terminated",
+          "steps": 12,
+          "task_return": 1.09625
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/c17d09e5b7c140af98bb0fd59f5c2ff1.search.json.gz",
+              "sha256": "4f0e521d72296ef70716ad0ed8354674ac40381d5afd9a31d7edca363293f572"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/c17d09e5b7c140af98bb0fd59f5c2ff1.training.json",
+              "sha256": "3db5efeaa9ae29c466905d5471381bf9680c3bb60d39747bffab324ea185ed5d"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "a63d5f37f099bd47d26b5b74746d3f05500a69d632762048061ac45357354a1a",
+              "path": "runs/direct-search-learning-initial-eval-20261004/c17d09e5b7c140af98bb0fd59f5c2ff1.trajectory.jsonl.gz",
+              "sha256": "a2af822a9eb532443992280632a68fed1420f6b8a6aecc02edf9a648f74ed911"
+            }
+          },
+          "case_id": "39cfb8ad04bf4ae5947b8aab19da8cd2",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 77,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 4
+          },
+          "encounter": "underdocks_corpse_slugs_weak",
+          "episode_id": "c17d09e5b7c140af98bb0fd59f5c2ff1",
+          "max_action_seconds": 0.19280154071748257,
+          "policy": "root",
+          "public_opening_sha256": "b396ea338ae5a0e420ae531ced27046888aa63d98d0f16c206abf92a506216c3",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 29,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.18175608245655894,
+              "updates": 13
+            },
+            "cutoffs": {},
+            "decisions": 12,
+            "fallbacks": {
+              "forced_action": 3
+            },
+            "p95_seconds": 0.19280154071748257,
+            "searched": 9,
+            "seconds": 1.5321159195154905,
+            "simulations": 144,
+            "timings": {
+              "conditioning": 0.2391659189015627,
+              "inference": 0.354332874994725,
+              "projection": 0.40174385253340006,
+              "reconstruction": 0.016690040472894907,
+              "sampling": 0.43522081105038524,
+              "transition": 0.04618541058152914
+            }
+          },
+          "source_group": "39cfb8ad04bf4ae5947b8aab19da8cd2",
+          "status": "terminated",
+          "steps": 12,
+          "task_return": 1.09625
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/2bfa0abb7597478e8215244465ffc5ad.search.json.gz",
+              "sha256": "d2759b554070dd1c3ab7844d4cb9cf7f0af46baf36633eb07b869fb35516adf8"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/2bfa0abb7597478e8215244465ffc5ad.training.json",
+              "sha256": "be9540e9e923211c2c42a0c9952b842b831e70043d1c777d279e9f2dac70c038"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "4a54bd4dbcb109f922971d043fb8b3ff09528ad52ad779d561b7cd924285f1d9",
+              "path": "runs/direct-search-learning-initial-eval-20261004/2bfa0abb7597478e8215244465ffc5ad.trajectory.jsonl.gz",
+              "sha256": "7d4f24f6326cf7ab09d2bf3548ae9441622585bcb9817e38c3c6883b79bc4894"
+            }
+          },
+          "case_id": "39cfb8ad04bf4ae5947b8aab19da8cd2",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 77,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 4
+          },
+          "encounter": "underdocks_corpse_slugs_weak",
+          "episode_id": "2bfa0abb7597478e8215244465ffc5ad",
+          "max_action_seconds": 0.2457534596323967,
+          "policy": "gumbel",
+          "public_opening_sha256": "b396ea338ae5a0e420ae531ced27046888aa63d98d0f16c206abf92a506216c3",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 29,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.15558616444468498,
+              "updates": 13
+            },
+            "cutoffs": {},
+            "decisions": 12,
+            "fallbacks": {
+              "forced_action": 3
+            },
+            "p95_seconds": 0.2457534596323967,
+            "searched": 9,
+            "seconds": 1.9659895435906947,
+            "simulations": 144,
+            "timings": {
+              "conditioning": 0.17957508517429233,
+              "inference": 0.5381169710308313,
+              "projection": 0.5952177047729492,
+              "reconstruction": 0.016001959331333637,
+              "sampling": 0.4895345396362245,
+              "transition": 0.08448413899168372
+            }
+          },
+          "source_group": "39cfb8ad04bf4ae5947b8aab19da8cd2",
+          "status": "terminated",
+          "steps": 12,
+          "task_return": 1.09625
+        },
+        {
+          "artifacts": {
+            "training": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/bb948d5cfaa74e559bf1fc82483f06b5.training.json",
+              "sha256": "4152fa162b3b4a592dd5bc06993df0d340d7301d486e3647f5dc382fd5ca3c8c"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "b70220c9a79285de8c7392738c8dc660b6834965fdbc7e521f27df82abe011e8",
+              "path": "runs/direct-search-learning-initial-eval-20261004/bb948d5cfaa74e559bf1fc82483f06b5.trajectory.jsonl.gz",
+              "sha256": "cbe099f6052efae943d153aff1900586e22b765d817a439ba4e7225fdb2e0004"
+            }
+          },
+          "case_id": "98fb7b2d54d04d9281053ff5b797abd6",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 57,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 5
+          },
+          "encounter": "underdocks_living_fog",
+          "episode_id": "bb948d5cfaa74e559bf1fc82483f06b5",
+          "policy": "network",
+          "public_opening_sha256": "e6a5873425973a690139cfc944bdfc89b7cf937a2a5475131e7942cd1e0b6c38",
+          "source_group": "98fb7b2d54d04d9281053ff5b797abd6",
+          "status": "terminated",
+          "steps": 15,
+          "task_return": 1.07125
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/e704eb6d37f04780aee7656178546c65.search.json.gz",
+              "sha256": "94347c6ba6d59eb542085bc2acb10c8df064a042eb602bb349a99557ffed1f51"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/e704eb6d37f04780aee7656178546c65.training.json",
+              "sha256": "e68e62b88a203b6fe6bbde4f45c12b59445c7adba4d05c6c551ff6696213af1f"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "211a0a289ea7bac1473b671b973464abf699d524a1d470b4b84c6d84636cf5da",
+              "path": "runs/direct-search-learning-initial-eval-20261004/e704eb6d37f04780aee7656178546c65.trajectory.jsonl.gz",
+              "sha256": "405f3a949de645c92c4ea9e287a58b40ce52c86278b88a41c0314f1b35e09e33"
+            }
+          },
+          "case_id": "98fb7b2d54d04d9281053ff5b797abd6",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 60,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 5
+          },
+          "encounter": "underdocks_living_fog",
+          "episode_id": "e704eb6d37f04780aee7656178546c65",
+          "max_action_seconds": 0.19470620807260275,
+          "policy": "root",
+          "public_opening_sha256": "e6a5873425973a690139cfc944bdfc89b7cf937a2a5475131e7942cd1e0b6c38",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 34,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.2005270393565297,
+              "updates": 17
+            },
+            "cutoffs": {},
+            "decisions": 16,
+            "fallbacks": {
+              "forced_action": 4
+            },
+            "p95_seconds": 0.19470620807260275,
+            "searched": 12,
+            "seconds": 2.0652759983204305,
+            "simulations": 192,
+            "timings": {
+              "conditioning": 0.2475809152238071,
+              "inference": 0.4676681673154235,
+              "projection": 0.6228274293243885,
+              "reconstruction": 0.007018751464784145,
+              "sampling": 0.6105129667557776,
+              "transition": 0.05921757919713855
+            }
+          },
+          "source_group": "98fb7b2d54d04d9281053ff5b797abd6",
+          "status": "terminated",
+          "steps": 16,
+          "task_return": 1.075
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/72aebc1e495e493ab194c1c69f1eb785.search.json.gz",
+              "sha256": "bd1ddca43e2014650f74a8f89c76cdc5fbea06bc982d14b274f8278b8699dafa"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/72aebc1e495e493ab194c1c69f1eb785.training.json",
+              "sha256": "2d43577ce988f8f873149b92cfc26c98d3535cb5b1aca55fefa859cab974d3d6"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "7663255f59eebb7c1fd389aded57195951f140bade43b22fc21b8dd39e4c612b",
+              "path": "runs/direct-search-learning-initial-eval-20261004/72aebc1e495e493ab194c1c69f1eb785.trajectory.jsonl.gz",
+              "sha256": "1859675f3dd8cef38baa4aae49fa7280732bde820b26a706a6634992eb0ec4bd"
+            }
+          },
+          "case_id": "98fb7b2d54d04d9281053ff5b797abd6",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 52,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 5
+          },
+          "encounter": "underdocks_living_fog",
+          "episode_id": "72aebc1e495e493ab194c1c69f1eb785",
+          "max_action_seconds": 0.248303041793406,
+          "policy": "gumbel",
+          "public_opening_sha256": "e6a5873425973a690139cfc944bdfc89b7cf937a2a5475131e7942cd1e0b6c38",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 32,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.18336295755580068,
+              "updates": 16
+            },
+            "cutoffs": {},
+            "decisions": 15,
+            "fallbacks": {
+              "forced_action": 4
+            },
+            "p95_seconds": 0.248303041793406,
+            "searched": 11,
+            "seconds": 2.6491622077301145,
+            "simulations": 176,
+            "timings": {
+              "conditioning": 0.25390624860301614,
+              "inference": 0.8871219172142446,
+              "projection": 0.8326663123443723,
+              "reconstruction": 0.007014120928943157,
+              "sampling": 0.48419450828805566,
+              "transition": 0.10254317102953792
+            }
+          },
+          "source_group": "98fb7b2d54d04d9281053ff5b797abd6",
+          "status": "terminated",
+          "steps": 15,
+          "task_return": 1.065
+        },
+        {
+          "artifacts": {
+            "training": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/8e9fd7f28b9248648a5ab3c49e725f25.training.json",
+              "sha256": "0026d85915558bdaf7a6acf26e547640b1fb12187a0c94befbe15d0078e8b51b"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "a6a7e922ce21da57fd783473d6514bed5576a7b75e576672c6081d8e34ad965c",
+              "path": "runs/direct-search-learning-initial-eval-20261004/8e9fd7f28b9248648a5ab3c49e725f25.trajectory.jsonl.gz",
+              "sha256": "3af2951e0018047b46bad5d8918286439abac915d57e93c19ee591c945f18c0c"
+            }
+          },
+          "case_id": "fc22fe58ba454ed0b22975298ecb6fc7",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 41,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 5
+          },
+          "encounter": "underdocks_skulking_colony",
+          "episode_id": "8e9fd7f28b9248648a5ab3c49e725f25",
+          "policy": "network",
+          "public_opening_sha256": "9a47a93cec0095d355a3a30df73d9ec42dbeab6973346ff4629e807a881eabeb",
+          "source_group": "fc22fe58ba454ed0b22975298ecb6fc7",
+          "status": "terminated",
+          "steps": 16,
+          "task_return": 1.05125
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/fa9240720d69452d86fb6b5aeb378e0b.search.json.gz",
+              "sha256": "a3136ad9f1eb55acc914c5b3ce874f17673cfc1660c5235c99acf09302cbdfb9"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/fa9240720d69452d86fb6b5aeb378e0b.training.json",
+              "sha256": "a9d52b6b81d234cf6267219cbed7a5f2c2c2e1220928cc06cfd875758e13d79a"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "7b8f6780a20c0cddabc77329e97e54db521ab34b1267d97514e8f743a5e6fa9a",
+              "path": "runs/direct-search-learning-initial-eval-20261004/fa9240720d69452d86fb6b5aeb378e0b.trajectory.jsonl.gz",
+              "sha256": "8b13c10dc401205f81fd6e011a3ffaac697d3fa9a08481def70611f3b814631e"
+            }
+          },
+          "case_id": "fc22fe58ba454ed0b22975298ecb6fc7",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 41,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 5
+          },
+          "encounter": "underdocks_skulking_colony",
+          "episode_id": "fa9240720d69452d86fb6b5aeb378e0b",
+          "max_action_seconds": 0.17854054179042578,
+          "policy": "root",
+          "public_opening_sha256": "9a47a93cec0095d355a3a30df73d9ec42dbeab6973346ff4629e807a881eabeb",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 34,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.19199583493173122,
+              "updates": 17
+            },
+            "cutoffs": {},
+            "decisions": 16,
+            "fallbacks": {
+              "forced_action": 4
+            },
+            "p95_seconds": 0.17854054179042578,
+            "searched": 12,
+            "seconds": 1.9327487056143582,
+            "simulations": 192,
+            "timings": {
+              "conditioning": 0.23804132780060172,
+              "inference": 0.40397529071196914,
+              "projection": 0.6176699050702155,
+              "reconstruction": 0.0065629989840090275,
+              "sampling": 0.5586618040688336,
+              "transition": 0.060082959942519665
+            }
+          },
+          "source_group": "fc22fe58ba454ed0b22975298ecb6fc7",
+          "status": "terminated",
+          "steps": 16,
+          "task_return": 1.05125
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/d991e3b3636c4748b37efd23c5f9520a.search.json.gz",
+              "sha256": "60ae89a055ed497e7f61b32bb45dc6a97cb497b67b3816944577bbbd091344d6"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/d991e3b3636c4748b37efd23c5f9520a.training.json",
+              "sha256": "978349e008b69847cfe569b6e9d3058d739c35a2be4589ee2fb96057ad3cf45f"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "211e7db1868ace34098f66ff509b1b82bcd67c2be9c2f51b41fb3d83ad07541e",
+              "path": "runs/direct-search-learning-initial-eval-20261004/d991e3b3636c4748b37efd23c5f9520a.trajectory.jsonl.gz",
+              "sha256": "057057ceb0feac11b1bbb9f50227641b6648d8561fbbfc2b462197e6afe75f8c"
+            }
+          },
+          "case_id": "fc22fe58ba454ed0b22975298ecb6fc7",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 41,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 5
+          },
+          "encounter": "underdocks_skulking_colony",
+          "episode_id": "d991e3b3636c4748b37efd23c5f9520a",
+          "max_action_seconds": 0.24917787546291947,
+          "policy": "gumbel",
+          "public_opening_sha256": "9a47a93cec0095d355a3a30df73d9ec42dbeab6973346ff4629e807a881eabeb",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 34,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.18931087385863066,
+              "updates": 17
+            },
+            "cutoffs": {},
+            "decisions": 16,
+            "fallbacks": {
+              "forced_action": 4
+            },
+            "p95_seconds": 0.24917787546291947,
+            "searched": 12,
+            "seconds": 2.718840630259365,
+            "simulations": 192,
+            "timings": {
+              "conditioning": 0.23622716637328267,
+              "inference": 0.8859604680910707,
+              "projection": 0.8433122909627855,
+              "reconstruction": 0.007061542943120003,
+              "sampling": 0.5399446575902402,
+              "transition": 0.11847732588648796
+            }
+          },
+          "source_group": "fc22fe58ba454ed0b22975298ecb6fc7",
+          "status": "terminated",
+          "steps": 16,
+          "task_return": 1.05125
+        },
+        {
+          "artifacts": {
+            "training": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/190d89abd9f4404ca25a461f37edb306.training.json",
+              "sha256": "ed78344bab3e7675c0511df0d57a00aae4493428d6cd637e2e4e015d3d9bebff"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "34cf271016e59a7a1910bf8da4a74b4e4e63789355bf8e3f39e11ab4bee65e7b",
+              "path": "runs/direct-search-learning-initial-eval-20261004/190d89abd9f4404ca25a461f37edb306.trajectory.jsonl.gz",
+              "sha256": "4fb4c2b98b2ff96fc5458ee4d0525c6a5236fdf003e04c026cf5c19c04d271d2"
+            }
+          },
+          "case_id": "5a88caff4fa84759b26c4a72f02c2eb7",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 12
+          },
+          "encounter": "underdocks_lagavulin_matriarch",
+          "episode_id": "190d89abd9f4404ca25a461f37edb306",
+          "policy": "network",
+          "public_opening_sha256": "da7e2f20da22f63453f225ea41c2c5a1a87a4c8a2386118b479766f714e0849c",
+          "source_group": "5a88caff4fa84759b26c4a72f02c2eb7",
+          "status": "terminated",
+          "steps": 40,
+          "task_return": 0.0
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/b802010c55604e71a77fbf09f1f48697.search.json.gz",
+              "sha256": "dd196225fe91ea82ee39c679023e68b3d175f12fbf6e07cb1f7f32e10b29cd39"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/b802010c55604e71a77fbf09f1f48697.training.json",
+              "sha256": "070058a8834d8b47362119d10c13debd76be9438d303a3d91734a7053d874351"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "bcdb48d1d3f9eda1e0709c2f42e5027c1a29bcddfd664ab6c2b8dd8478c16f6d",
+              "path": "runs/direct-search-learning-initial-eval-20261004/b802010c55604e71a77fbf09f1f48697.trajectory.jsonl.gz",
+              "sha256": "688e830fdf9a86aed077be2b1686f0cd161410bd6ed856c8116931236110f1cd"
+            }
+          },
+          "case_id": "5a88caff4fa84759b26c4a72f02c2eb7",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 10
+          },
+          "encounter": "underdocks_lagavulin_matriarch",
+          "episode_id": "b802010c55604e71a77fbf09f1f48697",
+          "max_action_seconds": 0.17543725110590458,
+          "policy": "root",
+          "public_opening_sha256": "da7e2f20da22f63453f225ea41c2c5a1a87a4c8a2386118b479766f714e0849c",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 70,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.4139317055232823,
+              "updates": 35
+            },
+            "cutoffs": {},
+            "decisions": 34,
+            "fallbacks": {
+              "forced_action": 9
+            },
+            "p95_seconds": 0.1714743748307228,
+            "searched": 25,
+            "seconds": 4.041477790568024,
+            "simulations": 400,
+            "timings": {
+              "conditioning": 0.5737604540772736,
+              "inference": 0.9732648287899792,
+              "projection": 1.1974611575715244,
+              "reconstruction": 0.007370421197265387,
+              "sampling": 1.0867368588224053,
+              "transition": 0.10340200224891305
+            }
+          },
+          "source_group": "5a88caff4fa84759b26c4a72f02c2eb7",
+          "status": "terminated",
+          "steps": 34,
+          "task_return": 0.0
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/7f085044266a49238ae2015a7b8fbf9d.search.json.gz",
+              "sha256": "237e7f0361e550c847a24910f291ff79c0a77ef9999546693b7ea95d55ff3f3e"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-initial-eval-20261004/7f085044266a49238ae2015a7b8fbf9d.training.json",
+              "sha256": "b22a4c9646882511cd52102f18b7267cd96d76d3e8a001ad845a85d590384417"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "741340eda434b5085654f40d833144b65cf706ccd5f7cf40249783178f34f7d5",
+              "path": "runs/direct-search-learning-initial-eval-20261004/7f085044266a49238ae2015a7b8fbf9d.trajectory.jsonl.gz",
+              "sha256": "8b3bb079f4383bd346a33baf223215f2bf816b1ce9170aea022bff1a2d1be182"
+            }
+          },
+          "case_id": "5a88caff4fa84759b26c4a72f02c2eb7",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 10
+          },
+          "encounter": "underdocks_lagavulin_matriarch",
+          "episode_id": "7f085044266a49238ae2015a7b8fbf9d",
+          "max_action_seconds": 0.2533632917329669,
+          "policy": "gumbel",
+          "public_opening_sha256": "da7e2f20da22f63453f225ea41c2c5a1a87a4c8a2386118b479766f714e0849c",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 70,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.3907868769019842,
+              "updates": 35
+            },
+            "cutoffs": {},
+            "decisions": 34,
+            "fallbacks": {
+              "forced_action": 9
+            },
+            "p95_seconds": 0.2458795835264027,
+            "searched": 25,
+            "seconds": 5.778383411467075,
+            "simulations": 400,
+            "timings": {
+              "conditioning": 0.5027285390533507,
+              "inference": 1.9338580747134984,
+              "projection": 1.858037915546447,
+              "reconstruction": 0.007371542509645224,
+              "sampling": 1.1039563426747918,
+              "transition": 0.18819751124829054
+            }
+          },
+          "source_group": "5a88caff4fa84759b26c4a72f02c2eb7",
+          "status": "terminated",
+          "steps": 34,
+          "task_return": 0.0
+        }
+      ],
+      "execution": {
+        "schedule": "parallel_episodes_v1",
+        "workers": 4
+      },
+      "goal": "combat",
+      "implementation": {
+        "build": "19985f63736ec0e5be2a391f495cb9667941663b3c9f720469c05dbf9cfb469e",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "8eaf44ce4600e6b25a1675aa41e181027aed519f1bebfbeb5089b74406b77e8a",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "limits": {
+        "max_decisions": 48,
+        "time_limit_seconds": 90.0
+      },
+      "paired_vs_network": {
+        "gumbel": {
+          "cases": 8,
+          "difference_group_hoeffding_95": [
+            -0.9603227913199207,
+            0.9603227913199207
+          ],
+          "win_rate_difference": 0.0,
+          "wins_only_candidate": 0,
+          "wins_only_network": 0
+        },
+        "root": {
+          "cases": 8,
+          "difference_group_hoeffding_95": [
+            -0.9603227913199207,
+            0.9603227913199207
+          ],
+          "win_rate_difference": 0.0,
+          "wins_only_candidate": 0,
+          "wins_only_network": 0
+        }
+      },
+      "plan": {
+        "path": "runs/direct-search-learning-initial-eval-20261004/search-plan.json",
+        "sha256": "7fda29c4e4cc915c8dfb128f9bdc9db6da3b2091e6a41211185a1e85db1aea15"
+      },
+      "planning_view": "detached_combat_history_cards_v1",
+      "policies": {
+        "gumbel": "sts_combat_search_v1:9275f0ef3f51b6e5f58b92f30166769f5054067ccd16c7888cd917dfc5c2390c",
+        "network": "sts_planning_view_v1:ec54a3a63898c43d80dbc7c39a8833b9afd47e4fa204756a288f08dfb3c4e11d",
+        "root": "sts_combat_search_v1:a3ad1f394b9fb579487a7b3240cb5b0d728fab655c3eb5664301a96855699069"
+      },
+      "promotion": "experimental_only",
+      "purpose": "evaluation",
+      "report": {
+        "path": "runs/direct-search-learning-initial-eval-20261004/search.json",
+        "sha256": "7f1a74b56d36784afe4f3743f32afc13416b22be1ea7661363700673c0b3399c"
+      },
+      "reward_spec": {
+        "schema": "sts_training_reward_v1",
+        "weights": {
+          "combat_loss": 0.0,
+          "combat_win": 1.0,
+          "end_turn_action": 0.0,
+          "potion_use_action": 0.0,
+          "win_hp_fraction": 0.1
+        }
+      },
+      "schema": "sts_search_report_v2",
+      "search_configs": {
+        "gumbel": {
+          "belief_particles": 2,
+          "belief_proposals": 1024,
+          "belief_replay_proposals": 2048,
+          "belief_replay_steps": 16384,
+          "belief_seconds": 5.0,
+          "considered_actions": 16,
+          "exploration": false,
+          "max_depth": 16,
+          "method": "gumbel",
+          "model_version": "direct_belief_v1",
+          "seed": 0,
+          "simulations": 16,
+          "time_limit": 5.0
+        },
+        "root": {
+          "belief_particles": 2,
+          "belief_proposals": 1024,
+          "belief_replay_proposals": 2048,
+          "belief_replay_steps": 16384,
+          "belief_seconds": 5.0,
+          "considered_actions": 16,
+          "exploration": false,
+          "max_depth": 16,
+          "method": "root",
+          "model_version": "direct_belief_v1",
+          "seed": 0,
+          "simulations": 16,
+          "time_limit": 5.0
+        }
+      },
+      "split": "validation",
+      "start_kind": "opening",
+      "status": "complete",
+      "summary": {
+        "gumbel": {
+          "attempted": 8,
+          "cutoffs": 0,
+          "failures": 0,
+          "hp_change_observations": 8,
+          "losses": 2,
+          "mean_final_turn_observed": 5.75,
+          "mean_hp_change_observed": -39.125,
+          "mean_hp_fraction_on_win": 0.6812499999999999,
+          "mean_hp_on_win": 54.5,
+          "mean_task_return": 0.8010937499999999,
+          "planned": 8,
+          "potion_use_actions": 0,
+          "search": {
+            "coverage": 0.7432432432432432,
+            "cutoffs": {},
+            "decisions": 148,
+            "fallbacks": {
+              "forced_action": 38
+            },
+            "max_episode_p95_seconds": 0.3155111246742308,
+            "searched": 110,
+            "seconds": 26.093142956029624,
+            "simulations": 1760,
+            "timings": {
+              "conditioning": 2.436478444840759,
+              "inference": 8.502226752694696,
+              "projection": 8.066100204829127,
+              "reconstruction": 0.07996450271457434,
+              "sampling": 5.208317611832172,
+              "transition": 0.9769109501503408
+            }
+          },
+          "source_groups": 8,
+          "steps": 148,
+          "unattempted": 0,
+          "win_rate": 0.75,
+          "win_rate_group_hoeffding_95": [
+            0.26983860434003965,
+            1
+          ],
+          "wins": 6
+        },
+        "network": {
+          "attempted": 8,
+          "cutoffs": 0,
+          "failures": 0,
+          "hp_change_observations": 8,
+          "losses": 2,
+          "mean_final_turn_observed": 6.25,
+          "mean_hp_change_observed": -38.5,
+          "mean_hp_fraction_on_win": 0.6916666666666665,
+          "mean_hp_on_win": 55.333333333333336,
+          "mean_task_return": 0.8018750000000001,
+          "planned": 8,
+          "potion_use_actions": 0,
+          "source_groups": 8,
+          "steps": 162,
+          "unattempted": 0,
+          "win_rate": 0.75,
+          "win_rate_group_hoeffding_95": [
+            0.26983860434003965,
+            1
+          ],
+          "wins": 6
+        },
+        "root": {
+          "attempted": 8,
+          "cutoffs": 0,
+          "failures": 0,
+          "hp_change_observations": 8,
+          "losses": 2,
+          "mean_final_turn_observed": 5.75,
+          "mean_hp_change_observed": -37.0,
+          "mean_hp_fraction_on_win": 0.7166666666666667,
+          "mean_hp_on_win": 57.333333333333336,
+          "mean_task_return": 0.8037500000000002,
+          "planned": 8,
+          "potion_use_actions": 0,
+          "search": {
+            "coverage": 0.7449664429530202,
+            "cutoffs": {},
+            "decisions": 149,
+            "fallbacks": {
+              "forced_action": 38
+            },
+            "max_episode_p95_seconds": 0.2147928331978619,
+            "searched": 111,
+            "seconds": 18.897901921067387,
+            "simulations": 1776,
+            "timings": {
+              "conditioning": 2.604116370435804,
+              "inference": 4.310509791597724,
+              "projection": 5.630364051088691,
+              "reconstruction": 0.10643708845600486,
+              "sampling": 5.259574469644576,
+              "transition": 0.5233536772429943
+            }
+          },
+          "source_groups": 8,
+          "steps": 149,
+          "unattempted": 0,
+          "win_rate": 0.75,
+          "win_rate_group_hoeffding_95": [
+            0.26983860434003965,
+            1
+          ],
+          "wins": 6
+        }
+      },
+      "total_seconds": 16.92855037515983
+    },
+    "reanalysis": {
+      "checkpoint": "imitation_v1:d0c1e9d6bcb628d1bd98b5e27840845d861dd74efc49d3ef50a2dda69f9e87bf",
+      "corpus": null,
+      "episodes": [
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-reanalysis-20261004/8bed313f28104368ac4ece4216f7aacc.search.json.gz",
+              "sha256": "7d895a4e110044e9882b6ffb208fe686408197bf22190080a81f6a25dc995d33"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-reanalysis-20261004/8bed313f28104368ac4ece4216f7aacc.training.json",
+              "sha256": "55ae1acd97fe3116ace4ea12d4f6c681a1241ed1b33f00c88c1b611ae6e09463"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "a7c081a61326973594f4560633a1ccda84174a1299eade5d195b64027c1b2d11",
+              "path": "runs/direct-search-learning-reanalysis-20261004/8bed313f28104368ac4ece4216f7aacc.trajectory.jsonl.gz",
+              "sha256": "aae67e14d173a55581bb3b655862e845cfbf05375496e6c833c3d323f1a78232"
+            }
+          },
+          "behavior_policy": "sts_combat_search_v1:a670d200bc4c58f2985d4e03196744076eaf6ea852e8ada8c804e65a942db9c1",
+          "case_id": "b457178f874a49969853cb50ee2c8572",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 73,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 3
+          },
+          "encounter": "overgrowth_nibbit",
+          "episode_id": "8bed313f28104368ac4ece4216f7aacc",
+          "max_action_seconds": 0.24086558306589723,
+          "policy": "gumbel",
+          "public_opening_sha256": "e1576379f90d6c81e7bf6e82af6cb6b6802f74efd03e6f7c1e3e3157246d5d7e",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 20,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.1088986680842936,
+              "updates": 10
+            },
+            "cutoffs": {},
+            "decisions": 9,
+            "fallbacks": {
+              "forced_action": 2
+            },
+            "p95_seconds": 0.24086558306589723,
+            "searched": 7,
+            "seconds": 1.3350198338739574,
+            "simulations": 112,
+            "timings": {
+              "conditioning": 0.12061025155708194,
+              "inference": 0.3976633306592703,
+              "projection": 0.39332668855786324,
+              "reconstruction": 0.015119291376322508,
+              "sampling": 0.297868300229311,
+              "transition": 0.06671000830829144
+            }
+          },
+          "source_group": "b457178f874a49969853cb50ee2c8572",
+          "status": "terminated",
+          "steps": 9,
+          "task_return": 1.09125
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-reanalysis-20261004/63027fb044ea478cb436bc7bc85cedad.search.json.gz",
+              "sha256": "7ce853dcf391693923ec26bfa4b43f31dea9435dfc98a44aea49ab4a4034c634"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-reanalysis-20261004/63027fb044ea478cb436bc7bc85cedad.training.json",
+              "sha256": "20e8dca8c7972612e1cd0255341f3d194b0a575b85c932221a2add2b12440f55"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "b7ee0dd8377c99fdccc11e28519bc3a29f4addf148de1968914b7a5d57272ec1",
+              "path": "runs/direct-search-learning-reanalysis-20261004/63027fb044ea478cb436bc7bc85cedad.trajectory.jsonl.gz",
+              "sha256": "f8c7747ed81755f3d4500905d1fa2a19be092792a1e2a9840091308b82096d71"
+            }
+          },
+          "behavior_policy": "sts_combat_search_v1:a670d200bc4c58f2985d4e03196744076eaf6ea852e8ada8c804e65a942db9c1",
+          "case_id": "4f4d2182d2a8472ca21c256a35811bef",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 68,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 5
+          },
+          "encounter": "overgrowth_slimes",
+          "episode_id": "63027fb044ea478cb436bc7bc85cedad",
+          "max_action_seconds": 0.27621633326634765,
+          "policy": "gumbel",
+          "public_opening_sha256": "8aeb5f87f7deb7180f133abd84996fad3e96493a1b2e462139ba4345208f82dd",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 44,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.23382712388411164,
+              "updates": 17
+            },
+            "cutoffs": {},
+            "decisions": 16,
+            "fallbacks": {
+              "forced_action": 4
+            },
+            "p95_seconds": 0.27621633326634765,
+            "searched": 12,
+            "seconds": 2.7399216243065894,
+            "simulations": 192,
+            "timings": {
+              "conditioning": 0.27364858286455274,
+              "inference": 0.9590421644970775,
+              "projection": 0.7522467100061476,
+              "reconstruction": 0.01974929077550769,
+              "sampling": 0.564261666033417,
+              "transition": 0.08745034597814083
+            }
+          },
+          "source_group": "4f4d2182d2a8472ca21c256a35811bef",
+          "status": "terminated",
+          "steps": 16,
+          "task_return": 1.085
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-reanalysis-20261004/733e169e635a4c8bb84389e87155166c.search.json.gz",
+              "sha256": "b37db890758f0bc47565aaa48a8256acc512acf301bc12acc229de1f0c3da1f5"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-reanalysis-20261004/733e169e635a4c8bb84389e87155166c.training.json",
+              "sha256": "086b86420b1af19f355b18ab6048063e30b573ade27be4703aaccd794b86f709"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "e451a9360adf762176089be24292f72e07d4a76682254e8742ef672575312a9b",
+              "path": "runs/direct-search-learning-reanalysis-20261004/733e169e635a4c8bb84389e87155166c.trajectory.jsonl.gz",
+              "sha256": "59c9117daa894ee2c9d5b2f1811de60d7e9b0f0f3b2faa85793c21d1c1468363"
+            }
+          },
+          "behavior_policy": "sts_combat_search_v1:a670d200bc4c58f2985d4e03196744076eaf6ea852e8ada8c804e65a942db9c1",
+          "case_id": "34286aed6951406d961c3ddf0549d9fd",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 7
+          },
+          "encounter": "overgrowth_bygone_effigy",
+          "episode_id": "733e169e635a4c8bb84389e87155166c",
+          "max_action_seconds": 0.22616170812398195,
+          "policy": "gumbel",
+          "public_opening_sha256": "2cd4b33a89025f1f5bacdb33c5c37b73191fb642e1dd6faa8cd6fe6a83bf6159",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 52,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.277985081076622,
+              "updates": 26
+            },
+            "cutoffs": {},
+            "decisions": 25,
+            "fallbacks": {
+              "forced_action": 7
+            },
+            "p95_seconds": 0.22497712448239326,
+            "searched": 18,
+            "seconds": 3.8787230057641864,
+            "simulations": 288,
+            "timings": {
+              "conditioning": 0.3551584188826382,
+              "inference": 1.2383208265528083,
+              "projection": 1.2252816585823894,
+              "reconstruction": 0.006741373799741268,
+              "sampling": 0.8064709445461631,
+              "transition": 0.12520428374409676
+            }
+          },
+          "source_group": "34286aed6951406d961c3ddf0549d9fd",
+          "status": "terminated",
+          "steps": 25,
+          "task_return": 0.0
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-reanalysis-20261004/182d5fbb43be44b7a151c7b8e97e59a5.search.json.gz",
+              "sha256": "108404673b6248553aa543a1b525999b8ece9a25cd62a41d59fcd9b005f7b2b1"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-reanalysis-20261004/182d5fbb43be44b7a151c7b8e97e59a5.training.json",
+              "sha256": "7c3d669bed11c6e22b31ec536a8a6ed70d83dcc3119c9a3bb82920965de93017"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "30b70aa4bfba0ba98e780c80d6e2354ac68ebeff6156ac296c4013bd0414b1bb",
+              "path": "runs/direct-search-learning-reanalysis-20261004/182d5fbb43be44b7a151c7b8e97e59a5.trajectory.jsonl.gz",
+              "sha256": "1c802886c185447c87f3a606c4afc34ca61adc1f0231d6bbcfc5a8b7c082c685"
+            }
+          },
+          "behavior_policy": "sts_combat_search_v1:a670d200bc4c58f2985d4e03196744076eaf6ea852e8ada8c804e65a942db9c1",
+          "case_id": "4aa21b5e4a764817a7f28e888f627f8c",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 10
+          },
+          "encounter": "overgrowth_vantom",
+          "episode_id": "182d5fbb43be44b7a151c7b8e97e59a5",
+          "max_action_seconds": 0.2939169164747,
+          "policy": "gumbel",
+          "public_opening_sha256": "7a21a771331413148a383007871731e5c9adfe640278aabfb68a53b9bc5168e2",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 70,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.40555941965430975,
+              "updates": 35
+            },
+            "cutoffs": {},
+            "decisions": 34,
+            "fallbacks": {
+              "forced_action": 9
+            },
+            "p95_seconds": 0.27644295897334814,
+            "searched": 25,
+            "seconds": 6.076690792106092,
+            "simulations": 400,
+            "timings": {
+              "conditioning": 0.5259873727336526,
+              "inference": 1.9672403312288225,
+              "projection": 1.9583002305589616,
+              "reconstruction": 0.00786466896533966,
+              "sampling": 1.267474609427154,
+              "transition": 0.1745631298981607
+            }
+          },
+          "source_group": "4aa21b5e4a764817a7f28e888f627f8c",
+          "status": "terminated",
+          "steps": 34,
+          "task_return": 0.0
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-reanalysis-20261004/38e5bb285b734d178c0015a7ace9f4f4.search.json.gz",
+              "sha256": "d25c7e3739d91e32dad93fedc6408585211e3ce676296a221cbf8ec58cde094a"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-reanalysis-20261004/38e5bb285b734d178c0015a7ace9f4f4.training.json",
+              "sha256": "0b105f8cdfa11c27277f364ca04164453ed8a16ae7ef4ecd31eb9b80d9820a54"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "0a7592ee200e9c5f9d3657469d2f28558bac2557a56c3744c3cbb53b60bae163",
+              "path": "runs/direct-search-learning-reanalysis-20261004/38e5bb285b734d178c0015a7ace9f4f4.trajectory.jsonl.gz",
+              "sha256": "0f4a75990dc23fa84489143a57f431b40dfe2566cbff7cbfb22d46d04fea99ee"
+            }
+          },
+          "behavior_policy": "sts_combat_search_v1:a670d200bc4c58f2985d4e03196744076eaf6ea852e8ada8c804e65a942db9c1",
+          "case_id": "2e84d5854a6f4735997558b2ef1daf54",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 78,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 3
+          },
+          "encounter": "underdocks_corpse_slugs_weak",
+          "episode_id": "38e5bb285b734d178c0015a7ace9f4f4",
+          "max_action_seconds": 0.2196038761176169,
+          "policy": "gumbel",
+          "public_opening_sha256": "94951b06dfb00416a34a07394d47daf0d69d97da54f799098faa179cc63d0bee",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 20,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.10179187590256333,
+              "updates": 10
+            },
+            "cutoffs": {},
+            "decisions": 9,
+            "fallbacks": {
+              "forced_action": 2
+            },
+            "p95_seconds": 0.2196038761176169,
+            "searched": 7,
+            "seconds": 1.3561355019919574,
+            "simulations": 112,
+            "timings": {
+              "conditioning": 0.12298116739839315,
+              "inference": 0.3616846199147403,
+              "projection": 0.41038099909201264,
+              "reconstruction": 0.006457250565290451,
+              "sampling": 0.3430729447863996,
+              "transition": 0.0653937472961843
+            }
+          },
+          "source_group": "2e84d5854a6f4735997558b2ef1daf54",
+          "status": "terminated",
+          "steps": 9,
+          "task_return": 1.0975
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-reanalysis-20261004/97d7c7c0a6974ff0a6b3b83f232d49b9.search.json.gz",
+              "sha256": "594236bfc6ecf498773d83b88a802c391c88233a43025e3460a3b71daa823df1"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-reanalysis-20261004/97d7c7c0a6974ff0a6b3b83f232d49b9.training.json",
+              "sha256": "e05c7d97f612e7a240d7e3413794ce5a27e59e2f2fc5605b40fb646fdfdaaf58"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "25f3b218ebd46fc9b45126b1e7b1e66d2a134f5ecd991521a808c45632805ef1",
+              "path": "runs/direct-search-learning-reanalysis-20261004/97d7c7c0a6974ff0a6b3b83f232d49b9.trajectory.jsonl.gz",
+              "sha256": "339d088659775686e14c5c9219259a0d573d1fe12a085417fa906c335db5a9ee"
+            }
+          },
+          "behavior_policy": "sts_combat_search_v1:a670d200bc4c58f2985d4e03196744076eaf6ea852e8ada8c804e65a942db9c1",
+          "case_id": "117f7921f5ca49cc92acd4fe00dcb6e7",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 49,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 6
+          },
+          "encounter": "underdocks_living_fog",
+          "episode_id": "97d7c7c0a6974ff0a6b3b83f232d49b9",
+          "max_action_seconds": 0.22681429190561175,
+          "policy": "gumbel",
+          "public_opening_sha256": "65b8368ce6ca3113cfedd87439ea5763203cc68b1830c641691e7116af61f306",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 38,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.272621207870543,
+              "updates": 19
+            },
+            "cutoffs": {},
+            "decisions": 18,
+            "fallbacks": {
+              "forced_action": 5
+            },
+            "p95_seconds": 0.22681429190561175,
+            "searched": 13,
+            "seconds": 2.781443582382053,
+            "simulations": 208,
+            "timings": {
+              "conditioning": 0.3255390413105488,
+              "inference": 0.8770903032273054,
+              "projection": 0.7731762495823205,
+              "reconstruction": 0.006521748844534159,
+              "sampling": 0.6109506455250084,
+              "transition": 0.10307432152330875
+            }
+          },
+          "source_group": "117f7921f5ca49cc92acd4fe00dcb6e7",
+          "status": "terminated",
+          "steps": 18,
+          "task_return": 1.06125
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-reanalysis-20261004/4c98016db9f5454bba6c3cdda2c8a8c5.search.json.gz",
+              "sha256": "e6d8a81c16e9a353f45d4c997740dc0d211c69abfe24f9bb073d122d4abec67a"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-reanalysis-20261004/4c98016db9f5454bba6c3cdda2c8a8c5.training.json",
+              "sha256": "48b7df26b88a51b69612c920dcb3bbdbd97b24739a9952489ca3616938ca7c97"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "6ab4309d69e1ccf253c9dfe5bbdf7c9bfea92133af727dc7c4d3f95fe4dfaba2",
+              "path": "runs/direct-search-learning-reanalysis-20261004/4c98016db9f5454bba6c3cdda2c8a8c5.trajectory.jsonl.gz",
+              "sha256": "77442ac68af11bad3cb2aafa4247ac9f8db26da1ce229565047345c8b56f506f"
+            }
+          },
+          "behavior_policy": "sts_combat_search_v1:a670d200bc4c58f2985d4e03196744076eaf6ea852e8ada8c804e65a942db9c1",
+          "case_id": "0b7950ec35214d93a167db69e35ccd46",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 41,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 5
+          },
+          "encounter": "underdocks_skulking_colony",
+          "episode_id": "4c98016db9f5454bba6c3cdda2c8a8c5",
+          "max_action_seconds": 0.22299808310344815,
+          "policy": "gumbel",
+          "public_opening_sha256": "37fb52f3445ea17782fbc098ee1daa84e5536cd032efb9bafa056ae5115c9eb5",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 32,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.1676276233047247,
+              "updates": 16
+            },
+            "cutoffs": {},
+            "decisions": 15,
+            "fallbacks": {
+              "forced_action": 4
+            },
+            "p95_seconds": 0.22299808310344815,
+            "searched": 11,
+            "seconds": 2.3425609581172466,
+            "simulations": 176,
+            "timings": {
+              "conditioning": 0.20811170851811767,
+              "inference": 0.7760972478426993,
+              "projection": 0.6912630428560078,
+              "reconstruction": 0.006675415672361851,
+              "sampling": 0.5017849197611213,
+              "transition": 0.08819525316357613
+            }
+          },
+          "source_group": "0b7950ec35214d93a167db69e35ccd46",
+          "status": "terminated",
+          "steps": 15,
+          "task_return": 1.05125
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-reanalysis-20261004/f72dfefc5b11497f9ff92856de47649c.search.json.gz",
+              "sha256": "cd210f3e434695bcd92721d70978c281bc411d9700fb1329f561c9704dbf88b5"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-reanalysis-20261004/f72dfefc5b11497f9ff92856de47649c.training.json",
+              "sha256": "2052271f1b87ab79adf5739cf88b3eac4871539e5badb82fbea520e7467d9ee6"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "a55a4e3228a323ba23c1d659c885002223df0ee5eca81e106bf9f05b9e351100",
+              "path": "runs/direct-search-learning-reanalysis-20261004/f72dfefc5b11497f9ff92856de47649c.trajectory.jsonl.gz",
+              "sha256": "a60520bba30c28a57145a3e65b6cd95015a8a10539e5367b4ce8b652beb96ea4"
+            }
+          },
+          "behavior_policy": "sts_combat_search_v1:a670d200bc4c58f2985d4e03196744076eaf6ea852e8ada8c804e65a942db9c1",
+          "case_id": "c375f8b4eea847d19cb8b70b4a4cd76e",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 9
+          },
+          "encounter": "underdocks_lagavulin_matriarch",
+          "episode_id": "f72dfefc5b11497f9ff92856de47649c",
+          "max_action_seconds": 0.25729212490841746,
+          "policy": "gumbel",
+          "public_opening_sha256": "7df9a5785de6f8dc59e9ebe6d50cc70c9b8b308994673205c808841e4ff68269",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 64,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.37571133486926556,
+              "updates": 32
+            },
+            "cutoffs": {},
+            "decisions": 31,
+            "fallbacks": {
+              "forced_action": 9
+            },
+            "p95_seconds": 0.24254462495446205,
+            "searched": 22,
+            "seconds": 4.9400734207592905,
+            "simulations": 352,
+            "timings": {
+              "conditioning": 0.4761431645601988,
+              "inference": 1.5753258322365582,
+              "projection": 1.5086782788857818,
+              "reconstruction": 0.007221166510134935,
+              "sampling": 1.0591695038601756,
+              "transition": 0.15921721560880542
+            }
+          },
+          "source_group": "c375f8b4eea847d19cb8b70b4a4cd76e",
+          "status": "terminated",
+          "steps": 31,
+          "task_return": 0.0
+        }
+      ],
+      "goal": "combat",
+      "implementation": {
+        "build": "19985f63736ec0e5be2a391f495cb9667941663b3c9f720469c05dbf9cfb469e",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "8eaf44ce4600e6b25a1675aa41e181027aed519f1bebfbeb5089b74406b77e8a",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "limits": {
+        "max_decisions": 48,
+        "time_limit_seconds": 90.0
+      },
+      "outcome_provenance": "original_behavior_unchanged",
+      "planning_view": "detached_combat_history_cards_v1",
+      "policies": {
+        "gumbel": "sts_combat_search_v1:319469ef20d707cc009cf75d4f5ee0533dc99060240d147dece323bca9bc8375"
+      },
+      "promotion": "not_evaluated",
+      "purpose": "reanalysis",
+      "report": {
+        "path": "runs/direct-search-learning-reanalysis-20261004/search.json",
+        "sha256": "f4202b16b8e8b4daab2439a83258037fc5732d36a387db26177996c3af164803"
+      },
+      "reward_spec": {
+        "schema": "sts_training_reward_v1",
+        "weights": {
+          "combat_loss": 0.0,
+          "combat_win": 1.0,
+          "end_turn_action": 0.0,
+          "potion_use_action": 0.0,
+          "win_hp_fraction": 0.1
+        }
+      },
+      "schema": "sts_search_report_v2",
+      "search_configs": {
+        "gumbel": {
+          "belief_particles": 2,
+          "belief_proposals": 1024,
+          "belief_replay_proposals": 2048,
+          "belief_replay_steps": 16384,
+          "belief_seconds": 5.0,
+          "considered_actions": 16,
+          "exploration": true,
+          "max_depth": 16,
+          "method": "gumbel",
+          "model_version": "direct_belief_v1",
+          "seed": 0,
+          "simulations": 16,
+          "time_limit": 5.0
+        }
+      },
+      "source_report_sha256": "f6aa82dbff055b921577b932900b35365d31925006cd9f236aea78a3cf2f8b01",
+      "split": "train",
+      "start_kind": "opening",
+      "status": "complete",
+      "target_refresh": {
+        "coverage": 0.732484076433121,
+        "cutoffs": {},
+        "decisions": 157,
+        "fallbacks": {
+          "forced_action": 42
+        },
+        "max_episode_p95_seconds": 0.27644295897334814,
+        "searched": 115,
+        "seconds": 25.450568719301373,
+        "simulations": 1840,
+        "timings": {
+          "conditioning": 2.408179707825184,
+          "inference": 8.152464656159282,
+          "projection": 7.7126538581214845,
+          "reconstruction": 0.07635020650923252,
+          "sampling": 5.45105353416875,
+          "transition": 0.8698083055205643
+        }
+      },
+      "total_seconds": 26.0124922497198
+    },
+    "student_evaluation": {
+      "checkpoint": "imitation_v1:d0c1e9d6bcb628d1bd98b5e27840845d861dd74efc49d3ef50a2dda69f9e87bf",
+      "corpus": null,
+      "episodes": [
+        {
+          "artifacts": {
+            "training": {
+              "path": "runs/direct-search-learning-student-eval-20261004/0f41d4a09ef04ca3b4add00d8f70b94e.training.json",
+              "sha256": "837bb7c6e4e9b583eba30f179aab1d7cba6f1ae1f733ae70f66133265e295ef5"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "4088b45d50885effa7c3a03a746a1f0ab69ab29627e6d89c54144ee4b74d387d",
+              "path": "runs/direct-search-learning-student-eval-20261004/0f41d4a09ef04ca3b4add00d8f70b94e.trajectory.jsonl.gz",
+              "sha256": "cfac4a7ce19005d736447b12000bfedad2e36649eba8d39587ffdcda7732a1fb"
+            }
+          },
+          "case_id": "69bcf5995c2b47978cb0caadfb9f1e42",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 74,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 2
+          },
+          "encounter": "overgrowth_nibbit",
+          "episode_id": "0f41d4a09ef04ca3b4add00d8f70b94e",
+          "policy": "network",
+          "public_opening_sha256": "3eac74dbc5b438823de16cd2b3b88df1178a476d7230095654ad719927e4c91d",
+          "source_group": "69bcf5995c2b47978cb0caadfb9f1e42",
+          "status": "terminated",
+          "steps": 6,
+          "task_return": 1.0925
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-student-eval-20261004/33a1bf42e5fa4c55b990584dc0aff86a.search.json.gz",
+              "sha256": "eff4fec7eb3fca00ebdb13dad01a287e18ff3826f871aa62505119c451746965"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-student-eval-20261004/33a1bf42e5fa4c55b990584dc0aff86a.training.json",
+              "sha256": "747c196a8606a3548ef466248fce862ab436f637f64b2bd280bc1445de3f565d"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "4809385cc7bf744bb1e26c6a7b3acc25ee6857311daddfc4c8eb9215cb042901",
+              "path": "runs/direct-search-learning-student-eval-20261004/33a1bf42e5fa4c55b990584dc0aff86a.trajectory.jsonl.gz",
+              "sha256": "499039e3c63518f0a0d38acca70faf6509cc497ba62accff06ab276526ed1dd6"
+            }
+          },
+          "case_id": "69bcf5995c2b47978cb0caadfb9f1e42",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 74,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 2
+          },
+          "encounter": "overgrowth_nibbit",
+          "episode_id": "33a1bf42e5fa4c55b990584dc0aff86a",
+          "max_action_seconds": 0.17803562385961413,
+          "policy": "root",
+          "public_opening_sha256": "3eac74dbc5b438823de16cd2b3b88df1178a476d7230095654ad719927e4c91d",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 14,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.07357262307778001,
+              "updates": 7
+            },
+            "cutoffs": {},
+            "decisions": 6,
+            "fallbacks": {
+              "forced_action": 1
+            },
+            "p95_seconds": 0.17803562385961413,
+            "searched": 5,
+            "seconds": 0.7564269565045834,
+            "simulations": 80,
+            "timings": {
+              "conditioning": 0.08439287403598428,
+              "inference": 0.1442202883772552,
+              "projection": 0.26084028696641326,
+              "reconstruction": 0.006961332634091377,
+              "sampling": 0.2094618803821504,
+              "transition": 0.030560795683413744
+            }
+          },
+          "source_group": "69bcf5995c2b47978cb0caadfb9f1e42",
+          "status": "terminated",
+          "steps": 6,
+          "task_return": 1.0925
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-student-eval-20261004/421fe8081a0f48d4be468e0cb544c301.search.json.gz",
+              "sha256": "c627faeefb043c750fa7b3ad6ab206f7dbd8476e9c20ca2be22ab05eb74d5d8e"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-student-eval-20261004/421fe8081a0f48d4be468e0cb544c301.training.json",
+              "sha256": "cfd14bb92fb78ceda9fa5f0538c3ecfebea069ceffa49c6dcb407b3c6f77d146"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "143715d5564017cb25668923f19e9bc5cc625850aa84500651855a32222c6893",
+              "path": "runs/direct-search-learning-student-eval-20261004/421fe8081a0f48d4be468e0cb544c301.trajectory.jsonl.gz",
+              "sha256": "79a3567b1d6a2fbb4ba163cc4bad3ec7a42e87039d0f971955a11043c21bab82"
+            }
+          },
+          "case_id": "69bcf5995c2b47978cb0caadfb9f1e42",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 74,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 2
+          },
+          "encounter": "overgrowth_nibbit",
+          "episode_id": "421fe8081a0f48d4be468e0cb544c301",
+          "max_action_seconds": 0.24739400018006563,
+          "policy": "gumbel",
+          "public_opening_sha256": "3eac74dbc5b438823de16cd2b3b88df1178a476d7230095654ad719927e4c91d",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 14,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.0740485000424087,
+              "updates": 7
+            },
+            "cutoffs": {},
+            "decisions": 6,
+            "fallbacks": {
+              "forced_action": 1
+            },
+            "p95_seconds": 0.24739400018006563,
+            "searched": 5,
+            "seconds": 0.9901303737424314,
+            "simulations": 80,
+            "timings": {
+              "conditioning": 0.08482762379571795,
+              "inference": 0.2426053318195045,
+              "projection": 0.3153647859580815,
+              "reconstruction": 0.007297626230865717,
+              "sampling": 0.23761907313019037,
+              "transition": 0.06481775408610702
+            }
+          },
+          "source_group": "69bcf5995c2b47978cb0caadfb9f1e42",
+          "status": "terminated",
+          "steps": 6,
+          "task_return": 1.0925
+        },
+        {
+          "artifacts": {
+            "training": {
+              "path": "runs/direct-search-learning-student-eval-20261004/3d722200cf214b4e8fc753b4ca603c97.training.json",
+              "sha256": "004dc0ff42b82b3d29bc994f238b994ace4c3fd3a97f2c710c92bab84371b603"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "40e7675118a8a0ceb8348416e169c283bbf55e6684dc590b96002590fdd0513c",
+              "path": "runs/direct-search-learning-student-eval-20261004/3d722200cf214b4e8fc753b4ca603c97.trajectory.jsonl.gz",
+              "sha256": "05136dc197768cc656053833aed3468dd1871092a728a8f891e6428891d58f6a"
+            }
+          },
+          "case_id": "046b44d6503a4e7e854f5285de94c9af",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 75,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 5
+          },
+          "encounter": "overgrowth_slimes",
+          "episode_id": "3d722200cf214b4e8fc753b4ca603c97",
+          "policy": "network",
+          "public_opening_sha256": "ac4aeb2823420c1455205afdab1fdf98e50bfe311527b4fe03566a220960e760",
+          "source_group": "046b44d6503a4e7e854f5285de94c9af",
+          "status": "terminated",
+          "steps": 15,
+          "task_return": 1.09375
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-student-eval-20261004/1a12beeafffd459db466a74a3f07ef69.search.json.gz",
+              "sha256": "63f34a312a35ffc029dabedd7100702817a9430d8568ac3f027f204edcb7a643"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-student-eval-20261004/1a12beeafffd459db466a74a3f07ef69.training.json",
+              "sha256": "b0ab93af44a71ee1e2059f3f1724d8121efdac76e3de57deb94cb41b4f38a41c"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "d20320200c8532e5686df8138aad2c596dc10bcb2eaa2818847549d33a918178",
+              "path": "runs/direct-search-learning-student-eval-20261004/1a12beeafffd459db466a74a3f07ef69.trajectory.jsonl.gz",
+              "sha256": "aa0f88aafc25527f454d8c59b004207f465bf0dc88f92625cd770dde4c091f88"
+            }
+          },
+          "case_id": "046b44d6503a4e7e854f5285de94c9af",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 67,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 5
+          },
+          "encounter": "overgrowth_slimes",
+          "episode_id": "1a12beeafffd459db466a74a3f07ef69",
+          "max_action_seconds": 0.2193870833143592,
+          "policy": "root",
+          "public_opening_sha256": "ac4aeb2823420c1455205afdab1fdf98e50bfe311527b4fe03566a220960e760",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 42,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.2370318784378469,
+              "updates": 16
+            },
+            "cutoffs": {},
+            "decisions": 15,
+            "fallbacks": {
+              "forced_action": 4
+            },
+            "p95_seconds": 0.2193870833143592,
+            "searched": 11,
+            "seconds": 2.2523378739133477,
+            "simulations": 176,
+            "timings": {
+              "conditioning": 0.24500170862302184,
+              "inference": 0.5572973717935383,
+              "projection": 0.683271259535104,
+              "reconstruction": 0.04881141660735011,
+              "sampling": 0.6082509090192616,
+              "transition": 0.05434062099084258
+            }
+          },
+          "source_group": "046b44d6503a4e7e854f5285de94c9af",
+          "status": "terminated",
+          "steps": 15,
+          "task_return": 1.08375
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-student-eval-20261004/e102d7a1d1ee4d88a27090928daf5f53.search.json.gz",
+              "sha256": "ee6b7b2c3b2eff380b3aa8f370d5c6a2d5fbe0051db42abfe65a6f683a3d8137"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-student-eval-20261004/e102d7a1d1ee4d88a27090928daf5f53.training.json",
+              "sha256": "1402d161f68ec6f02514434553d6d65b1ca81b061735dd891d096abcd116cfe1"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "fb02d90092dd51507335c2caf56c4a3052923cbbabb35f5ed118b2a57fd6c97a",
+              "path": "runs/direct-search-learning-student-eval-20261004/e102d7a1d1ee4d88a27090928daf5f53.trajectory.jsonl.gz",
+              "sha256": "ac75cd629bffe0a5128f1dd03c561a8fa8981acd73239d78faed0bb2cf349307"
+            }
+          },
+          "case_id": "046b44d6503a4e7e854f5285de94c9af",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 67,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 5
+          },
+          "encounter": "overgrowth_slimes",
+          "episode_id": "e102d7a1d1ee4d88a27090928daf5f53",
+          "max_action_seconds": 0.28213208401575685,
+          "policy": "gumbel",
+          "public_opening_sha256": "ac4aeb2823420c1455205afdab1fdf98e50bfe311527b4fe03566a220960e760",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 42,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.26594812562689185,
+              "updates": 16
+            },
+            "cutoffs": {},
+            "decisions": 15,
+            "fallbacks": {
+              "forced_action": 4
+            },
+            "p95_seconds": 0.28213208401575685,
+            "searched": 11,
+            "seconds": 2.782956376671791,
+            "simulations": 176,
+            "timings": {
+              "conditioning": 0.30124333314597607,
+              "inference": 0.9548972509801388,
+              "projection": 0.7401425405405462,
+              "reconstruction": 0.021010540425777435,
+              "sampling": 0.5968828806653619,
+              "transition": 0.08728383434936404
+            }
+          },
+          "source_group": "046b44d6503a4e7e854f5285de94c9af",
+          "status": "terminated",
+          "steps": 15,
+          "task_return": 1.08375
+        },
+        {
+          "artifacts": {
+            "training": {
+              "path": "runs/direct-search-learning-student-eval-20261004/e5854f5a9ac84b508ab8178c04a2c2b0.training.json",
+              "sha256": "6b257c249c86be2a3b0ad073c6dbaa8f91d415e29de2117b28213f4f57ad6c2e"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "2af977b8fdcde533fedfb2490ed691c6b7c7a7a3b753fabf70c349aa1d32fad6",
+              "path": "runs/direct-search-learning-student-eval-20261004/e5854f5a9ac84b508ab8178c04a2c2b0.trajectory.jsonl.gz",
+              "sha256": "9c85938939d90b74303f7be4231f4e7fc4b2fbae84575f2acec0b084e3bfa272"
+            }
+          },
+          "case_id": "7657788818ec4daa91cb00f0289efcdc",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 17,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 6
+          },
+          "encounter": "overgrowth_bygone_effigy",
+          "episode_id": "e5854f5a9ac84b508ab8178c04a2c2b0",
+          "policy": "network",
+          "public_opening_sha256": "7684d7da85c7da86ae014c33e8668e905e6c998ff456e2c18910dadbb773482f",
+          "source_group": "7657788818ec4daa91cb00f0289efcdc",
+          "status": "terminated",
+          "steps": 20,
+          "task_return": 1.02125
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-student-eval-20261004/c918f1e9928e4ebc9a030d900ec5ac4b.search.json.gz",
+              "sha256": "e65650226121e9823b8aed24d102524292d9df83e7aae81df32209e1d7d0aaaa"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-student-eval-20261004/c918f1e9928e4ebc9a030d900ec5ac4b.training.json",
+              "sha256": "463e272582850f91730797f49d8b7cc73dcd92b3ae4fe4e0f7161cdc6f31fa4c"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "c78cf61c17c7d1423e8d4ebc810284ddb47fec893e4b7f8428433a5a98181e61",
+              "path": "runs/direct-search-learning-student-eval-20261004/c918f1e9928e4ebc9a030d900ec5ac4b.trajectory.jsonl.gz",
+              "sha256": "8bc9ecf29be54a6eaf3c10c344707cbc0ead94e2d8a6427f57ac7b3cd682b57c"
+            }
+          },
+          "case_id": "7657788818ec4daa91cb00f0289efcdc",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 17,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 6
+          },
+          "encounter": "overgrowth_bygone_effigy",
+          "episode_id": "c918f1e9928e4ebc9a030d900ec5ac4b",
+          "max_action_seconds": 0.17614308279007673,
+          "policy": "root",
+          "public_opening_sha256": "7684d7da85c7da86ae014c33e8668e905e6c998ff456e2c18910dadbb773482f",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 42,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.24048008164390922,
+              "updates": 21
+            },
+            "cutoffs": {},
+            "decisions": 20,
+            "fallbacks": {
+              "forced_action": 5
+            },
+            "p95_seconds": 0.1728344578295946,
+            "searched": 15,
+            "seconds": 2.436917415354401,
+            "simulations": 240,
+            "timings": {
+              "conditioning": 0.330716828815639,
+              "inference": 0.5891892095096409,
+              "projection": 0.7233169535174966,
+              "reconstruction": 0.007363622076809406,
+              "sampling": 0.6563287419266999,
+              "transition": 0.06880942406132817
+            }
+          },
+          "source_group": "7657788818ec4daa91cb00f0289efcdc",
+          "status": "terminated",
+          "steps": 20,
+          "task_return": 1.02125
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-student-eval-20261004/dc7e72526d97455ca315e1f5ec7e443b.search.json.gz",
+              "sha256": "2e99ed7a0ee55f9dd28fdfe9a461ed84242e2d22b8222f98fd412305972042ed"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-student-eval-20261004/dc7e72526d97455ca315e1f5ec7e443b.training.json",
+              "sha256": "5ac90324bf78850df12dfd5d6d3d0b76cdf4e286cf2d397e52bbb7c8477aa4d7"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "b565204d869f5eecde4405d6dbf475a46fbe5b711160c48ae0bd7fff8a84bbad",
+              "path": "runs/direct-search-learning-student-eval-20261004/dc7e72526d97455ca315e1f5ec7e443b.trajectory.jsonl.gz",
+              "sha256": "a3ea2b1fab48a482c89190fe7d9bfe8c8eca75f0c9505fa6727c35d9169b1b8a"
+            }
+          },
+          "case_id": "7657788818ec4daa91cb00f0289efcdc",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 17,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 6
+          },
+          "encounter": "overgrowth_bygone_effigy",
+          "episode_id": "dc7e72526d97455ca315e1f5ec7e443b",
+          "max_action_seconds": 0.2565324162133038,
+          "policy": "gumbel",
+          "public_opening_sha256": "7684d7da85c7da86ae014c33e8668e905e6c998ff456e2c18910dadbb773482f",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 42,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.23821221059188247,
+              "updates": 21
+            },
+            "cutoffs": {},
+            "decisions": 20,
+            "fallbacks": {
+              "forced_action": 5
+            },
+            "p95_seconds": 0.24245516676455736,
+            "searched": 15,
+            "seconds": 3.4684634604491293,
+            "simulations": 240,
+            "timings": {
+              "conditioning": 0.2986611691303551,
+              "inference": 1.0079091200605035,
+              "projection": 1.1337118363007903,
+              "reconstruction": 0.007400084752589464,
+              "sampling": 0.761234587058425,
+              "transition": 0.14522299822419882
+            }
+          },
+          "source_group": "7657788818ec4daa91cb00f0289efcdc",
+          "status": "terminated",
+          "steps": 20,
+          "task_return": 1.02125
+        },
+        {
+          "artifacts": {
+            "training": {
+              "path": "runs/direct-search-learning-student-eval-20261004/58e88a0f5feb4c37bb9b57b07f9978fa.training.json",
+              "sha256": "88258f9688a7d4c57e1cf3e1dece724d23351d44081771953b96cf262b6a26ce"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "6a5b26a0c5a0b65141bfa47ea33ea2665edfa7359d39f5185cf969a090a8af56",
+              "path": "runs/direct-search-learning-student-eval-20261004/58e88a0f5feb4c37bb9b57b07f9978fa.trajectory.jsonl.gz",
+              "sha256": "d34e0042d272ba15da3856395dcab7ff77ce65ab936fbe481ba530d0e9af8c77"
+            }
+          },
+          "case_id": "a21d4fb8393f4fd980e2aa9562d5b250",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 10
+          },
+          "encounter": "overgrowth_vantom",
+          "episode_id": "58e88a0f5feb4c37bb9b57b07f9978fa",
+          "policy": "network",
+          "public_opening_sha256": "86230cbfb1d0bbfd5fc8c61baf58c1cedfda3fac6e107a74ec44b9acd4ab3776",
+          "source_group": "a21d4fb8393f4fd980e2aa9562d5b250",
+          "status": "terminated",
+          "steps": 34,
+          "task_return": 0.0
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-student-eval-20261004/d3c3b2f337fc438dbebcee905d9a89bf.search.json.gz",
+              "sha256": "7d9d2c177f80fb0abee98e96ca79ddbe043489a22c828310070bc51d7ea88c9f"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-student-eval-20261004/d3c3b2f337fc438dbebcee905d9a89bf.training.json",
+              "sha256": "5cc6568b3e0547fb39fe77fc7418e6e071a14da736f7a82f754b3f43c32e0994"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "cdedee1907b461fe76f33988bea12b1a84ffdae8dd6977681faf94f4d0e700ba",
+              "path": "runs/direct-search-learning-student-eval-20261004/d3c3b2f337fc438dbebcee905d9a89bf.trajectory.jsonl.gz",
+              "sha256": "4a738376e4db07e86b29ecfd60b5fae26c9e49978e6873b9430c13c0efb71275"
+            }
+          },
+          "case_id": "a21d4fb8393f4fd980e2aa9562d5b250",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 10
+          },
+          "encounter": "overgrowth_vantom",
+          "episode_id": "d3c3b2f337fc438dbebcee905d9a89bf",
+          "max_action_seconds": 0.21222370769828558,
+          "policy": "root",
+          "public_opening_sha256": "86230cbfb1d0bbfd5fc8c61baf58c1cedfda3fac6e107a74ec44b9acd4ab3776",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 70,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.49605941446498036,
+              "updates": 35
+            },
+            "cutoffs": {},
+            "decisions": 34,
+            "fallbacks": {
+              "forced_action": 10
+            },
+            "p95_seconds": 0.2109932079911232,
+            "searched": 24,
+            "seconds": 4.450855874456465,
+            "simulations": 384,
+            "timings": {
+              "conditioning": 0.6562219164334238,
+              "inference": 1.007011295761913,
+              "projection": 1.3810201226733625,
+              "reconstruction": 0.007652541622519493,
+              "sampling": 1.185791190713644,
+              "transition": 0.10807798290625215
+            }
+          },
+          "source_group": "a21d4fb8393f4fd980e2aa9562d5b250",
+          "status": "terminated",
+          "steps": 34,
+          "task_return": 0.0
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-student-eval-20261004/1312ff8177fe445e8a393452aeb6eea6.search.json.gz",
+              "sha256": "11639fe85fd17a82fb72103b4a3216b779dec58c8c33d435a04289efcd677ea5"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-student-eval-20261004/1312ff8177fe445e8a393452aeb6eea6.training.json",
+              "sha256": "27e082e995185d003d6cab6126107f616ef24a4000c287f3dc2966adbc495b0b"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "545e38fcb782aa0679df7dd2d45f19ace5620fbc9ac039f4a66a344db6848e60",
+              "path": "runs/direct-search-learning-student-eval-20261004/1312ff8177fe445e8a393452aeb6eea6.trajectory.jsonl.gz",
+              "sha256": "202166e1930a7317be3af8c1af6c7d5e1d3c720feccf4a647d2a8a03a96602ce"
+            }
+          },
+          "case_id": "a21d4fb8393f4fd980e2aa9562d5b250",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 10
+          },
+          "encounter": "overgrowth_vantom",
+          "episode_id": "1312ff8177fe445e8a393452aeb6eea6",
+          "max_action_seconds": 0.34185145795345306,
+          "policy": "gumbel",
+          "public_opening_sha256": "86230cbfb1d0bbfd5fc8c61baf58c1cedfda3fac6e107a74ec44b9acd4ab3776",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 70,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.46085591707378626,
+              "updates": 35
+            },
+            "cutoffs": {},
+            "decisions": 34,
+            "fallbacks": {
+              "forced_action": 10
+            },
+            "p95_seconds": 0.32982875080779195,
+            "searched": 24,
+            "seconds": 6.434652331285179,
+            "simulations": 384,
+            "timings": {
+              "conditioning": 0.5856814575381577,
+              "inference": 2.129617915954441,
+              "projection": 2.0980742275714874,
+              "reconstruction": 0.007474664598703384,
+              "sampling": 1.2173289097845554,
+              "transition": 0.20104673271998763
+            }
+          },
+          "source_group": "a21d4fb8393f4fd980e2aa9562d5b250",
+          "status": "terminated",
+          "steps": 34,
+          "task_return": 0.0
+        },
+        {
+          "artifacts": {
+            "training": {
+              "path": "runs/direct-search-learning-student-eval-20261004/d7b2f858ed1e41ae9aa5a1cc834e0fc8.training.json",
+              "sha256": "823ceb79df1a7ef2aa319eff22657671c2bd620daa783fdb58dcf3ae662c4f3a"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "d8bf5aaa147dece13a463875c979c1154791c87414206418c9fbdd7919eb3efd",
+              "path": "runs/direct-search-learning-student-eval-20261004/d7b2f858ed1e41ae9aa5a1cc834e0fc8.trajectory.jsonl.gz",
+              "sha256": "d40c54d212909efedf04cf4d2b9acec3d58a846fe1c27cf5ceb9ca17e336d63e"
+            }
+          },
+          "case_id": "4e0c4018462b4c8abfaab74e4c7d1a9b",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 77,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 4
+          },
+          "encounter": "underdocks_corpse_slugs_weak",
+          "episode_id": "d7b2f858ed1e41ae9aa5a1cc834e0fc8",
+          "policy": "network",
+          "public_opening_sha256": "b396ea338ae5a0e420ae531ced27046888aa63d98d0f16c206abf92a506216c3",
+          "source_group": "4e0c4018462b4c8abfaab74e4c7d1a9b",
+          "status": "terminated",
+          "steps": 12,
+          "task_return": 1.09625
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-student-eval-20261004/ceb0e9428bf64be5944618ca257e4a56.search.json.gz",
+              "sha256": "c598a2734a0847466f2c87004c6873291b812566fafbd97041ec8b75a8c29211"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-student-eval-20261004/ceb0e9428bf64be5944618ca257e4a56.training.json",
+              "sha256": "4ff72ceefbf1afbe0d6da48550f5f401fc7c76c5ab4e12d6b08fcd25e39665fa"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "ab50ec6c80bc08bc2a3dba5fb98798ac9946e2085c03aec2fb6ee601a8508c53",
+              "path": "runs/direct-search-learning-student-eval-20261004/ceb0e9428bf64be5944618ca257e4a56.trajectory.jsonl.gz",
+              "sha256": "c9a2f79f0ac1aa613e960c49c55e6f94be5e89d501e8dc5308c38557f0be5723"
+            }
+          },
+          "case_id": "4e0c4018462b4c8abfaab74e4c7d1a9b",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 77,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 4
+          },
+          "encounter": "underdocks_corpse_slugs_weak",
+          "episode_id": "ceb0e9428bf64be5944618ca257e4a56",
+          "max_action_seconds": 0.19378145830705762,
+          "policy": "root",
+          "public_opening_sha256": "b396ea338ae5a0e420ae531ced27046888aa63d98d0f16c206abf92a506216c3",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 29,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.18112382991239429,
+              "updates": 13
+            },
+            "cutoffs": {},
+            "decisions": 12,
+            "fallbacks": {
+              "forced_action": 3
+            },
+            "p95_seconds": 0.19378145830705762,
+            "searched": 9,
+            "seconds": 1.5315219997428358,
+            "simulations": 144,
+            "timings": {
+              "conditioning": 0.2037859996780753,
+              "inference": 0.3255201615393162,
+              "projection": 0.4031348805874586,
+              "reconstruction": 0.01679916912689805,
+              "sampling": 0.49747837288305163,
+              "transition": 0.0464202081784606
+            }
+          },
+          "source_group": "4e0c4018462b4c8abfaab74e4c7d1a9b",
+          "status": "terminated",
+          "steps": 12,
+          "task_return": 1.09625
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-student-eval-20261004/e5ffd4dde9b147e99615884c2a1484de.search.json.gz",
+              "sha256": "f2c8ac07bef6c01f4d3fade337ec9207a3db4ae2e6d19f5414fbf46e04ec72af"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-student-eval-20261004/e5ffd4dde9b147e99615884c2a1484de.training.json",
+              "sha256": "5c2182e6cbc38358953be48ce291d4e97e8fb1ec7f687fa2020bb1d6a0cddc4c"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "97cd5931a07c82012666b1e13ef98748f6621088f39eb6e64b42631f65fe9434",
+              "path": "runs/direct-search-learning-student-eval-20261004/e5ffd4dde9b147e99615884c2a1484de.trajectory.jsonl.gz",
+              "sha256": "7edac0d62fc88d9347f3182c885f3d2e9db7a400170c84a1b36c8edb6ce1a8fc"
+            }
+          },
+          "case_id": "4e0c4018462b4c8abfaab74e4c7d1a9b",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 77,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 4
+          },
+          "encounter": "underdocks_corpse_slugs_weak",
+          "episode_id": "e5ffd4dde9b147e99615884c2a1484de",
+          "max_action_seconds": 0.2466335422359407,
+          "policy": "gumbel",
+          "public_opening_sha256": "b396ea338ae5a0e420ae531ced27046888aa63d98d0f16c206abf92a506216c3",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 29,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.1797378766350448,
+              "updates": 13
+            },
+            "cutoffs": {},
+            "decisions": 12,
+            "fallbacks": {
+              "forced_action": 3
+            },
+            "p95_seconds": 0.2466335422359407,
+            "searched": 9,
+            "seconds": 1.9870311673730612,
+            "simulations": 144,
+            "timings": {
+              "conditioning": 0.2018500417470932,
+              "inference": 0.6257552551105618,
+              "projection": 0.5705467443913221,
+              "reconstruction": 0.01688558328896761,
+              "sampling": 0.42278708051890135,
+              "transition": 0.08566523529589176
+            }
+          },
+          "source_group": "4e0c4018462b4c8abfaab74e4c7d1a9b",
+          "status": "terminated",
+          "steps": 12,
+          "task_return": 1.09625
+        },
+        {
+          "artifacts": {
+            "training": {
+              "path": "runs/direct-search-learning-student-eval-20261004/458f5c9d318443958412c01417c5a820.training.json",
+              "sha256": "396302d63abe5f4714f153ace944b6e736dccb68e8a4ab40aa0a5f7de62388ce"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "ee8e199b2d62fea9bfa1620cde08945f58403108b0c51702593a6f29dc59047d",
+              "path": "runs/direct-search-learning-student-eval-20261004/458f5c9d318443958412c01417c5a820.trajectory.jsonl.gz",
+              "sha256": "2397299bdc8211d2d4ae94980bb08f68da8e3a39f586db3be920a99806b94225"
+            }
+          },
+          "case_id": "9cbe7a20af89404894b6eb7a0251427d",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 57,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 5
+          },
+          "encounter": "underdocks_living_fog",
+          "episode_id": "458f5c9d318443958412c01417c5a820",
+          "policy": "network",
+          "public_opening_sha256": "e6a5873425973a690139cfc944bdfc89b7cf937a2a5475131e7942cd1e0b6c38",
+          "source_group": "9cbe7a20af89404894b6eb7a0251427d",
+          "status": "terminated",
+          "steps": 15,
+          "task_return": 1.07125
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-student-eval-20261004/4ded2e39a6c64df48cfd9c52ecb9160f.search.json.gz",
+              "sha256": "311155a8b06c124ad431b79ef51ba690cc454eca7853578ab45d50788637b296"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-student-eval-20261004/4ded2e39a6c64df48cfd9c52ecb9160f.training.json",
+              "sha256": "1d7cd6f258c3217719ab7ee7df7641364fcb1b7adca1d45d1c25ee833cc3e855"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "b1826f4649640e43c253d2839093a4af9ec9156c623ddfd62b71dc4207673fd3",
+              "path": "runs/direct-search-learning-student-eval-20261004/4ded2e39a6c64df48cfd9c52ecb9160f.trajectory.jsonl.gz",
+              "sha256": "df9ec51efadef1e1c067ba8fbf2c73dd8b3ccb50a920e7efc071ad3f0389f356"
+            }
+          },
+          "case_id": "9cbe7a20af89404894b6eb7a0251427d",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 60,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 5
+          },
+          "encounter": "underdocks_living_fog",
+          "episode_id": "4ded2e39a6c64df48cfd9c52ecb9160f",
+          "max_action_seconds": 0.18409312516450882,
+          "policy": "root",
+          "public_opening_sha256": "e6a5873425973a690139cfc944bdfc89b7cf937a2a5475131e7942cd1e0b6c38",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 34,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.22756321029737592,
+              "updates": 17
+            },
+            "cutoffs": {},
+            "decisions": 16,
+            "fallbacks": {
+              "forced_action": 4
+            },
+            "p95_seconds": 0.18409312516450882,
+            "searched": 12,
+            "seconds": 2.027701873332262,
+            "simulations": 192,
+            "timings": {
+              "conditioning": 0.27538258489221334,
+              "inference": 0.46850399719551206,
+              "projection": 0.6211834447458386,
+              "reconstruction": 0.007295041810721159,
+              "sampling": 0.5448581678792834,
+              "transition": 0.05938687827438116
+            }
+          },
+          "source_group": "9cbe7a20af89404894b6eb7a0251427d",
+          "status": "terminated",
+          "steps": 16,
+          "task_return": 1.075
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-student-eval-20261004/ae6fe60a6a294a23a13a1d356507303d.search.json.gz",
+              "sha256": "72f3785259678287d06be09c5c983e89a606e5904c72a1c0dce5b38573aef5a3"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-student-eval-20261004/ae6fe60a6a294a23a13a1d356507303d.training.json",
+              "sha256": "28893e2831c8f6b8a9bd23ab3e99fae98c3e94cda32bfb8f3fd47fd365083dfe"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "1efd2fba79ecb07ca6446b5db26e472669a361690ed1328dcd5a02ce19b423be",
+              "path": "runs/direct-search-learning-student-eval-20261004/ae6fe60a6a294a23a13a1d356507303d.trajectory.jsonl.gz",
+              "sha256": "326b1325760dbb995c98c49ca619c49f19d9b92f340d01e511b798716bec3512"
+            }
+          },
+          "case_id": "9cbe7a20af89404894b6eb7a0251427d",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 57,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 5
+          },
+          "encounter": "underdocks_living_fog",
+          "episode_id": "ae6fe60a6a294a23a13a1d356507303d",
+          "max_action_seconds": 0.2608888749964535,
+          "policy": "gumbel",
+          "public_opening_sha256": "e6a5873425973a690139cfc944bdfc89b7cf937a2a5475131e7942cd1e0b6c38",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 32,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.20863770693540573,
+              "updates": 16
+            },
+            "cutoffs": {},
+            "decisions": 15,
+            "fallbacks": {
+              "forced_action": 4
+            },
+            "p95_seconds": 0.2608888749964535,
+            "searched": 11,
+            "seconds": 2.5935222101397812,
+            "simulations": 176,
+            "timings": {
+              "conditioning": 0.2807752904482186,
+              "inference": 0.8446107944473624,
+              "projection": 0.7133140917867422,
+              "reconstruction": 0.00691225053742528,
+              "sampling": 0.5648738737218082,
+              "transition": 0.10178653383627534
+            }
+          },
+          "source_group": "9cbe7a20af89404894b6eb7a0251427d",
+          "status": "terminated",
+          "steps": 15,
+          "task_return": 1.07125
+        },
+        {
+          "artifacts": {
+            "training": {
+              "path": "runs/direct-search-learning-student-eval-20261004/ad715ca588484caaa4462d7e69b930a0.training.json",
+              "sha256": "fef77213304db00c6248dcb4035b80d1a6604fb037b30fdb229d7e88bf2da188"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "ae33e3582c3e3396ff9ebd2298cda8fcb793e5019b034b6ba4f6ab4cb5392dc8",
+              "path": "runs/direct-search-learning-student-eval-20261004/ad715ca588484caaa4462d7e69b930a0.trajectory.jsonl.gz",
+              "sha256": "69d0671ca3c6eff17b4964bc69b9f579424285a289aa9d5ff1db761a98e9cf4d"
+            }
+          },
+          "case_id": "21a1d33563354406894fc237991dcf5d",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 41,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 5
+          },
+          "encounter": "underdocks_skulking_colony",
+          "episode_id": "ad715ca588484caaa4462d7e69b930a0",
+          "policy": "network",
+          "public_opening_sha256": "9a47a93cec0095d355a3a30df73d9ec42dbeab6973346ff4629e807a881eabeb",
+          "source_group": "21a1d33563354406894fc237991dcf5d",
+          "status": "terminated",
+          "steps": 16,
+          "task_return": 1.05125
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-student-eval-20261004/5051cbd228894c738e5e12b628e34f12.search.json.gz",
+              "sha256": "02e07593c6b0d20e81f0c92e2f563d79b2129d7e6b6d94e0c61cc72402c6284e"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-student-eval-20261004/5051cbd228894c738e5e12b628e34f12.training.json",
+              "sha256": "8673612d22794b4ab42ebd3d254384fcd9003c893277d4aad6ed50522e98c30d"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "c7fd62a30a2495b11d58b4182ecddc5c9940dbb0dcfb42d84b368411851f0e2b",
+              "path": "runs/direct-search-learning-student-eval-20261004/5051cbd228894c738e5e12b628e34f12.trajectory.jsonl.gz",
+              "sha256": "fb1707739e9b647dd9befb9503c559654564a81cc63465fc27eabf5a8106a562"
+            }
+          },
+          "case_id": "21a1d33563354406894fc237991dcf5d",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 41,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 5
+          },
+          "encounter": "underdocks_skulking_colony",
+          "episode_id": "5051cbd228894c738e5e12b628e34f12",
+          "max_action_seconds": 0.17557183280587196,
+          "policy": "root",
+          "public_opening_sha256": "9a47a93cec0095d355a3a30df73d9ec42dbeab6973346ff4629e807a881eabeb",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 34,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.21654391521587968,
+              "updates": 17
+            },
+            "cutoffs": {},
+            "decisions": 16,
+            "fallbacks": {
+              "forced_action": 4
+            },
+            "p95_seconds": 0.17557183280587196,
+            "searched": 12,
+            "seconds": 1.9644837891682982,
+            "simulations": 192,
+            "timings": {
+              "conditioning": 0.28973953938111663,
+              "inference": 0.43503900431096554,
+              "projection": 0.5371583993546665,
+              "reconstruction": 0.007257457822561264,
+              "sampling": 0.5885431780479848,
+              "transition": 0.05913171172142029
+            }
+          },
+          "source_group": "21a1d33563354406894fc237991dcf5d",
+          "status": "terminated",
+          "steps": 16,
+          "task_return": 1.05125
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-student-eval-20261004/9e1c2582ebaa4134b9c79918ac002884.search.json.gz",
+              "sha256": "a83ced5def86c3fcb85783e81dd6bda4148946ea28bc0e2291a858de255da96a"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-student-eval-20261004/9e1c2582ebaa4134b9c79918ac002884.training.json",
+              "sha256": "4fe663fffbbfb9a81ce57329af8b56b3bda601cf25aea706d986bad6e621af0b"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "2ba0ab8b6ce3e874ed4bfb5b27d1673758aad04dea2cfbebb4d9035a47decb88",
+              "path": "runs/direct-search-learning-student-eval-20261004/9e1c2582ebaa4134b9c79918ac002884.trajectory.jsonl.gz",
+              "sha256": "e681549378284d204a1a97a81f96ace1c0eb3a8e139a3092a6866ca2b7d8abf0"
+            }
+          },
+          "case_id": "21a1d33563354406894fc237991dcf5d",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 41,
+            "max_hp": 80,
+            "outcome": "victory",
+            "schema": "sts_combat_summary_v1",
+            "turn": 5
+          },
+          "encounter": "underdocks_skulking_colony",
+          "episode_id": "9e1c2582ebaa4134b9c79918ac002884",
+          "max_action_seconds": 0.2505002492107451,
+          "policy": "gumbel",
+          "public_opening_sha256": "9a47a93cec0095d355a3a30df73d9ec42dbeab6973346ff4629e807a881eabeb",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 34,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.22178445663303137,
+              "updates": 17
+            },
+            "cutoffs": {},
+            "decisions": 16,
+            "fallbacks": {
+              "forced_action": 4
+            },
+            "p95_seconds": 0.2505002492107451,
+            "searched": 12,
+            "seconds": 2.730852330569178,
+            "simulations": 192,
+            "timings": {
+              "conditioning": 0.2670327480882406,
+              "inference": 0.9153090422041714,
+              "projection": 0.7496452871710062,
+              "reconstruction": 0.006927832495421171,
+              "sampling": 0.587652675807476,
+              "transition": 0.11747975647449493
+            }
+          },
+          "source_group": "21a1d33563354406894fc237991dcf5d",
+          "status": "terminated",
+          "steps": 16,
+          "task_return": 1.05125
+        },
+        {
+          "artifacts": {
+            "training": {
+              "path": "runs/direct-search-learning-student-eval-20261004/3f25f2554ed54d1daa0cacc53e6b2835.training.json",
+              "sha256": "787b04f8ec41ce7502df1e5b4bde48578be2759ca2ec9780a8b46fa26ded30a3"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "f732156c670943ec5f702d6f2e179e459e05c9d72659ba28cb45a99b3ad7597c",
+              "path": "runs/direct-search-learning-student-eval-20261004/3f25f2554ed54d1daa0cacc53e6b2835.trajectory.jsonl.gz",
+              "sha256": "ee4a8aaf7789e2838a9378a49cde75abea27437d4820cb7b7ce9fe56b44a8a2e"
+            }
+          },
+          "case_id": "845852d10c23479d829d910c2c1c1b3f",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 10
+          },
+          "encounter": "underdocks_lagavulin_matriarch",
+          "episode_id": "3f25f2554ed54d1daa0cacc53e6b2835",
+          "policy": "network",
+          "public_opening_sha256": "da7e2f20da22f63453f225ea41c2c5a1a87a4c8a2386118b479766f714e0849c",
+          "source_group": "845852d10c23479d829d910c2c1c1b3f",
+          "status": "terminated",
+          "steps": 35,
+          "task_return": 0.0
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-student-eval-20261004/65f4b96bddfc41788e337f34b69eeaf2.search.json.gz",
+              "sha256": "4f1385e736072bece46b455a85217769e2f09fad4b24596bc08ec7b888045dbc"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-student-eval-20261004/65f4b96bddfc41788e337f34b69eeaf2.training.json",
+              "sha256": "256dab30167aed790d45b8f1271e496ca2a4f985f84b29d9ca468f1a55ab3c99"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "0043b9561fbaf6c8f1c433e964c8643678030bd6ff0a2427254b8ace7c006d5f",
+              "path": "runs/direct-search-learning-student-eval-20261004/65f4b96bddfc41788e337f34b69eeaf2.trajectory.jsonl.gz",
+              "sha256": "dd27ceb5cc47df98de9402147dad376bf093da500d245271f2919edac4a33795"
+            }
+          },
+          "case_id": "845852d10c23479d829d910c2c1c1b3f",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 10
+          },
+          "encounter": "underdocks_lagavulin_matriarch",
+          "episode_id": "65f4b96bddfc41788e337f34b69eeaf2",
+          "max_action_seconds": 0.18303412524983287,
+          "policy": "root",
+          "public_opening_sha256": "da7e2f20da22f63453f225ea41c2c5a1a87a4c8a2386118b479766f714e0849c",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 72,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.40369225526228547,
+              "updates": 36
+            },
+            "cutoffs": {},
+            "decisions": 35,
+            "fallbacks": {
+              "forced_action": 10
+            },
+            "p95_seconds": 0.181449041236192,
+            "searched": 25,
+            "seconds": 3.9787071249447763,
+            "simulations": 400,
+            "timings": {
+              "conditioning": 0.5775957494042814,
+              "inference": 0.8915144177153707,
+              "projection": 1.2217132239602506,
+              "reconstruction": 0.007425999268889427,
+              "sampling": 1.0768037871457636,
+              "transition": 0.10303437896072865
+            }
+          },
+          "source_group": "845852d10c23479d829d910c2c1c1b3f",
+          "status": "terminated",
+          "steps": 35,
+          "task_return": 0.0
+        },
+        {
+          "artifacts": {
+            "targets": {
+              "path": "runs/direct-search-learning-student-eval-20261004/2e9c06d472484c24ae1e4f3661ae92a0.search.json.gz",
+              "sha256": "ef6bdc99457a3099ff7c53d7b4460b6ff7e07a3e6337a03866a1325c630d7672"
+            },
+            "training": {
+              "path": "runs/direct-search-learning-student-eval-20261004/2e9c06d472484c24ae1e4f3661ae92a0.training.json",
+              "sha256": "baaac2597f5004a3eeb9c6f5a7e9471b28aac5c0384671f95530c90d7d950d16"
+            },
+            "trajectory": {
+              "canonical_jsonl_sha256": "ae7eb022d4db30d36c28a6b48413c07da31a5388cd213f334046db7a9945372e",
+              "path": "runs/direct-search-learning-student-eval-20261004/2e9c06d472484c24ae1e4f3661ae92a0.trajectory.jsonl.gz",
+              "sha256": "f9a90f3154932d7c426cfddb0f1886b2a3ec29d965e2574e9c1e1c2004c6c973"
+            }
+          },
+          "case_id": "845852d10c23479d829d910c2c1c1b3f",
+          "combat": {
+            "combat_ref": "combat:0",
+            "hp": 0,
+            "max_hp": 80,
+            "outcome": "defeat",
+            "schema": "sts_combat_summary_v1",
+            "turn": 10
+          },
+          "encounter": "underdocks_lagavulin_matriarch",
+          "episode_id": "2e9c06d472484c24ae1e4f3661ae92a0",
+          "max_action_seconds": 0.2490984587930143,
+          "policy": "gumbel",
+          "public_opening_sha256": "da7e2f20da22f63453f225ea41c2c5a1a87a4c8a2386118b479766f714e0849c",
+          "search": {
+            "belief": {
+              "failures": {},
+              "model": "direct_belief_v1",
+              "proposals": 72,
+              "recoveries": 0,
+              "replay_steps": 0,
+              "seconds": 0.42964841751381755,
+              "updates": 36
+            },
+            "cutoffs": {},
+            "decisions": 35,
+            "fallbacks": {
+              "forced_action": 10
+            },
+            "p95_seconds": 0.2455498748458922,
+            "searched": 25,
+            "seconds": 5.83383466815576,
+            "simulations": 400,
+            "timings": {
+              "conditioning": 0.5715916263870895,
+              "inference": 1.8250899044796824,
+              "projection": 1.9144773483276367,
+              "reconstruction": 0.007550083566457033,
+              "sampling": 1.1413207747973502,
+              "transition": 0.18855649884790182
+            }
+          },
+          "source_group": "845852d10c23479d829d910c2c1c1b3f",
+          "status": "terminated",
+          "steps": 35,
+          "task_return": 0.0
+        }
+      ],
+      "execution": {
+        "schedule": "parallel_episodes_v1",
+        "workers": 4
+      },
+      "goal": "combat",
+      "implementation": {
+        "build": "19985f63736ec0e5be2a391f495cb9667941663b3c9f720469c05dbf9cfb469e",
+        "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+        "rules": "8eaf44ce4600e6b25a1675aa41e181027aed519f1bebfbeb5089b74406b77e8a",
+        "target": "sts2-v0.107.1-steam-23811903"
+      },
+      "limits": {
+        "max_decisions": 48,
+        "time_limit_seconds": 90.0
+      },
+      "paired_vs_network": {
+        "gumbel": {
+          "cases": 8,
+          "difference_group_hoeffding_95": [
+            -0.9603227913199207,
+            0.9603227913199207
+          ],
+          "win_rate_difference": 0.0,
+          "wins_only_candidate": 0,
+          "wins_only_network": 0
+        },
+        "root": {
+          "cases": 8,
+          "difference_group_hoeffding_95": [
+            -0.9603227913199207,
+            0.9603227913199207
+          ],
+          "win_rate_difference": 0.0,
+          "wins_only_candidate": 0,
+          "wins_only_network": 0
+        }
+      },
+      "plan": {
+        "path": "runs/direct-search-learning-student-eval-20261004/search-plan.json",
+        "sha256": "908ee7f97c5d5d59df948c110915e2687fbc4d510b21fb5aef26575cf6e63818"
+      },
+      "planning_view": "detached_combat_history_cards_v1",
+      "policies": {
+        "gumbel": "sts_combat_search_v1:dc609fb7b7255e75512bfbd89f8300b5599a8ef92e1e88c51628562a396714c1",
+        "network": "sts_planning_view_v1:9d1a73c2d2b92e7a5ed081198ada69e88577aedbba0a5487d5ea1bd24f14667f",
+        "root": "sts_combat_search_v1:a830fe0b7b23758cec4f38fd44466c963277cf25b3c94ea732250d9e9ecad166"
+      },
+      "promotion": "experimental_only",
+      "purpose": "evaluation",
+      "report": {
+        "path": "runs/direct-search-learning-student-eval-20261004/search.json",
+        "sha256": "65c207cd8635f83cf96f304f733fd220292ee672b8d6a5a27092d9c7efafaba0"
+      },
+      "reward_spec": {
+        "schema": "sts_training_reward_v1",
+        "weights": {
+          "combat_loss": 0.0,
+          "combat_win": 1.0,
+          "end_turn_action": 0.0,
+          "potion_use_action": 0.0,
+          "win_hp_fraction": 0.1
+        }
+      },
+      "schema": "sts_search_report_v2",
+      "search_configs": {
+        "gumbel": {
+          "belief_particles": 2,
+          "belief_proposals": 1024,
+          "belief_replay_proposals": 2048,
+          "belief_replay_steps": 16384,
+          "belief_seconds": 5.0,
+          "considered_actions": 16,
+          "exploration": false,
+          "max_depth": 16,
+          "method": "gumbel",
+          "model_version": "direct_belief_v1",
+          "seed": 0,
+          "simulations": 16,
+          "time_limit": 5.0
+        },
+        "root": {
+          "belief_particles": 2,
+          "belief_proposals": 1024,
+          "belief_replay_proposals": 2048,
+          "belief_replay_steps": 16384,
+          "belief_seconds": 5.0,
+          "considered_actions": 16,
+          "exploration": false,
+          "max_depth": 16,
+          "method": "root",
+          "model_version": "direct_belief_v1",
+          "seed": 0,
+          "simulations": 16,
+          "time_limit": 5.0
+        }
+      },
+      "split": "validation",
+      "start_kind": "opening",
+      "status": "complete",
+      "summary": {
+        "gumbel": {
+          "attempted": 8,
+          "cutoffs": 0,
+          "failures": 0,
+          "hp_change_observations": 8,
+          "losses": 2,
+          "mean_final_turn_observed": 5.875,
+          "mean_hp_change_observed": -38.375,
+          "mean_hp_fraction_on_win": 0.69375,
+          "mean_hp_on_win": 55.5,
+          "mean_task_return": 0.80203125,
+          "planned": 8,
+          "potion_use_actions": 0,
+          "search": {
+            "coverage": 0.7320261437908496,
+            "cutoffs": {},
+            "decisions": 153,
+            "fallbacks": {
+              "forced_action": 41
+            },
+            "max_episode_p95_seconds": 0.32982875080779195,
+            "searched": 112,
+            "seconds": 26.82144291838631,
+            "simulations": 1792,
+            "timings": {
+              "conditioning": 2.5916632902808487,
+              "inference": 8.545794615056366,
+              "projection": 8.235276862047613,
+              "reconstruction": 0.0814586658962071,
+              "sampling": 5.529699855484068,
+              "transition": 0.9918593438342214
+            }
+          },
+          "source_groups": 8,
+          "steps": 153,
+          "unattempted": 0,
+          "win_rate": 0.75,
+          "win_rate_group_hoeffding_95": [
+            0.26983860434003965,
+            1
+          ],
+          "wins": 6
+        },
+        "network": {
+          "attempted": 8,
+          "cutoffs": 0,
+          "failures": 0,
+          "hp_change_observations": 8,
+          "losses": 2,
+          "mean_final_turn_observed": 5.875,
+          "mean_hp_change_observed": -37.375,
+          "mean_hp_fraction_on_win": 0.7104166666666667,
+          "mean_hp_on_win": 56.833333333333336,
+          "mean_task_return": 0.8032812500000002,
+          "planned": 8,
+          "potion_use_actions": 0,
+          "source_groups": 8,
+          "steps": 153,
+          "unattempted": 0,
+          "win_rate": 0.75,
+          "win_rate_group_hoeffding_95": [
+            0.26983860434003965,
+            1
+          ],
+          "wins": 6
+        },
+        "root": {
+          "attempted": 8,
+          "cutoffs": 0,
+          "failures": 0,
+          "hp_change_observations": 8,
+          "losses": 2,
+          "mean_final_turn_observed": 5.875,
+          "mean_hp_change_observed": -38.0,
+          "mean_hp_fraction_on_win": 0.7000000000000001,
+          "mean_hp_on_win": 56.0,
+          "mean_task_return": 0.8025,
+          "planned": 8,
+          "potion_use_actions": 0,
+          "search": {
+            "coverage": 0.7337662337662337,
+            "cutoffs": {},
+            "decisions": 154,
+            "fallbacks": {
+              "forced_action": 41
+            },
+            "max_episode_p95_seconds": 0.2193870833143592,
+            "searched": 113,
+            "seconds": 19.39895290741697,
+            "simulations": 1808,
+            "timings": {
+              "conditioning": 2.6628372012637556,
+              "inference": 4.418295746203512,
+              "projection": 5.831638571340591,
+              "reconstruction": 0.10956658096984029,
+              "sampling": 5.3675162279978395,
+              "transition": 0.5297620007768273
+            }
+          },
+          "source_groups": 8,
+          "steps": 154,
+          "unattempted": 0,
+          "win_rate": 0.75,
+          "win_rate_group_hoeffding_95": [
+            0.26983860434003965,
+            1
+          ],
+          "wins": 6
+        }
+      },
+      "total_seconds": 17.376058166846633
+    }
+  },
+  "same_training_set_fit": {
+    "after": {
+      "search_cross_entropy": 0.8521878781525986,
+      "value_mse": 0.11606948842173037
+    },
+    "before": {
+      "search_cross_entropy": 0.9209324878195058,
+      "value_mse": 0.16387259752854058
+    },
+    "note": "Completed-behavior labels and search distributions from collection only; fit is not generalization evidence."
+  },
+  "schema": "sts_direct_search_learning_evidence_v1",
+  "scope": "Bounded controlled-headless learning compatibility; not search-strength or native acceptance",
+  "source_note": "Dirty implementation at execution is bound by source hashes, not by base commit alone.",
+  "validation": {
+    "author_aggregate": {
+      "passed": 292,
+      "seconds": 124.92
+    },
+    "author_runner_package_tracking_cpu": {
+      "passed": 42,
+      "seconds": 40.64
+    },
+    "compileall_and_diff_check": "passed",
+    "independent_latest_input_view_suite": {
+      "passed": 21,
+      "seconds": 6.85
+    },
+    "independent_semantic_review": "No remaining blockers; actual selector checks retain supported commitment restrictions."
+  },
+  "verification": {
+    "actual_fights": 56,
+    "changed_reanalysis_distributions": 115,
+    "changed_reanalysis_recommendations": 14,
+    "episode_records": 64,
+    "original_trajectory_training_and_planning_bytes_or_values_preserved": true,
+    "original_value_labels_preserved": true,
+    "reanalysed_episodes": 8,
+    "seconds": 5.36685787467286,
+    "target_records": 918,
+    "teacher_initializer_identical_predictions": 157,
+    "training_examples_with_completed_return_labels": 115
+  }
+}

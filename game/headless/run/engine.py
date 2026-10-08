@@ -191,7 +191,8 @@ class RunEngine:
         self.state.require_between_rooms()
         return upgrade_card(self.state, instance_id)
 
-    def start_combat(self, *, encounter_id: str | None = None, encounter_factory=None, enemy_factory=None, energy_per_turn=3, cards_per_turn=5) -> CombatEngine:
+    def start_combat(self, *, encounter_id: str | None = None, encounter_factory=None, enemy_factory=None, energy_per_turn=3, cards_per_turn=5,
+                     draw_knowledge=None, hp_knowledge=None) -> CombatEngine:
         if encounter_id is None and encounter_factory is not None:
             registered = next((name for name, definition in ENCOUNTERS.items() if definition is encounter_factory or definition.factory is encounter_factory), None)
             if registered is not None:
@@ -219,7 +220,8 @@ class RunEngine:
             if selected_id is not None and selected_id != encounter_id:
                 raise ValueError("Combat must match the selected encounter.")
         rng, combat = self._prepare_combat(encounter_factory=encounter_factory, enemy_factory=enemy_factory,
-                                           energy_per_turn=energy_per_turn, cards_per_turn=cards_per_turn)
+                                           energy_per_turn=energy_per_turn, cards_per_turn=cards_per_turn,
+                                           draw_knowledge=draw_knowledge, hp_knowledge=hp_knowledge)
         if self.state.encounter_progression is not None:
             if self.graph is None or self.state.pending is None or self.state.current_node_id in self.state.encounter_progression.assignments:
                 raise ValueError("Generated encounters require a new selected map room.")
@@ -236,10 +238,18 @@ class RunEngine:
             self.finish_combat()
         return combat
 
-    def _prepare_combat(self, *, encounter_factory=None, enemy_factory=None, energy_per_turn=3, cards_per_turn=5, constructed_hp_rng=None):
+    def _prepare_combat(self, *, encounter_factory=None, enemy_factory=None, energy_per_turn=3, cards_per_turn=5, constructed_hp_rng=None,
+                        draw_knowledge=None, hp_knowledge=None):
         # Build against an independent stream snapshot, committing only on success.
         from game.headless.core.rng import from_snapshot
         rng = from_snapshot(self.state.rng.snapshot())
+        if draw_knowledge is not None or hp_knowledge is not None:
+            if not getattr(rng, 'native', False) or constructed_hp_rng is not None:
+                raise ValueError('Conditional construction requires owned native streams.')
+            if draw_knowledge is not None:
+                rng.stream('shuffle').draw_knowledge = draw_knowledge
+            if hp_knowledge is not None:
+                rng.stream('niche').hp_knowledge = hp_knowledge
         seed = 0 if getattr(rng, "native", False) else rng.randint("combat_launch", 0, (1 << 63) - 1)
         deck = deepcopy(self.state.deck)
         combat = CombatEngine(seed=seed, deck_factory=lambda: deepcopy(deck),
@@ -271,10 +281,16 @@ class RunEngine:
         room_kind = getattr(encounter_factory, "room_kind", "combat")
         from game.headless.relics.ancient_map import coat_active
         combat.fur_coat_active = coat_active(self)
-        combat.reset(relics=self.state.relics, initial_hp=self.state.hp, room_kind=room_kind,
-                     potion_capacity=len(self.state.potions), potion_slots=self.state.potions.count(None), potions=self.state.potions,
-                     character=self.state.config.character if self.state.config else "ironclad",
-                     gold=self.state.gold, potion_pool=self.state.config.reward_potions if self.state.config else None)
+        from contextlib import nullcontext
+        from game.headless.reveals import reveal_owners
+        journal = getattr(self, '_combat_reveals', None)
+        observing = (reveal_owners(combat.native_streams.values(), journal)
+                     if journal is not None and getattr(rng, 'native', False) else nullcontext())
+        with observing:
+            combat.reset(relics=self.state.relics, initial_hp=self.state.hp, room_kind=room_kind,
+                         potion_capacity=len(self.state.potions), potion_slots=self.state.potions.count(None), potions=self.state.potions,
+                         character=self.state.config.character if self.state.config else "ironclad",
+                         gold=self.state.gold, potion_pool=self.state.config.reward_potions if self.state.config else None)
         return rng, combat
 
     def sync_combat_loot(self):

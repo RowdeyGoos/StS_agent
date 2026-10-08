@@ -11,7 +11,7 @@ def apply(p, op, amount=0):
             card.upgrade()
     elif op == 'colorless':
         from game.headless.generation.combat import select_cards
-        for definition in select_cards(pool(p, 'colorless'), p.deck.generation_rng, amount, distinct=True):
+        for definition in select_cards(pool(p, 'colorless'), p.deck.generation_rng, amount, distinct=True, revealed=True):
             create(p, definition, upgraded=True)
     elif op == 'stars':
         from game.headless.powers.regent import gain_stars

@@ -57,11 +57,32 @@ class Deck:
             # Native pile index zero is top; this engine's stack pops from the end.
             self.draw_pile.reverse()
 
+        knowledge = getattr(self.rng, 'draw_knowledge', None)
+        if knowledge is not None:
+            knowledge.shuffled(self)
+
         if not initial:
             for card in self.all_cards():
                 if card in self.draw_pile and card.enchantment and card.enchantment.definition_id == "perfect_fit":
                     self.draw_pile.remove(card)
-                    self.draw_pile.append(card)
+                    self.put_on_draw(card)
+
+    def put_on_draw(self, card, *, bottom=False):
+        """Place a card at a known end; the caller owns removal from its source."""
+        if bottom:
+            self.draw_pile.insert(0, card)
+        else:
+            self.draw_pile.append(card)
+        knowledge = getattr(self.rng, 'draw_knowledge', None)
+        if knowledge is not None:
+            knowledge.placed(card, bottom=bottom)
+
+    def insert_into_draw(self, index, card):
+        """Insert at a rule-sampled stack index, preserving proposal constraints."""
+        knowledge = getattr(self.rng, 'draw_knowledge', None)
+        if knowledge is not None:
+            knowledge.inserted(card, index, len(self.draw_pile))
+        self.draw_pile.insert(index, card)
 
     def shuffle_piles(self, *, include_hand=False):
         """Native Shuffle starts with discard, then the current top-first draw pile."""
@@ -94,11 +115,22 @@ class Deck:
             if not self.draw_pile:
                 break
 
-            card = self.draw_pile.pop()
+            card = self.take_top('draw')
             self.hand.append(card)
             drawn_cards.append(card)
 
         return drawn_cards
+
+    def take_top(self, reveal_kind):
+        """Remove one top card into a visible hand or autoplay reservation."""
+        knowledge = getattr(self.rng, 'draw_knowledge', None)
+        if knowledge is not None:
+            knowledge.before_draw(self)
+        card = self.draw_pile.pop()
+        journal = getattr(self, 'combat_reveals', getattr(self.rng, 'combat_reveals', None))
+        if journal is not None:
+            journal.card(card, reveal_kind)
+        return card
 
     def pop_card_from_hand(self, hand_index: int) -> Card:
         """Remove and return a card from the hand."""

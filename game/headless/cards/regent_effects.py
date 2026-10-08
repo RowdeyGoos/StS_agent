@@ -20,7 +20,7 @@ def colorless(p, count, *, upgraded=False, offered=False):
     from game.headless.cards.colorless_effects import pool, create
     from game.headless.generation.combat import select_cards
     return [create(p, d, upgraded=upgraded, destination='offered' if offered else 'hand')
-            for d in select_cards(pool(p, 'colorless'), p.deck.generation_rng, count, distinct=True)]
+            for d in select_cards(pool(p, 'colorless'), p.deck.generation_rng, count, distinct=True, revealed=True)]
 
 
 def is_colorless(card):

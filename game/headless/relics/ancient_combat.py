@@ -38,7 +38,7 @@ def enter(p, relic):
     elif name == 'delicate_frond':
         from game.headless.potions.pools import generate
         for _ in range(p.rules.potion_slots):
-            potion = generate(p.rules.potion_pool, p.deck.potion_rng)
+            potion = generate(p.rules.potion_pool, p.deck.potion_rng, revealed=not has(p, 'sozu'))
             if has(p, 'sozu'):
                 break
             p.rules.potions_generated.append(potion)
@@ -51,7 +51,7 @@ def generate_random_draw(p, name):
     p.deck._ensure_identity(card)
     # Native InsertRandomly enumerates from top, this pile pops from the end.
     index = p.deck.rng.randrange(len(p.deck.draw_pile) + 1)
-    p.deck.draw_pile.insert(len(p.deck.draw_pile) - index, card)
+    p.deck.insert_into_draw(len(p.deck.draw_pile) - index, card)
     from game.headless.core.piles import after_generated_entry
     after_generated_entry(p, card)
 
@@ -208,7 +208,7 @@ def offer(p, relic):
     from game.headless.cards.colorless_effects import create, pool
     from game.headless.generation.combat import select_cards
     from game.headless.core.choices import begin
-    definitions = select_cards(pool(p, kind='attack' if name == 'crossbow' else None), p.deck.generation_rng, 1 if name == 'crossbow' else 5, distinct=True)
+    definitions = select_cards(pool(p, kind='attack' if name == 'crossbow' else None), p.deck.generation_rng, 1 if name == 'crossbow' else 5, distinct=True, revealed=True)
     offers = [create(p, d, destination='offered') for d in definitions]
     if name == 'crossbow':
         from game.headless.core.choices import resolve

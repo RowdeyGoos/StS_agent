@@ -24,6 +24,17 @@ def stratagem_cards(player):
     return cards
 
 
+def draw_choice_cards(player, operation, whitelist=None):
+    """Pure eligibility/order query for colorless draw-pile selections."""
+    if operation in ('stratagem', 'seeker_strike'):
+        cards = stratagem_cards(player)
+        return [c for c in cards if whitelist is None or c.instance_id in whitelist]
+    if operation in ('secret_technique', 'secret_weapon'):
+        kinds = ('skill', 'block') if operation == 'secret_technique' else ('attack',)
+        return [c for c in player.deck.draw_pile if c.spec.kind in kinds]
+    raise ValueError('Unknown draw choice source.')
+
+
 def shuffle(player, *, include_hand=False):
     from game.headless.core.resolution import push
     from game.headless.relics.combat import tasks

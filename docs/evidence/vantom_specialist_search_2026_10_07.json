@@ -1,0 +1,708 @@
+{
+  "arms": {
+    "specialist_raw": {
+      "attempted": 42,
+      "completed_mean_end_hp": 13.642857142857142,
+      "completed_mean_return": 0.6352970623115146,
+      "component_totals": {
+        "combat_loss": 16.0,
+        "combat_win": 26.0,
+        "end_turn_action": 285.0,
+        "potion_use_action": 17.0,
+        "win_hp_fraction": 6.824766170836153
+      },
+      "cutoffs": 0,
+      "decisions_per_second": 26.860189917357655,
+      "failures": 0,
+      "losses": 16,
+      "mean_hp_on_win": 22.03846153846154,
+      "mean_task_return": 0.6352970623115146,
+      "potions_consumed": 17,
+      "steps": 1236,
+      "timings": {
+        "encoding_seconds": 5.309143417049199,
+        "initialization_seconds": 1.5840036664158106,
+        "policy_seconds": 15.414789367467165,
+        "projection_seconds": 10.459278156980872,
+        "recording_seconds": 7.412711929529905,
+        "simulation_dispatch_seconds": 5.08656173478812,
+        "total_seconds": 46.01605587312952
+      },
+      "wall_seconds": 12.950807999819517,
+      "win_rate": 0.6190476190476191,
+      "win_rate_wilson_95": [
+        0.4681404026715268,
+        0.7500027423604485
+      ],
+      "wins": 26
+    },
+    "specialist_same_view": {
+      "attempted": 42,
+      "completed_mean_end_hp": 13.642857142857142,
+      "completed_mean_return": 0.6352970623115146,
+      "component_totals": {
+        "combat_loss": 16.0,
+        "combat_win": 26.0,
+        "end_turn_action": 285.0,
+        "potion_use_action": 17.0,
+        "win_hp_fraction": 6.824766170836153
+      },
+      "cutoffs": 0,
+      "decisions_per_second": 26.709632801154708,
+      "failures": 0,
+      "losses": 16,
+      "mean_hp_on_win": 22.03846153846154,
+      "mean_task_return": 0.6352970623115146,
+      "potions_consumed": 17,
+      "steps": 1236,
+      "timings": {
+        "encoding_seconds": 4.94945899490267,
+        "initialization_seconds": 1.4688361277803779,
+        "policy_seconds": 15.689498480875045,
+        "projection_seconds": 10.735441928263754,
+        "recording_seconds": 7.384165822993964,
+        "simulation_dispatch_seconds": 5.2398069887422025,
+        "total_seconds": 46.27543962141499
+      },
+      "wall_seconds": 13.04410179099068,
+      "win_rate": 0.6190476190476191,
+      "win_rate_wilson_95": [
+        0.4681404026715268,
+        0.7500027423604485
+      ],
+      "wins": 26
+    },
+    "specialist_search": {
+      "attempted": 42,
+      "completed_mean_end_hp": 15.285714285714286,
+      "completed_mean_return": 0.6372821753222362,
+      "component_totals": {
+        "combat_loss": 16.0,
+        "combat_win": 26.0,
+        "end_turn_action": 277.0,
+        "potion_use_action": 17.0,
+        "win_hp_fraction": 7.658513635339194
+      },
+      "cutoffs": 0,
+      "decisions_per_second": 0.8387950141291758,
+      "failures": 0,
+      "losses": 16,
+      "mean_hp_on_win": 24.692307692307693,
+      "mean_task_return": 0.6372821753222362,
+      "potions_consumed": 17,
+      "steps": 1224,
+      "timings": {
+        "encoding_seconds": 5.853601339738816,
+        "initialization_seconds": 1.435776837170124,
+        "policy_seconds": 1428.1390850697644,
+        "projection_seconds": 10.645036518573761,
+        "recording_seconds": 6.686113557778299,
+        "simulation_dispatch_seconds": 5.265486031770706,
+        "total_seconds": 1459.2361415866762
+      },
+      "wall_seconds": 387.84969324991107,
+      "win_rate": 0.6190476190476191,
+      "win_rate_wilson_95": [
+        0.4681404026715268,
+        0.7500027423604485
+      ],
+      "wins": 26
+    }
+  },
+  "comparisons": {
+    "same_view_vs_original": {
+      "attempts": 42,
+      "completed_end_hp_difference": 0.0,
+      "completed_end_hp_difference_bootstrap_95": [
+        0.0,
+        0.0
+      ],
+      "completed_pairs": 42,
+      "completed_return_difference": 0.0,
+      "completed_return_difference_bootstrap_95": [
+        0.0,
+        0.0
+      ],
+      "discordance": {
+        "no_win_to_no_win": 16,
+        "win_to_win": 26
+      },
+      "discordant_cases": [],
+      "exact_paired_binomial_two_sided": 1.0,
+      "paired_win_difference": 0.0,
+      "paired_win_difference_bootstrap_95": [
+        0.0,
+        0.0
+      ]
+    },
+    "search_vs_original": {
+      "attempts": 42,
+      "completed_end_hp_difference": 1.6428571428571428,
+      "completed_end_hp_difference_bootstrap_95": [
+        -1.380952380952381,
+        4.785714285714286
+      ],
+      "completed_pairs": 42,
+      "completed_return_difference": 0.0019851130107215414,
+      "completed_return_difference_bootstrap_95": [
+        -0.09627419437602629,
+        0.10003253686532089
+      ],
+      "discordance": {
+        "no_win_to_no_win": 14,
+        "no_win_to_win": 2,
+        "win_to_no_win": 2,
+        "win_to_win": 24
+      },
+      "discordant_cases": [
+        {
+          "candidate_won": true,
+          "case_id": "0572e38510d6477685a18f94b4eceec8",
+          "case_index": 5,
+          "control_won": false
+        },
+        {
+          "candidate_won": false,
+          "case_id": "a203df19890248698b0de938b3092464",
+          "case_index": 11,
+          "control_won": true
+        },
+        {
+          "candidate_won": false,
+          "case_id": "08614fe513b64d5fa89bd6b34554e573",
+          "case_index": 14,
+          "control_won": true
+        },
+        {
+          "candidate_won": true,
+          "case_id": "e8173ef4120c434eb5568d9dce1efd16",
+          "case_index": 34,
+          "control_won": false
+        }
+      ],
+      "exact_paired_binomial_two_sided": 1.0,
+      "paired_win_difference": 0.0,
+      "paired_win_difference_bootstrap_95": [
+        -0.09523809523809523,
+        0.09523809523809523
+      ]
+    },
+    "search_vs_same_view": {
+      "attempts": 42,
+      "completed_end_hp_difference": 1.6428571428571428,
+      "completed_end_hp_difference_bootstrap_95": [
+        -1.380952380952381,
+        4.785714285714286
+      ],
+      "completed_pairs": 42,
+      "completed_return_difference": 0.0019851130107215414,
+      "completed_return_difference_bootstrap_95": [
+        -0.09627419437602629,
+        0.10003253686532089
+      ],
+      "discordance": {
+        "no_win_to_no_win": 14,
+        "no_win_to_win": 2,
+        "win_to_no_win": 2,
+        "win_to_win": 24
+      },
+      "discordant_cases": [
+        {
+          "candidate_won": true,
+          "case_id": "0572e38510d6477685a18f94b4eceec8",
+          "case_index": 5,
+          "control_won": false
+        },
+        {
+          "candidate_won": false,
+          "case_id": "a203df19890248698b0de938b3092464",
+          "case_index": 11,
+          "control_won": true
+        },
+        {
+          "candidate_won": false,
+          "case_id": "08614fe513b64d5fa89bd6b34554e573",
+          "case_index": 14,
+          "control_won": true
+        },
+        {
+          "candidate_won": true,
+          "case_id": "e8173ef4120c434eb5568d9dce1efd16",
+          "case_index": 34,
+          "control_won": false
+        }
+      ],
+      "exact_paired_binomial_two_sided": 1.0,
+      "paired_win_difference": 0.0,
+      "paired_win_difference_bootstrap_95": [
+        -0.09523809523809523,
+        0.09523809523809523
+      ]
+    }
+  },
+  "files": {
+    "/Users/rowdeygoos/Documents/Codex/vantom-search-comparison-20261007-corrected/analyze.py": "0f211a9f6bc1987fbaca5a813e9b04f19dc6401ccdfa79e2794c7fd6ec5d950a",
+    "/Users/rowdeygoos/Documents/Codex/vantom-search-comparison-20261007-corrected/protocol.json": "9149846f00a32bca3879e718cbfe7d486b9aa500a066c2261a42d17cd6132ecd",
+    "/Users/rowdeygoos/Documents/Codex/vantom-search-comparison-20261007-corrected/specialist_raw.json": "64c5f53f3ff2204c34e5bd67e964b3fa0d786ccdae4e14bd1b02fe3ad674a14f",
+    "/Users/rowdeygoos/Documents/Codex/vantom-search-comparison-20261007-corrected/specialist_same_view.json": "de3c6d533cdf46c07d8f583286d11e39c8df01b1e92b1cc6a20d307f4349c787",
+    "/Users/rowdeygoos/Documents/Codex/vantom-search-comparison-20261007-corrected/specialist_search.json": "2038365febbeeab7a11f43d375289c51f970835e8b89109b374c7bee026ce2ff"
+  },
+  "historical_specialist_check": {
+    "action_sequence_differences": [],
+    "differences": [],
+    "historical_wins": 26,
+    "same_view_action_sequence_differences": []
+  },
+  "invalidated_attempt": {
+    "path": "/Users/rowdeygoos/Documents/Codex/vantom-search-comparison-20261007",
+    "protocol_sha256": "c6d4809de03d39bf5cb3cc7f16b490ac300208f8bfd7453edb4b327837a865f9",
+    "reason": "Hypothetical generation used restricted potion pool instead of canonical Ironclad pool.",
+    "record_sha256": "f479a35a088d2592eba42ad412891978302cc96570d349b2338d4c052d3e5db2"
+  },
+  "measured_seconds": {
+    "evaluation_by_arm": {
+      "specialist_raw": 12.950807999819517,
+      "specialist_same_view": 13.04410179099068,
+      "specialist_search": 387.84969324991107
+    },
+    "focused_checks": 10.176096833311021,
+    "preflight": 1.3162817498669028
+  },
+  "protocol_sha256": "9149846f00a32bca3879e718cbfe7d486b9aa500a066c2261a42d17cd6132ecd",
+  "schema": "sts_vantom_search_comparison_analysis_v1",
+  "search": {
+    "all_action_median_seconds": 0.0867598548065871,
+    "all_action_p95_seconds": 2.834757850272581,
+    "changed_greedy_prior": 103,
+    "completed_simulations": 14544,
+    "decisions": 1224,
+    "episodes": [
+      {
+        "case_id": "dff6b5e7792d4bc29ea13b9dcc1509ed",
+        "case_index": 0,
+        "decisions": 24,
+        "fallback_reasons": {
+          "forced_action": 5,
+          "opening_scope:card:havoc": 17
+        },
+        "searched": 2
+      },
+      {
+        "case_id": "b468623b22004f9982c848792b3c26bb",
+        "case_index": 1,
+        "decisions": 28,
+        "fallback_reasons": {},
+        "searched": 28
+      },
+      {
+        "case_id": "abf54cdcb60b48f7b16433b4faec73b7",
+        "case_index": 2,
+        "decisions": 40,
+        "fallback_reasons": {
+          "forced_action": 9,
+          "opening_scope:intrinsic_retention": 29
+        },
+        "searched": 2
+      },
+      {
+        "case_id": "a03b6f70a45045f2b455df1363f720d4",
+        "case_index": 3,
+        "decisions": 31,
+        "fallback_reasons": {
+          "forced_action": 5,
+          "opening_scope:card:pillage": 16
+        },
+        "searched": 10
+      },
+      {
+        "case_id": "83d033c4b46b4c35b879e042e0a5d79b",
+        "case_index": 4,
+        "decisions": 33,
+        "fallback_reasons": {
+          "forced_action": 8,
+          "opening_scope:end_turn_draw_trigger": 23
+        },
+        "searched": 2
+      },
+      {
+        "case_id": "0572e38510d6477685a18f94b4eceec8",
+        "case_index": 5,
+        "decisions": 37,
+        "fallback_reasons": {
+          "forced_action": 8
+        },
+        "searched": 29
+      },
+      {
+        "case_id": "453f00536be74ff6886a9c506d153c13",
+        "case_index": 6,
+        "decisions": 29,
+        "fallback_reasons": {
+          "forced_action": 5
+        },
+        "searched": 24
+      },
+      {
+        "case_id": "9ddbb23578eb471eae71883d5802390c",
+        "case_index": 7,
+        "decisions": 29,
+        "fallback_reasons": {
+          "opening_scope:potion:radiant_tincture": 27
+        },
+        "searched": 2
+      },
+      {
+        "case_id": "ac77d9b1cde74c6495fadca8067c9e2b",
+        "case_index": 8,
+        "decisions": 30,
+        "fallback_reasons": {
+          "forced_action": 6,
+          "opening_scope:card:infernal_blade": 14
+        },
+        "searched": 10
+      },
+      {
+        "case_id": "a827c177c41b46b6bfacaa2347642302",
+        "case_index": 9,
+        "decisions": 22,
+        "fallback_reasons": {
+          "forced_action": 6,
+          "opening_scope:card:hellraiser": 12
+        },
+        "searched": 4
+      },
+      {
+        "case_id": "ab31fd57f873423e8b0fa13b632bd1fc",
+        "case_index": 10,
+        "decisions": 31,
+        "fallback_reasons": {
+          "forced_action": 1
+        },
+        "searched": 30
+      },
+      {
+        "case_id": "a203df19890248698b0de938b3092464",
+        "case_index": 11,
+        "decisions": 30,
+        "fallback_reasons": {
+          "forced_action": 7
+        },
+        "searched": 23
+      },
+      {
+        "case_id": "d4bd413b6a4342f7a89c72d87331f007",
+        "case_index": 12,
+        "decisions": 41,
+        "fallback_reasons": {
+          "forced_action": 8,
+          "opening_scope:card:juggling": 24
+        },
+        "searched": 9
+      },
+      {
+        "case_id": "4a436b29b253468ba824f7a26231afd5",
+        "case_index": 13,
+        "decisions": 15,
+        "fallback_reasons": {
+          "forced_action": 3,
+          "opening_scope:potion:bottled_potential": 11
+        },
+        "searched": 1
+      },
+      {
+        "case_id": "08614fe513b64d5fa89bd6b34554e573",
+        "case_index": 14,
+        "decisions": 29,
+        "fallback_reasons": {
+          "forced_action": 7
+        },
+        "searched": 22
+      },
+      {
+        "case_id": "64973cf725284b71862e3f44d51b84f4",
+        "case_index": 15,
+        "decisions": 19,
+        "fallback_reasons": {
+          "forced_action": 4
+        },
+        "searched": 15
+      },
+      {
+        "case_id": "08ebccdda466438bae165f82e10fc89a",
+        "case_index": 16,
+        "decisions": 36,
+        "fallback_reasons": {
+          "forced_action": 9,
+          "opening_scope:potion:liquid_memories": 26
+        },
+        "searched": 1
+      },
+      {
+        "case_id": "358a6b24a2414a60bb7c702bd841fd75",
+        "case_index": 17,
+        "decisions": 31,
+        "fallback_reasons": {
+          "forced_action": 9
+        },
+        "searched": 22
+      },
+      {
+        "case_id": "3b3fb152b42e456287d4f6080adfaaec",
+        "case_index": 18,
+        "decisions": 33,
+        "fallback_reasons": {
+          "forced_action": 8,
+          "opening_scope:potion:fysh_oil": 24
+        },
+        "searched": 1
+      },
+      {
+        "case_id": "f18f0c4656934ef1a60d3a1987dc2b32",
+        "case_index": 19,
+        "decisions": 34,
+        "fallback_reasons": {
+          "forced_action": 8
+        },
+        "searched": 26
+      },
+      {
+        "case_id": "8ba161219d1942caaa5c650b29a44a6b",
+        "case_index": 20,
+        "decisions": 30,
+        "fallback_reasons": {
+          "forced_action": 6
+        },
+        "searched": 24
+      },
+      {
+        "case_id": "4e702dc470aa485b93fd5f186b4f118a",
+        "case_index": 21,
+        "decisions": 35,
+        "fallback_reasons": {
+          "forced_action": 7,
+          "opening_scope:card:juggling": 21
+        },
+        "searched": 7
+      },
+      {
+        "case_id": "0dfac130ccc745c79d2005721a8a7414",
+        "case_index": 22,
+        "decisions": 28,
+        "fallback_reasons": {
+          "forced_action": 7
+        },
+        "searched": 21
+      },
+      {
+        "case_id": "b37cb8e717be4f22af788e348909f5ee",
+        "case_index": 23,
+        "decisions": 25,
+        "fallback_reasons": {
+          "forced_action": 6
+        },
+        "searched": 19
+      },
+      {
+        "case_id": "f2100eee54784615a418e188acfbb28d",
+        "case_index": 24,
+        "decisions": 20,
+        "fallback_reasons": {
+          "forced_action": 5,
+          "opening_scope:card:havoc": 13
+        },
+        "searched": 2
+      },
+      {
+        "case_id": "4ce1bcd016c34a18a5e5b10545adf245",
+        "case_index": 25,
+        "decisions": 33,
+        "fallback_reasons": {
+          "forced_action": 9
+        },
+        "searched": 24
+      },
+      {
+        "case_id": "3c6e2b097c9640fdb9d31415afeb44be",
+        "case_index": 26,
+        "decisions": 29,
+        "fallback_reasons": {
+          "forced_action": 6
+        },
+        "searched": 23
+      },
+      {
+        "case_id": "124d5552fcd34df09938aee794df7ae9",
+        "case_index": 27,
+        "decisions": 29,
+        "fallback_reasons": {
+          "forced_action": 6
+        },
+        "searched": 23
+      },
+      {
+        "case_id": "0c651228b1ff415a8547edd33c0acb39",
+        "case_index": 28,
+        "decisions": 26,
+        "fallback_reasons": {
+          "forced_action": 7,
+          "opening_scope:end_turn_draw_trigger": 16
+        },
+        "searched": 3
+      },
+      {
+        "case_id": "4113034b1d9f4a1fa19be99c7ce3c5c1",
+        "case_index": 29,
+        "decisions": 27,
+        "fallback_reasons": {
+          "forced_action": 7,
+          "opening_scope:potion:stable_serum": 18
+        },
+        "searched": 2
+      },
+      {
+        "case_id": "c5972b2f6f7b4ba480ae9fb3789a7742",
+        "case_index": 30,
+        "decisions": 28,
+        "fallback_reasons": {
+          "forced_action": 6,
+          "opening_scope:card:pillage": 14
+        },
+        "searched": 8
+      },
+      {
+        "case_id": "1698935587a141cb8d6e5d480f5a3d20",
+        "case_index": 31,
+        "decisions": 23,
+        "fallback_reasons": {
+          "forced_action": 5,
+          "opening_scope:card:pillage": 7
+        },
+        "searched": 11
+      },
+      {
+        "case_id": "75e0e5f70c97408eba56af27da767037",
+        "case_index": 32,
+        "decisions": 42,
+        "fallback_reasons": {},
+        "searched": 42
+      },
+      {
+        "case_id": "2c54e7bdcd104f0fabdd1664c45a81c3",
+        "case_index": 33,
+        "decisions": 23,
+        "fallback_reasons": {
+          "forced_action": 6
+        },
+        "searched": 17
+      },
+      {
+        "case_id": "e8173ef4120c434eb5568d9dce1efd16",
+        "case_index": 34,
+        "decisions": 25,
+        "fallback_reasons": {
+          "forced_action": 5,
+          "opening_scope:card:havoc": 14
+        },
+        "searched": 6
+      },
+      {
+        "case_id": "77540ea056a34e659bb024eecc47abc5",
+        "case_index": 35,
+        "decisions": 28,
+        "fallback_reasons": {
+          "forced_action": 6
+        },
+        "searched": 22
+      },
+      {
+        "case_id": "625168dd95ee489894cebc584179f76c",
+        "case_index": 36,
+        "decisions": 29,
+        "fallback_reasons": {
+          "forced_action": 7,
+          "opening_scope:potion:colorless_potion": 21
+        },
+        "searched": 1
+      },
+      {
+        "case_id": "72276542fdd245abba9ec500f8bee715",
+        "case_index": 37,
+        "decisions": 27,
+        "fallback_reasons": {
+          "forced_action": 5
+        },
+        "searched": 22
+      },
+      {
+        "case_id": "878e460cd65146ceb3b3a0397fdcc7d5",
+        "case_index": 38,
+        "decisions": 31,
+        "fallback_reasons": {
+          "forced_action": 7
+        },
+        "searched": 24
+      },
+      {
+        "case_id": "043779d998864771869ab4ff5ed06b78",
+        "case_index": 39,
+        "decisions": 27,
+        "fallback_reasons": {
+          "forced_action": 6
+        },
+        "searched": 21
+      },
+      {
+        "case_id": "3b4a4afe7fdb4d11943985fe7003a3b1",
+        "case_index": 40,
+        "decisions": 31,
+        "fallback_reasons": {
+          "forced_action": 8,
+          "opening_scope:card:pillage": 22
+        },
+        "searched": 1
+      },
+      {
+        "case_id": "35aa876c6d9b4bcb9a88b0d4219a675e",
+        "case_index": 41,
+        "decisions": 26,
+        "fallback_reasons": {
+          "forced_action": 6
+        },
+        "searched": 20
+      }
+    ],
+    "episodes_with_search": 42,
+    "fallback_reasons": {
+      "forced_action": 249,
+      "opening_scope:card:havoc": 44,
+      "opening_scope:card:hellraiser": 12,
+      "opening_scope:card:infernal_blade": 14,
+      "opening_scope:card:juggling": 45,
+      "opening_scope:card:pillage": 59,
+      "opening_scope:end_turn_draw_trigger": 39,
+      "opening_scope:intrinsic_retention": 29,
+      "opening_scope:potion:bottled_potential": 11,
+      "opening_scope:potion:colorless_potion": 21,
+      "opening_scope:potion:fysh_oil": 24,
+      "opening_scope:potion:liquid_memories": 26,
+      "opening_scope:potion:radiant_tincture": 27,
+      "opening_scope:potion:stable_serum": 18
+    },
+    "forced": 249,
+    "full_budget_searched_decisions": 606,
+    "max_action_seconds": 4.340816750191152,
+    "search_cutoffs": {},
+    "searched": 606,
+    "searched_action_median_seconds": 2.4930844996124506,
+    "searched_action_p95_seconds": 2.9522502085892484,
+    "searched_fraction": 0.4950980392156863,
+    "searched_nonforced_fraction": 0.6215384615384615
+  },
+  "uncertainty": {
+    "cutoffs": "Separate from actual defeats; completed-return estimates exclude cutoffs.",
+    "distinct_source_groups": 42,
+    "method": "50,000 paired source-group percentile bootstrap resamples",
+    "seed": 20261007,
+    "split": "previously used validation; not held-out"
+  }
+}

@@ -12,6 +12,7 @@ from urllib.parse import parse_qs, urlsplit
 
 from game.agent.action_policy import action_mask
 from game.agent.contracts import full as f
+from game.agent.input_views import RAW, apply_view, validate_view
 from game.agent.training.rewards import strict_json
 from .decisions import detail, json_bytes, state_digest
 from .report import CHUNK_SIZE, SCHEMA
@@ -53,6 +54,7 @@ class AnalysisStore:
                 self.model_info.append({'label': label, 'identity': policy.identity,
                                         'behavior': fingerprint(policy.model),
                                         'action_policy': policy.model.action_policy,
+                                        'input_view': getattr(policy.model, 'input_view', RAW),
                                         'reward_spec': policy.reward_spec.to_dict(),
                                         'reward_identity': policy.reward_spec.identity})
 
@@ -115,8 +117,51 @@ class AnalysisStore:
                 results.append({**metadata, 'value': critic, 'matches_recorded_policy': same,
                                 'probabilities': [{'ref': a.ref, 'probability': probabilities[a.ref],
                                                    'allowed': ok} for a, ok in zip(decision.candidates, allowed)]})
+            search_actor = self._search_actor(key, value, decision)
         return {'state_sha256': state_digest(decision), 'step': step, 'models': results,
+                'search_actor': search_actor,
                 'interpretation': 'Recomputed preferences on one recorded public state. No alternative outcomes were simulated.'}
+
+    def _search_actor(self, key, value, decision):
+        """Reproduce root inputs, not search itself. Called under inference_lock."""
+        search = self.runs[key].get('search')
+        if not search or not value.get('search'):
+            return None
+        matching = next((m for m in self.model_info if m['identity'] == search['checkpoint']), None)
+        if matching is None:
+            return {'status': 'checkpoint_not_loaded', 'checkpoint': search['checkpoint'],
+                    'reason': 'Load the exact recorded checkpoint to recompute the search actor.'}
+        policy = self.models[matching['label']]
+        view = search['planning_view']
+        try:
+            validate_view(view, action_policy=policy.model.action_policy)
+            if (policy.reward_spec.to_dict() != search['reward_spec']
+                    or getattr(policy.model, 'input_view', RAW) not in (RAW, view)):
+                raise ValueError('Checkpoint objective or input view differs from recorded search')
+            observed = apply_view(decision, view)
+            allowed = {a.ref for a, ok in zip(observed.candidates,
+                       action_mask(observed, policy.model.action_policy)) if ok}
+            if allowed != set(value['search']['probabilities']):
+                raise ValueError('Checkpoint action support differs from recorded search')
+            probabilities, critic = policy.probabilities(observed)
+            if (set(probabilities) != {a.ref for a in observed.candidates}
+                    or any(not math.isfinite(v) or not 0 <= v <= 1 for v in probabilities.values())
+                    or not math.isfinite(critic)):
+                raise ValueError('Invalid search actor inference')
+            mass = sum(probabilities[ref] for ref in allowed)
+            if mass <= 0 or not math.isclose(mass, 1., abs_tol=1e-5):
+                raise ValueError('Invalid search actor probability mass')
+            # Search normalizes the allowed actor distribution and clips its
+            # root critic. Keep both raw and effective values clearly labelled.
+            return {'status': 'available', 'label': matching['label'], 'checkpoint': policy.identity,
+                    'planning_view': view, 'input_state_sha256': state_digest(observed),
+                    'action_policy': policy.model.action_policy,
+                    'probabilities': {ref: probabilities[ref]/mass for ref in sorted(allowed)},
+                    'action_ref': max((a.ref for a in observed.candidates if a.ref in allowed),
+                                      key=lambda ref: probabilities[ref]),
+                    'critic': critic, 'search_value': min(1.1, max(0., critic))}
+        except ValueError as error:
+            return {'status': 'incompatible', 'checkpoint': policy.identity, 'reason': str(error)}
 
 
 def make_server(store, port=8765):

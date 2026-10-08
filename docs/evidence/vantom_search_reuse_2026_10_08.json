@@ -1,0 +1,1056 @@
+{
+  "bindings": {
+    "corpus-audit.json": "a892320e67333bc5d7f637018bb1949fa95784231cc3f90426a22a22f119b3cb",
+    "evaluation.json": "d67b6bb6d9dbeb272da19a8243f225e9a466f27460d2784a3c4a719e5b143994",
+    "finish.py": "b4a664d9b120f31427c45ae35d9aa1ae6b9ab36ec0ac4e26388a8e35cc8b7255",
+    "protocol.json": "f758d7985d52bd16e257532a97af864dae617161a8fa8644d3931a7e63423e2e",
+    "reanalysis.json": "9105e1da289548291a6c43939599ac81fda64dde5045ea0a8321685a4b8c2140",
+    "refresh/final.sts-model": "3ee53a212814915b48b40c3d68c0a925030539f7e691ab344eee1e08d7330092",
+    "refresh/search-distillation.json": "3e1b9c9047c8ce4f42e8ff76c8c15b00ba8d79d94ced6b7399346712368c7681",
+    "replay/final.sts-model": "f3d776b39584cf5e89fc80a6aaa891cc1db3f99a7e2402cd5971503a94bf17a0",
+    "replay/search-distillation.json": "7ded37ce9a07b34649e1b6d08ae23a7c96e0cd0f06e6dc5fac42151a43056798",
+    "reuse.py": "19006515993c5cbac1c7577dbcdddf9e43604849bdf9a70b1d4cbcd7c7088b88",
+    "review.json": "d57192c6b47fd2324d9d533af3e1d26ee9b01611c6468c2f32000dc4d5e7ab35",
+    "selection.json": "1857faa18becbd6d9f599fb6c27f284abf58b0243002d3c09cd838919cdbe3fb",
+    "smoke-check.json": "1abe8fdd2aca04e95c5fb4366319e4132a411cbce9a41d23ee0fc575fa75c7c1",
+    "training-audit.json": "f66439e4a573b2399c2c0dfe0a93cce22c5ff39c60c7350380f9549f4728b60c"
+  },
+  "corpus_audit": {
+    "actions_and_value_labels": "identical",
+    "changed_targets": 3299,
+    "completed_value_examples": 38784,
+    "examples": 39667,
+    "features": "exact arrays and candidate mappings",
+    "missing_value_examples": 883,
+    "order": "identical (episode ID, original transition index)",
+    "original_corpus": "sts_search_corpora_v1:20c1b4798221803c7912dd8706965d9be7748c986f54ffe875b6a9b304359445",
+    "preparation_seconds": 806.5361308339052,
+    "refreshed_corpus": "sts_search_target_refresh_corpus_v1:b07d91acb17888c6e8a9b58f3db6dd6ecb3842ac2836676319f8de5527002d55",
+    "refreshed_examples": 3299,
+    "status": "passed"
+  },
+  "cumulative_fresh_training_decisions": 150000,
+  "evaluation_seconds": 282.1902455412783,
+  "evaluation_summary": {
+    "baseline_network": {
+      "attempted": 42,
+      "cutoffs": 0,
+      "failures": 0,
+      "hp_change_observations": 42,
+      "losses": 20,
+      "mean_final_turn_observed": 7.285714285714286,
+      "mean_hp_change_observed": -55.92857142857143,
+      "mean_hp_fraction_on_win": 0.27642807384186696,
+      "mean_hp_on_win": 23.227272727272727,
+      "mean_task_return": 0.5382890895821928,
+      "planned": 42,
+      "potion_use_actions": 17,
+      "source_groups": 42,
+      "steps": 1212,
+      "unattempted": 0,
+      "win_rate": 0.5238095238095238,
+      "win_rate_group_hoeffding_95": [
+        0.31424991034215155,
+        0.7333691372768961
+      ],
+      "wins": 22
+    },
+    "baseline_search": {
+      "attempted": 42,
+      "cutoffs": 0,
+      "failures": 0,
+      "hp_change_observations": 42,
+      "losses": 14,
+      "mean_final_turn_observed": 7.476190476190476,
+      "mean_hp_change_observed": -53.88095238095238,
+      "mean_hp_fraction_on_win": 0.25606828938471937,
+      "mean_hp_on_win": 21.321428571428573,
+      "mean_task_return": 0.6837378859589811,
+      "planned": 42,
+      "potion_use_actions": 17,
+      "source_groups": 42,
+      "steps": 1239,
+      "unattempted": 0,
+      "win_rate": 0.6666666666666666,
+      "win_rate_group_hoeffding_95": [
+        0.45710705319929434,
+        0.8762262801340389
+      ],
+      "wins": 28
+    },
+    "refresh_network": {
+      "attempted": 42,
+      "cutoffs": 0,
+      "failures": 0,
+      "hp_change_observations": 42,
+      "losses": 18,
+      "mean_final_turn_observed": 7.309523809523809,
+      "mean_hp_change_observed": -54.73809523809524,
+      "mean_hp_fraction_on_win": 0.2785121328224776,
+      "mean_hp_on_win": 23.375,
+      "mean_task_return": 0.5873435504469985,
+      "planned": 42,
+      "potion_use_actions": 17,
+      "source_groups": 42,
+      "steps": 1214,
+      "unattempted": 0,
+      "win_rate": 0.5714285714285714,
+      "win_rate_group_hoeffding_95": [
+        0.3618689579611991,
+        0.7809881848959437
+      ],
+      "wins": 24
+    },
+    "refresh_search": {
+      "attempted": 42,
+      "cutoffs": 0,
+      "failures": 0,
+      "hp_change_observations": 42,
+      "losses": 18,
+      "mean_final_turn_observed": 7.4523809523809526,
+      "mean_hp_change_observed": -55.476190476190474,
+      "mean_hp_fraction_on_win": 0.2656784097738712,
+      "mean_hp_on_win": 22.083333333333332,
+      "mean_task_return": 0.5866101948442212,
+      "planned": 42,
+      "potion_use_actions": 17,
+      "source_groups": 42,
+      "steps": 1241,
+      "unattempted": 0,
+      "win_rate": 0.5714285714285714,
+      "win_rate_group_hoeffding_95": [
+        0.3618689579611991,
+        0.7809881848959437
+      ],
+      "wins": 24
+    },
+    "replay_network": {
+      "attempted": 42,
+      "cutoffs": 0,
+      "failures": 0,
+      "hp_change_observations": 42,
+      "losses": 20,
+      "mean_final_turn_observed": 7.238095238095238,
+      "mean_hp_change_observed": -55.285714285714285,
+      "mean_hp_fraction_on_win": 0.29163183559735284,
+      "mean_hp_on_win": 24.454545454545453,
+      "mean_task_return": 0.5390854771027184,
+      "planned": 42,
+      "potion_use_actions": 17,
+      "source_groups": 42,
+      "steps": 1202,
+      "unattempted": 0,
+      "win_rate": 0.5238095238095238,
+      "win_rate_group_hoeffding_95": [
+        0.31424991034215155,
+        0.7333691372768961
+      ],
+      "wins": 22
+    },
+    "replay_search": {
+      "attempted": 42,
+      "cutoffs": 0,
+      "failures": 0,
+      "hp_change_observations": 42,
+      "losses": 16,
+      "mean_final_turn_observed": 7.357142857142857,
+      "mean_hp_change_observed": -54.42857142857143,
+      "mean_hp_fraction_on_win": 0.2653547095230665,
+      "mean_hp_on_win": 22.076923076923077,
+      "mean_task_return": 0.6354743391609519,
+      "planned": 42,
+      "potion_use_actions": 17,
+      "source_groups": 42,
+      "steps": 1237,
+      "unattempted": 0,
+      "win_rate": 0.6190476190476191,
+      "win_rate_group_hoeffding_95": [
+        0.4094880055802468,
+        0.8286072325149914
+      ],
+      "wins": 26
+    },
+    "specialist_network": {
+      "attempted": 42,
+      "cutoffs": 0,
+      "failures": 0,
+      "hp_change_observations": 42,
+      "losses": 16,
+      "mean_final_turn_observed": 7.380952380952381,
+      "mean_hp_change_observed": -54.45238095238095,
+      "mean_hp_fraction_on_win": 0.2624910065706212,
+      "mean_hp_on_win": 22.03846153846154,
+      "mean_task_return": 0.6352970623115145,
+      "planned": 42,
+      "potion_use_actions": 17,
+      "source_groups": 42,
+      "steps": 1236,
+      "unattempted": 0,
+      "win_rate": 0.6190476190476191,
+      "win_rate_group_hoeffding_95": [
+        0.4094880055802468,
+        0.8286072325149914
+      ],
+      "wins": 26
+    },
+    "specialist_search": {
+      "attempted": 42,
+      "cutoffs": 0,
+      "failures": 0,
+      "hp_change_observations": 42,
+      "losses": 14,
+      "mean_final_turn_observed": 7.476190476190476,
+      "mean_hp_change_observed": -53.19047619047619,
+      "mean_hp_fraction_on_win": 0.26727518593644356,
+      "mean_hp_on_win": 22.357142857142858,
+      "mean_task_return": 0.6844850123957629,
+      "planned": 42,
+      "potion_use_actions": 17,
+      "source_groups": 42,
+      "steps": 1248,
+      "unattempted": 0,
+      "win_rate": 0.6666666666666666,
+      "win_rate_group_hoeffding_95": [
+        0.45710705319929434,
+        0.8762262801340389
+      ],
+      "wins": 28
+    }
+  },
+  "heldout_test_opened": false,
+  "implementation": {
+    "build": "322f129e4bd1a4124603dcb760302da9fdcf362a110a877835ce913585c97a22",
+    "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+    "rules": "efcc2494d3c1f896669e334cb49a60455048ac4f2a44a3466a7a62225cd0771c",
+    "target": "sts2-v0.107.1-steam-23811903"
+  },
+  "new_evaluation_fights": 168,
+  "new_training_game_decisions": 0,
+  "paired": {
+    "refresh_network_vs_baseline_network": {
+      "cases": 42,
+      "difference_group_hoeffding_95": [
+        -0.37150017931569695,
+        0.4667382745537922
+      ],
+      "paired_campaign_bootstrap_95": [
+        -0.047619047619047616,
+        0.14285714285714285
+      ],
+      "status": "complete",
+      "win_rate_difference": 0.047619047619047616,
+      "wins_only_baseline_network": 1,
+      "wins_only_candidate": 3
+    },
+    "refresh_network_vs_replay_network": {
+      "cases": 42,
+      "difference_group_hoeffding_95": [
+        -0.37150017931569695,
+        0.4667382745537922
+      ],
+      "paired_campaign_bootstrap_95": [
+        0.0,
+        0.11904761904761904
+      ],
+      "status": "complete",
+      "win_rate_difference": 0.047619047619047616,
+      "wins_only_candidate": 2,
+      "wins_only_replay_network": 0
+    },
+    "refresh_search_vs_baseline_search": {
+      "cases": 42,
+      "difference_group_hoeffding_95": [
+        -0.5143573221728398,
+        0.32388113169664934
+      ],
+      "paired_campaign_bootstrap_95": [
+        -0.19047619047619047,
+        -0.023809523809523808
+      ],
+      "status": "complete",
+      "win_rate_difference": -0.09523809523809523,
+      "wins_only_baseline_search": 4,
+      "wins_only_candidate": 0
+    },
+    "refresh_search_vs_refresh_network": {
+      "cases": 42,
+      "difference_group_hoeffding_95": [
+        -0.41911922693474457,
+        0.41911922693474457
+      ],
+      "paired_campaign_bootstrap_95": [
+        -0.14285714285714285,
+        0.14285714285714285
+      ],
+      "status": "complete",
+      "win_rate_difference": 0.0,
+      "wins_only_candidate": 4,
+      "wins_only_refresh_network": 4
+    },
+    "refresh_search_vs_replay_search": {
+      "cases": 42,
+      "difference_group_hoeffding_95": [
+        -0.4667382745537922,
+        0.37150017931569695
+      ],
+      "paired_campaign_bootstrap_95": [
+        -0.11904761904761904,
+        0.0
+      ],
+      "status": "complete",
+      "win_rate_difference": -0.047619047619047616,
+      "wins_only_candidate": 0,
+      "wins_only_replay_search": 2
+    },
+    "refresh_search_vs_specialist_search": {
+      "cases": 42,
+      "difference_group_hoeffding_95": [
+        -0.5143573221728398,
+        0.32388113169664934
+      ],
+      "paired_campaign_bootstrap_95": [
+        -0.21428571428571427,
+        0.0
+      ],
+      "status": "complete",
+      "win_rate_difference": -0.09523809523809523,
+      "wins_only_candidate": 1,
+      "wins_only_specialist_search": 5
+    },
+    "replay_network_vs_baseline_network": {
+      "cases": 42,
+      "difference_group_hoeffding_95": [
+        -0.41911922693474457,
+        0.41911922693474457
+      ],
+      "paired_campaign_bootstrap_95": [
+        -0.09523809523809523,
+        0.09523809523809523
+      ],
+      "status": "complete",
+      "win_rate_difference": 0.0,
+      "wins_only_baseline_network": 2,
+      "wins_only_candidate": 2
+    },
+    "replay_search_vs_baseline_search": {
+      "cases": 42,
+      "difference_group_hoeffding_95": [
+        -0.4667382745537922,
+        0.37150017931569695
+      ],
+      "paired_campaign_bootstrap_95": [
+        -0.14285714285714285,
+        0.047619047619047616
+      ],
+      "status": "complete",
+      "win_rate_difference": -0.047619047619047616,
+      "wins_only_baseline_search": 3,
+      "wins_only_candidate": 1
+    },
+    "replay_search_vs_replay_network": {
+      "cases": 42,
+      "difference_group_hoeffding_95": [
+        -0.32388113169664934,
+        0.5143573221728398
+      ],
+      "paired_campaign_bootstrap_95": [
+        0.0,
+        0.21428571428571427
+      ],
+      "status": "complete",
+      "win_rate_difference": 0.09523809523809523,
+      "wins_only_candidate": 5,
+      "wins_only_replay_network": 1
+    },
+    "replay_search_vs_specialist_search": {
+      "cases": 42,
+      "difference_group_hoeffding_95": [
+        -0.4667382745537922,
+        0.37150017931569695
+      ],
+      "paired_campaign_bootstrap_95": [
+        -0.14285714285714285,
+        0.047619047619047616
+      ],
+      "status": "complete",
+      "win_rate_difference": -0.047619047619047616,
+      "wins_only_candidate": 1,
+      "wins_only_specialist_search": 3
+    }
+  },
+  "paired_quality": {
+    "refresh_network_vs_baseline_network": {
+      "end_hp": {
+        "mean_difference": 1.1904761904761905,
+        "paired_campaign_bootstrap_95": [
+          -0.30952380952380953,
+          3.0238095238095237
+        ]
+      },
+      "potion_use_actions": {
+        "mean_difference": 0.0,
+        "paired_campaign_bootstrap_95": [
+          0.0,
+          0.0
+        ]
+      },
+      "task_return": {
+        "mean_difference": 0.0490544608648057,
+        "paired_campaign_bootstrap_95": [
+          -0.04764333607006021,
+          0.14649664750957853
+        ]
+      }
+    },
+    "refresh_network_vs_replay_network": {
+      "end_hp": {
+        "mean_difference": 0.5476190476190477,
+        "paired_campaign_bootstrap_95": [
+          -0.7142857142857143,
+          1.9285714285714286
+        ]
+      },
+      "potion_use_actions": {
+        "mean_difference": 0.0,
+        "paired_campaign_bootstrap_95": [
+          0.0,
+          0.0
+        ]
+      },
+      "task_return": {
+        "mean_difference": 0.04825807334428024,
+        "paired_campaign_bootstrap_95": [
+          -0.0007560207991242484,
+          0.12141933497536944
+        ]
+      }
+    },
+    "refresh_search_vs_baseline_search": {
+      "end_hp": {
+        "mean_difference": -1.5952380952380953,
+        "paired_campaign_bootstrap_95": [
+          -3.880952380952381,
+          0.6190476190476191
+        ]
+      },
+      "potion_use_actions": {
+        "mean_difference": 0.0,
+        "paired_campaign_bootstrap_95": [
+          0.0,
+          0.0
+        ]
+      },
+      "task_return": {
+        "mean_difference": -0.09712769111476002,
+        "paired_campaign_bootstrap_95": [
+          -0.19426917989417988,
+          -0.02330938697318006
+        ]
+      }
+    },
+    "refresh_search_vs_refresh_network": {
+      "end_hp": {
+        "mean_difference": -0.7380952380952381,
+        "paired_campaign_bootstrap_95": [
+          -4.142857142857143,
+          2.6666666666666665
+        ]
+      },
+      "potion_use_actions": {
+        "mean_difference": 0.0,
+        "paired_campaign_bootstrap_95": [
+          0.0,
+          0.0
+        ]
+      },
+      "task_return": {
+        "mean_difference": -0.0007333556027774778,
+        "paired_campaign_bootstrap_95": [
+          -0.1440820561941251,
+          0.14331155354862252
+        ]
+      }
+    },
+    "refresh_search_vs_replay_search": {
+      "end_hp": {
+        "mean_difference": -1.0476190476190477,
+        "paired_campaign_bootstrap_95": [
+          -3.0476190476190474,
+          0.8333333333333334
+        ]
+      },
+      "potion_use_actions": {
+        "mean_difference": 0.0,
+        "paired_campaign_bootstrap_95": [
+          0.0,
+          0.0
+        ]
+      },
+      "task_return": {
+        "mean_difference": -0.04886414431673052,
+        "paired_campaign_bootstrap_95": [
+          -0.12178696861886518,
+          0.00039272030651340975
+        ]
+      }
+    },
+    "refresh_search_vs_specialist_search": {
+      "end_hp": {
+        "mean_difference": -2.2857142857142856,
+        "paired_campaign_bootstrap_95": [
+          -4.785714285714286,
+          0.2857142857142857
+        ]
+      },
+      "potion_use_actions": {
+        "mean_difference": 0.0,
+        "paired_campaign_bootstrap_95": [
+          0.0,
+          0.0
+        ]
+      },
+      "task_return": {
+        "mean_difference": -0.09787481755154168,
+        "paired_campaign_bootstrap_95": [
+          -0.21879663838715557,
+          0.0011680122240467323
+        ]
+      }
+    },
+    "replay_network_vs_baseline_network": {
+      "end_hp": {
+        "mean_difference": 0.6428571428571429,
+        "paired_campaign_bootstrap_95": [
+          -1.1666666666666667,
+          2.6666666666666665
+        ]
+      },
+      "potion_use_actions": {
+        "mean_difference": 0.0,
+        "paired_campaign_bootstrap_95": [
+          0.0,
+          0.0
+        ]
+      },
+      "task_return": {
+        "mean_difference": 0.000796387520525455,
+        "paired_campaign_bootstrap_95": [
+          -0.0964918582375479,
+          0.09829775588396278
+        ]
+      }
+    },
+    "replay_search_vs_baseline_search": {
+      "end_hp": {
+        "mean_difference": -0.5476190476190477,
+        "paired_campaign_bootstrap_95": [
+          -3.2857142857142856,
+          2.2857142857142856
+        ]
+      },
+      "potion_use_actions": {
+        "mean_difference": 0.0,
+        "paired_campaign_bootstrap_95": [
+          0.0,
+          0.0
+        ]
+      },
+      "task_return": {
+        "mean_difference": -0.04826354679802954,
+        "paired_campaign_bootstrap_95": [
+          -0.14572979383324214,
+          0.04745644043057836
+        ]
+      }
+    },
+    "replay_search_vs_replay_network": {
+      "end_hp": {
+        "mean_difference": 0.8571428571428571,
+        "paired_campaign_bootstrap_95": [
+          -1.8571428571428572,
+          3.5238095238095237
+        ]
+      },
+      "potion_use_actions": {
+        "mean_difference": 0.0,
+        "paired_campaign_bootstrap_95": [
+          0.0,
+          0.0
+        ]
+      },
+      "task_return": {
+        "mean_difference": 0.0963888620582333,
+        "paired_campaign_bootstrap_95": [
+          -0.0030642218573252973,
+          0.217293551520225
+        ]
+      }
+    },
+    "replay_search_vs_specialist_search": {
+      "end_hp": {
+        "mean_difference": -1.2380952380952381,
+        "paired_campaign_bootstrap_95": [
+          -3.2857142857142856,
+          0.8333333333333334
+        ]
+      },
+      "potion_use_actions": {
+        "mean_difference": 0.0,
+        "paired_campaign_bootstrap_95": [
+          0.0,
+          0.0
+        ]
+      },
+      "task_return": {
+        "mean_difference": -0.049010673234811175,
+        "paired_campaign_bootstrap_95": [
+          -0.14616345101258896,
+          0.04760878489326766
+        ]
+      }
+    }
+  },
+  "promotion": "experimental_only",
+  "protocol": {
+    "bindings": [
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-reuse-20261008/reuse.py",
+        "sha256": "19006515993c5cbac1c7577dbcdddf9e43604849bdf9a70b1d4cbcd7c7088b88"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-reuse-20261008/selection.json",
+        "sha256": "1857faa18becbd6d9f599fb6c27f284abf58b0243002d3c09cd838919cdbe3fb"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-reuse-20261008/smoke-check.json",
+        "sha256": "1abe8fdd2aca04e95c5fb4366319e4132a411cbce9a41d23ee0fc575fa75c7c1"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-reuse-20261008/review.json",
+        "sha256": "d57192c6b47fd2324d9d533af3e1d26ee9b01611c6468c2f32000dc4d5e7ab35"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-round3-20261008/student/final.sts-model",
+        "sha256": "7805954e02238a6928a3c15ce2b6d65e492f1743a3a1bb87054dc8ffa5d9c9b0"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-round3-20261008/round3.py",
+        "sha256": "8958c0955b95e8cd9fcd8b503995d577d7529f5c20346a799955c94a83b0c74c"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-round3-20261008/protocol.json",
+        "sha256": "90c04d262a3389f95d7ad330183c600796afb942d480d928094bf8bd493ebfd1"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-round3-20261008/summary.json",
+        "sha256": "70d406641d7b3276837c3e7138275961508194d0ade00a63c3e7837fa560ec72"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-round3-20261008/evaluation.json",
+        "sha256": "25909e6e13f1262e78591ffdff399cc98266694191c0d23d177d16892cd8acdd"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-round3-20261008/source-archive.json",
+        "sha256": "65820904335f2db216464de8ce0acf15d74a2d0ff8ef718f34f15d239705cfdf"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-training-20261008/study.py",
+        "sha256": "5035dbd6a2665092a6bcc03e2fddad5ce8db796e3103592806dae16cc9c2e396"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-training-20261008/correction.py",
+        "sha256": "050ac6778846dd17ec7aa15602b841570e5b13cb709c0dd37ad66c8bd6b6f7c7"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-training-20261008/summarize.py",
+        "sha256": "080f9f26faa50dfb75ecbde46f057c11410b435d6f67c350886bbe778f425834"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-training-20261008/correction/prefix-recovery.json",
+        "sha256": "9bfedfffc4280fcc7995b2ba6f4f59a9af98962955c56cf0f5bcb2dc31025d5d"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-round3-20261008/collection-00/search.json",
+        "sha256": "af881a0f38968e808fb1d6ec8d6cc8356cc5553f64af817e060fcd3d8de500eb"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-round3-20261008/collection-01/search.json",
+        "sha256": "721ceb1341aa5d5a867c8bc7378a47a4c4f9d0545519489fa6abdc0915d841e6"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-round3-20261008/collection-02/search.json",
+        "sha256": "b94059f75cfe5c548f02e91d41dfed18e47ee57b87ea78d343ebdd4e05b6e8f4"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-round3-20261008/collection-03/search.json",
+        "sha256": "7c255d5e6b2cd62e8a78cd91d5adfc362e4a083146fdef27eaf5ecb886fc2bde"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-round3-20261008/collection-04/search.json",
+        "sha256": "c93f9b75c216ac2c6103b737d6fc3c53e45ebbc71217a76220df13b20c09ff80"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-20261002/corpus/corpus.json",
+        "sha256": "0b9f7cd09f6d63aa47f3110b3e7faca63039ea37e6b392e4ed0db5ebd63a9a9f"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-20261002/corpus/test-opened.json",
+        "sha256": "4ecf002c05a76e5ec990909844d23487ae306e9043c8209adc70ce5d8cdbd279"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-action-preview-20261002/corpus/corpus.json",
+        "sha256": "6306c4e3d94edde7782f9cedacd6a9a4cfb2e6da5f7870404794619dfcbeffb5"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-action-preview-20261002/corpus/test-opened.json",
+        "sha256": "d828d0d66afa9422da386323f1f59103543ad1c150f1dd8bbe3c5d38695d0108"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/corpus/corpus.json",
+        "sha256": "c817e01031d3abcd0668ea68401c7a80ddff093a5cb114bf4d9697595c96a7c9"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/combat-potential-shaping-20261002/corpus/test-opened.json",
+        "sha256": "7b7c1d8c64c9024edfd2431d75fdd63930555536ab0ff025f9afdf6bd005f531"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-nongraph-20261003/corpus/corpus.json",
+        "sha256": "b43736e38c603dd8c9a689c11287a40ace74b27f371675fb6d07be32c665335b"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-nongraph-20261003/corpus/test-opened.json",
+        "sha256": "ee91967c79e4e2e5cb15fe56a557776e0997df1a44afbb11fe11cec7793fd482"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-defeat-hp-20261003/corpus/corpus.json",
+        "sha256": "3beb2fe93a5704270b31816ee19b0fefddba2a758909329178f64455eee2dcd0"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-defeat-hp-20261003/corpus/test-opened.json",
+        "sha256": "44cb68dc26776641ee24da6d5e710a1ecaa85a4c2c6c0da03d8c556fb7b1e8ee"
+      },
+      {
+        "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/corpus/corpus.json",
+        "sha256": "01e34face70f278ef2ac3dce531d75ca6b17886232e3be4a6d81f420918ae0c7"
+      }
+    ],
+    "created_unix": 1791483848.039147,
+    "cumulative_fresh_training_decisions": 150000,
+    "evaluation": {
+      "cases": 42,
+      "checkpoint_selection": "fixed two-epoch finals; no validation-selected variants",
+      "episode_seconds": 1800,
+      "fresh_arms": [
+        "replay_network",
+        "replay_search",
+        "refresh_network",
+        "refresh_search"
+      ],
+      "intervals": "paired source-campaign bootstrap, 20000 draws; descriptive secondary comparisons",
+      "max_decisions": 512,
+      "primary_pairs": [
+        [
+          "replay_search",
+          "baseline_search"
+        ],
+        [
+          "refresh_search",
+          "replay_search"
+        ]
+      ],
+      "reused_arms": {
+        "baseline_network": "student_network",
+        "baseline_search": "student_search",
+        "specialist_network": "specialist_network",
+        "specialist_search": "specialist_search"
+      },
+      "seed_base": 20261008,
+      "split": "validation",
+      "starts": "same known openings",
+      "workers": 16
+    },
+    "heldout_test_opened": false,
+    "implementation": {
+      "build": "322f129e4bd1a4124603dcb760302da9fdcf362a110a877835ce913585c97a22",
+      "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+      "rules": "efcc2494d3c1f896669e334cb49a60455048ac4f2a44a3466a7a62225cd0771c",
+      "target": "sts2-v0.107.1-steam-23811903"
+    },
+    "new_training_game_decisions": 0,
+    "objective": {
+      "schema": "sts_training_reward_v1",
+      "weights": {
+        "combat_loss": 0.0,
+        "combat_win": 1.0,
+        "end_turn_action": 0.0,
+        "potion_use_action": 0.0,
+        "win_hp_fraction": 0.1
+      }
+    },
+    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "promotion": "experimental_only",
+    "python": "3.11.15 (main, Mar  3 2026, 00:52:57) [Clang 21.0.0 (clang-2100.0.123.102)]",
+    "refresh": {
+      "episodes": 202,
+      "original_outcomes": "unchanged completed behavior returns; truncations retain missing values",
+      "selection_sha256": "1857faa18becbd6d9f599fb6c27f284abf58b0243002d3c09cd838919cdbe3fb",
+      "settings": "original per-episode Search config, including seed; only the network changes",
+      "workers": 16
+    },
+    "replay": {
+      "decisions": 50000,
+      "episodes": 2308,
+      "examples": 39667,
+      "reports": [
+        "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-round3-20261008/collection-00/search.json",
+        "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-round3-20261008/collection-01/search.json",
+        "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-round3-20261008/collection-02/search.json",
+        "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-round3-20261008/collection-03/search.json",
+        "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-round3-20261008/collection-04/search.json"
+      ]
+    },
+    "reserved_test_owner": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-catalog-20261004/corpus/corpus.json",
+    "schema": "sts_vantom_sample_reuse_protocol_v1",
+    "teacher_checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-round3-20261008/student/final.sts-model",
+    "teacher_sha256": "7805954e02238a6928a3c15ce2b6d65e492f1743a3a1bb87054dc8ffa5d9c9b0",
+    "torch": "2.13.0",
+    "training": {
+      "arms": [
+        "replay",
+        "refresh"
+      ],
+      "batch_size": 32,
+      "difference": "replace only selected policy_target tuples in place; all features/actions/value labels shared",
+      "epochs": 2,
+      "expected_presentations": 79334,
+      "gradient_clip": 1.0,
+      "initialization": "exact 150k weights, fresh Adam; identical example and minibatch order",
+      "learning_rate": 0.0001,
+      "seed": 2026100804,
+      "threads": 4,
+      "value_weight": 0.25
+    }
+  },
+  "protocol_sha256": "f758d7985d52bd16e257532a97af864dae617161a8fa8644d3931a7e63423e2e",
+  "reanalysis": {
+    "changed_argmax": 619,
+    "changed_targets": 3299,
+    "new_game_decisions": 0,
+    "protocol_sha256": "f758d7985d52bd16e257532a97af864dae617161a8fa8644d3931a7e63423e2e",
+    "recorded_decisions": 4154,
+    "searched": 3299,
+    "seconds": 440.6381504582241,
+    "status": "complete",
+    "total_variation": {
+      "count": 3299,
+      "maximum": 0.9965731119301843,
+      "mean": 0.16759732610537517,
+      "median": 0.06175855993037379,
+      "p95": 0.7627195836437614
+    }
+  },
+  "replay_source": {
+    "decisions": 50000,
+    "episodes": 2308,
+    "examples": 39667,
+    "parent_summary_sha256": "70d406641d7b3276837c3e7138275961508194d0ade00a63c3e7837fa560ec72"
+  },
+  "reused_evaluation_fights": 168,
+  "schema": "sts_vantom_sample_reuse_evidence_v1",
+  "status": "complete",
+  "students": {
+    "refresh": {
+      "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-reuse-20261008/refresh/final.sts-model",
+      "episodes": 2308,
+      "epochs": 2,
+      "examples": 39667,
+      "first_100_means": {
+        "entropy": 0.681810821890831,
+        "imitation_loss": 0.6910589808225631,
+        "loss": 0.7191843494772912,
+        "value_loss": 0.1125014828145504
+      },
+      "initial_tensors_exact": 38,
+      "last_100_means": {
+        "entropy": 0.684153391122818,
+        "imitation_loss": 0.6891892790794373,
+        "loss": 0.7170942011475563,
+        "value_loss": 0.11161967888474464
+      },
+      "optimization_checkpoint_seconds": 47.25143808312714,
+      "sample_presentations": 79334,
+      "sha256": "3ee53a212814915b48b40c3d68c0a925030539f7e691ab344eee1e08d7330092",
+      "updates": 2480
+    },
+    "replay": {
+      "checkpoint": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-reuse-20261008/replay/final.sts-model",
+      "episodes": 2308,
+      "epochs": 2,
+      "examples": 39667,
+      "first_100_means": {
+        "entropy": 0.6771620380878448,
+        "imitation_loss": 0.6807387274503708,
+        "loss": 0.7087506371736526,
+        "value_loss": 0.11204763650894164
+      },
+      "initial_tensors_exact": 38,
+      "last_100_means": {
+        "entropy": 0.6733872270584107,
+        "imitation_loss": 0.6778206011652946,
+        "loss": 0.7058276697993279,
+        "value_loss": 0.11202827617526054
+      },
+      "optimization_checkpoint_seconds": 48.808398582972586,
+      "sample_presentations": 79334,
+      "sha256": "f3d776b39584cf5e89fc80a6aaa891cc1db3f99a7e2402cd5971503a94bf17a0",
+      "updates": 2480
+    }
+  },
+  "training_audit": {
+    "cumulative_fresh_decisions": 150000,
+    "epochs_per_arm": 2,
+    "exact_initial_tensors": 38,
+    "minibatch_order_sha256": "662487c0f3a87b907e4418781f48f3d31704879de58b2aa5df0db3700a45d196",
+    "new_game_decisions": 0,
+    "samples_per_arm": 79334,
+    "status": "passed",
+    "teacher_sha256": "7805954e02238a6928a3c15ce2b6d65e492f1743a3a1bb87054dc8ffa5d9c9b0"
+  },
+  "validation": {
+    "inherited_production_tests": "source-identical accepted speed validation reused; not rerun",
+    "review": {
+      "blockers": [],
+      "driver_sha256": "19006515993c5cbac1c7577dbcdddf9e43604849bdf9a70b1d4cbcd7c7088b88",
+      "focused_test_result": "2 passed in 2.74s",
+      "independently_checked": {
+        "continuations": 101,
+        "episodes": 202,
+        "openings": 101,
+        "recorded_decisions": 4154,
+        "searched": 3299,
+        "source_fights": 101,
+        "truncated_episodes": 11
+      },
+      "review_actions": "read-only source/metadata/binding checks; no games or heavy tests",
+      "reviewer": "/root/selection_semantic_review",
+      "scope": "fixed replay/selective-reanalysis protocol; public and RNG boundary, sample correspondence, unchanged labels, minibatch matching and evidence reuse",
+      "status": "passed",
+      "test_command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. .venv/bin/python -m pytest -q tests/agent/test_search_training.py::test_fresh_and_reanalysed_training_reports_preserve_bindings_and_exact_epochs tests/agent/test_search_training.py::test_observed_collection_reanalysis_and_critic_replay_receipts"
+    },
+    "smoke": {
+      "episodes": 2,
+      "examples": 33,
+      "excluded_from_training": true,
+      "results": [
+        {
+          "artifact_bindings": {
+            "ac436abb854a4efb9c5b31273290a7af.search.json.gz": "7589f36d168a926f3c11912513aa615deb08002e4d2909931006261be2812226",
+            "ac436abb854a4efb9c5b31273290a7af.training.json": "40afa1f576624640d6b11c8cd888f0471279b91a70f7619b6ebdba63014164be",
+            "ac436abb854a4efb9c5b31273290a7af.trajectory.jsonl.gz": "5350d1247583ef1c40b8410d7f6073a4f9716bc63ec5730e1562703405ff9026"
+          },
+          "changed_argmax": 5,
+          "changed_targets": 18,
+          "episode_id": "ac436abb854a4efb9c5b31273290a7af",
+          "kept_steps": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            6,
+            7,
+            8,
+            10,
+            11,
+            12,
+            14,
+            15,
+            17,
+            18,
+            19,
+            20,
+            21
+          ],
+          "report": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-reuse-20261008/smoke/ac436abb854a4efb9c5b31273290a7af/refreshed/search.json",
+          "report_sha256": "aba3cbe11e460a6b4cef1e152900597819d1f9b2c4e19b1ad9a15a412be2b0f5",
+          "searched": 18,
+          "seconds": 18.18939487496391,
+          "source_report_sha256": "c93f9b75c216ac2c6103b737d6fc3c53e45ebbc71217a76220df13b20c09ff80",
+          "steps": 22,
+          "total_variation": [
+            0.531249855451137,
+            0.08848674520281517,
+            0.10884300915096405,
+            0.518985166142801,
+            0.1590321133769383,
+            0.08576154106017851,
+            0.059674691407721976,
+            0.11537205638116928,
+            0.14909709339909177,
+            0.17307350044893874,
+            0.0003722416410516739,
+            0.5688753292789581,
+            0.00017630361353296865,
+            0.11313723816187161,
+            0.004299348576064915,
+            0.011130167814448826,
+            0.07340366257806326,
+            0.04033949099175678
+          ]
+        },
+        {
+          "artifact_bindings": {
+            "b6fafcc34b01490cb10e0f03ebb8860d.search.json.gz": "a94edcf3706fb1d8abc3ec3c7020ef9e0dd356b9cb1d9b16110f0d4418e64821",
+            "b6fafcc34b01490cb10e0f03ebb8860d.training.json": "d6b4c502160556901386de744a2b15b6a1394aa86055388191de4395e1aecf58",
+            "b6fafcc34b01490cb10e0f03ebb8860d.trajectory.jsonl.gz": "89137f8ca6a0d8782cc65f557d6c2fbb8f62869355599db03c7d0b3599529828"
+          },
+          "changed_argmax": 3,
+          "changed_targets": 15,
+          "episode_id": "b6fafcc34b01490cb10e0f03ebb8860d",
+          "kept_steps": [
+            0,
+            1,
+            2,
+            3,
+            5,
+            6,
+            7,
+            9,
+            10,
+            11,
+            13,
+            14,
+            15,
+            16,
+            17
+          ],
+          "report": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/vantom-search-reuse-20261008/smoke/b6fafcc34b01490cb10e0f03ebb8860d/refreshed/search.json",
+          "report_sha256": "a169c27426b5ac170c72c593ee2e04c156d4ace75eb8926fc4096b6d8370a380",
+          "searched": 15,
+          "seconds": 14.779058957938105,
+          "source_report_sha256": "721ceb1341aa5d5a867c8bc7378a47a4c4f9d0545519489fa6abdc0915d841e6",
+          "steps": 19,
+          "total_variation": [
+            0.026631702127432096,
+            0.652053187045005,
+            0.00012044182902426168,
+            0.40822168730744546,
+            0.41614024774901964,
+            0.1603016080981353,
+            0.0003530025010229724,
+            0.0558120140656164,
+            0.21115111896868155,
+            0.5737380659583488,
+            0.13229544657723472,
+            0.05763502189717673,
+            0.0005311774021327389,
+            0.059266114675569644,
+            0.026713060947822387
+          ]
+        }
+      ],
+      "status": "passed",
+      "teacher_sha256": "7805954e02238a6928a3c15ce2b6d65e492f1743a3a1bb87054dc8ffa5d9c9b0"
+    }
+  }
+}

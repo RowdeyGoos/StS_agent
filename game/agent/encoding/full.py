@@ -76,3 +76,21 @@ class FullRunEncoder(PublicEncoder):
         if type(self) is not FullRunEncoder:
             return self.encode(decision)
         return self._pad(self._pack_prepared(decision, prepared))
+
+    def mapping_prepared(self, decision, prepared):
+        """Check the same capacities/order without allocating lossless arrays.
+
+        Only the exact built-in codec opts into this representation. Custom
+        codecs retain their pack hooks; this method does not replace wire data.
+        """
+        if type(prepared) is not full.PreparedPublic:
+            raise full.ContractError('Expected a prepared public observation')
+        prepared.require(decision)
+        if type(decision) is not full.PublicDecision:
+            raise full.ContractError('Terminal observations have no policy mapping')
+        from .full_records import DecisionMapping, pack_records
+        if type(self) is not FullRunEncoder or set(vars(self)) != {'profile'}:
+            graph = self.pack(decision)
+            return DecisionMapping(graph.candidate_refs, graph.reference_refs,
+                                   tuple(bool(v) for v in graph.observation['action_mask']))
+        return pack_records(self, decision, mapping_only=True)

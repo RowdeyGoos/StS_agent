@@ -17,7 +17,7 @@ def card_pool(catalog, family="ironclad", kind=None):
     )
 
 
-def select_cards(options, rng, count, *, distinct):
+def select_cards(options, rng, count, *, distinct, revealed=False):
     """Native GetDistinctForCombat shuffles the full pool; GetForCombat replaces.
 
     NativeRng.sample owns the full-pool shuffle, including count zero. The fixture
@@ -26,7 +26,10 @@ def select_cards(options, rng, count, *, distinct):
     """
     options = list(dict.fromkeys(options))
     if distinct:
-        return rng.sample(options, min(count, len(options)))
-    if count and not options:
-        raise ValueError("No eligible combat generation content.")
-    return [rng.choice(options) for _ in range(count)]
+        selected = rng.sample(options, min(count, len(options)))
+    else:
+        if count and not options:
+            raise ValueError("No eligible combat generation content.")
+        selected = [rng.choice(options) for _ in range(count)]
+    journal = getattr(rng, 'combat_reveals', None)
+    return selected if journal is None or not revealed else journal.generated(options, selected, distinct=distinct)

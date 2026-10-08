@@ -3,21 +3,35 @@
 The canonical public graph remains the source of truth. This only specializes
 its fixed record layout; standalone inputs still use the validating wire path.
 """
+from dataclasses import dataclass
+
 from .schema import (ARRAY, BOOLEAN, CapacityError, INTEGER, INTEGER_MAX, NULL,
                      OBJECT, REFERENCE, TEXT)
 
 
-def pack_records(encoder, decision):
+@dataclass(frozen=True, slots=True)
+class DecisionMapping:
+    """Public correspondence for learned inputs, without lossless tables."""
+    candidate_refs: tuple[str, ...]
+    reference_refs: tuple[str, ...]
+    legal_mask: tuple[bool, ...]
+
+
+def pack_records(encoder, decision, *, mapping_only=False):
     p = encoder.profile
     nodes, strings, references, definitions = [], {}, {}, {}
+    count = 0
     fields = {name: i for i, name in enumerate(encoder.fields, 1)}
     matches_reference = encoder.reference_pattern.fullmatch
 
     def row(parent, field, position, kind, payload=0):
-        index = len(nodes) + 1
+        nonlocal count
+        count += 1
+        index = count
         if index > p.nodes:
             raise CapacityError('nodes', index, p.nodes)
-        nodes.append([parent, field, position, kind, payload])
+        if not mapping_only:
+            nodes.append([parent, field, position, kind, payload])
         return index
 
     def reference(name):
@@ -33,7 +47,9 @@ def pack_records(encoder, decision):
         # Reserve the row before interning, preserving capacity-error ordering.
         index = row(parent, field, position, TEXT)
         if matches_reference(value):
-            nodes[index - 1][3:] = REFERENCE, reference(value)
+            payload = reference(value)
+            if not mapping_only:
+                nodes[index - 1][3:] = REFERENCE, payload
         else:
             payload = strings.get(value)
             if payload is None:
@@ -44,7 +60,8 @@ def pack_records(encoder, decision):
                 if payload > p.strings:
                     raise CapacityError('strings', payload, p.strings)
                 strings[value] = payload
-            nodes[index - 1][4] = payload
+            if not mapping_only:
+                nodes[index - 1][4] = payload
 
     def scalar(value, parent, field, position):
         if type(value) is str:
@@ -62,7 +79,8 @@ def pack_records(encoder, decision):
         index = row(parent, field, position, OBJECT)
         if value.ref is not None:
             reference(value.ref)
-            definitions[value.ref] = index
+            if not mapping_only:
+                definitions[value.ref] = index
         text(value.kind, index, fields['kind'], 0)
         text(value.definition_id, index, fields['definition_id'], 1)
         scalar(value.ref, index, fields['ref'], 2)
@@ -85,4 +103,7 @@ def pack_records(encoder, decision):
     root = row(0, 0, 0, OBJECT)
     node(decision.run, root, fields['run'], 0)
     node(decision.context, root, fields['context'], 1)
+    if mapping_only:
+        rows = encoder._candidate_rows(decision, references)
+        return DecisionMapping(tuple(name for _, name in rows), tuple(references), (True,) * len(rows))
     return encoder._finish_pack(decision, nodes, strings, references, definitions)

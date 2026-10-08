@@ -1,0 +1,409 @@
+{
+  "completed_replayed_fights": 252,
+  "implementation": {
+    "build": "4f9f89e83ee86e0fddcb7c70f8d25c977cd6f6b734f56fc839fa7375400146b5",
+    "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+    "rules": "237b89973ceeeab4b02962ddc69876cd08a57be27ae6f7c1b52ea371e5bceaea",
+    "target": "sts2-v0.107.1-steam-23811903"
+  },
+  "limits": [
+    "Same 42 previously used validation openings, partial guarded search coverage; not new win-rate evidence.",
+    "120-second search/conditioning ceilings preserve fixed work, not strict five-second deployment.",
+    "End-to-end timing includes startup, recording and shutdown; host load and finite-batch tails remain."
+  ],
+  "measurement_seconds": 1083.537837750744,
+  "median_batch_speedup": 1.546861711672469,
+  "median_batch_time_reduction": 0.3535298000757944,
+  "paired_speedups": [
+    1.5638753370628047,
+    1.5265711302562441,
+    1.546861711672469
+  ],
+  "probe_seconds": 148.89192512491718,
+  "protocol_sha256": "3e1b58c48332dae5934855c32c47f99cac0234206c26e76cdab33c10272e7681",
+  "real_decisions_per_trial": 1224,
+  "review": {
+    "bindings": [
+      {
+        "path": "game/agent/encoding/codec.py",
+        "sha256": "684cb1ef8dcc543f0ed4b6c42d570c349ca2487778afb6ece1ad9ab6ea5ba71e"
+      },
+      {
+        "path": "game/agent/encoding/full.py",
+        "sha256": "595ed3fa840ceeaf4cd940c21ba9183d014f310a24e9d41854ad8582d3b89f2a"
+      },
+      {
+        "path": "game/agent/encoding/full_records.py",
+        "sha256": "7c7a0b84b5784cbdf60de1308a5897bb12fcf433fa73b6af6e276f9f3be0f50b"
+      },
+      {
+        "path": "game/agent/training/features.py",
+        "sha256": "9c2a4fc1b2ee8883692021300a901e614f59969d006f797a1de05f197faaf4f5"
+      },
+      {
+        "path": "game/agent/training/checkpoint.py",
+        "sha256": "82ffcaf1f5d7aed142c3b9cc6891749a47ec76438c8b16197cc54bb3ad977363"
+      },
+      {
+        "path": "game/agent/training/combat_features.py",
+        "sha256": "6c80453dffc2b45b24f7d8533bd16cfec898c91df372a8da35f237b684f46c28"
+      },
+      {
+        "path": "tests/agent/test_inference_features.py",
+        "sha256": "c971ce6da08a984f37dfa4fe47a6a4a5e501655fca455132a80191a0f0470a71"
+      },
+      {
+        "path": "tests/agent/test_prepared_public.py",
+        "sha256": "9fc58e8d783f90af623a638f595458f5fa0358dd4529ae779ce20528aa2cb24c"
+      },
+      {
+        "path": "tests/agent/test_training_model.py",
+        "sha256": "2ccb79f2e346c0e93a6b344540d34147563c4b037af9c31172cccd9d2a8342df"
+      }
+    ],
+    "blockers": [],
+    "fixed_finding": "Exact FeatureEncoder instance encode/_features hooks now take the legacy fallback, retaining calling conventions.",
+    "reviewer": "/root/selection_semantic_review",
+    "scope": [
+      "Fresh public validation and owner identity",
+      "Custom record and encoder fallback",
+      "Reference/candidate ordering, legal masks, capacity precedence",
+      "Checkpoint collation compatibility",
+      "No hidden-state or RNG reads",
+      "Sparse present-channel writes versus preserved dense computation"
+    ],
+    "status": "source_review_complete",
+    "utc": "2026-10-07T21:57:19.952110+00:00",
+    "validation_limit": "Reviewer did not execute runtime checks; author must complete numerical and fixed-search comparisons."
+  },
+  "schema": "sts_search_inference_summary_v1",
+  "searched_decisions_per_trial": 606,
+  "serial": {
+    "compact_only": {
+      "encoding_median": 0.47437870781868696,
+      "encoding_seconds": [
+        0.4766337499022484,
+        0.4726221249438822,
+        0.47437870781868696
+      ],
+      "search_median": 9.981900125276297,
+      "search_seconds": [
+        10.024747167248279,
+        9.981900125276297,
+        9.830073374789208
+      ]
+    },
+    "legacy": {
+      "encoding_median": 1.0039414577186108,
+      "encoding_seconds": [
+        1.0397844999097288,
+        0.9051159583032131,
+        1.0039414577186108
+      ],
+      "search_median": 14.202714667655528,
+      "search_seconds": [
+        14.4727065814659,
+        14.041679459158331,
+        14.202714667655528
+      ]
+    },
+    "optimized": {
+      "encoding_median": 0.41802274994552135,
+      "encoding_seconds": [
+        0.4275345001369715,
+        0.4178227079100907,
+        0.41802274994552135
+      ],
+      "search_median": 9.505768501199782,
+      "search_seconds": [
+        9.713333708234131,
+        9.505768501199782,
+        9.458650668617338
+      ]
+    }
+  },
+  "simulations_per_trial": 14544,
+  "source_bindings": [
+    {
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/search-inference-20261007/benchmark.py",
+      "sha256": "1b407b622c5cec3a8397c908418573d7dedf7c34366cf54ca2fa2a7d63efdab4"
+    },
+    {
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/search-inference-20261007/analyze.py",
+      "sha256": "3b59e66977d4fc7726ad0a942fdf596cd56dd4184aa19321f07f76f08e86505e"
+    },
+    {
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/search-inference-20261007/protocol.json",
+      "sha256": "3e1b58c48332dae5934855c32c47f99cac0234206c26e76cdab33c10272e7681"
+    },
+    {
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/search-inference-20261007/probe.json",
+      "sha256": "fe04455a63aa12e791dc2c69576b0ca51142ec8d8cf14b416e3d9c5bfdacd8fc"
+    },
+    {
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/search-inference-20261007/review.json",
+      "sha256": "1061021d1b561bdffd7363da199508d7d0ed2b8d072fdeb05bce789fbc18d925"
+    },
+    {
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/search-inference-20261007/validation.json",
+      "sha256": "cb94f089e7847cef6942a844f590cdaab366a63f2c3fe06572661de6e2e258b6"
+    },
+    {
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/search-inference-20261007/before.json",
+      "sha256": "52db539deb002367bb146a3094f45050479de51da39de09d7a310ec446483ba9"
+    }
+  ],
+  "status": "complete",
+  "trials": [
+    {
+      "latency_max": 7.283025291748345,
+      "latency_median": 4.002843375550583,
+      "latency_p95": 4.7373667085776106,
+      "name": "repeat-1-legacy",
+      "over_five_seconds": 13,
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/search-inference-20261007/repeat-1-legacy.json",
+      "reasons": {
+        "forced_action": 249,
+        "opening_scope:card:havoc": 44,
+        "opening_scope:card:hellraiser": 12,
+        "opening_scope:card:infernal_blade": 14,
+        "opening_scope:card:juggling": 45,
+        "opening_scope:card:pillage": 59,
+        "opening_scope:end_turn_draw_trigger": 39,
+        "opening_scope:intrinsic_retention": 29,
+        "opening_scope:potion:bottled_potential": 11,
+        "opening_scope:potion:colorless_potion": 21,
+        "opening_scope:potion:fysh_oil": 24,
+        "opening_scope:potion:liquid_memories": 26,
+        "opening_scope:potion:radiant_tincture": 27,
+        "opening_scope:potion:stable_serum": 18,
+        "searched": 606
+      },
+      "repeat": 0,
+      "searched_decisions_per_second": 2.722401215220015,
+      "seconds": 222.5976085420698,
+      "sha256": "c1a8b21381dfaf7dd3e82f74f4a5b8a0695ee7cbd42f72d652718d2567c64b38",
+      "summed_worker_peak_rss_gib": 4.7831878662109375,
+      "variant": "legacy",
+      "wins": 26
+    },
+    {
+      "latency_max": 5.540417291224003,
+      "latency_median": 2.4365299590863287,
+      "latency_p95": 2.9341942606261,
+      "name": "repeat-1-optimized",
+      "over_five_seconds": 1,
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/search-inference-20261007/repeat-1-optimized.json",
+      "reasons": {
+        "forced_action": 249,
+        "opening_scope:card:havoc": 44,
+        "opening_scope:card:hellraiser": 12,
+        "opening_scope:card:infernal_blade": 14,
+        "opening_scope:card:juggling": 45,
+        "opening_scope:card:pillage": 59,
+        "opening_scope:end_turn_draw_trigger": 39,
+        "opening_scope:intrinsic_retention": 29,
+        "opening_scope:potion:bottled_potential": 11,
+        "opening_scope:potion:colorless_potion": 21,
+        "opening_scope:potion:fysh_oil": 24,
+        "opening_scope:potion:liquid_memories": 26,
+        "opening_scope:potion:radiant_tincture": 27,
+        "opening_scope:potion:stable_serum": 18,
+        "searched": 606
+      },
+      "repeat": 0,
+      "searched_decisions_per_second": 4.25749611807239,
+      "seconds": 142.33718204172328,
+      "sha256": "0282828db19c92f1406bcd28dea929f41aaf96f34f0de693b56d85d233afe36b",
+      "summed_worker_peak_rss_gib": 4.7317962646484375,
+      "variant": "optimized",
+      "wins": 26
+    },
+    {
+      "latency_max": 5.514853376429528,
+      "latency_median": 2.418599729426205,
+      "latency_p95": 2.886941176955588,
+      "name": "repeat-2-optimized",
+      "over_five_seconds": 1,
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/search-inference-20261007/repeat-2-optimized.json",
+      "reasons": {
+        "forced_action": 249,
+        "opening_scope:card:havoc": 44,
+        "opening_scope:card:hellraiser": 12,
+        "opening_scope:card:infernal_blade": 14,
+        "opening_scope:card:juggling": 45,
+        "opening_scope:card:pillage": 59,
+        "opening_scope:end_turn_draw_trigger": 39,
+        "opening_scope:intrinsic_retention": 29,
+        "opening_scope:potion:bottled_potential": 11,
+        "opening_scope:potion:colorless_potion": 21,
+        "opening_scope:potion:fysh_oil": 24,
+        "opening_scope:potion:liquid_memories": 26,
+        "opening_scope:potion:radiant_tincture": 27,
+        "opening_scope:potion:stable_serum": 18,
+        "searched": 606
+      },
+      "repeat": 1,
+      "searched_decisions_per_second": 4.298143101832851,
+      "seconds": 140.99111770885065,
+      "sha256": "c897364c5e9f4a0522f2d480eced407ea22049d83232baa665b839d99ca59338",
+      "summed_worker_peak_rss_gib": 4.7555694580078125,
+      "variant": "optimized",
+      "wins": 26
+    },
+    {
+      "latency_max": 6.63897354202345,
+      "latency_median": 3.8190950211137533,
+      "latency_p95": 4.52002618717961,
+      "name": "repeat-2-legacy",
+      "over_five_seconds": 6,
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/search-inference-20261007/repeat-2-legacy.json",
+      "reasons": {
+        "forced_action": 249,
+        "opening_scope:card:havoc": 44,
+        "opening_scope:card:hellraiser": 12,
+        "opening_scope:card:infernal_blade": 14,
+        "opening_scope:card:juggling": 45,
+        "opening_scope:card:pillage": 59,
+        "opening_scope:end_turn_draw_trigger": 39,
+        "opening_scope:intrinsic_retention": 29,
+        "opening_scope:potion:bottled_potential": 11,
+        "opening_scope:potion:colorless_potion": 21,
+        "opening_scope:potion:fysh_oil": 24,
+        "opening_scope:potion:liquid_memories": 26,
+        "opening_scope:potion:radiant_tincture": 27,
+        "opening_scope:potion:stable_serum": 18,
+        "searched": 606
+      },
+      "repeat": 1,
+      "searched_decisions_per_second": 2.815553770567757,
+      "seconds": 215.2329699168913,
+      "sha256": "fef0420301d9b15647e6160ddc0947055549e75d7703b206f873d251f744adf8",
+      "summed_worker_peak_rss_gib": 4.8116912841796875,
+      "variant": "legacy",
+      "wins": 26
+    },
+    {
+      "latency_max": 6.572472833096981,
+      "latency_median": 3.864065334200859,
+      "latency_p95": 4.5731868534348905,
+      "name": "repeat-3-legacy",
+      "over_five_seconds": 6,
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/search-inference-20261007/repeat-3-legacy.json",
+      "reasons": {
+        "forced_action": 249,
+        "opening_scope:card:havoc": 44,
+        "opening_scope:card:hellraiser": 12,
+        "opening_scope:card:infernal_blade": 14,
+        "opening_scope:card:juggling": 45,
+        "opening_scope:card:pillage": 59,
+        "opening_scope:end_turn_draw_trigger": 39,
+        "opening_scope:intrinsic_retention": 29,
+        "opening_scope:potion:bottled_potential": 11,
+        "opening_scope:potion:colorless_potion": 21,
+        "opening_scope:potion:fysh_oil": 24,
+        "opening_scope:potion:liquid_memories": 26,
+        "opening_scope:potion:radiant_tincture": 27,
+        "opening_scope:potion:stable_serum": 18,
+        "searched": 606
+      },
+      "repeat": 2,
+      "searched_decisions_per_second": 2.753363336594616,
+      "seconds": 220.09445391595364,
+      "sha256": "592eb72a6c7d6a4445ba2463e5f89d74bd78f96d80a13cedf1f37c47f5a55277",
+      "summed_worker_peak_rss_gib": 4.7978363037109375,
+      "variant": "legacy",
+      "wins": 26
+    },
+    {
+      "latency_max": 5.336253666318953,
+      "latency_median": 2.3964630828704685,
+      "latency_p95": 2.8898479072377086,
+      "name": "repeat-3-optimized",
+      "over_five_seconds": 1,
+      "path": "/Users/rowdeygoos/code/github/RowdeyGoos/StS_agent/runs/search-inference-20261007/repeat-3-optimized.json",
+      "reasons": {
+        "forced_action": 249,
+        "opening_scope:card:havoc": 44,
+        "opening_scope:card:hellraiser": 12,
+        "opening_scope:card:infernal_blade": 14,
+        "opening_scope:card:juggling": 45,
+        "opening_scope:card:pillage": 59,
+        "opening_scope:end_turn_draw_trigger": 39,
+        "opening_scope:intrinsic_retention": 29,
+        "opening_scope:potion:bottled_potential": 11,
+        "opening_scope:potion:colorless_potion": 21,
+        "opening_scope:potion:fysh_oil": 24,
+        "opening_scope:potion:liquid_memories": 26,
+        "opening_scope:potion:radiant_tincture": 27,
+        "opening_scope:potion:stable_serum": 18,
+        "searched": 606
+      },
+      "repeat": 2,
+      "searched_decisions_per_second": 4.259072323700968,
+      "seconds": 142.2845056252554,
+      "sha256": "799fc4a0e8570140e3f861c928d4c914072f9f8afb0639d3f23e05a3d9cc8eb2",
+      "summed_worker_peak_rss_gib": 4.7308349609375,
+      "variant": "optimized",
+      "wins": 26
+    }
+  ],
+  "validation": {
+    "command": [
+      ".venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/agent/test_inference_features.py",
+      "tests/agent/test_training_model.py",
+      "tests/agent/test_prepared_public.py",
+      "tests/agent/test_encoding.py",
+      "tests/agent/test_training_checkpoint.py",
+      "tests/agent/test_combat_representation.py",
+      "tests/agent/test_set_models.py",
+      "tests/agent/test_full_profile.py",
+      "tests/agent/test_input_views.py",
+      "tests/agent/test_search.py",
+      "tests/agent/test_belief_search.py",
+      "tests/agent/test_direct_belief.py",
+      "tests/agent/test_search_training.py",
+      "tests/agent/test_search_selection.py"
+    ],
+    "exit_code": 0,
+    "note": "Final stable-source run. An earlier run overlapped the hook fix and had one ValueError in spawned collection; the focused rerun passed, then this full affected matrix was repeated.",
+    "output": "........................................................................ [ 15%]\n........................................................................ [ 31%]\n........................................................................ [ 46%]\n........................................................................ [ 62%]\n........................................................................ [ 77%]\n........................................................................ [ 93%]\n................................                                         [100%]\n464 passed in 69.95s (0:01:09)\n",
+    "seconds": 70.62101424997672,
+    "status": "passed"
+  },
+  "validation_fights": 42,
+  "workers": {
+    "legacy": {
+      "median_seconds": 220.09445391595364,
+      "over_five_seconds": 25,
+      "search_latency_max": 7.283025291748345,
+      "search_latency_median": 3.864065334200859,
+      "search_latency_p95": 4.5731868534348905,
+      "searched_per_second_median": 2.753363336594616,
+      "seconds": [
+        222.5976085420698,
+        215.2329699168913,
+        220.09445391595364
+      ],
+      "summed_worker_peak_rss_gib_median": 4.7978363037109375
+    },
+    "optimized": {
+      "median_seconds": 142.2845056252554,
+      "over_five_seconds": 3,
+      "search_latency_max": 5.540417291224003,
+      "search_latency_median": 2.418599729426205,
+      "search_latency_p95": 2.8898479072377086,
+      "searched_per_second_median": 4.259072323700968,
+      "seconds": [
+        142.33718204172328,
+        140.99111770885065,
+        142.2845056252554
+      ],
+      "summed_worker_peak_rss_gib_median": 4.7317962646484375
+    }
+  }
+}

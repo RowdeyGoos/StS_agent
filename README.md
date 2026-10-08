@@ -216,6 +216,18 @@ choices and the heuristic elsewhere. Existing playback also accepts
 `sts-agent-play --combat-checkpoint runs/imitation/final.sts-model --output-dir runs/playback`.
 See [checkpoint, resume and measured results](docs/AGENT_TRAINING.md#milestone-3-usage-and-implementation-choices).
 
+Experimental public-information combat search is available with a compatible
+unshaped combat critic:
+
+```bash
+sts-agent-play --combat-checkpoint runs/combat-model/final.sts-model \
+  --search --act1 --output-dir runs/searched-play
+```
+
+See [combat search](docs/AGENT_TRAINING.md#experimental-combat-search) for supported
+content, paired comparisons, search distillation and reanalysis. Unsupported
+states explicitly fall back to the same checkpoint. Search remains opt-in.
+
 Continue the checkpoint with bounded, masked combat PPO:
 
 ```bash

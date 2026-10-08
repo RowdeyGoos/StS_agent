@@ -199,20 +199,7 @@ class PublicEncoder:
 
     def _finish_pack(self, decision, nodes, strings, references, definitions):
         """Shared final tables and action ordering for both public traversals."""
-        p = self.profile
-        if len(decision.candidates) > p.candidates:
-            raise CapacityError('candidates', len(decision.candidates), p.candidates)
-        # Candidate order/opaque names carry no policy semantics. All arguments
-        # must already have appeared in the complete public entity graph.
-        rows = []
-        for action in decision.candidates:
-            try:
-                rows.append(((self.actions.index(action.kind) + 1,
-                              references[action.subject] if action.subject else 0,
-                              references[action.target] if action.target else 0), action.ref))
-            except KeyError as error:
-                raise EncodingError('Candidate argument absent from public graph') from error
-        rows.sort(key=lambda item: item[0])
+        rows = self._candidate_rows(decision, references)
         obs = self._tables(len(nodes), len(references), len(strings), len(rows))
         for value, index in strings.items():
             data = value.encode('utf-8')
@@ -228,6 +215,24 @@ class PublicEncoder:
         obs['action_mask'][:len(rows)] = 1
         obs['candidates'][:len(rows)] = [row for row, _ in rows]
         return EncodedDecision(obs, tuple(name for _, name in rows), tuple(references))
+
+    def _candidate_rows(self, decision, references):
+        """One candidate ordering for lossless tables and learned-only inputs."""
+        p = self.profile
+        if len(decision.candidates) > p.candidates:
+            raise CapacityError('candidates', len(decision.candidates), p.candidates)
+        # Candidate order/opaque names carry no policy semantics. All arguments
+        # must already have appeared in the complete public entity graph.
+        rows = []
+        for action in decision.candidates:
+            try:
+                rows.append(((self.actions.index(action.kind) + 1,
+                              references[action.subject] if action.subject else 0,
+                              references[action.target] if action.target else 0), action.ref))
+            except KeyError as error:
+                raise EncodingError('Candidate argument absent from public graph') from error
+        rows.sort(key=lambda item: item[0])
+        return rows
 
     def decode(self, observation: dict[str, np.ndarray]) -> c.PublicDecision | c.RunOutcome:
         """Reconstruct public semantics with canonical local reference names.

@@ -80,6 +80,8 @@ class RunResult:
     trajectory: str
     outcome: c.RunOutcome
     timings: Timings
+    search: dict | None = None
+    combats: tuple[dict, ...] = ()
 
 
 def prepare_directories(output_dir, audit_dir):
@@ -119,6 +121,9 @@ def run_episode(config, *, output_dir, audit_dir, episode_id=None, cancel=None,
     recording overhead; they are observational metrics, never policy features.
     """
     config.validate()
+    for chooser in (policy, combat_policy):
+        if callable(getattr(chooser, 'reset', None)):
+            chooser.reset()
     if engine_factory is not None and config.evidence != 'controlled_fixture':
         raise ValueError('Custom engine factories require controlled_fixture evidence')
     if (policy is not choose_action or combat_policy is not None) and not policy_identity:
@@ -152,11 +157,15 @@ def run_episode(config, *, output_dir, audit_dir, episode_id=None, cancel=None,
     reset_seconds = time.perf_counter() - started
     observations = steps = 0
     observe_seconds = policy_seconds = step_seconds = recording_seconds = 0.0
+    completed_combats = {}
 
     def observe():
         nonlocal observe_seconds, observations
         before = time.perf_counter()
         frame = adapter.observe()
+        summary = adapter.combat_summary
+        if summary is not None and summary.completed:
+            completed_combats.setdefault(summary.combat_ref, asdict(summary))
         observe_seconds += time.perf_counter() - before
         observations += 1
         return frame
@@ -190,7 +199,9 @@ def run_episode(config, *, output_dir, audit_dir, episode_id=None, cancel=None,
             # Routing is a controller decision based on authoritative ownership.
             # Nested relic/selection contexts can still belong to a live fight;
             # a completed fight's reward/pickup choices belong to the heuristic.
-            candidate = _chooser(adapter, policy, combat_policy)(frame.decision)
+            chooser = _chooser(adapter, policy, combat_policy)
+            decision = frame.decision
+            candidate = chooser(decision)
             policy_seconds += time.perf_counter() - before
             if candidate not in frame.decision.candidates:
                 raise RunFailure('Policy returned an unadvertised action')
@@ -206,6 +217,8 @@ def run_episode(config, *, output_dir, audit_dir, episode_id=None, cancel=None,
                 raise RunFailure('Action was not reconciled: ' + report.status)
             frame = observe()
             successor = frame if isinstance(frame, c.RunOutcome) else frame.decision
+            if callable(getattr(chooser, 'observe_transition', None)):
+                chooser.observe_transition(decision, candidate, report, successor)
             before = time.perf_counter()
             writer.append(candidate, report, successor)
             recording_seconds += time.perf_counter() - before
@@ -216,4 +229,6 @@ def run_episode(config, *, output_dir, audit_dir, episode_id=None, cancel=None,
         recording_seconds += time.perf_counter() - before
     return RunResult(episode_id, str(path), outcome,
                      Timings(reset_seconds, observe_seconds, policy_seconds, step_seconds,
-                             recording_seconds, time.perf_counter() - started, observations, steps))
+                             recording_seconds, time.perf_counter() - started, observations, steps),
+                     combat_policy.summary() if callable(getattr(combat_policy, 'summary', None)) else None,
+                     tuple(completed_combats.values()))

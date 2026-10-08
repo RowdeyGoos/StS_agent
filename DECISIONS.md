@@ -201,6 +201,31 @@ predictions and optimizer state. Use paired Act 1 clear rates against a frozen
 initializer to measure progress. The [training guide](docs/AGENT_TRAINING.md#act-1-training-and-configurable-act-rewards)
 owns usage and results.
 
+## Public-information combat search uses the existing engine
+
+Use exact headless rules with public-history reconstruction and sampled unknowns
+for the initial Ironclad A0 search capability. Search never initializes from the
+actual private state. Gumbel planning supplies improved action distributions to
+the imitation learner; completed combat outcomes supply value labels. Keep these
+trajectories separate from on-policy PPO, preserve truncations and original
+behavior provenance during reanalysis, and fall back explicitly on unsupported
+reconstruction. The initial critic retains the unshaped combat objective and
+unit discount. Search stays opt-in until paired Act 1 improvement clears its
+confidence gate. Defer learned dynamics; prioritize a campaign-aware combat exit
+value after useful combat search is demonstrated. The [training guide](docs/AGENT_TRAINING.md#experimental-combat-search)
+owns usage, coverage and measurements.
+
+Prefer direct conditional sampling at shared engine random operations over
+whole-history rejection for supported public facts. Represent unknown remaining
+draw order separately from known placements, preserve likelihood weights and
+retain bounded replay for other latent state/recovery. Both headless and future
+bridge producers use the same public declaration/history boundary. Bind a
+normalized public input view to search targets, feature identities and student
+checkpoints, and use it consistently in training and deployment. Raw legacy
+checkpoints retain their semantics; incompatible action restrictions or missing
+view provenance reject explicitly. A changed input view is a declared weight
+initialization, not an exact continuation of the old optimizer.
+
 ## Maintaining this record
 
 Add a short decision when architecture, training defaults or workflow materially

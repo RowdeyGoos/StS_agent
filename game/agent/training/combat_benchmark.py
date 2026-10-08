@@ -95,8 +95,11 @@ def evaluate_corpus(*, corpus_path, output_dir, checkpoints=None, split='validat
     binding = {'schema': 'sts_combat_corpus_test_lock_v2', 'corpus': corpus.identity, 'start_kind': start_kind,
                'policies': policies, 'checkpoints': metadata, 'reward': reward.to_dict(), 'limits': limits}
     lock = corpus.path.parent / 'test-opened.json'
-    if split == 'validation' and lock.exists():
+    search_lock = corpus.path.parent / 'search-test-opened.json'
+    if split == 'validation' and (lock.exists() or search_lock.exists()):
         raise ValueError('Development benchmark is closed after this corpus test was opened')
+    if split == 'test' and search_lock.exists():
+        raise ValueError('Held-out corpus is already locked to a search experiment')
     if split == 'test' and lock.exists() and strict_json(lock.read_bytes()) != binding:
         raise ValueError('Held-out corpus is already locked to different checkpoints or limits')
     output = Path(output_dir).resolve()

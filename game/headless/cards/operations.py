@@ -150,7 +150,10 @@ class ChoosePileCard:
     def resolve(self, player, selected):
         getattr(player.deck, self.pile).remove(selected)
         destination = "discard_pile" if self.destination == "hand" and len(player.hand) >= 10 else self.destination
-        getattr(player.deck, destination).append(selected)
+        if destination == 'draw_pile':
+            player.deck.put_on_draw(selected)
+        else:
+            getattr(player.deck, destination).append(selected)
 
     def apply(self, card, player, target):
         if player.combat_is_ending:

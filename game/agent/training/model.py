@@ -7,6 +7,7 @@ from torch import nn
 
 from game.agent.contracts import full as f
 from game.agent.action_policy import ALL_LEGAL, validate_policy
+from game.agent.input_views import RAW, VIEWS, validate_view
 from .features import Vocabulary
 from .action_features import WIDTH as ACTION_WIDTH, mode as preview_mode
 from .combat_features import (GRAPH, COMBAT_REPRESENTATIONS, REPRESENTATIONS, WIDTH, ROLES,
@@ -38,6 +39,9 @@ def collate(states, *, vocabulary):
         raise ValueError('Mixed feature representations in one batch')
     if len({s.preview_mode for s in states}) != 1:
         raise ValueError('Mixed action preview representations in one batch')
+    if len({s.input_view for s in states}) != 1:
+        raise ValueError('Mixed public input views in one batch')
+    input_view = validate_view(states[0].input_view)
     rows = {key: [] for key in ('nodes', 'parents', 'positions', 'fields', 'numbers', 'links',
                                 'link_positions', 'owners', 'roots')}
     counts = [len(s.candidates) for s in states]
@@ -71,6 +75,8 @@ def collate(states, *, vocabulary):
         offset += n
     batch = {key: torch.from_numpy(np.concatenate(value, axis=0)) for key, value in rows.items()}
     batch.update(candidates=torch.from_numpy(candidates), mask=torch.from_numpy(mask))
+    if input_view != RAW:
+        batch['input_view'] = torch.tensor(VIEWS.index(input_view), dtype=torch.int64)
     if states[0].combat is not None:
         for state in states:
             if (state.combat.shape != (len(state.nodes), WIDTH) or state.combat.dtype != np.float32 or
@@ -110,12 +116,14 @@ def _linked(values, indexes):
 
 
 class ActorCritic(nn.Module):
-    def __init__(self, vocabulary: Vocabulary, architecture=Architecture(), *, seed=0, action_policy=ALL_LEGAL):
+    def __init__(self, vocabulary: Vocabulary, architecture=Architecture(), *, seed=0, action_policy=ALL_LEGAL,
+                 input_view=RAW):
         super().__init__()
         if type(seed) is not int or not 0 <= seed < 2**63:
             raise ValueError('Model seed must be a nonnegative int64')
         self.vocabulary, self.architecture = vocabulary, architecture
-        self.feature_identity = feature_identity(vocabulary, architecture.schema)
+        self.input_view = validate_view(input_view, action_policy=action_policy)
+        self.feature_identity = feature_identity(vocabulary, architecture.schema, self.input_view)
         self.action_policy = validate_policy(action_policy)
         d = architecture.hidden_size
         is_set = architecture.schema in SET_REPRESENTATIONS
@@ -156,6 +164,8 @@ class ActorCritic(nn.Module):
                 nn.init.zeros_(self.action_preview[-1].weight)
 
     def forward(self, batch):
+        if int(batch.get('input_view', 0)) != VIEWS.index(self.input_view):
+            raise ValueError('Model and public input view differ')
         if ('combat' in batch) != (self.architecture.schema in COMBAT_REPRESENTATIONS):
             raise ValueError('Model and feature representation differ')
         mode = preview_mode(self.architecture.schema)

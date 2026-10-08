@@ -56,9 +56,14 @@ def _worker(config, output, audit, episode_id, stopped, sender, checkpoint=None)
             torch.set_num_threads(1)
             task = checkpoint[2]
             learned = load_policy(checkpoint[0], expected_sha256=checkpoint[1], task=task)
+            if len(checkpoint) == 4:
+                from game.agent.search import SearchConfig, SearchPolicy
+                learned = SearchPolicy(learned, SearchConfig(**checkpoint[3]))
             kwargs = ({'policy':learned, 'policy_identity':learned.identity} if task == 'full_run' else
                       {'combat_policy': learned,
                        'policy_identity': 'hybrid_v1:' + checkpoint[1] + ':' + implementation().policy})
+            if len(checkpoint) == 4:
+                kwargs['policy_identity'] = learned.identity + ':' + implementation().policy
         result = run_episode(config, output_dir=output, audit_dir=audit,
                              episode_id=episode_id, cancel=stopped, **kwargs)
         sender.send(('complete', result))
@@ -96,7 +101,7 @@ def _cleanup(active, stopped):
         process.close()
 
 
-def run_batch(config, *, output_dir, audit_dir, episodes=1, workers=1, cancel=None, combat_checkpoint=None, run_checkpoint=None):
+def run_batch(config, *, output_dir, audit_dir, episodes=1, workers=1, cancel=None, combat_checkpoint=None, run_checkpoint=None, search=None):
     """Run seeds base+i in fresh processes; result order is independent of scheduling.
 
     Each job has its own engine, policy state, RNG, files, and opaque episode ID.
@@ -110,6 +115,10 @@ def run_batch(config, *, output_dir, audit_dir, episodes=1, workers=1, cancel=No
     if type(workers) is not int or not 1 <= workers <= 32:
         raise ValueError('workers must be between 1 and 32')
     checkpoint = None
+    if search is not None and combat_checkpoint is None:
+        raise ValueError('Combat search requires --combat-checkpoint')
+    if search is not None and search.uses_belief:
+        raise ValueError('Campaign play has no declared belief anchor; use controlled combat search evaluation')
     if combat_checkpoint is not None and run_checkpoint is not None:
         raise ValueError('Choose either a full-run policy or a combat hybrid')
     if combat_checkpoint is not None or run_checkpoint is not None:
@@ -119,6 +128,11 @@ def run_batch(config, *, output_dir, audit_dir, episodes=1, workers=1, cancel=No
         path = str(Path(run_checkpoint if run_checkpoint is not None else combat_checkpoint).resolve())
         frozen = load_policy(path, task=task)
         checkpoint = (path, frozen.identity.split(':')[-1], task)
+        if search is not None:
+            from dataclasses import asdict
+            from game.agent.search import SearchPolicy
+            SearchPolicy(frozen, search)  # Validate objective before launching workers.
+            checkpoint += (asdict(search),)
     output, audit = prepare_directories(output_dir, audit_dir)
     context = multiprocessing.get_context('spawn')
     stopped = context.Event()

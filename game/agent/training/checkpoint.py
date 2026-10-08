@@ -12,6 +12,7 @@ import torch
 
 from game.agent.contracts import full as f
 from game.agent.action_policy import ALL_LEGAL, validate_policy
+from game.agent.input_views import RAW, validate_view
 from game.agent.encoding.full import FULL_RUN_PROFILE
 from game.agent.provenance import implementation
 from game.agent.runner import prepare_directories
@@ -23,6 +24,7 @@ from .rewards import RewardSpec, strict_json
 SCHEMA = 'sts_inference_bundle_v1'
 PPO_SCHEMA = 'sts_inference_bundle_v2'
 ACTION_SCHEMA = 'sts_inference_bundle_v3'
+VIEW_SCHEMA = 'sts_inference_bundle_v4'
 RESUME_SCHEMA = 'sts_imitation_resume_v1'
 PPO_RESUME_SCHEMA = 'sts_ppo_resume_v3'
 SUFFIX = '.sts-model'
@@ -84,15 +86,18 @@ def _save_inference(path, model, reward_spec, updates, settings, *, algorithm=No
     if any(not torch.isfinite(value).all() for value in model.state_dict().values()):
         raise ValueError('Cannot publish nonfinite model weights')
     restricted = model.action_policy != ALL_LEGAL
-    manifest = {'schema': ACTION_SCHEMA if restricted else SCHEMA if algorithm is None else PPO_SCHEMA,
+    viewed = model.input_view != RAW
+    manifest = {'schema': VIEW_SCHEMA if viewed else ACTION_SCHEMA if restricted else SCHEMA if algorithm is None else PPO_SCHEMA,
                 'contract': f.PROFILE, 'encoding': FULL_RUN_PROFILE.identity,
                 'architecture': asdict(model.architecture), 'vocabulary': model.vocabulary.to_dict(),
                 'feature_identity': model.feature_identity, 'reward_spec': reward_spec.to_dict(),
                 'reward_identity': reward_spec.identity, 'implementation': asdict(implementation()),
                 'runtime': runtime(), 'updates': updates, 'learner_config': settings,
                 'weights_sha256': hashlib.sha256(weights).hexdigest()}
-    if restricted:
+    if restricted or viewed:
         manifest.update(action_policy=model.action_policy, algorithm=algorithm or 'imitation')
+    if viewed:
+        manifest['input_view'] = model.input_view
     if algorithm is not None:
         manifest['algorithm'] = algorithm
         manifest['resume_state_sha256'] = resume_digest
@@ -108,18 +113,27 @@ class CheckpointPolicy:
         self.model, self.reward_spec, self.identity, self.manifest = model, reward_spec, identity, manifest
         self.algorithm = manifest.get('algorithm', 'imitation')
         self.encoder = FeatureEncoder(model.vocabulary, action_policy=model.action_policy,
-                                      representation=model.architecture.schema)
+                                      representation=model.architecture.schema, input_view=model.input_view)
         self.model.eval().requires_grad_(False)
 
     def probabilities(self, decision):
-        state = self.encoder.encode(decision)
+        return self._probabilities(self.encoder.encode_inference(decision))
+
+    def probabilities_prepared(self, decision, prepared):
+        # Subclasses and instance overrides retain their ordinary policy hooks.
+        if (type(self) is not CheckpointPolicy or 'probabilities' in vars(self)
+                or type(self.encoder) is not FeatureEncoder):
+            return self.probabilities(decision)
+        return self._probabilities(self.encoder.encode_prepared(decision, prepared))
+
+    def _probabilities(self, state):
         batch = collate([state], vocabulary=self.model.vocabulary)
         with torch.inference_mode():
             logits, value = self.model(batch)
             probabilities = log_probabilities(logits, batch['mask']).exp()[0].tolist()
         if not torch.isfinite(value).all():
             raise ValueError('Nonfinite checkpoint value')
-        return dict(zip(state.graph.candidate_refs, probabilities)), value.item()
+        return dict(zip(state.candidate_refs, probabilities)), value.item()
 
     def __call__(self, decision):
         probabilities, _ = self.probabilities(decision)
@@ -145,16 +159,21 @@ def load_policy(path, *, expected_sha256=None, reward_spec=None, task=None):
                 'reward_spec', 'reward_identity', 'implementation', 'runtime', 'updates', 'weights_sha256', 'learner_config'}
     if type(manifest) is dict and manifest.get('schema') == PPO_SCHEMA:
         required.update(('algorithm', 'resume_state_sha256'))
-    if type(manifest) is dict and manifest.get('schema') == ACTION_SCHEMA:
+    if type(manifest) is dict and manifest.get('schema') in (ACTION_SCHEMA, VIEW_SCHEMA):
         required.update(('algorithm', 'action_policy'))
+        if manifest['schema'] == VIEW_SCHEMA:
+            required.add('input_view')
         if manifest.get('algorithm') == 'ppo':
             required.add('resume_state_sha256')
-    if (type(manifest) is not dict or set(manifest) != required or manifest['schema'] not in (SCHEMA, PPO_SCHEMA, ACTION_SCHEMA) or
+    if (type(manifest) is not dict or set(manifest) != required or manifest['schema'] not in (SCHEMA, PPO_SCHEMA, ACTION_SCHEMA, VIEW_SCHEMA) or
             manifest['contract'] != f.PROFILE or manifest['encoding'] != FULL_RUN_PROFILE.identity or
             manifest['weights_sha256'] != hashlib.sha256(weights).hexdigest() or
             type(manifest['updates']) is not int or manifest['updates'] < 0):
         raise ValueError('Incompatible or corrupt inference manifest')
     action_policy = validate_policy(manifest.get('action_policy', ALL_LEGAL))
+    input_view = validate_view(manifest.get('input_view', RAW))
+    if manifest['schema'] == VIEW_SCHEMA and (input_view == RAW or manifest['algorithm'] not in ('imitation', 'ppo')):
+        raise ValueError('Invalid versioned public input view manifest')
     if manifest['schema'] == ACTION_SCHEMA and (action_policy == ALL_LEGAL or
             manifest['algorithm'] not in ('imitation', 'ppo')):
         raise ValueError('Invalid versioned action-policy manifest')
@@ -173,10 +192,10 @@ def load_policy(path, *, expected_sha256=None, reward_spec=None, task=None):
     if type(manifest['architecture']) is not dict or set(manifest['architecture']) != set(Architecture.__dataclass_fields__):
         raise ValueError('Unsupported architecture fields')
     architecture = Architecture(**manifest['architecture'])
-    if (feature_identity(vocabulary, architecture.schema) != manifest['feature_identity'] or
+    if (feature_identity(vocabulary, architecture.schema, input_view) != manifest['feature_identity'] or
             objective.identity != manifest['reward_identity'] or reward_spec is not None and reward_spec != objective):
         raise ValueError('Feature or objective identity mismatch')
-    model = ActorCritic(vocabulary, architecture, action_policy=action_policy)
+    model = ActorCritic(vocabulary, architecture, action_policy=action_policy, input_view=input_view)
     state = torch.load(io.BytesIO(weights), map_location='cpu', weights_only=True)
     expected = model.state_dict()
     if (type(state) is not dict or state.keys() != expected.keys() or any(
@@ -198,6 +217,8 @@ def restore_learner(bundle_path, resume_path, corpus):
         raise ValueError('Expected an imitation checkpoint')
     if policy.model.action_policy != corpus.action_policy:
         raise ValueError('Imitation resume cannot change its policy-action version')
+    if policy.model.input_view != corpus.input_view:
+        raise ValueError('Imitation resume cannot change its public input view')
     if policy.manifest['implementation'] != asdict(implementation()):
         raise ValueError('Exact resume requires unchanged implementation sources')
     state = torch.load(path, map_location='cpu', weights_only=True)

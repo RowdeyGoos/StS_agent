@@ -1,0 +1,2068 @@
+{
+  "base_git_commit": "c09506f985fc3155e208cabba8d2d7e2b31c9c5e",
+  "campaign_dependency_census": {
+    "all_legacy_content_exclusions": {
+      "card": [
+        "armaments",
+        "ashen_strike",
+        "blood_wall",
+        "breakthrough",
+        "bully",
+        "cinder",
+        "cruelty",
+        "evil_eye",
+        "expect_a_fight",
+        "fiend_fire",
+        "fight_me",
+        "giant_rock",
+        "havoc",
+        "hellraiser",
+        "hemokinesis",
+        "infection",
+        "infernal_blade",
+        "juggernaut",
+        "one_two_punch",
+        "primal_force",
+        "second_wind",
+        "setup_strike",
+        "stampede",
+        "stomp",
+        "thrash",
+        "tremble",
+        "vicious"
+      ],
+      "enemy": [
+        "AssassinRubyRaider",
+        "AxeRubyRaider",
+        "Byrdonis",
+        "CalcifiedCultist",
+        "CeremonialBeast",
+        "CorpseSlug",
+        "CrossbowRubyRaider",
+        "DampCultist",
+        "EyeWithTeeth",
+        "Flyconid",
+        "Fogmog",
+        "FossilStalker",
+        "FuzzyWurmCrawler",
+        "GasBomb",
+        "Inklet",
+        "LagavulinMatriarch",
+        "LeafSlimeSmall",
+        "LivingFog",
+        "Mawler",
+        "PhrogParasite",
+        "PunchConstruct",
+        "ShrinkerBeetle",
+        "SkulkingColony",
+        "SnappingJaxfruit",
+        "TerrorEel",
+        "Toadpole",
+        "TwigSlimeMedium",
+        "VineShambler",
+        "Wriggler"
+      ],
+      "potion": [
+        "attack_potion",
+        "distilled_chaos",
+        "entropic_brew",
+        "fairy_in_a_bottle",
+        "potion_of_binding",
+        "potion_shaped_rock",
+        "powdered_demise",
+        "power_potion",
+        "ship_in_a_bottle",
+        "skill_potion",
+        "touch_of_insanity"
+      ],
+      "relic": [
+        "art_of_war",
+        "fishing_rod",
+        "gorget",
+        "lava_rock",
+        "mercury_hourglass",
+        "new_leaf",
+        "old_coin",
+        "petrified_toad",
+        "scroll_boxes",
+        "sparkling_rouge",
+        "venerable_tea_set"
+      ]
+    },
+    "decisions": 563,
+    "definitions_per_decision": {
+      "card": {
+        "anger": 89,
+        "armaments": 21,
+        "ashen_strike": 115,
+        "bash": 257,
+        "battle_trance": 2,
+        "blood_wall": 41,
+        "bludgeon": 2,
+        "breakthrough": 52,
+        "bully": 67,
+        "cinder": 209,
+        "cruelty": 2,
+        "dazed": 9,
+        "defend": 563,
+        "evil_eye": 106,
+        "expect_a_fight": 112,
+        "fiend_fire": 8,
+        "fight_me": 57,
+        "giant_rock": 16,
+        "havoc": 175,
+        "hellraiser": 2,
+        "hemokinesis": 109,
+        "infection": 54,
+        "infernal_blade": 166,
+        "juggernaut": 52,
+        "one_two_punch": 77,
+        "perfected_strike": 28,
+        "pommel_strike": 137,
+        "primal_force": 82,
+        "rage": 166,
+        "second_wind": 42,
+        "setup_strike": 70,
+        "slimed": 28,
+        "stampede": 26,
+        "stomp": 144,
+        "strike": 563,
+        "thrash": 3,
+        "thunderclap": 201,
+        "tremble": 381,
+        "true_grit": 190,
+        "twin_strike": 229,
+        "vicious": 166,
+        "whirlwind": 128
+      },
+      "enchantment": {
+        "sharp": 218
+      },
+      "enemy": {
+        "AssassinRubyRaider": 15,
+        "AxeRubyRaider": 15,
+        "Byrdonis": 14,
+        "CalcifiedCultist": 67,
+        "CeremonialBeast": 27,
+        "CorpseSlug": 22,
+        "CrossbowRubyRaider": 15,
+        "DampCultist": 37,
+        "EyeWithTeeth": 15,
+        "Flyconid": 18,
+        "Fogmog": 28,
+        "FossilStalker": 6,
+        "FuzzyWurmCrawler": 23,
+        "GasBomb": 4,
+        "Inklet": 19,
+        "LagavulinMatriarch": 47,
+        "LeafSlimeMedium": 38,
+        "LeafSlimeSmall": 38,
+        "LivingFog": 16,
+        "Mawler": 19,
+        "Nibbit": 9,
+        "PhrogParasite": 67,
+        "PunchConstruct": 10,
+        "Seapunk": 38,
+        "ShrinkerBeetle": 23,
+        "SkulkingColony": 12,
+        "SludgeSpinner": 17,
+        "SnappingJaxfruit": 18,
+        "TerrorEel": 35,
+        "Toadpole": 8,
+        "TwigSlimeMedium": 12,
+        "TwigSlimeSmall": 38,
+        "VineShambler": 15,
+        "Wriggler": 43
+      },
+      "modifier": {},
+      "potion": {
+        "attack_potion": 6,
+        "cure_all": 2,
+        "dexterity_potion": 1,
+        "distilled_chaos": 8,
+        "energy_potion": 4,
+        "entropic_brew": 1,
+        "explosive_ampoule": 1,
+        "fairy_in_a_bottle": 32,
+        "gamblers_brew": 3,
+        "potion_of_binding": 1,
+        "potion_shaped_rock": 6,
+        "powdered_demise": 2,
+        "power_potion": 3,
+        "ship_in_a_bottle": 7,
+        "skill_potion": 3,
+        "touch_of_insanity": 3,
+        "weak_potion": 9
+      },
+      "power": {
+        "artifact": 7,
+        "block_next_turn": 7,
+        "demise": 10,
+        "dexterity": 44,
+        "frail": 15,
+        "illusion": 13,
+        "infested": 24,
+        "juggernaut": 28,
+        "minion": 16,
+        "one_two_punch": 7,
+        "plating": 73,
+        "plow": 15,
+        "rage": 45,
+        "setup_strike": 13,
+        "shrink": 16,
+        "slippery": 12,
+        "smoggy": 8,
+        "stampede": 23,
+        "tangled": 5,
+        "territorial": 14,
+        "vicious": 91,
+        "vulnerable": 242,
+        "weak": 19
+      },
+      "power_counter": {
+        "asleep": 47,
+        "hardened_shell_remaining": 12,
+        "plating": 47,
+        "ritual": 52,
+        "shriek": 35,
+        "thorns": 8
+      },
+      "relic": {
+        "art_of_war": 82,
+        "burning_blood": 563,
+        "fishing_rod": 175,
+        "gorget": 92,
+        "lava_rock": 133,
+        "meal_ticket": 69,
+        "mercury_hourglass": 21,
+        "molten_egg": 57,
+        "new_leaf": 140,
+        "old_coin": 82,
+        "petrified_toad": 68,
+        "scroll_boxes": 115,
+        "sparkling_rouge": 68,
+        "venerable_tea_set": 59
+      },
+      "selection": {
+        "discard_redraw": 2,
+        "free_combat": 2,
+        "move": 8,
+        "upgrade": 1
+      }
+    },
+    "openings": 36,
+    "scope": "all public combat decision inputs from four frozen greedy development campaigns; no private audits read",
+    "source_report": "runs/search-act1-development-20261004/search.json",
+    "source_report_sha256": "b49098c09a3d01176048c48696efe7c8f7453545ac94d19d2e321a45b04a5dfd",
+    "state_indicators": {
+      "card_enchantment": 436,
+      "decisions_with_map": 563,
+      "decisions_with_nonzero_floor": 563,
+      "relic:melted:False": 1724,
+      "relic:status:active": 38,
+      "relic:status:normal": 1686
+    },
+    "trajectories": [
+      {
+        "combat_openings": 10,
+        "file_sha256": "214921a59284fbd315f378e8c93231c06bf545c9a1bf8b5b8c16ab094b8f2ccb",
+        "first_act": "overgrowth",
+        "logical_sha256": "3b52b74dc96647325bf681f4d3a86549fa580785d8e706c92b2a169a93ded523",
+        "trajectory": "6c7ee3114cbe471db9e6e5c2edc6de6e.trajectory.jsonl.gz"
+      },
+      {
+        "combat_openings": 10,
+        "file_sha256": "961d45cef30ebb76ee3d9d51f7cdf7515801824ff678c708095575b85b7c2126",
+        "first_act": "underdocks",
+        "logical_sha256": "3feb35a2992e2ac83d9113d8263b68471877e2dbf65806c3976377b8ab2fa5af",
+        "trajectory": "96bbab241ec54b7885cef68ff0fd8354.trajectory.jsonl.gz"
+      },
+      {
+        "combat_openings": 8,
+        "file_sha256": "2bd31e5908412e825666c156ec66a16b25774169d6e66bd295185d808042961c",
+        "first_act": "overgrowth",
+        "logical_sha256": "7bbf05190ed3557c1d17f7a73430e01474fd1dd7c49c6e71158d86ee3658a118",
+        "trajectory": "b65b807f670c4d27a01e7209ba3a2430.trajectory.jsonl.gz"
+      },
+      {
+        "combat_openings": 8,
+        "file_sha256": "152a9f8894f8176dab3b5b266add949e44e12f7fc0e026b54cbfb4bfa179d6f1",
+        "first_act": "underdocks",
+        "logical_sha256": "05153c698f43a2c4f1bdddfe4fdcc941b39c31b907ef1a15df351fb325914610",
+        "trajectory": "f321109599d04a8a9145054464ef3fa2.trajectory.jsonl.gz"
+      }
+    ]
+  },
+  "conclusion": "Declared construction and state-mechanism coverage broadened. Gumbel searched 23/138 attempts across seven of eight starter-deck fights; all eight small controlled fixtures searched. Rejection/replay dominates work; Slimes had zero searched decisions and three fights per search controller hit episode time limits. No strength, five-second general latency, native or campaign promotion gate passed.",
+  "date": "2026-10-04",
+  "development": {
+    "checkpoint": "ppo_v1:4f06f6566a83bf658685ddbf799e0e4c2856d00eb979a7b7d35b890c25562595",
+    "checkpoint_path": "runs/vantom-specialist-training-20261002/ppo/chunk-15/final.sts-model",
+    "checkpoint_sha256": "4f06f6566a83bf658685ddbf799e0e4c2856d00eb979a7b7d35b890c25562595",
+    "episodes": [
+      {
+        "case_id": "9ac1b04b70a04342853d4bf1894d9778",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 74,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 2
+        },
+        "encounter": "overgrowth_nibbit",
+        "end_hp": 74,
+        "episode_id": "3110d5fb89e04934bab0a0e52938610e",
+        "policy": "network",
+        "public_artifact_sha256": {
+          "training": "e69a9f641ff98e8c84d46f9476abb1ab63b2645012954e18ca501ca18551e6b2",
+          "trajectory": "41ac9a33324301a9134aef12690190c3fe15c3cbbb66f6d251427870e76eee54"
+        },
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "external_stop",
+          "schema": "sts_run_outcome_v1"
+        },
+        "source_group": "9ac1b04b70a04342853d4bf1894d9778",
+        "start_hp": 80,
+        "status": "terminated",
+        "steps": 6,
+        "timings": {
+          "encoding_seconds": 0.0055292085744440556,
+          "initialization_seconds": 0.0120041249319911,
+          "policy_seconds": 0.022429166827350855,
+          "projection_seconds": 0.03796491678804159,
+          "recording_seconds": 0.011096915230154991,
+          "simulation_dispatch_seconds": 0.014091331511735916,
+          "total_seconds": 0.10904758283868432
+        },
+        "training": "3110d5fb89e04934bab0a0e52938610e.training.json",
+        "trajectory": "3110d5fb89e04934bab0a0e52938610e.trajectory.jsonl.gz"
+      },
+      {
+        "case_id": "9ac1b04b70a04342853d4bf1894d9778",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 74,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 2
+        },
+        "encounter": "overgrowth_nibbit",
+        "end_hp": 74,
+        "episode_id": "60bd698628504a3aa41238820ee11df0",
+        "policy": "root",
+        "public_artifact_sha256": {
+          "targets": "156454fc1b15b714a6c693fb8cc75441746ef87a8360f1305bac1fa85a72a9c7",
+          "training": "857c5a2a9aec9db609eccf8d1b74d89ea76cb7be3e67f5865f1f167e17efb80e",
+          "trajectory": "7e3162c79d608804479591ebc4ae1c10f4d0fac6dc49a0b1b470a68239b68153"
+        },
+        "reconciled_search_targets": 1,
+        "reconciled_target_count": 6,
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "external_stop",
+          "schema": "sts_run_outcome_v1"
+        },
+        "search": {
+          "belief": {
+            "failures": {
+              "belief_budget": 9
+            },
+            "model": "public_belief_v1",
+            "proposals": 8592,
+            "recoveries": 1,
+            "replay_steps": 20,
+            "seconds": 28.153489333577454,
+            "updates": 11
+          },
+          "cutoffs": {},
+          "decisions": 6,
+          "fallbacks": {
+            "belief_budget": 4,
+            "forced_action": 1
+          },
+          "p95_seconds": 5.006988000124693,
+          "searched": 1,
+          "seconds": 28.332525791600347,
+          "simulations": 16,
+          "timings": {
+            "conditioning": 6.971981208305806,
+            "inference": 0.04398308461531997,
+            "projection": 0.04511962691321969,
+            "reconstruction": 21.199283709283918,
+            "sampling": 0.06405695946887136,
+            "transition": 0.004552622325718403
+          }
+        },
+        "source_group": "9ac1b04b70a04342853d4bf1894d9778",
+        "start_hp": 80,
+        "status": "terminated",
+        "steps": 6,
+        "targets": "60bd698628504a3aa41238820ee11df0.search.json.gz",
+        "timings": {
+          "encoding_seconds": 0.006359124556183815,
+          "initialization_seconds": 0.009799290914088488,
+          "policy_seconds": 28.33281371090561,
+          "projection_seconds": 0.023419334087520838,
+          "recording_seconds": 0.01150245824828744,
+          "simulation_dispatch_seconds": 0.014706376008689404,
+          "total_seconds": 28.40826250007376
+        },
+        "training": "60bd698628504a3aa41238820ee11df0.training.json",
+        "trajectory": "60bd698628504a3aa41238820ee11df0.trajectory.jsonl.gz"
+      },
+      {
+        "case_id": "9ac1b04b70a04342853d4bf1894d9778",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 74,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 2
+        },
+        "encounter": "overgrowth_nibbit",
+        "end_hp": 74,
+        "episode_id": "4fd0a37e6618455d850eb5c7f3adc705",
+        "policy": "gumbel",
+        "public_artifact_sha256": {
+          "targets": "678828cad152424e13061cd6888d7a2a4ac7aa842ffbc777dfd3594acac0157a",
+          "training": "c1c30f5cf9c6acd2e11508a5aa25905e4415aa04484b426f73f42226c9b9fb57",
+          "trajectory": "06cf6934ecb694e44236eee26cd3cf851c37d76f08f58d89821cec0e538d76fb"
+        },
+        "reconciled_search_targets": 1,
+        "reconciled_target_count": 6,
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "external_stop",
+          "schema": "sts_run_outcome_v1"
+        },
+        "search": {
+          "belief": {
+            "failures": {
+              "belief_budget": 9
+            },
+            "model": "public_belief_v1",
+            "proposals": 8620,
+            "recoveries": 1,
+            "replay_steps": 20,
+            "seconds": 28.146263958886266,
+            "updates": 11
+          },
+          "cutoffs": {},
+          "decisions": 6,
+          "fallbacks": {
+            "belief_budget": 4,
+            "forced_action": 1
+          },
+          "p95_seconds": 5.008162292186171,
+          "searched": 1,
+          "seconds": 28.39671104447916,
+          "simulations": 16,
+          "timings": {
+            "conditioning": 6.974416417535394,
+            "inference": 0.10080354334786534,
+            "projection": 0.0723465452902019,
+            "reconstruction": 21.189459541346878,
+            "sampling": 0.038802373223006725,
+            "transition": 0.012127004098147154
+          }
+        },
+        "source_group": "9ac1b04b70a04342853d4bf1894d9778",
+        "start_hp": 80,
+        "status": "terminated",
+        "steps": 6,
+        "targets": "4fd0a37e6618455d850eb5c7f3adc705.search.json.gz",
+        "timings": {
+          "encoding_seconds": 0.006613956764340401,
+          "initialization_seconds": 0.009774167090654373,
+          "policy_seconds": 28.39707225235179,
+          "projection_seconds": 0.02295791683718562,
+          "recording_seconds": 0.010844625532627106,
+          "simulation_dispatch_seconds": 0.014056625310331583,
+          "total_seconds": 28.471055458765477
+        },
+        "training": "4fd0a37e6618455d850eb5c7f3adc705.training.json",
+        "trajectory": "4fd0a37e6618455d850eb5c7f3adc705.trajectory.jsonl.gz"
+      },
+      {
+        "case_id": "ae602cf358b04f59b62f836cda314b21",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 66,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 6
+        },
+        "encounter": "overgrowth_slimes",
+        "end_hp": 66,
+        "episode_id": "30d6806950d548bcbc430193514f2a57",
+        "policy": "network",
+        "public_artifact_sha256": {
+          "training": "9ced146e9d00ce0da8114a6d5f020c4962f2eca21569893de9ee7d12aac73214",
+          "trajectory": "cce6e5dd354adbdf1d0f7c6b1a1acaa709c90cf16727a5465094387b6f4aa0b9"
+        },
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "external_stop",
+          "schema": "sts_run_outcome_v1"
+        },
+        "source_group": "ae602cf358b04f59b62f836cda314b21",
+        "start_hp": 80,
+        "status": "terminated",
+        "steps": 19,
+        "timings": {
+          "encoding_seconds": 0.03939279401674867,
+          "initialization_seconds": 0.012006249744445086,
+          "policy_seconds": 0.10067045921459794,
+          "projection_seconds": 0.08033749787136912,
+          "recording_seconds": 0.03614575369283557,
+          "simulation_dispatch_seconds": 0.03993629198521376,
+          "total_seconds": 0.31742800027132034
+        },
+        "training": "30d6806950d548bcbc430193514f2a57.training.json",
+        "trajectory": "30d6806950d548bcbc430193514f2a57.trajectory.jsonl.gz"
+      },
+      {
+        "case_id": "ae602cf358b04f59b62f836cda314b21",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 60,
+          "max_hp": 80,
+          "outcome": "ongoing",
+          "schema": "sts_combat_summary_v1",
+          "turn": 6
+        },
+        "encounter": "overgrowth_slimes",
+        "end_hp": 60,
+        "episode_id": "9562c5da131848b6adba03ac62a7d3d8",
+        "policy": "root",
+        "public_artifact_sha256": {
+          "targets": "8700f30f8c305e58524f28500cfd371e5ae24d8bd13e9df4b73940b98482abd3",
+          "training": "536bbb132b0c6909a735a7b4a2607158f3f49e995e71ad9aaffbdead7b80d155",
+          "trajectory": "5b7b1b087d273a1b2766e451de984068137bacb15d3a14de3157ada165f0b632"
+        },
+        "reconciled_search_targets": 0,
+        "reconciled_target_count": 18,
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "time_budget",
+          "schema": "sts_run_outcome_v1"
+        },
+        "search": {
+          "belief": {
+            "failures": {
+              "belief_budget": 32
+            },
+            "model": "public_belief_v1",
+            "proposals": 30037,
+            "recoveries": 0,
+            "replay_steps": 8,
+            "seconds": 94.9473915421404,
+            "updates": 32
+          },
+          "cutoffs": {},
+          "decisions": 19,
+          "fallbacks": {
+            "belief_budget": 14,
+            "forced_action": 5
+          },
+          "p95_seconds": 5.007304416038096,
+          "searched": 0,
+          "seconds": 95.10276904329658,
+          "simulations": 0,
+          "timings": {
+            "conditioning": 26.87017649738118,
+            "inference": 0.08305804384872317,
+            "projection": 0.0,
+            "reconstruction": 68.14798849960789,
+            "sampling": 0.0,
+            "transition": 0.0
+          }
+        },
+        "source_group": "ae602cf358b04f59b62f836cda314b21",
+        "start_hp": 80,
+        "status": "truncated",
+        "steps": 18,
+        "targets": "9562c5da131848b6adba03ac62a7d3d8.search.json.gz",
+        "timings": {
+          "encoding_seconds": 0.01951445732265711,
+          "initialization_seconds": 0.0017648753710091114,
+          "policy_seconds": 95.1032992079854,
+          "projection_seconds": 0.06149687431752682,
+          "recording_seconds": 0.03696091938763857,
+          "simulation_dispatch_seconds": 0.03798329271376133,
+          "total_seconds": 95.27233929093927
+        },
+        "training": "9562c5da131848b6adba03ac62a7d3d8.training.json",
+        "trajectory": "9562c5da131848b6adba03ac62a7d3d8.trajectory.jsonl.gz"
+      },
+      {
+        "case_id": "ae602cf358b04f59b62f836cda314b21",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 60,
+          "max_hp": 80,
+          "outcome": "ongoing",
+          "schema": "sts_combat_summary_v1",
+          "turn": 6
+        },
+        "encounter": "overgrowth_slimes",
+        "end_hp": 60,
+        "episode_id": "418f6e2fd2e54420b351d1c5f57748b6",
+        "policy": "gumbel",
+        "public_artifact_sha256": {
+          "targets": "a44b05738d49a1f083061f34a74c20d1eda9b35fa36a8a6893baecb4e6e0e422",
+          "training": "a10ab720bbf7ede643db05ce4be2c00951821f8fb4277d04707ca9fd4fc16453",
+          "trajectory": "0315b59f53555a152b687299c95c18d57c22837ae1ef6ca8f4ea21a283ca2a0a"
+        },
+        "reconciled_search_targets": 0,
+        "reconciled_target_count": 18,
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "time_budget",
+          "schema": "sts_run_outcome_v1"
+        },
+        "search": {
+          "belief": {
+            "failures": {
+              "belief_budget": 32
+            },
+            "model": "public_belief_v1",
+            "proposals": 30025,
+            "recoveries": 0,
+            "replay_steps": 8,
+            "seconds": 94.92773691983894,
+            "updates": 32
+          },
+          "cutoffs": {},
+          "decisions": 19,
+          "fallbacks": {
+            "belief_budget": 14,
+            "forced_action": 5
+          },
+          "p95_seconds": 5.028659124858677,
+          "searched": 0,
+          "seconds": 95.13316649990156,
+          "simulations": 0,
+          "timings": {
+            "conditioning": 26.86392849870026,
+            "inference": 0.11033016489818692,
+            "projection": 0.0,
+            "reconstruction": 68.15735879167914,
+            "sampling": 0.0,
+            "transition": 0.0
+          }
+        },
+        "source_group": "ae602cf358b04f59b62f836cda314b21",
+        "start_hp": 80,
+        "status": "truncated",
+        "steps": 18,
+        "targets": "418f6e2fd2e54420b351d1c5f57748b6.search.json.gz",
+        "timings": {
+          "encoding_seconds": 0.04440016532316804,
+          "initialization_seconds": 0.0016837497241795063,
+          "policy_seconds": 95.13371899630874,
+          "projection_seconds": 0.061005749739706516,
+          "recording_seconds": 0.037680165842175484,
+          "simulation_dispatch_seconds": 0.03635133383795619,
+          "total_seconds": 95.3259215829894
+        },
+        "training": "418f6e2fd2e54420b351d1c5f57748b6.training.json",
+        "trajectory": "418f6e2fd2e54420b351d1c5f57748b6.trajectory.jsonl.gz"
+      },
+      {
+        "case_id": "814531694e3a47c5aa3938f3c9be54b5",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 17,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 6
+        },
+        "encounter": "overgrowth_bygone_effigy",
+        "end_hp": 17,
+        "episode_id": "49f6d6e182e64bbcb8479b6575ca2133",
+        "policy": "network",
+        "public_artifact_sha256": {
+          "training": "056996561b4ad5e1e305fdee4f2320ad90957a3907dbcae3216895fc4076176d",
+          "trajectory": "b6ca606a32ab7307a3cd240612b89a0db21362eafc3e908af0041ae13f8bf9e7"
+        },
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "external_stop",
+          "schema": "sts_run_outcome_v1"
+        },
+        "source_group": "814531694e3a47c5aa3938f3c9be54b5",
+        "start_hp": 80,
+        "status": "terminated",
+        "steps": 20,
+        "timings": {
+          "encoding_seconds": 0.018627998419106007,
+          "initialization_seconds": 0.0015999171882867813,
+          "policy_seconds": 0.07920749858021736,
+          "projection_seconds": 0.08720716740936041,
+          "recording_seconds": 0.03423516685143113,
+          "simulation_dispatch_seconds": 0.04148766724392772,
+          "total_seconds": 0.2704643332399428
+        },
+        "training": "49f6d6e182e64bbcb8479b6575ca2133.training.json",
+        "trajectory": "49f6d6e182e64bbcb8479b6575ca2133.trajectory.jsonl.gz"
+      },
+      {
+        "case_id": "814531694e3a47c5aa3938f3c9be54b5",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 17,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 6
+        },
+        "encounter": "overgrowth_bygone_effigy",
+        "end_hp": 17,
+        "episode_id": "713606fd71794d799a221fbefae773f0",
+        "policy": "root",
+        "public_artifact_sha256": {
+          "targets": "8a427c8761a54cb7871e4115bc64a184201d70d50e47bdb997e29ba67b06a537",
+          "training": "30b95c76edcb2c594ad97c93b7ce038bcb0b9bc6ce8e15038d6f491788ac5b8a",
+          "trajectory": "f4af7d55db80d53bc760f6450f51739364130609b73c7813a6abde2c36f16675"
+        },
+        "reconciled_search_targets": 4,
+        "reconciled_target_count": 20,
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "external_stop",
+          "schema": "sts_run_outcome_v1"
+        },
+        "search": {
+          "belief": {
+            "failures": {
+              "belief_budget": 27
+            },
+            "model": "public_belief_v1",
+            "proposals": 24705,
+            "recoveries": 1,
+            "replay_steps": 723,
+            "seconds": 82.72987745981663,
+            "updates": 33
+          },
+          "cutoffs": {},
+          "decisions": 20,
+          "fallbacks": {
+            "belief_budget": 11,
+            "forced_action": 5
+          },
+          "p95_seconds": 5.007512416690588,
+          "searched": 4,
+          "seconds": 83.37113458663225,
+          "simulations": 64,
+          "timings": {
+            "conditioning": 25.14867091923952,
+            "inference": 0.17227937607094646,
+            "projection": 0.1722961706109345,
+            "reconstruction": 57.672073665075004,
+            "sampling": 0.17517587542533875,
+            "transition": 0.016169871669262648
+          }
+        },
+        "source_group": "814531694e3a47c5aa3938f3c9be54b5",
+        "start_hp": 80,
+        "status": "terminated",
+        "steps": 20,
+        "targets": "713606fd71794d799a221fbefae773f0.search.json.gz",
+        "timings": {
+          "encoding_seconds": 0.01900845766067505,
+          "initialization_seconds": 0.0016502910293638706,
+          "policy_seconds": 83.37197495484725,
+          "projection_seconds": 0.059236878994852304,
+          "recording_seconds": 0.035751999355852604,
+          "simulation_dispatch_seconds": 0.04149120720103383,
+          "total_seconds": 83.54073145892471
+        },
+        "training": "713606fd71794d799a221fbefae773f0.training.json",
+        "trajectory": "713606fd71794d799a221fbefae773f0.trajectory.jsonl.gz"
+      },
+      {
+        "case_id": "814531694e3a47c5aa3938f3c9be54b5",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 17,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 6
+        },
+        "encounter": "overgrowth_bygone_effigy",
+        "end_hp": 17,
+        "episode_id": "3d0469e2313144929e7d83f8ba6169c5",
+        "policy": "gumbel",
+        "public_artifact_sha256": {
+          "targets": "9d66621f6bf4677cae124209836407915da2a2d0b7915b0c2dbfbff4fceb9199",
+          "training": "b726120e3f6ac4602a0d76cdb85083bba5b0cddf887f2768193a6d6105003499",
+          "trajectory": "103e599d615f38a9d9e9eb4b322c9c825b982e38eff421d983b686f0799b25bb"
+        },
+        "reconciled_search_targets": 4,
+        "reconciled_target_count": 20,
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "external_stop",
+          "schema": "sts_run_outcome_v1"
+        },
+        "search": {
+          "belief": {
+            "failures": {
+              "belief_budget": 27
+            },
+            "model": "public_belief_v1",
+            "proposals": 24701,
+            "recoveries": 1,
+            "replay_steps": 722,
+            "seconds": 82.65768399881199,
+            "updates": 33
+          },
+          "cutoffs": {},
+          "decisions": 20,
+          "fallbacks": {
+            "belief_budget": 11,
+            "forced_action": 5
+          },
+          "p95_seconds": 5.006437875330448,
+          "searched": 4,
+          "seconds": 83.64263541344553,
+          "simulations": 64,
+          "timings": {
+            "conditioning": 25.09764708019793,
+            "inference": 0.3622957575134933,
+            "projection": 0.3075975002720952,
+            "reconstruction": 57.62647795723751,
+            "sampling": 0.18113183276727796,
+            "transition": 0.036143377888947725
+          }
+        },
+        "source_group": "814531694e3a47c5aa3938f3c9be54b5",
+        "start_hp": 80,
+        "status": "terminated",
+        "steps": 20,
+        "targets": "3d0469e2313144929e7d83f8ba6169c5.search.json.gz",
+        "timings": {
+          "encoding_seconds": 0.018901626113802195,
+          "initialization_seconds": 0.0015677916817367077,
+          "policy_seconds": 83.64399667037651,
+          "projection_seconds": 0.08419774984940886,
+          "recording_seconds": 0.03561816876754165,
+          "simulation_dispatch_seconds": 0.04119616840034723,
+          "total_seconds": 83.836352000013
+        },
+        "training": "3d0469e2313144929e7d83f8ba6169c5.training.json",
+        "trajectory": "3d0469e2313144929e7d83f8ba6169c5.trajectory.jsonl.gz"
+      },
+      {
+        "case_id": "a5011ee15e564617839c14fb061181b3",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 0,
+          "max_hp": 80,
+          "outcome": "defeat",
+          "schema": "sts_combat_summary_v1",
+          "turn": 10
+        },
+        "encounter": "overgrowth_vantom",
+        "end_hp": 0,
+        "episode_id": "7da3a3353a964707b0b30800634c71d5",
+        "policy": "network",
+        "public_artifact_sha256": {
+          "training": "7e0c33e7d0e364294ab8a1751d5f64ad9bb5cb4153f627b7a167b6d5d038419a",
+          "trajectory": "dcc8b5993de10bfb92c1bc9a8de8b09b6f5d8072ec93f975c8cf20a1ee0fc6bc"
+        },
+        "run_outcome": {
+          "kind": "defeat",
+          "reason": "none",
+          "schema": "sts_run_outcome_v1"
+        },
+        "source_group": "a5011ee15e564617839c14fb061181b3",
+        "start_hp": 80,
+        "status": "terminated",
+        "steps": 34,
+        "timings": {
+          "encoding_seconds": 0.036133917048573494,
+          "initialization_seconds": 0.0022017499431967735,
+          "policy_seconds": 0.1758483750745654,
+          "projection_seconds": 0.13992421189323068,
+          "recording_seconds": 0.09002045122906566,
+          "simulation_dispatch_seconds": 0.06963762594386935,
+          "total_seconds": 0.5251391250640154
+        },
+        "training": "7da3a3353a964707b0b30800634c71d5.training.json",
+        "trajectory": "7da3a3353a964707b0b30800634c71d5.trajectory.jsonl.gz"
+      },
+      {
+        "case_id": "a5011ee15e564617839c14fb061181b3",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 18,
+          "max_hp": 80,
+          "outcome": "ongoing",
+          "schema": "sts_combat_summary_v1",
+          "turn": 8
+        },
+        "encounter": "overgrowth_vantom",
+        "end_hp": 18,
+        "episode_id": "e5b7ed16d4e84d8e9e0881a36f14cc8a",
+        "policy": "root",
+        "public_artifact_sha256": {
+          "targets": "f1c234e1fd3a8ef2f3ffbdcf34e79841db282ee8c9385466c1cf9f5cc50d4399",
+          "training": "d7848c89c3e4fe77de5a24ad50eb81b4108acfb5759d0ce760cf14f7573399ed",
+          "trajectory": "591a6e56612a43b0bc9a70b3c8c28c03594c1b8e4148d50ab007f2c375f57baa"
+        },
+        "reconciled_search_targets": 5,
+        "reconciled_target_count": 24,
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "time_budget",
+          "schema": "sts_run_outcome_v1"
+        },
+        "search": {
+          "belief": {
+            "failures": {
+              "belief_budget": 31
+            },
+            "model": "public_belief_v1",
+            "proposals": 26246,
+            "recoveries": 0,
+            "replay_steps": 2684,
+            "seconds": 95.42498183296993,
+            "updates": 38
+          },
+          "cutoffs": {},
+          "decisions": 25,
+          "fallbacks": {
+            "belief_budget": 13,
+            "forced_action": 7
+          },
+          "p95_seconds": 5.006848500110209,
+          "searched": 5,
+          "seconds": 96.22540058428422,
+          "simulations": 80,
+          "timings": {
+            "conditioning": 30.13547237496823,
+            "inference": 0.23757966374978423,
+            "projection": 0.24253666400909424,
+            "reconstruction": 65.37995662400499,
+            "sampling": 0.19050899287685752,
+            "transition": 0.020922911819070578
+          }
+        },
+        "source_group": "a5011ee15e564617839c14fb061181b3",
+        "start_hp": 80,
+        "status": "truncated",
+        "steps": 24,
+        "targets": "e5b7ed16d4e84d8e9e0881a36f14cc8a.search.json.gz",
+        "timings": {
+          "encoding_seconds": 0.024077625945210457,
+          "initialization_seconds": 0.002234041690826416,
+          "policy_seconds": 96.22649417072535,
+          "projection_seconds": 0.0771701242774725,
+          "recording_seconds": 0.04677083622664213,
+          "simulation_dispatch_seconds": 0.04774095769971609,
+          "total_seconds": 96.43633691594005
+        },
+        "training": "e5b7ed16d4e84d8e9e0881a36f14cc8a.training.json",
+        "trajectory": "e5b7ed16d4e84d8e9e0881a36f14cc8a.trajectory.jsonl.gz"
+      },
+      {
+        "case_id": "a5011ee15e564617839c14fb061181b3",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 18,
+          "max_hp": 80,
+          "outcome": "ongoing",
+          "schema": "sts_combat_summary_v1",
+          "turn": 8
+        },
+        "encounter": "overgrowth_vantom",
+        "end_hp": 18,
+        "episode_id": "db7cd96e981a4f61bd5f491a92deacea",
+        "policy": "gumbel",
+        "public_artifact_sha256": {
+          "targets": "502d1778df84cf06995295a94fcbdca34d215ea7fba85ae9dea475cb3226c4f4",
+          "training": "0b883d14b308be1017fe00d02121ece27edd87728fab6d9a1fbcf2ebe85b9cea",
+          "trajectory": "797e5cbc6e74952030347851b12b3bdfe894b6189f71ea4785b9d9c71c589bb9"
+        },
+        "reconciled_search_targets": 5,
+        "reconciled_target_count": 24,
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "time_budget",
+          "schema": "sts_run_outcome_v1"
+        },
+        "search": {
+          "belief": {
+            "failures": {
+              "belief_budget": 31
+            },
+            "model": "public_belief_v1",
+            "proposals": 26162,
+            "recoveries": 0,
+            "replay_steps": 2666,
+            "seconds": 95.35881924862042,
+            "updates": 38
+          },
+          "cutoffs": {},
+          "decisions": 25,
+          "fallbacks": {
+            "belief_budget": 13,
+            "forced_action": 7
+          },
+          "p95_seconds": 5.008737707976252,
+          "searched": 5,
+          "seconds": 96.62541945884004,
+          "simulations": 80,
+          "timings": {
+            "conditioning": 30.19432712625712,
+            "inference": 0.4761659996584058,
+            "projection": 0.3427315498702228,
+            "reconstruction": 65.3099824981764,
+            "sampling": 0.22341208020225167,
+            "transition": 0.0424457467161119
+          }
+        },
+        "source_group": "a5011ee15e564617839c14fb061181b3",
+        "start_hp": 80,
+        "status": "truncated",
+        "steps": 24,
+        "targets": "db7cd96e981a4f61bd5f491a92deacea.search.json.gz",
+        "timings": {
+          "encoding_seconds": 0.02376108104363084,
+          "initialization_seconds": 0.0016014999710023403,
+          "policy_seconds": 96.62743916595355,
+          "projection_seconds": 0.07844137353822589,
+          "recording_seconds": 0.07392008090391755,
+          "simulation_dispatch_seconds": 0.048998745158314705,
+          "total_seconds": 96.86619349988177
+        },
+        "training": "db7cd96e981a4f61bd5f491a92deacea.training.json",
+        "trajectory": "db7cd96e981a4f61bd5f491a92deacea.trajectory.jsonl.gz"
+      },
+      {
+        "case_id": "f032f991f67241cabb219be22e221f92",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 77,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 4
+        },
+        "encounter": "underdocks_corpse_slugs_weak",
+        "end_hp": 77,
+        "episode_id": "80f6208626fc4f619d509c245cd8bd59",
+        "policy": "network",
+        "public_artifact_sha256": {
+          "training": "cfbb1b99edfa2e7b455bcdbfcdc43b524e6b7c1d46bbd1b676103f5b88a70681",
+          "trajectory": "53944024c9d7327e2aab6c488a2ffe20b3b1de240f6bd51ce11589b2a2353584"
+        },
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "external_stop",
+          "schema": "sts_run_outcome_v1"
+        },
+        "source_group": "f032f991f67241cabb219be22e221f92",
+        "start_hp": 80,
+        "status": "terminated",
+        "steps": 12,
+        "timings": {
+          "encoding_seconds": 0.010362915694713593,
+          "initialization_seconds": 0.0016284999437630177,
+          "policy_seconds": 0.07125375187024474,
+          "projection_seconds": 0.03600829187780619,
+          "recording_seconds": 0.020854705944657326,
+          "simulation_dispatch_seconds": 0.02571341907605529,
+          "total_seconds": 0.17186195775866508
+        },
+        "training": "80f6208626fc4f619d509c245cd8bd59.training.json",
+        "trajectory": "80f6208626fc4f619d509c245cd8bd59.trajectory.jsonl.gz"
+      },
+      {
+        "case_id": "f032f991f67241cabb219be22e221f92",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 77,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 4
+        },
+        "encounter": "underdocks_corpse_slugs_weak",
+        "end_hp": 77,
+        "episode_id": "41884d048bbf4c62bc69a31445dd7df1",
+        "policy": "root",
+        "public_artifact_sha256": {
+          "targets": "3a588d3468b2c229f44a3a615a4a58ff7dbfbf631674fb79dc8da9acd07618c3",
+          "training": "bf3a64ed84dd84f568458a688c8e1b84f03d9971d973122beb18654c8a930f2a",
+          "trajectory": "f57c6da17f9e4641841738897a3113841cad13be5fc44fb29e1a1aceab35b9aa"
+        },
+        "reconciled_search_targets": 3,
+        "reconciled_target_count": 12,
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "external_stop",
+          "schema": "sts_run_outcome_v1"
+        },
+        "search": {
+          "belief": {
+            "failures": {
+              "belief_budget": 15
+            },
+            "model": "public_belief_v1",
+            "proposals": 14398,
+            "recoveries": 0,
+            "replay_steps": 75,
+            "seconds": 46.39037866424769,
+            "updates": 19
+          },
+          "cutoffs": {},
+          "decisions": 12,
+          "fallbacks": {
+            "belief_budget": 6,
+            "forced_action": 3
+          },
+          "p95_seconds": 5.005815833806992,
+          "searched": 3,
+          "seconds": 46.878623333293945,
+          "simulations": 48,
+          "timings": {
+            "conditioning": 15.060449667274952,
+            "inference": 0.12500058533623815,
+            "projection": 0.13514758087694645,
+            "reconstruction": 31.367744957562536,
+            "sampling": 0.16624812316149473,
+            "transition": 0.012017044238746166
+          }
+        },
+        "source_group": "f032f991f67241cabb219be22e221f92",
+        "start_hp": 80,
+        "status": "terminated",
+        "steps": 12,
+        "targets": "41884d048bbf4c62bc69a31445dd7df1.search.json.gz",
+        "timings": {
+          "encoding_seconds": 0.037145290058106184,
+          "initialization_seconds": 0.0016330000944435596,
+          "policy_seconds": 46.879236126784235,
+          "projection_seconds": 0.035624999552965164,
+          "recording_seconds": 0.02127849915996194,
+          "simulation_dispatch_seconds": 0.026014792267233133,
+          "total_seconds": 47.01040037535131
+        },
+        "training": "41884d048bbf4c62bc69a31445dd7df1.training.json",
+        "trajectory": "41884d048bbf4c62bc69a31445dd7df1.trajectory.jsonl.gz"
+      },
+      {
+        "case_id": "f032f991f67241cabb219be22e221f92",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 77,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 4
+        },
+        "encounter": "underdocks_corpse_slugs_weak",
+        "end_hp": 77,
+        "episode_id": "65434da2b36b4bb4b119f207f9a118da",
+        "policy": "gumbel",
+        "public_artifact_sha256": {
+          "targets": "8c53ad26425b76273b8d4c08ced611089915286e10da23386edcd3726c198ce3",
+          "training": "c46b8431091a6e750d3835f209c8b7d472d8e4fdbf712c1dce5c30708814fc19",
+          "trajectory": "1f82472fd68b57202120d47fb18adb19f4be5f562ad9f6768eeb0c40fc92009c"
+        },
+        "reconciled_search_targets": 3,
+        "reconciled_target_count": 12,
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "external_stop",
+          "schema": "sts_run_outcome_v1"
+        },
+        "search": {
+          "belief": {
+            "failures": {
+              "belief_budget": 15
+            },
+            "model": "public_belief_v1",
+            "proposals": 14386,
+            "recoveries": 0,
+            "replay_steps": 72,
+            "seconds": 46.42433554120362,
+            "updates": 19
+          },
+          "cutoffs": {},
+          "decisions": 12,
+          "fallbacks": {
+            "belief_budget": 6,
+            "forced_action": 3
+          },
+          "p95_seconds": 5.033554291818291,
+          "searched": 3,
+          "seconds": 47.14374587358907,
+          "simulations": 48,
+          "timings": {
+            "conditioning": 15.093322082888335,
+            "inference": 0.27441154373809695,
+            "projection": 0.19133800268173218,
+            "reconstruction": 31.397558665368706,
+            "sampling": 0.14321896387264132,
+            "transition": 0.022322167176753283
+          }
+        },
+        "source_group": "f032f991f67241cabb219be22e221f92",
+        "start_hp": 80,
+        "status": "terminated",
+        "steps": 12,
+        "targets": "65434da2b36b4bb4b119f207f9a118da.search.json.gz",
+        "timings": {
+          "encoding_seconds": 0.010922419372946024,
+          "initialization_seconds": 0.0016032923012971878,
+          "policy_seconds": 47.14477095892653,
+          "projection_seconds": 0.035528918262571096,
+          "recording_seconds": 0.020777170546352863,
+          "simulation_dispatch_seconds": 0.025996580254286528,
+          "total_seconds": 47.249679832719266
+        },
+        "training": "65434da2b36b4bb4b119f207f9a118da.training.json",
+        "trajectory": "65434da2b36b4bb4b119f207f9a118da.trajectory.jsonl.gz"
+      },
+      {
+        "case_id": "31cde5ef873a486b806ad6425f5e92ae",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 57,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 5
+        },
+        "encounter": "underdocks_living_fog",
+        "end_hp": 57,
+        "episode_id": "7ff425d29fcf4c1d86360fd053111413",
+        "policy": "network",
+        "public_artifact_sha256": {
+          "training": "1dd75eae8304381dfc375e743dfe83ee8ef40dc71d78b1f7e912cb4e09c834a4",
+          "trajectory": "d14f409f07750a476135d79bccc3f817aecc4a63bf17137762dc820954914dd8"
+        },
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "external_stop",
+          "schema": "sts_run_outcome_v1"
+        },
+        "source_group": "31cde5ef873a486b806ad6425f5e92ae",
+        "start_hp": 80,
+        "status": "terminated",
+        "steps": 15,
+        "timings": {
+          "encoding_seconds": 0.013597834389656782,
+          "initialization_seconds": 0.0016364590264856815,
+          "policy_seconds": 0.056771000381559134,
+          "projection_seconds": 0.04504545871168375,
+          "recording_seconds": 0.025891000404953957,
+          "simulation_dispatch_seconds": 0.05929237697273493,
+          "total_seconds": 0.20793445827439427
+        },
+        "training": "7ff425d29fcf4c1d86360fd053111413.training.json",
+        "trajectory": "7ff425d29fcf4c1d86360fd053111413.trajectory.jsonl.gz"
+      },
+      {
+        "case_id": "31cde5ef873a486b806ad6425f5e92ae",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 60,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 5
+        },
+        "encounter": "underdocks_living_fog",
+        "end_hp": 60,
+        "episode_id": "975e1fd0adf548c58195b4750f44a71b",
+        "policy": "root",
+        "public_artifact_sha256": {
+          "targets": "fd83e1c7e1b19bd0af540441d20812e9674a9871b134ce97251740124185d136",
+          "training": "f73e230e009091c33a6bb0c2fe6fcb09dbec0e968afbb517de14963ebd5adebc",
+          "trajectory": "1adbf3297db29c34d2c961e043c575a773cccca5c1b9ddbb50a3402a2d833ee0"
+        },
+        "reconciled_search_targets": 3,
+        "reconciled_target_count": 16,
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "external_stop",
+          "schema": "sts_run_outcome_v1"
+        },
+        "search": {
+          "belief": {
+            "failures": {
+              "belief_budget": 22
+            },
+            "model": "public_belief_v1",
+            "proposals": 18284,
+            "recoveries": 0,
+            "replay_steps": 1519,
+            "seconds": 65.14311916707084,
+            "updates": 26
+          },
+          "cutoffs": {},
+          "decisions": 16,
+          "fallbacks": {
+            "belief_budget": 9,
+            "forced_action": 4
+          },
+          "p95_seconds": 5.006927959155291,
+          "searched": 3,
+          "seconds": 65.6451802928932,
+          "simulations": 48,
+          "timings": {
+            "conditioning": 20.07630900107324,
+            "inference": 0.15069979103282094,
+            "projection": 0.16096937842667103,
+            "reconstruction": 45.119927211198956,
+            "sampling": 0.11370017006993294,
+            "transition": 0.01248503988608718
+          }
+        },
+        "source_group": "31cde5ef873a486b806ad6425f5e92ae",
+        "start_hp": 80,
+        "status": "terminated",
+        "steps": 16,
+        "targets": "975e1fd0adf548c58195b4750f44a71b.search.json.gz",
+        "timings": {
+          "encoding_seconds": 0.014834709465503693,
+          "initialization_seconds": 0.0016036671586334705,
+          "policy_seconds": 65.6458694152534,
+          "projection_seconds": 0.047548293601721525,
+          "recording_seconds": 0.02775041200220585,
+          "simulation_dispatch_seconds": 0.03370008384808898,
+          "total_seconds": 65.78245208412409
+        },
+        "training": "975e1fd0adf548c58195b4750f44a71b.training.json",
+        "trajectory": "975e1fd0adf548c58195b4750f44a71b.trajectory.jsonl.gz"
+      },
+      {
+        "case_id": "31cde5ef873a486b806ad6425f5e92ae",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 52,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 5
+        },
+        "encounter": "underdocks_living_fog",
+        "end_hp": 52,
+        "episode_id": "4d8619d87fab400eb35e3e91b9555324",
+        "policy": "gumbel",
+        "public_artifact_sha256": {
+          "targets": "1da16abb106b62e1c14324636e34848831c2e4e1193308c4d3d6b86f95003931",
+          "training": "5cd229d5d790fdc0d2533f30ba0415c58527f23f91e2c0746b60d5ed7b972b5f",
+          "trajectory": "43a55b0532794eb7ddf7c71a9defff6bbdc1878f703af43e267dd1cb2a2c929d"
+        },
+        "reconciled_search_targets": 3,
+        "reconciled_target_count": 15,
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "external_stop",
+          "schema": "sts_run_outcome_v1"
+        },
+        "search": {
+          "belief": {
+            "failures": {
+              "belief_budget": 20
+            },
+            "model": "public_belief_v1",
+            "proposals": 16894,
+            "recoveries": 0,
+            "replay_steps": 1387,
+            "seconds": 60.204560707788914,
+            "updates": 24
+          },
+          "cutoffs": {},
+          "decisions": 15,
+          "fallbacks": {
+            "belief_budget": 8,
+            "forced_action": 4
+          },
+          "p95_seconds": 5.028422458097339,
+          "searched": 3,
+          "seconds": 60.92722628917545,
+          "simulations": 48,
+          "timings": {
+            "conditioning": 20.075105290859938,
+            "inference": 0.2522215796634555,
+            "projection": 0.22977362666279078,
+            "reconstruction": 40.17877521039918,
+            "sampling": 0.13853453425690532,
+            "transition": 0.028521290980279446
+          }
+        },
+        "source_group": "31cde5ef873a486b806ad6425f5e92ae",
+        "start_hp": 80,
+        "status": "terminated",
+        "steps": 15,
+        "targets": "4d8619d87fab400eb35e3e91b9555324.search.json.gz",
+        "timings": {
+          "encoding_seconds": 0.03731312416493893,
+          "initialization_seconds": 0.001579000148922205,
+          "policy_seconds": 60.9283577054739,
+          "projection_seconds": 0.045037458185106516,
+          "recording_seconds": 0.026393333449959755,
+          "simulation_dispatch_seconds": 0.0318131260573864,
+          "total_seconds": 61.08018812537193
+        },
+        "training": "4d8619d87fab400eb35e3e91b9555324.training.json",
+        "trajectory": "4d8619d87fab400eb35e3e91b9555324.trajectory.jsonl.gz"
+      },
+      {
+        "case_id": "c71bcb6f79e242ef85107eb1bbb08cd6",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 41,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 5
+        },
+        "encounter": "underdocks_skulking_colony",
+        "end_hp": 41,
+        "episode_id": "0aecf406447941dbb944cdea54dba0d9",
+        "policy": "network",
+        "public_artifact_sha256": {
+          "training": "cd7a409b031785dcbf147413fd7d6f596eafb2cb30d44166c6f565f936f27d34",
+          "trajectory": "857c15b0a9adbe093acf143528fa0cfd88a89538d8bfe5528e314671f4a64f4f"
+        },
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "external_stop",
+          "schema": "sts_run_outcome_v1"
+        },
+        "source_group": "c71bcb6f79e242ef85107eb1bbb08cd6",
+        "start_hp": 80,
+        "status": "terminated",
+        "steps": 16,
+        "timings": {
+          "encoding_seconds": 0.014356544241309166,
+          "initialization_seconds": 0.0016045831143856049,
+          "policy_seconds": 0.08987587271258235,
+          "projection_seconds": 0.04715712508186698,
+          "recording_seconds": 0.027625128161162138,
+          "simulation_dispatch_seconds": 0.03353204671293497,
+          "total_seconds": 0.22063104202970862
+        },
+        "training": "0aecf406447941dbb944cdea54dba0d9.training.json",
+        "trajectory": "0aecf406447941dbb944cdea54dba0d9.trajectory.jsonl.gz"
+      },
+      {
+        "case_id": "c71bcb6f79e242ef85107eb1bbb08cd6",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 41,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 5
+        },
+        "encounter": "underdocks_skulking_colony",
+        "end_hp": 41,
+        "episode_id": "c41efbaf68a54485946aadcb61fc86fd",
+        "policy": "root",
+        "public_artifact_sha256": {
+          "targets": "9191c860dc0b66d84921bf2dcec8f657cb41ab806b173b2fbddb7ac80a3bcb12",
+          "training": "d28804d82bb1a7eca70ef1444ed917c73c7d8c59b91dd7298ffb0cec8449d485",
+          "trajectory": "c7911ac8462078d29ef081e2842d18b268db17dc0cccf59a3a9beaaddf3a336e"
+        },
+        "reconciled_search_targets": 2,
+        "reconciled_target_count": 16,
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "external_stop",
+          "schema": "sts_run_outcome_v1"
+        },
+        "search": {
+          "belief": {
+            "failures": {
+              "belief_budget": 24
+            },
+            "model": "public_belief_v1",
+            "proposals": 21959,
+            "recoveries": 0,
+            "replay_steps": 532,
+            "seconds": 71.10240812553093,
+            "updates": 27
+          },
+          "cutoffs": {},
+          "decisions": 16,
+          "fallbacks": {
+            "belief_budget": 10,
+            "forced_action": 4
+          },
+          "p95_seconds": 5.007337917108089,
+          "searched": 2,
+          "seconds": 71.4655544590205,
+          "simulations": 32,
+          "timings": {
+            "conditioning": 20.06513333460316,
+            "inference": 0.1023224126547575,
+            "projection": 0.08932957984507084,
+            "reconstruction": 51.08912675222382,
+            "sampling": 0.10363828716799617,
+            "transition": 0.008239501621574163
+          }
+        },
+        "source_group": "c71bcb6f79e242ef85107eb1bbb08cd6",
+        "start_hp": 80,
+        "status": "terminated",
+        "steps": 16,
+        "targets": "c41efbaf68a54485946aadcb61fc86fd.search.json.gz",
+        "timings": {
+          "encoding_seconds": 0.015098000410944223,
+          "initialization_seconds": 0.001601249910891056,
+          "policy_seconds": 71.46615983452648,
+          "projection_seconds": 0.04694554256275296,
+          "recording_seconds": 0.027870291844010353,
+          "simulation_dispatch_seconds": 0.03431750042364001,
+          "total_seconds": 71.60269870888442
+        },
+        "training": "c41efbaf68a54485946aadcb61fc86fd.training.json",
+        "trajectory": "c41efbaf68a54485946aadcb61fc86fd.trajectory.jsonl.gz"
+      },
+      {
+        "case_id": "c71bcb6f79e242ef85107eb1bbb08cd6",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 41,
+          "max_hp": 80,
+          "outcome": "victory",
+          "schema": "sts_combat_summary_v1",
+          "turn": 5
+        },
+        "encounter": "underdocks_skulking_colony",
+        "end_hp": 41,
+        "episode_id": "8a3eda61c7214f8cb4b095b678ee7b9c",
+        "policy": "gumbel",
+        "public_artifact_sha256": {
+          "targets": "f39b7c03f7de883ac14f7d6e0c91b00c079a3bfb66eca8df07754c76d592f1fb",
+          "training": "209bc95173d935683fe435a5bb21214e8466d57340710d8402c7a7047987d3b1",
+          "trajectory": "58d24b8a88a10e3ba5757c3f5f991ce4145453a2e935f74969a8247d82347110"
+        },
+        "reconciled_search_targets": 2,
+        "reconciled_target_count": 16,
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "external_stop",
+          "schema": "sts_run_outcome_v1"
+        },
+        "search": {
+          "belief": {
+            "failures": {
+              "belief_budget": 24
+            },
+            "model": "public_belief_v1",
+            "proposals": 21853,
+            "recoveries": 0,
+            "replay_steps": 532,
+            "seconds": 71.11912704026327,
+            "updates": 27
+          },
+          "cutoffs": {},
+          "decisions": 16,
+          "fallbacks": {
+            "belief_budget": 10,
+            "forced_action": 4
+          },
+          "p95_seconds": 5.008468583226204,
+          "searched": 2,
+          "seconds": 71.67384374886751,
+          "simulations": 32,
+          "timings": {
+            "conditioning": 20.06754408404231,
+            "inference": 0.17902470752596855,
+            "projection": 0.20114195859059691,
+            "reconstruction": 51.1035031657666,
+            "sampling": 0.07836991315707564,
+            "transition": 0.023870876990258694
+          }
+        },
+        "source_group": "c71bcb6f79e242ef85107eb1bbb08cd6",
+        "start_hp": 80,
+        "status": "terminated",
+        "steps": 16,
+        "targets": "8a3eda61c7214f8cb4b095b678ee7b9c.search.json.gz",
+        "timings": {
+          "encoding_seconds": 0.015100293792784214,
+          "initialization_seconds": 0.001624290831387043,
+          "policy_seconds": 71.67482395889238,
+          "projection_seconds": 0.048002163879573345,
+          "recording_seconds": 0.028086209669709206,
+          "simulation_dispatch_seconds": 0.03495120955631137,
+          "total_seconds": 71.81302604125813
+        },
+        "training": "8a3eda61c7214f8cb4b095b678ee7b9c.training.json",
+        "trajectory": "8a3eda61c7214f8cb4b095b678ee7b9c.trajectory.jsonl.gz"
+      },
+      {
+        "case_id": "7c0d7ae58a8d406fa3caf7caf6fa5b6b",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 0,
+          "max_hp": 80,
+          "outcome": "defeat",
+          "schema": "sts_combat_summary_v1",
+          "turn": 12
+        },
+        "encounter": "underdocks_lagavulin_matriarch",
+        "end_hp": 0,
+        "episode_id": "f7c1cb98d776430a8cad5acc069ffd48",
+        "policy": "network",
+        "public_artifact_sha256": {
+          "training": "75406d12d1b35835832ac84730b341866b445cbb6b6d17248914f562a9d255ae",
+          "trajectory": "7b8fc189b1e5ad51dfd5384bb7ca8ed459b0a1d8ad1e29514afbb6782a0884d2"
+        },
+        "run_outcome": {
+          "kind": "defeat",
+          "reason": "none",
+          "schema": "sts_run_outcome_v1"
+        },
+        "source_group": "7c0d7ae58a8d406fa3caf7caf6fa5b6b",
+        "start_hp": 80,
+        "status": "terminated",
+        "steps": 41,
+        "timings": {
+          "encoding_seconds": 0.08982412284240127,
+          "initialization_seconds": 0.0016144579276442528,
+          "policy_seconds": 0.16182783897966146,
+          "projection_seconds": 0.1484104967676103,
+          "recording_seconds": 0.07235296163707972,
+          "simulation_dispatch_seconds": 0.07966845855116844,
+          "total_seconds": 0.5657742922194302
+        },
+        "training": "f7c1cb98d776430a8cad5acc069ffd48.training.json",
+        "trajectory": "f7c1cb98d776430a8cad5acc069ffd48.trajectory.jsonl.gz"
+      },
+      {
+        "case_id": "7c0d7ae58a8d406fa3caf7caf6fa5b6b",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 25,
+          "max_hp": 80,
+          "outcome": "ongoing",
+          "schema": "sts_combat_summary_v1",
+          "turn": 8
+        },
+        "encounter": "underdocks_lagavulin_matriarch",
+        "end_hp": 25,
+        "episode_id": "cec76c57ef3449a59070cbfd1f6f0c4d",
+        "policy": "root",
+        "public_artifact_sha256": {
+          "targets": "ed93c10825ddf4d7485679993133aadb5155386a73690f6c8049ab85699b7630",
+          "training": "bd48590d7bd55fc8c857726a4f23ebcb84146f18ade16d3ccf11bcf8be0a54c7",
+          "trajectory": "34a38979b641e7424c1bde2cca43993470c60523705cc051903c60f9716fd585"
+        },
+        "reconciled_search_targets": 5,
+        "reconciled_target_count": 24,
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "time_budget",
+          "schema": "sts_run_outcome_v1"
+        },
+        "search": {
+          "belief": {
+            "failures": {
+              "belief_budget": 31
+            },
+            "model": "public_belief_v1",
+            "proposals": 30224,
+            "recoveries": 0,
+            "replay_steps": 906,
+            "seconds": 95.43707574857399,
+            "updates": 38
+          },
+          "cutoffs": {},
+          "decisions": 25,
+          "fallbacks": {
+            "belief_budget": 13,
+            "forced_action": 7
+          },
+          "p95_seconds": 5.0060989167541265,
+          "searched": 5,
+          "seconds": 96.25655483361334,
+          "simulations": 80,
+          "timings": {
+            "conditioning": 30.15869541838765,
+            "inference": 0.21575862588360906,
+            "projection": 0.21381556568667293,
+            "reconstruction": 65.38789250142872,
+            "sampling": 0.24128759000450373,
+            "transition": 0.02038233308121562
+          }
+        },
+        "source_group": "7c0d7ae58a8d406fa3caf7caf6fa5b6b",
+        "start_hp": 80,
+        "status": "truncated",
+        "steps": 24,
+        "targets": "cec76c57ef3449a59070cbfd1f6f0c4d.search.json.gz",
+        "timings": {
+          "encoding_seconds": 0.02306679217144847,
+          "initialization_seconds": 0.0016568750143051147,
+          "policy_seconds": 96.25768299633637,
+          "projection_seconds": 0.0737959984689951,
+          "recording_seconds": 0.09491846105083823,
+          "simulation_dispatch_seconds": 0.0461757886223495,
+          "total_seconds": 96.50900712516159
+        },
+        "training": "cec76c57ef3449a59070cbfd1f6f0c4d.training.json",
+        "trajectory": "cec76c57ef3449a59070cbfd1f6f0c4d.trajectory.jsonl.gz"
+      },
+      {
+        "case_id": "7c0d7ae58a8d406fa3caf7caf6fa5b6b",
+        "combat": {
+          "combat_ref": "combat:0",
+          "hp": 25,
+          "max_hp": 80,
+          "outcome": "ongoing",
+          "schema": "sts_combat_summary_v1",
+          "turn": 8
+        },
+        "encounter": "underdocks_lagavulin_matriarch",
+        "end_hp": 25,
+        "episode_id": "8e18e8d416794fd1bc7b40a430fd1f11",
+        "policy": "gumbel",
+        "public_artifact_sha256": {
+          "targets": "5ea7481a947c3a8d019ba7a193ae6373fa755b91aa0f2810d1707351a51c3fba",
+          "training": "9ff9f7491464b84ec5e92ddcf51c0dd9e75fb8cd2ec27c5b631fff9c598576b2",
+          "trajectory": "cda5d9d01348993f7d14eeb4550c58d17ee5636bf257b493c61784e6b35573f2"
+        },
+        "reconciled_search_targets": 5,
+        "reconciled_target_count": 24,
+        "run_outcome": {
+          "kind": "truncated",
+          "reason": "time_budget",
+          "schema": "sts_run_outcome_v1"
+        },
+        "search": {
+          "belief": {
+            "failures": {
+              "belief_budget": 31
+            },
+            "model": "public_belief_v1",
+            "proposals": 30353,
+            "recoveries": 0,
+            "replay_steps": 903,
+            "seconds": 95.38386570988223,
+            "updates": 38
+          },
+          "cutoffs": {},
+          "decisions": 25,
+          "fallbacks": {
+            "belief_budget": 13,
+            "forced_action": 7
+          },
+          "p95_seconds": 5.006145083345473,
+          "searched": 5,
+          "seconds": 96.584100543987,
+          "simulations": 80,
+          "timings": {
+            "conditioning": 30.099872917868197,
+            "inference": 0.4446125044487417,
+            "projection": 0.3515194524079561,
+            "reconstruction": 65.36695054220036,
+            "sampling": 0.24586562952026725,
+            "transition": 0.039625335950404406
+          }
+        },
+        "source_group": "7c0d7ae58a8d406fa3caf7caf6fa5b6b",
+        "start_hp": 80,
+        "status": "truncated",
+        "steps": 24,
+        "targets": "8e18e8d416794fd1bc7b40a430fd1f11.search.json.gz",
+        "timings": {
+          "encoding_seconds": 0.02295295801013708,
+          "initialization_seconds": 0.0016119168139994144,
+          "policy_seconds": 96.58593045501038,
+          "projection_seconds": 0.07504037441685796,
+          "recording_seconds": 0.043593788519501686,
+          "simulation_dispatch_seconds": 0.04705708334222436,
+          "total_seconds": 96.78779733367264
+        },
+        "training": "8e18e8d416794fd1bc7b40a430fd1f11.training.json",
+        "trajectory": "8e18e8d416794fd1bc7b40a430fd1f11.trajectory.jsonl.gz"
+      }
+    ],
+    "execution": {
+      "schedule": "parallel_episodes_v1",
+      "workers": 4
+    },
+    "limits": {
+      "max_decisions": 48,
+      "time_limit_seconds": 90.0
+    },
+    "paired_vs_network": {
+      "gumbel": {
+        "cases": 8,
+        "difference_group_hoeffding_95": [
+          -1,
+          0.8353227913199207
+        ],
+        "win_rate_difference": -0.125,
+        "wins_only_candidate": 0,
+        "wins_only_network": 1
+      },
+      "root": {
+        "cases": 8,
+        "difference_group_hoeffding_95": [
+          -1,
+          0.8353227913199207
+        ],
+        "win_rate_difference": -0.125,
+        "wins_only_candidate": 0,
+        "wins_only_network": 1
+      }
+    },
+    "plan_sha256": "0df2885320dfb7628675abe56c8282bf2719ea80ba974748336d34219670ea51",
+    "population": "8 controlled ordinary starter inventories, validation indices 200..207; paired across network/root/gumbel; no held-out test opened",
+    "report": "runs/belief-coverage-development-20261004/search.json",
+    "report_sha256": "0858d3fb6fe458b1de8f47d364379e30ff1834415a3781c737624e6bdc97ae36",
+    "search_configs": {
+      "gumbel": {
+        "belief_particles": 2,
+        "belief_proposals": 1024,
+        "belief_replay_proposals": 2048,
+        "belief_replay_steps": 16384,
+        "belief_seconds": 5.0,
+        "considered_actions": 16,
+        "exploration": false,
+        "max_depth": 16,
+        "method": "gumbel",
+        "model_version": "public_belief_v1",
+        "seed": 0,
+        "simulations": 16,
+        "time_limit": 5.0
+      },
+      "root": {
+        "belief_particles": 2,
+        "belief_proposals": 1024,
+        "belief_replay_proposals": 2048,
+        "belief_replay_steps": 16384,
+        "belief_seconds": 5.0,
+        "considered_actions": 16,
+        "exploration": false,
+        "max_depth": 16,
+        "method": "root",
+        "model_version": "public_belief_v1",
+        "seed": 0,
+        "simulations": 16,
+        "time_limit": 5.0
+      }
+    },
+    "status": "complete",
+    "summary": {
+      "gumbel": {
+        "attempted": 8,
+        "cutoffs": 3,
+        "failures": 0,
+        "hp_change_observations": 8,
+        "losses": 0,
+        "mean_final_turn_observed": 5.5,
+        "mean_hp_change_observed": -34.5,
+        "mean_hp_fraction_on_win": 0.6525000000000001,
+        "mean_hp_on_win": 52.2,
+        "mean_task_return": 0.66578125,
+        "planned": 8,
+        "potion_use_actions": 0,
+        "search": {
+          "coverage": 0.16666666666666666,
+          "cutoffs": {},
+          "decisions": 138,
+          "fallbacks": {
+            "belief_budget": 79,
+            "forced_action": 36
+          },
+          "max_episode_p95_seconds": 5.033554291818291,
+          "searched": 23,
+          "seconds": 580.1268488722853,
+          "simulations": 368,
+          "timings": {
+            "conditioning": 174.4661634983495,
+            "inference": 2.199865800794214,
+            "projection": 1.696448635775596,
+            "reconstruction": 400.33006637217477,
+            "sampling": 1.0493353269994259,
+            "transition": 0.2050557998009026
+          }
+        },
+        "source_groups": 8,
+        "steps": 135,
+        "unattempted": 0,
+        "win_rate": 0.625,
+        "win_rate_group_hoeffding_95": [
+          0.14483860434003965,
+          1
+        ],
+        "wins": 5
+      },
+      "network": {
+        "attempted": 8,
+        "cutoffs": 0,
+        "failures": 0,
+        "hp_change_observations": 8,
+        "losses": 2,
+        "mean_final_turn_observed": 6.25,
+        "mean_hp_change_observed": -38.5,
+        "mean_hp_fraction_on_win": 0.6916666666666665,
+        "mean_hp_on_win": 55.333333333333336,
+        "mean_task_return": 0.8018750000000001,
+        "planned": 8,
+        "potion_use_actions": 0,
+        "source_groups": 8,
+        "steps": 163,
+        "unattempted": 0,
+        "win_rate": 0.75,
+        "win_rate_group_hoeffding_95": [
+          0.26983860434003965,
+          1
+        ],
+        "wins": 6
+      },
+      "root": {
+        "attempted": 8,
+        "cutoffs": 3,
+        "failures": 0,
+        "hp_change_observations": 8,
+        "losses": 0,
+        "mean_final_turn_observed": 5.5,
+        "mean_hp_change_observed": -33.5,
+        "mean_hp_fraction_on_win": 0.6725,
+        "mean_hp_on_win": 53.8,
+        "mean_task_return": 0.66703125,
+        "planned": 8,
+        "potion_use_actions": 0,
+        "search": {
+          "coverage": 0.16546762589928057,
+          "cutoffs": {},
+          "decisions": 139,
+          "fallbacks": {
+            "belief_budget": 80,
+            "forced_action": 36
+          },
+          "max_episode_p95_seconds": 5.007512416690588,
+          "searched": 23,
+          "seconds": 583.2777429246344,
+          "simulations": 368,
+          "timings": {
+            "conditioning": 174.48688842123374,
+            "inference": 1.1306815831921995,
+            "projection": 1.0592145663686097,
+            "reconstruction": 405.36399392038584,
+            "sampling": 1.0546159981749952,
+            "transition": 0.09476932464167476
+          }
+        },
+        "source_groups": 8,
+        "steps": 136,
+        "unattempted": 0,
+        "win_rate": 0.625,
+        "win_rate_group_hoeffding_95": [
+          0.14483860434003965,
+          1
+        ],
+        "wins": 5
+      }
+    },
+    "total_seconds": 323.206106166821
+  },
+  "dirty_checkout": true,
+  "environment": {
+    "inference": "CPU; one torch thread per worker; four episode workers",
+    "machine": "arm64",
+    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "python": "3.11.15",
+    "torch": "2.13.0"
+  },
+  "implementation": {
+    "build": "0747a360ad3739d58d5e5c324293c13e4fa3e4b22858a5548bda5f3f76669736",
+    "policy": "full_run_demo_v2:9c78a9e87f988ccb06b778a5196ae8f26e1721f7aab0a4fd402c2a032c13648b",
+    "rules": "8040c9a77ffd3e58afa502cbcf0abf33baec709b92267f5d9a758d1b5a384ecb",
+    "target": "sts2-v0.107.1-steam-23811903"
+  },
+  "next": "Stage 5: profile and improve bounded belief conditioning/recovery with generic rule-owned random-operation proposals and correct posterior weights before scaling learning. Retain explicit campaign/corpus anchor gaps.",
+  "schema": "sts_combat_belief_coverage_evidence_v1",
+  "scope": "Stage 4 controlled declared Act 1 coverage, not native or campaign-anchor certification",
+  "source_files_sha256": {
+    "game/agent/contracts/planning.py": "8fcea158d98b0e7fd306998c2fce01b8bb3d03b221767c9b6423e6fb0d0fa863",
+    "game/agent/headless/identity.py": "8d2e9ae962e904ad26a0a673ca88ba36d5a24710ab816f2cf463df0e5038d554",
+    "game/agent/search/belief.py": "6cef0a6a4a9bd34edd056cb1583449af3ff493b0b2240089c3905401d4c932fd",
+    "game/agent/search/policy.py": "89ab923246bf654db713ac9b0e399a5b4338baea3af6b057d5ad1489a76a9c21",
+    "game/agent/search/public_keys.py": "ff1dd0ac7c03ba64805219f1c7b63e8cc1f93597914de4c364d330e1bf5068d3",
+    "game/agent/search/world.py": "d87b56d7652f0b9c4a06b0e02d2391ef91ea0196019022277df9f463144b3dcf",
+    "game/agent/training/scenarios.py": "00256838c56d1f2d9a8b87eab4fbe59fab687bdf25b0617a09e70a1d06f38123",
+    "game/agent/training/search_run.py": "cb8ff776f91ffe78edd3e9af0c834ee112b56d5d98c6c32c6c3cb5173b2d5692",
+    "game/cli/search_args.py": "f8c36c8b163423736bffff16679b25404f39bd9d4ad4b47cc312a2e469d429d9",
+    "game/headless/run/construction.py": "4d51d2b8ab3226a6f237a82e6476879de361aba4867676a594416254f6bff98f",
+    "tests/agent/test_belief.py": "ac277f8b62f49b93085a185becfc2d0784d6d1ee4b493783a2e90583242da531",
+    "tests/agent/test_belief_coverage.py": "a2133b72f9cfb814718359ef2ecb24acde588a7f5be9593d56a863ff64aa4583",
+    "tests/agent/test_belief_search.py": "cc2b212be03f8a7cfcc07ba988158cdcc06382c0bdafcb11a52d6640ef018c6b",
+    "tests/agent/test_search_training.py": "dcc7a067216565606b7f488f653854149c49289a5d5494e1b8793277c0732fac"
+  },
+  "structural_checks": {
+    "fixture_inventory": "Hemokinesis, Defend, Burning Blood, Fire Potion, Block Potion; production catalog; controlled fresh setup",
+    "gumbel_and_all_root_branch_fixtures": 8,
+    "mechanisms": [
+      "ordinary/elite/boss room entry",
+      "setup relic selector",
+      "end-turn retention selector",
+      "reactive enemy multi-hit selector",
+      "duplicate draw references",
+      "summoned stable enemy slots",
+      "Smog lifetime",
+      "room-sensitive cleanup",
+      "Fishing Rod victory counter and upgrade",
+      "hidden RNG/order invariance"
+    ],
+    "regions": [
+      "overgrowth",
+      "underdocks"
+    ],
+    "registered_encounters": 42
+  },
+  "validation": {
+    "affected_aggregate": {
+      "explanation": "Only failure was a new fixture expecting Smog after the normal end-turn expiry. Corrected to assert presence before expiry and absence afterward; production sources stayed unchanged.",
+      "failed": 1,
+      "passed": 406,
+      "seconds": 42.55
+    },
+    "affected_tests_passed": 407,
+    "compileall": "passed",
+    "corrected_fixture_rerun": {
+      "passed": 1,
+      "seconds": 0.23
+    },
+    "diff_check": "passed",
+    "integration": {
+      "passed": 106,
+      "paths": [
+        "tests/agent/test_projection_reuse.py",
+        "tests/agent/test_recording.py",
+        "tests/agent/test_training_records.py",
+        "tests/agent/test_runner.py",
+        "tests/test_package_layout.py"
+      ],
+      "seconds": 32.52
+    },
+    "semantic_review": {
+      "passed": 73,
+      "result": "no_remaining_blockers_for_declared_scope",
+      "scope": "public information, selector/captured enemy continuation, RNG aliasing, cleanup, idempotent duplicate references",
+      "seconds": 6.97
+    }
+  }
+}

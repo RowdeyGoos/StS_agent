@@ -7,6 +7,16 @@ from .records import TrainingRecordError, _read, _validate
 from .rewards import RewardSpec
 
 
+def training_episode(trajectory, sidecar_path, *, reward_spec=None):
+    """Validate a reward sidecar against an already loaded public trajectory.
+
+    Callers still load/validate the trajectory and its split/provenance first;
+    the ordinary sidecar digest, outcome and reward checks remain unchanged.
+    """
+    value, spec = _read(sidecar_path)
+    return _validate(value, spec, trajectory, reward_spec)
+
+
 @dataclass(frozen=True, slots=True)
 class TrainingExample(EncodedTransition):
     reward_spec_id: str
