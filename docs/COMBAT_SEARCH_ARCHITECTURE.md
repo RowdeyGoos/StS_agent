@@ -9,6 +9,21 @@ learning gain, campaign benefit and native support remain open gates. The
 existing CLI search prototype. This redesign replaces card-by-card reconstruction
 expansion as the recommended direction.
 
+The current CLI default is `combat_belief_v1`: one belief and learning path for
+declared fixtures, headless Act 1 receipts and verified historical Vantom
+prefixes. `sts_combat_anchor_v1` declares setup timing, supported ruleset, public
+inventory/history and ordered reveals. Its adapters preserve the old fresh
+inventory and after-room-entry semantics without applying entry effects twice.
+Controlled fixtures retain their declared potion pool; campaign rules retain the
+Ironclad pool. The common engine constructor executes both. Historical models
+below keep their original identities and are not the recommended workflow.
+
+See [current usage and validation](AGENT_TRAINING.md#campaign-search-and-witnessed-validation).
+Collection, distillation and reanalysis now share this contract; full-run strategic
+search and native bridge receipt production remain later work. A bridge must
+declare equivalent public setup facts/rules and ordered lifecycle events; the
+common contract does not grant access to live private snapshots.
+
 ## Recommendation and first acceptance case
 
 Keep the existing headless engine, Gumbel search and learning pipeline. Replace
@@ -39,7 +54,7 @@ smallest useful proof that the redesign reduces duplication.
 
 Initial scope remains Ironclad A0 combat, followed by both Act 1 regions. Native
 bridge compatibility is designed now and delivered after the headless proof.
-Learned dynamics, campaign search, tree reuse and other characters are later work.
+Learned dynamics, strategic campaign search, tree reuse and other characters are later work.
 
 ### Delivered state proof and belief/search integration (stages 1–3)
 
@@ -59,7 +74,7 @@ explicitly declared fresh inventory and revealed encounter. A round-one observat
 alone does not authorize inventing that declaration. The controlled scenario
 producer supplies its public setup constants; campaign starts, corpus attachments
 and native execution do not yet supply a supported anchor. The existing
-`reconstruction_v1` model remains the default during migration. A teacher uses one
+`reconstruction_v1` model was the default during that initial migration. A teacher uses one
 declared model throughout its run; there is no silent reconstruction-model switch.
 
 | Required fact | Current proof source | Later bridge prerequisite |
@@ -301,6 +316,16 @@ The [training guide](AGENT_TRAINING.md#public-model-and-current-coverage) descri
 the programmatic hooks and preserved learning/provenance checks.
 
 ## Why change the current boundary?
+
+The campaign producer observes the inventory after room-entry effects and before
+combat setup. It does not serialize the real engine. Public entry-action context
+distinguishes ordinary fights from event-owned settlement. The declared world
+constructor skips already-observed room-entry effects and invokes normal setup;
+draw/generation/HP conditioning then checks the complete public opening. Known
+persistent card values and displayed relic state enter through explicit records.
+Unrecoverable hidden history produces a named fallback. Public historical
+references are reserved when rebasing attachments, including references to
+consumed items, so simulated generation cannot give them a new meaning.
 
 The prototype already executes branches with `RunEngine.apply()`. Damage, block,
 card effects and enemy turns are not a second search rules engine. The fragile

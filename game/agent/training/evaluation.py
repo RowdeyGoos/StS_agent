@@ -65,9 +65,13 @@ def _episode(case, policy, identity, output, audit, config, *, chooser=None,
     try:
         _audit(audit / (episode_id + '.audit.json'), case, identity, policy, config, scenario_set)
         observation, info = env.reset(seed=case.seed)
+        if callable(planning_start):
+            planning_start = planning_start(env.public_state)
         if callable(getattr(chooser, 'reset', None)):
             chooser.reset()
-        if planning_start is not None:
+        if getattr(chooser, 'needs_campaign_planning', False):
+            chooser.begin_campaign_combat(planning_start, env.public_state)
+        elif planning_start is not None:
             chooser.begin_combat(planning_start, env.public_state)
         env.record_combat_reveals = bool(getattr(chooser, 'needs_combat_reveals', False))
         if expected_start is not None:
@@ -108,7 +112,7 @@ def _episode(case, policy, identity, output, audit, config, *, chooser=None,
                     if callable(getattr(chooser, 'observe_transition', None)):
                         before = time.perf_counter()
                         successor = env.planning_successor if planning_start is not None else env.public_state
-                        if env.record_combat_reveals:
+                        if env.record_combat_reveals and getattr(chooser, 'belief', None) is not None:
                             chooser.observe_reveals(env.combat_reveals)
                         chooser.observe_transition(public, chosen, execution, successor)
                         policy_seconds += time.perf_counter() - before

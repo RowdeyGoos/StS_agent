@@ -31,6 +31,8 @@ The top level contains current guidance. Completed Phase 0/1 work lives in the
 ## References and results
 
 - Experimental combat search: [implementation and October 4 pilot](evidence/COMBAT_SEARCH_2026_10_04.md)
+- Campaign Search and witnessed validation: [October 9 integration and frozen diagnostic set](evidence/CAMPAIGN_SEARCH_VALIDATION_2026_10_09.md)
+- Shared Search workflow: [October 11 consolidation and verification of 935 Vantom starts](evidence/SEARCH_WORKFLOW_CONSOLIDATION_2026_10_11.md)
   records public-information/RNG checks, latency, learning integration and the
   campaign coverage limitation; search remains opt-in.
 - Maintained-belief coverage: [October 4 Act 1 audit](evidence/COMBAT_BELIEF_COVERAGE_2026_10_04.md)

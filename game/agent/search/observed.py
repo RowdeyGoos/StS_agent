@@ -119,11 +119,13 @@ class ObservedWorld(DirectWorld):
 
 
 class ObservedCombatBelief(DirectCombatBelief):
+    validate_anchor = staticmethod(validate_anchor)
+
     def __init__(self, anchor, current, *, seed, budget):
-        self.anchor = validate_anchor(anchor)
+        self.anchor = self.validate_anchor(anchor)
         _boundary(current)
-        self.initial = f.from_dict(anchor['initial'])
-        self.opening = f.from_dict(anchor['opening'])
+        self.initial = f.from_dict(self.anchor['initial'])
+        self.opening = f.from_dict(self.anchor['opening'])
         self.current = current
         self.budget, self._rng, self._cards = budget, Random(seed), DEFAULT_CARDS
         self.transitions, self._constraints, self.reveal_history = [], [], []

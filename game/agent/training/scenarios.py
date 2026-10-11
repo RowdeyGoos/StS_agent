@@ -30,14 +30,23 @@ class Scenario:
             start.max_hp, start.max_hp, 99, tuple(StartingCard(c, 0) for c in start.deck),
             (StartingRelic(start.relic, 0),), (None, None, None))
 
-    def make(self, seed):
+    def make(self, seed, *, entry_observer=None, reveal_journal=None):
         start = definition('ironclad')
         run = RunEngine(seed=seed, card_ids=start.deck, max_hp=start.max_hp,
                         gold=99, config=RunConfig(character='ironclad', ascension=0,
                                                  act='underdocks' if self.encounter.startswith('underdocks_') else 'overgrowth'),
                         rng_profile='native')
         run.obtain_relic(start.relic)
-        run.start_combat(encounter_id=self.encounter)
+        from contextlib import nullcontext
+        from game.headless.reveals import run_reveals
+        if entry_observer is not None:
+            run._combat_entry_observer = lambda: entry_observer(run)
+        try:
+            with run_reveals(run, reveal_journal) if reveal_journal is not None else nullcontext():
+                run.start_combat(encounter_id=self.encounter)
+        finally:
+            if entry_observer is not None:
+                del run._combat_entry_observer
         return run
 
 

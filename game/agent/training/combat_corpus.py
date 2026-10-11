@@ -44,6 +44,7 @@ class CorpusConfig:
     time_limit_seconds: float = 120.
     route_policy: str = 'collector'
     capture_turns: int = 1
+    record_planning: bool = False
 
     def __post_init__(self):
         episode_seed('train', self.start_index)
@@ -61,6 +62,8 @@ class CorpusConfig:
             raise ValueError('Choose collector or mixed_elites routing')
         if type(self.capture_turns) is not int or not 1 <= self.capture_turns <= 12:
             raise ValueError('Capture 1–12 player-turn starts per combat')
+        if type(self.record_planning) is not bool:
+            raise ValueError('Invalid planning receipt setting')
 
 
 def public_digest(decision):
@@ -188,6 +191,10 @@ def build_corpus(output_dir, config=CorpusConfig(), *, checkpoint=None, cancel=N
             run = RunEngine.campaign(character='ironclad', first_act=group['region'],
                                      ascension=0, seed=seeds[group['source_group']], rng_profile='native')
             adapter = HeadlessAdapter(run, decision_profile=f.PROFILE)
+            planning = None
+            if config.record_planning:
+                from game.agent.headless.planning import CampaignPlanning
+                planning = CampaignPlanning(adapter)
             previous, combat_id, last_turn = None, None, None
             deadline = time.monotonic() + config.time_limit_seconds
             for step in range(config.max_decisions + 1):
@@ -226,6 +233,10 @@ def build_corpus(output_dir, config=CorpusConfig(), *, checkpoint=None, cancel=N
                     row.update(case_id=key, combat_id=combat_id, start_kind='opening' if opening else 'continuation',
                                scenario=run.state.active_encounter_id,
                                public_state_sha256=public_digest(public), **_describe(restored, public))
+                    if planning is not None:
+                        anchor = planning.export()
+                        row['planning_sha256'] = (publish(output / (key + '.planning.json'), data(anchor))
+                                                  if anchor is not None else None)
                     snapshot_sha = publish(private / (key + '.start.json'), snapshot, private=True)
                     registry[key] = {'snapshot_sha256': snapshot_sha, 'case': row}
                     cases.append(row)
@@ -234,7 +245,7 @@ def build_corpus(output_dir, config=CorpusConfig(), *, checkpoint=None, cancel=N
                 action = elite_route(frame.decision) if group['route_policy'] == 'elite_first' else None
                 if action is None:
                     action = teacher(frame.decision) if teacher else choose_action(frame.decision)
-                execution = adapter.step(frame.binding, action.ref)
+                execution = (planning or adapter).step(frame.binding, action.ref)
                 if execution.status != 'reconciled':
                     raise RuntimeError('Source campaign action did not reconcile')
                 group['steps'] += 1
@@ -309,7 +320,10 @@ class CombatCorpus:
         if private.get('schema') != SCHEMA or digest(private) != report['registry_sha256']:
             raise ValueError('Combat corpus registry mismatch')
         config = CorpusConfig(**private['source_config'])
-        if report['config'] != {k: v for k, v in asdict(config).items() if k != 'start_index'}:
+        recorded_config = {k: v for k, v in asdict(config).items() if k != 'start_index'}
+        if not config.record_planning and 'record_planning' not in report['config']:
+            recorded_config.pop('record_planning')
+        if report['config'] != recorded_config:
             raise ValueError('Combat source settings mismatch')
         groups, roots = {}, set()
         for row in report['campaigns']:
@@ -349,6 +363,9 @@ class CombatCorpus:
             combats[combat] = owner
             turns.add((combat, row['turn']))
             self.cases[key] = row
+            if config.record_planning and ('planning_sha256' not in row or
+                    row['planning_sha256'] is not None and not _sha(row['planning_sha256'])):
+                raise ValueError('Invalid public planning receipt binding')
         self.registry = private['cases']
         if set(self.registry) != set(self.cases) or any(
                 not _sha(r['snapshot_sha256']) or r['case'] != self.cases[key]
@@ -383,6 +400,17 @@ class CombatCorpus:
                 any(row[k] != v for k, v in _describe(run, frame.decision).items())):
             raise ValueError('Frozen combat state disagrees with its public case')
         return run
+
+    def planning_start(self, key, *, split):
+        row = self.cases[key]
+        if row['split'] != split:
+            raise ValueError('Planning receipt belongs to another split')
+        sha = row.get('planning_sha256')
+        if sha is None:
+            return None
+        # Search validates capability separately and records unsupported public
+        # entries as fallbacks. Artifact integrity applies to every entry.
+        return _read(self.path.parent / (key + '.planning.json'), expected_sha=sha)
 
 
 def _uuid(value):

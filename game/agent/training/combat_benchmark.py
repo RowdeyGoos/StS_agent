@@ -9,7 +9,8 @@ from game.agent.action_policy import ALL_LEGAL
 from game.agent.provenance import implementation
 from game.agent.runner import RunCancelled, prepare_directories
 from .benchmark_suite import data
-from .combat_corpus import CombatCorpus, coverage
+from .combat_corpus import coverage
+from .search_sources import open_search_source
 from .comparison import paired, summarize
 from .config import TrainingConfig
 from .evaluation import BaselineCase, _episode
@@ -25,7 +26,7 @@ class CorpusEvaluator:
     """Per-worker models and corpus registry; every game gets a new restore."""
     def __init__(self, settings, checkpoints, policies, source):
         from .checkpoint import load_policy
-        self.corpus = CombatCorpus(settings['path'], expected=settings['identity'])
+        self.corpus = open_search_source(settings['path'], expected=settings['identity'])
         self.reward = RewardSpec.from_dict(settings['reward'])
         self.policies = policies
         self.identity = implementation()
@@ -34,6 +35,9 @@ class CorpusEvaluator:
         self.models = {}
         for name, (path, sha, task) in checkpoints.items():
             model = load_policy(path, expected_sha256=sha, task=task)
+            if name in settings.get('search_configs', {}):
+                from game.agent.search import SearchPolicy, SearchConfig
+                model = SearchPolicy(model, SearchConfig(**settings['search_configs'][name]))
             if model.identity != policies[name]:
                 raise ValueError('Combat comparison checkpoint changed')
             self.models[name] = model
@@ -47,7 +51,15 @@ class CorpusEvaluator:
             Path(output), Path(private), training, chooser=model,
             engine_factory=lambda _: self.corpus.restore(config.case_id, split=config.split),
             scenario_set=self.corpus.identity, cancel=cancel, episode_id=episode,
-            expected_start=row['public_state_sha256'], evidence='headless_rollout')
+            expected_start=row['public_state_sha256'], evidence='headless_rollout',
+            planning_start=self.corpus.planning_start(config.case_id, split=config.split)
+                if getattr(model, 'needs_campaign_planning', False) else None)
+        if getattr(model, 'needs_campaign_planning', False) and result['status'] in ('terminated', 'truncated'):
+            from .search_run import _targets
+            if model.planning_start is None:
+                result['targets_omitted'] = 'missing_or_unsupported_public_anchor'
+            else:
+                result['targets'], result['targets_sha256'] = _targets(Path(output), result, model, config.split)
         result.update(case_id=config.case_id, source_group=row['source_group'],
                       start_sha256=self.corpus.registry[config.case_id]['snapshot_sha256'])
         return result
@@ -55,7 +67,7 @@ class CorpusEvaluator:
 
 def evaluate_corpus(*, corpus_path, output_dir, checkpoints=None, split='validation',
                     max_decisions=512, time_limit_seconds=120., workers=1, cancel=None,
-                    start_kind='opening'):
+                    start_kind='opening', search_configs=None, diagnostics_path=None):
     from .checkpoint import load_policy, publish, runtime
     from .env import CombatTrainingEnv
     from .evaluation_workers import evaluate_parallel, settings
@@ -68,11 +80,21 @@ def evaluate_corpus(*, corpus_path, output_dir, checkpoints=None, split='validat
         raise ValueError('Choose 1–4096 evaluation decisions per combat')
     with CombatTrainingEnv(max_decisions=max_decisions, time_limit_seconds=time_limit_seconds):
         pass
-    corpus = CombatCorpus(corpus_path)
+    corpus = open_search_source(corpus_path)
     cases = [r for r in corpus.split(split) if start_kind == 'all' or r['start_kind'] == start_kind]
     if not cases:
         raise ValueError('No combat cases in requested evaluation split')
     checkpoints = {} if checkpoints is None else checkpoints
+    search_configs = {} if search_configs is None else search_configs
+    from game.agent.search import SearchConfig, SearchPolicy
+    if (not isinstance(search_configs, dict) or not set(search_configs) <= set(checkpoints)
+            or any(type(v) is not SearchConfig or v.model_version not in ('campaign_belief_v1', 'combat_belief_v1') for v in search_configs.values())):
+        raise ValueError('Corpus search requires named public combat belief checkpoint configurations')
+    diagnostics = None
+    if diagnostics_path is not None:
+        from .combat_diagnostics import CombatDiagnostics
+        diagnostics = CombatDiagnostics(diagnostics_path, corpus=corpus)
+        diagnostics.require_population(cases, split)
     if (type(checkpoints) is not dict or len(checkpoints) > 8 or any(
             type(n) is not str or not n or len(n) > 64 or n in ('heuristic', 'random_legal')
             for n in checkpoints)):
@@ -84,16 +106,21 @@ def evaluate_corpus(*, corpus_path, output_dir, checkpoints=None, split='validat
         path = Path(path).resolve()
         sha = hashlib.sha256(path.read_bytes()).hexdigest()
         model = load_policy(path, expected_sha256=sha)
+        task = model.reward_spec.task
+        if name in search_configs:
+            model = SearchPolicy(model, search_configs[name])
         # Only the actor is used. Critics/objectives from Act 1 checkpoints do
         # not become combat-value estimates or redefine benchmark wins.
         policies[name] = model.identity
-        bundles[name] = (str(path), sha, model.reward_spec.task)
+        bundles[name] = (str(path), sha, task)
         metadata[name] = {'identity': model.identity, 'sha256': sha,
             'training_reward': model.reward_spec.to_dict(), 'action_policy': model.model.action_policy}
     reward = RewardSpec({'combat_win': 1., 'win_hp_fraction': .1})
     limits = {'max_decisions': max_decisions, 'time_limit_seconds': time_limit_seconds}
     binding = {'schema': 'sts_combat_corpus_test_lock_v2', 'corpus': corpus.identity, 'start_kind': start_kind,
                'policies': policies, 'checkpoints': metadata, 'reward': reward.to_dict(), 'limits': limits}
+    if search_configs:
+        binding['search_configs'] = {n: asdict(v) for n, v in search_configs.items()}
     lock = corpus.path.parent / 'test-opened.json'
     search_lock = corpus.path.parent / 'search-test-opened.json'
     if split == 'validation' and (lock.exists() or search_lock.exists()):
@@ -123,6 +150,10 @@ def evaluate_corpus(*, corpus_path, output_dir, checkpoints=None, split='validat
             'HP on wins is conditional on winning; net HP includes cleanup healing. '
             'This measures the selected frozen start population, not Act 1 completion. '
             'Only opening starts measure whole fights; continuation results are tactical diagnostics.'}
+    if search_configs:
+        report['search_configs'] = binding['search_configs']
+    if diagnostics is not None:
+        report['diagnostics'] = diagnostics.identity
     # Publish the complete evaluation plan and freeze test identities before any
     # private test snapshot can be restored. Games are never retried.
     publish(output / 'combat-plan.json', data(report))
@@ -133,6 +164,8 @@ def evaluate_corpus(*, corpus_path, output_dir, checkpoints=None, split='validat
             if strict_json(lock.read_bytes()) != binding:
                 raise ValueError('Held-out corpus was concurrently locked to another comparison')
     combat = {'path': str(corpus.path), 'identity': corpus.identity, 'reward': reward.to_dict()}
+    if search_configs:
+        combat['search_configs'] = binding['search_configs']
     started = time.perf_counter()
     try:
         if cancel is not None and cancel.is_set():
@@ -156,6 +189,8 @@ def evaluate_corpus(*, corpus_path, output_dir, checkpoints=None, split='validat
         report.update(status='interrupted' if isinstance(error, (RunCancelled, KeyboardInterrupt)) else 'failed',
                       failure=type(error).__name__)
     report.update(summarize(rows, policies))
+    if diagnostics is not None:
+        report['diagnostic_summary'] = diagnostics.summarize(rows, policies)
     for field in ('encounter', 'region', 'room_kind', 'start_kind', 'threat', 'hp_band'):
         report['by_' + field] = {name: summarize([r for r in rows if r[field] == name], policies)
                                 for name in sorted({r[field] for r in rows})}

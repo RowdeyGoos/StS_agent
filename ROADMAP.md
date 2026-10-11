@@ -86,9 +86,13 @@ Further work should start from a new concrete requirement:
    before another large collection round. Expensive planning improved fresh
    combat return but missed the latency target; validate both strength and cost
    before promotion.
-   Campaign/corpus and native anchors still need their own public history
-   support; current display fields do not establish fresh inventory. Then investigate
-   campaign-aware combat exit values.
+   Headless campaign play and new corpora now record public entry/reveal receipts
+   with explicit coverage fallbacks. Use the [witnessed validation workflow](docs/AGENT_TRAINING.md#campaign-search-and-witnessed-validation)
+   beside natural-population comparisons before expanding experiments. Native
+   bridge receipts remain a separate gate. The common `combat_belief_v1` workflow
+   now connects campaign receipts and verified Vantom prefixes to collection,
+   distillation and reanalysis; use this path for subsequent controlled studies.
+   Then investigate campaign-aware combat exit values.
    The [seven-hour research pass](docs/AGENT_TRAINING.md#seven-hour-combat-research-2026-10-02)
    identifies successful hard-fight imitation as a promising lead, with
    inconclusive final combat and Act 1 confirmation. Prioritize preserving its

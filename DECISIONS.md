@@ -226,6 +226,28 @@ checkpoints retain their semantics; incompatible action restrictions or missing
 view provenance reject explicitly. A changed input view is a declared weight
 initialization, not an exact continuation of the old optimizer.
 
+Use one current combat-belief contract and learning workflow across controlled
+fixtures, campaign receipts and verified historical prefixes. Keep producer
+adapters small: declare setup timing and the supported ruleset, preserve public
+history, and let the same engine/filter/search own transitions. Older model
+identities remain available for historical evidence, not separate recommended
+training pipelines. Import old Vantom data through a new source derivation with
+fresh-inventory checks and exact native prefix replay under current rules; never
+repin the original corpus or relax its implementation guard. Keep source campaign
+splits and held-out reservations. Native bridge producers must supply equivalent
+ordered public facts and receipts before using this contract.
+
+## Witnessed combat diagnostics preserve natural benchmarks
+
+Combat validation keeps the natural campaign-derived population, including hard
+and unresolved fights. A separate diagnostic subset may require a recorded
+public-policy win, verified by native replay, under a portfolio frozen before
+qualification. Failure to find a witness is not proof of impossibility. Freeze
+subset membership for subsequent comparisons, preserve campaign-level splits
+and all attempt denominators, and never turn validation witnesses into training
+data. Combat exit quality and paired Act 1 completion remain the acceptance
+criteria beyond this diagnostic tool.
+
 ## Maintaining this record
 
 Add a short decision when architecture, training defaults or workflow materially

@@ -154,6 +154,11 @@ def run_episode(config, *, output_dir, audit_dir, episode_id=None, cancel=None,
             seed=seed, character=config.character, first_act=config.first_act,
             ascension=config.ascension, ancient_profile=PROFILE)
     adapter = HeadlessAdapter(engine_factory(config.seed), decision_profile='full_run_v2')
+    planning = None
+    planning_serial = -1
+    if getattr(combat_policy, 'needs_campaign_planning', False):
+        from game.agent.headless.planning import CampaignPlanning
+        planning = CampaignPlanning(adapter)
     reset_seconds = time.perf_counter() - started
     observations = steps = 0
     observe_seconds = policy_seconds = step_seconds = recording_seconds = 0.0
@@ -201,6 +206,9 @@ def run_episode(config, *, output_dir, audit_dir, episode_id=None, cancel=None,
             # a completed fight's reward/pickup choices belong to the heuristic.
             chooser = _chooser(adapter, policy, combat_policy)
             decision = frame.decision
+            if planning is not None and chooser is combat_policy and planning_serial != planning.serial:
+                chooser.begin_campaign_combat(planning.export(), decision)
+                planning_serial = planning.serial
             candidate = chooser(decision)
             policy_seconds += time.perf_counter() - before
             if candidate not in frame.decision.candidates:
@@ -211,14 +219,19 @@ def run_episode(config, *, output_dir, audit_dir, episode_id=None, cancel=None,
                 outcome = c.RunOutcome('sts_run_outcome_v1', 'truncated', 'time_budget')
                 break
             before = time.perf_counter()
-            report = adapter.step(frame.binding, candidate.ref)
+            report = (planning or adapter).step(frame.binding, candidate.ref)
             step_seconds += time.perf_counter() - before
             if report.status != 'reconciled':
                 raise RunFailure('Action was not reconciled: ' + report.status)
             frame = observe()
             successor = frame if isinstance(frame, c.RunOutcome) else frame.decision
             if callable(getattr(chooser, 'observe_transition', None)):
-                chooser.observe_transition(decision, candidate, report, successor)
+                planning_successor = successor
+                if planning is not None and chooser is combat_policy:
+                    if chooser.belief is not None:
+                        chooser.observe_reveals(planning.reveals)
+                    planning_successor = adapter.combat_completion or successor
+                chooser.observe_transition(decision, candidate, report, planning_successor)
             before = time.perf_counter()
             writer.append(candidate, report, successor)
             recording_seconds += time.perf_counter() - before

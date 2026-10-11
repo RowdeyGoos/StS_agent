@@ -192,7 +192,7 @@ class RunEngine:
         return upgrade_card(self.state, instance_id)
 
     def start_combat(self, *, encounter_id: str | None = None, encounter_factory=None, enemy_factory=None, energy_per_turn=3, cards_per_turn=5,
-                     draw_knowledge=None, hp_knowledge=None) -> CombatEngine:
+                     draw_knowledge=None, hp_knowledge=None, room_entered=False, fur_coat_active=None) -> CombatEngine:
         if encounter_id is None and encounter_factory is not None:
             registered = next((name for name, definition in ENCOUNTERS.items() if definition is encounter_factory or definition.factory is encounter_factory), None)
             if registered is not None:
@@ -210,7 +210,7 @@ class RunEngine:
                 if self.state.config is None or not eligible_relics(self.state):
                     raise ValueError("The restricted elite relic pool has no available reward.")
         self.state.require_room_entry(room_kind)
-        if self.state.pending is None:
+        if self.state.pending is None and not room_entered:
             from game.headless.relics.run_rules import entered_room
             entered_room(self.state, room_kind)
         if self.state.pending is not None and self.graph is not None:
@@ -221,7 +221,8 @@ class RunEngine:
                 raise ValueError("Combat must match the selected encounter.")
         rng, combat = self._prepare_combat(encounter_factory=encounter_factory, enemy_factory=enemy_factory,
                                            energy_per_turn=energy_per_turn, cards_per_turn=cards_per_turn,
-                                           draw_knowledge=draw_knowledge, hp_knowledge=hp_knowledge)
+                                           draw_knowledge=draw_knowledge, hp_knowledge=hp_knowledge,
+                                           fur_coat_active=fur_coat_active)
         if self.state.encounter_progression is not None:
             if self.graph is None or self.state.pending is None or self.state.current_node_id in self.state.encounter_progression.assignments:
                 raise ValueError("Generated encounters require a new selected map room.")
@@ -239,7 +240,12 @@ class RunEngine:
         return combat
 
     def _prepare_combat(self, *, encounter_factory=None, enemy_factory=None, energy_per_turn=3, cards_per_turn=5, constructed_hp_rng=None,
-                        draw_knowledge=None, hp_knowledge=None):
+                        draw_knowledge=None, hp_knowledge=None, fur_coat_active=None):
+        # A passive owner may observe the settled inventory after room-entry
+        # effects and before combat setup. No engine state is serialized here.
+        observer = getattr(self, '_combat_entry_observer', None)
+        if observer is not None:
+            observer()
         # Build against an independent stream snapshot, committing only on success.
         from game.headless.core.rng import from_snapshot
         rng = from_snapshot(self.state.rng.snapshot())
@@ -280,7 +286,7 @@ class RunEngine:
                 )
         room_kind = getattr(encounter_factory, "room_kind", "combat")
         from game.headless.relics.ancient_map import coat_active
-        combat.fur_coat_active = coat_active(self)
+        combat.fur_coat_active = coat_active(self) if fur_coat_active is None else fur_coat_active
         from contextlib import nullcontext
         from game.headless.reveals import reveal_owners
         journal = getattr(self, '_combat_reveals', None)

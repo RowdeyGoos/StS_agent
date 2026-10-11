@@ -37,11 +37,12 @@ class DeclaredScenario:
     role: str
     start: CombatStart
 
-    def make(self, seed):
+    def make(self, seed, *, entry_observer=None, reveal_journal=None):
         s = self.start
         return declared_combat(deck=[(c.definition_id, c.upgrade_level) for c in s.deck],
             relics=[(r.definition_id, r.counter) for r in s.relics], potions=s.potions,
-            hp=s.hp, max_hp=s.max_hp, gold=s.gold, encounter_id=s.encounter_id, seed=seed)
+            hp=s.hp, max_hp=s.max_hp, gold=s.gold, encounter_id=s.encounter_id, seed=seed,
+            entry_observer=entry_observer, reveal_journal=reveal_journal)
 
     def to_dict(self):
         return dict(id=self.name, deck_profile=self.deck_profile, role=self.role, start=to_dict(self.start))

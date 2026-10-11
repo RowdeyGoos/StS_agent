@@ -117,7 +117,7 @@ def run_batch(config, *, output_dir, audit_dir, episodes=1, workers=1, cancel=No
     checkpoint = None
     if search is not None and combat_checkpoint is None:
         raise ValueError('Combat search requires --combat-checkpoint')
-    if search is not None and search.uses_belief:
+    if search is not None and search.uses_belief and search.model_version not in ('campaign_belief_v1', 'combat_belief_v1'):
         raise ValueError('Campaign play has no declared belief anchor; use controlled combat search evaluation')
     if combat_checkpoint is not None and run_checkpoint is not None:
         raise ValueError('Choose either a full-run policy or a combat hybrid')

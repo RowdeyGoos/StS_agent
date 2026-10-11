@@ -13,8 +13,8 @@ def add_search_arguments(parser, *, collection=False, method_switch=True):
     parser.add_argument('--search-final-selection', choices=('prior_value', 'max_value'), default='prior_value',
                         help='Final choice among evaluated contenders; max_value leaves allocation and targets unchanged')
     parser.add_argument('--search-seed', type=int, default=0, help='Planner RNG, independent of the game seed')
-    parser.add_argument('--search-model', choices=('reconstruction_v1', 'public_belief_v1', 'direct_belief_v1'),
-                        default='reconstruction_v1', help='Belief modes require declared controlled starts; direct_belief_v1 supports a guarded content slice')
+    parser.add_argument('--search-model', choices=('combat_belief_v1', 'reconstruction_v1', 'public_belief_v1', 'direct_belief_v1', 'campaign_belief_v1'),
+                        default='combat_belief_v1', help='Shared combat belief for collection, reanalysis and campaign play; older modes reproduce historical experiments')
     parser.add_argument('--belief-particles', type=int, default=4)
     parser.add_argument('--belief-proposals', type=int, default=1024)
     parser.add_argument('--belief-replay-proposals', type=int, default=2048)

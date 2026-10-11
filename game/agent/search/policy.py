@@ -14,10 +14,13 @@ from game.headless.planning import UnsupportedSearch
 from .belief import BeliefBudget, CombatBelief, MODEL as BELIEF_MODEL
 from .direct import DirectCombatBelief, MODEL as DIRECT_MODEL
 from .observed import ObservedCombatBelief, MODEL as OBSERVED_MODEL
+from .campaign import CampaignCombatBelief, MODEL as CAMPAIGN_MODEL
+from .combat import CombatBelief as UnifiedCombatBelief, MODEL as COMBAT_MODEL
 from .public_keys import public_key
 
-BELIEF_MODELS = (BELIEF_MODEL, DIRECT_MODEL, OBSERVED_MODEL)
-DETACHED_MODELS = (DIRECT_MODEL, OBSERVED_MODEL)
+RECEIPT_MODELS = (OBSERVED_MODEL, CAMPAIGN_MODEL, COMBAT_MODEL)
+BELIEF_MODELS = (BELIEF_MODEL, DIRECT_MODEL, *RECEIPT_MODELS)
+DETACHED_MODELS = (DIRECT_MODEL, *RECEIPT_MODELS)
 
 
 def _checkpoint_provider(policy):
@@ -179,6 +182,7 @@ guaranteed only when that ceiling does not interrupt the requested simulations.
         self.planning_start = None
         self.planning_ends = {}
         self.planning_reveals = []
+        self._finished_belief_updates = []
         self._belief_failure = 'missing_planning_anchor'
 
     def _seed(self, domain):
@@ -194,10 +198,11 @@ guaranteed only when that ceiling does not interrupt the requested simulations.
             raise ValueError('A declared anchor requires the public belief model')
         if self.planning_start is not None:
             raise ValueError('Reset before declaring another combat')
-        if self.config.model_version == OBSERVED_MODEL:
-            from .observed import validate_anchor
-            self.planning_start = validate_anchor(setup)
-            self.belief = ObservedCombatBelief(self.planning_start, opening, seed=self._seed('belief'),
+        if self.config.model_version in RECEIPT_MODELS:
+            model = {COMBAT_MODEL: UnifiedCombatBelief, CAMPAIGN_MODEL: CampaignCombatBelief,
+                     OBSERVED_MODEL: ObservedCombatBelief}[self.config.model_version]
+            self.planning_start = model.validate_anchor(setup)
+            self.belief = model(self.planning_start, opening, seed=self._seed('belief'),
                                               budget=self.config.belief_budget())
             self._belief_failure = None
             return
@@ -214,7 +219,25 @@ guaranteed only when that ceiling does not interrupt the requested simulations.
 
     @property
     def needs_combat_reveals(self):
-        return self.config.model_version == OBSERVED_MODEL
+        return self.config.model_version in RECEIPT_MODELS
+
+    @property
+    def needs_campaign_planning(self):
+        return self.config.model_version in (CAMPAIGN_MODEL, COMBAT_MODEL)
+
+    def begin_campaign_combat(self, setup, opening):
+        """Start a fight while retaining campaign work/fallback diagnostics."""
+        if self.belief is not None:
+            self._finished_belief_updates.extend(self.belief.updates)
+        self.belief = self.planning_start = None
+        self._last_decision = None
+        self._belief_failure = 'missing_campaign_entry'
+        if setup is not None:
+            try:
+                self.begin_combat(setup, opening)
+            except UnsupportedSearch as error:
+                self.belief = self.planning_start = None
+                self._belief_failure = str(error)
 
     def observe_reveals(self, events):
         if not self.needs_combat_reveals or self.belief is None:
@@ -514,7 +537,7 @@ guaranteed only when that ceiling does not interrupt the requested simulations.
                     timings={k: sum(r.timings.get(k, 0.) for r in self.results)
                              for k in ('inference', 'reconstruction', 'sampling', 'transition', 'projection', 'conditioning')})
         if self.config.uses_belief:
-            updates = self.belief.updates if self.belief is not None else []
+            updates = self._finished_belief_updates + (self.belief.updates if self.belief is not None else [])
             result['belief'] = dict(model=self.config.model_version, updates=len(updates),
                 seconds=sum(u.elapsed for u in updates), proposals=sum(u.proposals for u in updates),
                 replay_steps=sum(u.replay_steps for u in updates), recoveries=sum(u.recovered for u in updates),

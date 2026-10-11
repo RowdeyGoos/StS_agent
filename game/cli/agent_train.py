@@ -39,6 +39,23 @@ def main(argv=None):
                         help='mixed_elites sends half the campaigns along public elite-seeking routes')
     combat.add_argument('--capture-turns', type=int, default=1,
                         help='Retain the opening and up to this player turn (1–12) for combat practice')
+    combat.add_argument('--record-planning', action=argparse.BooleanOptionalAction, default=True,
+                        help='Record public entry/reveal receipts for combat Search (default: enabled)')
+    prepare = sub.add_parser('prepare-search-corpus', help='Verify historical public prefixes under current rules; preserve original corpus')
+    prepare.add_argument('--combat-corpus', required=True)
+    prepare.add_argument('--public-prefixes', required=True, help='Verified public-prefix manifest (.json.gz)')
+    prepare.add_argument('--prefix-dir', required=True, help='Directory containing the bound public prefix files')
+    prepare.add_argument('--output-dir', required=True)
+    diagnostics = sub.add_parser('build-combat-diagnostics', help='Replay-verify winning validation attempts without removing unresolved fights')
+    diagnostics.add_argument('--combat-corpus', required=True)
+    diagnostics.add_argument('--output-dir', required=True)
+    diagnostics.add_argument('--candidate', action='append', default=[], help='Frozen portfolio actor: NAME=PATH')
+    diagnostics.add_argument('--search-checkpoint', help='Optional frozen combat actor/critic for an additional search teacher')
+    diagnostics.add_argument('--workers', type=int, default=performance.game_workers())
+    diagnostics.add_argument('--max-decisions', type=int, default=512)
+    diagnostics.add_argument('--time-limit', type=float, default=600.)
+    from game.cli.search_args import add_search_arguments
+    add_search_arguments(diagnostics)
     collect_run = sub.add_parser('collect-run', help='Record genuine campaigns and optional declared assisted demonstrations')
     collect_run.add_argument('--output-dir', required=True)
     collect_run.add_argument('--split', choices=('train','validation','test'), default='train')
@@ -96,7 +113,7 @@ def main(argv=None):
     search_collect = sub.add_parser('search-collect', help='Collect a frozen search teacher on public training combats')
     search_collect.add_argument('--checkpoint', required=True)
     search_collect.add_argument('--output-dir', required=True)
-    search_collect.add_argument('--combat-corpus', help='Use opening states from the training partition')
+    search_collect.add_argument('--combat-corpus', help='Current corpus.json or verified search-source.json; sample train openings and continuations')
     search_collect.add_argument('--search-benchmark', help='Public developed-inventory JSON for balanced training collection')
     search_collect.add_argument('--encounter', action='append', dest='encounters')
     search_collect.add_argument('--cases', type=int, default=8)
@@ -158,6 +175,13 @@ def _run(args, parser):
                     torch.is_deterministic_algorithms_warn_only_enabled())
     try:
         torch.set_num_threads(1)
+        if args.command == 'prepare-search-corpus':
+            from game.agent.training.search_sources import prepare_search_source
+            path, report = prepare_search_source(corpus_path=args.combat_corpus,
+                prefix_manifest=args.public_prefixes, prefix_dir=args.prefix_dir, output_dir=args.output_dir)
+            print(json.dumps({'report': str(path), 'status': report['status'], 'starts': len(report['cases']),
+                              'seconds': report['total_seconds']}, indent=2))
+            return 0
         if args.command.startswith('search-'):
             from game.cli.search_args import search_config
             from game.agent.training.search_run import run_search, distill_search, reanalyse_search, audit_critic
@@ -206,7 +230,7 @@ def _run(args, parser):
             _configure_ppo_cpu(args, load_policy)
             if args.workers is None and not args.resume_state:
                 args.workers = performance.game_workers()
-        if (args.command in ('ppo','curriculum','collect-run','build-combat-corpus') or
+        if (args.command in ('ppo','curriculum','collect-run','build-combat-corpus','build-combat-diagnostics') or
                 args.command == 'collect' and args.combat_corpus):
             import signal
             import threading
@@ -219,12 +243,30 @@ def _run(args, parser):
             for sig in previous:
                 signal.signal(sig, interrupt)
             try:
-                if args.command == 'build-combat-corpus':
+                if args.command == 'build-combat-diagnostics':
+                    from game.agent.training.combat_diagnostics import build_diagnostics
+                    from game.cli.search_args import search_config
+                    checkpoints = {}
+                    for value in args.candidate:
+                        name, sep, path = value.partition('=')
+                        if not sep or not path or name in checkpoints or name == 'search':
+                            raise ValueError('Use distinct NAME=PATH candidates; search is reserved')
+                        checkpoints[name] = path
+                    if bool(args.search_checkpoint) != bool(args.search):
+                        raise ValueError('Use --search and --search-checkpoint together')
+                    configs = {}
+                    if args.search:
+                        checkpoints['search'] = args.search_checkpoint
+                        configs['search'] = search_config(args)
+                    path, report = build_diagnostics(corpus_path=args.combat_corpus, output_dir=args.output_dir,
+                        checkpoints=checkpoints, search_configs=configs, workers=args.workers,
+                        max_decisions=args.max_decisions, time_limit_seconds=args.time_limit, cancel=stopped)
+                elif args.command == 'build-combat-corpus':
                     from game.agent.training.combat_corpus import CorpusConfig, build_corpus
                     path, report = build_corpus(args.output_dir,
                         CorpusConfig(args.train_campaigns, args.validation_campaigns, args.test_campaigns,
                                      args.start_index, args.max_decisions, args.time_limit,
-                                     args.route_policy, args.capture_turns),
+                                     args.route_policy, args.capture_turns, args.record_planning),
                         checkpoint=args.checkpoint, cancel=stopped)
                 elif args.command == 'collect':
                     if args.cases_per_scenario != 1 or args.start_index:

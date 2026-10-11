@@ -129,9 +129,9 @@ def _config(value, view):
             or type(value.get('exploration')) is not bool):
         raise ValueError('Invalid recorded search method/budget')
     model = value.get('model_version', 'reconstruction_v1')
-    if model not in ('reconstruction_v1', 'public_belief_v1', 'direct_belief_v1', 'revealed_belief_v1'):
+    if model not in ('reconstruction_v1', 'public_belief_v1', 'direct_belief_v1', 'revealed_belief_v1', 'campaign_belief_v1', 'combat_belief_v1'):
         raise ValueError('Unsupported recorded search model')
-    if view != (DETACHED_HISTORY if model in ('direct_belief_v1', 'revealed_belief_v1') else RAW):
+    if view != (DETACHED_HISTORY if model in ('direct_belief_v1', 'revealed_belief_v1', 'campaign_belief_v1', 'combat_belief_v1') else RAW):
         raise ValueError('Search model and recorded public input view differ')
     return dict(value)
 

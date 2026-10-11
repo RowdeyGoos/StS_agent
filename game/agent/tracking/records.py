@@ -260,8 +260,13 @@ def evaluations(report):
                          else 'terminated') if row['status'] == 'complete' else row['status']}
                          for row in report['episodes']]}
     groups = defaultdict(list)
+    collection = schema in ('sts_search_report_v1', 'sts_search_report_v2') and report.get('purpose') == 'collection'
     for row in report.get('episodes', []):
         label = row.get('policy', row.get('model'))
+        if collection and 'arm' in row:
+            if row['arm'] != report['search_configs'][label]['method']:
+                raise ValueError('Search collection arm differs from its teacher')
+            label = row['arm']
         inference_mode = ('greedy' if label == 'network' else 'search_' + label) if schema in ('sts_search_report_v1', 'sts_search_report_v2') else None
         groups[(label, row.get('split', report.get('split', 'unknown')),
                 row.get('mode', inference_mode or ('greedy' if label not in ('random', 'random_legal') else 'random')),
@@ -324,6 +329,11 @@ def evaluations(report):
                 population['benchmark'] = report['benchmark_identity']
             population['fixed_controller'] = report.get('noncombat_policy')
             population['search'] = report.get('search_configs', {}).get(label)
+            if collection and any('arm' in r for r in rows):
+                labels = sorted({r['policy'] for r in rows})
+                population['search'] = {n: report['search_configs'][n] for n in labels}
+                population['sampling'] = report.get('sampling')
+                policy = 'sts_search_collection_v1:' + identity({n: report['policies'][n] for n in labels})
             if 'planning_view' in report:
                 population['planning_view'] = report['planning_view']
         yield {'label': label, 'split': split, 'mode': mode, 'panel': panel, 'goal': goal,

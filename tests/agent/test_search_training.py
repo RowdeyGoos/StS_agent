@@ -318,7 +318,8 @@ def test_model_switch_keeps_public_planning_provenance_and_audit_does_not_switch
     data = json.loads(gzip.decompress((updated.parent / result['episodes'][0]['targets']).read_bytes()))
     assert data['planning'] == source['planning']
     assert data['search']['model_version'] == 'reconstruction_v1'
-def test_observed_collection_reanalysis_and_critic_replay_receipts(checkpoint, tmp_path, monkeypatch):
+@pytest.mark.parametrize('refresh_model', ('revealed_belief_v1', 'combat_belief_v1'))
+def test_observed_collection_reanalysis_and_critic_replay_receipts(checkpoint, tmp_path, monkeypatch, refresh_model):
     from .test_observed_belief import fixture
     from game.agent.search.observed import MODEL
     from game.headless.run.snapshots import restore_run
@@ -338,7 +339,7 @@ def test_observed_collection_reanalysis_and_critic_replay_receipts(checkpoint, t
     assert data['planning']['schema'] == 'sts_public_planning_trace_v2'
     assert any(data['planning']['reveals'])
     refreshed, rerun = reanalyse_search(checkpoint=checkpoint, report_path=path,
-        output_dir=tmp_path / 'refreshed', search=config)
+        output_dir=tmp_path / 'refreshed', search=replace(config, model_version=refresh_model))
     assert set(rerun['target_refresh']['fallbacks']) <= {'forced_action'}
     assert load_search_corpus(refreshed, load_policy(checkpoint)).examples
     _, audit = audit_critic(checkpoint=checkpoint, report_path=path,

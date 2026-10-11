@@ -11,6 +11,7 @@ from game.headless.potions.base import PotionInstance
 from game.headless.relics.base import RelicInstance
 from game.headless.run.config import RunConfig
 from game.headless.run.engine import RunEngine
+from functools import lru_cache
 
 
 def declared_combat_region(encounter_id):
@@ -29,7 +30,8 @@ def declared_combat_region(encounter_id):
 
 
 def declared_combat(*, deck, relics, potions, hp, max_hp, gold,
-                    encounter_id, seed, cards=DEFAULT_CARDS, draw_knowledge=None, hp_knowledge=None):
+                    encounter_id, seed, cards=DEFAULT_CARDS, draw_knowledge=None, hp_knowledge=None,
+                    entry_observer=None, reveal_journal=None):
     """Ironclad A0 setup with fresh (definition, upgrade) card templates.
 
 Relics are (definition, explicit counter) with empty instance data. This is a
@@ -54,11 +56,18 @@ No gameplay seed, private continuation, actor or observation object is accepted.
     run.state.validate()
     # Optional conditional proposal owners are local to this newly constructed
     # hypothetical world. They are not snapshot fields or global RNG overrides.
+    from contextlib import nullcontext
+    from game.headless.reveals import run_reveals
+    if entry_observer is not None:
+        run._combat_entry_observer = lambda: entry_observer(run)
     try:
-        run.start_combat(encounter_id=encounter_id, draw_knowledge=draw_knowledge, hp_knowledge=hp_knowledge)
+        with run_reveals(run, reveal_journal) if reveal_journal is not None else nullcontext():
+            run.start_combat(encounter_id=encounter_id, draw_knowledge=draw_knowledge, hp_knowledge=hp_knowledge)
         if hp_knowledge is not None:
             hp_knowledge.finish()
     finally:
+        if entry_observer is not None:
+            del run._combat_entry_observer
         if hasattr(run.state.rng.stream('niche'), 'hp_knowledge'):
             del run.state.rng.stream('niche').hp_knowledge
     return run
@@ -192,3 +201,67 @@ def inventory_combat(*, deck, relics, potions, hp, max_hp, gold, encounter_id,
     with run_reveals(run, reveal_journal) if reveal_journal is not None else nullcontext():
         run.start_combat(encounter_id=encounter_id, draw_knowledge=draw_knowledge)
     return run
+
+
+def campaign_combat(*, deck, relics, potions, hp, max_hp, gold, encounter_id,
+                    fur_coat_active, seed, draw_knowledge=None, hp_knowledge=None, reveal_journal=None,
+                    room_entered=True, reward_potions=None):
+    """Construct an owned world from declared persistent inventory values.
+
+    The declaration is after room entry and before combat setup. It contains
+    neither a live snapshot nor private identities. Normal rules still own
+    setup, commands and settlement; room-entry effects have already occurred.
+    """
+    from dataclasses import asdict
+    from game.headless.characters import potion_pool
+    from game.headless.core.card_state import CardState
+    from game.headless.reveals import run_reveals
+    if type(fur_coat_active) is not bool or type(seed) is not int or type(room_entered) is not bool:
+        raise ValueError('Explicit public coat state and simulation seed are required.')
+    run = RunEngine(seed=seed, card_ids=[], hp=hp, max_hp=max_hp, gold=gold,
+        config=RunConfig(act=declared_combat_region(encounter_id),
+                         reward_potions=potion_pool('ironclad') if reward_potions is None else tuple(reward_potions)),
+        rng_profile='native')
+    for value in deck:
+        record = dict(value, instance_id=run.state.allocate_card_id(), combat_state=asdict(CardState()))
+        run.state.deck.append(restore_card(record, run.cards))
+    run.state.relics = [RelicInstance(name, run.state.allocate_item_id(), count, data)
+                        for name, count, data in relics]
+    run.state.potion_capacity = len(potions)
+    run.state.potions = [None if name is None else PotionInstance(name, run.state.allocate_item_id())
+                         for name in potions]
+    run.state.validate()
+    try:
+        with run_reveals(run, reveal_journal):
+            run.start_combat(encounter_id=encounter_id, draw_knowledge=draw_knowledge,
+                             hp_knowledge=hp_knowledge, room_entered=room_entered,
+                             fur_coat_active=fur_coat_active if room_entered else None)
+        if hp_knowledge is not None:
+            hp_knowledge.finish()
+    finally:
+        if hasattr(run.state.rng.stream('niche'), 'hp_knowledge'):
+            del run.state.rng.stream('niche').hp_knowledge
+    return run
+
+
+def revealed_encounter(enemy_names):
+    """Identify an ordinary Act 1 roster using independently generated rules.
+
+    The lookup contains only public type multisets. Unrecognized or ambiguous
+    rosters reject; it never reads an actual encounter assignment or RNG.
+    """
+    matches = [name for name, rosters in _public_rosters() if tuple(sorted(enemy_names)) in rosters]
+    if len(matches) != 1:
+        raise ValueError('Public encounter roster is unknown or ambiguous.')
+    return matches[0]
+
+
+@lru_cache(maxsize=1)
+def _public_rosters():
+    from random import Random
+    from game.headless.encounters.catalog import ENCOUNTERS, NATIVE_OVERGROWTH_ENCOUNTERS, NATIVE_UNDERDOCKS_ENCOUNTERS
+    names = (*NATIVE_OVERGROWTH_ENCOUNTERS.values(), *NATIVE_UNDERDOCKS_ENCOUNTERS.values())
+    # Fixed probes only discover supported public rosters; they do not estimate
+    # outcome probabilities. Hypothetical construction uses the normal factory.
+    return tuple((name, frozenset(tuple(sorted(type(e).__name__ for e in ENCOUNTERS[name](Random(seed))))
+                                 for seed in range(128))) for name in names)

@@ -84,6 +84,140 @@ checkpoint. Implementation and initial measurements are recorded in
 [the search evidence](evidence/COMBAT_SEARCH_2026_10_04.md). Those measurements
 do not promote search to the default controller.
 
+### Campaign search and witnessed validation
+
+`combat_belief_v1` is the default model when Search is enabled. It supports
+**headless Ironclad A0 combat collection, play and evaluation** across both
+regions, including controlled fixtures and verified Vantom prefixes. It records public inventory after room-entry
+effects and before combat setup, then records setup reveals and reconciled
+transitions. Each fight gets a new belief; campaign work and fallback counts
+accumulate. The existing engine owns all setup, card/potion effects, enemy turns
+and cleanup. The planner receives no actual snapshot, gameplay RNG or private
+encounter assignment. Encounter inference uses revealed enemy types and native
+ordinary encounter definitions. Historical model identities remain unchanged.
+
+```bash
+sts-agent-evaluate --checkpoint runs/combat-model/final.sts-model \
+  --search --act1 --campaign-cases 16 \
+  --search-simulations 64 --search-seconds 5 --time-limit 3600 \
+  --search-skip-root-baseline --workers 8 --output-dir runs/act1-search-validation
+```
+
+This pairs the same checkpoint with and without combat Search, keeping the
+noncombat heuristic fixed. Per-action thinking limits, campaign time cutoffs
+and defeats remain separate. It is an experimental controller, not an Act 1
+performance promotion. All 42 ordinary Act 1 encounter openings have focused
+construction checks, but this does not establish every inventory/history.
+Event-owned fights, Toy Box/Silver Crucible history and stored Pael's Tooth cards
+currently fall back explicitly. Missing entry/history and exhausted belief
+budgets also fall back. Publicly observed permanent card growth, enchantments,
+displayed relic counters and recorded lifetime-card history are retained.
+
+The corpus-building CLI records the same **public** receipts by default alongside
+its owner-only snapshots (`--no-record-planning` opts out). Old snapshots cannot retroactively supply missing history:
+
+```bash
+sts-agent-train build-combat-corpus --record-planning \
+  --train-campaigns 32 --validation-campaigns 16 --test-campaigns 16 \
+  --capture-turns 2 --output-dir runs/campaign-corpus
+```
+
+Use `--combat-corpus runs/campaign-corpus/corpus.json` with Search collection or
+evaluation. Collection samples training encounters/fights uniformly, then chooses
+opening versus continuation with equal probability when later starts exist.
+Comparisons use fixed validation openings. Repeated starts get separate episode
+identities and planner seeds; source fight/campaign identities remain recorded.
+Each seed is bound to its frozen teacher configuration. Fallback-only episodes
+stay in coverage denominators and omit unusable training targets. Truncations
+retain unknown value labels. No searched trajectories enter PPO.
+
+The live bridge must still provide equivalent ordered public entry/reveal
+receipts, public card history and a compatible ruleset; it cannot attach through
+private headless snapshots. The shared anchor distinguishes fresh inventory before
+room entry from inventory after entry, so entry effects execute once. It also
+preserves the smaller declared-fixture potion pool versus the campaign pool.
+
+### One Search learning workflow
+
+Current corpora with receipts work directly. The original Vantom corpus needs an
+explicit import because its implementation identity predates the current engine:
+
+```bash
+sts-agent-train prepare-search-corpus \
+  --combat-corpus runs/vantom-specialist-20261002/corpus/corpus.json \
+  --public-prefixes runs/vantom-search-training-20261008/prefixes-v3.json.gz \
+  --prefix-dir runs/vantom-search-training-20261008/prefixes-v3 \
+  --output-dir runs/vantom-search-source
+```
+
+This writes a new `search-source.json` and public anchors, checks the historical
+fresh-card/relic/ruleset certificate, and replays every continuation from its
+original frozen opening under current rules. Original snapshots, hashes and
+reports remain unchanged. Source implementation checks remain strict; regenerate
+the derivative after executable changes. Import follows existing validation
+reservations and never reads held-out test snapshots. It verifies compatibility
+of these recorded starts, not every game rule or whether the fights are winnable.
+
+Use the same commands for that source or a current campaign corpus:
+
+```bash
+sts-agent-train search-collect --checkpoint runs/combat-model/final.sts-model \
+  --combat-corpus runs/vantom-search-source/search-source.json \
+  --cases 64 --max-decisions 512 --time-limit 1800 --workers 16 \
+  --search-simulations 16 --output-dir runs/search-round
+sts-agent-train search-distill --checkpoint runs/combat-model/final.sts-model \
+  --training-report runs/search-round/search.json --epochs 2 \
+  --output-dir runs/search-student
+sts-agent-train search-reanalyse --checkpoint runs/search-student/final.sts-model \
+  --training-report runs/search-round/search.json --search-simulations 16 \
+  --output-dir runs/search-refreshed
+```
+
+`--cases` budgets episodes; `--max-decisions` caps each fight. The report records
+actual decisions, searched decisions and cutoffs separately. Advance
+`--start-index` for a new collection block (or change `--search-seed`); repeating
+both deliberately repeats the source/planner schedule. Reanalysis can also read
+old `revealed_belief_v1` public traces and normalize their anchor for the current
+model. Original behavior and outcome bytes remain unchanged. Earlier model
+versions remain explicit historical options; no new run needs the Vantom
+experiment driver.
+
+The [consolidation evidence](evidence/SEARCH_WORKFLOW_CONSOLIDATION_2026_10_11.md)
+records the verified 935-start Vantom derivative and bounded checks of both
+learning paths. The prepared source for this checkout is
+`runs/search-consolidation-20261011/source/search-source.json`.
+
+Keep the natural validation population and add a frozen diagnostic classification:
+
+```bash
+sts-agent-train build-combat-diagnostics \
+  --combat-corpus runs/campaign-corpus/corpus.json \
+  --candidate specialist=runs/combat-model/final.sts-model \
+  --search --search-checkpoint runs/combat-model/final.sts-model \
+  --search-simulations 16 --search-seconds 5 --time-limit 600 --workers 8 \
+  --output-dir runs/campaign-diagnostics
+```
+
+The complete portfolio (including heuristic/random baselines), budgets and all
+validation opening cases are published before attempts run. Every attempt,
+defeat and cutoff remains in `combat-benchmark.json`. `combat-diagnostics.json`
+labels a case `witnessed_win` only after validating its public trace/sidecar and
+independently replaying its advertised actions to native victory. Otherwise its
+label is `unresolved`, never "impossible." A witness proves a win for that frozen
+realization; it does not prove reliable success over unknown draws. The policies
+used to select the subset are not an independent test of that subset.
+
+Pass `--combat-diagnostics runs/campaign-diagnostics/combat-diagnostics.json` to
+future `sts-agent-evaluate --combat-corpus ...` comparisons to report both frozen
+diagnostic groups **alongside the full natural denominator**. Search comparisons
+must include the complete population (`--search-cases 10000` selects all available
+openings). Source campaigns retain their original splits; qualification never
+opens test snapshots and diagnostics are not a training-data source. Confidence
+intervals continue to group correlated fights by source campaign.
+
+The [campaign integration evidence](evidence/CAMPAIGN_SEARCH_VALIDATION_2026_10_09.md)
+records the bounded acceptance run, coverage and remaining limits.
+
 The [search architecture redesign](COMBAT_SEARCH_ARCHITECTURE.md) adds the
 `public_belief_v1` model, using shared engine construction, maintained hypothetical
 worlds and bounded public-prefix recovery. Controlled tests cover generated
@@ -93,16 +227,16 @@ reshuffles, card/potion selectors and settlement. Declared starts now accept the
 elites and bosses. This is permission to attempt bounded belief construction,
 not a guarantee that every encounter/history fits the rejection budget. See the
 [coverage audit](evidence/COMBAT_BELIEF_COVERAGE_2026_10_04.md) for the tested panel
-and remaining constraints. The default remains
-`reconstruction_v1`; the coverage below describes that restricted model unless
-stated otherwise.
+and remaining constraints. Those results describe historical model versions.
+The current CLI default is `combat_belief_v1`; the restricted reconstruction
+coverage described below is retained for historical use.
 
-Select the maintained model for controlled starts (Vantom remains the default
+Use the shared model for controlled starts (Vantom remains the default
 encounter when `--encounter` is omitted):
 
 ```bash
 sts-agent-evaluate --checkpoint runs/combat-model/final.sts-model \
-  --search --search-model public_belief_v1 --search-cases 8 --workers 1 \
+  --search --search-cases 8 --workers 1 \
   --encounter overgrowth_nibbit --encounter underdocks_sewer_clam \
   --output-dir runs/belief-development
 ```
@@ -245,8 +379,9 @@ proxy does not replace Act 1 completion as the promotion criterion.
 
 ### Public model and current coverage
 
-The experimental `revealed_belief_v1` model extends conditional sampling to the
-verified Vantom corpus. Its public anchor contains the pre-combat inventory,
+The historical `revealed_belief_v1` model introduced conditional sampling for the
+verified Vantom corpus. Its public anchors now enter `combat_belief_v1` through
+the import/normalization adapter above. Its public anchor contains the pre-combat inventory,
 opening, and any accepted public prefix before attachment. The producer must
 certify fresh card templates and sufficient public relic state. A saved private
 continuation alone is still insufficient. The Vantom experiment recovers these
@@ -270,9 +405,9 @@ observed trace into a legacy model during reanalysis is refused. Offline search
 learning uses the same compact learned features as inference to avoid retaining
 duplicate lossless arrays for every training example.
 
-This is a verified headless producer, not a general corpus-attachment or native
-bridge capability. The generic CLI producers still expose their existing
-models. A future bridge must provide equivalent public inventory/history and
+This remains a verified headless producer, not arbitrary snapshot attachment
+or a delivered native bridge capability. The generic CLI now uses the same
+current belief for these verified sources and campaign receipts. A future bridge must provide equivalent public inventory/history and
 ordered reveal receipts. Beliefs remain finite-particle approximations, and
 simulated tree child keys currently use successor observations without the
 intermediate reveal journal; this can merge histories with useful distinctions.

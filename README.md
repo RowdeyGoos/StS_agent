@@ -227,6 +227,11 @@ sts-agent-play --combat-checkpoint runs/combat-model/final.sts-model \
 See [combat search](docs/AGENT_TRAINING.md#experimental-combat-search) for supported
 content, paired comparisons, search distillation and reanalysis. Unsupported
 states explicitly fall back to the same checkpoint. Search remains opt-in.
+The default Search model, `combat_belief_v1`, shares public combat-entry/reveal
+receipts across controlled fights, verified Vantom starts and Act 1 campaigns.
+Collection, distillation and reanalysis use the same CLI workflow; native bridge
+receipt production remains a separate gate. The [diagnostic validation workflow](docs/AGENT_TRAINING.md#campaign-search-and-witnessed-validation)
+retains natural fights alongside replay-verified winning examples.
 
 Continue the checkpoint with bounded, masked combat PPO:
 

@@ -14,8 +14,10 @@ import uuid
 
 from game.agent.search import SearchConfig, SearchPolicy, BELIEF_MODELS
 from game.agent.search.direct import MODEL as DIRECT_MODEL, VIEW as DIRECT_VIEW, PlanningViewPolicy
-from game.agent.search.policy import DETACHED_MODELS
+from game.agent.search.policy import DETACHED_MODELS, RECEIPT_MODELS
 from game.agent.search.observed import MODEL as OBSERVED_MODEL
+from game.agent.search.campaign import MODEL as CAMPAIGN_MODEL
+from game.agent.search.combat import MODEL as COMBAT_MODEL
 from game.agent.input_views import RAW, validate_view
 from game.agent.provenance import implementation
 from game.agent.runner import RunCancelled, RunConfig, prepare_directories, run_episode
@@ -35,6 +37,12 @@ OBJECTIVE = RewardSpec({'combat_win': 1., 'win_hp_fraction': .1})
 
 def _json(value):
     return (json.dumps(value, sort_keys=True, indent=2, allow_nan=False) + '\n').encode()
+
+
+def _collection_seed(seed, index, domain):
+    """Independent, recorded source/planner schedules; never use the game RNG."""
+    raw = f'search_collection_sha256_v1:{domain}:{seed}:{index}'.encode()
+    return int.from_bytes(hashlib.sha256(raw).digest()[:8], 'big') % (2**63)
 
 
 def _artifact(directory, name):
@@ -94,7 +102,7 @@ def _targets(path, row, policy, split):
               'split': split, 'targets': [dict(step=i, **r.to_dict()) for i, r in enumerate(policy.reconciled_results)]}
     if policy.planning_start is not None:
         from game.agent.contracts.planning import to_dict, end_to_dict
-        observed = policy.config.model_version == OBSERVED_MODEL
+        observed = policy.config.model_version in RECEIPT_MODELS
         target['planning'] = {'schema': 'sts_public_planning_trace_v2' if observed else 'sts_public_planning_trace_v1',
             'start': policy.planning_start if observed else to_dict(policy.planning_start),
             'completions': {str(i): end_to_dict(end) for i, end in policy.planning_ends.items()}}
@@ -115,28 +123,33 @@ class SearchEvaluator:
         self.settings, self.policies, self.source = settings, policies, source
         self.corpus = None
         if settings.get('corpus_path'):
-            from .combat_corpus import CombatCorpus
-            self.corpus = CombatCorpus(settings['corpus_path'], expected=settings['corpus'])
+            from .search_sources import open_search_source
+            self.corpus = open_search_source(settings['corpus_path'], expected=settings['corpus'])
         self.benchmark = None
         if settings.get('benchmark'):
             from .search_benchmark import SearchBenchmark
             self.benchmark = SearchBenchmark.from_dict(settings['benchmark'])
             if self.benchmark.identity != settings['benchmark_identity']:
                 raise ValueError('Declared search benchmark changed after planning')
-        self.models = {}
+        self.models, loaded = {}, {}
         for name, (path, digest, task) in checkpoints.items():
-            model = load_policy(path, expected_sha256=digest, task=task)
-            if name != 'network':
-                model = SearchPolicy(model, SearchConfig(**settings['configs'][name]))
-            elif settings.get('planning_view') == DIRECT_VIEW:
+            key = (path, digest, task)
+            if key not in loaded:
+                loaded[key] = load_policy(path, expected_sha256=digest, task=task)
+            model = loaded[key]
+            if name == 'network' and settings.get('planning_view') == DIRECT_VIEW:
                 model = PlanningViewPolicy(model)
-            if model.identity != policies[name]:
+            if name == 'network' and model.identity != policies[name]:
                 raise ValueError('Search teacher changed after planning')
             self.models[name] = model
 
     def run(self, config, episode, policy, output, private, cancel=None):
         output, private = Path(output), Path(private)
         chooser = self.models[policy]
+        if policy != 'network':
+            chooser = SearchPolicy(chooser, SearchConfig(**self.settings['configs'][policy]))
+            if chooser.identity != self.policies[policy]:
+                raise ValueError('Search teacher changed after planning')
         if self.settings['goal'] == 'act1':
             from .run_demonstrations import describe
             result = run_episode(config, output_dir=output, audit_dir=private, episode_id=episode,
@@ -156,6 +169,8 @@ class SearchEvaluator:
             case = self.corpus.cases[config.case_id]
             factory = lambda _: self.corpus.restore(config.case_id, split=config.split)
             expected = case['public_state_sha256']
+            if getattr(chooser, 'needs_campaign_planning', False):
+                planning = self.corpus.planning_start(config.case_id, split=config.split)
         elif self.benchmark:
             scenario = next(s for s in self.benchmark.scenarios if s.name == config.scenario_id)
             if scenario.start.encounter_id != config.encounter:
@@ -169,6 +184,10 @@ class SearchEvaluator:
             factory = scenario.make
             if isinstance(chooser, SearchPolicy) and chooser.config.uses_belief:
                 planning = scenario.planning_start()
+        if not self.corpus and isinstance(chooser, SearchPolicy) and chooser.config.model_version == COMBAT_MODEL:
+            from game.agent.headless.declared_planning import DeclaredPlanning
+            receipt = DeclaredPlanning(scenario)
+            factory, planning = receipt.make, receipt.anchor
         row = _episode(config, policy, replace(implementation(), policy=self.policies[policy]),
             output, private, TrainingConfig(reward=OBJECTIVE, action_policy=chooser.model.action_policy),
             chooser=chooser, engine_factory=factory, episode_id=episode,
@@ -176,7 +195,10 @@ class SearchEvaluator:
             expected_start=expected, evidence='headless_rollout' if self.corpus else 'controlled_fixture', cancel=cancel,
             planning_start=planning)
         if isinstance(chooser, SearchPolicy) and row['status'] in ('terminated', 'truncated'):
-            row['targets'], row['targets_sha256'] = _targets(output, row, chooser, config.split)
+            if chooser.config.uses_belief and chooser.planning_start is None:
+                row['targets_omitted'] = 'missing_or_unsupported_public_anchor'
+            else:
+                row['targets'], row['targets_sha256'] = _targets(output, row, chooser, config.split)
         return row
 
 
@@ -184,7 +206,7 @@ def run_search(*, checkpoint, output_dir, search=SearchConfig(), corpus_path=Non
                cases=8, split='validation', start_index=0, max_decisions=256,
                time_limit_seconds=600., workers=1, collect=False, act1=False,
                encounters=('overgrowth_vantom',), benchmark_path=None,
-               critic_baseline_simulations=None, include_root=True, cancel=None):
+               critic_baseline_simulations=None, include_root=True, cancel=None, diagnostics_path=None):
     from .evaluation_workers import settings as worker_settings, evaluate_parallel
     if type(cases) is not int or not 1 <= cases <= 10000 or max_decisions < 1:
         raise ValueError('Invalid search experiment size')
@@ -200,7 +222,16 @@ def run_search(*, checkpoint, output_dir, search=SearchConfig(), corpus_path=Non
         raise ValueError('Search collection uses only training combats')
     if act1 and corpus_path:
         raise ValueError('Campaign evaluation starts genuine runs, not combat snapshots')
-    if search.uses_belief:
+    if diagnostics_path is not None and (not corpus_path or collect or act1 or split != 'validation'):
+        raise ValueError('Diagnostic comparisons require the validation combat corpus')
+    if search.model_version == COMBAT_MODEL:
+        pass  # All sources supply public receipts through their input adapter.
+    elif search.model_version == CAMPAIGN_MODEL:
+        if collect:
+            raise ValueError('Campaign belief currently supports play/evaluation, not search collection')
+        if not (act1 or corpus_path) or benchmark_path:
+            raise ValueError('Campaign belief requires a campaign or a corpus with public entry receipts')
+    elif search.uses_belief:
         if act1 or corpus_path:
             raise ValueError('The public belief model requires declared controlled starts; campaign/corpus anchors are not available')
         # Validate every requested public declaration before creating artifacts.
@@ -241,27 +272,54 @@ def run_search(*, checkpoint, output_dir, search=SearchConfig(), corpus_path=Non
     if benchmark:
         settings.update(benchmark=benchmark.to_dict(), benchmark_identity=benchmark.identity)
     source_rows = None
+    diagnostics = None
     if corpus_path:
-        from .combat_corpus import CombatCorpus
-        corpus = CombatCorpus(corpus_path)
+        from .search_sources import open_search_source
+        corpus = open_search_source(corpus_path)
         settings.update(corpus_path=str(corpus.path), corpus=corpus.identity)
         locks = [corpus.path.parent / n for n in ('test-opened.json', 'search-test-opened.json')]
         if split == 'validation' and any(p.exists() for p in locks):
             raise ValueError('Development is closed after held-out test was opened')
-        source_rows = [r for r in corpus.split(split) if r['start_kind'] == 'opening']
-        source_rows = source_rows[start_index:start_index+cases]
+        if collect:
+            from .combat_corpus import sample_training_case
+            pool = {}
+            for row in corpus.split('train'):
+                pool.setdefault(row['encounter'], {}).setdefault(row['combat_id'], []).append(row)
+            if not pool:
+                raise ValueError('No training cases in requested corpus')
+            source_rows = [sample_training_case(pool, _collection_seed(search.seed, start_index+i, 'source'))
+                           for i in range(cases)]
+        else:
+            source_rows = [r for r in corpus.split(split) if r['start_kind'] == 'opening']
+            source_rows = source_rows[start_index:start_index+cases]
         if not source_rows:
             raise ValueError('No opening cases in requested corpus partition')
+        if diagnostics_path is not None:
+            from .combat_diagnostics import CombatDiagnostics
+            diagnostics = CombatDiagnostics(diagnostics_path, corpus=corpus)
+            diagnostics.require_population(source_rows, split)
     rows, jobs = [], []
     count = len(source_rows) if source_rows is not None else cases
     for index in range(count):
         identity = uuid.uuid4().hex
         source_row = source_rows[index] if source_rows is not None else None
-        case_id = source_row['case_id'] if source_row else identity
+        case_id = source_row['case_id'] if source_row and not collect else identity
         group = source_row['source_group'] if source_row else identity
         declared = benchmark.scenarios[index % len(benchmark.scenarios)] if benchmark else None
         for name in names:
-            row = dict(case_id=case_id, source_group=group, policy=name, status='unattempted', episode_id=uuid.uuid4().hex)
+            label = name
+            if collect and corpus_path:
+                label = name + '-' + str(start_index + index)
+                config = replace(search, exploration=True,
+                                 seed=_collection_seed(search.seed, start_index+index, 'planner'))
+                configs[label] = asdict(config)
+                policies[label] = SearchPolicy(teacher, config).identity
+            row = dict(case_id=case_id, source_group=group, policy=label, status='unattempted', episode_id=uuid.uuid4().hex)
+            if collect:
+                row['arm'] = name
+            if source_row:
+                row.update(source_case_id=source_row['case_id'], source_combat_id=source_row['combat_id'],
+                           start_kind=source_row['start_kind'])
             if declared:
                 row.update(scenario_id=declared.name, deck_profile=declared.deck_profile, benchmark_role=declared.role,
                            case_index=start_index + index)
@@ -277,17 +335,26 @@ def run_search(*, checkpoint, output_dir, search=SearchConfig(), corpus_path=Non
                 args = (encounter, split, episode_seed(split, start_index+index), 0, max_decisions, time_limit_seconds)
                 if source_row:
                     from .combat_benchmark import FrozenCombatCase
-                    jobs.append(FrozenCombatCase(*args, case_id))
+                    jobs.append(FrozenCombatCase(*args, source_row['case_id']))
                 elif declared:
                     from .search_benchmark import DeclaredCase
                     jobs.append(DeclaredCase(*args, declared.name))
                 else:
                     jobs.append(BaselineCase(*args))
+    if collect and corpus_path:
+        for name in names:
+            policies.pop(name)
+            configs.pop(name)
     report = dict(schema=SCHEMA, status='running', split=split, goal=settings['goal'],
         purpose='collection' if collect else 'evaluation', policies=policies, checkpoint=teacher.identity,
         search_configs=configs, reward_spec=OBJECTIVE.to_dict(), implementation=source,
         limits=dict(max_decisions=max_decisions, time_limit_seconds=time_limit_seconds),
-        execution=execution, corpus=settings.get('corpus'), start_kind='opening', episodes=rows)
+        execution=execution, corpus=settings.get('corpus'),
+        start_kind='opening_continuation_mix' if collect and corpus_path else 'opening', episodes=rows)
+    if collect:
+        report['sampling'] = dict(seed=search.seed, start_index=start_index,
+            schedule='search_collection_sha256_v1' if corpus_path else 'interleaved_splits_v1_fixed_planner_seed',
+            allocation='uniform encounter/fight; half opening/continuation when available' if corpus_path else 'scenario schedule')
     if benchmark:
         report.update(benchmark=benchmark.to_dict(), benchmark_identity=benchmark.identity,
                       evidence='authored_developed_inventory', allocation='balanced_round_robin')
@@ -295,6 +362,8 @@ def run_search(*, checkpoint, output_dir, search=SearchConfig(), corpus_path=Non
         report['planning_view'] = settings['planning_view']
     if act1:
         report['noncombat_policy'] = source['policy']
+    if diagnostics is not None:
+        report['diagnostics'] = diagnostics.identity
     if corpus_path and split == 'test':
         # Freeze every compared policy and its compute budget before reading a
         # single held-out engine snapshot. Existing locks are never rewritten.
@@ -309,7 +378,7 @@ def run_search(*, checkpoint, output_dir, search=SearchConfig(), corpus_path=Non
             publish(lock, _json(binding))
     publish(output / 'search-plan.json', _json(report))
     digest = hashlib.sha256(Path(checkpoint).read_bytes()).hexdigest()
-    bundles = {name: (str(Path(checkpoint).resolve()), digest, 'combat') for name in names}
+    bundles = {name: (str(Path(checkpoint).resolve()), digest, 'combat') for name in policies}
     started = time.perf_counter()
     if workers > 1:
         report.update(evaluate_parallel(rows, jobs, checkpoints=bundles, policies=policies, source=source,
@@ -330,7 +399,7 @@ def run_search(*, checkpoint, output_dir, search=SearchConfig(), corpus_path=Non
                 report['status'] = row['status']
                 break
     report['total_seconds'] = time.perf_counter() - started
-    grouped = {name: [r for r in rows if r['policy'] == name] for name in names}
+    grouped = {name: [r for r in rows if r.get('arm', r['policy']) == name] for name in names}
     if act1:
         from .run_evaluation import compare, _won
         from .comparison import interval
@@ -355,6 +424,8 @@ def run_search(*, checkpoint, output_dir, search=SearchConfig(), corpus_path=Non
     for name, values in grouped.items():
         if name != 'network':
             report['summary'][name]['search'] = _aggregate_search(values)
+    if diagnostics is not None:
+        report['diagnostic_summary'] = diagnostics.summarize(rows, policies)
     if benchmark:
         from .comparison import summary, paired
         report['benchmark_breakdown'] = {}
@@ -384,7 +455,7 @@ def _planning_trace(data, trajectory, row):
         if data['search'].get('model_version') in BELIEF_MODELS:
             raise ValueError('Belief targets require their recorded public planning anchor')
         return None, {}
-    observed = data['search'].get('model_version') == OBSERVED_MODEL
+    observed = data['search'].get('model_version') in RECEIPT_MODELS
     fields = {'schema', 'start', 'completions'} | ({'reveals'} if observed else set())
     if (type(value) is not dict or set(value) != fields or
             value['schema'] != ('sts_public_planning_trace_v2' if observed else 'sts_public_planning_trace_v1')
@@ -392,6 +463,10 @@ def _planning_trace(data, trajectory, row):
         raise ValueError('Invalid public planning trace')
     if observed:
         from game.agent.search.observed import validate_anchor
+        if data['search'].get('model_version') == CAMPAIGN_MODEL:
+            from game.agent.search.campaign import validate_anchor
+        if data['search'].get('model_version') == COMBAT_MODEL:
+            from game.agent.search.combat import normalize_anchor as validate_anchor
         from game.headless.reveals import validate_reveals
         start = validate_anchor(value['start'])
         if not isinstance(value['reveals'], list) or len(value['reveals']) != len(trajectory.transitions):
@@ -637,7 +712,11 @@ def audit_critic(*, checkpoint, report_path, output_path, positions=8, rollouts=
     # Preserve the source simulator, action budget, seed and depth. Only disable
     # root exploration for the diagnostic recommendation; never silently switch
     # a maintained belief to the restricted reconstruction simulator.
-    config = replace(SearchConfig(**source['search_configs']['gumbel']), exploration=False)
+    gumbel = {name: replace(SearchConfig(**value), exploration=False)
+              for name, value in source['search_configs'].items() if value['method'] == 'gumbel'}
+    if not gumbel:
+        raise ValueError('Critic audit requires a Gumbel search teacher')
+    config = next(iter(gumbel.values()))
     teacher = load_policy(checkpoint, reward_spec=OBJECTIVE)
     planner = SearchPolicy(teacher, config)
     if planner.input_view != input_view:
@@ -645,13 +724,16 @@ def audit_critic(*, checkpoint, report_path, output_path, positions=8, rollouts=
     policy = PlanningViewPolicy(teacher) if input_view == DIRECT_VIEW else teacher
     # Greedy recordings from older evaluators have no public planning anchor.
     # Use the explicitly anchored Gumbel behavior for maintained-belief audits.
-    behavior = 'gumbel' if config.uses_belief or 'network' not in source['policies'] else 'network'
-    episodes = [r for r in source['episodes'] if r['policy'] == behavior and r['status'] == 'terminated']
+    behaviors = set(gumbel) if config.uses_belief or 'network' not in source['policies'] else {'network'}
+    episodes = [r for r in source['episodes'] if r['policy'] in behaviors and r['status'] == 'terminated']
     rows, bindings, rng = [], [], Random(0)
     started = time.perf_counter()
     for row in episodes:
         if cancel is not None and cancel.is_set():
             break
+        if row['policy'] in gumbel:
+            config = gumbel[row['policy']]
+            planner = SearchPolicy(teacher, config)
         pair = (_artifact(source_path.parent, row['trajectory']), _artifact(source_path.parent, row['training']))
         identity = row.get('behavior_policy', source['policies'][row['policy']])
         expected = {'policy': identity}
@@ -695,7 +777,7 @@ def audit_critic(*, checkpoint, report_path, output_path, positions=8, rollouts=
                         (('greedy', greedy_ref), ('search', result.action_ref))}
                 item = dict(episode_id=row['episode_id'], case_id=row['case_id'], source_group=row['source_group'],
                     encounter=row['encounter'], trajectory_sha256=episode.trajectory.sha256, step=index,
-                    behavior_policy=identity, critic=value, search_clipped_critic=min(1.1, max(0., value)),
+                    behavior_policy=identity, search_policy=row['policy'], critic=value, search_clipped_critic=min(1.1, max(0., value)),
                     completed_behavior_return=sum(s.reward for s in episode.transitions[index:]),
                     greedy_action_ref=greedy_ref, search_action_ref=result.action_ref,
                     search_disagrees=result.action_ref != greedy_ref, search_fallback=result.reason,
@@ -746,7 +828,8 @@ def audit_critic(*, checkpoint, report_path, output_path, positions=8, rollouts=
         checkpoint=teacher.identity, rollout_policy=policy.identity, implementation=asdict(implementation()),
         source_report_sha256=hashlib.sha256(source_path.read_bytes()).hexdigest(),
         split=source['split'], reward_spec=OBJECTIVE.to_dict(), planning_view=input_view,
-        search=asdict(config), selected_behavior=behavior, selection='opening_and_midpoint_in_report_order',
+            search=asdict(config), selected_behavior=next(iter(behaviors)) if len(behaviors) == 1 else sorted(behaviors),
+            search_configs={k: asdict(v) for k, v in gumbel.items()}, selection='opening_and_midpoint_in_report_order',
         source_bindings=bindings, positions=rows,
         limits=dict(positions=positions, rollouts=rollouts, depth=depth, rollout_seconds=rollout_seconds),
         interpretation='Original completed behavior labels; model rollouts use greedy continuation after the named first action. Cutoffs/unsupported branches have no value label. Correlated positions share source_group.',
@@ -812,7 +895,7 @@ def reanalyse_search(*, checkpoint, report_path, output_dir, search=SearchConfig
         policy.reset()
         data = json.loads(gzip.decompress(_artifact(source_path.parent, row['targets']).read_bytes()))
         start, ends = _planning_trace(data, trajectory, row)
-        if (search.model_version == OBSERVED_MODEL) != (data['search']['model_version'] == OBSERVED_MODEL):
+        if (search.model_version in RECEIPT_MODELS) != (data['search']['model_version'] in RECEIPT_MODELS):
             raise ValueError('Reanalysis cannot convert between observed and legacy planning traces')
         if search.uses_belief:
             if start is None:
