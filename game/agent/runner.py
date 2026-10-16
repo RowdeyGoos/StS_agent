@@ -156,7 +156,7 @@ def run_episode(config, *, output_dir, audit_dir, episode_id=None, cancel=None,
     adapter = HeadlessAdapter(engine_factory(config.seed), decision_profile='full_run_v2')
     planning = None
     planning_serial = -1
-    if getattr(combat_policy, 'needs_campaign_planning', False):
+    if getattr(combat_policy, 'needs_campaign_planning', False) or getattr(combat_policy, 'needs_public_history', False):
         from game.agent.headless.planning import CampaignPlanning
         planning = CampaignPlanning(adapter)
     reset_seconds = time.perf_counter() - started
@@ -207,7 +207,10 @@ def run_episode(config, *, output_dir, audit_dir, episode_id=None, cancel=None,
             chooser = _chooser(adapter, policy, combat_policy)
             decision = frame.decision
             if planning is not None and chooser is combat_policy and planning_serial != planning.serial:
-                chooser.begin_campaign_combat(planning.export(), decision)
+                if getattr(chooser, 'needs_public_history', False):
+                    chooser.begin_combat(planning.export(), decision)
+                else:
+                    chooser.begin_campaign_combat(planning.export(), decision)
                 planning_serial = planning.serial
             candidate = chooser(decision)
             policy_seconds += time.perf_counter() - before
@@ -228,7 +231,7 @@ def run_episode(config, *, output_dir, audit_dir, episode_id=None, cancel=None,
             if callable(getattr(chooser, 'observe_transition', None)):
                 planning_successor = successor
                 if planning is not None and chooser is combat_policy:
-                    if chooser.belief is not None:
+                    if getattr(chooser, 'belief', None) is not None or getattr(chooser, 'needs_public_history', False):
                         chooser.observe_reveals(planning.reveals)
                     planning_successor = adapter.combat_completion or successor
                 chooser.observe_transition(decision, candidate, report, planning_successor)

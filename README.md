@@ -216,6 +216,18 @@ choices and the heuristic elsewhere. Existing playback also accepts
 `sts-agent-play --combat-checkpoint runs/imitation/final.sts-model --output-dir runs/playback`.
 See [checkpoint, resume and measured results](docs/AGENT_TRAINING.md#milestone-3-usage-and-implementation-choices).
 
+For experiments from random initialization, `sts-agent-train feature-study`
+compares public feature richness, optional content identities and six experimental
+architectures through the existing PPO, checkpoint, evaluation and recording
+pipeline. It also supports equal-width comparisons and shared PPO calibration.
+The [current Vantom findings](docs/AGENT_TRAINING.md#current-vantom-findings)
+summarize four completed studies: basic flat MLPs remain a useful baseline,
+compact typed pooling reduces rich-input storage, and no replacement PPO recipe
+passed the registered adoption rule. These studies use 100k decisions per learner
+without imitation or warm-up; they leave the default model and settings unchanged.
+See the [saved encoder design](docs/AGENT_ENCODING.md#experimental-typed-combat-encoder)
+and [study usage](docs/AGENT_TRAINING.md#vantom-feature-and-architecture-study).
+
 Experimental public-information combat search is available with a compatible
 unshaped combat critic:
 

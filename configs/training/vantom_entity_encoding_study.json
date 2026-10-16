@@ -1,0 +1,8 @@
+{
+  "schema": "sts_vantom_entity_encoding_study_v1",
+  "parent_manifest": "~/code/github/RowdeyGoos/StS_agent/runs/vantom-feature-study-20261012-r3/manifest.json",
+  "hidden_size": 64,
+  "seeds": [11, 29, 47],
+  "collectors": 16,
+  "learner_threads": 4
+}

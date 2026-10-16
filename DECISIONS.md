@@ -248,6 +248,26 @@ and all attempt denominators, and never turn validation witnesses into training
 data. Combat exit quality and paired Act 1 completion remain the acceptance
 criteria beyond this diagnostic tool.
 
+## Controlled learner studies bind features and update semantics
+
+Keep architecture, content identities, nested feature richness and removal masks
+as separate versioned study factors over one public semantic projection. Bind the
+catalog, capacities and public-history semantics into checkpoints; unknown history
+must remain distinguishable from zero. Compact typed encoders share these facts
+with the original models. Canonical observations and older checkpoint meanings
+remain unchanged. The [encoding guide](docs/AGENT_ENCODING.md#experimental-typed-combat-encoder)
+owns the implemented design and compatibility details.
+
+Compare models with frozen budgets, shared PPO settings, paired source fights and
+multiple learner seeds. Keep collected decisions, decisions in updated rollouts,
+unique optimizer coverage and repeated optimizer visits distinct. A changed KL
+guard is a versioned training change, not an exact continuation. Development-only
+derivatives preserve completed TEST reservations and acknowledge earlier exposure;
+they never reopen sealed gameplay. Experimental results and generated presets do
+not automatically change production defaults. The
+[training guide](docs/AGENT_TRAINING.md#current-vantom-findings) owns the current
+findings and reusable-recipe recommendation.
+
 ## Maintaining this record
 
 Add a short decision when architecture, training defaults or workflow materially

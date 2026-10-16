@@ -14,7 +14,7 @@ import torch
 from game.agent.runner import RunCancelled, RunFailure, prepare_directories
 from game.agent.workers import _cleanup, _defer_start_signals
 from game.agent.performance import GAME_WORKER_LIMIT
-from .model import ActorCritic
+from .model import make_model as ActorCritic
 from .rollout import Rollout, advantages, check_cancel, collect, fingerprint
 from .scenarios import episode_seed
 

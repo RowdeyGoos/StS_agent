@@ -11,6 +11,10 @@ from game.agent import performance
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest='command', required=True)
+    study = sub.add_parser('feature-study', help='Run the frozen Vantom feature/architecture study from random initialization')
+    study.add_argument('--config', required=True)
+    study.add_argument('--output-dir', required=True)
+    study.add_argument('--phase', choices=('prepare', 'smoke', 'run', 'confirm', 'report', 'all'), default='all')
     audit = sub.add_parser('audit-representation', help='Audit frozen identities and effect descriptions without training')
     audit.add_argument('--checkpoint', help='Audit this saved vocabulary; default is the current public catalog')
     audit.add_argument('--input', nargs='+', default=[], help='Optional completed public trajectory files/directories')
@@ -175,6 +179,12 @@ def _run(args, parser):
                     torch.is_deterministic_algorithms_warn_only_enabled())
     try:
         torch.set_num_threads(1)
+        if args.command == 'feature-study':
+            from game.agent.training.study.run import run
+            result = run(args.config, args.output_dir, phase=args.phase,
+                         progress=lambda value: print(json.dumps(value), flush=True))
+            print(json.dumps({'status': result.get('status', 'complete'), 'output': args.output_dir}))
+            return 0
         if args.command == 'prepare-search-corpus':
             from game.agent.training.search_sources import prepare_search_source
             path, report = prepare_search_source(corpus_path=args.combat_corpus,

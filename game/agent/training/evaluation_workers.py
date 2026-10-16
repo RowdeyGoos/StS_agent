@@ -32,7 +32,10 @@ def _worker(checkpoints, policies, source, output, private, stopped, connection,
         choices = {'heuristic': {}}
         combat_owner = None
         if combat is not None:
-            if combat.get('kind') == 'search':
+            if combat.get('kind') == 'feature_study':
+                from .study.evaluate import StudyEvaluator
+                combat_owner = StudyEvaluator(combat, checkpoints, policies, source)
+            elif combat.get('kind') == 'search':
                 from .search_run import SearchEvaluator
                 combat_owner = SearchEvaluator(combat, checkpoints, policies, source)
             else:

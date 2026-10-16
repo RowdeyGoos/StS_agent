@@ -49,7 +49,7 @@ def _audit(path, case, identity, policy, config, scenario_set=SCENARIO_SET):
 
 def _episode(case, policy, identity, output, audit, config, *, chooser=None,
              engine_factory=None, scenario_set=SCENARIO_SET, cancel=None,
-             episode_id=None, expected_start=None, evidence='controlled_fixture', planning_start=None):
+             episode_id=None, expected_start=None, evidence='controlled_fixture', planning_start=None, public_health=False):
     episode_id = uuid.uuid4().hex if episode_id is None else episode_id
     path = output / (episode_id + SUFFIX)
     result = {'episode_id': episode_id, 'encounter': case.encounter, 'policy': policy,
@@ -58,6 +58,7 @@ def _episode(case, policy, identity, output, audit, config, *, chooser=None,
               'task_return': 0.0, 'run_outcome': None, 'failure': None,
               'reward_spec_id': config.reward.identity, 'components': dict.fromkeys(config.reward.components, 0.0)}
     recording = policy_seconds = 0.0
+    history_records = []
     started = time.perf_counter()
     env = CombatTrainingEnv(encounter=case.encounter, max_decisions=case.max_decisions,
                             time_limit_seconds=case.time_limit_seconds, reward_spec=config.reward,
@@ -95,6 +96,8 @@ def _episode(case, policy, identity, output, audit, config, *, chooser=None,
                 if cancel is not None and cancel.is_set():
                     raise RunCancelled('Evaluation cancelled')
                 public = env.public_state
+                history_record = (chooser.encoder.history.export(public)
+                    if getattr(chooser, 'needs_public_history', False) else None)
                 before = time.perf_counter()
                 allowed = tuple(a for a, permitted in zip(public.candidates,
                     action_mask(public, config.action_policy)) if permitted)
@@ -112,7 +115,8 @@ def _episode(case, policy, identity, output, audit, config, *, chooser=None,
                     if callable(getattr(chooser, 'observe_transition', None)):
                         before = time.perf_counter()
                         successor = env.planning_successor if planning_start is not None else env.public_state
-                        if env.record_combat_reveals and getattr(chooser, 'belief', None) is not None:
+                        if env.record_combat_reveals and (getattr(chooser, 'belief', None) is not None
+                                or getattr(chooser, 'needs_public_history', False)):
                             chooser.observe_reveals(env.combat_reveals)
                         chooser.observe_transition(public, chosen, execution, successor)
                         policy_seconds += time.perf_counter() - before
@@ -121,6 +125,8 @@ def _episode(case, policy, identity, output, audit, config, *, chooser=None,
                                   reward=reward, terminated=terminated, truncated=truncated)
                     recording += time.perf_counter() - before
                     result['steps'] += 1
+                    if history_record is not None:
+                        history_records.append(history_record)
                     result['end_turn_actions'] += int(chosen.kind == 'end_turn')
                     result['potion_use_actions'] += int(chosen.kind == 'use_potion')
                     for name, value in info['training_reward']['components'].items():
@@ -135,6 +141,11 @@ def _episode(case, policy, identity, output, audit, config, *, chooser=None,
                     recording += time.perf_counter() - before
                     result.update(status='terminated' if terminated else 'truncated',
                                   trajectory=path.name, training=writer.path.name, run_outcome=info['outcome'])
+                    if history_records:
+                        from .study.recording import write_history
+                        from game.agent.trace_storage import trajectory_digest
+                        result['public_history_sha256'] = write_history(output, episode_id,
+                            trajectory_digest(path), history_records)
                     break
             else:
                 raise RuntimeError('Combat environment failed to enforce its decision budget')
@@ -145,6 +156,8 @@ def _episode(case, policy, identity, output, audit, config, *, chooser=None,
         if isinstance(error, (KeyboardInterrupt, RunCancelled)):
             result['status'] = 'interrupted'
     finally:
+        if public_health or getattr(chooser, 'needs_public_history', False):
+            result['settled_public_health'] = env.public_combat_health
         result['end_hp'] = (result.get('combat') or {}).get('hp')
         result['timings'] = {**env.timings, 'policy_seconds': policy_seconds,
                              'recording_seconds': recording,

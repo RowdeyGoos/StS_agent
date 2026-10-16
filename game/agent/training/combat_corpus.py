@@ -429,7 +429,8 @@ class CorpusEnvironment:
 
     @cached_property
     def corpus(self):
-        return CombatCorpus(self.path, expected=self.identity)
+        from .search_sources import open_search_source
+        return open_search_source(self.path, expected=self.identity)
 
     @cached_property
     def pools(self):
@@ -449,6 +450,8 @@ class CorpusEnvironment:
             row = sample_training_case(pool, seed)
             run = self.corpus.restore(row['case_id'], split='train')
             env.corpus_case = row
+            history = getattr(self.corpus, 'history_start', None) or self.corpus.planning_start
+            env.public_history_start = history(row['case_id'], split='train')
             return run
 
         env = CombatTrainingEnv(engine_factory=make, **settings)

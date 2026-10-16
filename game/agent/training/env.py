@@ -56,6 +56,12 @@ class CombatTrainingEnv(StsEnv):
     def planning_successor(self):
         return self._adapter.combat_completion or self.public_state
 
+    @property
+    def public_combat_health(self):
+        """Settled public HUD measurements for reporting, outside policy inputs."""
+        value = self._adapter.combat_health_summary
+        return None if value is None else asdict(value)
+
     def step(self, action):
         self._reward_measurement = self._reward_input = None
         return super().step(action)

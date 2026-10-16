@@ -1,6 +1,6 @@
 # Agent training guide
 
-Prepared 2026-09-28; current workflow updated 2026-10-08.
+Prepared 2026-09-28; current workflow and findings updated 2026-10-16.
 **Status: milestones 1–7 implemented and validated.**
 **Current training goal: clear Act 1 with Ironclad at A0.** Measure improvement
 by paired Act 1 clear rate across Overgrowth and Underdocks. Training all three
@@ -21,6 +21,296 @@ This document owns training usage, implementation choices and measured results. 
 owns the full-game objective, the [public contract](AGENT_CONTRACT.md) owns actor
 information, and the [execution guide](AGENT_EXECUTION.md) owns existing recordings
 and workers. The retired training pipelines are not implementation dependencies.
+
+## Current Vantom findings
+
+Four completed studies cover **174 fresh learners and 17.4 million collected
+training decisions**, excluding disposable smokes. Each learner received 100k
+decisions without warm-up, demonstrations, transferred weights, search or previews.
+The evidence records retain the frozen designs, per-seed results, paired uncertainty,
+diagnostics, coverage and actual timings:
+
+| Question | Finding at this budget | Evidence |
+| --- | --- | --- |
+| Which features, identities and architectures help? | Basic flat with identities led the parameter-matched screen. Both selected finalists beat the heuristic on the original reserved TEST panel; their difference, matched identity effects and individual feature-removal effects remained unresolved. | [96 learners / 9.6M decisions](evidence/VANTOM_FEATURE_STUDY_2026_10_12.md) |
+| Did parameter matching handicap richer flat models? | Giving every flat model two 64-unit hidden layers did not recover the richer models' mean performance. Basic won every paired seed comparison; only one of four family-adjusted richness intervals excluded zero. | [18 learners / 1.8M](evidence/VANTOM_FLAT_WIDTH_2026_10_13.md) |
+| Does a compact typed frontend help? | Rich compact pooling uses about 6.7× less packed input storage, with competitive win-rate estimates but slower measured inference. Richness helped its greedy score in an exploratory comparison. Extra hierarchical pooling has not established an advantage over ordinary pooling. | [24 learners / 2.4M](evidence/VANTOM_ENTITY_ENCODING_2026_10_14.md) |
+| Can we reuse one PPO recipe across models? | Batch 64 was the strongest alternative and improved all four rich-model means, but hurt basic flat and failed the aggregate uncertainty gates. The registered rule retains the reference recipe with the study's common minibatch KL guard as an opt-in preset. | [36 learners / 3.6M](evidence/VANTOM_SHARED_PPO_2026_10_15.md) |
+
+For subsequent model comparisons, retain basic flat and original rich pooling as
+baselines, with rich compact pooling as a candidate. Freeze one shared recipe
+before looking at model outcomes; the calibration does not justify choosing a
+different recipe for each architecture. Its reference is learning rate 0.0003,
+minibatch 16 and entropy weight 0.01 with `minibatch_v1` stopping. Batch 64 remains
+a candidate for a separately authorized replication. Production defaults retain
+their existing epoch-only guard; no default model or training setting changed.
+
+Win-rate curves are not monotonic: rankings changed between 50k and 100k, and some
+learners recovered after early collapses. Use the fixed endpoint, multiple seeds
+and paired source-fight uncertainty rather than the smoothest or highest intermediate
+curve. Greedy and sampled evaluation answer different questions and must remain
+separate. In the PPO calibration, batch 16 also reached far fewer collected decisions
+with gradients than batch 64 under the common KL guard; collected budget alone
+does not equal optimizer exposure.
+
+These results concern one boss and this training budget. Incomplete mechanics,
+many constant channels and partly unknown public counters limit feature conclusions.
+Only the first study used the reserved TEST panel; all later work is exploratory
+TRAIN/DEV evidence after that exposure. Cross-study score differences also mix
+width, representation or update semantics and are not controlled comparisons.
+
+## Vantom feature and architecture study
+
+`sts-agent-train feature-study` implements the separately authorized Vantom
+study: 24 architecture × identity × richness configurations, then eight feature
+removals on the strongest rich no-vocabulary architecture. Each configuration
+has three independently initialized learners and **100,000 collected decisions**;
+the full budget is 96 learners and 9.6 million decisions. There is no imitation,
+transferred initialization, critic warm-up, search or action preview. This study
+does not change the default policy or establish full-game performance.
+
+The [configuration](../configs/training/vantom_feature_study.json) fixes seeds,
+source paths and one allocation of 16 collectors/four learner threads. Resolve
+local corpus paths before preparing the study. Choose a public output directory:
+the inspector and MLflow deliberately reject hidden/private ancestors, including
+`.codex/worktrees`. The example saves artifacts in the primary project's `runs`
+directory while executing code from the current checkout. Use the supported Python training
+environment and current checkout (`PYTHONPATH=.` when its installed command is
+provided by another checkout):
+
+```bash
+study_output="$HOME/code/github/RowdeyGoos/StS_agent/runs/vantom-feature-study-new"
+PYTHONPATH=. sts-agent-train feature-study \
+  --config configs/training/vantom_feature_study.json \
+  --output-dir "$study_output" --phase prepare
+PYTHONPATH=. sts-agent-train feature-study \
+  --config configs/training/vantom_feature_study.json \
+  --output-dir "$study_output" --phase smoke
+PYTHONPATH=. sts-agent-train feature-study \
+  --config configs/training/vantom_feature_study.json \
+  --output-dir "$study_output" --phase run
+PYTHONPATH=. sts-agent-train feature-study \
+  --config configs/training/vantom_feature_study.json \
+  --output-dir "$study_output" --phase confirm
+```
+
+`--phase all` performs those phases sequentially, reusing completed artifacts
+with identical bindings. Keep the executable source unchanged while it runs.
+The runner stops on an incomplete training/evaluation attempt and preserves its
+evidence; it does not automatically retry or enlarge the decision budget.
+The October 12 study and its TEST reservation are already complete. The commands
+describe the protocol for an authorized new study, not permission to reuse a
+sealed source or repeat confirmation. Later study schemas omit `confirm` entirely.
+
+Preparation reuses the native historical-prefix verifier, preserves original
+hashes/splits/held-out ownership, and builds public history supplements for every
+TRAIN/DEV start. It does not open TEST gameplay. Only TRAIN public entities fit
+content names and capacities. `manifest.json` freezes the catalog, channels,
+history semantics, capacity calculations, PPO settings and ordered schedule.
+Executable-source changes require a newly verified derivative. Existing
+checkpoints keep their original architecture and feature behavior.
+
+The four models use the same semantic projection: two graph-processing layers,
+two pooled entity MLP layers, two four-head attention layers, or a padded flat
+MLP with two fully connected hidden layers. The three nested richness settings
+are `basic`, `mechanics` and `context`. Identity-enabled models add eight-wide
+learned content embeddings; no-vocabulary models receive only numerical facts,
+fixed mechanical categories and structural relationships. Widths are selected
+from parameter counts alone within ±5% of a common target, starting at 250k and
+doubling through 2M if necessary. Padding overflow is an error, never clipping.
+The width search spans 8–1,024 units, with attention widths divisible by four.
+Parameter equality can leave the flat model with a narrow hidden layer; inspect
+the frozen widths and latency before interpreting architectural differences.
+
+The pinned [AlphaSpire crosswalk](../configs/training/vantom_alphaspire_crosswalk.json)
+records represented, added, unavailable and out-of-scope features. Displayed
+threat is a pressure summary, not resolved future damage. Enemy history contains
+three observed intent profiles, not native move IDs. Turn counters use accepted
+public actions and reveal receipts; uncertainty and missing prefixes stay
+unknown. Publicly distinct modifier durations remain separate. Unknown static
+mechanics have coverage flags, rather than invented zero effects. Offered choices
+and selection progress reach both actor and critic; powers retain ownership.
+Raw-prefix endpoint checks omit the adapter's attachment-owned action log and
+its `observed_plays` power-card log, which are absent after a native snapshot
+restore. All study configurations exclude those historical card descriptions and
+their count, including counter-completeness paths; active creature power stacks
+remain represented. Historical descriptions cannot own current candidate or
+selection operands. All other current facts still have to match. Compact history
+supplements are bound to the complete fresh public observation with a strict SHA
+check.
+
+Each removal masks direct and derived paths while retaining parent dimensions.
+Removing card details, powers, or item mechanics also masks reconstructed turn
+counters because their completeness can expose auto-play/replay mechanics.
+Removing current intent also masks pressure summaries derived from that intent.
+These dependency closures make those removals coupled interventions; the report
+does not label them as isolated causal effects.
+
+Full training requires successful eight-model TRAIN-only smoke evidence and a
+completed independent semantic review in `semantic-review.json`, both bound to
+the frozen implementation. The review record must document an actual review of
+information boundaries, removal paths, compatibility and split ownership.
+PPO settings are fixed in the manifest, including the zero-signal guard. Reports
+separate collected, trained and skipped decisions. Bounded chunks preserve
+optimizer/RNG state; exact resume rejects changed semantics, allocation or
+configuration. Completed chunks are reusable; an incomplete attempt stops with
+its evidence intact, without a budget extension.
+
+DEV greedy evaluation runs at 0/10k/25k/50k/75k/100k. At 100k it adds two paired
+sampled DEV repetitions and greedy TRAIN openings. Only the 100k endpoint selects
+the ablation parent and finalists. Tie-breaks use sampled wins, greedy cutoffs,
+greedy inference latency and configuration ID. `confirm` first registers six
+finalist checkpoints and both controls in one reservation, closes training at
+the existing split owner, and evaluates the 57 TEST openings once in all three
+registered modes. Every test attempt is reserved before its snapshot is read;
+an uncertain attempt cannot be retried. There is no post-test reselection.
+
+`--phase report` rebuilds derived reports without training. Canonical artifacts
+include `manifest.json`, source verification, each learner's trajectories and
+checkpoints, `followups.json`, `selection.json`, and the test reservation.
+Resume files and engine replay audits remain in private directories. The local
+`mlflow/` store publishes learning curves and comparisons; `report/` contains
+paired fight/seed intervals, per-seed metrics, coverage, slices and ablation plots.
+`decision-inspector/` shows the first DEV case for the lowest-seed finalists at
+initialization and endpoint, with verified history supplements. The random-legal
+control samples in every registered mode; the heuristic is deterministic.
+Three learner seeds provide limited uncertainty estimates, and sampled repeats
+are averaged within fights. Peak RSS currently measures the parent process,
+not aggregate collector memory.
+
+Implementation, verification and execution status are recorded in the single
+[study evidence record](evidence/VANTOM_FEATURE_STUDY_2026_10_12.md).
+
+The completed 2026-10-12 study trained all 96 learners for 9.6 million decisions,
+with no skipped updates. The basic flat MLP with learned identities led DEV
+(35.7% greedy wins) and scored 33.3% on reserved TEST; the selected no-vocabulary
+graph scored 25.1% TEST. Both exceeded the 10.5% heuristic, but the registered
+paired interval did not resolve the finalists' difference. No matched identity
+comparison or feature-removal effect was resolved by the exploratory intervals.
+Card mechanics, intent and threat had the largest observed removal penalties.
+Rich flat models were constrained to 8–9 hidden units by parameter matching;
+their results do not establish that richer inputs are harmful. The evidence
+record contains the complete matrix, intervals, coverage limits and timing.
+The basic flat MLP led this screen; subsequent representation and PPO findings
+are summarized [above](#current-vantom-findings). The default stays unchanged.
+
+### Equal-width flat MLP follow-up
+
+The separately authorized [fixed-width configuration](../configs/training/vantom_flat_width_study.json)
+compares basic, mechanics and context inputs with and without vocabulary using
+two **64-unit hidden layers in every model**. All six configurations train fresh
+seeds 11/29/47 for 100k decisions each (18 learners, 1.8M decisions). Rich models
+intentionally have more parameters: approximately 14.5–15.7M versus 2.5M for basic.
+PPO, reward, action policy, RNG stream construction, evaluation milestones,
+bounded training chunks and 16-collector/four-thread allocation stay fixed.
+This comparison changes hidden width from the original study; it reuses no weights
+or learner outcomes. See the [follow-up evidence](evidence/VANTOM_FLAT_WIDTH_2026_10_13.md).
+
+Use `sts-agent-train feature-study --config configs/training/vantom_flat_width_study.json
+--output-dir <public-output> --phase all` (or prepare/smoke/run/report separately).
+This schema has **no TEST confirmation phase**. Its new development-only source
+records the original completed study, full ownership chain and TEST reservation
+hashes, explicitly acknowledges prior TEST exposure, and retains exactly the
+original TRAIN/DEV populations. Original source loaders and reservations remain
+closed and unchanged. Current native prefixes and history supplements are verified
+again before training. The new source rejects TEST cases, restoration and reservation.
+
+The primary endpoint is mean 100k DEV greedy wins. Four planned richer-minus-basic
+comparisons (mechanics/context within each identity setting) include paired
+fight/seed 95% intervals and Bonferroni-adjusted 98.75% intervals. Curves, sampled
+DEV play, TRAIN openings, PPO diagnostics, coverage and parameter counts are saved
+and published to MLflow. This is exploratory follow-up evidence after earlier
+TEST exposure, with three seeds and 42 DEV source fights.
+
+The completed follow-up trained all 18 learners in 4h 10m with no skipped updates.
+At 100k, basic inputs led DEV with identities (27.8% greedy / 23.4% sampled) and
+without vocabulary (23.8% / 19.4%). Detailed mechanics scored 7.1% / 0.8% with
+identities and 14.3% / 2.8% without; full context scored 15.1% / 0.4% and
+8.7% / 0.4%, respectively. All four rich-minus-basic greedy means were negative.
+Only detailed mechanics with identities had an adjusted interval excluding zero
+(−20.6 percentage points; 98.75% interval [−36.5, −7.1]); the other three adjusted
+intervals include zero. Rich models also had lower TRAIN means and higher cost.
+Basic tactical inputs remain the flat MLP baseline for shared-PPO tuning; these
+results do not establish that richer features are intrinsically unhelpful.
+Per-seed results, coverage limits, curves and timing are in the follow-up evidence.
+No default model changed and no new TEST gameplay was performed.
+
+### Compact and hierarchical entity comparison
+
+The [typed combat design](AGENT_ENCODING.md#experimental-typed-combat-encoder)
+adds two no-vocabulary architectures: `compact_pooled_mlp` retains the original
+global mean/linear critic with a compact typed frontend; `hierarchical_pooled_mlp`
+also pools separate entity groups and applies a nonlinear state network. Both
+reuse the public semantic projection, history, candidate mapping and PPO pipeline.
+The original pooled and flat MLPs remain available and checkpoint-compatible.
+
+The [entity comparison configuration](../configs/training/vantom_entity_encoding_study.json)
+runs all four designs with basic and context inputs, width 64, and seeds 11/29/47:
+**24 fresh learners × 100k decisions = 2.4M decisions**. Input semantics and PPO
+are fixed; parameter counts and frontend depth differ. Six registered
+hierarchical-versus-comparator contrasts use paired fight/seed intervals with
+a six-comparison family correction. Rich-minus-basic and frontend-only contrasts
+are secondary exploratory comparisons. This uses the same TRAIN/DEV-only source
+workflow and has no TEST confirmation phase. It does not change the default.
+
+Run `sts-agent-train feature-study --config configs/training/vantom_entity_encoding_study.json
+--output-dir <public-output> --phase prepare`, then `smoke`, `run`, and `report`.
+Training requires the current-source smoke and independent semantic review gates.
+The [evidence record](evidence/VANTOM_ENTITY_ENCODING_2026_10_14.md) contains
+the fixed matrix, actual dimensions, validation, execution status and results.
+The completed October 14 run took **4h06m09s**, with all 2.4M decisions trained
+and zero skipped updates or failed training episodes. Rich DEV greedy means were
+**30.2% hierarchical, 28.6% compact pooled, 27.8% original pooled and 8.7% flat**;
+their basic counterparts scored 21.4%, 19.0%, 27.8% and 23.8%. Only hierarchical
+rich versus flat rich excluded zero in the six primary family-adjusted intervals.
+Richer inputs improved compact pooling by 9.5 percentage points (exploratory 95%
+interval +0.8 to +19.0), while the hierarchical richness interval included zero.
+Sampled rich wins were 15.1% hierarchical, 22.2% compact and 23.0% original pooled.
+Compact rich inputs used about 6.7× less packed rollout storage, but measured
+inference was slower than original pooling. Rich compact pooling is a useful
+candidate for further experiments alongside the original pooled baseline; the
+extra hierarchy has not established an advantage. These remain exploratory
+TRAIN/DEV results after prior TEST exposure. No default model changed.
+
+### Shared PPO recipe calibration
+
+The [shared PPO study](evidence/VANTOM_SHARED_PPO_2026_10_15.md) screens four
+recipes across basic flat, rich graph and rich attention models, then compares
+one frozen alternative with the reference on original and compact pooled MLPs
+using fresh seeds. Its fixed budget is 36 learners × 100k collected decisions.
+All recipes use the same versioned per-minibatch KL stop, retaining the full-rollout
+check; historical v1/v2 checkpoints preserve epoch-only stopping. Selection requires
+cross-model gains and a fresh-seed transfer check, rather than picking settings
+for each architecture. Reports distinguish decisions in updated rollouts from
+actual unique optimizer coverage, since early stopping can leave part of a rollout
+unused. The output preset is opt-in; defaults remain unchanged. This is exploratory
+TRAIN/DEV work after prior TEST exposure, with no new TEST confirmation.
+
+Use `sts-agent-train feature-study --config configs/training/vantom_shared_ppo_study.json
+--output-dir <public-output> --phase prepare`, then `smoke`, `run`, and `report`.
+The run requires verified current-source data, disposable smokes and independent
+semantic review. The evidence record contains the completed results and audit.
+The generated `report/shared-preset.json` is an evidence wrapper: its `experiment`
+field contains the resolved PPO configuration and source binding, while
+`recommendation` records each adoption check. The wrapper itself is not a
+`sts-agent-train ppo --config` file. Preserve the binding when reusing it; changing
+the recipe or KL guard is incompatible with exact checkpoint continuation.
+
+The completed October 15–16 run finished all 36 learners and 3.6M collected decisions
+in **5h58m35s**. The registered rule retains **learning rate 0.0003, minibatch 16,
+entropy 0.01 with the shared minibatch KL guard** as an opt-in reference preset.
+Batch 64 was the strongest alternative: calibration greedy means rose from 26.6%
+to 31.3%, and fresh-seed pooled transfer means from 22.2% to 31.3%. The aggregate
+gain intervals included zero (calibration adjusted −5.6 to +15.9 pp; transfer 95%
+−1.2 to +18.3 pp), so it did not pass the adoption rule. It helped the four rich
+model means but reduced basic flat greedy wins by 4.8 pp. No universal optimum was
+established, and this study did not compare the new guard against epoch-only stopping.
+The guard used 47.3% of calibration decisions for gradients with batch 16 versus
+98.0% with batch 64; across the entire study, 3,029,392 unique decisions reached an
+optimizer step, with zero zero-signal skips or failed training episodes. The evidence
+record contains per-seed results, uncertainty, optimizer coverage and the saved preset.
+For metric definitions and the four study dashboards, see
+[frozen-study tracking](EXPERIMENT_TRACKING.md#frozen-vantom-study-results).
 
 ## CPU execution defaults
 

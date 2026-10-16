@@ -152,6 +152,8 @@ class PPOLearner:
         started, start_updates = time.perf_counter(), self.updates
         config, steps = self.config, rollout.steps
         metrics, weight, max_norm, peak_batch = {}, 0, 0.0, 0
+        kl_checks, max_minibatch_kl, stop_at = 0, 0.0, None
+        optimized = torch.zeros(len(steps), dtype=torch.bool)
         try:
             adv, returns = advantages(steps, gamma=config.gamma, gae_lambda=config.gae_lambda)
             training_adv = normalize(adv) if config.normalize_advantages else adv
@@ -179,24 +181,40 @@ class PPOLearner:
                     logp, entropy = policy_statistics(logits, batch['mask'], torch.tensor([s.action for s in rows]))
                     loss, parts = objective(logp, torch.tensor([s.old_log_probability for s in rows]),
                         training_adv[indexes], values, returns[indexes], entropy, config)
+                    if config.kl_check == 'minibatch_v1':
+                        # Current policy versus frozen behavior, before another
+                        # optimizer step. This estimate is noisy; retain the full
+                        # rollout check and report below. No rollback is implied.
+                        kl_checks += 1
+                        current_kl = parts['approx_kl'].item()
+                        max_minibatch_kl = max(max_minibatch_kl, current_kl)
+                        if current_kl > config.target_kl:
+                            if self.updates == start_updates:
+                                raise ValueError('Frozen behavior diverged before the first PPO optimizer step')
+                            stopped, stop_at = True, 'minibatch'
+                            break
                     self.optimizer.zero_grad(set_to_none=True)
                     loss.backward()
                     norm = torch.nn.utils.clip_grad_norm_(self.model.parameters(), config.gradient_clip,
                                                          error_if_nonfinite=True)
                     self.optimizer.step()
                     self.updates += 1
+                    optimized[indexes] = True
                     if any(not torch.isfinite(p).all() for p in self.model.parameters()):
                         raise ValueError('Nonfinite PPO parameters')
                     for key, value in parts.items():
                         metrics[key] = metrics.get(key, 0.0)+value.item()*len(rows)
                     weight += len(rows)
                     max_norm = max(max_norm, norm.item())
-                    peak_batch = max(peak_batch, sum(t.numel()*t.element_size() for t in batch.values()))
+                    peak_batch = max(peak_batch, sum(t.numel()*t.element_size() for t in batch.values()
+                                                    if isinstance(t, torch.Tensor)))
                 # Measure divergence over the entire original batch after this
                 # epoch. This is a stopping heuristic, not a hard KL constraint.
                 last = self._measure(steps, training_adv, returns, cancel=cancel, deadline=deadline)
                 if last['approx_kl'] > config.target_kl:
                     stopped = True
+                    stop_at = stop_at or 'epoch'
+                if stopped:
                     break
             check_budget(cancel, deadline)
             self.episode_cursor = rollout.next_episode
@@ -210,6 +228,10 @@ class PPOLearner:
                     'skip_reason':'zero_advantages_and_value_errors' if skipped else None,
                     'signal':signal,
                     'kl_early_stop':stopped, 'mean_update':{k:v/weight for k,v in metrics.items()},
+                    'kl_check':config.kl_check, 'kl_minibatch_checks':kl_checks,
+                    'max_minibatch_kl':max_minibatch_kl, 'kl_stop_at':stop_at,
+                    'optimizer_unique_decisions':int(optimized.sum()), 'optimizer_decision_visits':weight,
+                    'kl_unvisited_decisions':int((~optimized).sum()) if stopped else 0,
                     'after':last, 'max_gradient_norm':max_norm, 'batch_input_tensor_bytes':peak_batch,
                     'packed_rollout_bytes':sum(s.state.nbytes for s in steps),
                     'seconds':time.perf_counter()-started}

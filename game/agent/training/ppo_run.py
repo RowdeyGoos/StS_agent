@@ -85,7 +85,7 @@ def run_ppo(*, checkpoint, experiment, output_dir, decisions=256, time_limit_sec
         model, transfer = transfer_run_objective(policy, experiment.training.reward,
                                                  seed=0 if seed is None else seed)
     if reset_action_policy:
-        from .model import ActorCritic
+        from .model import make_model as ActorCritic
         initialized = ActorCritic(model.vocabulary, model.architecture,
                                  action_policy=experiment.training.action_policy, input_view=model.input_view)
         initialized.load_state_dict(model.state_dict(), strict=True)
@@ -201,6 +201,8 @@ def run_ppo(*, checkpoint, experiment, output_dir, decisions=256, time_limit_sec
             report['summary'].update(goal='act1', act1_clears=clears,
                 act1_clear_rate=clears/len(episodes) if episodes else None)
     report['summary']['decisions_per_second'] = report['summary']['accepted_decisions']/report['total_seconds']
+    for key in ('optimizer_unique_decisions', 'optimizer_decision_visits', 'kl_unvisited_decisions'):
+        report['summary'][key] = sum(i.get('update', {}).get(key, 0) for i in report['iterations'])
     _publish_json(report_path, report)
     report_progress(report_path, report)
     return report_path, report

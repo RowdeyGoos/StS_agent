@@ -1144,4 +1144,15 @@ These preserve canonical public observations and sparse run utility; their
 experimental status does not imply improved playing strength. The selected 250k
 Vantom specialist remains the reference after the preview, shaping and
 [continuation comparisons](AGENT_TRAINING.md#vantom-continuation-diagnostic).
+The subsequent [Vantom feature and PPO studies](AGENT_TRAINING.md#current-vantom-findings)
+are complete: 174 fresh learners and 17.4M collected decisions. The supported
+research path now includes versioned feature/identity/removal specifications,
+flat and entity architectures, compact typed pooling, verified public history
+through evaluation/playback, and opt-in minibatch KL stopping with actual optimizer
+coverage accounting. Original observations, checkpoint semantics and production
+defaults are preserved. The evidence supports basic flat and original rich pooling
+as research baselines, with compact rich pooling as a candidate; it establishes
+neither a universal architecture ranking nor a replacement PPO recipe. The original feature study completed its
+reserved TEST confirmation; later comparisons used TRAIN/DEV only and remain
+exploratory after that exposure.
 Current follow-up priorities are in the [roadmap](../ROADMAP.md#immediate-priorities).

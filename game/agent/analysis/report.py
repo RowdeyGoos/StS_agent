@@ -26,9 +26,11 @@ CHUNK_SIZE = 16
 
 
 def _export_episode(job):
-    path, key, annotated, overlay, search_binding, goal, output = job
+    path, key, annotated, overlay, search_binding, goal, output, history_path, history_sha = job
     started = time.perf_counter()
     trajectory = load_trajectory(path, expected={'episode_id': key})
+    from game.agent.training.study.recording import read_history
+    histories = read_history(history_path, trajectory, history_sha) if history_path is not None else None
     loaded = time.perf_counter()
     pair = signature = None
     data = summarize(trajectory)
@@ -94,6 +96,9 @@ def _export_episode(job):
                            'successor': next_wire, 'canonical_reward': transition.reward,
                            'training': diagnostics[index] if overlay else None,
                            'search': search_rows[index] if search else None})
+            if histories is not None:
+                values[-1]['public_history'] = histories[index]
+                values[-1]['public_history_verified'] = history_sha is not None
             current_wire = next_wire
             if overlay:
                 row['timeline'][index]['training_reward'] = diagnostics[index]['reward']
@@ -113,6 +118,8 @@ def build_report(inputs, output_dir, *, title='Act 1 · Decision lab', goal=None
         raise ValueError(f'Analysis workers must be between 1 and {ARTIFACT_WORKER_LIMIT}')
     started = time.perf_counter()
     paths = discover(inputs)
+    from game.agent.training.study.recording import collect_history
+    history_bindings = collect_history(paths)
     trajectories = [p for p in paths if p.name.endswith(SUFFIX)]
     if not trajectories:
         raise ValueError('No completed public trajectories found')
@@ -130,7 +137,10 @@ def build_report(inputs, output_dir, *, title='Act 1 · Decision lab', goal=None
         if key in reserved:
             raise ValueError('Duplicate trajectory episode identity')
         reserved.add(key)
-        jobs_to_export.append((path, key, annotations.get(key), overlays.get(key), search_bindings.get(path), goal, output))
+        from game.agent.training.study.recording import SUFFIX as HISTORY_SUFFIX
+        history_path = path.parent/(key+HISTORY_SUFFIX)
+        jobs_to_export.append((path, key, annotations.get(key), overlays.get(key), search_bindings.get(path), goal,
+                               output, history_path if history_path in paths else None, history_bindings.get(history_path)))
     prepared = time.perf_counter()
     # A failed export remains visibly incomplete; it never replaces a report.
     output.mkdir(parents=True, exist_ok=False)

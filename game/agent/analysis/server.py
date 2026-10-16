@@ -104,6 +104,8 @@ class AnalysisStore:
         with self.inference_lock:
             for metadata in self.model_info:
                 policy = self.models[metadata['label']]
+                if getattr(policy, 'needs_public_history', False):
+                    policy.begin_combat(value.get('public_history'), decision)
                 probabilities, critic = policy.probabilities(decision)
                 allowed = action_mask(decision, policy.model.action_policy)
                 if (set(probabilities) != {a.ref for a in decision.candidates}
@@ -114,6 +116,8 @@ class AnalysisStore:
                 run = self.runs[key]
                 same = (run['training']['behavior'] == metadata['behavior'] if run['training']
                         else run['metadata']['policy'] == policy.identity)
+                if getattr(policy, 'needs_public_history', False) and not value.get('public_history_verified', False):
+                    same = False
                 results.append({**metadata, 'value': critic, 'matches_recorded_policy': same,
                                 'probabilities': [{'ref': a.ref, 'probability': probabilities[a.ref],
                                                    'allowed': ok} for a, ok in zip(decision.candidates, allowed)]})

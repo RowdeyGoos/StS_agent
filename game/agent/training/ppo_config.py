@@ -27,6 +27,7 @@ class PPOConfig:
     gradient_clip: float = 0.5
     target_kl: float = 0.03
     normalize_advantages: bool = True
+    kl_check: str = 'epoch_v1'
 
     def __post_init__(self):
         for key, maximum in (('rollout_steps', 4096), ('episode_decisions', 4096),
@@ -41,7 +42,8 @@ class PPOConfig:
                 raise ValueError('Invalid finite PPO '+key)
         if (not 0 < self.episode_seconds <= 3600 or self.learning_rate == 0 or self.gradient_clip == 0 or
                 not 0 < self.gamma <= 1 or not 0 <= self.gae_lambda <= 1 or not 0 < self.clip_ratio < 1 or
-                self.target_kl == 0 or type(self.normalize_advantages) is not bool):
+                self.target_kl == 0 or type(self.normalize_advantages) is not bool or
+                self.kl_check not in ('epoch_v1', 'minibatch_v1')):
             raise ValueError('Unsupported PPO settings')
 
 
@@ -54,7 +56,7 @@ class PPOExperiment:
     schema: str = 'sts_ppo_experiment_v1'
 
     def __post_init__(self):
-        if (self.schema not in ('sts_ppo_experiment_v1', 'sts_ppo_experiment_v2') or type(self.training) is not TrainingConfig or
+        if (self.schema not in ('sts_ppo_experiment_v1', 'sts_ppo_experiment_v2', 'sts_ppo_experiment_v3') or type(self.training) is not TrainingConfig or
                 type(self.ppo) is not PPOConfig or type(self.encounters) is not tuple or
                 not 1 <= len(self.encounters) <= 100 or
                 any(type(n) is not str or not 0 < len(n) <= 128 for n in self.encounters) or
@@ -63,6 +65,8 @@ class PPOExperiment:
             raise ValueError('Invalid PPO experiment')
         if (self.schema == 'sts_ppo_experiment_v1') != (self.training.action_policy == ALL_LEGAL):
             raise ValueError('Policy-action restrictions require PPO experiment v2')
+        if (self.schema == 'sts_ppo_experiment_v3') != (self.ppo.kl_check == 'minibatch_v1'):
+            raise ValueError('Minibatch KL stopping requires PPO experiment v3')
         if self.training.reward.schema == POTENTIAL_SCHEMA and self.training.reward.discount != self.ppo.gamma:
             raise ValueError('Potential reward discount must equal PPO gamma')
         if self.training.mode == 'full_run':
@@ -80,7 +84,11 @@ class PPOExperiment:
                 raise ValueError('Held-out combinations cannot enter PPO training')
 
     def to_dict(self):
-        return {'schema': self.schema, 'training': self.training.to_dict(), 'ppo': asdict(self.ppo),
+        ppo = asdict(self.ppo)
+        # Preserve exact historical v1/v2 serialization, identities and behavior.
+        if self.schema != 'sts_ppo_experiment_v3':
+            ppo.pop('kl_check')
+        return {'schema': self.schema, 'training': self.training.to_dict(), 'ppo': ppo,
                 'encounters': list(self.encounters), 'source': self.source}
 
     @property
@@ -90,8 +98,11 @@ class PPOExperiment:
 
     @classmethod
     def from_dict(cls, value):
+        fields = set(PPOConfig.__dataclass_fields__)
+        if type(value) is dict and value.get('schema') != 'sts_ppo_experiment_v3':
+            fields.remove('kl_check')
         if (type(value) is not dict or set(value) != set(cls.__dataclass_fields__) or
-                type(value['ppo']) is not dict or set(value['ppo']) != set(PPOConfig.__dataclass_fields__) or
+                type(value['ppo']) is not dict or set(value['ppo']) != fields or
                 type(value['encounters']) is not list):
             raise ValueError('Expected a complete resolved PPO experiment')
         return cls(TrainingConfig.from_dict(value['training']), PPOConfig(**value['ppo']),

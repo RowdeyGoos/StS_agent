@@ -59,6 +59,7 @@ def discover(inputs):
                 continue
             if (is_trajectory(item) or item.name in REPORT_NAMES | PLAN_NAMES | {'search.json'} or
                     re.fullmatch(r'[0-9a-f]{32}\.search\.json\.gz', item.name) or
+                    re.fullmatch(r'[0-9a-f]{32}\.public-history\.json\.gz', item.name) or
                     re.fullmatch(r'rollout-\d{5}\.json', item.name)):
                 # A verified migration can briefly expose both containers.
                 files.add(logical_path(item) if is_trajectory(item) else item)

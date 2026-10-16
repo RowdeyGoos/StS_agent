@@ -30,10 +30,25 @@ from .checkpoint import publish
 from .combat_corpus import CombatCorpus, _read, _uuid, _sha, _describe, public_digest
 
 SCHEMA = 'sts_verified_search_source_v1'
+DEVELOPMENT_SCHEMA = 'sts_verified_development_search_source_v1'
 
 
 def _sha_file(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def _dependency_stamps(dependencies):
+    # Avoid rereading the completed parent's large report on every episode.
+    # All bytes are checked on load; any subsequent filesystem change rejects.
+    stamps = []
+    for binding in dependencies:
+        path = Path(binding['path'])
+        if path.is_symlink():
+            raise ValueError('Unexpected development provenance symlink')
+        stat = path.stat()
+        stamps.append((str(path), stat.st_dev, stat.st_ino, stat.st_size,
+                       stat.st_mtime_ns, stat.st_ctime_ns))
+    return stamps
 
 
 def _sibling(directory, name):
@@ -72,6 +87,66 @@ def _owners(source):
                 [r for r in next_report['cases'] if r['split'] == 'validation']):
             raise ValueError('Delegated validation population changed')
         path = following
+
+
+def development_context(parent_manifest):
+    """Bind a new exploratory TRAIN/DEV study to a completed, exposed parent.
+
+    This never reopens the parent's source or resets its TEST reservation. The
+    resulting source has a distinct schema and cannot offer any TEST cases.
+    Only public provenance is read here; native verification remains mandatory.
+    """
+    path = Path(parent_manifest).resolve()
+    parent = _read(path)
+    if parent.get('schema') != 'sts_vantom_feature_study_v1':
+        raise ValueError('Development continuation requires the original feature-study manifest')
+    manifest_sha = _sha_file(path)
+    result_path = path.parent/'report'/'comparisons.json'
+    completed = _read(result_path)
+    if (completed.get('status') != 'complete' or completed.get('learners_completed') != 96
+            or completed.get('manifest_sha256') != manifest_sha):
+        raise ValueError('Development continuation requires completed parent evidence')
+    source_path = Path(parent['source'])
+    source = _read(source_path)
+    if (source.get('schema') != 'sts_verified_feature_study_source_v1'
+            or source.get('status') != 'complete' or source['implementation'] != parent['implementation']
+            or parent['source_identity'] != source['schema']+':'+_sha_file(source_path)
+            or _sha_file(source['original']) != source['original_sha256']
+            or _sha_file(source['verified_source']) != source['verified_sha256']
+            or source['original'] != parent['configuration']['corpus']):
+        raise ValueError('Parent source provenance changed')
+    original = _read(Path(source['original']))
+    owner = Path(source['owner'])
+    if (source['cases'] != original['cases'] or not source['ownership']
+            or source['ownership'][0]['path'] != source['original']
+            or source['ownership'][-1]['path'] != str(owner)
+            or [r for r in _read(owner)['cases'] if r['split'] in ('validation', 'test')] !=
+               [r for r in original['cases'] if r['split'] in ('validation', 'test')]):
+        raise ValueError('Parent source populations or ownership changed')
+    reservation_path = owner.with_name('test-opened.json')
+    reservation_copy = path.parent/'test-reservation.json'
+    reservation = _read(reservation_path)
+    if (reservation.get('schema') != 'sts_feature_study_test_reservation_v1'
+            or reservation.get('source') != parent['source_identity']
+            or reservation.get('manifest_sha256') != manifest_sha
+            or reservation.get('no_further_training') is not True
+            or reservation.get('no_reselection') is not True
+            or reservation != _read(reservation_copy)
+            or sorted(reservation['cases']) != sorted(r['case_id'] for r in original['cases']
+                                                     if r['split'] == 'test' and r['start_kind'] == 'opening')
+            or owner.with_name('search-test-opened.json').exists()):
+        raise ValueError('Parent TEST reservation changed')
+    dependencies = list(source['ownership'])
+    dependencies += [dict(path=str(p), sha256=_sha_file(p)) for p in
+                     (path, source_path, Path(source['verified_source']), result_path,
+                      reservation_path, reservation_copy)]
+    for binding in dependencies:
+        p = Path(binding['path'])
+        if p.is_symlink() or _sha_file(p) != binding['sha256']:
+            raise ValueError('Development provenance changed')
+    return dict(parent_manifest=str(path), parent_manifest_sha256=manifest_sha,
+                source=source['original'], owner=str(owner), dependencies=dependencies,
+                prior_test_exposure=True, test_access=False, splits=['train', 'validation'])
 
 
 def _state(path, sha, row):
@@ -119,13 +194,20 @@ def _fresh_certificate(run, anchor, belief):
         raise ValueError('Historical fresh inventory certificate contradicts native relic counters')
 
 
-def prepare_search_source(*, corpus_path, prefix_manifest, prefix_dir, output_dir, progress=None):
+def prepare_search_source(*, corpus_path, prefix_manifest, prefix_dir, output_dir, progress=None,
+                          development_parent=None):
     started = time.perf_counter()
     source = Path(corpus_path).absolute()
     report = _read(source)
     if report.get('schema') != 'sts_act1_combat_corpus_v2' or report.get('status') != 'complete':
         raise ValueError('Expected a complete historical combat corpus')
-    owner, dependencies = _owners(source)
+    context = development_context(development_parent) if development_parent is not None else None
+    if context is not None:
+        if context['source'] != str(source):
+            raise ValueError('Development source differs from its completed parent')
+        owner, dependencies = Path(context['owner']), list(context['dependencies'])
+    else:
+        owner, dependencies = _owners(source)
     manifest_path, directory = Path(prefix_manifest).absolute(), Path(prefix_dir).absolute()
     if manifest_path.is_symlink() or directory.is_symlink():
         raise ValueError('Unexpected public prefix symlink')
@@ -249,12 +331,18 @@ def prepare_search_source(*, corpus_path, prefix_manifest, prefix_dir, output_di
     if asdict(implementation()) != source_identity:
         raise ValueError('Implementation changed during source verification')
     registry_sha = publish(private / 'registry.json', data(snapshots), private=True)
-    result = dict(schema=SCHEMA, status='complete', implementation=source_identity,
+    result = dict(schema=DEVELOPMENT_SCHEMA if context is not None else SCHEMA,
+        status='complete', implementation=source_identity,
         source=str(source), source_sha256=_sha_file(source), validation_owner=str(owner),
         dependencies=dependencies, registry_sha256=registry_sha, cases=prepared,
         verification='current public setup + exact native opening-to-continuation replay + public reveals',
         original_implementation=report['implementation'], prefix_implementation=manifest['implementation'],
-        heldout_test_opened=False, total_seconds=time.perf_counter() - started)
+        heldout_test_opened=context is not None, total_seconds=time.perf_counter() - started)
+    if context is not None:
+        if development_context(development_parent) != context:
+            raise ValueError('Parent provenance changed during development verification')
+        result.update(development_context=context, test_access=False,
+                      test_gameplay_opened_by_derivative=False)
     path = output / 'search-source.json'
     publish(path, data(result))
     return path, result
@@ -265,12 +353,22 @@ class VerifiedSearchSource:
         self.path = Path(path).absolute()
         self.report = _read(self.path)
         report = self.report
-        self.identity = SCHEMA + ':' + _sha_file(self.path)
-        if (report.get('schema') != SCHEMA or report.get('status') != 'complete' or
+        self.development_only = report.get('schema') == DEVELOPMENT_SCHEMA
+        self.identity = report.get('schema', '') + ':' + _sha_file(self.path)
+        if (report.get('schema') not in (SCHEMA, DEVELOPMENT_SCHEMA) or report.get('status') != 'complete' or
                 report.get('implementation') != asdict(implementation()) or
-                report.get('heldout_test_opened') is not False or expected not in (None, self.identity)):
+                report.get('heldout_test_opened') is not self.development_only or expected not in (None, self.identity)):
             raise ValueError('Search source requires current verified rules and exact identity')
-        owner, dependencies = _owners(Path(report['source']))
+        if self.development_only:
+            initial_stamps = _dependency_stamps(report['dependencies'])
+            context = development_context(report['development_context']['parent_manifest'])
+            if (context != report['development_context'] or context['source'] != report['source']
+                    or report.get('test_access') is not False
+                    or report.get('test_gameplay_opened_by_derivative') is not False):
+                raise ValueError('Development source provenance changed')
+            owner, dependencies = Path(context['owner']), context['dependencies']
+        else:
+            owner, dependencies = _owners(Path(report['source']))
         if str(owner) != report['validation_owner'] or dependencies != report['dependencies'][:-1]:
             raise ValueError('Source split reservations changed')
         for binding in report['dependencies']:
@@ -289,6 +387,9 @@ class VerifiedSearchSource:
         self.registry = _read(private / 'registry.json', private=True, expected_sha=report['registry_sha256'])
         if set(self.registry) != set(self.cases):
             raise ValueError('Verified source registry population changed')
+        self._development_stamps = _dependency_stamps(report['dependencies']) if self.development_only else None
+        if self.development_only and self._development_stamps != initial_stamps:
+            raise ValueError('Development provenance changed while opening source')
 
     def split(self, split):
         if split not in ('train', 'validation'):
@@ -296,10 +397,15 @@ class VerifiedSearchSource:
         return [r for r in self.cases.values() if r['split'] == split]
 
     def restore(self, key, *, split):
+        if split not in ('train', 'validation'):
+            raise ValueError('Imported search sources do not open held-out test')
         row = self.cases[key]
         if row['split'] != split:
             raise ValueError('Combat case belongs to another split')
-        if split == 'validation':
+        if self.development_only:
+            if _dependency_stamps(self.report['dependencies']) != self._development_stamps:
+                raise ValueError('Development provenance changed after opening source')
+        elif split == 'validation':
             _owners(Path(self.report['source']))
         record = self.registry[key]
         return _state(Path(record['path']), record['snapshot_sha256'], row)[0]
@@ -316,5 +422,8 @@ class VerifiedSearchSource:
 
 def open_search_source(path, *, expected=None):
     schema = _read(Path(path)).get('schema')
-    cls = VerifiedSearchSource if schema == SCHEMA else CombatCorpus
+    from .study.source import SOURCE as STUDY, DEVELOPMENT_SOURCE, StudySource
+    if schema in (STUDY, DEVELOPMENT_SOURCE):
+        return StudySource(path, expected=expected)
+    cls = VerifiedSearchSource if schema in (SCHEMA, DEVELOPMENT_SCHEMA) else CombatCorpus
     return cls(path, expected=expected)

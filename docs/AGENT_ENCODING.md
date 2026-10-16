@@ -11,6 +11,86 @@ while preserving the original slice and live contract.
 Milestone 6's [public trajectories and training loader](AGENT_EXECUTION.md)
 consume this encoding without changing its spaces, semantics or capacities.
 
+## Experimental typed combat encoder
+
+The implemented October 14 design preserves the existing Vantom study's public feature
+meanings while changing how the learner receives and combines them. It is a
+learned projection over the public contract, not a replacement for the lossless
+observation format below. It does not change the default model.
+
+![Implemented experimental hierarchical pooled MLP](assets/hierarchical-mlp/design.png)
+
+[Editable figure](assets/hierarchical-mlp/design.svg) · [PDF](assets/hierarchical-mlp/design.pdf).
+The figure describes the
+full no-content-vocabulary variant. The experiment record fixes the implementation
+and controls; the figure generator is saved beside the assets.
+
+The original study projection uses one universal 293/1,745/1,874-channel record
+per entity for basic/mechanics/context features, with a capacity of 128 entities.
+The no-vocabulary context flat model therefore concatenates **240,000 state
+values**, including one presence mask per entity, before adding candidate operands.
+This describes that experimental flat model, not every checkpoint or the canonical
+observation format. The original pooled MLP applies a shared entity network to
+those universal records, then a global mean and linear value head.
+The new design uses:
+
+- Role-specific compact records with known-value flags, one numerical transform,
+  and fixed mechanical categories. Player/context fields occur once. Content
+  names, hashes, ordinals and learned content embeddings are excluded.
+- A shared effect encoder across cards, potions and relics. Its ordered combiner
+  preserves the eight public effect positions and presence masks; effects stay
+  attached to their owner. Unknown mechanics remain unknown, not zero effects.
+- A shared local encoder within each entity type, producing 64-dimensional
+  entity vectors, followed by two shared processing layers.
+- Separate mean/max/count summaries for enemies, each combat pile, potions and
+  relics. Player and selection vectors remain separate. A nonlinear state MLP
+  combines these summaries before actor and critic use them.
+- The existing candidate scorer, with the combined state and individual subject
+  and target vectors. All offered choices reach actor and critic. Reference
+  indexes join operands but their names never become features.
+
+Public history, modifier durations, completeness flags, ownership, meaningful
+positions, and every legal candidate survive. Only the existing public projection
+can supply facts: no hidden AI, RNG, draw order or action previews are added.
+Compact batches contain actual entities/effects with masks; capacity overflow is
+an error. Historical checkpoints retain their original semantics.
+
+The compact-input pooled control uses the same new frontend but retains the old
+single mean and linear critic. It separates the frontend intervention from the
+additional group pooling/state-network intervention. Each intervention bundles
+specified changes; neither is a pure test of parameter count.
+
+The design draws on the nested shared encoders in
+[OpenAI Five, Figure 17](https://cdn.openai.com/dota-2.pdf#page=47),
+[Deep Sets](https://papers.nips.cc/paper/6931-deep-sets), and the entity-interaction
+alternative in [Set Transformer](https://proceedings.mlr.press/v97/lee19d.html).
+Attention over the compact frontend is not part of this implementation; the
+original universal-input attention model remains available in the feature study.
+The [experiment record](evidence/VANTOM_ENTITY_ENCODING_2026_10_14.md) owns
+the frozen comparison, validation and measured results.
+
+Both new architectures are implemented as `compact_pooled_mlp` and
+`hierarchical_pooled_mlp`, currently without content vocabulary. Role widths and
+the ordered effect layout are bound into the feature identity. Compact rollouts
+and batches store actual entities and effect records; the original semantic
+projection is still constructed temporarily for encoding and auditing. Thus this
+is a smaller learned-input path, not yet a direct typed public encoder.
+
+The completed width-64 comparison found about **6.7× less packed rich-input
+storage** for either compact design. Rich compact pooling scored 28.6% greedy DEV
+versus 27.8% for original pooling; the difference was unresolved. Hierarchical
+pooling scored 30.2%, without an established gain over either pooled comparator.
+Measured rich inference was slower for compact/hierarchical pooling
+(12.01/11.76 ms versus 6.71 ms). The useful outcome is reduced storage with a
+candidate worth further testing, not a demonstrated speed or playing-strength
+advantage. See the evidence record for sampled play, paired intervals and limits.
+
+Study checkpoints use `sts_inference_bundle_v5` and bind architecture, feature
+specification, catalog, history semantics, capacities and optional vocabulary.
+Training, evaluation, playback and the decision inspector dispatch through the
+same encoder. Earlier bundle schemas remain loadable with their own meanings;
+exact PPO resume rejects changed feature or update semantics.
+
 ## Fixed spaces and public semantics
 
 The format is `sts_public_graph_v1`. Its default padded profile has **256 action

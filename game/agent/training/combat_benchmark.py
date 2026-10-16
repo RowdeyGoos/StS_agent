@@ -52,8 +52,8 @@ class CorpusEvaluator:
             engine_factory=lambda _: self.corpus.restore(config.case_id, split=config.split),
             scenario_set=self.corpus.identity, cancel=cancel, episode_id=episode,
             expected_start=row['public_state_sha256'], evidence='headless_rollout',
-            planning_start=self.corpus.planning_start(config.case_id, split=config.split)
-                if getattr(model, 'needs_campaign_planning', False) else None)
+            planning_start=(getattr(self.corpus, 'history_start', None) or self.corpus.planning_start)(config.case_id, split=config.split)
+                if getattr(model, 'needs_campaign_planning', False) or getattr(model, 'needs_public_history', False) else None)
         if getattr(model, 'needs_campaign_planning', False) and result['status'] in ('terminated', 'truncated'):
             from .search_run import _targets
             if model.planning_start is None:

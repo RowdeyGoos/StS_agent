@@ -21,7 +21,7 @@ from game.agent.recording import Metadata, COMPRESSED_SUFFIX as SUFFIX, Trajecto
 from game.agent.trace_storage import trajectory_digest
 from game.agent.runner import RunCancelled, prepare_directories
 from .env import CombatTrainingEnv
-from .features import FeatureEncoder, _RolloutEncoder
+from .features import FeatureEncoder, _RolloutEncoder, encoder_for
 from .model import collate, policy_statistics, sample_actions
 from .records import CombatTrainingRecorder
 from .rewards import (ACT_RUN_SCHEMA, DEFEAT_HP_SCHEMA, POTENTIAL_SCHEMA, SHAPED_RUN_SCHEMAS,
@@ -137,8 +137,8 @@ def collect(model, experiment, generator, *, cursor, iteration, decisions=None,
         output = audit = None
     identity, behavior = implementation(), fingerprint(model)
     identity = replace(identity, policy='ppo_v1:' + behavior.split(':')[-1])
-    encoder = FeatureEncoder(model.vocabulary, action_policy=model.action_policy,
-                             representation=model.architecture.schema, input_view=model.input_view)
+    encoder = encoder_for(model)
+    public_history = getattr(encoder, 'history', None)
     prepared = None
     model.eval()
     steps, episodes = [], []
@@ -179,7 +179,7 @@ def collect(model, experiment, generator, *, cursor, iteration, decisions=None,
                 # Custom environments/encoders keep their independent encoding
                 # contract. Standard tasks can reuse the graph built by Gym.
                 prepared = None
-                if (type(env) in (CombatTrainingEnv, FullRunEnv, FullRunTrainingEnv) and
+                if (type(encoder) is FeatureEncoder and type(env) in (CombatTrainingEnv, FullRunEnv, FullRunTrainingEnv) and
                         type(env.encoder) is FullRunEncoder and env.encoder.profile == encoder.public.profile):
                     prepared = _RolloutEncoder(encoder)
                     env.encoder = prepared
@@ -188,6 +188,9 @@ def collect(model, experiment, generator, *, cursor, iteration, decisions=None,
                 public, summary = env.public_state, info.get('combat')
                 if isinstance(public, c.RunOutcome):
                     raise ValueError('Collection requires an initial ready decision')
+                if public_history is not None:
+                    public_history.restore(getattr(env, 'public_history_start', None), public)
+                    env.record_combat_reveals = True
                 row['start_hp'] = public.run.get('hp') if full_run else summary['hp']
                 row['contexts'], row['action_kinds'] = {}, {}
                 from .run_task import environment as campaign_environment
@@ -200,6 +203,7 @@ def collect(model, experiment, generator, *, cursor, iteration, decisions=None,
                                encounter=env.corpus_case['encounter'], room_kind=env.corpus_case['room_kind'],
                                start_kind=env.corpus_case['start_kind'], start_turn=env.corpus_case['turn'])
                 writer = None
+                history_records = []
                 if output is not None:
                     replay = {'schema':'sts_ppo_episode_replay_v1', 'environment_reset_seed':seed,
                               'encounter':name, 'source':experiment.source, 'episode_decisions':limit,
@@ -245,6 +249,7 @@ def collect(model, experiment, generator, *, cursor, iteration, decisions=None,
                     context = public.context.kind
                     prior_act = completed_act(public)
                     prior_public, prior_summary = public, summary
+                    history_record = public_history.export(public) if public_history is not None and writer else None
                     observation, reward, terminated, truncated, info = env.step(index)
                     execution = info['execution']
                     if execution is None:
@@ -258,6 +263,10 @@ def collect(model, experiment, generator, *, cursor, iteration, decisions=None,
                     if execution['status'] != 'reconciled':
                         raise ValueError('PPO requires a reconciled action; no retry is allowed')
                     public, summary = env.public_state, info.get('combat')
+                    if public_history is not None:
+                        if history_record is not None:
+                            history_records.append(history_record)
+                        public_history.observe(prior_public, chosen, public, env.combat_reveals)
                     measurement = ({'spec_id':objective.identity, 'components':asdict(measure_run(public))}
                                    if full_run and objective.schema not in SHAPED_RUN_SCHEMAS else info.get('training_reward'))
                     if measurement is None or measurement['spec_id'] != objective.identity:
@@ -330,6 +339,10 @@ def collect(model, experiment, generator, *, cursor, iteration, decisions=None,
                                       check_cancel=lambda:check_cancel(cancel))
                         row.update(trajectory=writer.writer.path.name, training=writer.path.name,
                                    trajectory_sha256=json.loads(writer.path.read_text())['trajectory_sha256'])
+                    if history_records:
+                        from .study.recording import write_history
+                        row['public_history_sha256'] = write_history(output, episode_id,
+                            row['trajectory_sha256'], history_records)
             # A timeout with no executed action cannot make quota progress. Stop
             # the collection rather than repeatedly resetting another game.
             if not row['steps'] or progress['stop_reason'] is not None:

@@ -1,0 +1,10 @@
+{
+  "schema": "sts_vantom_feature_study_v1",
+  "corpus": "~/code/github/RowdeyGoos/StS_agent/runs/vantom-specialist-20261002/corpus/corpus.json",
+  "prefix_manifest": "~/code/github/RowdeyGoos/StS_agent/runs/vantom-search-training-20261008/prefixes-v3.json.gz",
+  "prefix_dir": "~/code/github/RowdeyGoos/StS_agent/runs/vantom-search-training-20261008/prefixes-v3",
+  "reference_crosswalk": "configs/training/vantom_alphaspire_crosswalk.json",
+  "seeds": [11, 29, 47],
+  "collectors": 16,
+  "learner_threads": 4
+}

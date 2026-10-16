@@ -31,6 +31,10 @@ class Architecture:
 
 
 def collate(states, *, vocabulary):
+    from .study.projection import StudyFeatures
+    if states and isinstance(states[0], StudyFeatures):
+        from .study.model import collate_study
+        return collate_study(states, vocabulary)
     if not states or any(s.vocabulary != vocabulary.identity for s in states):
         raise ValueError('Expected nonempty batch with one frozen vocabulary')
     if len({s.action_policy for s in states}) != 1:
@@ -103,6 +107,14 @@ def collate(states, *, vocabulary):
     elif any(s.action_previews is not None for s in states):
         raise ValueError('Action previews require a versioned representation')
     return batch
+
+
+def make_model(vocabulary, architecture, **settings):
+    from .study.spec import StudyArchitecture
+    if isinstance(architecture, StudyArchitecture):
+        from .study.model import StudyActorCritic
+        return StudyActorCritic(vocabulary, architecture, **settings)
+    return ActorCritic(vocabulary, architecture, **settings)
 
 
 def _pool(values, owners, count):

@@ -23,6 +23,14 @@ _FEATURE_ARRAYS = ('nodes', 'parents', 'positions', 'fields', 'numbers', 'links'
                    'link_positions', 'candidates')
 
 
+def encoder_for(model):
+    from .study.spec import SCHEMA as STUDY
+    if model.architecture.schema == STUDY:
+        return model.encoder()
+    return FeatureEncoder(model.vocabulary, action_policy=model.action_policy,
+                          representation=model.architecture.schema, input_view=model.input_view)
+
+
 @dataclass(frozen=True, slots=True)
 class Vocabulary:
     names: tuple[str, ...]

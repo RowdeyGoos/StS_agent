@@ -28,6 +28,54 @@ names, tags and the Markdown run description can hold experiment notes. Write
 notes above or below the generated description block; subsequent imports preserve
 that text and retain the inspector link when no replacement URL is supplied.
 
+## Frozen Vantom study results
+
+`sts-agent-train feature-study` publishes one MLflow run per completed learner
+and a comparison run in that study's own `mlflow/` directory. These use
+`sts.kind = 'feature_study'` and `feature_study_comparison`, rather than the generic
+`ppo`/`evaluation` filters above. All four completed studies have checked reports,
+plots and endpoint metrics:
+
+| Study | Learners | Local viewer | Evidence |
+| --- | ---: | --- | --- |
+| Feature/architecture screen | 96 | [5051](http://127.0.0.1:5051/#/experiments/1) | [Results](evidence/VANTOM_FEATURE_STUDY_2026_10_12.md) |
+| Equal-width flat MLP | 18 | [5052](http://127.0.0.1:5052/#/experiments/1) | [Results](evidence/VANTOM_FLAT_WIDTH_2026_10_13.md) |
+| Compact/hierarchical encoders | 24 | [5053](http://127.0.0.1:5053/#/experiments/1) | [Results](evidence/VANTOM_ENTITY_ENCODING_2026_10_14.md) |
+| Shared PPO calibration | 36 | [5054](http://127.0.0.1:5054/#/experiments/1) | [Results](evidence/VANTOM_SHARED_PPO_2026_10_15.md) |
+
+Each viewer needs its local server running; the evidence records give the public
+output paths. Serve a retained store with `sts-agent-track serve --store
+<study-output>/mlflow --port <port>`. Do not rerun training to recover a dashboard.
+The canonical `manifest.json`, learner reports and `report/comparisons.json`
+remain authoritative. Study runs publish aggregate metrics directly; the generic
+Models-catalog import workflow below is separate. Checkpoints, trajectories and
+private resume state retain their original locations and access boundaries.
+
+Study `development/greedy_win_rate` curves use the six collected-decision milestones
+0/10k/25k/50k/75k/100k. Endpoint greedy, two-repeat sampled DEV and TRAIN-opening
+measurements remain separate. Plot shading shows the learner-seed range, not a
+confidence interval. Paired intervals in the comparison artifacts resample source
+fights and learner seeds, retaining the registered comparison families. Neither
+sampled repeats nor continuation starts are independent fights.
+
+Study `ppo/*` curves contain the recorded `mean_update` diagnostics. For the shared
+PPO calibration, use the saved completion diagnostics and comparison plots for
+full post-update rollout KL and the registered severe-KL rate; a mean of minibatch
+estimates is a different measurement. The study also records three distinct counts:
+
+- **Collected decisions:** environment interactions and the fixed 100k budget.
+- **Trained decisions:** decisions belonging to a rollout with an optimizer update.
+  Zero-signal skips are reported separately.
+- **Optimizer coverage:** `optimizer_unique_decisions` counts collected decisions
+  actually used in a gradient step; `optimizer_decision_visits` includes repeated
+  epochs; `kl_unvisited_decisions` counts decisions left unused by KL stopping.
+
+The shared study collected 3.6M decisions in updated rollouts but used 3,029,392
+unique decisions for gradients, with 5,631,168 visits. No updates were skipped for
+zero signal; this does not imply complete optimizer coverage. Historical reports
+without those fields remain unmeasured; do not infer zero missing exposure or two
+complete epochs.
+
 ## Focused saved views
 
 Report imports and live tracking automatically apply reusable views as the
@@ -249,8 +297,10 @@ The last available public bundle of each completed segment is copied into run
 artifacts. The Models catalog also retains the recorded public checkpoint bundles;
 canonical files remain in their original directories.
 
-Raw learner/game seeds, optimizer RNG state, private replay snapshots and private
-audit directories are not imported. Separate learners retain separate run IDs;
+Generic report imports exclude raw learner/game seeds, optimizer RNG state,
+private replay snapshots and private audit directories. Frozen studies deliberately
+publish their registered learner-seed labels for paired comparisons; gameplay
+seeds and optimizer RNG contents stay private. Separate learners retain separate run IDs;
 exact-resume state digests bind PPO continuations without exposing RNG contents.
 
 ## Continuations, comparisons and historical imports

@@ -52,6 +52,15 @@ selectors, to the learned policy. Completed fights hand control back to the
 heuristic. Both policies receive only the immutable public decision and select
 advertised candidates through the existing adapter.
 
+The same command accepts experimental
+[feature-study checkpoints](AGENT_TRAINING.md#vantom-feature-and-architecture-study),
+including the compact and hierarchical pooled models. Their frozen feature
+specification selects the encoder. Headless playback supplies public combat-entry
+history and reveal receipts, resets history for each combat and updates it only
+after accepted transitions. Missing history remains explicitly unknown. This
+supports playback of the research models; their Vantom results do not establish
+campaign or native-bridge performance.
+
 `sts-agent-evaluate --checkpoint ... --hybrid` pairs ordinary-HP Ironclad A0
 campaigns against that heuristic on development seeds. It records actual run
 outcomes, cutoffs/failures, potion-use commands and the last observed public
@@ -91,6 +100,16 @@ references and hashes remain valid. A present plain file is validated as-is,
 never silently replaced by its sibling. This adds loader metadata without changing
 the v1 wire format or sparse-reward validator. Combat training uses that complete
 digest to join a [separate task sidecar](AGENT_TRAINING.md#milestone-2-usage-and-record-semantics).
+
+Feature-study PPO and combat evaluation also save
+`<episode-id>.public-history.json.gz` supplements with schema
+`sts_recorded_public_history_v1`. They contain the public history needed at each
+recorded decision, bound to the trajectory digest and observation identities;
+they contain no private game saves. Owning PPO/evaluation reports bind the exact
+supplement bytes. Include those reports and supplements when building a decision
+inspector dataset. The inspector validates each binding and does not claim an
+exact recorded-policy match when the history lacks its report hash. Canonical
+trajectory bytes and the sparse full-run reward remain unchanged.
 
 Build identity hashes the shipped `game/**/*.py` sources; rules identity hashes
 `game/headless/**/*.py`; the policy identity names and hashes the reference chooser.

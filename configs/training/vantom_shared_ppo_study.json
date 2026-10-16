@@ -1,0 +1,17 @@
+{
+  "schema": "sts_vantom_shared_ppo_study_v1",
+  "parent_manifest": "~/code/github/RowdeyGoos/StS_agent/runs/vantom-feature-study-20261012-r3/manifest.json",
+  "hidden_size": 64,
+  "seeds": [11, 29],
+  "transfer_seeds": [71, 101, 137],
+  "collectors": 16,
+  "learner_threads": 4,
+  "calibration_models": ["flat_mlp-ids-basic", "graph-mechanical-context", "attention-ids-context"],
+  "transfer_models": ["pooled_mlp-mechanical-context", "compact_pooled_mlp-mechanical-context"],
+  "recipes": {
+    "reference": {"learning_rate": 0.0003, "batch_size": 16, "entropy_weight": 0.01},
+    "larger_batch": {"learning_rate": 0.0003, "batch_size": 64, "entropy_weight": 0.01},
+    "smaller_lr": {"learning_rate": 0.0001, "batch_size": 64, "entropy_weight": 0.01},
+    "lower_entropy": {"learning_rate": 0.0001, "batch_size": 64, "entropy_weight": 0.003}
+  }
+}

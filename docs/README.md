@@ -22,6 +22,7 @@ The top level contains current guidance. Completed Phase 0/1 work lives in the
 | Shared public contract, bridge adapter and Gymnasium delivery | [V1/full-run v2 contracts and producer mapping](AGENT_CONTRACT.md), [encoding and Gymnasium](AGENT_ENCODING.md), [delivery plan](AGENT_ENVIRONMENT.md) |
 | Public trajectories, agent command, workers and training data | [Execution and data loading](AGENT_EXECUTION.md) |
 | Combat/full-run objectives, imitation/PPO, combat search, distillation, reanalysis and paired evaluation | [Training guide](AGENT_TRAINING.md) |
+| Feature/architecture studies, typed entity design and reusable PPO findings | [Current Vantom findings](AGENT_TRAINING.md#current-vantom-findings), [encoder design](AGENT_ENCODING.md#experimental-typed-combat-encoder) |
 | Combat-search redesign, maintained beliefs, prefix recovery and future bridge compatibility | [Search architecture plan](COMBAT_SEARCH_ARCHITECTURE.md) |
 | Local experiment dashboard, learning curves, historical imports and checkpoint lineage | [Experiment tracking](EXPERIMENT_TRACKING.md) |
 | Headless game logic and architecture | [Game engine](HEADLESS_ENGINE.md) |
@@ -30,6 +31,18 @@ The top level contains current guidance. Completed Phase 0/1 work lives in the
 
 ## References and results
 
+- Feature, identity and architecture comparison: [October 12, 96 learners](evidence/VANTOM_FEATURE_STUDY_2026_10_12.md)
+  records the AlphaSpire feature crosswalk, matched-capacity screen, feature removals
+  and the original reserved TEST confirmation.
+- Richness at equal flat-MLP width: [October 13, 18 learners](evidence/VANTOM_FLAT_WIDTH_2026_10_13.md)
+  separates the earlier narrow hidden layers from the richer-input comparison.
+- Compact and hierarchical entity encoders: [October 14, 24 learners](evidence/VANTOM_ENTITY_ENCODING_2026_10_14.md)
+  compares the implemented design with original pooling and flat MLPs, including
+  memory, latency, sampled play and uncertainty.
+- Shared PPO calibration: [October 15–16, 36 learners](evidence/VANTOM_SHARED_PPO_2026_10_15.md)
+  records four recipes, frozen challenger selection, fresh-seed transfer and
+  actual optimizer coverage. The latter three studies are exploratory TRAIN/DEV
+  follow-ups after prior TEST exposure; no defaults changed.
 - Experimental combat search: [implementation and October 4 pilot](evidence/COMBAT_SEARCH_2026_10_04.md)
 - Campaign Search and witnessed validation: [October 9 integration and frozen diagnostic set](evidence/CAMPAIGN_SEARCH_VALIDATION_2026_10_09.md)
 - Shared Search workflow: [October 11 consolidation and verification of 935 Vantom starts](evidence/SEARCH_WORKFLOW_CONSOLIDATION_2026_10_11.md)

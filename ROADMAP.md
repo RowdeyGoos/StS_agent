@@ -47,7 +47,17 @@ Further work should start from a new concrete requirement:
    genuine frozen combat starts from both regions, whole-campaign data splits,
    a victory-first combat objective with modest HP shaping, and matched
    encounter-level comparisons. Keep the noncombat heuristic fixed during hybrid
-   Act 1 checks. The existing model architecture and parallel PPO remain in use.
+   Act 1 checks. Production defaults and parallel PPO remain in use. The completed
+   [Vantom feature, encoder and PPO studies](docs/AGENT_TRAINING.md#current-vantom-findings)
+   support keeping basic flat and original rich pooling as baselines, with compact
+   rich pooling as a candidate for reduced rollout storage. Extra hierarchy has
+   not established an advantage, and smaller inputs did not improve measured
+   inference latency. Freeze a common recipe for architecture comparisons;
+   batch 64 is a promising replication candidate but failed the registered
+   adoption gates. Prioritize independent learner replication, public-feature
+   coverage and broader combat evidence before increasing model size or budgets.
+   These follow-ups are exploratory after the original TEST exposure; they do not
+   authorize another TEST run or a default change.
    The new [experimental combat search](docs/AGENT_TRAINING.md#experimental-combat-search)
    adds public-history planning, soft-target distillation and reanalysis. Measure
    supported-state coverage, critic accuracy and paired combat gains before
