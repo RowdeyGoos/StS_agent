@@ -598,3 +598,30 @@ def test_last_potion_discard_activates_belt_buckle_immediately():
     assert p.rules.powers["dexterity"] == 2
     assert p.rules.powers.get("reptile_trinket", 0) == 0
     clone(run)
+
+
+@pytest.mark.parametrize("sozu", [False, True])
+def test_relic_pickup_potions_inside_an_event_keep_its_potion_chain(sozu):
+    """Tiny Mailbox rest rewards during Dense Vegetation, then a discard before its fight."""
+    from game.headless.run import events
+    from game.headless.run.actions import ChooseEventOption, ChooseRelicReward
+    from game.headless.run.config import RunConfig
+
+    run = RunEngine(seed=5, hp=30, gold=100, config=RunConfig())
+    add_relic(run.state, "tiny_mailbox", cards=run.cards)
+    add_potion(run.state, "strength_potion")
+    if sozu:
+        add_relic(run.state, "sozu", cards=run.cards)
+    events.begin(run.state, "dense_vegetation", cards=run.cards)
+    run.apply(next(a for a in run.legal_actions() if isinstance(a, ChooseEventOption) and a.option_id == "rest"))
+    for _ in range(2):
+        run.apply(ChooseRelicReward(0))
+        clone(run)
+    # Sozu refuses both claims, so neither enters the event's potion history.
+    assert sum(p is not None for p in run.state.potions) == (1 if sozu else 3)
+    assert len(run.state.pending.get("potion_changes", [])) == (0 if sozu else 2)
+    run.apply(next(a for a in run.legal_actions() if isinstance(a, DiscardPotion)))
+    clone(run)
+    run.apply(next(a for a in run.legal_actions() if isinstance(a, ChooseEventOption) and a.option_id == "fight"))
+    assert run.combat is not None
+    clone(run)

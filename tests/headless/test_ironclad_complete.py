@@ -314,6 +314,30 @@ def test_vicious_hellraiser_nested_draw_occurs_before_next_enemy_vulnerable():
     assert all(e.statuses.get("vulnerable") == 3 for e in c.enemies)
 
 
+def test_resolution_budget_stops_only_an_unbounded_hellraiser_pillage_cycle():
+    from game.headless.core.hook_scheduler import ResolutionLimitExceeded
+
+    def cycle(hp):
+        c = fight("pillage", draw=("strike", "strike"), hp=hp)
+        apply_power(c.player, "hellraiser", 1)
+        return c
+
+    # Pillage keeps drawing after attacks and Hellraiser autoplays each Strike;
+    # an effectively unkillable enemy never ends the reshuffling chain.
+    c = cycle(999_999_999)
+    c.player.resolution_limit = 10_000
+    with pytest.raises(ResolutionLimitExceeded):
+        play(c, "card.0")
+    # A finite chain under the same budget resolves exactly as without one.
+    bounded, reference = cycle(30), cycle(30)
+    bounded.player.resolution_limit = 10_000
+    play(bounded, "card.0")
+    play(reference, "card.0")
+    assert bounded.done and bounded.player.resolution_limit < 10_000
+    bounded.player.resolution_limit = None
+    assert saved(bounded) == saved(reference)
+
+
 @pytest.mark.parametrize(
     "alter",
     [

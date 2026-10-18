@@ -6,8 +6,18 @@ import time
 from game.agent.contracts import full as f
 from game.agent.headless.full_projection import FullProjection
 from game.agent.headless.identity import Identities
+from game.headless.core.hook_scheduler import ResolutionLimitExceeded
 from game.headless.planning import UnsupportedSearch
 from .public_keys import action_key
+
+# Deterministic cap on one simulated command's resolution tasks. Ordinary plays
+# use tens to hundreds; a non-terminating world falls back explicitly instead
+# of blocking the search deadline, which is only checked between commands.
+SIMULATED_RESOLUTION_LIMIT = 100_000
+
+
+class SimulationWorkLimit(UnsupportedSearch):
+    """One simulated command exceeded its resolution budget; this world cannot continue."""
 
 
 class SimulationWorld:
@@ -17,6 +27,7 @@ class SimulationWorld:
         self._root = root
         self._ids = Identities()
         self._history, self._powers, self._commands = [], {}, {}
+        self._legal = None
         self.terminal_value = self.completion = None
         self.prepared = None
         self.timings = dict(transition=0., projection=0.)
@@ -39,7 +50,7 @@ class SimulationWorld:
             if node.kind == 'pile' and node.definition_id == 'powers':
                 for card in node.children:
                     self._powers[0, refs[card.ref][1]] = card
-        self._commands = {}
+        self._commands, self._legal = {}, None
         self.terminal_value = None
         self.timings = dict(transition=0., projection=0.)
 
@@ -55,7 +66,7 @@ class SimulationWorld:
             raise UnsupportedSearch('simulation_fork_unsupported') from error
         result._ids = deepcopy(self._ids)
         result._history, result._powers = list(self._history), dict(self._powers)
-        result._commands = {}
+        result._commands, result._legal = {}, None
         result.prepared = None
         result.timings = dict(transition=0., projection=0.)
         return result
@@ -68,7 +79,7 @@ class SimulationWorld:
             result = owner.decision(transform=self._project_view)
         except UnsupportedProfile as error:
             raise UnsupportedSearch('simulation_projection_unsupported') from error
-        self._commands = owner.commands
+        self._commands, self._legal = owner.commands, owner.legal
         self.prepared = owner.prepared
         self.timings['projection'] += time.perf_counter() - started
         return result
@@ -94,7 +105,17 @@ class SimulationWorld:
         card = next((n for n in f.walk(decision.context) if n.ref == action.subject), None)
         command = self._commands[action.ref]
         started = time.perf_counter()
-        self._run.apply(command)
+        player = previous.player if previous is not None else None
+        if player is not None:
+            player.resolution_limit = SIMULATED_RESOLUTION_LIMIT
+        try:
+            # The projection that bound this command enumerated this unchanged state.
+            self._run.apply(command, legal=self._legal)
+        except ResolutionLimitExceeded:
+            raise SimulationWorkLimit('simulation_work_limit') from None
+        finally:
+            if player is not None:
+                player.resolution_limit = None
         self.timings['transition'] += time.perf_counter() - started
         self._history.append(action)
         if action.kind == 'play_card' and previous is self._run.combat:

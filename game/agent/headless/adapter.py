@@ -12,6 +12,27 @@ from .projection import Projection
 from .combat_summary import summarize, with_enemy_health
 
 
+# Shared content definitions embedded in every snapshot (see capture_run's
+# shared_content). Their JSON text is spliced into the guard string verbatim.
+_CONTENT_KEYS = frozenset(('items', 'shops', 'events'))
+_CONTENT_TEXT = {}
+
+
+def _content_text(value):
+    """json.dumps(value, ...) for an unmutated shared content value, computed once.
+
+    Holding the value keeps its id unique; a fresh (uncached) value never hits.
+    """
+    entry = _CONTENT_TEXT.get(id(value))
+    if entry is not None and entry[0] is value:
+        return entry[1]
+    text = json.dumps(value, sort_keys=True, separators=(',', ':'))
+    if len(_CONTENT_TEXT) >= 16:
+        _CONTENT_TEXT.clear()
+    _CONTENT_TEXT[id(value)] = (value, text)
+    return text
+
+
 @dataclass(frozen=True, slots=True)
 class DecisionFrame:
     """The policy receives decision only; binding stays with the caller.
@@ -49,7 +70,7 @@ class HeadlessAdapter:
         self._surfaces = []
         self._surface_epoch = 0
         self._frame = None
-        self._commands = {}
+        self._commands, self._legal = {}, None
         self._stamp = None
         self._faulted = False
         self._roots = self._owned_roots()
@@ -122,7 +143,12 @@ class HeadlessAdapter:
     def _guard(self):
         # Private control guard ONLY. Projection reads explicit owned fields; it
         # neither subtracts fields from this snapshot nor exposes this digest.
-        data = json.dumps(self._engine.snapshot(), sort_keys=True, separators=(',', ':'))
+        # The string is byte-identical to json.dumps(snapshot, sort_keys=True,
+        # separators=(',', ':')); only the constant content text is reused.
+        snapshot = self._engine.snapshot(shared_content=True)
+        data = '{' + ','.join(json.dumps(key) + ':' + (
+            _content_text(snapshot[key]) if key in _CONTENT_KEYS else
+            json.dumps(snapshot[key], sort_keys=True, separators=(',', ':'))) for key in sorted(snapshot)) + '}'
         return hashlib.sha256(data.encode()).digest()
 
     def _outcome(self):
@@ -148,13 +174,13 @@ class HeadlessAdapter:
         outcome = self._outcome()
         if outcome is not None:
             self._frame = None
-            self._commands = {}
+            self._commands, self._legal = {}, None
             return outcome
         stamp = self._guard()
         if self._frame is not None and stamp == self._stamp:
             return self._frame
         self._frame = None
-        self._commands = {}
+        self._commands, self._legal = {}, None
         # An unsupported projection must not consume identity allocation or
         # partially replace a valid decision's metadata.
         identities = deepcopy(self._ids)
@@ -202,7 +228,8 @@ class HeadlessAdapter:
             self._surfaces.append((owner, generation))
             self._surface_epoch = generation
         self._ids = identities
-        self._commands = projection.commands
+        # step() re-checks this stamp, so these commands and legal tuple stay exact.
+        self._commands, self._legal = projection.commands, getattr(projection, 'legal', None)
         self._stamp = stamp
         self._frame = DecisionFrame(decision, object(), getattr(projection, 'prepared', None))
         return self._frame
@@ -236,13 +263,14 @@ class HeadlessAdapter:
                 acquired_ref = getattr(reward, acquired_kind).value.ref
         # Consume the capability before execution, including a presentation-only
         # open. Exceptions may follow mutation; no automatic retry is permitted.
+        legal = self._legal
         self._frame = None
-        self._commands = {}
+        self._commands, self._legal = {}, None
         try:
             if action.kind == 'open_card_reward':
                 self._opened = True
             else:
-                result = self._engine.apply(command)
+                result = self._engine.apply(command, legal=legal)
                 if (played_card is not None and self._engine.combat is combat_before and
                         any(card.instance_id == command.instance_id for card in combat_before.player.deck.powers)):
                     self._power_cards[self._epoch, command.instance_id] = played_card
@@ -290,13 +318,14 @@ class HeadlessAdapter:
         before_ids = {kind: {item.instance_id for item in items} for kind, items in inventory().items()}
         # One command, one consumed capability. Interrupts also latch the host:
         # a caller cannot retry after an uncertain native/rules interruption.
-        self._frame, self._commands = None, {}
+        legal = self._legal
+        self._frame, self._commands, self._legal = None, {}, None
         try:
             if action.kind in ('open_reward', 'close_reward'):
                 self._opened = action.subject if action.kind == 'open_reward' else False
                 result = None
             else:
-                result = self._engine.apply(command)
+                result = self._engine.apply(command, legal=legal)
                 if action.kind != 'reroll_card_reward':
                     self._opened = False
             # apply() has completed all synchronous cleanup/hooks. Retain the

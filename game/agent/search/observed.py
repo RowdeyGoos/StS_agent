@@ -23,6 +23,7 @@ from game.headless.run.construction import inventory_combat
 from .belief import BeliefUpdate, _boundary, _Work
 from .direct import DirectCombatBelief, DirectWorld, _hand, _kinds
 from .public_keys import action_key, public_key
+from .world import SimulationWorkLimit
 
 MODEL = 'revealed_belief_v1'
 ANCHOR = 'sts_observed_combat_anchor_v1'
@@ -114,7 +115,7 @@ class ObservedWorld(DirectWorld):
 
     def attach(self, root):
         self._ids, self._history, self._powers = Identities(), [], {}
-        self._commands = {}
+        self._commands, self._legal = {}, None
         self.public_root = root
 
 
@@ -245,7 +246,7 @@ class ObservedCombatBelief(DirectCombatBelief):
                 after = world.step(world.project(), action_key(before, action))
             world.knowledge.finish()
             journal.finish()
-        except InconsistentKnowledge:
+        except (InconsistentKnowledge, SimulationWorkLimit):
             return world, False
         world.log_weight = world.knowledge.log_likelihood + journal.log_likelihood
         return world, self._key(world.completion if after is None else after) == self._key(successor)

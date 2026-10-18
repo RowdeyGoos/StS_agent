@@ -11,6 +11,9 @@ from game.headless.core.utils import shuffle_list
 MAX_CARDS_IN_HAND = 10
 
 
+CARD_PILES = ("draw_pile", "discard_pile", "hand", "exhaust_pile", "in_play", "powers", "offered")
+
+
 class Deck:
     """Owns draw, discard, hand, and exhaust piles for a combat."""
 
@@ -42,7 +45,15 @@ class Deck:
         self.shuffle_draw_pile(initial=True)
 
     def all_cards(self):
-        return [c for name in ("draw_pile", "discard_pile", "hand", "exhaust_pile", "in_play", "powers", "offered") for c in getattr(self, name)]
+        return [c for name in CARD_PILES for c in getattr(self, name)]
+
+    def find(self, identity):
+        """The first card with this instance ID in all_cards() order, without building that list."""
+        for name in CARD_PILES:
+            for card in getattr(self, name):
+                if card.instance_id == identity:
+                    return card
+        return None
 
     def shuffle_draw_pile(self, *, initial=False) -> None:
         """Shuffle the draw pile in place."""

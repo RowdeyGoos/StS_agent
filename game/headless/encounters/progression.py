@@ -42,14 +42,26 @@ def pools_for(act):
     return tuple(tuple(ids[n] for n in pool) for pool in REGION_POOLS[act][5])
 
 
+_NATIVE_NAMES = None
+
+
+def _native_name(identity):
+    """First native name for this encounter ID in the merged later-act tables (immutable)."""
+    global _NATIVE_NAMES
+    if _NATIVE_NAMES is None:
+        names = {}
+        for n, value in {**native_ids('underdocks'), **native_ids('hive'), **native_ids('glory')}.items():
+            names.setdefault(value, n)
+        _NATIVE_NAMES = names
+    return _NATIVE_NAMES.get(identity)
+
+
 def _compatible(previous, candidate):
     from game.headless.generation.room_pools import ENCOUNTER_TAGS
     def tags(name):
         if name in TAGS:
             return TAGS[name]
-        ids = {**native_ids('underdocks'), **native_ids('hive'), **native_ids('glory')}
-        native = next((n for n, identity in ids.items() if identity == name), None)
-        return frozenset(ENCOUNTER_TAGS.get(native, ()))
+        return frozenset(ENCOUNTER_TAGS.get(_native_name(name), ()))
     return candidate != previous and not tags(previous) & tags(candidate)
 
 

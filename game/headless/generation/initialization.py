@@ -4,6 +4,8 @@ Future room sets are plain initialization data. They advance the shared UpFront
 stream without pretending to implement later-act combat or event behavior.
 """
 
+from functools import lru_cache
+
 from game.headless.generation.room_pools import campaign_pools, SHARED_EVENTS, SHARED_ANCIENTS, ENCOUNTER_TAGS
 
 PROFILE = "native_overgrowth_hive_glory_all_unlocked_v1"
@@ -71,22 +73,31 @@ def generate(rng, *, act="overgrowth", ascension=0):
     return dict(profile=f"native_{act}_hive_glory_all_unlocked_v1", subsets=subsets, acts=acts)
 
 
-def validate(state):
+@lru_cache(maxsize=64)
+def _reference(seed, character, act, ascension):
+    """Seed-determined initialization and UpFront count. Callers only read the result."""
     from game.headless.core.native_service import NativeRandomService
     from game.headless.generation.relics import populate
+    rng = NativeRandomService(seed)
+    populate(rng, character)
+    return generate(rng, act=act, ascension=ascension), rng.request_count("up_front")
+
+
+def validate(state):
+    from game.headless.core.native_service import NativeRandomService
 
     if state.initialization is None:
         return
     if not getattr(state.rng, "native", False):
         raise ValueError("Fixture run cannot own native initialization.")
-    rng = NativeRandomService(state.seed)
+    if type(state.seed) not in (int, str):
+        NativeRandomService(state.seed)  # Raises its seed error before the settings check.
     if state.config is None:
         raise ValueError("Native initialization requires declared act settings.")
-    populate(rng, state.config.character)
-    expected = generate(rng, act=state.config.first_act, ascension=state.config.ascension)
+    expected, up_front = _reference(state.seed, state.config.character, state.config.first_act, state.config.ascension)
     if state.initialization != expected:
         raise ValueError("Native initialization differs from its seed and declared inputs.")
-    if state.rng.request_count("up_front") < rng.request_count("up_front"):
+    if state.rng.request_count("up_front") < up_front:
         raise ValueError("Native UpFront state precedes initialization.")
     progression = state.encounter_progression
     if progression is None:

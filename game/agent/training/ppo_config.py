@@ -10,6 +10,10 @@ from .config import TrainingConfig, RUN_SCENARIO_SET
 from .rewards import POTENTIAL_SCHEMA, strict_json
 from .scenarios import SCENARIO_SET, scenario
 
+FROZEN_HIDDEN_STATE = 'frozen'
+RESAMPLED_HIDDEN_STATE = 'resampled_v1'
+HIDDEN_STATES = (FROZEN_HIDDEN_STATE, RESAMPLED_HIDDEN_STATE)
+
 
 @dataclass(frozen=True, slots=True)
 class PPOConfig:
@@ -54,6 +58,9 @@ class PPOExperiment:
     encounters: tuple[str, ...] = ('overgrowth_nibbit',)
     source: str = SCENARIO_SET
     schema: str = 'sts_ppo_experiment_v1'
+    # Frozen corpus starts replay their saved draw order and RNG. Resampled
+    # starts keep public state and draw new hidden state from the reset seed.
+    hidden_state: str = FROZEN_HIDDEN_STATE
 
     def __post_init__(self):
         if (self.schema not in ('sts_ppo_experiment_v1', 'sts_ppo_experiment_v2', 'sts_ppo_experiment_v3') or type(self.training) is not TrainingConfig or
@@ -61,8 +68,12 @@ class PPOExperiment:
                 not 1 <= len(self.encounters) <= 100 or
                 any(type(n) is not str or not 0 < len(n) <= 128 for n in self.encounters) or
                 len(set(self.encounters)) != len(self.encounters) or
-                type(self.source) is not str or not 0 < len(self.source) <= 128):
+                type(self.source) is not str or not 0 < len(self.source) <= 128 or
+                self.hidden_state not in HIDDEN_STATES):
             raise ValueError('Invalid PPO experiment')
+        if self.hidden_state != FROZEN_HIDDEN_STATE and (self.training.mode != 'combat' or self.source in (
+                SCENARIO_SET, RUN_SCENARIO_SET, 'ironclad_a0_curriculum_v1')):
+            raise ValueError('Hidden-state resampling requires a frozen combat corpus source')
         if (self.schema == 'sts_ppo_experiment_v1') != (self.training.action_policy == ALL_LEGAL):
             raise ValueError('Policy-action restrictions require PPO experiment v2')
         if (self.schema == 'sts_ppo_experiment_v3') != (self.ppo.kl_check == 'minibatch_v1'):
@@ -88,8 +99,12 @@ class PPOExperiment:
         # Preserve exact historical v1/v2 serialization, identities and behavior.
         if self.schema != 'sts_ppo_experiment_v3':
             ppo.pop('kl_check')
-        return {'schema': self.schema, 'training': self.training.to_dict(), 'ppo': ppo,
-                'encounters': list(self.encounters), 'source': self.source}
+        value = {'schema': self.schema, 'training': self.training.to_dict(), 'ppo': ppo,
+                 'encounters': list(self.encounters), 'source': self.source}
+        # Frozen starts keep the historical serialization and identity.
+        if self.hidden_state != FROZEN_HIDDEN_STATE:
+            value['hidden_state'] = self.hidden_state
+        return value
 
     @property
     def identity(self):
@@ -101,12 +116,16 @@ class PPOExperiment:
         fields = set(PPOConfig.__dataclass_fields__)
         if type(value) is dict and value.get('schema') != 'sts_ppo_experiment_v3':
             fields.remove('kl_check')
-        if (type(value) is not dict or set(value) != set(cls.__dataclass_fields__) or
+        if type(value) is dict and value.get('hidden_state') == FROZEN_HIDDEN_STATE:
+            raise ValueError('Omit hidden_state for frozen corpus starts; it is the default')
+        required = set(cls.__dataclass_fields__) - {'hidden_state'}
+        if (type(value) is not dict or set(value) - {'hidden_state'} != required or
                 type(value['ppo']) is not dict or set(value['ppo']) != fields or
                 type(value['encounters']) is not list):
             raise ValueError('Expected a complete resolved PPO experiment')
         return cls(TrainingConfig.from_dict(value['training']), PPOConfig(**value['ppo']),
-                   tuple(value['encounters']), value['source'], value['schema'])
+                   tuple(value['encounters']), value['source'], value['schema'],
+                   value.get('hidden_state', FROZEN_HIDDEN_STATE))
 
     @classmethod
     def load(cls, path):

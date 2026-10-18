@@ -9,6 +9,10 @@ from dataclasses import asdict
 from game.headless.core.selection import PendingCardPlay
 
 
+class ResolutionLimitExceeded(RuntimeError):
+    """A caller-set task budget ran out; the engine state is mid-resolution."""
+
+
 def paused(p):
     return p.rules.selection is not None or p.pending_play is not None
 
@@ -87,6 +91,14 @@ def run(p, execute):
             r.active_hook, r.tasks = parents.pop()
             continue
         if r.tasks:
+            # Hypothetical worlds may cap one command's resolution work: some
+            # legal states never end (Hellraiser + Pillage drawing only Strikes
+            # into an unkillable enemy). Real games never set this budget.
+            limit = getattr(p, 'resolution_limit', None)
+            if limit is not None:
+                if limit <= 0:
+                    raise ResolutionLimitExceeded('Combat resolution exceeded its task budget')
+                p.resolution_limit = limit - 1
             task = r.tasks.pop(0)
             if task[0] == "death_hook":
                 if p.combat_is_ending:

@@ -131,3 +131,24 @@ def test_named_search_portfolio_and_parallel_campaign_corpus_evaluation(corpus, 
         run_search(checkpoint=checkpoint, output_dir=tmp_path / 'rejected', corpus_path=corpus.path,
             search=config, collect=True, split='train')
     assert not (tmp_path / 'rejected').exists()
+
+
+def test_corpus_search_selects_room_kinds_and_reports_balanced_rates(corpus, checkpoint, tmp_path):
+    from game.agent.search import SearchConfig
+    from game.agent.training.search_run import run_search
+    config = SearchConfig(simulations=2, max_depth=4, belief_particles=1, time_limit=10)
+    _, report = run_search(checkpoint=checkpoint, output_dir=tmp_path / 'combat-only', corpus_path=corpus.path,
+        search=config, cases=2, max_decisions=2, time_limit_seconds=30, room_kinds=('combat',),
+        include_root=False)
+    assert report['status'] == 'complete', report
+    assert report['room_kinds'] == ['combat'] and 'balanced' in report
+    assert {r['room_kind'] for r in report['episodes']} == {'combat'}
+    assert all(r['encounter'] == corpus.cases[r['source_case_id']]['encounter'] for r in report['episodes'])
+    with pytest.raises(ValueError, match='No opening cases'):
+        run_search(checkpoint=checkpoint, output_dir=tmp_path / 'bosses', corpus_path=corpus.path,
+            search=config, cases=2, room_kinds=('boss',))
+    with pytest.raises(ValueError, match='Room-kind selection'):
+        run_search(checkpoint=checkpoint, output_dir=tmp_path / 'controlled', search=config, room_kinds=('boss',))
+    with pytest.raises(ValueError, match='room kinds'):
+        run_search(checkpoint=checkpoint, output_dir=tmp_path / 'invalid', corpus_path=corpus.path,
+            search=config, room_kinds=('hallway',))

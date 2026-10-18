@@ -24,7 +24,7 @@ from .test_search import UniformPolicy
 
 
 def fixture(encounter='overgrowth_vantom', *, deck=('strike', 'defend', 'bash', 'pillage', 'pommel_strike'),
-            relics=('burning_blood',), seed=13, edit=None, history=()):
+            relics=('burning_blood',), seed=13, edit=None, history=(), names=None):
     run = RunEngine(seed=seed, card_ids=deck, hp=70, max_hp=80,
         config=RunConfig(act=declared_combat_region(encounter)), rng_profile='native')
     for relic in relics:
@@ -34,7 +34,7 @@ def fixture(encounter='overgrowth_vantom', *, deck=('strike', 'defend', 'bash', 
     values = []
     def entry():
         initial = f.PublicDecision(f.SCHEMA, f.PROFILE,
-            FullProjection(run, Identities(), list(history), {}, 'attachment', 0, False).run(),
+            FullProjection(run, names or Identities(), list(history), {}, 'attachment', 0, False).run(),
             f.Node('planning', 'combat_entry', fields=(f.Field('entry_action_kind', 'choose_map_node'),)),
             (f.Candidate('action:0', 'end_turn'),))
         values.append(f.to_dict(initial))
@@ -43,6 +43,8 @@ def fixture(encounter='overgrowth_vantom', *, deck=('strike', 'defend', 'bash', 
         run.start_combat(encounter_id=encounter)
     del run._combat_entry_observer
     adapter = HeadlessAdapter(run, decision_profile=f.PROFILE)
+    if names is not None:
+        adapter._ids = names  # One continuously attached owner named the deck earlier.
     adapter._history = list(history)
     # Reserve historical public names exactly as a continuously attached owner.
     for action in history:
@@ -131,6 +133,25 @@ def test_room_entry_effects_applied_once_and_permanent_modifiers_preserved():
     assert world._run.state.gold == run.state.gold
     assert sorted((c.definition.definition_id, c.permanent_damage, c.permanent_block) for c in world._run.state.deck) == sorted(
         (c.definition.definition_id, c.permanent_damage, c.permanent_block) for c in run.state.deck)
+
+
+@pytest.mark.parametrize('enchanted', (0, -1))
+def test_lone_enchanted_copy_keeps_its_public_name_among_equal_definitions(enchanted):
+    from game.headless.enchantments.base import enchant
+    names = Identities()
+    def edit(run):
+        # Public names precede the enchantment, as for a starting card enchanted later.
+        FullProjection(run, names, [], {}, 'attachment', 0, False).run()
+        enchant([c for c in run.state.deck if c.definition.definition_id == 'defend'][enchanted], 'spiral')
+    run, adapter, anchor = fixture(deck=('defend',) * 4 + ('strike',) * 4 + ('bash',), edit=edit, names=names)
+    restored = RunEngine()
+    restored.restore(deepcopy(run.snapshot()))
+    # Corpus starts attach to a fresh owner, which names equal copies by content.
+    for current in (adapter.observe().decision, HeadlessAdapter(restored, decision_profile=f.PROFILE).observe().decision):
+        belief = CampaignCombatBelief(anchor, current, seed=5, budget=BeliefBudget(1, 256, 10))
+        assert belief.recover().reason is None
+        _, sampled = belief.sample(3)
+        assert public_key(sampled) == public_key(planning_view(current))
 
 
 def test_past_consumed_potion_reference_cannot_rebind_to_generated_potion():

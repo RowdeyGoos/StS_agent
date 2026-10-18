@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import TYPE_CHECKING, Protocol
 
 from game.headless.core.selection import HandChoice
@@ -95,42 +95,39 @@ class Card:
 
     @property
     def spec(self) -> CardSpec:
-        spec = self.definition.spec_at(self.upgrade_level)
-        if self.definition.definition_id == "mad_science":
-            from dataclasses import replace
+        definition, level = self.definition, self.upgrade_level
+        levels = definition.levels
+        if type(level) is not int or not 0 <= level < len(levels):
+            return definition.spec_at(level)  # Raises the same unsupported-level error.
+        spec = levels[level]
+        if definition.definition_id == "mad_science":
             kind = self.event_data["kind"]
             spec = replace(spec, kind=kind, uses_target=kind == "attack", base_damage=12 if kind == "attack" else 0, block_gain=8 if kind == "skill" else 0)
-        if self.enchantment is not None and self.enchantment.definition_id == "royally_approved":
-            from dataclasses import replace
-            spec = replace(spec, innate=True, retain=True)
-        if self.enchantment is not None:
-            from dataclasses import replace
-            if self.enchantment.definition_id == 'goopy':
+        enchantment = self.enchantment
+        if enchantment is not None:
+            name = enchantment.definition_id
+            if name == "royally_approved":
+                spec = replace(spec, innate=True, retain=True)
+            elif name == 'goopy':
                 spec = replace(spec, exhausts=True)
-            elif self.enchantment.definition_id == 'steady':
+            elif name == 'steady':
                 spec = replace(spec, retain=True)
-            elif self.enchantment.definition_id == 'souls_power':
+            elif name == 'souls_power':
                 spec = replace(spec, exhausts=False)
-            elif self.enchantment.definition_id == 'tezcataras_ember':
+            elif name == 'tezcataras_ember':
                 spec = replace(spec, cost=0, eternal=True)
         if self.permanent_damage:
-            from dataclasses import replace
             spec = replace(spec, base_damage=spec.base_damage + self.permanent_damage)
         if self.permanent_block:
-            from dataclasses import replace
             spec = replace(spec, block_gain=spec.block_gain + self.permanent_block)
         state = self.combat_state
         if state.wither_level:
-            from dataclasses import replace
             spec = replace(spec, name=f"Wither+{state.wither_level}", end_turn_damage=3 + 3 * state.wither_level)
         if state.hexed:
-            from dataclasses import replace
             spec = replace(spec, ethereal=True)
         if state.is_dupe:
-            from dataclasses import replace
             spec = replace(spec, exhausts=False)
         if state.retain_this_turn or state.retain_this_combat or state.sly_this_turn or state.sly_this_combat or state.all_enemies or state.ethereal_this_combat:
-            from dataclasses import replace
             spec = replace(spec, retain=spec.retain or state.retain_this_turn or state.retain_this_combat,
                            sly=spec.sly or state.sly_this_turn or state.sly_this_combat,
                            uses_target=spec.uses_target and not state.all_enemies,

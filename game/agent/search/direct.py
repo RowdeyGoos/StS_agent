@@ -17,7 +17,7 @@ from game.headless.planning import UnsupportedSearch
 from game.headless.run.construction import declared_combat, materialize_combat_draw
 from .belief import CombatBelief, _key
 from .public_keys import action_key
-from .world import SimulationWorld
+from .world import SimulationWorkLimit, SimulationWorld
 
 MODEL = 'direct_belief_v1'
 
@@ -124,7 +124,7 @@ class DirectCombatBelief(CombatBelief):
         try:
             after = world.step(world.project(), action_key(before, action))
             world.knowledge.finish()
-        except InconsistentKnowledge:
+        except (InconsistentKnowledge, SimulationWorkLimit):
             return world, False
         world.log_weight = world.knowledge.log_likelihood
         return world, self._key(world.completion if after is None else after) == self._key(successor)

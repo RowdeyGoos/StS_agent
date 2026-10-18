@@ -46,6 +46,7 @@ def _build_fingerprint():
         {**asdict(s), "items": [list(item) for item in s.items]} for s in SLOTS]}
 
 
-def fingerprint():
+def fingerprint(*, shared=False):
+    """`shared`: the cached value for read-only use; otherwise detached containers."""
     from game.headless.generation.merchant import SLOTS as native_slots
-    return _CATALOG_JSON.read((SHOP_ID, *native_slots, None, *SLOTS), _build_fingerprint)
+    return (_CATALOG_JSON.shared if shared else _CATALOG_JSON.read)((SHOP_ID, *native_slots, None, *SLOTS), _build_fingerprint)

@@ -145,6 +145,11 @@ def _wire_fields(cls):
     return tuple(field.name for field in fields(cls))
 
 
+# Exact record types may register an equivalent specialized converter (same
+# key order, element order and error precedence). Subclasses never match.
+_EXACT_WIRE = {}
+
+
 def _wire(value):
     # Exact builtin values cannot be dataclass instances. Subclasses still take
     # the structural path below, as they did before this fast path.
@@ -152,6 +157,9 @@ def _wire(value):
         return value
     if type(value) is tuple:
         return [_wire(v) for v in value]
+    exact = _EXACT_WIRE.get(type(value))
+    if exact is not None:
+        return exact(value)
     if is_dataclass(value) and not isinstance(value, type):
         return {name: _wire(getattr(value, name)) for name in _wire_fields(type(value))}
     raise ContractError('Expected immutable public values')

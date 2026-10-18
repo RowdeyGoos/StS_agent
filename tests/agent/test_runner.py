@@ -43,9 +43,9 @@ def test_policy_gets_only_public_input_and_invalid_action_never_mutates(tmp_path
 def test_uncertain_mutation_is_not_retried_or_published(tmp_path):
     run = RunEngine.campaign(seed=2)
     original, attempts = run.apply, []
-    def failed(action):
+    def failed(action, **kwargs):
         attempts.append(action)
-        original(action)
+        original(action, **kwargs)
         raise RuntimeError('synthetic failure after mutation')
     run.apply = failed
     with pytest.raises(AdapterFault):
@@ -99,8 +99,8 @@ def test_controlled_multi_act_trajectory_round_trips_with_victory_and_training(t
     apply = run.apply
     # The declared controlled fixture accelerates combat; it is never labelled
     # an ordinary policy victory or retained native evidence.
-    def controlled(action):
-        result = apply(action)
+    def controlled(action, **kwargs):
+        result = apply(action, **kwargs)
         if run.combat:
             run.apply = apply
             try:

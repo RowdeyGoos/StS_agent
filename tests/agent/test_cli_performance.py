@@ -82,6 +82,23 @@ def test_parallel_evaluation_cli_defaults_and_explicit_serial(tmp_path, monkeypa
         torch.set_num_threads(before)
 
 
+@pytest.mark.parametrize('workers,expected', [(None,16), ('1',1)])
+def test_corpus_build_cli_uses_game_worker_default(tmp_path, monkeypatch, machine, workers, expected):
+    pytest.importorskip('torch')
+    pytest.importorskip('gymnasium')
+    from game.agent.training import combat_corpus
+    from game.cli.agent_train import main
+    calls = []
+    def build(output_dir, config, **kwargs):
+        calls.append((config, kwargs))
+        return tmp_path/'corpus.json', {'status':'complete', 'coverage':{}}
+    monkeypatch.setattr(combat_corpus, 'build_corpus', build)
+    arguments = ['build-combat-corpus', '--output-dir', str(tmp_path/'corpus'), '--capture-turns', '2']
+    if workers is not None:arguments += ['--workers', workers]
+    assert main(arguments) == 0
+    assert calls[0][1]['workers'] == expected and calls[0][0].capture_turns == 2
+
+
 def test_serial_only_evaluation_default_still_dispatches(tmp_path, monkeypatch, machine):
     pytest.importorskip('gymnasium')
     from game.agent.training import evaluation

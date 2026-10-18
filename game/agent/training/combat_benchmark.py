@@ -9,9 +9,9 @@ from game.agent.action_policy import ALL_LEGAL
 from game.agent.provenance import implementation
 from game.agent.runner import RunCancelled, prepare_directories
 from .benchmark_suite import data
-from .combat_corpus import coverage
+from .combat_corpus import ROOM_KINDS, coverage
 from .search_sources import open_search_source
-from .comparison import paired, summarize
+from .comparison import balanced, paired, summarize
 from .config import TrainingConfig
 from .evaluation import BaselineCase, _episode
 from .rewards import RewardSpec, strict_json
@@ -67,7 +67,7 @@ class CorpusEvaluator:
 
 def evaluate_corpus(*, corpus_path, output_dir, checkpoints=None, split='validation',
                     max_decisions=512, time_limit_seconds=120., workers=1, cancel=None,
-                    start_kind='opening', search_configs=None, diagnostics_path=None):
+                    start_kind='opening', search_configs=None, diagnostics_path=None, room_kinds=None):
     from .checkpoint import load_policy, publish, runtime
     from .env import CombatTrainingEnv
     from .evaluation_workers import evaluate_parallel, settings
@@ -76,12 +76,19 @@ def evaluate_corpus(*, corpus_path, output_dir, checkpoints=None, split='validat
         raise ValueError('Combat benchmark uses validation or held-out test cases')
     if start_kind not in ('opening', 'continuation', 'all'):
         raise ValueError('Choose opening, continuation or all combat starts')
+    kinds = ROOM_KINDS if room_kinds is None else tuple(room_kinds)
+    if not kinds or len(set(kinds)) != len(kinds) or not set(kinds) <= set(ROOM_KINDS):
+        raise ValueError('Choose distinct room kinds from combat, elite and boss')
+    kinds = tuple(k for k in ROOM_KINDS if k in kinds)
+    if diagnostics_path is not None and kinds != ROOM_KINDS:
+        raise ValueError('Combat diagnostics report alongside the complete natural population')
     if type(max_decisions) is not int or not 1 <= max_decisions <= 4096:
         raise ValueError('Choose 1–4096 evaluation decisions per combat')
     with CombatTrainingEnv(max_decisions=max_decisions, time_limit_seconds=time_limit_seconds):
         pass
     corpus = open_search_source(corpus_path)
-    cases = [r for r in corpus.split(split) if start_kind == 'all' or r['start_kind'] == start_kind]
+    cases = [r for r in corpus.split(split) if (start_kind == 'all' or r['start_kind'] == start_kind)
+             and r['room_kind'] in kinds]
     if not cases:
         raise ValueError('No combat cases in requested evaluation split')
     checkpoints = {} if checkpoints is None else checkpoints
@@ -118,7 +125,8 @@ def evaluate_corpus(*, corpus_path, output_dir, checkpoints=None, split='validat
     reward = RewardSpec({'combat_win': 1., 'win_hp_fraction': .1})
     limits = {'max_decisions': max_decisions, 'time_limit_seconds': time_limit_seconds}
     binding = {'schema': 'sts_combat_corpus_test_lock_v2', 'corpus': corpus.identity, 'start_kind': start_kind,
-               'policies': policies, 'checkpoints': metadata, 'reward': reward.to_dict(), 'limits': limits}
+               'room_kinds': list(kinds), 'policies': policies, 'checkpoints': metadata,
+               'reward': reward.to_dict(), 'limits': limits}
     if search_configs:
         binding['search_configs'] = {n: asdict(v) for n, v in search_configs.items()}
     lock = corpus.path.parent / 'test-opened.json'
@@ -142,7 +150,7 @@ def evaluate_corpus(*, corpus_path, output_dir, checkpoints=None, split='validat
             configs.append(FrozenCombatCase(case['encounter'], split, 0, policy_seed,
                            max_decisions, time_limit_seconds, case['case_id']))
     report = {'schema': 'sts_combat_corpus_comparison_v2', 'status': 'running', 'start_kind': start_kind,
-        'split': split, 'corpus': corpus.identity, 'implementation': source, 'runtime': runtime(),
+        'room_kinds': list(kinds), 'split': split, 'corpus': corpus.identity, 'implementation': source, 'runtime': runtime(),
         'policies': policies, 'checkpoints': metadata, 'episodes': rows, 'limits': limits,
         'reward_spec': reward.to_dict(), 'execution': execution, 'evidence': 'headless_rollout',
         'coverage': coverage(cases)[split], 'corpus_coverage': corpus.report['coverage'][split],
@@ -189,6 +197,7 @@ def evaluate_corpus(*, corpus_path, output_dir, checkpoints=None, split='validat
         report.update(status='interrupted' if isinstance(error, (RunCancelled, KeyboardInterrupt)) else 'failed',
                       failure=type(error).__name__)
     report.update(summarize(rows, policies))
+    report['balanced'] = balanced(rows, list(policies))
     if diagnostics is not None:
         report['diagnostic_summary'] = diagnostics.summarize(rows, policies)
     for field in ('encounter', 'region', 'room_kind', 'start_kind', 'threat', 'hp_band'):

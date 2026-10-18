@@ -266,6 +266,28 @@ def test_replay_deadline_step_and_journal_limits_do_not_fabricate_terminal_resul
     assert not isinstance(belief.current, CombatEnd)
 
 
+def test_simulated_work_limit_rejects_proposals_and_falls_back_explicitly(monkeypatch):
+    from game.agent.search import world as simulation
+    start = setup(deck=('strike',) * 4 + ('defend',) * 4)
+    run, adapter = actual(start)
+    policy = SearchPolicy(UniformPolicy(), SearchConfig(model_version='public_belief_v1',
+        simulations=4, time_limit=20, belief_particles=2))
+    before = adapter.observe().decision
+    policy.begin_combat(start, before)
+    assert policy.choose(before).reason is None
+    # A sampled world exceeding the budget abandons the decision's tree search.
+    monkeypatch.setattr(simulation, 'SIMULATED_RESOLUTION_LIMIT', 1)
+    result = policy.choose(before)
+    assert result.reason == 'simulation_work_limit' and result.action_ref in {a.ref for a in before.candidates}
+    # The actual engine never carries the budget; belief proposals that exceed
+    # it are rejected one by one rather than aborting the update.
+    after = observe(adapter, policy, play(before, 'strike'))
+    assert getattr(run.combat.player, 'resolution_limit', None) is None
+    assert policy.belief.reason == 'belief_budget' and policy.belief.last_update.proposals > 0
+    monkeypatch.setattr(simulation, 'SIMULATED_RESOLUTION_LIMIT', 100_000)
+    assert public_key(policy.belief.current) == public_key(after)
+
+
 def test_initial_search_works_when_collapse_replay_is_disabled():
     start = setup(deck=('strike', 'defend'))
     _, adapter = actual(start)

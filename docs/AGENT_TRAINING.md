@@ -1,6 +1,6 @@
 # Agent training guide
 
-Prepared 2026-09-28; current workflow and findings updated 2026-10-16.
+Prepared 2026-09-28; current workflow and findings updated 2026-10-17.
 **Status: milestones 1–7 implemented and validated.**
 **Current training goal: clear Act 1 with Ironclad at A0.** Measure improvement
 by paired Act 1 clear rate across Overgrowth and Underdocks. Training all three
@@ -8,6 +8,7 @@ acts is deferred until this goal shows useful progress. The next learning focus 
 **combat specialization**, with fixed noncombat decisions in hybrid Act 1 checks;
 see [campaign-derived combat training](#campaign-derived-combat-training) and
 [Act 1 training and configurable act rewards](#act-1-training-and-configurable-act-rewards).
+Measure combat changes on the [boss and elite benchmark](#boss-and-elite-benchmark).
 The user authorized milestones 1–7 and requested a summary of key
 implementation details and choices after each milestone. A bounded CPU imitation
 warm-up and hybrid development evaluation are included in milestone 3. Milestone 4
@@ -21,6 +22,60 @@ This document owns training usage, implementation choices and measured results. 
 owns the full-game objective, the [public contract](AGENT_CONTRACT.md) owns actor
 information, and the [execution guide](AGENT_EXECUTION.md) owns existing recordings
 and workers. The retired training pipelines are not implementation dependencies.
+
+## Boss and elite benchmark
+
+Most Act 1 losses happen in elite and boss fights, while normal fights are won
+about 98% of the time. The current combat development benchmark therefore covers
+every Act 1 elite and boss with enough fights to compare encounters: 1,024
+validation campaigns from the 500k Act 1 collector yield **589 boss fights (85–120
+per boss) and 1,139 elite fights (170–207 per elite)**. Paired boss comparisons
+resolve differences of about 5 percentage points; the earlier 42-fight Vantom
+panel needed about 20. See the [evidence record](evidence/BOSS_ELITE_BENCHMARK_2026_10_17.md)
+for the complete tables, Waterfall Giant analysis and limits.
+
+| Checkpoint | Bosses, equal weight | Elites, equal weight |
+| --- | ---: | ---: |
+| Vantom specialist 250k | 48.7% | 79.1% |
+| Successful-fight imitation 8k, seeds 1/2 | 43.4% / 45.6% | 79.3% / 79.6% |
+| Combat PPO 250k, seeds 1/2 | 38.5% / 43.0% | 75.7% / 78.2% |
+| Act 1 campaign PPO 500k / 250k | 36.7% / 26.1% | 75.8% / 71.1% |
+| Heuristic | 15.1% | 66.7% |
+
+The Vantom specialist's Vantom-only PPO improved all bosses by 3.0 points
+(paired interval +0.3 to +5.8) over its imitation initializer. Successful-fight
+imitation improved its seed-1 parent by 4.9 boss points (+2.1 to +8.1). The
+Waterfall Giant (best 23%) and Lagavulin Matriarch (best 29%) are the weakest
+bosses. Learned models knock the Giant out in most fights, then usually die to
+its Steam explosion. These are single validation checkpoints after greedy play
+on frozen starts; learner seeds differ by 2–4 points.
+
+**Combat search** (`combat_belief_v1`, 24 simulations) on the same checkpoint
+raises bosses from 48.7% to **55.5%** (+6.8, paired interval +4.1 to +9.7) and
+elites from 79.1% to **85.8%** (+6.7, +5.3 to +8.2). Every encounter's estimate
+is positive. Each searched decision takes 1.9 s on average with 16 workers. See
+the [search evidence](evidence/COMBAT_SEARCH_BENCHMARK_2026_10_17.md), which
+also records the two search fixes this measurement required.
+
+Rebuild and rerun the benchmark after source changes, because corpora bind the
+implementation identity. The same settings and start index reproduce the fights:
+
+```bash
+sts-agent-train build-combat-corpus --output-dir runs/boss-elite-benchmark/corpus \
+  --checkpoint runs/act1-increased-500k-8workers-20260930/chunk-15/final.sts-model \
+  --train-campaigns 1 --validation-campaigns 512 --test-campaigns 1 \
+  --start-index 30000000 --route-policy mixed_elites --capture-turns 1
+sts-agent-evaluate --combat-corpus runs/boss-elite-benchmark/corpus/corpus.json \
+  --combat-room-kind elite --combat-room-kind boss --candidate NAME=PATH \
+  --max-decisions 512 --time-limit 120 --output-dir runs/boss-elite-benchmark/eval
+```
+
+`--combat-room-kind` restricts evaluation to the named kinds and is bound into the
+plan, report and held-out lock. Every combat-corpus report includes a `balanced`
+section: per-encounter win rates, their equal-weight mean for elites and bosses,
+and paired differences between all policies. Intervals come from 2,000 bootstrap
+resamples of whole source campaigns shared by all policies. Failed, cut-off and
+unattempted fights count as non-wins; the existing Hoeffding fields are unchanged.
 
 ## Current Vantom findings
 
@@ -320,6 +375,7 @@ Commands resolve their worker defaults from the available CPU count. On the
 | Command or phase | Default on this host | Explicit override |
 | --- | ---: | --- |
 | New `sts-agent-train ppo` collection | 16 processes | `--workers 1` through `16` |
+| `sts-agent-train build-combat-corpus` | 16 campaign processes | `--workers 1` through `16` |
 | New PPO updates | 4 threads, strict deterministic operations | `--update-threads 1`, `2`, `4` or `8` |
 | `sts-agent-evaluate --act1`, `--full-run` or `--combat-corpus` | 16 processes | `--workers 1` through `16` |
 | `sts-agent-play` | Up to 16 concurrent games | `--workers 1` through `32` |
@@ -364,6 +420,17 @@ decisions while retaining their validation, rewards and episode bindings. See th
 [follow-up speed benchmark](evidence/SEARCH_TRAINING_SPEED_2026_10_08.md) for
 individual ablations and combined measurements. Search budgets and checkpoint
 inputs are unchanged; no additional CLI settings are required.
+
+PPO collection is 1.94× faster at the production combat shape, and whole
+invocations are 1.36× faster, with bit-identical results:
+- collectors receive their startup state after starting;
+- the state guard reuses constant content text;
+- public contracts and table packing use exact-type fast paths;
+- rollouts return through pipes with 1 MiB buffers.
+
+Updates are now about 60% of wall time. See the
+[training-speed benchmark](evidence/TRAINING_SPEED_2026_10_18.md) for the
+breakdown and the remaining options that would change training semantics.
 
 ## Experimental combat search
 
@@ -964,7 +1031,9 @@ sts-agent-train build-combat-corpus --output-dir runs/combat-corpus \
 
 Counts are **per region** (128 campaigns in this example). The default source
 limit is 1,024 decisions / 120 seconds per campaign, stopping at the Act 1
-completion boundary. Omit `--checkpoint` to use the heuristic. The default
+completion boundary. `--workers` (default `min(16, CPUs)`) runs whole campaigns
+in parallel; cases match serial collection apart from opaque IDs and keep the
+predeclared campaign order. Omit `--checkpoint` to use the heuristic. The default
 private seed offset is 1,000,000; choose a fresh `--start-index` when building a
 new experimental population. Splits are assigned to entire source campaigns
 before play: fights from one campaign can never cross train/validation/test.
@@ -1034,6 +1103,24 @@ sts-agent-train ppo --checkpoint runs/combat-imitation/final.sts-model \
   --config runs/combat-corpus/combat-ppo.json --combat-corpus runs/combat-corpus/corpus.json \
   --output-dir runs/combat-ppo --decisions 20000
 ```
+
+By default each training episode restores its frozen start exactly, so every
+visit to a fight replays the same draw order, enemy choices and later shuffles.
+Add `"hidden_state": "resampled_v1"` to a corpus PPO experiment to redraw that
+hidden state on every restore while keeping the public start unchanged: cards
+are drawn in a new uniform order and each combat RNG stream advances by 1–1,024
+ordinary draws from its owning seed. Imbued and Perfect Fit cards conservatively
+keep their current draw-pile positions; Imbued cards autoplay before an opening is
+captured, and a Perfect Fit card is rarely still at a known top by a capture. The episode reset seed determines the result, so
+replay audits reproduce it. The field is part of the experiment identity; a
+frozen experiment omits it, keeping historical identities, and exact resume
+rejects a changed treatment. Restored episodes still begin with fresh adapter
+history, so history-only knowledge about placed cards is not represented.
+The [2026-10-17 comparison](evidence/COMBAT_HIDDEN_STATE_2026_10_17.md) found no
+effect at the current corpus scale (bosses −0.7 points, interval −2.1 to +0.8,
+three seeds × 245,760 decisions), so frozen starts remain the default. That run
+visited each boss fight about ten times; resampling may still matter for small
+corpora trained for many passes.
 
 Demonstrations use each requested train/validation fight once; `--split test`
 is rejected. PPO retains the existing commit-selection policy, native selection
@@ -4457,9 +4544,12 @@ sts-agent-train ppo --checkpoint runs/run-imitation/final.sts-model \
 With multiple workers, the parent owns Adam and the update RNG. Spawned processes
 each use one Torch thread and perform simulation, public encoding, inference and
 recording locally. They persist between rounds and receive a copied snapshot of
-the same behavior policy for each round. Completed public feature batches return
-through pipes; transfer threads leave the parent responsive to cancellation and
-deadlines. The parent merges batches by worker index and then performs the PPO
+the same behavior policy for each round. Their startup state, including the
+environment factory, is pickled once and arrives as each pipe's first message,
+so the parent never waits on a child's imports. A custom factory must therefore
+be plain picklable data, with no multiprocessing locks, queues or connections. Completed public feature batches
+return through pipes with 1 MiB socket buffers. Transfer threads leave the parent
+responsive to cancellation and deadlines. The parent merges batches by worker index and then performs the PPO
 update. A worker failure discards the round and closes the entire pool, with no
 retry or update from a successful subset. Completed recordings remain available;
 interrupted recordings remain `.partial`.

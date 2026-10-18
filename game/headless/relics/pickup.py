@@ -161,7 +161,7 @@ def _apply(state, cards, action):
     if isinstance(action, DiscardPotion):
         from game.headless.run.inventory import discard_potion
 
-        return discard_potion(state, action.instance_id)
+        return _event_potion_change(state, lambda: discard_potion(state, action.instance_id))
     if isinstance(action, ChooseRelicCard):
         selected = work["selected"]
         (
@@ -255,7 +255,19 @@ def _apply(state, cards, action):
     if work["kind"] == "potion_reward":
         from game.headless.run.inventory import add_potion
 
-        return add_potion(state, offer)
+        return _event_potion_change(state, lambda: add_potion(state, offer))
+
+
+def _event_potion_change(state, change):
+    """Pickups granted during a scripted event (for example rest rewards) extend
+    its potion history, so later event validation replays an owned chain."""
+    from dataclasses import asdict
+    from game.headless.events.potion_context import record
+
+    before = [None if p is None else asdict(p) for p in state.potions]
+    result = change()
+    record(state, before)
+    return result
 
 
 def validate(state, cards):

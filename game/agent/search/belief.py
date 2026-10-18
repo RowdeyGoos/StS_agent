@@ -18,7 +18,7 @@ from game.headless.cards.catalog import DEFAULT_CARDS
 from game.headless.run.construction import declared_combat, declared_combat_region
 from game.headless.planning import UnsupportedSearch
 from .public_keys import action_key, public_key, end_key
-from .world import SimulationWorld
+from .world import SimulationWorkLimit, SimulationWorld
 
 MODEL = 'public_belief_v1'
 
@@ -165,7 +165,10 @@ class CombatBelief:
 
     def _advance(self, parent, before, action, successor):
         world = parent.fork(self._seed())
-        after = world.step(world.project(), action_key(before, action))
+        try:
+            after = world.step(world.project(), action_key(before, action))
+        except SimulationWorkLimit:
+            return world, False
         return world, self._key(world.completion if after is None else after) == self._key(successor)
 
     def _replay(self, work):
@@ -179,7 +182,10 @@ class CombatBelief:
                     return world, False
                 work.steps += 1
                 world = world.fork(self._seed())
-                after = world.step(world.project(), key)
+                try:
+                    after = world.step(world.project(), key)
+                except SimulationWorkLimit:
+                    return world, False
                 actual = world.completion if after is None else after
                 if self._key(actual) != expected:
                     return world, False

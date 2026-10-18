@@ -21,7 +21,7 @@ from game.headless.cards.ancient import DEFINITIONS as ANCIENT
 class CardCatalog:
     _definitions: object
     _cacheable: bool = field(compare=False, repr=False)
-    _snapshot_cache: tuple[str, str] | None = field(compare=False, repr=False)
+    _snapshot_cache: tuple | None = field(compare=False, repr=False)
 
     def __init__(self, definitions) -> None:
         definitions = tuple(definitions)
@@ -51,12 +51,19 @@ class CardCatalog:
         Snapshots still require the same game-rule implementation; this is not
         an executable-source provenance certificate or a release manifest.
         """
-        from game.headless.enchantments.base import fingerprint
+        from game.headless.enchantments.base import ENCHANTMENTS, fingerprint
 
+        sources = tuple(ENCHANTMENTS.values())
+        cached = self._snapshot_cache
+        # Identical immutable enchantment definitions cannot change the key.
+        if (cached is not None and cached[2] is not None and len(cached[2]) == len(sources)
+                and all(a is b for a, b in zip(cached[2], sources))):
+            return cached[1]
         enchantments = fingerprint()
         enchantment_key = json.dumps(enchantments, sort_keys=True, separators=(",", ":"))
-        cached = self._snapshot_cache
+        identities = sources if _immutable_content(sources) else None
         if cached is not None and cached[0] == enchantment_key:
+            object.__setattr__(self, "_snapshot_cache", (enchantment_key, cached[1], identities))
             return cached[1]
         rows = []
         for definition in sorted(self.definitions, key=lambda d: d.definition_id):
@@ -69,7 +76,7 @@ class CardCatalog:
         result = sha256(json.dumps({"cards": rows, "enchantments": enchantments}, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
         if self._cacheable:
             # Derived content only: no run state, global cache or snapshot-format change.
-            object.__setattr__(self, "_snapshot_cache", (enchantment_key, result))
+            object.__setattr__(self, "_snapshot_cache", (enchantment_key, result, identities))
         return result
 
     def __deepcopy__(self, memo):

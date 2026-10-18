@@ -72,16 +72,24 @@ def _build_item_definitions():
     return json.loads(json.dumps({"relics": records(RELICS), "potions": records(POTIONS)}))
 
 
-def _item_definitions():
-    return _ITEM_JSON.read((*RELICS.values(), None, *POTIONS.values()), _build_item_definitions)
+def _item_definitions(*, shared=False):
+    sources = (*RELICS.values(), None, *POTIONS.values())
+    return (_ITEM_JSON.shared if shared else _ITEM_JSON.read)(sources, _build_item_definitions)
 
 
-def capture_run(engine) -> dict:
+def _items_match(value):
+    return _ITEM_JSON.matches(value, (*RELICS.values(), None, *POTIONS.values()), _build_item_definitions)
+
+
+def capture_run(engine, *, shared_content=False) -> dict:
+    """`shared_content`: content definitions are the cached shared values, for
+    callers that only read the snapshot (restore, serialization) and never mutate it."""
     state = engine.state
     state.validate()
     _validate_progression(state, engine.graph, engine.cards)
     return {
-        "schema": SCHEMA, "cards": engine.cards.snapshot_fingerprint(), "items": _item_definitions(), "shops": shop_fingerprint(), "treasure": treasure_fingerprint(), "events": event_fingerprint(),
+        "schema": SCHEMA, "cards": engine.cards.snapshot_fingerprint(), "items": _item_definitions(shared=shared_content),
+        "shops": shop_fingerprint(shared=shared_content), "treasure": treasure_fingerprint(), "events": event_fingerprint(shared=shared_content),
         "state": {"seed": state.seed, "max_hp": state.max_hp, "hp": state.hp,
                   "gold": state.gold, "deck": [card_record(c) for c in state.deck],
                   "stolen_cards": [card_record(c) for c in state.stolen_cards],
@@ -118,13 +126,13 @@ def restore_run(snapshot, *, cards=DEFAULT_CARDS):
         raise ValueError("Incompatible run snapshot.")
     if snapshot.get("cards") != cards.snapshot_fingerprint():
         raise ValueError("Run snapshot card definitions are incompatible.")
-    if snapshot.get("items") != _item_definitions():
+    if not _items_match(snapshot.get("items")):
         raise ValueError("Run snapshot item definitions are incompatible.")
-    if snapshot.get("shops") != shop_fingerprint():
+    if snapshot.get("shops") != shop_fingerprint(shared=True):
         raise ValueError("Run snapshot shop definitions are incompatible.")
     if snapshot.get("treasure") != treasure_fingerprint():
         raise ValueError("Run snapshot treasure definitions are incompatible.")
-    if snapshot.get("events") != event_fingerprint():
+    if snapshot.get("events") != event_fingerprint(shared=True):
         raise ValueError("Run snapshot event definitions are incompatible.")
     try:
         payload = snapshot["state"]

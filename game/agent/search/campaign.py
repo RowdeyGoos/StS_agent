@@ -4,9 +4,11 @@ The engine owns every rule. This module translates public inventory and
 history-derived facts, then conditions ordinary setup on observed reveals.
 It never accepts a continuation snapshot, game seed or native identity.
 """
+from collections import defaultdict
 from copy import deepcopy
 
 from game.agent.contracts import full as f
+from game.agent.headless.full_cards import CardViews, _signature
 from game.agent.headless.full_projection import FullProjection
 from game.agent.headless.full_relics import WRAPPED
 from game.agent.headless.identity import Identities
@@ -126,19 +128,30 @@ class CampaignWorld(ObservedWorld):
 
     def attach(self, root):
         super().attach(root)
-        # Establish identity using public positions only. Past campaign actions
-        # remain part of the network input; private allocator values do not.
+        for node in (*f.walk(root.run), *f.walk(root.context)):
+            refs = ([node.ref] if node.ref else []) + [r for link in node.links for r in link.targets]
+            for ref in refs:
+                kind, serial = ref.split(':')
+                self._ids.counts[kind] = max(self._ids.counts[kind], int(serial) + 1)
+        # The projection orders equal definitions by public name, and a root's
+        # names need not follow content (a lone copy enchanted after naming).
+        # Give each deck card the name of a publicly identical root card.
+        views, names = CardViews(), defaultdict(list)
+        for node in next(n for n in root.run.children if n.kind == 'deck').children:
+            names[_signature(f.Node(node.kind, node.definition_id, None, node.fields, node.links, node.children))].append(node.ref)
+        deck = self._run.state.deck
+        contents = [views.signature(card) for card in deck]
+        if sorted(contents) == sorted(key for key, refs in names.items() for _ in refs):
+            for card, key in zip(deck, contents):
+                self._ids.refs['card', ('deck', card.instance_id)] = names[key].pop(0)
+        # Establish remaining identity using public positions only. Past campaign
+        # actions remain part of the network input; private allocator values do not.
         owner = FullProjection(self._run, self._ids, [], {}, 'attachment', 0, False)
         sample = owner.decision()
         positions = {path: ref for ref, path in _paths(root).items()}
         rename = {ref: positions[path] for ref, path in _paths(sample).items() if path in positions}
         for key, ref in list(self._ids.refs.items()):
             self._ids.refs[key] = rename.get(ref, ref)
-        for node in (*f.walk(root.run), *f.walk(root.context)):
-            refs = ([node.ref] if node.ref else []) + [r for link in node.links for r in link.targets]
-            for ref in refs:
-                kind, serial = ref.split(':')
-                self._ids.counts[kind] = max(self._ids.counts[kind], int(serial) + 1)
         self._history = [f.Candidate('action:0', n.definition_id,
             next(iter(n.linked('history_subject')), None), next(iter(n.linked('history_target')), None))
             for group in root.run.children if group.kind == 'history' for n in group.children]

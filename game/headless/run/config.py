@@ -50,7 +50,8 @@ class RunConfig:
                 raise ValueError("Reward pools must contain distinct definition IDs.")
             object.__setattr__(self, name, values)
         from game.headless.characters import relic_pool
-        if any(name not in relic_pool(self.character, shop=True) for name in self.shop_relics):
+        shop_pool = relic_pool(self.character, shop=True)
+        if any(name not in shop_pool for name in self.shop_relics):
             raise ValueError("Unsupported merchant relic pool.")
         if len(self.reward_cards) < 3 or len(self.boss_reward_cards) < 3:
             raise ValueError("The slice needs at least three card reward definitions.")

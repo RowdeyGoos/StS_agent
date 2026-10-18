@@ -265,7 +265,7 @@ def test_mutation_then_failure_stops_environment_and_never_retries(monkeypatch, 
     obs, _ = env.reset(seed=1)
     run = env._adapter._engine
     before = run.state.gold
-    def fail(action):
+    def fail(action, **kwargs):
         run.state.gold += 10
         raise interruption('private backend diagnostic')
     monkeypatch.setattr(run, 'apply', fail)
@@ -304,8 +304,8 @@ def test_unsupported_and_capacity_failures_stop_without_fabricating_transitions(
     env = StsEnv(max_decisions=1)
     obs, _ = env.reset(seed=1)
     run, original = env._adapter._engine, env._adapter._engine.apply
-    def grow(action):
-        value = original(action)
+    def grow(action, **kwargs):
+        value = original(action, **kwargs)
         run.state.gold = 2**31
         return value
     monkeypatch.setattr(run, 'apply', grow)

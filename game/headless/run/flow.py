@@ -1,6 +1,7 @@
 """Direct gameplay command dispatch; room and content rules stay in their modules."""
 
 from game.headless.core.actions import ChooseCombatCard, ConfirmCombatSelection, EndTurn, PlayCard
+from game.headless.core.state_records import state_record
 from game.headless.encounters.catalog import ENCOUNTERS
 from game.headless.events.catalog import EVENTS
 from game.headless.potions.base import POTIONS
@@ -95,10 +96,13 @@ def legal_actions(engine) -> tuple:
     return tuple(actions)
 
 
-def apply(engine, action):
-    if action not in legal_actions(engine):
+def apply(engine, action, *, legal=None):
+    if action not in (legal_actions(engine) if legal is None else legal):
         raise ValueError(f"Illegal run action: {action!r}")
     state = engine.state
+    # The combat check below would repeat the one above unless this sync
+    # changes combat inputs before dispatch.
+    unchanged = True
     if isinstance(action, ContinueAct):
         return engine.advance_act()
     if isinstance(action, (RerollCardReward, SacrificeCardReward)):
@@ -107,12 +111,14 @@ def apply(engine, action):
     if engine.combat is not None:
         # Run inventory is authoritative between commands (including direct
         # acquisition through the shared inventory API).
-        from dataclasses import asdict
         r = engine.combat.player.rules
+        potions = [None if p is None else state_record(p) for p in state.potions]
+        slots = state.potions.count(None)
+        unchanged = r.gold_available == state.gold and r.potions == potions and r.potion_slots == slots
         r.gold_available = state.gold
         previous_potions = r.potions
-        r.potions = [None if p is None else asdict(p) for p in state.potions]
-        r.potion_slots = state.potions.count(None)
+        r.potions = potions
+        r.potion_slots = slots
         from game.headless.relics.damage import potions_changed
         if r.potions != previous_potions:
             potions_changed(engine.combat.player)
@@ -169,7 +175,7 @@ def apply(engine, action):
             if engine.combat is None:
                 return result
         else:
-            result = engine.combat.apply(action)
+            result = engine.combat.apply(action, checked=unchanged)
         engine.sync_combat_loot()
         if result.done:
             engine.finish_combat()

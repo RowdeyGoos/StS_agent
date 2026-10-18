@@ -8,6 +8,7 @@ from dataclasses import replace
 from game.headless.cards.catalog import DEFAULT_CARDS
 from game.headless.core.combat import CombatEngine
 from game.headless.core.rng import GameRandomService
+from game.headless.core.state_records import state_record
 from game.headless.map.graph import MapGraph
 from game.headless.run.deck import add_card, find_card, upgrade_card
 from game.headless.run.state import RunPhase, RunState
@@ -154,9 +155,15 @@ class RunEngine:
         from game.headless.run.flow import legal_actions
         return legal_actions(self)
 
-    def apply(self, action):
+    def apply(self, action, *, legal=None):
+        """Execute one legal command.
+
+        A trusted caller may pass `legal`: the tuple it obtained from
+        `legal_actions()` for this unchanged state. Membership is then checked
+        against it instead of regenerating every action.
+        """
         from game.headless.run.flow import apply
-        result = apply(self, action)
+        result = apply(self, action, legal=legal)
         from game.headless.relics.neow import drain
         drain(self.state, self.cards)
         from game.headless.run.shop import resume_parasol
@@ -306,14 +313,16 @@ class RunEngine:
         r = self.combat.player.rules
         from game.headless.relics.ancient_state import sync_cards
         sync_cards(self.state, self.combat.player)
-        for card in self.state.deck:
-            if card.definition.definition_id == 'the_scythe':
-                card.permanent_damage += r.scythe_gains.get(card.instance_id, 0)
-        r.scythe_gains.clear()
-        for card in self.state.deck:
-            if card.definition.definition_id == 'genetic_algorithm':
-                card.permanent_block += r.genetic_gains.get(card.instance_id, 0)
-        r.genetic_gains.clear()
+        if r.scythe_gains:
+            for card in self.state.deck:
+                if card.definition.definition_id == 'the_scythe':
+                    card.permanent_damage += r.scythe_gains.get(card.instance_id, 0)
+            r.scythe_gains.clear()
+        if r.genetic_gains:
+            for card in self.state.deck:
+                if card.definition.definition_id == 'genetic_algorithm':
+                    card.permanent_block += r.genetic_gains.get(card.instance_id, 0)
+            r.genetic_gains.clear()
         from game.headless.relics.combat import synchronize
         from game.headless.relics.damage import potions_changed
         synchronize(self.state, self.combat.player)
@@ -324,9 +333,8 @@ class RunEngine:
         self.state.potions = [None if item is None else PotionInstance(**item) for item in r.potions]
         for potion in r.potions_generated:
             add_potion(self.state, potion)
-        from dataclasses import asdict
         previous_potions = r.potions
-        r.potions = [None if item is None else asdict(item) for item in self.state.potions]
+        r.potions = [None if item is None else state_record(item) for item in self.state.potions]
         r.potions_generated.clear()
         r.potion_slots = self.state.potions.count(None)
         # Only procurement changes inventory here. Consumption hooks belong
@@ -406,9 +414,10 @@ class RunEngine:
             self.state.phase = RunPhase.SLICE_COMPLETE
         return node
 
-    def snapshot(self) -> dict:
+    def snapshot(self, *, shared_content=False) -> dict:
+        """`shared_content`: see capture_run; only for callers that never mutate the result."""
         from game.headless.run.snapshots import capture_run
-        return capture_run(self)
+        return capture_run(self, shared_content=shared_content)
 
     def restore(self, snapshot: dict) -> None:
         from game.headless.run.snapshots import restore_run

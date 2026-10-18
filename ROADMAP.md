@@ -1,6 +1,6 @@
 # Roadmap
 
-Priorities updated 2026-10-07. This file owns priorities;
+Priorities updated 2026-10-17. This file owns priorities;
 [current status](docs/STATUS.md) owns capability and evidence. Follow [AGENTS.md](AGENTS.md) for the development
 process. Completed packets and old campaign instructions are historical references.
 
@@ -47,7 +47,19 @@ Further work should start from a new concrete requirement:
    genuine frozen combat starts from both regions, whole-campaign data splits,
    a victory-first combat objective with modest HP shaping, and matched
    encounter-level comparisons. Keep the noncombat heuristic fixed during hybrid
-   Act 1 checks. Production defaults and parallel PPO remain in use. The completed
+   Act 1 checks. Production defaults and parallel PPO remain in use.
+   **Current combat priority (2026-10-17):** measure combat on the
+   [boss and elite benchmark](docs/AGENT_TRAINING.md#boss-and-elite-benchmark),
+   because most Act 1 losses are boss and elite fights. The
+   [hidden-state comparison](docs/evidence/COMBAT_HIDDEN_STATE_2026_10_17.md)
+   found no effect of resampling at the current corpus scale, and 245,760 more
+   PPO decisions from the Vantom specialist did not improve bosses (elites +2
+   points). [Combat search](docs/evidence/COMBAT_SEARCH_BENCHMARK_2026_10_17.md)
+   on the same checkpoint adds 6.8 boss and 6.7 elite points. Next, collect
+   search-labelled hard-fight states and test whether distillation closes that
+   gap, before scaling boss PPO. Pause Vantom-only
+   feature and architecture screens; compare representations first with supervised
+   tests on search-labelled hard-fight states, then confirm the best one with RL. The completed
    [Vantom feature, encoder and PPO studies](docs/AGENT_TRAINING.md#current-vantom-findings)
    support keeping basic flat and original rich pooling as baselines, with compact
    rich pooling as a candidate for reduced rollout storage. Extra hierarchy has

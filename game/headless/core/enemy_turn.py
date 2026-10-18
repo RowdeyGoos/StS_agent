@@ -1,6 +1,7 @@
 """Resume enemy-side work after a reactive draw interrupts an individual hit."""
 
 from dataclasses import asdict
+from game.headless.core.state_records import state_record
 from game.headless.monsters.base import Intent
 from game.headless.core.resolution import drain
 
@@ -66,7 +67,7 @@ def execute(enemy, player, continuation):
 def begin(enemy):
     if not enemy.stunned:
         enemy.before_move(enemy.combat_player)
-    return {"intent": asdict(enemy.intent), "hit": 0, "stage": "hits"}
+    return {"intent": state_record(enemy.intent), "hit": 0, "stage": "hits"}
 
 
 def validate(record, player):

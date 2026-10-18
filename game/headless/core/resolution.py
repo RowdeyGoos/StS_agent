@@ -18,7 +18,7 @@ def push(player, *tasks):
 
 
 def find(player, identity):
-    return next((c for c in player.deck.all_cards() if c.instance_id == identity), None)
+    return player.deck.find(identity)
 
 
 def move_out(player, card):
@@ -167,11 +167,23 @@ def drain(player):
         player._resolving = False
 
 
+_HOOK_MODULES = None
+
+
+def _hook_modules():
+    """Modules every task may dispatch to; they import this one, so bind them lazily once."""
+    global _HOOK_MODULES
+    if _HOOK_MODULES is None:
+        from game.headless.powers import ironclad as hooks
+        from game.headless.cards import special
+        from game.headless.powers import colorless
+        from game.headless.core import choices
+        _HOOK_MODULES = hooks, special, colorless, choices
+    return _HOOK_MODULES
+
+
 def execute(p, task):
-    from game.headless.powers import ironclad as hooks
-    from game.headless.cards import special
-    from game.headless.powers import colorless
-    from game.headless.core import choices
+    hooks, special, colorless, choices = _hook_modules()
 
     op, *args = task
     r = p.rules

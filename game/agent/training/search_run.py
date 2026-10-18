@@ -206,10 +206,18 @@ def run_search(*, checkpoint, output_dir, search=SearchConfig(), corpus_path=Non
                cases=8, split='validation', start_index=0, max_decisions=256,
                time_limit_seconds=600., workers=1, collect=False, act1=False,
                encounters=('overgrowth_vantom',), benchmark_path=None,
-               critic_baseline_simulations=None, include_root=True, cancel=None, diagnostics_path=None):
+               critic_baseline_simulations=None, include_root=True, cancel=None, diagnostics_path=None,
+               room_kinds=None):
     from .evaluation_workers import settings as worker_settings, evaluate_parallel
+    from .combat_corpus import ROOM_KINDS
     if type(cases) is not int or not 1 <= cases <= 10000 or max_decisions < 1:
         raise ValueError('Invalid search experiment size')
+    kinds = ROOM_KINDS if room_kinds is None else tuple(room_kinds)
+    if not kinds or len(set(kinds)) != len(kinds) or not set(kinds) <= set(ROOM_KINDS):
+        raise ValueError('Choose distinct room kinds from combat, elite and boss')
+    kinds = tuple(k for k in ROOM_KINDS if k in kinds)
+    if kinds != ROOM_KINDS and (not corpus_path or diagnostics_path is not None):
+        raise ValueError('Room-kind selection requires a combat corpus and the complete diagnostic population')
     if type(include_root) is not bool:
         raise ValueError('Invalid root comparison switch')
     if critic_baseline_simulations is not None and (collect or search.method != 'gumbel' or not search.leaf_rollout_steps or
@@ -284,13 +292,14 @@ def run_search(*, checkpoint, output_dir, search=SearchConfig(), corpus_path=Non
             from .combat_corpus import sample_training_case
             pool = {}
             for row in corpus.split('train'):
-                pool.setdefault(row['encounter'], {}).setdefault(row['combat_id'], []).append(row)
+                if row['room_kind'] in kinds:
+                    pool.setdefault(row['encounter'], {}).setdefault(row['combat_id'], []).append(row)
             if not pool:
                 raise ValueError('No training cases in requested corpus')
             source_rows = [sample_training_case(pool, _collection_seed(search.seed, start_index+i, 'source'))
                            for i in range(cases)]
         else:
-            source_rows = [r for r in corpus.split(split) if r['start_kind'] == 'opening']
+            source_rows = [r for r in corpus.split(split) if r['start_kind'] == 'opening' and r['room_kind'] in kinds]
             source_rows = source_rows[start_index:start_index+cases]
         if not source_rows:
             raise ValueError('No opening cases in requested corpus partition')
@@ -319,7 +328,8 @@ def run_search(*, checkpoint, output_dir, search=SearchConfig(), corpus_path=Non
                 row['arm'] = name
             if source_row:
                 row.update(source_case_id=source_row['case_id'], source_combat_id=source_row['combat_id'],
-                           start_kind=source_row['start_kind'])
+                           start_kind=source_row['start_kind'], room_kind=source_row['room_kind'],
+                           encounter=source_row['encounter'])
             if declared:
                 row.update(scenario_id=declared.name, deck_profile=declared.deck_profile, benchmark_role=declared.role,
                            case_index=start_index + index)
@@ -351,6 +361,8 @@ def run_search(*, checkpoint, output_dir, search=SearchConfig(), corpus_path=Non
         limits=dict(max_decisions=max_decisions, time_limit_seconds=time_limit_seconds),
         execution=execution, corpus=settings.get('corpus'),
         start_kind='opening_continuation_mix' if collect and corpus_path else 'opening', episodes=rows)
+    if corpus_path:
+        report['room_kinds'] = list(kinds)
     if collect:
         report['sampling'] = dict(seed=search.seed, start_index=start_index,
             schedule='search_collection_sha256_v1' if corpus_path else 'interleaved_splits_v1_fixed_planner_seed',
@@ -369,7 +381,7 @@ def run_search(*, checkpoint, output_dir, search=SearchConfig(), corpus_path=Non
         # single held-out engine snapshot. Existing locks are never rewritten.
         lock = corpus.path.parent / 'search-test-opened.json'
         binding = dict(corpus=corpus.identity, policies=policies, cases=[r['case_id'] for r in source_rows],
-                       search_configs=configs, limits=report['limits'], implementation=source)
+                       room_kinds=list(kinds), search_configs=configs, limits=report['limits'], implementation=source)
         if locks[0].exists():
             raise ValueError('This corpus test was already opened by another experiment')
         if lock.exists() and json.loads(lock.read_text()) != binding:
@@ -416,11 +428,13 @@ def run_search(*, checkpoint, output_dir, search=SearchConfig(), corpus_path=Non
         report['paired_vs_network'] = {n: compare(v, grouped['network'], goal='act1', baseline_name='network')
                                        for n, v in grouped.items() if n != 'network'}
     else:
-        from .comparison import summary, paired
+        from .comparison import balanced, summary, paired
         report['summary'] = {n: summary(v) for n, v in grouped.items()}
         if not collect:
             report['paired_vs_network'] = {n: paired(v, grouped['network'], baseline_name='network')
                                            for n, v in grouped.items() if n != 'network'}
+            if corpus_path:
+                report['balanced'] = balanced(rows, list(names))
     for name, values in grouped.items():
         if name != 'network':
             report['summary'][name]['search'] = _aggregate_search(values)

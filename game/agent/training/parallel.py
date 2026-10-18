@@ -4,8 +4,10 @@ Only public rollout features cross back to the learner. Each round starts new
 games and local action generators; no environment or RNG is kept in a worker.
 """
 import multiprocessing
+from multiprocessing.reduction import ForkingPickler
 import queue
 import signal
+import socket
 import threading
 import time
 
@@ -23,6 +25,33 @@ def collection_settings(workers):
     if type(workers) is not int or not 1 <= workers <= GAME_WORKER_LIMIT:
         raise ValueError(f'PPO workers must be between 1 and {GAME_WORKER_LIMIT}')
     return {'workers': workers, 'schedule': 'serial_v1' if workers == 1 else 'parallel_quota_ranges_v1'}
+
+
+# A worker's rollout is tens of megabytes. Duplex pipes are socket pairs, whose
+# 8 KiB macOS defaults made the learner's receive loop each round's bottleneck.
+PIPE_BUFFER_BYTES = 1 << 20
+
+
+def _grow_pipe_buffers(*connections):
+    """Raise kernel socket buffers only; bytes and message order are unchanged."""
+    for connection in connections:
+        try:
+            pipe = socket.socket(fileno=connection.fileno())
+        except OSError:
+            return  # Not a socket pair (Windows pipe handles): keep the defaults.
+        try:
+            for option in (socket.SO_SNDBUF, socket.SO_RCVBUF):
+                if pipe.getsockopt(socket.SOL_SOCKET, option) < PIPE_BUFFER_BYTES:
+                    pipe.setsockopt(socket.SOL_SOCKET, option, PIPE_BUFFER_BYTES)
+        except OSError:
+            pass  # A lower system limit keeps the slower default.
+        finally:
+            try:
+                # As Pipe() itself does: a process-wide default socket timeout
+                # must not leave the connection non-blocking.
+                pipe.setblocking(True)
+            finally:
+                pipe.detach()
 
 
 def allocations(quota, workers, cursor):
@@ -43,11 +72,17 @@ def allocations(quota, workers, cursor):
     return tuple(jobs)
 
 
-def _worker(vocabulary, architecture, input_view, experiment, env_factory, stopped, connection):
+def _worker(stopped, connection):
     signal.signal(signal.SIGINT, signal.SIG_IGN)
     # Avoid multiplying the parent's BLAS/Torch thread count by the pool size.
     torch.set_num_threads(1)
     try:
+        # Startup state arrives on the pipe after start(), from the transfer
+        # thread, so the parent never waits for one collector's imports.
+        while not connection.poll(.05):
+            if stopped.is_set():
+                return
+        vocabulary, architecture, input_view, experiment, env_factory = connection.recv()
         model = ActorCritic(vocabulary, architecture,
                            action_policy=experiment.training.action_policy, input_view=input_view).requires_grad_(False)
         while not stopped.is_set():
@@ -78,8 +113,13 @@ def _worker(vocabulary, architecture, input_view, experiment, env_factory, stopp
         connection.close()
 
 
-def _exchange(index, connection, inbox, outbox):
+def _exchange(index, connection, inbox, outbox, startup):
     """Keep large pipe sends/receives off the cancellation/deadline thread."""
+    try:
+        connection.send_bytes(startup)
+    except BaseException:
+        outbox.put((index, ('failed', {'failure': 'WorkerTransportError'})))
+        return
     while True:
         job = inbox.get()
         if job is None:
@@ -106,16 +146,24 @@ class ParallelCollector:
         self.active, self.channels = {}, {}
         self.outbox = queue.Queue()
         self.closed = False
+        self._startup = None
 
     def _start(self, count, cancel, deadline):
         before = time.perf_counter()
+        if self._startup is None and len(self.active) < count:
+            # Pickled once, outside spawn's inheritance context, and the same bytes
+            # go to every collector (equal to Connection.send() of this tuple). The
+            # state must be plain picklable data: no multiprocessing locks, queues,
+            # connections or other one-shot handles.
+            self._startup = bytes(ForkingPickler.dumps((self.vocabulary, self.architecture, self.input_view,
+                                                        self.experiment, self.env_factory)))
         for index in range(len(self.active), count):
             check_cancel(cancel)
             if deadline is not None and time.monotonic() >= deadline:
                 raise TimeoutError('PPO collection startup exceeded its time budget')
             parent, child = self.context.Pipe()
-            process = self.context.Process(target=_worker, args=(self.vocabulary, self.architecture,
-                self.input_view, self.experiment, self.env_factory, self.stopped, child), name='sts-ppo-collector')
+            _grow_pipe_buffers(parent, child)
+            process = self.context.Process(target=_worker, args=(self.stopped, child), name='sts-ppo-collector')
             # Register before start, and defer signals until the OS handle is
             # attached. Reuse the episode runner's interruption-safe lifecycle.
             self.active[index] = (process, parent, time.monotonic())
@@ -125,7 +173,7 @@ class ParallelCollector:
             finally:
                 child.close()
             inbox = queue.Queue()
-            thread = threading.Thread(target=_exchange, args=(index, parent, inbox, self.outbox),
+            thread = threading.Thread(target=_exchange, args=(index, parent, inbox, self.outbox, self._startup),
                                       name='sts-ppo-transfer', daemon=True)
             self.channels[index] = (inbox, thread)
             with _defer_start_signals():

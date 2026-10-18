@@ -116,24 +116,30 @@ class CombatEngine:
             return tuple(ChooseCombatCard(i) for i in self.player.pending_options())
         actions: list[CombatAction] = [EndTurn()]
         from game.headless.cards.curses import can_play
-        for card in self.player.hand:
-            if not can_play(self.player, card):
+        player = self.player
+        living = None
+        for card in player.hand:
+            if not can_play(player, card):
                 continue
-            if self.player.statuses.get("ringing") and self.player.cards_played_this_turn:
+            if player.statuses.get("ringing") and player.cards_played_this_turn:
                 continue
-            if (card.cost < 0 and not card.spec.x_cost) or self.player.card_cost(card) > self.player.energy or self.player.star_cost(card) > self.player.rules.stars:
+            spec = card.spec
+            if (spec.cost < 0 and not spec.x_cost) or player.card_cost(card) > player.energy or player.star_cost(card) > player.rules.stars:
                 continue
-            if card.spec.uses_target:
-                actions.extend(PlayCard(card.instance_id, slot) for slot in self._living_enemy_indices())
+            if spec.uses_target:
+                if living is None:
+                    living = self._living_enemy_indices()
+                actions.extend(PlayCard(card.instance_id, slot) for slot in living)
             else:
                 actions.append(PlayCard(card.instance_id))
         return tuple(actions)
 
-    def apply(self, action: CombatAction) -> CombatResult:
+    def apply(self, action: CombatAction, *, checked=False) -> CombatResult:
+        """`checked`: the caller already verified `action` against this exact state's legal actions."""
         self._ensure_ready()
         if self.done:
             raise RuntimeError("Combat is already finished. Call reset() to start a new run.")
-        if action not in self.legal_actions():
+        if not checked and action not in self.legal_actions():
             raise ValueError(f"Illegal action for current state: {action!r}")
         details = {}
         if isinstance(action, (ChooseCombatCard, ConfirmCombatSelection)):

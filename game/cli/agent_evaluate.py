@@ -28,6 +28,8 @@ def main(argv=None):
     parser.add_argument('--combat-diagnostics', help='Frozen witnessed-win labels; report alongside the full validation population')
     parser.add_argument('--combat-starts', choices=('opening', 'continuation', 'all'), default='opening',
                         help='Whole fights by default; continuations are separate tactical diagnostics')
+    parser.add_argument('--combat-room-kind', action='append', dest='room_kinds', choices=('combat', 'elite', 'boss'),
+                        help='Restrict combat-corpus cases to these room kinds (repeatable); default all')
     parser.add_argument('--freeze-suite', metavar='CONFIG', help='Freeze benchmark settings, cases and private snapshots before tuning')
     parser.add_argument('--suite', help='Frozen suite.json for paired evaluation or checkpoint selection')
     parser.add_argument('--candidate', action='append', default=[], help='Named inference bundle: imitation=PATH or ppo_NAME=PATH')
@@ -59,6 +61,8 @@ def _run(args, parser):
         parser.error('--search-benchmark requires --search combats; omit --act1, --combat-corpus and --encounter')
     if args.combat_starts != 'opening' and not args.combat_corpus:
         parser.error('--combat-starts requires --combat-corpus')
+    if args.room_kinds and not args.combat_corpus:
+        parser.error('--combat-room-kind requires --combat-corpus')
     parallel = bool(args.act1 or args.full_run or args.combat_corpus or args.search)
     if args.workers is None:
         args.workers = performance.game_workers() if parallel else 1
@@ -106,7 +110,7 @@ def _run(args, parser):
                     benchmark_path=args.search_benchmark,
                     critic_baseline_simulations=args.search_critic_baseline_simulations,
                     include_root=not args.search_skip_root_baseline, cancel=stopped,
-                    diagnostics_path=args.combat_diagnostics)
+                    diagnostics_path=args.combat_diagnostics, room_kinds=args.room_kinds)
             finally:
                 for sig, handler in previous.items():
                     signal.signal(sig, handler)
@@ -135,11 +139,15 @@ def _run(args, parser):
                 path, report = evaluate_corpus(corpus_path=args.combat_corpus, output_dir=args.output_dir,
                     checkpoints=checkpoints, split=args.split, max_decisions=args.max_decisions,
                     time_limit_seconds=args.time_limit, workers=args.workers, cancel=stopped,
-                    start_kind=args.combat_starts, diagnostics_path=args.combat_diagnostics)
+                    start_kind=args.combat_starts, diagnostics_path=args.combat_diagnostics,
+                    room_kinds=args.room_kinds)
             finally:
                 for sig, handler in previous.items(): signal.signal(sig,handler)
+            balanced = {kind: {name: value['estimate'] for name, value in values['win_rate'].items()}
+                        for kind, values in report.get('balanced', {}).items() if kind in ('elite', 'boss')}
             print(json.dumps({'report':str(path), 'status':report['status'], 'summary':report['summary'],
-                              'coverage':report['coverage'], 'total_seconds':report['total_seconds']},indent=2))
+                              'balanced_win_rate':balanced, 'coverage':report['coverage'],
+                              'total_seconds':report['total_seconds']},indent=2))
             return 130 if report['status']=='interrupted' else 0 if report['status']=='complete' else 1
         if args.full_run or args.act1:
             if (args.full_run and args.act1 or not args.checkpoint or

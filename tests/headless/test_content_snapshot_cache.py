@@ -112,3 +112,40 @@ def test_mutating_one_run_snapshot_cannot_change_another():
     assert second.snapshot() == expected
     second.restore(deepcopy(expected))
     assert second.snapshot() == expected
+
+
+@pytest.mark.parametrize('definition', [Frozen(1), Mutable(1)])
+def test_shared_and_matches_agree_with_detached_reads(definition):
+    cache = ContentJson()
+    build = lambda: asdict(definition)
+    shared = cache.shared([definition], build)
+    assert shared == cache.read([definition], build) == build()
+    assert cache.matches(build(), [definition], build) and not cache.matches({'value': 9}, [definition], build)
+    if isinstance(definition, Frozen):
+        # Warm frozen content: one cached comparison value, never a returned read.
+        cached = cache.shared([definition], build)
+        assert cache.shared([definition], build) is cached
+        assert cache.read([definition], build) is not cached
+    else:
+        definition.value = 2
+        assert cache.shared([definition], build) == build() != shared
+        assert cache.matches(build(), [definition], build)
+
+
+def test_shared_content_snapshot_equals_detached_and_restores():
+    run = RunEngine.act1(seed=3)
+    detached, shared = run.snapshot(), run.snapshot(shared_content=True)
+    assert shared == detached
+    assert shared['items'] is run.snapshot(shared_content=True)['items']
+    detached['items']['relics'][0]['definition_id'] = 'changed'
+    assert run.snapshot() == run.snapshot(shared_content=True) == shared
+    copy = RunEngine()
+    copy.restore(shared)
+    assert copy.snapshot() == shared
+    for key, edit in (('items', lambda v: v['potions'][0].update(definition_id='changed')),
+                      ('shops', lambda v: v['slots'][0].update(kind='changed')),
+                      ('events', lambda v: v[0].update(definition_id='changed'))):
+        tampered = run.snapshot()
+        edit(tampered[key])
+        with pytest.raises(ValueError, match='definitions are incompatible'):
+            copy.restore(tampered)

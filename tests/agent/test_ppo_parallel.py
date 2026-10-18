@@ -332,8 +332,8 @@ def test_parallel_merge_matches_identical_jobs_executed_sequentially():
             assert left.state.legal_mask == right.state.legal_mask
 
 
-def unresponsive_transport_worker(vocabulary, architecture, experiment, env_factory, stopped, connection):
-    # Never read the parent's multi-megabyte command: force a real blocked pipe.
+def unresponsive_transport_worker(stopped, connection):
+    connection.recv()  # Startup state; then never read the multi-megabyte command.
     time.sleep(30)
 
 
@@ -344,7 +344,8 @@ def test_cancellation_unblocks_a_large_pipe_send(monkeypatch):
     original = Connection.send
     def observe_send(self, value):
         if threading.current_thread().name == 'sts-ppo-transfer':
-            assert sum(v.nbytes for v in value['weights'].values()) > 1024*1024
+            # Larger than both enlarged socket buffers: the send really blocks.
+            assert sum(v.nbytes for v in value['weights'].values()) > 4*parallel.PIPE_BUFFER_BYTES
             sending.set()
         return original(self, value)
     monkeypatch.setattr(Connection, 'send', observe_send)
@@ -355,10 +356,70 @@ def test_cancellation_unblocks_a_large_pipe_send(monkeypatch):
         stopped.set()
     monitor = threading.Thread(target=cancel_during_send)
     monitor.start()
-    with PPOLearner(ActorCritic(Vocabulary(tuple(f'name_{i:05}' for i in range(4096))), Architecture(128, 4)),
+    with PPOLearner(ActorCritic(Vocabulary(tuple(f'name_{i:05}' for i in range(16384))), Architecture(128, 4)),
                     PPOExperiment(), workers=2) as owner:
         with pytest.raises(RunCancelled):
             owner.collect(decisions=2, cancel=stopped)
     monitor.join(1)
     assert sending.is_set() and child_pids() == before
     assert not any(t.name == 'sts-ppo-transfer' for t in threading.enumerate())
+
+
+def _pipe_buffer_sizes(connection):
+    import socket
+    pipe = socket.socket(fileno=connection.fileno())
+    try:
+        return [pipe.getsockopt(socket.SOL_SOCKET, option) for option in (socket.SO_SNDBUF, socket.SO_RCVBUF)]
+    finally:
+        pipe.detach()
+
+
+def _assert_round_trip(parent, child, payload):
+    received = []
+    reader = threading.Thread(target=lambda: received.append(parent.recv_bytes()))
+    reader.start()
+    child.send_bytes(payload)
+    reader.join(10)
+    assert received == [payload]
+
+
+@pytest.mark.skipif(os.name != 'posix', reason='Duplex pipes are socket pairs only on POSIX')
+def test_collector_pipes_get_larger_buffers_and_carry_identical_bytes():
+    import sys
+    from game.agent.training import parallel
+    parent, child = multiprocessing.get_context('spawn').Pipe()
+    try:
+        before = _pipe_buffer_sizes(parent) + _pipe_buffer_sizes(child)
+        parallel._grow_pipe_buffers(parent, child)
+        after = _pipe_buffer_sizes(parent) + _pipe_buffer_sizes(child)
+        # Linux caps a request at its configured maximum; buffers never shrink.
+        assert all(grown >= original for grown, original in zip(after, before))
+        if sys.platform == 'darwin':
+            assert min(after) >= parallel.PIPE_BUFFER_BYTES
+        assert os.get_blocking(parent.fileno()) and os.get_blocking(child.fileno())
+        _assert_round_trip(parent, child, os.urandom(3*parallel.PIPE_BUFFER_BYTES + 17))
+        child.send(('complete', {'steps': 1}))
+        assert parent.recv() == ('complete', {'steps': 1})
+    finally:
+        parent.close()
+        child.close()
+
+
+@pytest.mark.skipif(os.name != 'posix', reason='Duplex pipes are socket pairs only on POSIX')
+def test_collector_pipes_stay_blocking_under_a_default_socket_timeout():
+    import socket
+    from game.agent.training import parallel
+    parent, child = multiprocessing.get_context('spawn').Pipe()
+    previous = socket.getdefaulttimeout()
+    try:
+        # Wrapping a descriptor applies the process default timeout (non-blocking).
+        socket.setdefaulttimeout(5)
+        try:
+            parallel._grow_pipe_buffers(parent, child)
+        finally:
+            socket.setdefaulttimeout(previous)
+        assert os.get_blocking(parent.fileno()) and os.get_blocking(child.fileno())
+        _assert_round_trip(parent, child, os.urandom(3*parallel.PIPE_BUFFER_BYTES))
+    finally:
+        parent.close()
+        child.close()

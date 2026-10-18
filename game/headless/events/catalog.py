@@ -40,5 +40,6 @@ def _build_fingerprint():
     return json.loads(json.dumps([asdict(event) for event in EVENTS.values()]))
 
 
-def fingerprint():
-    return _CATALOG_JSON.read(EVENTS.values(), _build_fingerprint)
+def fingerprint(*, shared=False):
+    """`shared`: the cached value for read-only use; otherwise detached containers."""
+    return (_CATALOG_JSON.shared if shared else _CATALOG_JSON.read)(EVENTS.values(), _build_fingerprint)

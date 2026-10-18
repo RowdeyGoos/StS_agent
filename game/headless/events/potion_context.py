@@ -19,12 +19,16 @@ def record(state, before, definition_id=None):
     from game.headless.events.catalog import EVENTS
     if getattr(EVENTS[pending["definition_id"]], "uses_steps", False):
         return
+    after = [None if p is None else asdict(p) for p in state.potions]
+    # A refused acquisition (for example under Sozu) leaves no inventory change.
+    if after == before:
+        return
     pending.setdefault("potion_changes", []).append(
         {
             "position": position(pending),
             "definition_id": definition_id,
             "before": before,
-            "after": [None if p is None else asdict(p) for p in state.potions],
+            "after": after,
         }
     )
 

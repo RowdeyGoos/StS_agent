@@ -9,7 +9,7 @@ import json
 import re
 from typing import Literal
 
-from .codec import ContractError, _read, _read_record, _wire, _unique_object, _invalid_constant
+from .codec import ContractError, _EXACT_WIRE, _read, _read_record, _wire, _wire_fields, _unique_object, _invalid_constant
 from .models import RunOutcome
 
 SCHEMA = 'sts_public_decision_v2'
@@ -74,6 +74,108 @@ class PublicDecision:
     run: Node
     context: Node
     candidates: tuple[Candidate, ...]
+
+
+# Exact-type equivalents of codec._wire and of _read_record(..., PublicDecision)
+# for the fixed graph records. Any other type defers to the generic code at that
+# same position, so output, key order and error precedence are unchanged.
+_SCALAR = (str, int, bool, type(None))
+
+
+def _wire_field(value):
+    key = value.key
+    key = key if type(key) in _SCALAR else _wire(key)
+    item = value.value
+    return {'key': key, 'value': item if type(item) in _SCALAR else _wire(item)}
+
+
+def _wire_link(value):
+    key = value.key
+    key = key if type(key) in _SCALAR else _wire(key)
+    targets = value.targets
+    return {'key': key, 'targets': [t if type(t) in _SCALAR else _wire(t) for t in targets]
+            if type(targets) is tuple else _wire(targets)}
+
+
+def _wire_node(value):
+    # Read and convert each field in declaration order, exactly as _wire does.
+    kind = value.kind
+    kind = kind if type(kind) in _SCALAR else _wire(kind)
+    definition_id = value.definition_id
+    definition_id = definition_id if type(definition_id) in _SCALAR else _wire(definition_id)
+    ref = value.ref
+    ref = ref if type(ref) in _SCALAR else _wire(ref)
+    fields = value.fields
+    fields = [_wire_field(v) if type(v) is Field else _wire(v) for v in fields] if type(fields) is tuple else _wire(fields)
+    links = value.links
+    links = [_wire_link(v) if type(v) is Link else _wire(v) for v in links] if type(links) is tuple else _wire(links)
+    children = value.children
+    children = ([_wire_node(v) if type(v) is Node else _wire(v) for v in children]
+                if type(children) is tuple else _wire(children))
+    return {'kind': kind, 'definition_id': definition_id, 'ref': ref,
+            'fields': fields, 'links': links, 'children': children}
+
+
+for _type, _keys in ((Field, ('key', 'value')), (Link, ('key', 'targets')),
+                     (Node, ('kind', 'definition_id', 'ref', 'fields', 'links', 'children'))):
+    if _wire_fields(_type) != _keys:
+        raise RuntimeError('Specialized wire layout differs from its record fields')
+_EXACT_WIRE.update({Field: _wire_field, Link: _wire_link, Node: _wire_node})
+
+
+class _Generic(Exception):
+    """Leave this value to the generic schema reader."""
+
+
+def _clone_node(value, depth):
+    # validate() rejects depth > 24; deeper input keeps the generic path.
+    if depth > 24:
+        raise _Generic
+    kind, definition_id, ref = value.kind, value.definition_id, value.ref
+    fields, links, children = value.fields, value.links, value.children
+    if (type(kind) is not str or type(definition_id) is not str or (ref is not None and type(ref) is not str)
+            or type(fields) is not tuple or type(links) is not tuple or type(children) is not tuple):
+        raise _Generic
+    cloned_fields = []
+    for field in fields:
+        if type(field) is not Field or type(field.key) is not str or type(field.value) not in _SCALAR:
+            raise _Generic
+        cloned_fields.append(Field(field.key, field.value))
+    cloned_links = []
+    for link in links:
+        targets = link.targets if type(link) is Link else None
+        if type(targets) is not tuple or type(link.key) is not str or any(type(t) is not str for t in targets):
+            raise _Generic
+        cloned_links.append(Link(link.key, (*targets,)))
+    cloned_children = []
+    for child in children:
+        if type(child) is not Node:
+            raise _Generic
+        cloned_children.append(_clone_node(child, depth + 1))
+    return Node(kind, definition_id, ref, tuple(cloned_fields), tuple(cloned_links), tuple(cloned_children))
+
+
+def _clone_decision(value):
+    """_read_record(value, PublicDecision, '$') for exact-typed input; None defers."""
+    try:
+        if (type(value) is not PublicDecision or type(value.schema) is not str or value.schema != SCHEMA
+                or type(value.profile) is not str or value.profile != PROFILE
+                or type(value.run) is not Node or type(value.context) is not Node
+                or type(value.candidates) is not tuple):
+            raise _Generic
+        candidates = []
+        for c in value.candidates:
+            if (type(c) is not Candidate or type(c.ref) is not str or type(c.kind) is not str
+                    or (c.subject is not None and type(c.subject) is not str)
+                    or (c.target is not None and type(c.target) is not str)):
+                raise _Generic
+            candidates.append(Candidate(c.ref, c.kind, c.subject, c.target))
+        return PublicDecision(value.schema, value.profile, _clone_node(value.run, 0),
+                              _clone_node(value.context, 0), tuple(candidates))
+    except (_Generic, AttributeError):
+        # Includes hand-built records with unset slots: the generic reader keeps
+        # its own field order and error.
+        return None
 
 
 def walk(node):
@@ -162,7 +264,9 @@ class PreparedPublic:
 
     def __init__(self, value):
         if type(value) is PublicDecision:
-            canonical = _read_record(value, PublicDecision, '$')
+            canonical = _clone_decision(value)
+            if canonical is None:
+                canonical = _read_record(value, PublicDecision, '$')
             validate(canonical)
         else:
             canonical = from_dict(to_dict(value))

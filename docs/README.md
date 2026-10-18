@@ -31,6 +31,24 @@ The top level contains current guidance. Completed Phase 0/1 work lives in the
 
 ## References and results
 
+- PPO training throughput: [October 18, bit-identical](evidence/TRAINING_SPEED_2026_10_18.md)
+  records 1.36× faster production-shaped combat PPO with identical episodes,
+  updates and weights. It also covers the remaining update-phase costs and the
+  options that would change training semantics.
+- Headless engine speedups: [October 17, behaviour-identical](evidence/ENGINE_SPEED_2026_10_17.md)
+  records 1.5–2.8× faster play, snapshots and forks with identical results, the
+  agent-layer costs that dominate realistic workloads, and a Corrupted float-HP rules bug.
+- Combat search on the boss and elite benchmark: [October 17, 1,728 paired openings](evidence/COMBAT_SEARCH_BENCHMARK_2026_10_17.md)
+  finds +6.8 boss and +6.7 elite points from search over the same checkpoint. It
+  also records the simulated work budget and the equal-card naming fix it required.
+- Hidden-state resampling for combat PPO: [October 17, six learners](evidence/COMBAT_HIDDEN_STATE_2026_10_17.md)
+  finds no effect of redrawing training starts' hidden state, no boss gain from
+  245,760 more PPO decisions and a small elite gain; it also records an engine fix
+  for relic-pickup potions inside scripted events.
+- Boss and elite combat benchmark: [October 17, 589 bosses and 1,139 elites](evidence/BOSS_ELITE_BENCHMARK_2026_10_17.md)
+  records parallel corpus collection, per-encounter results for seven checkpoints
+  and two baselines, paired campaign-bootstrap comparisons and the Waterfall Giant
+  eruption analysis. It is the current combat development measure.
 - Feature, identity and architecture comparison: [October 12, 96 learners](evidence/VANTOM_FEATURE_STUDY_2026_10_12.md)
   records the AlphaSpire feature crosswalk, matched-capacity screen, feature removals
   and the original reserved TEST confirmation.

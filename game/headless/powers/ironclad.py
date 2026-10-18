@@ -86,47 +86,55 @@ def apply_power(p, name, amount, target=None):
 
 
 def card_cost(p, card):
-    if card.spec.kind == 'power' and p.rules.powers.get('free_power') and card in (*p.hand, *p.deck.in_play):
+    # One resolved spec per call: nothing here changes the card, and the
+    # condition order is unchanged (relic memory lookups may create entries).
+    spec = card.spec
+    kind, cost, powers = spec.kind, spec.cost, p.rules.powers
+    if kind == 'power' and powers.get('free_power') and card in (*p.hand, *p.deck.in_play):
         return 0
     from game.headless.powers.regent import free
-    if card.spec.ethereal and p.rules.powers.get('veilpiercer') and card in (*p.hand, *p.deck.in_play) and not card.spec.x_cost and card.cost >= 0:
+    if spec.ethereal and powers.get('veilpiercer') and card in (*p.hand, *p.deck.in_play) and not spec.x_cost and cost >= 0:
         return 0
-    if not card.spec.x_cost and card.cost >= 0 and free(p):
+    if not spec.x_cost and cost >= 0 and free(p):
         return 0
-    if card.spec.kind in ("skill", "block") and p.rules.powers.get("free_skill") and (card in p.hand or card in p.deck.in_play):
+    if kind in ("skill", "block") and powers.get("free_skill") and (card in p.hand or card in p.deck.in_play):
         return 0
-    if card.spec.x_cost:
+    if spec.x_cost:
+        state = card.combat_state
         return (
             0
-            if (card.combat_state.free_this_turn or card.combat_state.free_until_played or card.combat_state.free_this_combat)
-            or (card.spec.kind == "attack" and p.rules.powers.get("free_attack"))
-            or (card.spec.kind == "skill" and p.rules.powers.get("corruption"))
+            if (state.free_this_turn or state.free_until_played or state.free_this_combat)
+            or (kind == "attack" and powers.get("free_attack"))
+            or (kind == "skill" and powers.get("corruption"))
             else p.energy
         )
-    if card.cost < 0:
-        return card.cost
+    if cost < 0:
+        return cost
     from game.headless.relics.ancient_combat import scarf_free
     if scarf_free(p, card):
         return 0
-    if card.spec.kind in ("skill", "block") and p.rules.powers.get("corruption"):
+    if kind in ("skill", "block") and powers.get("corruption"):
         return 0
-    if card.spec.kind == "attack" and p.rules.powers.get("free_attack"):
+    if kind == "attack" and powers.get("free_attack"):
         return 0
     from game.headless.relics.combat import has
-    surcharge = int(card.spec.kind == "power" and has(p, "spiked_gauntlets"))
-    return max(0, local_cost(card, clamp=False) - (p.rules.powers.get("curious", 0) if card.spec.kind == "power" else 0) + surcharge + p.rules.powers.get("borrowed_time", 0) + (p.statuses.get("tangled") if card.spec.kind == "attack" else 0))
+    surcharge = int(kind == "power" and has(p, "spiked_gauntlets"))
+    return max(0, local_cost(card, clamp=False, cost=cost) - (powers.get("curious", 0) if kind == "power" else 0) + surcharge + powers.get("borrowed_time", 0) + (p.statuses.get("tangled") if kind == "attack" else 0))
 
 
-def local_cost(card, *, clamp=True):
-    """Local cost layers, before combat-wide powers such as Corruption."""
+def local_cost(card, *, clamp=True, cost=None):
+    """Local cost layers, before combat-wide powers such as Corruption.
+
+    `cost` may pass the caller's already resolved `card.cost`."""
     v = card.combat_state
-    if card.cost < 0:
-        return card.cost
+    cost = card.cost if cost is None else cost
+    if cost < 0:
+        return cost
     if v.free_this_turn or ((v.free_until_played or v.free_this_combat) and v.turn_cost_override is None):
         return 0
     from game.headless.core.card_costs import latest
     setter = latest(v)
-    value = card.cost if setter is None else getattr(v, setter + '_cost_override')
+    value = cost if setter is None else getattr(v, setter + '_cost_override')
     value += v.cost_change + v.turn_cost_change + v.combat_cost_change - v.until_played_discount
     if setter is not None:
         value += v.cost_discount_baselines.get(setter, 0)

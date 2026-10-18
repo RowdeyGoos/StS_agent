@@ -275,8 +275,10 @@ See the [CPU update benchmark](docs/AGENT_TRAINING.md#cpu-ppo-update-threads-and
 
 For the current combat focus, use the
 [campaign-derived corpus workflow](docs/AGENT_TRAINING.md#campaign-derived-combat-training)
-to train and compare policies on frozen fights from both Act 1 regions. PPO
-and matched combat evaluation both support up to 16 workers. The
+to train and compare policies on frozen fights from both Act 1 regions. Corpus
+building, PPO and matched combat evaluation all support up to 16 workers. Measure
+combat changes on the [boss and elite benchmark](docs/AGENT_TRAINING.md#boss-and-elite-benchmark),
+which reports per-encounter and equal-weight elite/boss win rates. The
 [command defaults](docs/AGENT_TRAINING.md#cpu-execution-defaults) also cover
 playback, analysis export and compression. The earlier finite fixture curriculum remains available:
 

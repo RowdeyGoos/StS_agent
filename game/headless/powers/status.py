@@ -78,7 +78,8 @@ class StatusCollection:
 
     def get(self, status_name: str) -> int:
         """Return the current stack count for a supported status."""
-        _require_supported_status(status_name)
+        if status_name not in STATUS_DEFINITIONS:
+            _require_supported_status(status_name)
         return self._counts.get(status_name, 0)
 
     def decrement(self, status_name: str, amount: int = 1) -> None:

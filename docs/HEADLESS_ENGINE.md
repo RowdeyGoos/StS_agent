@@ -52,6 +52,13 @@ room continuation and persistent inventory changes remain owned by the run.
 After a boss, apply an offered `ContinueAct()` command; after Glory, resolve the
 Architect's offered ending choice to obtain full-game victory.
 
+`apply()` validates the command against a freshly generated legal set. A caller
+that has just enumerated `legal = run.legal_actions()` on the unchanged state may
+pass `run.apply(action, legal=legal)`. Membership is then checked against that
+tuple instead of being regenerated. The headless adapter (after its state-guard
+check) and search worlds (after their own projection) do this. Results are
+identical; a stale tuple is the caller's error.
+
 | Entry point | Intended use |
 | --- | --- |
 | `RunEngine.campaign(character=..., first_act=..., ascension=...)` | Generated campaign through Glory and the Architect; `last_act="hive"` stops after Act 2 |
@@ -193,6 +200,10 @@ content fingerprints, validates ownership and rejects incompatible versions;
 it does not infer missing state. Reuse the same rules/catalogs when restoring.
 Mutable branch state is independent, while immutable definitions may be shared.
 Do not serialize arbitrary callables or import a type named by a snapshot.
+`snapshot(shared_content=True)` embeds the cached content definitions instead of
+detached copies. Only use it when the result is read and never mutated, for
+example when it is restored or hashed immediately. `fork_combat()` and the
+adapter's state guard use it.
 
 The domain helpers in [run construction](../game/headless/run/construction.py)
 also build declared Ironclad A0 combat setups from fresh card templates,

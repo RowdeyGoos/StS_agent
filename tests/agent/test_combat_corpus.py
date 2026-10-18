@@ -26,6 +26,7 @@ from game.agent.training.ppo import PPOLearner
 from game.agent.training.ppo_config import PPOExperiment
 from game.agent.training.ppo_run import run_ppo
 from game.agent.training.rollout import collect
+from game.headless.run.engine import RunEngine
 from .test_full_run_training import bundles
 from .test_ppo import comparable
 from .test_training_model import cpu_threads
@@ -148,6 +149,241 @@ def test_interruption_keeps_predeclared_sources_without_retry(tmp_path):
         CombatCorpus(path)
     with pytest.raises(FileExistsError):
         build_corpus(path.parent, CorpusConfig(1,1,1,max_decisions=4))
+
+
+def _collection_shape(report):
+    order = {g['source_group']: i for i, g in enumerate(report['campaigns'])}
+    campaigns = [{k: v for k, v in g.items() if k != 'source_group'} for g in report['campaigns']]
+    cases = [dict({k: v for k, v in r.items() if k not in ('source_group', 'case_id', 'combat_id')},
+                  campaign=order[r['source_group']]) for r in report['cases']]
+    return campaigns, cases
+
+
+@pytest.mark.parametrize('learned', [False, True])
+def test_parallel_collection_matches_serial_campaigns(tmp_path, bundles, learned):
+    config = CorpusConfig(2, 1, 1, max_decisions=32, route_policy='mixed_elites', capture_turns=3,
+                          start_index=5000, record_planning=True)
+    collector = bundles[1] if learned else None
+    serial_path, serial = build_corpus(tmp_path / 'serial', config, checkpoint=collector)
+    seen = []
+    parallel_path, parallel = build_corpus(tmp_path / 'parallel', config, checkpoint=collector, workers=3,
+                                           progress=lambda group, total: seen.append((group['source_group'], total)))
+    assert serial['status'] == parallel['status'] == 'complete'
+    assert serial['execution'] == {'workers': 1, 'schedule': 'serial_v1'}
+    assert parallel['execution'] == {'workers': 3, 'schedule': 'parallel_campaigns_v1'}
+    assert serial['collector'] == parallel['collector']
+    assert _collection_shape(serial) == _collection_shape(parallel)
+    assert serial['coverage'] == parallel['coverage']
+    assert sorted(seen) == sorted((g['source_group'], 8) for g in parallel['campaigns'])
+    left, right = CombatCorpus(serial_path), CombatCorpus(parallel_path)
+    assert ([left.registry[r['case_id']]['snapshot_sha256'] for r in serial['cases']] ==
+            [right.registry[r['case_id']]['snapshot_sha256'] for r in parallel['cases']])
+    assert all(p.stat().st_mode & 0o777 == 0o600 for p in right.private.iterdir())
+    assert not list(right.private.glob('*.partial')) and not list(right.path.parent.glob('*.partial'))
+    assert not [p for p in multiprocessing.active_children() if p.name.startswith('sts-')]
+
+
+def test_parallel_cancellation_keeps_predeclared_sources_without_retry(tmp_path):
+    stopped = threading.Event()
+    path, report = build_corpus(tmp_path / 'cancelled', CorpusConfig(1, 1, 1, max_decisions=4), cancel=stopped,
+                                progress=lambda group, total: stopped.set(), workers=2)
+    assert report['status'] == 'interrupted'
+    assert len(report['campaigns']) == 6
+    assert sum(g['status'] == 'unattempted' for g in report['campaigns']) >= 3
+    assert sum(g['starts'] for g in report['campaigns']) == len(report['cases'])
+    assert not (path.parent / 'combat-ppo.json').exists()
+    with pytest.raises(ValueError, match='complete collection'):
+        CombatCorpus(path)
+    assert not [p for p in multiprocessing.active_children() if p.name.startswith('sts-')]
+
+
+def test_collector_changed_after_planning_stops_parallel_collection(tmp_path, bundles, monkeypatch):
+    from game.agent.training import checkpoint
+    collector = bundles[1]
+    original = checkpoint.publish
+    def publish(path, value, **kwargs):
+        sha = original(path, value, **kwargs)
+        if Path(path).name == 'campaigns.json':
+            collector.write_bytes(collector.read_bytes() + b'changed')
+        return sha
+    monkeypatch.setattr(checkpoint, 'publish', publish)
+    path, report = build_corpus(tmp_path / 'changed', CorpusConfig(1, 1, 1, max_decisions=4),
+                                checkpoint=collector, workers=2)
+    assert report['status'] == 'failed'
+    assert all(g['status'] == 'unattempted' for g in report['campaigns']) and not report['cases']
+    with pytest.raises(ValueError, match='complete collection'):
+        CombatCorpus(path)
+    with pytest.raises(ValueError, match='workers'):
+        build_corpus(tmp_path / 'too-many', CorpusConfig(1, 1, 1, max_decisions=4), workers=17)
+    assert not [p for p in multiprocessing.active_children() if p.name.startswith('sts-')]
+
+
+def test_room_kind_filter_is_reported_and_bound_to_the_test_lock(corpus, tmp_path):
+    arguments = dict(corpus_path=corpus.path, max_decisions=2)
+    with pytest.raises(ValueError, match='room kinds'):
+        evaluate_corpus(output_dir=tmp_path/'bad', room_kinds=('hallway',), **arguments)
+    with pytest.raises(ValueError, match='room kinds'):
+        evaluate_corpus(output_dir=tmp_path/'repeated', room_kinds=('boss', 'boss'), **arguments)
+    with pytest.raises(ValueError, match='No combat cases'):
+        evaluate_corpus(output_dir=tmp_path/'empty', room_kinds=('boss',), **arguments)
+    _, report = evaluate_corpus(output_dir=tmp_path/'combat', room_kinds=('combat',), **arguments)
+    assert report['status'] == 'complete' and report['room_kinds'] == ['combat']
+    assert {r['room_kind'] for r in report['episodes']} == {'combat'}
+    assert 'combat' not in report['balanced'] and report['balanced']['draws'] == 2000
+    _, test = evaluate_corpus(output_dir=tmp_path/'test', split='test', room_kinds=('combat',), **arguments)
+    assert test['status'] == 'complete'
+    with pytest.raises(ValueError, match='locked'):
+        evaluate_corpus(output_dir=tmp_path/'test-all-kinds', split='test', **arguments)
+
+
+def test_balanced_win_rates_weight_encounters_equally_with_paired_campaign_resampling():
+    from game.agent.training.comparison import balanced
+    rows = []
+    def add(policy, case, group, encounter, outcome, status='terminated'):
+        rows.append({'policy': policy, 'case_id': case, 'source_group': group, 'room_kind': 'boss',
+                     'encounter': encounter, 'status': status,
+                     'combat': {'outcome': outcome} if outcome else None})
+    for index in range(4):
+        add('learned', f'c{index}', f'g{index}', 'common_boss', 'victory')
+        add('heuristic', f'c{index}', f'g{index}', 'common_boss', 'defeat')
+    add('learned', 'rare', 'g4', 'rare_boss', 'defeat')
+    add('heuristic', 'rare', 'g4', 'rare_boss', 'victory')
+    add('learned', 'failed', 'g5', 'rare_boss', None, status='failed')
+    add('heuristic', 'failed', 'g5', 'rare_boss', 'victory')
+    result = balanced(rows, ['heuristic', 'learned'])
+    assert result == balanced(rows, ['heuristic', 'learned'])
+    boss = result['boss']
+    assert boss['encounters']['common_boss'] == {'fights': 4, 'win_rate': {'heuristic': 0., 'learned': 1.}}
+    assert boss['encounters']['rare_boss'] == {'fights': 2, 'win_rate': {'heuristic': 1., 'learned': 0.}}
+    assert boss['win_rate']['learned']['estimate'] == boss['win_rate']['heuristic']['estimate'] == .5
+    assert 'elite' not in result
+    forward, backward = boss['paired']['learned']['heuristic'], boss['paired']['heuristic']['learned']
+    assert forward['difference'] == backward['difference'] == 0.
+    assert forward['interval_95'] == pytest.approx([-b for b in reversed(backward['interval_95'])])
+    low, high = boss['win_rate']['learned']['interval_95']
+    assert 0 <= low <= .5 <= high <= 1
+    json.loads(data(result))
+
+
+def _public(run):
+    return public_digest(HeadlessAdapter(run, decision_profile='full_run_v2').observe().decision)
+
+
+def _exact(run):
+    return json.dumps(run.snapshot(), ensure_ascii=False, allow_nan=False, separators=(',', ':')).encode()
+
+
+def test_hidden_resampling_keeps_public_state_and_a_restorable_engine(tactical_corpus):
+    from game.headless.run.hidden import resample_hidden_combat
+    from game.headless.run.snapshots import restore_run
+    from game.agent.training.rewards import strict_json
+    corpus = tactical_corpus
+    rows = corpus.split('train')
+    assert {r['start_kind'] for r in rows} == {'opening', 'continuation'}
+    for row in rows:
+        original = _exact(corpus.restore(row['case_id'], split='train'))
+        variants = set()
+        for seed in range(3):
+            run = corpus.restore(row['case_id'], split='train')
+            before = sorted(c.instance_id for c in run.combat.player.deck.draw_pile)
+            resample_hidden_combat(run, seed)
+            assert sorted(c.instance_id for c in run.combat.player.deck.draw_pile) == before
+            assert _public(run) == row['public_state_sha256']
+            raw = _exact(run)
+            assert _exact(restore_run(strict_json(raw))) == raw
+            repeated = corpus.restore(row['case_id'], split='train')
+            resample_hidden_combat(repeated, seed)
+            assert _exact(repeated) == raw
+            variants.add(raw)
+        assert original not in variants and len(variants) == 3
+    row = next(r for r in rows if r['start_kind'] == 'opening')
+    successors = set()
+    for seed in range(8):
+        run = corpus.restore(row['case_id'], split='train')
+        resample_hidden_combat(run, seed)
+        adapter = HeadlessAdapter(run, decision_profile='full_run_v2')
+        frame = adapter.observe()
+        end = next(a for a in frame.decision.candidates if a.kind == 'end_turn')
+        assert adapter.step(frame.binding, end.ref).status == 'reconciled'
+        successors.add(_exact(run))
+    assert len(successors) > 1
+    with pytest.raises(ValueError, match='active native combat'):
+        resample_hidden_combat(RunEngine.campaign(character='ironclad', seed=3), 1)
+    with pytest.raises(ValueError, match='nonnegative'):
+        resample_hidden_combat(corpus.restore(row['case_id'], split='train'), -1)
+
+
+def test_hidden_resampling_keeps_enchantment_owned_draw_positions(corpus):
+    from game.headless.enchantments.base import EnchantmentInstance
+    from game.headless.run.hidden import resample_hidden_combat
+    row = next(r for r in corpus.split('train') if r['start_kind'] == 'opening')
+    run = corpus.restore(row['case_id'], split='train')
+    pile = run.combat.player.deck.draw_pile
+    assert len(pile) >= 4
+    pile[0].enchantment = EnchantmentInstance('imbued')
+    pile[2].enchantment = EnchantmentInstance('perfect_fit')
+    pinned = {0: pile[0], 2: pile[2]}
+    orders = set()
+    for seed in range(6):
+        resample_hidden_combat(run, seed)
+        assert all(pile[index] is card for index, card in pinned.items())
+        orders.add(tuple(c.instance_id for c in pile))
+    assert len(orders) > 1
+
+
+def test_resampled_corpus_training_is_bound_and_reproducible(corpus):
+    from game.agent.training.combat_corpus import validate_factory
+    from game.agent.training.ppo_config import RESAMPLED_HIDDEN_STATE
+    base = PPOExperiment.load(corpus.path.parent / 'combat-ppo.json')
+    resampled = replace(base, hidden_state=RESAMPLED_HIDDEN_STATE)
+    assert 'hidden_state' not in base.to_dict() and PPOExperiment.from_dict(base.to_dict()) == base
+    assert resampled.to_dict()['hidden_state'] == RESAMPLED_HIDDEN_STATE and resampled.identity != base.identity
+    assert PPOExperiment.from_dict(resampled.to_dict()) == resampled
+    with pytest.raises(ValueError, match='Omit hidden_state'):
+        PPOExperiment.from_dict(dict(base.to_dict(), hidden_state='frozen'))
+    with pytest.raises(ValueError, match='Invalid'):
+        replace(base, hidden_state='shuffled')
+    with pytest.raises(ValueError, match='Hidden-state'):
+        PPOExperiment(hidden_state=RESAMPLED_HIDDEN_STATE)
+    frozen = training_factory(corpus.path, base)
+    factory = pickle.loads(pickle.dumps(training_factory(corpus.path, resampled)))
+    assert factory.hidden_state == RESAMPLED_HIDDEN_STATE
+    for experiment, owner in ((resampled, frozen), (base, factory), (resampled, None)):
+        with pytest.raises(ValueError, match='hidden-state'):
+            validate_factory(experiment, owner)
+    for name in base.encounters:
+        starts = {}
+        for label, owner in (('frozen', frozen), ('resampled', factory)):
+            snapshots = []
+            for _ in range(2):
+                with owner(encounter=name, reward_spec=base.training.reward) as env:
+                    env.reset(seed=23)
+                    case = env.corpus_case
+                    assert public_digest(env.public_state) == case['public_state_sha256']
+                    snapshots.append(_exact(env._adapter._engine))
+            assert snapshots[0] == snapshots[1]
+            starts[label] = snapshots[0]
+        assert starts['frozen'] == _exact(corpus.restore(case['case_id'], split='train'))
+        assert starts['resampled'] != starts['frozen']
+
+
+def test_resampled_ppo_records_its_treatment_and_rejects_a_changed_resume(tactical_corpus, tmp_path):
+    corpus = tactical_corpus
+    bundle = make_model(corpus, tmp_path)
+    experiment = PPOExperiment.load(corpus.path.parent / 'combat-ppo.json')
+    experiment = replace(experiment, hidden_state='resampled_v1', ppo=replace(
+        experiment.ppo, rollout_steps=8, episode_decisions=2, batch_size=4, epochs=1))
+    factory = training_factory(corpus.path, experiment)
+    _, report = run_ppo(checkpoint=bundle, experiment=experiment, env_factory=factory,
+                        output_dir=tmp_path/'ppo', decisions=8, workers=2)
+    assert report['status'] == 'complete', report
+    audits = list((tmp_path/'ppo-private').rglob('*.audit.json'))
+    assert audits and all(json.loads(p.read_text())['experiment']['hidden_state'] == 'resampled_v1' for p in audits)
+    frozen = replace(experiment, hidden_state='frozen')
+    with pytest.raises(ValueError):
+        restore_ppo(tmp_path/'ppo/final.sts-model', tmp_path/'ppo-private/final.resume.pt',
+                    experiment=frozen, env_factory=training_factory(corpus.path, frozen))
+    assert not [p for p in multiprocessing.active_children() if p.name.startswith('sts-')]
 
 
 def make_model(corpus, tmp_path):

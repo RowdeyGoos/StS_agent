@@ -109,6 +109,14 @@ journal keeps collecting verified progress. A later successful replay can resume
 search. Invalid receipts, unsupported boundaries or lost history invalidate the
 session until a new anchor. Neither case becomes a fabricated combat loss.
 
+Each simulated command also carries a deterministic budget of 100,000 resolution
+tasks (`SIMULATED_RESOLUTION_LIMIT`). Ordinary commands use well under a hundred.
+Some legal states never settle, such as Hellraiser plus Pillage drawing only Strikes
+into the erupting Waterfall Giant's 999,999,999 HP. A belief proposal that exceeds
+the budget is rejected. Tree search instead falls back for that decision with
+`simulation_work_limit`. The actual engine never sets the budget, and native
+behavior for such loops is unverified.
+
 Card choices and potion-generated offers retain their materialized options,
 pending parent state and stream aliases across forks. Selector progress is one
 reconciled synchronous command, not a claim that the whole parent effect finished.

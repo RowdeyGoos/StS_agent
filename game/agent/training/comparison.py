@@ -59,6 +59,66 @@ def paired(rows, baseline, *, baseline_name='heuristic'):
             'win_rate_difference':delta, 'difference_group_hoeffding_95':interval(delta, rows, paired=True)}
 
 
+BALANCED_DRAWS = 2000
+BALANCED_SEED = 20261017
+
+
+def balanced(rows, names, *, kinds=('elite', 'boss'), draws=BALANCED_DRAWS, seed=BALANCED_SEED):
+    """Equal-encounter win rates within room kinds, with source-campaign bootstrap intervals.
+
+    Every encounter present in the planned population has equal weight, so a
+    frequent elite cannot dominate a rare one. Each draw resamples whole source
+    campaigns for all policies at once, so paired differences keep their
+    correlation. Failed, cut-off and unattempted fights count as non-wins.
+    """
+    import numpy as np
+    groups = sorted({r['source_group'] for r in rows})
+    result = {'method': 'Mean of per-encounter win rates within each room kind; 95% percentile '
+                        'intervals from source-campaign bootstrap resamples shared by all policies.',
+              'draws': draws, 'seed': seed}
+    if not groups:
+        return result
+    column = {g: i for i, g in enumerate(groups)}
+    counts = np.random.default_rng(seed).multinomial(len(groups), np.full(len(groups), 1/len(groups)), size=draws)
+
+    def bounds(values):
+        values = values[np.isfinite(values)]
+        return [float(np.percentile(values, 2.5)), float(np.percentile(values, 97.5))] if len(values) else None
+
+    for kind in kinds:
+        cases = {r['case_id']: r for r in rows if r['room_kind'] == kind}
+        if not cases:
+            continue
+        encounters = sorted({r['encounter'] for r in cases.values()})
+        index = {e: j for j, e in enumerate(encounters)}
+        planned = np.zeros((len(groups), len(encounters)))
+        for r in cases.values():
+            planned[column[r['source_group']], index[r['encounter']]] += 1
+        wins = {name: np.zeros_like(planned) for name in names}
+        for r in rows:
+            if r['room_kind'] == kind and r['policy'] in wins and won(r):
+                wins[r['policy']][column[r['source_group']], index[r['encounter']]] += 1
+        fights, resampled = planned.sum(0), counts @ planned
+        present = resampled > 0
+        estimate = {name: float(np.mean(w.sum(0)/fights)) for name, w in wins.items()}
+        draws_by_policy = {}
+        with np.errstate(invalid='ignore', divide='ignore'):
+            for name, w in wins.items():
+                # An encounter absent from one resample leaves that draw's mean
+                # over the encounters it does contain; an empty draw is undefined.
+                rates = np.where(present, (counts @ w)/np.where(present, resampled, 1), 0.)
+                draws_by_policy[name] = np.where(present.any(1), rates.sum(1)/present.sum(1), np.nan)
+        result[kind] = {
+            'encounters': {e: {'fights': int(fights[j]), 'win_rate': {name: float(w[:, j].sum()/fights[j])
+                               for name, w in wins.items()}} for j, e in enumerate(encounters)},
+            'win_rate': {name: {'estimate': estimate[name], 'interval_95': bounds(draws_by_policy[name])}
+                         for name in names},
+            'paired': {a: {b: {'difference': estimate[a]-estimate[b],
+                               'interval_95': bounds(draws_by_policy[a]-draws_by_policy[b])}
+                           for b in names if b != a} for a in names}}
+    return result
+
+
 def summarize(rows, names):
     by_policy={name:[r for r in rows if r['policy']==name] for name in names}
     if any(not values for values in by_policy.values()):

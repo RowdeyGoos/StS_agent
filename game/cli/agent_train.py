@@ -45,6 +45,8 @@ def main(argv=None):
                         help='Retain the opening and up to this player turn (1–12) for combat practice')
     combat.add_argument('--record-planning', action=argparse.BooleanOptionalAction, default=True,
                         help='Record public entry/reveal receipts for combat Search (default: enabled)')
+    combat.add_argument('--workers', type=int, default=performance.game_workers(),
+                        help='1–16 campaign workers; cases match serial collection except opaque IDs')
     prepare = sub.add_parser('prepare-search-corpus', help='Verify historical public prefixes under current rules; preserve original corpus')
     prepare.add_argument('--combat-corpus', required=True)
     prepare.add_argument('--public-prefixes', required=True, help='Verified public-prefix manifest (.json.gz)')
@@ -125,6 +127,8 @@ def main(argv=None):
     search_collect.add_argument('--max-decisions', type=int, default=256)
     search_collect.add_argument('--time-limit', type=float, default=600., help='Total episode wall-clock limit')
     search_collect.add_argument('--workers', type=int, default=1)
+    search_collect.add_argument('--combat-room-kind', action='append', dest='room_kinds', choices=('combat', 'elite', 'boss'),
+                                help='With --combat-corpus, sample only these room kinds (repeatable); default all')
     add_search_arguments(search_collect, collection=True)
     search_collect.set_defaults(search=True)
     search_distill = sub.add_parser('search-distill', help='Fit search distributions and completed combat returns')
@@ -209,7 +213,7 @@ def _run(args, parser):
                         cases=args.cases, split='train', start_index=args.start_index,
                         max_decisions=args.max_decisions, time_limit_seconds=args.time_limit,
                         workers=args.workers, collect=True, cancel=stopped,
-                        encounters=tuple(args.encounters or ('overgrowth_vantom',)))
+                        encounters=tuple(args.encounters or ('overgrowth_vantom',)), room_kinds=args.room_kinds)
                 elif args.command == 'search-distill':
                     path, report = distill_search(checkpoint=args.checkpoint, report_path=args.training_report,
                         output_dir=args.output_dir, updates=args.updates, epochs=args.epochs, seed=args.seed, cancel=stopped)
@@ -277,7 +281,7 @@ def _run(args, parser):
                         CorpusConfig(args.train_campaigns, args.validation_campaigns, args.test_campaigns,
                                      args.start_index, args.max_decisions, args.time_limit,
                                      args.route_policy, args.capture_turns, args.record_planning),
-                        checkpoint=args.checkpoint, cancel=stopped)
+                        checkpoint=args.checkpoint, cancel=stopped, workers=args.workers)
                 elif args.command == 'collect':
                     if args.cases_per_scenario != 1 or args.start_index:
                         raise ValueError('Corpus demonstrations use each frozen case once; omit case counts/seed offsets')

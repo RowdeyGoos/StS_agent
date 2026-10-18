@@ -469,6 +469,7 @@ class FullProjection:
 
     def decision(self, *, transform=None):
         legal = self.engine.legal_actions()
+        self.legal = legal  # Engine commands bind only from this exact tuple.
         if any(type(action) not in COMMANDS for action in legal):
             raise UnsupportedProfile('legal_action_family')
         public_run = self.run()

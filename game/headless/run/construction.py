@@ -97,7 +97,7 @@ planning approximation, never an operation on the real game or its seed.
     # Restoration validates selector ownership, queued tasks and any captured
     # enemy hit/turn cursor. A suspended engine-owned selection is a decision
     # boundary too; already captured hits/offers remain in this snapshot.
-    branch = restore_run(run.snapshot(), cards=run.cards)
+    branch = restore_run(run.snapshot(shared_content=True), cards=run.cards)
     if future_seed is not None:
         old = branch.state.rng
         # Validate the ownership graph before changing streams. Keep every

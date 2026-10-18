@@ -73,9 +73,9 @@ def test_public_only_chooser_combat_optional_selection_rewards_and_map(monkeypat
     adapter = HeadlessAdapter(run)
     commands = []
     apply = run.apply
-    def record(command):
+    def record(command, **kwargs):
         commands.append(command)
-        return apply(command)
+        return apply(command, **kwargs)
     monkeypatch.setattr(run, 'apply', record)
     contexts, chosen = [], []
     for _ in range(30):
@@ -533,7 +533,7 @@ def test_backend_exception_stops_without_fabricated_loss_or_retry(monkeypatch):
     run = fury_game()
     adapter = HeadlessAdapter(run)
     frame = adapter.observe()
-    def fail(command):
+    def fail(command, **kwargs):
         run.state.gold += 1
         raise RuntimeError('test backend failure after mutation')
     monkeypatch.setattr(run, 'apply', fail)

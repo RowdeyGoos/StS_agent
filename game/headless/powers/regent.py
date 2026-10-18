@@ -34,12 +34,13 @@ def free(p):
 
 
 def star_cost(p, card):
-    if card.spec.star_x:
+    spec = card.spec
+    if spec.star_x:
         return p.rules.stars
     from game.headless.relics.ancient_combat import scarf_free
     if card.combat_state.star_free_this_turn or scarf_free(p, card):
         return 0
-    return 0 if free(p) else max(0, card.spec.star_cost)
+    return 0 if free(p) else max(0, spec.star_cost)
 
 
 def gain_stars(p, amount):

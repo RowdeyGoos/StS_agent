@@ -167,7 +167,7 @@ def test_uncertain_mutation_latches_failure_until_reset(monkeypatch):
     with CombatTrainingEnv(engine_factory=fixture) as env:
         env.reset(seed=0)
         run = env._adapter._engine
-        def fail(command):
+        def fail(command, **kwargs):
             run.combat.player.hp -= 1
             raise RuntimeError('deliberate failure after mutation')
         monkeypatch.setattr(run, 'apply', fail)
