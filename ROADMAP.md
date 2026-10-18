@@ -64,9 +64,10 @@ Further work should start from a new concrete requirement:
    support keeping basic flat and original rich pooling as baselines, with compact
    rich pooling as a candidate for reduced rollout storage. Extra hierarchy has
    not established an advantage, and smaller inputs did not improve measured
-   inference latency. Freeze a common recipe for architecture comparisons;
-   batch 64 is a promising replication candidate but failed the registered
-   adoption gates. Prioritize independent learner replication, public-feature
+   inference latency. Freeze a common recipe for architecture comparisons.
+   Batch 64 failed the Vantom calibration's gates. On the boss/elite benchmark it
+   [trained 12.5% faster and was not worse](docs/evidence/COMBAT_MINIBATCH_2026_10_18.md),
+   and the generated corpus PPO preset now uses it. Prioritize independent learner replication, public-feature
    coverage and broader combat evidence before increasing model size or budgets.
    These follow-ups are exploratory after the original TEST exposure; they do not
    authorize another TEST run or a default change.

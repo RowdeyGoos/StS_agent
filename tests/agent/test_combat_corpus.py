@@ -64,6 +64,11 @@ def test_genuine_campaign_roots_are_split_before_combat_capture(corpus):
     assert a.state.current_node_id is not None
 
 
+def test_generated_ppo_preset_uses_minibatch_64(corpus):
+    ppo = PPOExperiment.load(corpus.path.parent / 'combat-ppo.json').ppo
+    assert (ppo.batch_size, ppo.rollout_steps, ppo.epochs, ppo.episode_decisions) == (64, 4096, 2, 512)
+
+
 def test_train_factory_never_opens_heldout_snapshots_and_is_spawn_safe(corpus, monkeypatch):
     experiment = PPOExperiment.load(corpus.path.parent / 'combat-ppo.json')
     factory = pickle.loads(pickle.dumps(training_factory(corpus.path, experiment)))

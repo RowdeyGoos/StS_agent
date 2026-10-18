@@ -96,9 +96,12 @@ For subsequent model comparisons, retain basic flat and original rich pooling as
 baselines, with rich compact pooling as a candidate. Freeze one shared recipe
 before looking at model outcomes; the calibration does not justify choosing a
 different recipe for each architecture. Its reference is learning rate 0.0003,
-minibatch 16 and entropy weight 0.01 with `minibatch_v1` stopping. Batch 64 remains
-a candidate for a separately authorized replication. Production defaults retain
-their existing epoch-only guard; no default model or training setting changed.
+minibatch 16 and entropy weight 0.01 with `minibatch_v1` stopping. Production
+defaults retain their existing epoch-only guard, and the calibration changed no
+default model or training setting. A later replication on the boss/elite
+benchmark found minibatch 64 12.5% faster and not worse for corpus fine-tuning.
+The generated corpus PPO preset now uses it; see the
+[minibatch comparison](evidence/COMBAT_MINIBATCH_2026_10_18.md).
 
 Win-rate curves are not monotonic: rankings changed between 50k and 100k, and some
 learners recovered after early collapses. Use the fixed endpoint, multiple seeds
@@ -1122,11 +1125,30 @@ three seeds × 245,760 decisions), so frozen starts remain the default. That run
 visited each boss fight about ten times; resampling may still matter for small
 corpora trained for many passes.
 
+For the corpus fine-tuning recipe (learning rate 1e-4, entropy 1e-3), the
+[2026-10-18 minibatch comparison](evidence/COMBAT_MINIBATCH_2026_10_18.md) used
+the same design and found minibatch 64 at least as good as 16, and faster:
+- 12.5% less PPO time per learner, all of it from updates;
+- bosses +1.7 points [+0.2, +3.3], which is tentative because replicate runs
+  differ by about 1 point;
+- elites −0.3 [−1.2, +0.6].
+
+Its registered rule recommends minibatch 64. A follow-up at learning rate 2e-4,
+which restores minibatch 16's per-round policy movement, did not improve
+learning (bosses −1.1 [−2.5, +0.3] against 1e-4), so 1e-4 stays.
+
+Corpora built from 2026-10-18 on write `combat-ppo.json` with minibatch 64.
+- The preset keeps learning rate 3e-4 and entropy 0.01 for the imitation-to-PPO
+  workflow above, a setting the Vantom calibration also tested with minibatch
+  64.
+- Fine-tuning runs keep overriding those to 1e-4 and 1e-3.
+- Existing corpora keep the presets they were written with.
+
 Demonstrations use each requested train/validation fight once; `--split test`
 is rejected. PPO retains the existing commit-selection policy, native selection
 order, 1–16 persistent collectors, and checkpoint/resume workflow. The generated
 rollout is 4,096 total decisions, with 512 decisions / 120 seconds per fight and
-two optimization epochs. Resume with the same corpus, experiment, implementation
+two optimization epochs over minibatches of 64. Resume with the same corpus, experiment, implementation
 and worker allocation, using the matching `.resume.pt` file. A different corpus
 or factory is rejected at learner creation and collection. Existing full-run
 checkpoints can be **benchmark actors** below; this does not reinterpret their

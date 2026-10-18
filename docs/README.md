@@ -31,6 +31,10 @@ The top level contains current guidance. Completed Phase 0/1 work lives in the
 
 ## References and results
 
+- Minibatch 64 for corpus PPO: [October 18, six learners](evidence/COMBAT_MINIBATCH_2026_10_18.md)
+  finds 12.5% faster training and no loss on the boss/elite benchmark (bosses
+  +1.7 points, tentative; elites −0.3). The generated corpus PPO preset now uses
+  it. A follow-up found that doubling the learning rate does not help.
 - PPO training throughput: [October 18, bit-identical](evidence/TRAINING_SPEED_2026_10_18.md)
   records 1.36× faster production-shaped combat PPO with identical episodes,
   updates and weights. It also covers the remaining update-phase costs and the
