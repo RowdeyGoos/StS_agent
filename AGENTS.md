@@ -74,8 +74,10 @@ local verification and implementation choices do not need repeated permission.
 
 Additional review must answer a distinct unresolved risk. Reviewers block concrete
 correctness, compatibility or safety failures, not speculative improvements outside
-the task. Use [multi-agent guidance](docs/MULTI_AGENT_EXECUTION.md) only when
-delegation is permitted and would shorten the critical path.
+the task. Delegation is permitted for the required independent semantic review:
+use one review subagent without asking again. For other delegation, use the
+[multi-agent guidance](docs/MULTI_AGENT_EXECUTION.md) only when it is permitted
+and would shorten the critical path.
 
 Run targeted tests during corrections. Reuse trusted accepted evidence only when
 the relevant transitive sources, tests, dependencies, toolchain and settings match.
