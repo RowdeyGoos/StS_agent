@@ -55,11 +55,19 @@ Further work should start from a new concrete requirement:
    found no effect of resampling at the current corpus scale, and 245,760 more
    PPO decisions from the Vantom specialist did not improve bosses (elites +2
    points). [Combat search](docs/evidence/COMBAT_SEARCH_BENCHMARK_2026_10_17.md)
-   on the same checkpoint adds 6.8 boss and 6.7 elite points. Next, collect
-   search-labelled hard-fight states and test whether distillation closes that
-   gap, before scaling boss PPO. Pause Vantom-only
-   feature and architecture screens; compare representations first with supervised
-   tests on search-labelled hard-fight states, then confirm the best one with RL. The completed
+   on the same checkpoint adds 6.8 boss and 6.7 elite points, but
+   [distilling it](docs/evidence/COMBAT_SEARCH_DISTILLATION_2026_10_18.md) into
+   the network recovered only 10–20%: the network cannot fit the search targets
+   on its own training data, whatever the learning rate. A
+   [representation screen](docs/evidence/COMBAT_REPRESENTATION_SCREEN_2026_10_22.md)
+   on those labels found nothing better than the specialist's combat graph, and
+   width did not help. Generalization from the labels is the limit.
+   [More labels and stronger targets](docs/evidence/COMBAT_SEARCH_TARGETS_2026_11_01.md)
+   both help distillation, but only a little. 96-simulation search won 3.5 more
+   points of the same training fights than 24 simulations. Next, measure
+   96-simulation search on the boss/elite benchmark and searched play in Act 1,
+   before larger distillation rounds or boss PPO. Keep the combat graph; pause
+   other architecture screens. The completed
    [Vantom feature, encoder and PPO studies](docs/AGENT_TRAINING.md#current-vantom-findings)
    support keeping basic flat and original rich pooling as baselines, with compact
    rich pooling as a candidate for reduced rollout storage. Extra hierarchy has

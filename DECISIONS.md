@@ -268,6 +268,24 @@ not automatically change production defaults. The
 [training guide](docs/AGENT_TRAINING.md#current-vantom-findings) owns the current
 findings and reusable-recipe recommendation.
 
+## Hard-fight combat is measured on frozen benchmarks and search labels
+
+Measure combat changes on the frozen boss/elite validation benchmark. Weight
+encounters equally and bootstrap whole source campaigns, paired across
+policies. Rebuild corpora for each implementation and verify that they
+reproduce the frozen fights before comparing results.
+
+Before RL, screen candidate representations offline on collected search labels:
+- fit on most training campaigns;
+- score held-out campaigns, paired on identical decisions;
+- use one shared recipe.
+
+Only a screened winner gets RL confirmation. Simulated search work is bounded so
+a non-terminating world falls back explicitly; actual games are never bounded.
+Equal cards keep public names by content, not by allocation order. The
+[training guide](docs/AGENT_TRAINING.md#boss-and-elite-benchmark) owns current
+results and commands.
+
 ## Maintaining this record
 
 Add a short decision when architecture, training defaults or workflow materially

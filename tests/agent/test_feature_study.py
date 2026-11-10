@@ -169,3 +169,33 @@ def test_random_checkpoint_and_exact_native_ppo_resume(tmp_path,kind):
 def test_overflow_is_explicit():
     with pytest.raises(ValueError,match='overflow'):
         make(spec=FeatureSpec(entities=8)).encoder().encode(public())
+
+
+@pytest.mark.parametrize('enchanted', (0, -1))
+def test_history_restore_accepts_fresh_names_for_equal_copies(enchanted):
+    from copy import deepcopy
+    from game.agent.contracts import full as f
+    from game.agent.headless import HeadlessAdapter
+    from game.agent.headless.full_projection import FullProjection
+    from game.agent.headless.identity import Identities
+    from game.agent.training.study.history import PublicHistory
+    from game.headless.enchantments.base import enchant
+    from game.headless.run.engine import RunEngine
+    from .test_campaign_search import fixture
+    deck = ('defend',) * 4 + ('strike',) * 4 + ('bash',)
+    names = Identities()
+    def edit(run):
+        # Public names precede the enchantment, as for a starting card enchanted later.
+        FullProjection(run, names, [], {}, 'attachment', 0, False).run()
+        enchant([c for c in run.state.deck if c.definition.definition_id == 'defend'][enchanted], 'spiral')
+    run, _, anchor = fixture(deck=deck, edit=edit, names=names)
+    restored = RunEngine()
+    restored.restore(deepcopy(run.snapshot()))
+    # Corpus starts observe through a fresh adapter, which names equal copies by content.
+    fresh = HeadlessAdapter(restored, decision_profile=f.PROFILE).observe().decision
+    history = PublicHistory()
+    history.restore(anchor, fresh)
+    assert history.current is fresh and history.complete
+    _, _, plain = fixture(deck=deck)
+    with pytest.raises(ValueError, match='History prefix'):
+        PublicHistory().restore(plain, fresh)

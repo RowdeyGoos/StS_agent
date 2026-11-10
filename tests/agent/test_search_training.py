@@ -66,6 +66,12 @@ def test_collection_distillation_and_reanalysis_preserve_cutoffs(checkpoint, tmp
         output_dir=tmp_path / 'student', updates=2)
     assert training['promotion'] == 'not_evaluated'
     assert training['updates'][-1]['value_loss'] == 0
+    assert training['learner_config']['learning_rate'] == 1e-4
+    _, faster = distill_search(checkpoint=checkpoint, report_path=path, output_dir=tmp_path / 'faster',
+                               updates=1, learning_rate=1e-3)
+    assert faster['learner_config']['learning_rate'] == 1e-3
+    with pytest.raises(ValueError, match='learning rate'):
+        distill_search(checkpoint=checkpoint, report_path=path, output_dir=tmp_path / 'bad', updates=1, learning_rate=1)
     student = distilled.parent / 'final.sts-model'
     refreshed, report2 = reanalyse_search(checkpoint=student, report_path=path,
         output_dir=tmp_path / 'reanalysis', search=SearchConfig(simulations=4, time_limit=20))

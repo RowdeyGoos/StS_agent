@@ -15,6 +15,13 @@ def main(argv=None):
     study.add_argument('--config', required=True)
     study.add_argument('--output-dir', required=True)
     study.add_argument('--phase', choices=('prepare', 'smoke', 'run', 'confirm', 'report', 'all'), default='all')
+    screen = sub.add_parser('search-screen', help='Fit candidate representations to collected search targets; no gameplay')
+    screen.add_argument('--config', required=True)
+    screen.add_argument('--output-dir', required=True)
+    screen_phase = screen.add_mutually_exclusive_group(required=True)
+    screen_phase.add_argument('--candidate', action='append', dest='candidates',
+                              help='Fit this configured candidate for every seed (repeatable; equal encoders share one encoding)')
+    screen_phase.add_argument('--report', action='store_true', help='Compare completed candidates on shared held-out decisions')
     audit = sub.add_parser('audit-representation', help='Audit frozen identities and effect descriptions without training')
     audit.add_argument('--checkpoint', help='Audit this saved vocabulary; default is the current public catalog')
     audit.add_argument('--input', nargs='+', default=[], help='Optional completed public trajectory files/directories')
@@ -140,6 +147,7 @@ def main(argv=None):
     distill_budget.add_argument('--updates', type=int, help='Optimizer updates; defaults to 128')
     distill_budget.add_argument('--epochs', type=int, help='Complete passes over searched training decisions')
     search_distill.add_argument('--seed', type=int, default=0)
+    search_distill.add_argument('--learning-rate', type=float, default=1e-4, help='Adam learning rate (default 1e-4)')
     reanalyse = sub.add_parser('search-reanalyse', help='Refresh public training targets without changing outcome provenance')
     reanalyse.add_argument('--checkpoint', required=True)
     reanalyse.add_argument('--training-report', required=True)
@@ -189,6 +197,15 @@ def _run(args, parser):
                          progress=lambda value: print(json.dumps(value), flush=True))
             print(json.dumps({'status': result.get('status', 'complete'), 'output': args.output_dir}))
             return 0
+        if args.command == 'search-screen':
+            from game.agent.training.search_screen import report, run_candidates
+            if args.report:
+                path, _ = report(args.config, args.output_dir)
+            else:
+                path = [str(p) for p, _ in run_candidates(args.config, args.output_dir, args.candidates,
+                        progress=lambda value: print(json.dumps(value), flush=True))]
+            print(json.dumps({'report': str(path)}))
+            return 0
         if args.command == 'prepare-search-corpus':
             from game.agent.training.search_sources import prepare_search_source
             path, report = prepare_search_source(corpus_path=args.combat_corpus,
@@ -216,7 +233,8 @@ def _run(args, parser):
                         encounters=tuple(args.encounters or ('overgrowth_vantom',)), room_kinds=args.room_kinds)
                 elif args.command == 'search-distill':
                     path, report = distill_search(checkpoint=args.checkpoint, report_path=args.training_report,
-                        output_dir=args.output_dir, updates=args.updates, epochs=args.epochs, seed=args.seed, cancel=stopped)
+                        output_dir=args.output_dir, updates=args.updates, epochs=args.epochs, seed=args.seed,
+                        learning_rate=args.learning_rate, cancel=stopped)
                 elif args.command == 'search-reanalyse':
                     path, report = reanalyse_search(checkpoint=args.checkpoint, report_path=args.training_report,
                         output_dir=args.output_dir, search=search_config(args, collection=True),

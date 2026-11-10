@@ -41,10 +41,23 @@ def _prefix_endpoint(public):
     from game.agent.input_views import planning_view
     from game.agent.search.public_keys import public_key
     public=planning_view(public)
-    children=tuple(n for n in public.run.children
+    children=tuple(_content_ordered(n) if n.kind=='deck' else n for n in public.run.children
                    if not (n.kind=='history' and n.get('coverage')=='attachment'))
     return public_key(replace(public,run=replace(public.run,children=children),
                               context=current_combat_context(public)))
+
+
+def _content_ordered(deck):
+    """Equal definitions are listed by public name, which differs between owners.
+
+    A recording owner keeps a starting card's old name after an enchantment; a
+    fresh adapter names copies by content. Compare the deck as public content.
+    """
+    from game.agent.headless.full_cards import _signature
+    def key(n):
+        return (n.definition_id, n.get('upgrade_level'),
+                _signature(f.Node(n.kind, n.definition_id, None, n.fields, n.links, n.children)))
+    return replace(deck, children=tuple(sorted(deck.children, key=key)))
 
 
 def enemies(public):

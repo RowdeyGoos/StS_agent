@@ -278,8 +278,11 @@ For the current combat focus, use the
 to train and compare policies on frozen fights from both Act 1 regions. Corpus
 building, PPO and matched combat evaluation all support up to 16 workers. Measure
 combat changes on the [boss and elite benchmark](docs/AGENT_TRAINING.md#boss-and-elite-benchmark),
-which reports per-encounter and equal-weight elite/boss win rates. The
-[command defaults](docs/AGENT_TRAINING.md#cpu-execution-defaults) also cover
+which reports per-encounter and equal-weight elite/boss win rates.
+`sts-agent-train search-screen` compares representations offline. It fits each
+one to collected search targets and scores held-out campaigns, without
+gameplay. See the [representation screen](docs/AGENT_TRAINING.md#boss-and-elite-benchmark).
+The [command defaults](docs/AGENT_TRAINING.md#cpu-execution-defaults) also cover
 playback, analysis export and compression. The earlier finite fixture curriculum remains available:
 
 ```bash

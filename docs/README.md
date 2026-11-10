@@ -42,6 +42,15 @@ The top level contains current guidance. Completed Phase 0/1 work lives in the
 - Headless engine speedups: [October 17, behaviour-identical](evidence/ENGINE_SPEED_2026_10_17.md)
   records 1.5–2.8× faster play, snapshots and forks with identical results, the
   agent-layer costs that dominate realistic workloads, and a Corrupted float-HP rules bug.
+- Search labels: [November 1, data scaling and 24 versus 96 simulations](evidence/COMBAT_SEARCH_TARGETS_2026_11_01.md)
+  finds small gains from more labels and from stronger targets. 96-simulation
+  search wins 3.5 more points of the same fights.
+- Representation screen on search labels: [October 22, six candidates](evidence/COMBAT_REPRESENTATION_SCREEN_2026_10_22.md)
+  finds the specialist's combat graph best on held-out campaigns. Width and the
+  feature study's flat, pooled and compact designs did not help.
+- Search distillation: [October 18, nine students and a learning-rate follow-up](evidence/COMBAT_SEARCH_DISTILLATION_2026_10_18.md)
+  recovers 10–20% of the search gain. The students underfit the targets at every
+  learning rate, which points the next step at representation.
 - Combat search on the boss and elite benchmark: [October 17, 1,728 paired openings](evidence/COMBAT_SEARCH_BENCHMARK_2026_10_17.md)
   finds +6.8 boss and +6.7 elite points from search over the same checkpoint. It
   also records the simulated work budget and the equal-card naming fix it required.

@@ -611,7 +611,8 @@ def _search_corpora(report_paths, policy):
                    encoding_seconds=sum(c.encoding_seconds for c in corpora)), bindings
 
 
-def distill_search(*, checkpoint, report_path, output_dir, updates=None, epochs=None, seed=0, cancel=None):
+def distill_search(*, checkpoint, report_path, output_dir, updates=None, epochs=None, seed=0, learning_rate=1e-4,
+                   cancel=None):
     from .learner import ImitationLearner, LearnerConfig
     if epochs is not None and (updates is not None or type(epochs) is not int or not 1 <= epochs <= 100):
         raise ValueError('Choose a bounded epoch count or an update count')
@@ -619,6 +620,8 @@ def distill_search(*, checkpoint, report_path, output_dir, updates=None, epochs=
         updates = 128
     if updates is not None and (type(updates) is not int or not 1 <= updates <= 100000):
         raise ValueError('Invalid bounded distillation updates')
+    if type(learning_rate) is not float or not 0 < learning_rate <= .01:
+        raise ValueError('Distillation learning rate must be in (0, 0.01]')
     teacher = load_policy(checkpoint, reward_spec=OBJECTIVE)
     # Validate the objective/discount without silently selecting a different
     # input view for an already distilled checkpoint.
@@ -639,7 +642,7 @@ def distill_search(*, checkpoint, report_path, output_dir, updates=None, epochs=
     model = ActorCritic(teacher.model.vocabulary, teacher.model.architecture,
                        action_policy=teacher.model.action_policy, input_view=corpus.input_view)
     model.load_state_dict(teacher.model.state_dict(), strict=True)
-    learner = ImitationLearner(model, corpus, LearnerConfig(batch_size=32, learning_rate=.0001), seed=seed)
+    learner = ImitationLearner(model, corpus, LearnerConfig(batch_size=32, learning_rate=learning_rate), seed=seed)
     initial = save_checkpoint(output / 'initial.sts-model', learner)
     started = time.perf_counter()
     metrics = []

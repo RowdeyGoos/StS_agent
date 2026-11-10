@@ -57,6 +57,46 @@ is positive. Each searched decision takes 1.9 s on average with 16 workers. See
 the [search evidence](evidence/COMBAT_SEARCH_BENCHMARK_2026_10_17.md), which
 also records the two search fixes this measurement required.
 
+**Distilling that search** into the same network recovered only 10–20% of the
+gain, which is not significant on bosses. The test used 60,738 targets from
+3,072 training elite and boss fights, with 1–16 epochs and learning rates
+1e-4 to 1e-3. Normal fights were unchanged. The targets change the network's
+top action in 19% of decisions, but no student fit them: training cross-entropy
+stayed near 0.61 nats against a noise-adjusted floor of about 0.46. See the
+[distillation evidence](evidence/COMBAT_SEARCH_DISTILLATION_2026_10_18.md).
+
+A **representation screen** on those labels found no better representation than
+the specialist's combat graph. It measured fit on 20% held-out campaigns.
+Trained from scratch, the combat graph reached held-out KL 0.278 nats at both
+width 48 and width 128. The feature study's compact pooling (0.330), original
+pooling (0.339) and basic flat (0.418) did worse, and the distilled specialist
+reached 0.265. Width 128 fit its training campaigns better without generalizing
+better, so generalization from these labels, not the representation, is the
+limit. See the [screen evidence](evidence/COMBAT_REPRESENTATION_SCREEN_2026_10_22.md).
+Run a screen with a frozen config naming the collection reports, split, recipe
+and candidates:
+
+```bash
+sts-agent-train search-screen --config runs/screen/config.json --output-dir runs/screen \
+  --candidate specialist_warm --candidate combat_graph_48
+sts-agent-train search-screen --config runs/screen/config.json --output-dir runs/screen --report
+```
+
+Candidates with identical encoders share one encoding. `--report` compares every
+completed candidate on the shared held-out decisions. Optional config fields:
+- `fit_fraction` with `fit_salt` keeps a nested share of fit campaigns.
+- `evaluation_reports` takes held-out decisions from another collection, so
+  students fitted to different labels are scored on the same decisions.
+
+A [follow-up](evidence/COMBAT_SEARCH_TARGETS_2026_11_01.md) found both levers real
+but small.
+- **More labels.** Each doubling lowered the distilled specialist's held-out KL by
+  only about 0.006 nats.
+- **Stronger targets.** At 96 simulations, search won 3.5 more points of the same
+  training fights than at 24 (bosses +5), at about four times the search time.
+  Students fitted to its labels predicted it better.
+Search at play time remains the larger gain.
+
 Rebuild and rerun the benchmark after source changes, because corpora bind the
 implementation identity. The same settings and start index reproduce the fights:
 
@@ -973,7 +1013,9 @@ sts-agent-train search-distill \
 Use a tested teacher configuration; the command above illustrates critic-only
 search. `--epochs 4` makes exactly four passes, including each short final batch;
 it is mutually exclusive with `--updates`. Repeat `--training-report` to combine
-disjoint fresh and refreshed training fights. The loader validates each report,
+disjoint fresh and refreshed training fights. `--learning-rate` sets the Adam
+rate (default 1e-4, batch 32); the 2026-10-18 study found 3e-4 and 1e-3 fit no
+better. The loader validates each report,
 rejects repeated source fights or incompatible input views, and binds every source
 report and corpus in the student report. Reanalysis accepts `--max-episodes` to
 refresh a recorded prefix; declared inventories require complete balanced rounds.
