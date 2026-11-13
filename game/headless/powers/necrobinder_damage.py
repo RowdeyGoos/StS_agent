@@ -4,13 +4,16 @@ from game.headless.core.resolution import push
 
 
 def pet_damage(p, target, amount):
-    from game.headless.relics.damage import attack_bonus, attack_multiplier
+    from game.headless.relics.damage import attack_bonus, attack_multiplier, enchantment_multiplier
     from game.headless.relics.combat import has
     from game.headless.potions.powers import attack_multiplier as potion_multiplier
     from game.headless.powers.necrobinder import damage_multiplier
     from game.headless.powers.status import modify_attack_damage_for_statuses
     card = p.current_card
+    # The source card's enchantment multiplies its damage before the additive bonuses.
+    multiplier, scale = enchantment_multiplier(card)
     n, d = target.incoming_attack_multiplier()
+    d *= scale
     n *= attack_multiplier(p, card) * potion_multiplier(p, card)
     from game.headless.powers.silent import damage_multiplier as silent_multiplier
     n *= silent_multiplier(p, target)
@@ -24,7 +27,8 @@ def pet_damage(p, target, amount):
             vulnerable = 100 + (vulnerable - 100) * 2
         n *= vulnerable
         d *= 200 if target.statuses.get('debilitate') else 150
-    return modify_attack_damage_for_statuses(amount + p.rules.powers.get('calcify', 0) + attack_bonus(p, card), target.statuses, extra_multiplier=(n, d))
+    bonus = p.rules.powers.get('calcify', 0) + attack_bonus(p, card)
+    return modify_attack_damage_for_statuses(amount * multiplier + bonus * scale, target.statuses, extra_multiplier=(n, d))
 
 
 def after_attack_damage(p, target, total, *, pet, damage, sic_em):

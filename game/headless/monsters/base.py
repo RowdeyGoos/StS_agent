@@ -172,23 +172,26 @@ class Enemy(ABC):
             from game.headless.powers.necrobinder_damage import pet_damage
             return pet_damage(self.combat_player, self, amount)
         player = self.combat_player
+        scale = 1
         if is_attack and powered and player is not None and attacker_statuses is player.statuses:
-            from game.headless.relics.damage import attack_bonus
-            amount += attack_bonus(player, player.current_card)
+            from game.headless.relics.damage import attack_bonus, enchantment_multiplier
             from game.headless.powers.silent import damage_bonus
-            amount += damage_bonus(player, player.current_card)
-        incoming_damage = (
-            modify_attack_damage_for_statuses(
-                amount,
-                self.statuses,
-                attacker_statuses=attacker_statuses,
-                attacker_strength=attacker_strength,
-                extra_multiplier=self._attack_multiplier(attacker_statuses),
-            )
-            if is_attack and powered
-            else amount
+            # The enchantment multiplies the card's damage before the additive bonuses
+            # and Strength. Scale those by the denominator to keep one exact final floor.
+            multiplier, scale = enchantment_multiplier(player.current_card)
+            bonus = attack_bonus(player, player.current_card) + damage_bonus(player, player.current_card)
+            amount = amount * multiplier + bonus * scale
+            attacker_strength *= scale
+        if not (is_attack and powered):
+            return amount
+        numerator, denominator = self._attack_multiplier(attacker_statuses)
+        return modify_attack_damage_for_statuses(
+            amount,
+            self.statuses,
+            attacker_statuses=attacker_statuses,
+            attacker_strength=attacker_strength,
+            extra_multiplier=(numerator, denominator * scale),
         )
-        return incoming_damage
 
     def take_damage(
         self,

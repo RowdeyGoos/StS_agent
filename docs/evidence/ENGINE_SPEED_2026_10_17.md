@@ -115,6 +115,11 @@ encoder then rejects the state ("Unsupported monster state value: float"), so a
 search fork in that state falls back. A fix changes game results and needs a
 native reference for the rounding. It is a separate change.
 
+Fixed on 2026-11-13. The enchantment now multiplies the card's own damage before
+Strength and the other bonuses, in exact integer arithmetic
+(`tests/headless/test_corrupted_damage.py`). The digests in this record predate
+that fix.
+
 ## Reproduce
 
 ```bash

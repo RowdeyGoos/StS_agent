@@ -135,10 +135,27 @@ def attack_bonus(p, card):
     return extra
 
 
+def enchantment_multiplier(card):
+    """Return the source card's enchantment damage multiplier as (numerator, denominator).
+
+    Native Hook.ModifyDamage multiplies the card's own damage by the enchantment
+    before any additive hook (Strength, Vigor, relic and power bonuses) and before
+    the other multipliers; the caller applies it to that term only. Corrupted and
+    Instinct define no additive enchantment bonus, so nothing else is multiplied.
+    Known gap: attack call sites fold Vigor into the card damage, so it is multiplied.
+    """
+    enchantment = card.enchantment if card is not None else None
+    if enchantment is None:
+        return 1, 1
+    if enchantment.definition_id == "instinct":
+        return 2, 1
+    if enchantment.definition_id == "corrupted":
+        return 3, 2
+    return 1, 1
+
+
 def attack_multiplier(p, card):
-    result = 2 if card and card.enchantment and card.enchantment.definition_id == "instinct" else 1
-    if card and card.enchantment and card.enchantment.definition_id == "corrupted":
-        result *= 1.5
+    result = 1
     for relic in p.rules.relics:
         if (relic["definition_id"] == "pen_nib" and not relic.get("data", {}).get("_melted")
                 and card is not None and memory(p, relic).get("attack_to_double") == card.instance_id):
