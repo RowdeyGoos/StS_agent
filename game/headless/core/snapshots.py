@@ -74,7 +74,12 @@ def restore_card(record, cards=DEFAULT_CARDS):
     validate_costs(values)
     if any(type(values[k]) is not int or values[k] < 0 for k in ('wither_level', 'dampened_levels')):
         raise ValueError('Invalid Glory card counters.')
-    card.combat_state = CardState(**values)
+    state = card.combat_state = CardState(**values)
+    # The engine edits this bookkeeping in place. The record stays the caller's: it may be
+    # restored again or read later, so the card takes its own (validated flat) containers.
+    state.cost_discount_baselines = dict(state.cost_discount_baselines)
+    state.played_cost_baselines = list(state.played_cost_baselines)
+    state.cost_override_order = list(state.cost_override_order)
     card.enchantment = enchantments.restore(record["enchantment"])
     enchantments.validate(card)
     return card

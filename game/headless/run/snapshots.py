@@ -51,13 +51,15 @@ def _restore_completed_act(record):
 def _restore_event_combat(record):
     if not isinstance(record, dict) or set(record) != {"event_instance_id", "definition_id", "node_id", "encounter_id", "combat_number", "outcome", "rewards_left", "continuation", "timed_out", "resumed"}:
         raise ValueError("Invalid event combat state fields.")
-    return EventCombatRecord(**record)
+    # The suspended event is nested data, like `pending`: the engine keeps its own copy.
+    return EventCombatRecord(**{**record, "continuation": deepcopy(record["continuation"])})
 
 
 def _restore_relic(record):
     if not isinstance(record, dict) or set(record) != {"definition_id", "instance_id", "counter", "data"}:
         raise ValueError("Invalid relic state fields.")
-    return RelicInstance(**record)
+    # Relic data is edited in place and can hold nested records; never share it with the snapshot.
+    return RelicInstance(**{**record, "data": deepcopy(record["data"])})
 
 _ITEM_JSON = ContentJson()
 
@@ -121,6 +123,12 @@ def capture_run(engine, *, shared_content=False) -> dict:
 
 
 def restore_run(snapshot, *, cards=DEFAULT_CARDS):
+    """A validated engine that owns all of its mutable state.
+
+    It shares no mutable container with `snapshot`, which is only read: one snapshot can be
+    restored any number of times, and later edits to its state cannot reach the engine.
+    Immutable content definitions stay shared, and the content tables of a `shared_content`
+    snapshot are still read-only."""
     from game.headless.run.engine import RunEngine
     if not isinstance(snapshot, dict) or snapshot.get("schema") != SCHEMA:
         raise ValueError("Incompatible run snapshot.")

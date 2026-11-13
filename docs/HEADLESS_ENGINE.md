@@ -198,7 +198,8 @@ They retain RNG state/aliases, stable identities, ordered piles, modifiers, owne
 pending tasks/selections, character resources and run/room history. Restore binds
 content fingerprints, validates ownership and rejects incompatible versions;
 it does not infer missing state. Reuse the same rules/catalogs when restoring.
-Mutable branch state is independent, while immutable definitions may be shared.
+A restored engine owns its mutable state and shares no mutable container with the
+snapshot, so one snapshot can be restored repeatedly; immutable definitions may be shared.
 Do not serialize arbitrary callables or import a type named by a snapshot.
 `snapshot(shared_content=True)` embeds the cached content definitions instead of
 detached copies. Only use it when the result is read and never mutated, for
