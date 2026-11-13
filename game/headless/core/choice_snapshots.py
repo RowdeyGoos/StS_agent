@@ -227,16 +227,17 @@ def validate_selection(r, p, *, deferred=False, shared_offers=False):
         kinds = ("skill", "block") if operation == "secret_technique" else ("attack",)
         if any(c.spec.kind not in kinds for c in available if c.instance_id in s["candidates"]):
             raise ValueError("Ineligible tutor card.")
+    # Restore validates before it installs r on p, so the owner comes from r.
     if operation == 'choices_paradox':
         from game.headless.cards.colorless_effects import pool
-        eligible = {d.definition_id for d in pool(p)}
+        eligible = {d.definition_id for d in pool(p, r.character)}
         if (len(available) != min(5, len(eligible)) or len({c.definition.definition_id for c in available}) != len(available)
                 or any(c.definition.definition_id not in eligible or not c.combat_state.retain_this_combat for c in available)):
             raise ValueError('Invalid Choices Paradox offers.')
     if operation == 'splash':
         from game.headless.cards.colorless_effects import catalog
         from game.headless.generation.foreign import splash_pool
-        eligible = {d.definition_id for d in splash_pool(catalog(p), p.rules.character)}
+        eligible = {d.definition_id for d in splash_pool(catalog(p), r.character)}
         offers = [c for c in available if c.instance_id in s['candidates']]
         if (len(offers) != min(3, len(eligible)) or len({c.definition.definition_id for c in offers}) != len(offers)
                 or any(c.definition.definition_id not in eligible or c.upgrade_level != int(source.upgraded) for c in offers)):
