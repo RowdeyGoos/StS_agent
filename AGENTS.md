@@ -17,6 +17,7 @@ do not falsify hashes, bypass runtime safeguards or broaden user-data access.
    | Live bridge or generic events | [Current status](docs/STATUS.md), then relevant source/contract; [live guide](docs/LIVE_DEVELOPMENT.md) before build/install/live work |
    | Headless game rules or architecture | [Headless engine](docs/HEADLESS_ENGINE.md), affected `game/headless/` source and tests |
    | Full-game observations, actor or data | [Implementation backlog](docs/HEADLESS_FULL_GAME_IMPLEMENTATION.md), then current engine source and tests; legacy pipelines are retired |
+   | Combat agent training, search or evaluation | [Combat overview](docs/COMBAT_OVERVIEW.md), then the linked evidence record or [training guide](docs/AGENT_TRAINING.md) section |
    | Architecture or priorities | [Decisions](DECISIONS.md) and [roadmap](ROADMAP.md) |
    | Documentation | The document and its direct references |
 
@@ -69,7 +70,8 @@ local verification and implementation choices do not need repeated permission.
 | --- | --- |
 | Documentation only | Diff, relevant links, factual consistency and any affected artifact bindings; no gameplay suite or live launch |
 | Local behavior/fix using existing contracts | Focused regression and affected consumers; author review normally suffices |
-| Live mutation, protocol, public information, RNG, persistence or cleanup semantics | Focused adversarial cases, one independent semantic review and relevant integration checks |
+| Small contained fix in those areas: known cause, no interface or contract change, roughly 50 changed source lines or fewer | A regression test that fails before the fix, the focused tests of the affected area and author review; no review subagent and no full suite |
+| Other changes to live mutation, protocol, public information, RNG, persistence or cleanup semantics | Focused adversarial cases, one independent semantic review and relevant integration checks |
 | Release | Changed behavior plus build/package/source identity and installation/cleanup checks; one final release gate |
 
 Additional review must answer a distinct unresolved risk. Reviewers block concrete
@@ -78,6 +80,21 @@ the task. Delegation is permitted for the required independent semantic review:
 use one review subagent without asking again. For other delegation, use the
 [multi-agent guidance](docs/MULTI_AGENT_EXECUTION.md) only when it is permitted
 and would shorten the critical path.
+
+Keep cost proportional to the change. The user pays for every agent, review and
+suite run.
+
+- Fix a defect whose cause is already known in the current session. Do not start
+  a separate session or subagent that must rediscover it, unless the user asks.
+- A required review gets a bounded brief: the diff, the specific risk to check
+  and a stated limit. It reads and runs focused checks; it does not repeat the
+  author's validation or audit unrelated code.
+- Do not add audits, benchmarks or whole-engine sweeps the task did not ask for.
+  Name the open question in the summary instead.
+- Before work likely to take more than about 30 minutes of agent time, or any
+  second agent beyond a required review, state the expected cost and ask.
+- Report unrelated defects found in passing in one line each; do not investigate
+  them.
 
 Run targeted tests during corrections. Reuse trusted accepted evidence only when
 the relevant transitive sources, tests, dependencies, toolchain and settings match.
