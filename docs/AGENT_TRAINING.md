@@ -9,6 +9,8 @@ acts is deferred until this goal shows useful progress. The next learning focus 
 see [campaign-derived combat training](#campaign-derived-combat-training) and
 [Act 1 training and configurable act rewards](#act-1-training-and-configurable-act-rewards).
 Measure combat changes on the [boss and elite benchmark](#boss-and-elite-benchmark).
+The [combat overview](COMBAT_OVERVIEW.md) holds the combat scoreboard and a
+one-row summary of every combat study; this guide keeps usage and detailed results.
 The user authorized milestones 1–7 and requested a summary of key
 implementation details and choices after each milestone. A bounded CPU imitation
 warm-up and hybrid development evaluation are included in milestone 3. Milestone 4

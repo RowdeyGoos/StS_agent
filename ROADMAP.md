@@ -1,6 +1,6 @@
 # Roadmap
 
-Priorities updated 2026-10-17. This file owns priorities;
+Priorities updated 2026-11-12. This file owns priorities;
 [current status](docs/STATUS.md) owns capability and evidence. Follow [AGENTS.md](AGENTS.md) for the development
 process. Completed packets and old campaign instructions are historical references.
 
@@ -41,126 +41,77 @@ Further work should start from a new concrete requirement:
    observable outcome first, then add the smallest implementation and validation
    needed. Unsupported shapes with no identified gameplay caller retain explicit
    limits; they are not an unbounded implementation queue.
-3. **Improve Act 1 completion.** The current training goal is Ironclad A0 Act 1
-   clear rate across Overgrowth and Underdocks. The immediate learning focus is
-   [combat specialization](docs/AGENT_TRAINING.md#campaign-derived-combat-training):
-   genuine frozen combat starts from both regions, whole-campaign data splits,
-   a victory-first combat objective with modest HP shaping, and matched
-   encounter-level comparisons. Keep the noncombat heuristic fixed during hybrid
-   Act 1 checks. Production defaults and parallel PPO remain in use.
-   **Current combat priority (2026-10-17):** measure combat on the
-   [boss and elite benchmark](docs/AGENT_TRAINING.md#boss-and-elite-benchmark),
-   because most Act 1 losses are boss and elite fights. The
-   [hidden-state comparison](docs/evidence/COMBAT_HIDDEN_STATE_2026_10_17.md)
-   found no effect of resampling at the current corpus scale, and 245,760 more
-   PPO decisions from the Vantom specialist did not improve bosses (elites +2
-   points). [Combat search](docs/evidence/COMBAT_SEARCH_BENCHMARK_2026_10_17.md)
-   on the same checkpoint adds 6.8 boss and 6.7 elite points, but
-   [distilling it](docs/evidence/COMBAT_SEARCH_DISTILLATION_2026_10_18.md) into
-   the network recovered only 10–20%: the network cannot fit the search targets
-   on its own training data, whatever the learning rate. A
-   [representation screen](docs/evidence/COMBAT_REPRESENTATION_SCREEN_2026_10_22.md)
-   on those labels found nothing better than the specialist's combat graph, and
-   width did not help. Generalization from the labels is the limit.
-   [More labels and stronger targets](docs/evidence/COMBAT_SEARCH_TARGETS_2026_11_01.md)
-   both help distillation, but only a little. 96-simulation search won 3.5 more
-   points of the same training fights than 24 simulations. Next, measure
-   96-simulation search on the boss/elite benchmark and searched play in Act 1,
-   before larger distillation rounds or boss PPO. Keep the combat graph; pause
-   other architecture screens. The completed
-   [Vantom feature, encoder and PPO studies](docs/AGENT_TRAINING.md#current-vantom-findings)
-   support keeping basic flat and original rich pooling as baselines, with compact
-   rich pooling as a candidate for reduced rollout storage. Extra hierarchy has
-   not established an advantage, and smaller inputs did not improve measured
-   inference latency. Freeze a common recipe for architecture comparisons.
-   Batch 64 failed the Vantom calibration's gates. On the boss/elite benchmark it
-   [trained 12.5% faster and was not worse](docs/evidence/COMBAT_MINIBATCH_2026_10_18.md),
-   and the generated corpus PPO preset now uses it. Prioritize independent learner replication, public-feature
-   coverage and broader combat evidence before increasing model size or budgets.
-   These follow-ups are exploratory after the original TEST exposure; they do not
-   authorize another TEST run or a default change.
-   The new [experimental combat search](docs/AGENT_TRAINING.md#experimental-combat-search)
-   adds public-history planning, soft-target distillation and reanalysis. Measure
-   supported-state coverage, critic accuracy and paired combat gains before
-   scaling its training; require a positive paired Act 1 confidence gate before
-   making searched play the default. The
-   [search architecture redesign](docs/COMBAT_SEARCH_ARCHITECTURE.md) has a
-   controlled implementation of shared engine construction, maintained public-information
-   beliefs, bounded prefix recovery and search integration. Declared starts now
-   cover both Act 1 regions, with validated setup/turn selectors and a
-   [representative coverage audit](docs/evidence/COMBAT_BELIEF_COVERAGE_2026_10_04.md).
-   A bounded direct draw/HP sampler now addresses rejection overhead; the
-   [direct-sampling experiment](docs/evidence/COMBAT_DIRECT_SAMPLING_2026_10_04.md)
-   records its coverage and timing. Its versioned planning view now carries
-   through collection, distillation, reanalysis and student checkpoints; the
-   [learning verification](docs/evidence/COMBAT_SEARCH_LEARNING_2026_10_04.md)
-   records the bounded check. A [128-start paired comparison and critic audit](docs/evidence/COMBAT_SEARCH_BENEFIT_2026_10_04.md)
-   shows full eligible search coverage and bounded latency, but its starter deck
-   produced no changed win outcomes. The
-   [developed-deck benchmark](docs/evidence/COMBAT_SEARCH_DEVELOPED_BENCHMARK_2026_10_05.md)
-   adds calibrated, tactically sensitive inventories: Gumbel rescued two losses
-   and lost one greedy win on 32 harder starts, an inconclusive net gain. Its
-   [decision diagnosis](docs/evidence/COMBAT_SEARCH_DEVELOPED_BENCHMARK_2026_10_05.md#follow-up-decision-diagnosis)
-   isolates useful block/attack ordering and a costly missed Inflame play. The
-   [rollout-search and learning study](docs/evidence/COMBAT_SEARCH_LEARNING_2026_10_06.md)
-   now confirms useful search on fresh authored challenge fights at the tested
-   thinking cost. Its bounded learning round did not improve searched performance
-   on confirmation. Keep the original searched checkpoint as the benchmark
-   teacher. The [strength diagnosis](docs/evidence/COMBAT_SEARCH_STRENGTH_2026_10_06.md)
-   found no established additional gain from more passes and exposes a synthetic
-   case where the actor prior outweighs an exactly evaluated win. The
-   [selection diagnosis](docs/evidence/COMBAT_SEARCH_SELECTION_2026_10_07.md)
-   tested value weighting, final-action selection and a cheaper horizon extension.
-   None established a stronger practical teacher; the horizon candidate failed
-   fresh confirmation. Keep the original 24-by-4 reference and next isolate
-   critic quality while holding actor probabilities and search settings fixed,
-   before another large collection round. Expensive planning improved fresh
-   combat return but missed the latency target; validate both strength and cost
-   before promotion.
-   Headless campaign play and new corpora now record public entry/reveal receipts
-   with explicit coverage fallbacks. Use the [witnessed validation workflow](docs/AGENT_TRAINING.md#campaign-search-and-witnessed-validation)
-   beside natural-population comparisons before expanding experiments. Native
-   bridge receipts remain a separate gate. The common `combat_belief_v1` workflow
-   now connects campaign receipts and verified Vantom prefixes to collection,
-   distillation and reanalysis; use this path for subsequent controlled studies.
-   Then investigate campaign-aware combat exit values.
-   The [seven-hour research pass](docs/AGENT_TRAINING.md#seven-hour-combat-research-2026-10-02)
-   identifies successful hard-fight imitation as a promising lead, with
-   inconclusive final combat and Act 1 confirmation. Prioritize preserving its
-   gains during PPO, expanding diverse successful elite/boss demonstrations and
-   replication across more learner seeds before increasing model capacity or
-   training budgets. For the Vantom specialist, prioritize independent training
-   fights and a frozen development panel; the
-   [continuation diagnostic](docs/AGENT_TRAINING.md#vantom-continuation-diagnostic)
-   did not support optimizer resets as the primary explanation for regression.
-   Full-campaign training is deferred until repeatable Act 1
-   progress. Use the [Act 1 workflow](docs/AGENT_TRAINING.md#act-1-training-and-configurable-act-rewards)
-   for the finite task horizon and paired initializer comparison. Stronger full-run learning,
-   throughput targets, stronger policies, exhaustive branch/seed coverage and a
-   fresh uninterrupted shared-v2 campaign are subsequent scopes. Representative
-   bridge coverage does not establish strategic quality.
-   The user-requested [training plan](docs/AGENT_TRAINING.md) starts with combat
-   objectives and then full-run learning. Milestones 1–5 deliver combat episodes,
-   measured baselines, configurable objectives, faithful training records, a
-   public graph actor-critic, imitation warm-up, bounded masked PPO and resumable
-   CPU checkpoints, a finite curriculum and frozen paired combat benchmarks.
-   The first broader held-out comparison is inconclusive; selector completion
-   remains a measured weakness. Hybrid campaign evaluation continues alongside
-   combat training. Milestone 6 adds full-run demonstrations, explicit actor
-   transfer with a fresh run critic, canonical victory PPO and paired genuine
-   campaign evaluation. Milestone 7 completes the installed-command delivery,
-   clean-package checks and broad Python integration. The completed
-   [staged diagnostic](docs/AGENT_TRAINING.md#staged-learning-diagnostic-2026-09-29)
-   finds entropy-only PPO drift and pre-existing non-combat selection loops in
-   one checkpoint lineage. Requested configurable full-run rewards now provide
-   combat and run components with explicit objective transfer and canonical
-   win-rate evaluation. A shared, versioned policy layer now completes explicit
-   mandatory single-card selections across training and playback; optional and
-   multiple-card selections preserve native actions because order can matter.
-   PPO now skips updates with no advantage or value-learning signal and records
-   skipped work separately. The newer commit-decisions policy prevents reversible
-   selection and reward-navigation loops while retaining native selection order.
-   Whole-run learning remains available for later integration work.
+3. **Improve Act 1 completion, combat first.** The training goal is Ironclad A0
+   Act 1 clear rate across Overgrowth and Underdocks. The current focus is a
+   well-functioning combat agent before the other aspects are added (user
+   direction, 2026-11-12). The [combat overview](docs/COMBAT_OVERVIEW.md) owns
+   the combat scoreboard, the record of every study and the open questions; this
+   entry owns only what comes next.
+
+   Where combat stands on the boss and elite benchmark:
+   - Search during play is the only lever with a large, repeatable gain: 55.5%
+     of bosses and 85.8% of elites at 24 simulations, against 48.7% and 79.1%
+     for the best network alone.
+   - More PPO, architecture and feature changes, and distilling search into the
+     network each moved bosses by a few points at most.
+   - With perfect information at least 82.8% of the boss fights can be won: a
+     player or a solver that sees the hidden state won them. The decks are not
+     the main limit.
+   - A planner with no network, which samples the unknown draw order and plans
+     with the solver's beam search, wins 59.6% of bosses: 4.1 points above the
+     network with search. It is an experiment on the headless engine, not a
+     deployable agent.
+
+   Sequence from the 2026-11-12 review. The user chose step 1, the ceiling
+   measurement of step 2 and the planner test of step 4; the rest of the
+   sequence and the pause list are proposed and await confirmation.
+   1. **Freeze the map.** Done: the combat overview and this entry.
+   2. **Measure the ceiling.** Done for the ceiling itself: see the
+      [ceiling record](docs/evidence/COMBAT_CEILING_2026_11_12.md). The solver
+      is a labelled privileged diagnostic: never the agent and never a training
+      target. Still outstanding since 2026-11-01: 96-simulation search on the
+      benchmark, and searched play in Act 1 with the fixed noncombat heuristic.
+   3. **Let the gap decide.** The solver wins far more than search does (+27
+      points on bosses), so combat has room in principle and step 4 applies.
+      Had it won little more, the next move would have been deck building
+      around the frozen searched player.
+   4. **Make search cheaper before making anything smarter.** Projection and
+      network inference take 76% of search time. Then measure strength against
+      simulation count on the benchmark, relative to the ceiling. Train on
+      search labels at scale only if that curve flattens early. The first
+      experiment is done: see the
+      [planner record](docs/evidence/COMBAT_PUBLIC_PLANNER_2026_11_12.md).
+      Proposed follow-ups for the planner, in order:
+      - count only the enemies that must die as progress, which is its weak spot
+        on The Kin;
+      - measure strength against the number of worlds and lines;
+      - try the network's value in place of its five hand-set numbers;
+      - make it cheap, and build its worlds from the public belief path so that
+        it no longer starts from the private engine state.
+
+   Paused while search is the focus: further PPO variants, architecture and
+   feature screens, reward shaping, single-boss specialists and larger
+   distillation rounds. Keep the combat graph.
+
+   Standing constraints:
+   - Keep the noncombat heuristic fixed in hybrid Act 1 checks. Production
+     defaults and parallel PPO remain in use.
+   - Search stays opt-in until a paired Act 1 comparison clears its confidence
+     gate. Native bridge receipts remain a separate gate.
+   - Experimental results and generated presets do not change production
+     defaults by themselves. Work after the original TEST exposure is
+     exploratory and authorizes no further TEST run.
+   - Full-campaign training is deferred until Act 1 progress is repeatable.
+     Campaign-aware combat exit values, stronger full-run learning, throughput
+     targets and a fresh uninterrupted shared-v2 campaign are later scopes.
+     Representative bridge coverage does not establish strategic quality.
+
+   Training milestones 1–7 are delivered. The [training guide](docs/AGENT_TRAINING.md)
+   owns their usage and results, including the
+   [Act 1 workflow](docs/AGENT_TRAINING.md#act-1-training-and-configurable-act-rewards)
+   and the [search workflow](docs/AGENT_TRAINING.md#experimental-combat-search).
+   The [search architecture](docs/COMBAT_SEARCH_ARCHITECTURE.md) owns the belief
+   design and its remaining gates.
 
 [Current status](docs/STATUS.md#implementation-gaps-versus-remaining-live-tests)
 owns remaining evidence limits, and the

@@ -21,6 +21,7 @@ The top level contains current guidance. Completed Phase 0/1 work lives in the
 | Full-game headless implementation tasks | [Current implementation backlog](HEADLESS_FULL_GAME_IMPLEMENTATION.md) |
 | Shared public contract, bridge adapter and Gymnasium delivery | [V1/full-run v2 contracts and producer mapping](AGENT_CONTRACT.md), [encoding and Gymnasium](AGENT_ENCODING.md), [delivery plan](AGENT_ENVIRONMENT.md) |
 | Public trajectories, agent command, workers and training data | [Execution and data loading](AGENT_EXECUTION.md) |
+| Combat agent: scoreboard, every study in one row and open questions | [Combat overview](COMBAT_OVERVIEW.md) |
 | Combat/full-run objectives, imitation/PPO, combat search, distillation, reanalysis and paired evaluation | [Training guide](AGENT_TRAINING.md) |
 | Feature/architecture studies, typed entity design and reusable PPO findings | [Current Vantom findings](AGENT_TRAINING.md#current-vantom-findings), [encoder design](AGENT_ENCODING.md#experimental-typed-combat-encoder) |
 | Combat-search redesign, maintained beliefs, prefix recovery and future bridge compatibility | [Search architecture plan](COMBAT_SEARCH_ARCHITECTURE.md) |
@@ -31,6 +32,23 @@ The top level contains current guidance. Completed Phase 0/1 work lives in the
 
 ## References and results
 
+The [combat overview](COMBAT_OVERVIEW.md) lists the combat studies below by
+lever, with one result and verdict each.
+
+- Planner without a network: [November 12, determinized planner on the 589 bosses](evidence/COMBAT_PUBLIC_PLANNER_2026_11_12.md)
+  finds 59.6% of bosses with eight sampled worlds and four lines each, 4.1
+  points above the network with search and 10.9 above the best network. It
+  decides from public information with stated exceptions, and it is an
+  experiment on the headless engine, not a deployable agent.
+- Perfect-information ceiling: [November 12, privileged solver on the benchmark](evidence/COMBAT_CEILING_2026_11_12.md)
+  finds that a player or a solver that sees the hidden state won 82.8% of the
+  boss fights and 94.5% of the elite fights. It is an upper bound with
+  hindsight, not a level a player can be expected to reach; with a single line
+  the solver wins 51.0% of bosses.
+- Fights won by any player: [November 12, reanalysis of existing reports](evidence/COMBAT_ANY_PLAYER_WINS_2026_11_12.md)
+  finds that some evaluated player won 69.5% of the benchmark's boss fights and
+  90.9% of its elite fights, against 55.5% and 85.8% for search. This is a floor
+  on the perfect-information ceiling, not a level one policy has reached.
 - Minibatch 64 for corpus PPO: [October 18, six learners](evidence/COMBAT_MINIBATCH_2026_10_18.md)
   finds 12.5% faster training and no loss on the boss/elite benchmark (bosses
   +1.7 points, tentative; elites −0.3). The generated corpus PPO preset now uses
@@ -41,7 +59,8 @@ The top level contains current guidance. Completed Phase 0/1 work lives in the
   options that would change training semantics.
 - Headless engine speedups: [October 17, behaviour-identical](evidence/ENGINE_SPEED_2026_10_17.md)
   records 1.5–2.8× faster play, snapshots and forks with identical results, the
-  agent-layer costs that dominate realistic workloads, and a Corrupted float-HP rules bug.
+  agent-layer costs that dominate realistic workloads, and a Corrupted float-HP rules
+  bug that was fixed on November 13.
 - Search labels: [November 1, data scaling and 24 versus 96 simulations](evidence/COMBAT_SEARCH_TARGETS_2026_11_01.md)
   finds small gains from more labels and from stronger targets. 96-simulation
   search wins 3.5 more points of the same fights.

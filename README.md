@@ -16,6 +16,8 @@ The current training goal is **clearing Act 1 with Ironclad at A0**, measured by
 Act 1 clear rate across both regions. The current learning focus is
 [combat specialization with campaign-derived starts and matched benchmarks](docs/AGENT_TRAINING.md#campaign-derived-combat-training),
 with a fixed noncombat controller for hybrid Act 1 checks. The
+[combat overview](docs/COMBAT_OVERVIEW.md) summarizes where combat stands and
+what has been tried. The
 [Act 1 preset and paired evaluation](docs/AGENT_TRAINING.md#act-1-training-and-configurable-act-rewards)
 retain the configurable act-clear reward and stopping boundary.
 
