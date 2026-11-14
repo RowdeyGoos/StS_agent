@@ -36,7 +36,15 @@ def validate(r, p, s, kind):
     if kind not in SETTINGS:
         raise ValueError("Potion does not own this choice.")
     _, op, free, optional, all_cards = SETTINGS[kind]
-    cards = eligible(p, kind)
+    # Restore validates before installing `r`; Touch of Insanity's live cost reads
+    # powers and relics from the rules. The copy keeps relic memory lookups out of `r`.
+    from copy import deepcopy
+
+    held, p.rules = p.rules, deepcopy(r)
+    try:
+        cards = eligible(p, kind)
+    finally:
+        p.rules = held
     ids = [c.instance_id for c in cards]
     maximum = len(ids) if all_cards else min(1, len(ids))
     if (

@@ -492,6 +492,30 @@ def test_touch_excludes_x_and_locally_free_cards_but_allows_corruption_discount(
     clone(run)
 
 
+@pytest.mark.parametrize(
+    "cards, relics, play",
+    [
+        (["panache", "strike", "defend", "bash"], ["spiked_gauntlets"], None),
+        (["finesse", "borrowed_time", "strike", "defend", "bash"], [], "borrowed_time"),
+    ],
+)
+def test_touch_restores_locally_free_card_with_raised_live_cost(cards, relics, play):
+    # Restore validates the choice before installing the saved rules, which hold
+    # the power or relic that makes the locally free card cost energy.
+    from game.headless.powers.ironclad import local_cost
+
+    run, item = setup("touch_of_insanity", cards=cards, relics=relics)
+    p = run.combat.player
+    if play:
+        card = next(c for c in p.hand if c.definition.definition_id == play)
+        run.apply(next(a for a in run.legal_actions() if isinstance(a, PlayCard) and a.instance_id == card.instance_id))
+    use(run, item)
+    raised = next(c for c in p.hand if c.definition.definition_id == cards[0])
+    assert local_cost(raised) == 0 and p.card_cost(raised) == 1
+    assert raised.instance_id in p.rules.selection["candidates"]
+    clone(run)
+
+
 def test_local_cost_clamps_after_global_tangled():
     run, item = setup("touch_of_insanity", cards=["stomp", "strike"])
     p = run.combat.player
