@@ -8,7 +8,7 @@ from game.agent.headless.full_projection import FullProjection
 from game.agent.headless.identity import Identities
 from game.headless.core.hook_scheduler import ResolutionLimitExceeded
 from game.headless.planning import UnsupportedSearch
-from .public_keys import action_key
+from .public_keys import action_keys
 
 # Deterministic cap on one simulated command's resolution tasks. Ordinary plays
 # use tens to hundreds; a non-terminating world falls back explicitly instead
@@ -76,7 +76,7 @@ class SimulationWorld:
         owner = FullProjection(self._run, self._ids, self._history, self._powers, 'attachment', 0, False)
         from game.agent.headless.errors import UnsupportedProfile
         try:
-            result = owner.decision(transform=self._project_view)
+            result = owner.decision(transform=self._project_view, adopt=True)
         except UnsupportedProfile as error:
             raise UnsupportedSearch('simulation_projection_unsupported') from error
         self._commands, self._legal = owner.commands, owner.legal
@@ -98,7 +98,7 @@ class SimulationWorld:
         return result
 
     def step(self, decision, key):
-        action = next((a for a in decision.candidates if action_key(decision, a) == key), None)
+        action = next((a for a, k in zip(decision.candidates, action_keys(decision)) if k == key), None)
         if action is None:
             raise UnsupportedSearch('sampled_action_mismatch')
         previous = self._run.combat

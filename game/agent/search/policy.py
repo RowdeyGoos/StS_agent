@@ -9,14 +9,14 @@ import sys
 import time
 
 from game.agent.action_policy import action_mask
-from game.agent.search.model import PublicCombatModel, SearchHistory, action_key, observation_key
+from game.agent.search.model import PublicCombatModel, SearchHistory, observation_key
 from game.headless.planning import UnsupportedSearch
 from .belief import BeliefBudget, CombatBelief, MODEL as BELIEF_MODEL
 from .direct import DirectCombatBelief, MODEL as DIRECT_MODEL
 from .observed import ObservedCombatBelief, MODEL as OBSERVED_MODEL
 from .campaign import CampaignCombatBelief, MODEL as CAMPAIGN_MODEL
 from .combat import CombatBelief as UnifiedCombatBelief, MODEL as COMBAT_MODEL
-from .public_keys import public_key
+from .public_keys import action_keys, public_key
 
 RECEIPT_MODELS = (OBSERVED_MODEL, CAMPAIGN_MODEL, COMBAT_MODEL)
 BELIEF_MODELS = (BELIEF_MODEL, DIRECT_MODEL, *RECEIPT_MODELS)
@@ -286,7 +286,7 @@ guaranteed only when that ceiling does not interrupt the requested simulations.
             raise ValueError('Invalid search network output')
         # This objective is bounded. Clipping is part of the search version,
         # never applied to recorded realized returns or the checkpoint itself.
-        keys = [action_key(decision, a) for a in actions]
+        keys = action_keys(decision, actions)
         if len(set(keys)) != len(keys):
             raise ValueError('Ambiguous public action mapping')
         return Node(keys, [v / sum(p) for v in p], min(1.1, max(0., value)), self.config.q_scale), actions

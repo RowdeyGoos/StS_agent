@@ -467,7 +467,13 @@ class FullProjection:
             return project_event(self)
         raise UnsupportedProfile('room_kind:' + str(kind))
 
-    def decision(self, *, transform=None):
+    def decision(self, *, transform=None, adopt=False):
+        """Project the next public decision.
+
+        `adopt` keeps the records built here as the prepared value instead of
+        a private copy. It is for hypothetical search worlds, which build
+        several observations per simulation and write to none of them.
+        """
         legal = self.engine.legal_actions()
         self.legal = legal  # Engine commands bind only from this exact tuple.
         if any(type(action) not in COMMANDS for action in legal):
@@ -505,7 +511,7 @@ class FullProjection:
         result = f.PublicDecision(f.SCHEMA, f.PROFILE, public_run, context, candidates)
         if transform is not None:
             result = transform(result)
-        self.prepared = f.PreparedPublic(result)
+        self.prepared = f.PreparedPublic.adopt(result) if adopt else f.PreparedPublic(result)
         return self.prepared.value
 
     def present(self, legal):

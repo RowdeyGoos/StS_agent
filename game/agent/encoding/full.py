@@ -93,4 +93,4 @@ class FullRunEncoder(PublicEncoder):
             graph = self.pack(decision)
             return DecisionMapping(graph.candidate_refs, graph.reference_refs,
                                    tuple(bool(v) for v in graph.observation['action_mask']))
-        return pack_records(self, decision, mapping_only=True)
+        return pack_records(self, decision, mapping_only=True, descriptions=True)

@@ -378,3 +378,125 @@ def test_adapter_owner_is_bound_to_current_frame_and_keeps_stale_guard():
     assert adapter.prepared_for(following.decision).value is following.decision
     adapter.reset(run)
     assert adapter.prepared_for(following.decision) is None
+
+
+def _inexact_and_exact_decisions():
+    base = rich_decision()
+    plain = decision()
+
+    class NodeChild(f.Node):
+        pass
+
+    class FieldChild(f.Field):
+        pass
+
+    class LinkChild(f.Link):
+        pass
+
+    class CandidateChild(f.Candidate):
+        pass
+
+    class DecisionChild(f.PublicDecision):
+        pass
+
+    class Text(str):
+        pass
+
+    def run(**values):
+        return replace(plain, run=replace(plain.run, **values))
+
+    deep = f.Node('leaf', 'leaf')
+    for _ in range(26):
+        deep = f.Node('branch', 'branch', children=(deep,))
+    unset = object.__new__(f.Node)
+    return [
+        base, plain,
+        replace(plain, candidates=list(plain.candidates)),
+        run(fields=list(plain.run.fields)), run(links=[]), run(children=[]),
+        run(links=(f.Link('target', ['enemy:0']),)),
+        run(fields=(FieldChild('hp', 50),)), run(links=(LinkChild('target', ('enemy:0',)),)),
+        run(children=(NodeChild('relic', 'anchor'),)),
+        replace(plain, run=NodeChild('run', 'run')), replace(plain, context=None),
+        replace(plain, candidates=(CandidateChild('action:0', 'end_turn'),)),
+        DecisionChild(plain.schema, plain.profile, plain.run, plain.context, plain.candidates),
+        run(kind=5), run(kind=Text('run')), run(definition_id=None), run(ref=7),
+        run(fields=(f.Field(5, 50),)), run(fields=(f.Field('hp', 1.5),)), run(fields=(f.Field('hp', Text('x')),)),
+        run(fields=(f.Link('hp', ()),)),
+        run(links=(f.Link(5, ('enemy:0',)),)), run(links=(f.Link('target', (5,)),)),
+        run(links=(f.Link('target', 'enemy:0'),)),
+        replace(plain, candidates=(f.Candidate(0, 'end_turn'),)),
+        replace(plain, candidates=(f.Candidate('action:0', None),)),
+        replace(plain, candidates=(f.Candidate('action:0', 'play_card', 3),)),
+        replace(plain, candidates=(f.Candidate('action:0', 'play_card', None, 3),)),
+        replace(plain, schema=Text(f.SCHEMA)), replace(plain, schema='other'), replace(plain, profile='full_run_v99'),
+        replace(plain, context=deep), run(children=(unset,)), unset, None,
+    ]
+
+
+def test_exactness_check_agrees_with_the_copying_reader_on_every_shape():
+    verdicts = []
+    for value in _inexact_and_exact_decisions():
+        copy = f._clone_decision(value)
+        assert f._exact_decision(value) is (copy is not None)
+        if copy is not None:
+            assert copy == value and copy is not value
+        verdicts.append(copy is not None)
+    assert verdicts[:2] == [True, True] and not any(verdicts[2:])
+
+
+def test_adoption_keeps_exact_records_and_is_checked_like_a_copy(monkeypatch):
+    source = rich_decision()
+    def forbidden(*args):
+        pytest.fail('Adopting exact records copied or serialized them')
+    with monkeypatch.context() as patch:
+        for name in ('_clone_decision', '_wire', 'from_dict'):
+            patch.setattr(f, name, forbidden)
+        owner = f.PreparedPublic.adopt(source)
+    assert type(owner) is f.PreparedPublic and owner.value is source
+    assert owner.value == f.PreparedPublic(source).value
+    assert owner.wire_for(source) == f.to_dict(source)
+    for other in (replace(source), decision(hp=40)):
+        with pytest.raises(c.ContractError, match='belong'):
+            owner.wire_for(other)
+    with pytest.raises((FrozenInstanceError, AttributeError, TypeError)):
+        owner.value = decision()
+    # The constructor's guarantee is unchanged: it never keeps its input.
+    assert f.PreparedPublic(source).value is not source
+
+
+def test_adoption_defers_inexact_input_to_the_constructor():
+    @dataclass
+    class InputField:
+        value: int
+        key: str
+    source = replace(decision(), run=f.Node('run', 'run', fields=(InputField(50, 'hp'),)))
+    owner = f.PreparedPublic.adopt(source)
+    assert owner.value is not source and owner.value == f.PreparedPublic(source).value
+    assert type(owner.value.run.fields[0]) is f.Field
+    outcome = c.RunOutcome('sts_run_outcome_v1', 'defeat', 'none')
+    assert f.PreparedPublic.adopt(outcome).value == outcome
+
+
+@pytest.mark.parametrize('bad', [
+    replace(decision(), candidates=list(decision().candidates)),
+    replace(decision(), run=f.Node('run', 'run', fields=[f.Field('hp', 50)])),
+    replace(decision(), run=f.Node('run', 'run', links=(f.Link('target', ['enemy:0']),))),
+    replace(decision(), profile='full_run_v99'),
+    replace(decision(), candidates=()),
+    replace(decision(), candidates=decision().candidates * 2),
+    replace(decision(), run=f.Node('run', 'run', fields=(f.Field('hp', 1.5),))),
+    replace(decision(), run=f.Node('run', 'run', fields=(f.Field('hp', float('nan')),))),
+    replace(decision(), run=f.Node('run', 'run', fields=(f.Link('hp', ()),))),
+    replace(decision(), run=f.Node('run', 'run', links=(f.Link('target', ('enemy:99',)),))),
+    replace(decision(), run=f.Node('run', 'run', fields=(f.Field('leak', 'card:99'),))),
+    replace(decision(), run=f.Node('run', 'run', fields=(f.Field('hp', 1), f.Field('hp', 2)))),
+    replace(decision(), context=f.Node('combat', 'combat', children=(
+        f.Node('enemy', 'jaw_worm', 'enemy:0'), f.Node('enemy', 'jaw_worm', 'enemy:0')))),
+    replace(decision(), candidates=(f.Candidate('action:0', 'play_card', 'card:5'),)),
+])
+def test_adoption_rejects_what_the_constructor_rejects(bad):
+    with pytest.raises(c.ContractError) as expected:
+        f.PreparedPublic(bad)
+    with pytest.raises(c.ContractError) as actual:
+        f.PreparedPublic.adopt(bad)
+    assert str(actual.value) == str(expected.value)

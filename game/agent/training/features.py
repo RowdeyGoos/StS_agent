@@ -96,6 +96,9 @@ class Vocabulary:
         return self._identity
 
 
+_VALUE_KINDS = {type(None): 0, bool: 1, int: 2, str: 3}
+
+
 def _number(value):
     # The packed public graph keeps the exact integer; these two continuous
     # model features are explicitly lossy, without clipping large values.
@@ -198,6 +201,13 @@ class FeatureEncoder:
         self.catalog_fields = ({(e.kind, e.definition_id): e.fields for e in vocabulary.catalog.entries}
                                if vocabulary.catalog is not None else {})
         self.public = FullRunEncoder()
+        # Rows of shared descriptions under these names and catalog fields;
+        # each entry keeps and confirms its node.
+        self._description_rows, self._description_source = {}, (self.names, self.catalog_fields)
+
+    def __getstate__(self):
+        # Kept rows name objects of this process only.
+        return {**vars(self), '_description_rows': {}}
 
     def encode(self, decision):
         if type(decision) is not f.PublicDecision:
@@ -268,16 +278,38 @@ class FeatureEncoder:
             return index
 
         roots = (visit(decision.run, -1, 0), visit(decision.context, -1, 1))
-        token = lambda name: self.names.get(name, 0)
+        names = self.names.get
+        token = lambda name: names(name, 0)
+        # A shared description's rows depend only on the node, these names and
+        # these catalog fields. A subclass or a hook that changes entity
+        # validation keeps the row-by-row path; replaced names start afresh.
+        if self._description_source[0] is not self.names or self._description_source[1] is not self.catalog_fields:
+            self._description_rows, self._description_source = {}, (self.names, self.catalog_fields)
+        reusable = (self._description_rows if type(self) is FeatureEncoder and 'validate_entity' not in vars(self)
+                    and FeatureEncoder.validate_entity is _ENTITY_CHECK else None)
+        tokens, owners = [], []
         for index, node in enumerate(nodes):
-            self.validate_entity(node)
-            # Learned enrichment only. The canonical graph/observation and all
-            # physical references remain unchanged, including for recordings.
-            metadata = self.catalog_fields.get((node.kind, node.definition_id), ())
-            for field in node.fields + metadata:
-                kind = {type(None): 0, bool: 1, int: 2, str: 3}[type(field.value)]
-                fields.append((index, token(field.key), kind, token(field.value) if kind == 3 else 0))
-                numbers.append(_number(field.value if kind in (1, 2) else 0))
+            entry = reusable.get(id(node)) if reusable is not None and node.ref is None else None
+            if entry is not None and entry[0] is node:
+                _, pair, rows, values = entry
+            else:
+                self.validate_entity(node)
+                # Learned enrichment only. The canonical graph/observation and all
+                # physical references remain unchanged, including for recordings.
+                metadata = self.catalog_fields.get((node.kind, node.definition_id), ())
+                rows, values = [], []
+                for field in node.fields + metadata:
+                    value = field.value
+                    kind = _VALUE_KINDS[type(value)]
+                    rows.extend((names(field.key, 0), kind, names(value, 0) if kind == 3 else 0))
+                    values.extend(_number(value if kind in (1, 2) else 0))
+                pair = (names(node.kind, 0), names(node.definition_id, 0))
+                if reusable is not None and node.ref is None and f.shared_height(node) is not None:
+                    f.remember(reusable, node, pair, tuple(rows), tuple(values))
+            tokens.append(pair)
+            owners.extend([index] * (len(rows) // 3))
+            fields.extend(rows)
+            numbers.extend(values)
             for link in node.links:
                 # An empty link is observable and differs from an absent link.
                 for order, target in enumerate(link.targets or (None,)):
@@ -296,14 +328,20 @@ class FeatureEncoder:
             result = np.array(rows, dtype=dtype).reshape(-1, width)
             result.flags.writeable = False
             return result
+        # Field rows are (node, key, value kind, value); the last three were
+        # collected flat, and so were the two numbers of each row.
+        field_rows = np.empty((len(owners), 4), dtype=np.int64)
+        field_rows[:, 0] = owners
+        field_rows[:, 1:] = np.array(fields, dtype=np.int64).reshape(-1, 3)
+        field_rows.flags.writeable = False
         from .combat_features import channels
         combat, roles = channels(nodes, parents) if self.representation in COMBAT_REPRESENTATIONS else (None, None)
         from .action_features import channels as action_channels, mode
         preview_mode = mode(self.representation)
         previews = action_channels(decision, graph.candidate_refs, self.representation) if preview_mode else None
         common = (self.vocabulary.identity,
-            array([(token(n.kind), token(n.definition_id)) for n in nodes], 2),
-            array(parents, 1), array(positions, 2, np.float32), array(fields, 4),
+            array(tokens, 2),
+            array(parents, 1), array(positions, 2, np.float32), field_rows,
             array(numbers, 2, np.float32), array(links, 4), array(link_positions, 3, np.float32),
             array(candidates, 3), roots, self.action_policy,
             tuple(permissions[ref] for ref in graph.candidate_refs))
@@ -311,6 +349,9 @@ class FeatureEncoder:
         if compact:
             return RolloutFeatures(*common, graph.candidate_refs, graph.legal_mask, *extra)
         return GraphFeatures(common[0], graph, *common[1:], *extra)
+
+
+_ENTITY_CHECK = FeatureEncoder.validate_entity
 
 
 class _RolloutEncoder(FullRunEncoder):

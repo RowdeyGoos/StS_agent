@@ -36,6 +36,14 @@ CHANNELS = (*DIRECT, *('spec.' + k for k in SPEC),
             *('power.' + k for k in POWERS), *DERIVED)
 ROLES = ('player', 'enemy', 'hand_card', 'potion', 'selection')
 WIDTH = len(CHANNELS) * 3
+_DIRECT, _SPEC = frozenset(DIRECT), frozenset(SPEC)
+_COLUMNS = {name: i for i, name in enumerate(CHANNELS)}
+# Kinds whose channels depend on where the node stands in the graph.
+_PLACED = frozenset(('combat', 'enemy', 'card', 'potion', 'selection'))
+# For shared descriptions (a card's spec and mechanics): the channel values a
+# node contributes as itself, and those a spec contributes to its card. Both
+# depend only on the node. Each entry keeps and confirms its node.
+_DESCRIPTION_VALUES, _SPEC_VALUES = {}, {}
 
 
 def feature_identity(vocabulary, representation, input_view='public_observation_v1'):
@@ -68,17 +76,33 @@ def _pressure(node):
             'attack_intents': len(attacks), 'unknown_attacks': len(attacks) - len(known)}
 
 
+def _triple(value):
+    return 1., float(value) / 100., math.copysign(math.log1p(abs(value)), value)
+
+
+def _written(data):
+    """The (first column, three values) writes of one node's channel data."""
+    return tuple((3 * _COLUMNS[name], _triple(value)) for name, value in data.items()
+                 if name in _COLUMNS and type(value) in (int, bool, float))
+
+
 def channels(nodes, parents):
     """Preserve node order and derive roles from structure, never opaque IDs."""
+    from game.agent.contracts.full import remember, shared_height
     values = np.zeros((len(nodes), WIDTH), dtype=np.float32)
     roles = np.full(len(nodes), -1, dtype=np.int64)
     roots = []
-    columns = {name: i for i, name in enumerate(CHANNELS)}
     for index, node in enumerate(nodes):
         root = index if parents[index] < 0 else roots[parents[index]]
         roots.append(root)
+        if node.ref is None and index != root:
+            entry = _DESCRIPTION_VALUES.get(id(node))
+            if entry is not None and entry[0] is node:
+                for start, triple in entry[1]:
+                    values[index, start:start + 3] = triple
+                continue
         current_combat = root != 0 and nodes[root].kind == 'combat'
-        data = {field.key: field.value for field in node.fields if field.key in DIRECT}
+        data = {field.key: field.value for field in node.fields if field.key in _DIRECT}
         parent = nodes[parents[index]] if parents[index] >= 0 else None
         if current_combat and index == root:
             roles[index] = 0
@@ -101,7 +125,12 @@ def channels(nodes, parents):
                 roles[index] = 2
             for spec in node.children:
                 if spec.kind == 'spec':
-                    data.update({'spec.' + field.key: field.value for field in spec.fields if field.key in SPEC})
+                    entry = _SPEC_VALUES.get(id(spec))
+                    if entry is None or entry[0] is not spec:
+                        entry = (spec, {'spec.' + field.key: field.value for field in spec.fields if field.key in _SPEC})
+                        if shared_height(spec) is not None:
+                            remember(_SPEC_VALUES, spec, entry[1])
+                    data.update(entry[1])
         elif node.kind == 'potion':
             # Owned slots and an active combat choice source, never shop offers.
             if parent is not None and ((root == 0 and parent.kind == 'potion_slot') or
@@ -121,10 +150,13 @@ def channels(nodes, parents):
         hp, maximum = node.get('hp'), node.get('max_hp')
         if type(hp) is int and type(maximum) is int and maximum > 0:
             data['hp_fraction'] = hp / maximum
-        for name, value in data.items():
-            column = columns.get(name)
-            if column is not None and type(value) in (int, bool, float):
-                values[index, 3 * column:3 * column + 3] = (
-                    1., float(value) / 100., math.copysign(math.log1p(abs(value)), value))
+        written = _written(data)
+        for start, triple in written:
+            values[index, start:start + 3] = triple
+        if (node.ref is None and index != root and node.kind not in _PLACED
+                and shared_height(node) is not None):
+            # Off the root and outside the placed kinds, nothing above depends
+            # on anything but the node itself.
+            remember(_DESCRIPTION_VALUES, node, written)
     values.flags.writeable = roles.flags.writeable = False
     return values, roles

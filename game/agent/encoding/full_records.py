@@ -11,6 +11,47 @@ from .schema import (ARRAY, BOOLEAN, CapacityError, INTEGER, INTEGER_MAX, NULL,
                      OBJECT, REFERENCE, TEXT)
 
 
+# What packing a shared description adds to the tables: its row count, its
+# distinct texts, its longest text in bytes and its largest integer. None marks
+# one that holds a reference-shaped text and must be packed row by row. Each
+# entry keeps and confirms its node and the reference pattern it was read with.
+_DESCRIPTION_ROWS = {}
+
+
+def _description_rows(value, pattern):
+    from game.agent.contracts.full import remember, shared_height
+    entry = _DESCRIPTION_ROWS.get(id(value))
+    if entry is not None and entry[0] is value and entry[1] is pattern:
+        return entry[2]
+    if shared_height(value) is None:
+        return None
+    matches_reference = pattern.fullmatch
+    rows, texts, largest = 0, {}, 0
+
+    def visit(node):
+        nonlocal rows, largest
+        # pack_records reserves seven rows for a node without links (itself,
+        # kind, definition, reference and its three arrays) and three per field.
+        rows += 7 + 3 * len(node.fields)
+        texts[node.kind] = texts[node.definition_id] = None
+        for entry in node.fields:
+            texts[entry.key] = None
+            item = entry.value
+            if type(item) is str:
+                texts[item] = None
+            elif item is not None and type(item) is not bool:
+                largest = max(largest, abs(item))
+        for child in node.children:
+            visit(child)
+
+    visit(value)
+    summary = None
+    if not any(matches_reference(text) for text in texts):
+        summary = (rows, tuple(texts), max(len(text.encode('utf-8')) for text in texts), largest)
+    remember(_DESCRIPTION_ROWS, value, pattern, summary)
+    return summary
+
+
 @dataclass(frozen=True, slots=True)
 class DecisionMapping:
     """Public correspondence for learned inputs, without lossless tables."""
@@ -19,7 +60,14 @@ class DecisionMapping:
     legal_mask: tuple[bool, ...]
 
 
-def pack_records(encoder, decision, *, mapping_only=False):
+def pack_records(encoder, decision, *, mapping_only=False, descriptions=False):
+    """Traverse the canonical records into the lossless tables, or only map them.
+
+    `descriptions` lets a mapping-only call of the exact built-in encoder add a
+    shared description's rows and texts in one step. It is used only where no
+    capacity can be exceeded inside that description, so every count, text and
+    error is the one the row-by-row traversal produces.
+    """
     p = encoder.profile
     node_capacity, reference_capacity = p.nodes, p.references
     string_capacity, string_bytes = p.strings, p.string_bytes
@@ -95,7 +143,21 @@ def pack_records(encoder, decision, *, mapping_only=False):
             if abs(value) > INTEGER_MAX:
                 raise CapacityError('integer_magnitude', abs(value), INTEGER_MAX)
 
+    whole = mapping_only and descriptions
+
     def node(value, parent, field, position):
+        nonlocal count
+        if whole and value.ref is None:
+            summary = _description_rows(value, encoder.reference_pattern)
+            if summary is not None:
+                rows, texts, longest, largest = summary
+                fresh = [name for name in texts if name not in strings]
+                if (count + rows <= node_capacity and len(strings) + len(fresh) <= string_capacity
+                        and longest <= string_bytes and largest <= INTEGER_MAX):
+                    count += rows
+                    for name in fresh:
+                        strings[name] = len(strings) + 1
+                    return
         index = row(parent, field, position, OBJECT)
         if value.ref is not None:
             reference(value.ref)

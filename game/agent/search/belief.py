@@ -17,7 +17,7 @@ from game.agent.contracts.planning import CombatEnd, validate_start, validate_en
 from game.headless.cards.catalog import DEFAULT_CARDS
 from game.headless.run.construction import declared_combat, declared_combat_region
 from game.headless.planning import UnsupportedSearch
-from .public_keys import action_key, public_key, end_key
+from .public_keys import action_key, action_keys, public_key, end_key
 from .world import SimulationWorkLimit, SimulationWorld
 
 MODEL = 'public_belief_v1'
@@ -57,7 +57,7 @@ def _boundary(decision):
     if not isinstance(decision, f.PublicDecision) or decision.context.kind != 'combat':
         raise UnsupportedSearch('belief_boundary_unsupported')
     f.require_ready(decision)
-    keys = [action_key(decision, a) for a in decision.candidates]
+    keys = action_keys(decision)
     if len(set(keys)) != len(keys):
         raise UnsupportedSearch('belief_ambiguous_actions')
 

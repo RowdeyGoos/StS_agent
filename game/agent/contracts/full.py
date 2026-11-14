@@ -178,6 +178,109 @@ def _clone_decision(value):
         return None
 
 
+# Descriptions that a producer builds once and places in many observations:
+# a card's printed spec and its mechanics. A registered description is an exact
+# record tree without references or links that has passed every per-node check
+# of validate(). Readers may therefore keep what they derived from it and look
+# it up by object; each such reader confirms the object itself, never only its
+# id. Registration is an optimisation: an unregistered node is read in full.
+# The registry and every reader's store are emptied when they reach the limit,
+# which changes no value: a producer registers a description again whenever it
+# uses it. An entry with height None records a node that cannot be shared.
+_DESCRIPTIONS = {}
+DESCRIPTION_LIMIT = 4096
+
+
+def _description_height(node):
+    """Height of a subtree that validate() accepts at any depth it fits, else None."""
+    if node.ref is not None or node.links or not node.kind or not node.definition_id:
+        return None
+    keys = [field.key for field in node.fields]
+    if any(not key for key in keys) or len(keys) != len(set(keys)):
+        return None
+    if any(type(field.value) is str and _REF.fullmatch(field.value) for field in node.fields):
+        return None
+    height = 0
+    for child in node.children:
+        below = _description_height(child)
+        if below is None:
+            return None
+        height = max(height, below + 1)
+    return height
+
+
+def share_description(node):
+    """Register an immutable description that recurs across observations; returns `node`.
+
+    A producer calls this each time it places the description, so that a
+    description still in use is registered again after the registry was emptied.
+    """
+    entry = _DESCRIPTIONS.get(id(node))
+    if entry is None or entry[0] is not node:
+        if len(_DESCRIPTIONS) >= DESCRIPTION_LIMIT:
+            _DESCRIPTIONS.clear()
+        _DESCRIPTIONS[id(node)] = (node, _description_height(node)
+                                   if type(node) is Node and _exact_node(node, 0) else None)
+    return node
+
+
+def shared_height(node):
+    """Height of `node` if this very object is a registered description, else None."""
+    entry = _DESCRIPTIONS.get(id(node))
+    return entry[1] if entry is not None and entry[0] is node else None
+
+
+def remember(store, node, *values):
+    """Keep what a reader derived from a shared description, within the registry's bound."""
+    if len(store) >= DESCRIPTION_LIMIT:
+        store.clear()
+    store[id(node)] = (node, *values)
+
+
+def _exact_node(value, depth):
+    """True exactly when _clone_node(value, depth) returns an equal copy."""
+    if depth > 24:
+        return False
+    shared = _DESCRIPTIONS.get(id(value))
+    if shared is not None and shared[0] is value and shared[1] is not None:
+        # Checked record by record when it was registered; only its depth varies.
+        return depth + shared[1] <= 24
+    fields, links, children = value.fields, value.links, value.children
+    if (type(value.kind) is not str or type(value.definition_id) is not str
+            or (value.ref is not None and type(value.ref) is not str)
+            or type(fields) is not tuple or type(links) is not tuple or type(children) is not tuple):
+        return False
+    for field in fields:
+        if type(field) is not Field or type(field.key) is not str or type(field.value) not in _SCALAR:
+            return False
+    for link in links:
+        targets = link.targets if type(link) is Link else None
+        if type(targets) is not tuple or type(link.key) is not str or any(type(t) is not str for t in targets):
+            return False
+    for child in children:
+        if type(child) is not Node or not _exact_node(child, depth + 1):
+            return False
+    return True
+
+
+def _exact_decision(value):
+    """True exactly when _clone_decision(value) returns an equal copy, not None."""
+    try:
+        if (type(value) is not PublicDecision or type(value.schema) is not str or value.schema != SCHEMA
+                or type(value.profile) is not str or value.profile != PROFILE
+                or type(value.run) is not Node or type(value.context) is not Node
+                or type(value.candidates) is not tuple):
+            return False
+        for c in value.candidates:
+            if (type(c) is not Candidate or type(c.ref) is not str or type(c.kind) is not str
+                    or (c.subject is not None and type(c.subject) is not str)
+                    or (c.target is not None and type(c.target) is not str)):
+                return False
+        return _exact_node(value.run, 0) and _exact_node(value.context, 0)
+    except AttributeError:
+        return False
+
+
 def walk(node):
     yield node
     for child in node.children:
@@ -187,6 +290,11 @@ def walk(node):
 def validate(decision):
     definitions, links = {}, []
     def visit(node, depth=0):
+        shared = _DESCRIPTIONS.get(id(node))
+        if shared is not None and shared[0] is node and shared[1] is not None and depth + shared[1] <= 24:
+            # A registered description has no reference or link and passed the
+            # checks below when it was registered; a too-deep one is read in full.
+            return
         if depth > 24 or not node.kind or not node.definition_id:
             raise ContractError('Invalid public graph node')
         if node.ref is not None:
@@ -271,6 +379,23 @@ class PreparedPublic:
         else:
             canonical = from_dict(to_dict(value))
         object.__setattr__(self, '_value', canonical)
+
+    @classmethod
+    def adopt(cls, value):
+        """Own a decision its producer has just built, without copying it.
+
+        Only for a producer that hands the value over and never writes to it
+        again. A graph of exact records is already canonical and immutable, so
+        it is checked as the constructor checks its copy and then kept as it
+        is: `owner.value is value`. Any other input takes the constructor,
+        with the same result and the same errors.
+        """
+        if not _exact_decision(value):
+            return cls(value)
+        validate(value)
+        owner = object.__new__(cls)
+        object.__setattr__(owner, '_value', value)
+        return owner
 
     @property
     def value(self):

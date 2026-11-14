@@ -3,7 +3,7 @@ from dataclasses import fields, is_dataclass
 from functools import lru_cache
 import json
 
-from game.agent.contracts.full import Field, Node
+from game.agent.contracts.full import DESCRIPTION_LIMIT, Field, Node, share_description
 from .errors import UnsupportedProfile
 
 # Displayed temporary modifiers. Cost provenance/baselines and allocator fields
@@ -41,7 +41,22 @@ def _immutable_static(kind, name, parameters):
     return Node(kind, name, fields=tuple(entries), children=tuple(children))
 
 
+# Descriptions of frozen definition values by object. Card specs and effects
+# are the same objects from one observation to the next; each entry keeps and
+# confirms its value, and the store is emptied at its limit.
+_STATIC_VALUES = {}
+
+
 def cached_static(value, kind, name):
+    """One shared description per distinct frozen definition value.
+
+    Readers of an observation may reuse what they derived from such a
+    description the last time they met it, so it is registered on every use.
+    """
+    key = (id(value), kind, name)
+    entry = _STATIC_VALUES.get(key)
+    if entry is not None and entry[0] is value:
+        return share_description(entry[1])
     params = getattr(type(value), '__dataclass_params__', None)
     if params is not None and params.frozen:
         parameters = []
@@ -55,7 +70,13 @@ def cached_static(value, kind, name):
                 parameters.append((field.name, tuple, tuple((type(v), v) for v in item)))
             else:
                 return public_static(value, kind, name)
-        return _immutable_static(kind, name, tuple(parameters))
+        # Every field above is an immutable scalar or tuple of scalars, so this
+        # frozen value describes the same thing for as long as it lives.
+        result = share_description(_immutable_static(kind, name, tuple(parameters)))
+        if len(_STATIC_VALUES) >= DESCRIPTION_LIMIT:
+            _STATIC_VALUES.clear()
+        _STATIC_VALUES[key] = (value, result)
+        return result
     return public_static(value, kind, name)
 
 
@@ -106,6 +127,37 @@ def _signature(value):
     return json.dumps(_wire(value), sort_keys=True, separators=(',', ':'))
 
 
+# Sort keys of card descriptions, reused across observations: the same
+# descriptions recur from one step to the next. Bounded by wholesale clearing,
+# which changes no value.
+_SIGNATURES = {}
+_SIGNATURE_LIMIT = 4096
+
+
+def _reused_signature(value):
+    """_signature(value) for a description built by card_node, without repeating its JSON.
+
+    Such a description has exact strings, scalar field values and no links;
+    for anything else a reused answer may differ from the codec's result or
+    error, and the observation's own validation still decides.
+
+    The key states every scalar with its exact type, because True == 1 in
+    Python while their JSON differs. Children are identified by object: each
+    entry retains its description, so a child's identity cannot be reused while
+    the entry lives, and an equal key means the very same immutable children.
+    A child that is rebuilt for every observation only misses.
+    """
+    key = (value.kind, value.definition_id, value.ref, value.links,
+           tuple((field.key, field.value.__class__, field.value) for field in value.fields),
+           tuple(map(id, value.children)))
+    entry = _SIGNATURES.get(key)
+    if entry is None:
+        if len(_SIGNATURES) >= _SIGNATURE_LIMIT:
+            _SIGNATURES.clear()
+        entry = _SIGNATURES[key] = (value, _signature(value))
+    return entry[1]
+
+
 class CardViews:
     """Reuse descriptions only during one synchronous, read-only projection.
 
@@ -135,5 +187,5 @@ class CardViews:
     def signature(self, card):
         key = id(card)
         if key not in self._signatures:
-            self._signatures[key] = _signature(self.card(card))
+            self._signatures[key] = _reused_signature(self.card(card))
         return self._signatures[key]
