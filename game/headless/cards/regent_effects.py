@@ -172,7 +172,7 @@ def execute(p, op, args):
         from game.headless.powers.regent import gain_stars
         card, target = find(p, args[0]), p.combat_enemies[args[1]]
         if target.is_alive:
-            target.take_damage(card.spec.base_damage + card.combat_state.extra_damage + args[2], attacker_statuses=p.statuses, attacker_strength=p.strength)
+            target.take_damage(card.spec.base_damage + card.combat_state.extra_damage, attacker_statuses=p.statuses, attacker_strength=p.strength, vigor=args[2])
             if not target.is_alive:
                 gain_stars(p, args[3])
     else:

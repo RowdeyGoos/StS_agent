@@ -48,11 +48,12 @@ def transform(p, card):
 
 
 def hit(p, card, target, *, extra=0):
+    """Hit once with the card's damage; `extra` is Vigor, added after its enchantment multiplier."""
     from game.headless.powers.status import modify_attack_damage_for_statuses
     from game.headless.powers.damage import resolve_unblocked_damage
 
-    amount = card.spec.base_damage + card.combat_state.extra_damage + extra
-    incoming = target.damage_amount(amount, attacker_statuses=p.statuses, attacker_strength=p.strength)
+    amount = card.spec.base_damage + card.combat_state.extra_damage
+    incoming = target.damage_amount(amount, attacker_statuses=p.statuses, attacker_strength=p.strength, vigor=extra)
     blocked = min(target.block, incoming)
     # Damage-result totals include block and overkill, after flat HP caps.
     from copy import deepcopy
@@ -62,7 +63,7 @@ def hit(p, card, target, *, extra=0):
     tracks = 'enemy_attack' not in frame and any(e.TRACKS_CARD_ATTACKS for e in p.combat_enemies or ())
     if tracks:
         frame['enemy_attack'] = {}
-    target.take_damage(amount, attacker_statuses=p.statuses, attacker_strength=p.strength)
+    target.take_damage(amount, attacker_statuses=p.statuses, attacker_strength=p.strength, vigor=extra)
     if tracks:
         from game.headless.core.enemy_lifecycle import finish_card_attack
         finish_card_attack(p, frame)

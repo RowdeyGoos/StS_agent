@@ -384,10 +384,10 @@ def execute(p, task):
                 continue
             from game.headless.cards.operations import Attack
 
-            amount = Attack(expression=expression, factor=factor).damage(card, p, target) + vigor
+            amount = Attack(expression=expression, factor=factor).damage(card, p, target)
             fatal = target.allows_fatal
             hp_before = target.hp
-            damage = target.take_damage(amount, attacker_statuses=p.statuses, attacker_strength=p.strength)
+            damage = target.take_damage(amount, attacker_statuses=p.statuses, attacker_strength=p.strength, vigor=vigor)
             if "echo_kills" in r.plays[identity] and damage >= hp_before:
                 r.plays[identity]["echo_kills"] += 1
             if max_hp and fatal and not target.is_alive and p.is_alive:

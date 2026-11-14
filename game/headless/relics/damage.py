@@ -142,7 +142,6 @@ def enchantment_multiplier(card):
     before any additive hook (Strength, Vigor, relic and power bonuses) and before
     the other multipliers; the caller applies it to that term only. Corrupted and
     Instinct define no additive enchantment bonus, so nothing else is multiplied.
-    Known gap: attack call sites fold Vigor into the card damage, so it is multiplied.
     """
     enchantment = card.enchantment if card is not None else None
     if enchantment is None:

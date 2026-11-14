@@ -167,7 +167,7 @@ class Enemy(ABC):
             raise ValueError("Strength gain cannot be negative.")
         self.strength += amount
 
-    def damage_amount(self, amount, *, is_attack=True, attacker_statuses=None, attacker_strength=0, powered=True, pet=False):
+    def damage_amount(self, amount, *, is_attack=True, attacker_statuses=None, attacker_strength=0, powered=True, pet=False, vigor=0):
         if pet:
             from game.headless.powers.necrobinder_damage import pet_damage
             return pet_damage(self.combat_player, self, amount)
@@ -176,12 +176,14 @@ class Enemy(ABC):
         if is_attack and powered and player is not None and attacker_statuses is player.statuses:
             from game.headless.relics.damage import attack_bonus, enchantment_multiplier
             from game.headless.powers.silent import damage_bonus
-            # The enchantment multiplies the card's damage before the additive bonuses
-            # and Strength. Scale those by the denominator to keep one exact final floor.
+            # The enchantment multiplies the card's damage before the additive bonuses,
+            # Vigor and Strength. Scale those by the denominator to keep one exact final floor.
             multiplier, scale = enchantment_multiplier(player.current_card)
-            bonus = attack_bonus(player, player.current_card) + damage_bonus(player, player.current_card)
+            bonus = attack_bonus(player, player.current_card) + damage_bonus(player, player.current_card) + vigor
             amount = amount * multiplier + bonus * scale
             attacker_strength *= scale
+        else:
+            amount += vigor
         if not (is_attack and powered):
             return amount
         numerator, denominator = self._attack_multiplier(attacker_statuses)
@@ -201,10 +203,11 @@ class Enemy(ABC):
         attacker_strength: int = 0,
         powered: bool = True,
         pet: bool = False,
+        vigor: int = 0,
     ) -> int:
         """Apply incoming damage and return the HP damage taken."""
         player = self.combat_player
-        incoming_damage = self.damage_amount(amount, is_attack=is_attack, attacker_statuses=attacker_statuses, attacker_strength=attacker_strength, powered=powered, pet=pet)
+        incoming_damage = self.damage_amount(amount, is_attack=is_attack, attacker_statuses=attacker_statuses, attacker_strength=attacker_strength, powered=powered, pet=pet, vigor=vigor)
         from game.headless.powers.damage import resolve_unblocked_damage
         self.before_received_damage(is_attack=is_attack, powered=powered,
                                     attacker_statuses=attacker_statuses, pet=pet)

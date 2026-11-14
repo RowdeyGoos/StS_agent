@@ -140,7 +140,7 @@ def execute(p, op, args):
         card, target = find(p, args[0]), p.combat_enemies[args[1]]
         if target.is_alive:
             fatal = target.allows_fatal
-            target.take_damage(card.spec.base_damage + card.combat_state.extra_damage + args[2], attacker_statuses=p.statuses, attacker_strength=p.strength)
+            target.take_damage(card.spec.base_damage + card.combat_state.extra_damage, attacker_statuses=p.statuses, attacker_strength=p.strength, vigor=args[2])
             if fatal and not target.is_alive:
                 r.extra_card_rewards += 1
     elif op == 'silent_echo':

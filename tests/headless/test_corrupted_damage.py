@@ -36,7 +36,7 @@ def fight(character, cards, enchanted, *, upgraded=(), relics=()):
 def play(run, card):
     enemy = run.combat.enemies[0]
     before = enemy.hp + enemy.block
-    run.apply(PlayCard(instance_id=card.instance_id, target_slot=0))
+    run.apply(PlayCard(instance_id=card.instance_id, target_slot=0 if card.spec.uses_target else None))
     return before - enemy.hp - enemy.block
 
 
@@ -123,4 +123,34 @@ def test_necrobinder_corrupted_osty_attack_with_calcify_and_vulnerable():
     p.rules.powers["calcify"] = 2
     run.combat.enemies[0].statuses.add("vulnerable", 2)
     assert play(run, deck[1]) == 23  # Poke+: (9 * 1.5 + 2) * 1.5 = 23.25
+    assert_integral_and_restorable(run)
+
+
+# Vigor is a native ModifyDamageAdditive hook like Strength, so the enchantment
+# does not multiply it. One case per call site that consumes Vigor: the attack
+# task (single and multi-hit), random hits through hit(), The Hunt and Knockout Blow.
+@pytest.mark.parametrize(
+    "character, cards, enchantment, upgraded, vigor, expected",
+    [
+        ("ironclad", IRONCLAD, "corrupted", (0,), 3, 16),  # Strike+: 13.5 + 3, not (9 + 3) * 1.5 = 18
+        ("ironclad", IRONCLAD, "instinct", (), 3, 15),  # Strike: 6 * 2 + 3, not (6 + 3) * 2 = 18
+        ("ironclad", ("twin_strike",) + IRONCLAD[2:], "corrupted", (), 3, 20),  # 2 x (7.5 + 3), not 2 x 12
+        ("ironclad", ("sword_boomerang",) + IRONCLAD[2:], "corrupted", (), 3, 21),  # 3 x (4.5 + 3), not 3 x 9
+        ("silent", ("the_hunt", "strike_silent", "defend_silent", "defend_silent"), "corrupted", (), 4, 19),  # 15 + 4, not 21
+        ("regent", ("knockout_blow", "strike_regent", "defend_regent", "defend_regent"), "corrupted", (), 4, 49),  # 45 + 4, not 51
+    ],
+)
+def test_vigor_is_added_after_the_enchantment_multiplier(character, cards, enchantment, upgraded, vigor, expected):
+    run, deck = fight(character, cards, {0: enchantment}, upgraded=upgraded)
+    p = run.combat.player
+    p.rules.powers["vigor"] = vigor
+    assert play(run, deck[0]) == expected
+    assert "vigor" not in p.rules.powers
+    assert_integral_and_restorable(run)
+
+
+def test_vigor_without_enchantment_is_unchanged():
+    run, deck = fight("ironclad", ("twin_strike",) + IRONCLAD[2:], {})
+    run.combat.player.rules.powers["vigor"] = 3
+    assert play(run, deck[0]) == 16  # 2 x (5 + 3)
     assert_integral_and_restorable(run)
