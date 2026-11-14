@@ -45,6 +45,22 @@ def _collection_seed(seed, index, domain):
     return int.from_bytes(hashlib.sha256(raw).digest()[:8], 'big') % (2**63)
 
 
+def campaign_identity(noncombat, combat):
+    """Trajectory identity of a campaign whose noncombat choices come from a checkpoint.
+
+    The report names both parts; one bounded digest keeps the metadata field short.
+    """
+    return 'act1_hybrid_v1:' + hashlib.sha256(f'{noncombat}\n{combat}'.encode()).hexdigest()
+
+
+def _noncombat_policy(path, *, expected_sha256=None):
+    """A frozen campaign policy that reads one public decision at a time."""
+    model = load_policy(path, expected_sha256=expected_sha256, task='full_run')
+    if getattr(model, 'needs_public_history', False):
+        raise ValueError('The noncombat policy must choose from single public decisions')
+    return model
+
+
 def _artifact(directory, name):
     if not isinstance(name, str) or Path(name).name != name:
         raise ValueError('Expected a sibling public search artifact')
@@ -142,6 +158,14 @@ class SearchEvaluator:
             if name == 'network' and model.identity != policies[name]:
                 raise ValueError('Search teacher changed after planning')
             self.models[name] = model
+        self.noncombat = None
+        if settings.get('noncombat'):
+            if settings['goal'] != 'act1':
+                raise ValueError('A noncombat policy applies only to Act 1 campaigns')
+            bundle = settings['noncombat']
+            self.noncombat = _noncombat_policy(bundle['path'], expected_sha256=bundle['sha256'])
+            if self.noncombat.identity != bundle['identity']:
+                raise ValueError('Noncombat policy changed after planning')
 
     def run(self, config, episode, policy, output, private, cancel=None):
         output, private = Path(output), Path(private)
@@ -152,8 +176,13 @@ class SearchEvaluator:
                 raise ValueError('Search teacher changed after planning')
         if self.settings['goal'] == 'act1':
             from .run_demonstrations import describe
+            # The heuristic makes the noncombat choices unless a frozen campaign
+            # policy was declared; every arm of one report uses the same one.
+            owner = {} if self.noncombat is None else {'policy': self.noncombat}
+            identity = (self.policies[policy] if self.noncombat is None else
+                        campaign_identity(self.noncombat.identity, self.policies[policy]))
             result = run_episode(config, output_dir=output, audit_dir=private, episode_id=episode,
-                                 combat_policy=chooser, policy_identity=self.policies[policy], cancel=cancel)
+                                 combat_policy=chooser, policy_identity=identity, cancel=cancel, **owner)
             row = describe(result, split=config.split, goal='act1')
             row['potion_use_actions'] = row['actions'].get('use_potion', 0)
             row['combats'] = list(result.combats)
@@ -207,7 +236,7 @@ def run_search(*, checkpoint, output_dir, search=SearchConfig(), corpus_path=Non
                time_limit_seconds=600., workers=1, collect=False, act1=False,
                encounters=('overgrowth_vantom',), benchmark_path=None,
                critic_baseline_simulations=None, include_root=True, cancel=None, diagnostics_path=None,
-               room_kinds=None):
+               room_kinds=None, noncombat_checkpoint=None):
     from .evaluation_workers import settings as worker_settings, evaluate_parallel
     from .combat_corpus import ROOM_KINDS
     if type(cases) is not int or not 1 <= cases <= 10000 or max_decisions < 1:
@@ -230,6 +259,8 @@ def run_search(*, checkpoint, output_dir, search=SearchConfig(), corpus_path=Non
         raise ValueError('Search collection uses only training combats')
     if act1 and corpus_path:
         raise ValueError('Campaign evaluation starts genuine runs, not combat snapshots')
+    if noncombat_checkpoint is not None and not act1:
+        raise ValueError('A noncombat checkpoint applies only to Act 1 campaign evaluation')
     if diagnostics_path is not None and (not corpus_path or collect or act1 or split != 'validation'):
         raise ValueError('Diagnostic comparisons require the validation combat corpus')
     if search.model_version == COMBAT_MODEL:
@@ -255,6 +286,7 @@ def run_search(*, checkpoint, output_dir, search=SearchConfig(), corpus_path=Non
             raise ValueError('Search cases must contain complete balanced benchmark rounds')
     execution = worker_settings(workers)
     teacher = load_policy(checkpoint, reward_spec=OBJECTIVE)
+    noncombat = None if noncombat_checkpoint is None else _noncombat_policy(noncombat_checkpoint)
     planner = SearchPolicy(teacher, search)
     names = ((search.method,) if collect else ('network', 'root') if search.method == 'root'
              else ('network', 'root', 'gumbel') if include_root else ('network', 'gumbel'))
@@ -279,6 +311,9 @@ def run_search(*, checkpoint, output_dir, search=SearchConfig(), corpus_path=Non
                     planning_view=planner.input_view)
     if benchmark:
         settings.update(benchmark=benchmark.to_dict(), benchmark_identity=benchmark.identity)
+    if noncombat is not None:
+        settings['noncombat'] = dict(path=str(Path(noncombat_checkpoint).resolve()),
+                                     sha256=noncombat.identity.rsplit(':', 1)[-1], identity=noncombat.identity)
     source_rows = None
     diagnostics = None
     if corpus_path:
@@ -373,7 +408,11 @@ def run_search(*, checkpoint, output_dir, search=SearchConfig(), corpus_path=Non
     if 'planning_view' in settings:
         report['planning_view'] = settings['planning_view']
     if act1:
-        report['noncombat_policy'] = source['policy']
+        report['noncombat_policy'] = source['policy'] if noncombat is None else noncombat.identity
+        if noncombat is not None:
+            # Recorded trajectories carry one identity for both deciders.
+            report['trajectory_policies'] = {name: campaign_identity(noncombat.identity, identity)
+                                             for name, identity in policies.items()}
     if diagnostics is not None:
         report['diagnostics'] = diagnostics.identity
     if corpus_path and split == 'test':

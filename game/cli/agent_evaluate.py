@@ -21,6 +21,8 @@ def main(argv=None):
     parser.add_argument('--act1', action='store_true', help='Stop at Act 1 completion and compare Act 1 clear rates')
     parser.add_argument('--combat-checkpoint', help='Frozen combat comparison bundle for --full-run')
     parser.add_argument('--reference-checkpoint', help='Frozen campaign initializer to compare with --checkpoint')
+    parser.add_argument('--noncombat-checkpoint',
+        help='Frozen campaign bundle that makes the noncombat choices of every --search --act1 arm; default heuristic')
     parser.add_argument('--campaign-cases', type=int, default=2)
     parser.add_argument('--workers', type=int,
         help=f'1–16 game workers for campaign or combat-corpus evaluation; defaults to min(16, CPUs), currently {performance.game_workers()}; other modes use 1')
@@ -53,6 +55,8 @@ def main(argv=None):
 
 
 def _run(args, parser):
+    if args.noncombat_checkpoint and not (args.search and args.act1):
+        parser.error('--noncombat-checkpoint applies to --search --act1')
     if args.time_limit is None:
         args.time_limit = (3600. if args.act1 else 600.) if args.search else 30.
     if args.max_decisions is None:
@@ -110,7 +114,8 @@ def _run(args, parser):
                     benchmark_path=args.search_benchmark,
                     critic_baseline_simulations=args.search_critic_baseline_simulations,
                     include_root=not args.search_skip_root_baseline, cancel=stopped,
-                    diagnostics_path=args.combat_diagnostics, room_kinds=args.room_kinds)
+                    diagnostics_path=args.combat_diagnostics, room_kinds=args.room_kinds,
+                    noncombat_checkpoint=args.noncombat_checkpoint)
             finally:
                 for sig, handler in previous.items():
                     signal.signal(sig, handler)

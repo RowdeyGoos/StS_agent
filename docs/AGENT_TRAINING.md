@@ -506,7 +506,10 @@ sts-agent-evaluate --checkpoint runs/combat-model/final.sts-model \
 ```
 
 This pairs the same checkpoint with and without combat Search, keeping the
-noncombat heuristic fixed. Per-action thinking limits, campaign time cutoffs
+noncombat heuristic fixed. `--noncombat-checkpoint PATH` lets a frozen campaign
+bundle make the noncombat choices of every arm instead. The report then names
+that bundle as `noncombat_policy`, and `trajectory_policies` gives the identity
+its recorded trajectories carry for both deciders. Per-action thinking limits, campaign time cutoffs
 and defeats remain separate. It is an experimental controller, not an Act 1
 performance promotion. All 42 ordinary Act 1 encounter openings have focused
 construction checks, but this does not establish every inventory/history.

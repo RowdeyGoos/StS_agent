@@ -204,6 +204,69 @@ def test_direct_evaluation_parallel_workers_match_network_view_and_record_anchor
             assert target['search']['model_version'] == 'direct_belief_v1'
 
 
+@pytest.fixture
+def campaign_checkpoint(tmp_path):
+    from game.agent.training.rewards import RewardSpec
+    corpus = replace(tiny_corpus(), reward_spec=RewardSpec.full_run())
+    learner = ImitationLearner(ActorCritic(corpus.vocabulary, Architecture(24, 1), seed=11), corpus)
+    path = tmp_path / 'campaign.sts-model'
+    save_checkpoint(path, learner)
+    return path
+
+
+CAMPAIGN_SEARCH = SearchConfig(simulations=2, time_limit=20, model_version='combat_belief_v1')
+
+
+def test_noncombat_checkpoint_is_an_act1_option_for_campaign_policies(checkpoint, campaign_checkpoint, tmp_path):
+    output = tmp_path / 'blocked'
+    with pytest.raises(ValueError, match='only to Act 1'):
+        run_search(checkpoint=checkpoint, output_dir=output, noncombat_checkpoint=campaign_checkpoint)
+    with pytest.raises(ValueError, match='task mismatch'):
+        run_search(checkpoint=checkpoint, output_dir=output, search=CAMPAIGN_SEARCH, act1=True,
+                   noncombat_checkpoint=checkpoint)
+    assert not output.exists()
+
+
+def test_act1_campaigns_take_noncombat_choices_from_the_declared_checkpoint(checkpoint, campaign_checkpoint,
+                                                                            tmp_path, monkeypatch):
+    from game.agent.recording import load_trajectory
+    from game.agent.training import search_run
+    campaign = load_policy(campaign_checkpoint)
+    calls, real = [], search_run.run_episode
+
+    def recorded(config, **kwargs):
+        calls.append(kwargs)
+        return real(config, **kwargs)
+
+    monkeypatch.setattr(search_run, 'run_episode', recorded)
+    settings = dict(checkpoint=checkpoint, search=CAMPAIGN_SEARCH, act1=True, cases=1, max_decisions=4,
+                    include_root=False)
+    path, report = run_search(output_dir=tmp_path / 'campaign', noncombat_checkpoint=campaign_checkpoint, **settings)
+    assert report['status'] == 'complete', report
+    assert report['noncombat_policy'] == campaign.identity
+    assert [call['policy'].identity for call in calls] == [campaign.identity] * 2
+    assert set(report['trajectory_policies']) == set(report['policies']) == {'network', 'gumbel'}
+    for row in report['episodes']:
+        trajectory = load_trajectory(path.parent / row['trajectory'], split='validation')
+        identity = search_run.campaign_identity(campaign.identity, report['policies'][row['policy']])
+        assert trajectory.metadata.policy == report['trajectory_policies'][row['policy']] == identity
+        before_the_fight = []
+        for step in trajectory.transitions:
+            if step.observation.context.kind == 'combat':
+                break
+            before_the_fight.append(step)
+        assert before_the_fight and all(campaign(step.observation) == step.action for step in before_the_fight)
+    # Without the option the heuristic still decides, under the combat policy's own identity.
+    calls.clear()
+    path, plain = run_search(output_dir=tmp_path / 'heuristic', **settings)
+    assert plain['status'] == 'complete', plain
+    assert len(calls) == 2 and all('policy' not in call for call in calls)
+    assert plain['noncombat_policy'] == plain['implementation']['policy'] and 'trajectory_policies' not in plain
+    for row in plain['episodes']:
+        trajectory = load_trajectory(path.parent / row['trajectory'], split='validation')
+        assert trajectory.metadata.policy == plain['policies'][row['policy']]
+
+
 def test_direct_campaign_path_still_fails_before_producing_artifacts(checkpoint, tmp_path):
     search = SearchConfig(model_version='direct_belief_v1')
     output = tmp_path / 'blocked-direct'
