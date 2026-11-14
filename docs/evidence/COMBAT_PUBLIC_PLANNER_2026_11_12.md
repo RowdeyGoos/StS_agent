@@ -61,8 +61,9 @@ solver. Against the full solver the 8×4 planner is 22 points short. How much of
 that a larger budget or a learned evaluation can recover is not measured.
 
 **The Kin is the exception.** The planner wins 49% there against 60% for search.
-It inherits the solver's weak spot: it counts damage to the Kin's followers as
-progress although they die with the Priest.
+The suspected cause was that it counts damage to the Kin's followers as progress
+although they die with the Priest. A [follow-up](#follow-up-2026-11-13-the-kin-and-the-progress-measure) did not confirm
+this; the cause is open.
 
 **It is slow in its present form.** 5.3 s per decision in Python, about three
 times the search's time, because every simulated command restores a full engine
@@ -214,3 +215,75 @@ and 66 minutes for the 1×1 run and the two parts of the 8×4 run), or 30.6
 worker-hours. The independent review took about 50 minutes in two parts.
 Implementation time was not measured. User wait: the session paused once for
 about 70 minutes while the 8×4 run continued.
+
+## Follow-up, 2026-11-13: The Kin and the progress measure
+
+Status: **complete; the change did not help.** The user approved it as the
+first planner follow-up.
+
+**Question.** The planner counts damage to the Kin's two followers as progress,
+although they die with the Priest. Does counting only the enemies that must die
+remove its weakness on The Kin?
+
+| Planner 8×4 on the 100 Kin fights | Wins | 95% interval |
+| --- | ---: | --- |
+| Progress counts every living enemy, as recorded | 49 | 39–59% |
+| Progress counts only the enemies that must die | 45 | 36–55% |
+| Network with search, for reference | 60 | 50–69% |
+| Perfect-information solver, for reference | 76 | 67–84% |
+
+Paired on the same fights the change is worth −4.0 points, with a 95% interval
+of −12.0 to +4.0. Six fights were won only with the change and ten only without
+it; 84 ended the same way.
+
+**What it means.**
+- The change does not close the gap to search. The interval rules out a gain
+  above 4 points, and the gap is 11.
+- The suspected cause is not confirmed. Why the planner is weak on The Kin is
+  open.
+- With the change fights ended about half a turn earlier, won or lost: wins on
+  turn 6.3 on average against 6.8.
+
+**Method.**
+- The engine ends a fight when no living enemy without the `minion` status is
+  left. The changed measure leaves minions out of the enemy HP and the enemy
+  count. Their Strength still counts as threat. This one variant was fixed
+  before any fight was played.
+- The variant is derived mechanically from the recorded planner
+  (`runs/combat-planner-kin-20261113/required.py`, SHA-256 `d56a34f6…`). In
+  twelve line searches on fights without minions it returned exactly the
+  recorded planner's result.
+- Both arms use the recorded 8×4 setting and the recorded seeds, on the engine
+  of the 2026-11-13 working tree (build `9c3e75bd…`) and a corpus rebuilt for it
+  with the same 1,728 openings.
+- The unchanged arm reproduced the recorded run: the same outcome and the same
+  number of decisions in all 100 fights.
+- All 200 episodes were replayed through the benchmark's public adapter. None
+  failed, was cut off or disagreed with the planner's own count.
+- Among the benchmark's encounters only The Kin has minions, so no other
+  benchmark fight is affected by the change.
+
+**Limits.**
+- 100 fights and one planner seed. A small effect in either direction cannot be
+  seen.
+- One way of leaving the followers out. Counting them in part was not tried.
+- The solver of the ceiling experiment was not rerun with the change.
+- No independent review. The change alters how sampled worlds are scored, not
+  what the planner can see, and the `minion` status is public.
+- A development result on the same panel.
+
+**Reproduce.**
+
+```bash
+.venv/bin/python runs/combat-planner-kin-20261113/run.py
+.venv/bin/python runs/combat-planner-kin-20261113/analyze.py \
+  runs/combat-planner-kin-20261113/analysis.json
+```
+
+They use the corpus at `runs/combat-benchmark-20261113/corpus`, built with the
+command of the [ceiling record](COMBAT_CEILING_2026_11_12.md#reproduce).
+Analysis output `analysis.json`, SHA-256 `a4abc733…`.
+
+Elapsed times: the run took 36 minutes of wall time on 16 workers, or 9.1
+worker-hours; the corpus rebuild took 156 s. Implementation and analysis time
+was not measured. User wait: none.

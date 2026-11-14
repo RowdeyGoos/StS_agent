@@ -1,6 +1,6 @@
 # Combat agent overview
 
-Updated 2026-11-12. This page is the map of the combat-agent work: where it
+Updated 2026-11-13. This page is the map of the combat-agent work: where it
 stands, what has been tried and what is still unknown. It owns the combat
 scoreboard and the one-row-per-study record. The [roadmap](../ROADMAP.md) owns
 what to do next, the [training guide](AGENT_TRAINING.md) owns commands and
@@ -16,7 +16,8 @@ Normal fights are won about 98% of the time and are not on the scoreboard.
 
 | Player | Bosses | Elites | Thinking time |
 | --- | ---: | ---: | --- |
-| Planner without a network, 8 sampled worlds with 4 lines each (experimental) | **59.6%** | not run | 5.3 s per decision |
+| Network with search, 96 simulations | **60.2%** | not run | 6.1 s per searched decision |
+| Planner without a network, 8 sampled worlds with 4 lines each (experimental) | 59.6% | not run | 5.3 s per decision |
 | Network with search, 24 simulations | 55.5% | **85.8%** | 1.9 s per searched decision |
 | Planner without a network, 1 sampled world with 1 line (experimental) | 49.8% | not run | 0.4 s per decision |
 | Best network alone (Vantom specialist, 250k) | 48.7% | 79.1% | none |
@@ -29,7 +30,16 @@ Normal fights are won about 98% of the time and are not on the scoreboard.
 | *Fight won by a player or the solver* | *82.8%* | *94.5%* | not a player |
 
 A simulation is one hypothetical continuation that search plays out before it
-chooses.
+chooses. The two leading rows are level: their paired difference is +0.6
+[−2.8, +4.1] points. The search times were measured before the speed changes
+of 2026-11-13 and 2026-11-14, which together made search 1.72 times faster
+with identical decisions.
+
+The benchmark's boss rates carry over to campaign play. In 512 Act 1 campaigns
+where the collector's campaign policy made the noncombat choices, the best
+network won 50.7% of the bosses it reached and 56.6% with 24-simulation
+search, and cleared Act 1 in 42.8% and 50.6% of the campaigns; see the
+[Act 1 record](evidence/ACT1_SEARCH_2026_11_13.md#follow-up-same-day-the-campaign-policy-makes-the-noncombat-choices).
 
 The planner has no network and no training. For each decision it samples
 hypothetical worlds in which the unknown draw order is reshuffled, plans in each
@@ -67,8 +77,8 @@ The last three rows are bounds, not players.
 
 | Lever | Best measured effect | Reading |
 | --- | --- | --- |
-| [Search during play](#search-during-play) | +6.8 boss and +6.7 elite points at 24 simulations, positive on all 12 encounters; 96 simulations won 3.5 points more on training fights | The only large, repeatable gain. It grows with the simulation budget, which is limited by cost |
-| [Planning without a network](#search-during-play) | 59.6% of bosses: +4.1 over the network with search and +10.9 over the best network | New lead. No learning, five hand-set numbers. Slow, weak on The Kin and not deployable as built |
+| [Search during play](#search-during-play) | +6.8 boss and +6.7 elite points at 24 simulations, positive on all 12 encounters; 96 simulations add 4.7 boss points at four times the cost. In Act 1, 24 simulations add 8 to 9 clear points | The only large, repeatable gain. It was still growing at 96 simulations; cost is the limit |
+| [Planning without a network](#search-during-play) | 59.6% of bosses: +10.9 over the best network, +4.1 over 24-simulation search and level with 96-simulation search | No learning, five hand-set numbers. Wins different fights than search does. Slow, weak on The Kin and not deployable as built |
 | [Imitating successful hard fights](#imitation) | +2.7 to +4.9 boss points | Small but real |
 | [The combat-graph network](#network-architecture-and-features) | +5.9 points over the original graph (2026-10-01) | Adopted. Nothing tried since has beaten it |
 | [More PPO training](#ppo-training) | about 0 on bosses, +2 on elites after 246k more decisions | Plateaued. Long runs on few fights overfit |
@@ -79,33 +89,74 @@ The last three rows are bounds, not players.
 
 1. **How much of the perfect-information ceiling a real player can reach.** With
    hindsight at least 82.8% of the boss fights can be won. The best public
-   player so far, the planner without a network, wins 59.6%. The decks are
-   therefore not the main limit. How much of the remaining 22 points a larger
-   budget or a learned evaluation can recover is unmeasured.
-2. **How much a larger search budget buys.** For the network's search only 24
-   simulations is measured on the benchmark. The 96-simulation result comes from
-   training fights with root exploration, and the 256-simulation result from 64
-   authored fights at 30 s per decision. For the planner only two settings are
-   measured: one world with one line (49.8%) and eight worlds with four lines
-   (59.6%).
-3. **What searched play is worth in Act 1.** The only check used four paired
-   campaigns (one clear against none).
+   players so far win about 60%: the network with 96-simulation search (60.2%)
+   and the planner without a network (59.6%). The decks are therefore not the
+   main limit. How much of the remaining 22 points a larger budget or a learned
+   evaluation can recover is unmeasured.
+2. **How much a larger search budget buys beyond 96 simulations.** On the
+   bosses the network's search wins 55.5% at 24 simulations and 60.2% at 96:
+   four times the cost bought 4.7 points, and the gain had not flattened.
+   Elites at 96 simulations and any larger budget are unmeasured on the
+   benchmark; the 256-simulation result comes from 64 authored fights at 30 s
+   per decision. For the planner only two settings are measured: one world with
+   one line (49.8%) and eight worlds with four lines (59.6%).
+3. **What searched play is worth in Act 1 beyond 24 simulations.** At 24
+   simulations search lifts the Act 1 clear rate from 42.8% to 50.6% when the
+   500k campaign policy makes the noncombat choices, +7.8 [+3.9, +11.7], and
+   from 18.2% to 27.5% with the noncombat heuristic, +9.4 [+5.5, +13.3]; both
+   on the same 512 starts, see the [Act 1 record](evidence/ACT1_SEARCH_2026_11_13.md).
+   The registered gate for making search the default uses a wider interval
+   and stays inconclusive in both. 96 simulations are unmeasured in Act 1, and
+   so is the campaign policy playing its own fights on these starts. With
+   search the boss ends four in five of the lost campaigns.
 4. **How much of a boss loss is decided before the fight.** Neither a player nor
    the solver has won 98 of the 589 boss fights. That is the most that decks and
    HP alone can still explain, and it is not a count of unwinnable fights. HP on
    arrival matters even with hindsight: 92.9% of the bosses entered with at
    least 85% HP can be won, and 60.3% of the 141 entered below 70%. All decks
-   come from one collector, the Act 1 500k policy.
-5. **Whether search can be made much cheaper.** Projection and network inference
-   take 76% of the network search's time and forks about 10%. The speed work so
+   come from one collector, the Act 1 500k policy. In Act 1 the noncombat
+   choices are worth about three times what search is: on the same starts that
+   policy's choices add 23 to 25 clear points over the heuristic's, and search
+   adds 8 to 9; see the [comparison](evidence/ACT1_SEARCH_2026_11_13.md#follow-up-same-day-the-campaign-policy-makes-the-noncombat-choices). The heuristic's campaigns
+   reach the boss with more upgrades and relics but 74% HP against 88%, and
+   lose three times as many campaigns at elites. Which choices matter most is
+   not separated. With the heuristic, bosses entered with at least 70% HP are
+   won 49% of the time under search and those entered below it 16%; see the
+   [fight breakdown](evidence/ACT1_SEARCH_2026_11_13.md#follow-up-same-day-which-fights-end-the-campaigns). Search values a win at 1 plus a tenth of the
+   HP fraction kept. In a first fight that both arms always won it kept 0.8 HP
+   more than the network. How much HP a player that valued it more could keep,
+   and what that is worth at the boss, is unmeasured.
+5. **Whether search can be made much cheaper.** A
+   [profile](evidence/SEARCH_PROFILE_2026_11_13.md) shows that 79% of the network search's time handles the
+   public observation of each simulated step: building it, copying and
+   checking it, computing keys from it and encoding it. The network itself
+   took 9.5% and the game rules 9.9%. Three contained changes then made
+   search 1.35 times faster with identical decisions, and reusing what is
+   derived from shared card descriptions another 1.28 times: 1.72 times
+   together, at 0.88 s per searched decision. Handling the observation is
+   still 65% of the search time. A gain of several times needs the rest of
+   the observation, the map and the cards, to be reused between steps, which
+   is a redesign. The greedy leaf
+   rollouts take over half of the time and pay for themselves: at equal time,
+   search without them loses 3.8 boss points. At the measured 2.3
+   boss points per doubling of simulations, four times faster search is worth
+   about 5 points. The speed work so
    far kept the public projection inside every simulation. The planner skips the
    projection but restores a full engine snapshot for every simulated command.
 6. **Whether learning from search compounds over rounds.** Not shown. Three
    rounds were run on a 42-fight panel and one round on the benchmark; the
    largest label set is 60,738 decisions.
-7. **Whether the planner and the network help each other.** The planner ranks
+7. **Whether the planner and the network help each other.** They win different
+   boss fights: 96-simulation search won 56 that the planner lost, the planner
+   52 that search lost, and one or the other won 69.0%. That alone does not
+   show that a combination would gain: six near-identical learners differ as
+   much among themselves (48.6% each, 60.6% for at least one of them). The
+   clear difference is The Kin, where search is 16 points ahead. The planner ranks
    states by five hand-set numbers. The network's value has not been tried in
    its place, and the planner has not been run on elites or in Act 1.
+8. **Why the planner is weak on The Kin.** It wins 49% there, against 60% and
+   65% for the network with 24 and 96 simulations. Leaving the Kin's followers
+   out of its progress measure did not help.
 
 ## Study record
 
@@ -130,8 +181,13 @@ Bracketed ranges are 95% paired intervals in percentage points.
 | 2026-10-07 | Search on the Vantom specialist, 42 fights | 26/42 with and without search; 28/42 after a coverage repair | Unresolved | [specialist](evidence/VANTOM_SPECIALIST_SEARCH_2026_10_07.md), [repair](evidence/VANTOM_SEARCH_TRAINING_2026_10_08.md) |
 | 2026-10-09 | Search in Act 1, four paired campaigns | one clear against none | Unresolved | [campaign search](evidence/CAMPAIGN_SEARCH_VALIDATION_2026_10_09.md) |
 | 2026-10-17 | **Search on the benchmark, 24 simulations** | bosses +6.8 [+4.1, +9.7], elites +6.7 [+5.3, +8.2] | **Helps** | [search benchmark](evidence/COMBAT_SEARCH_BENCHMARK_2026_10_17.md) |
-| 2026-11-01 | 96 against 24 simulations, 768 paired training fights | +3.5 [+1.6, +5.5], bosses +5.0; 7.4 s against 1.9 s per decision | Helps; not yet on the benchmark | [search targets](evidence/COMBAT_SEARCH_TARGETS_2026_11_01.md) |
+| 2026-11-01 | 96 against 24 simulations, 768 paired training fights | +3.5 [+1.6, +5.5], bosses +5.0; 7.4 s against 1.9 s per decision | Helps; on training fights | [search targets](evidence/COMBAT_SEARCH_TARGETS_2026_11_01.md) |
 | 2026-11-12 | Planner without a network on all 589 bosses: sampled draw orders, the solver's beam search, a vote | 8 worlds with 4 lines: 59.6%, +4.1 [+0.5, +7.7] over the network with search and +10.9 [+7.4, +14.7] over the best network; 1 world with 1 line: 49.8% | **Helps** | [public planner](evidence/COMBAT_PUBLIC_PLANNER_2026_11_12.md) |
+| 2026-11-13 | Planner on the 100 Kin fights, with progress counting only the enemies that must die | 45 wins against 49 unchanged, −4.0 [−12.0, +4.0] | No gain | [planner follow-up](evidence/COMBAT_PUBLIC_PLANNER_2026_11_12.md#follow-up-2026-11-13-the-kin-and-the-progress-measure) |
+| 2026-11-13 | **Search on the benchmark's 589 bosses, 96 simulations** | 60.2%: +4.7 [+2.3, +7.3] over 24 simulations and +11.5 [+8.6, +14.5] over the network; level with the planner, +0.6 [−2.8, +4.1]; 6.1 s against 1.5 s per searched decision | **Helps** | [search benchmark follow-up](evidence/COMBAT_SEARCH_BENCHMARK_2026_10_17.md#follow-up-2026-11-13-96-simulations-on-the-boss-fights) |
+| 2026-11-13 | Leaf rollouts at equal search time on the 589 bosses: 54 simulations without rollouts and 32 with two steps, against 24 with four | without rollouts 51.7%, −3.8 [−6.5, −1.1]; two steps 54.8%, −0.8 [−3.3, +1.6] | No gain; the four-step rollouts pay for themselves | [rollout test](evidence/COMBAT_SEARCH_BENCHMARK_2026_10_17.md#follow-up-2026-11-13-leaf-rollouts-at-equal-search-time) |
+| 2026-11-13 | **Search in Act 1, 24 simulations, 512 paired campaigns** with the fixed noncombat heuristic | Act 1 clears 18.2% to 27.5%, +9.4 [+5.5, +13.3]; boss reached 64.1% to 74.0%; the registered Hoeffding gate stays inconclusive (−2.6 to +21.4) | **Helps**; search stays opt-in | [Act 1 search](evidence/ACT1_SEARCH_2026_11_13.md) |
+| 2026-11-13 | **The same comparison with the 500k campaign policy making the noncombat choices**, same 512 starts | Act 1 clears 42.8% to 50.6%, +7.8 [+3.9, +11.7]; bosses reached are won 50.7% and 56.6%, as on the benchmark; the Hoeffding gate stays inconclusive (−4.2 to +19.8) | **Helps**; search stays opt-in | [campaign policy's choices](evidence/ACT1_SEARCH_2026_11_13.md#follow-up-same-day-the-campaign-policy-makes-the-noncombat-choices) |
 
 ### Learning from search
 
@@ -200,6 +256,9 @@ unchanged specialist wins 61.9%.
 | 2026-10-18 | PPO training speed, bit-identical | 1.36× faster | [training speed](evidence/TRAINING_SPEED_2026_10_18.md) |
 | 2026-11-12 | Fights won by any player, from existing reports | 69.5% of bosses and 90.9% of elites | [any player](evidence/COMBAT_ANY_PLAYER_WINS_2026_11_12.md) |
 | 2026-11-12 | Perfect-information solver on all 589 bosses and the 102 elites no player had won | a player or the solver won 82.8% of bosses and 94.5% of elites; the solver alone 81.6% of bosses, 51.0% with a single line | [ceiling](evidence/COMBAT_CEILING_2026_11_12.md) |
+| 2026-11-13 | Where the network search's time goes: direct timers on six boss fights | 79% handles the public observation of each simulated step; the network is 9.5% and the game rules 9.9% | [search profile](evidence/SEARCH_PROFILE_2026_11_13.md) |
+| 2026-11-13 | Search speed, decision-identical: no copy of simulated observations, one path walk, reused card signatures | 1.35× faster on the 589 bosses with 16 workers, 1.50× on one worker; all 19,260 searched decisions unchanged | [follow-up](evidence/SEARCH_PROFILE_2026_11_13.md#follow-up-same-day-the-three-contained-changes) |
+| 2026-11-14 | Search speed, decision-identical: readers reuse what they derive from shared card descriptions | 1.28× faster on the 589 bosses with 16 workers, 1.22× on one worker; 1.72× with the changes of 2026-11-13; all 19,260 searched decisions unchanged | [second follow-up](evidence/SEARCH_PROFILE_2026_11_13.md#follow-up-2026-11-14-shared-card-descriptions) |
 
 ### Act 1 results for context
 
@@ -207,6 +266,8 @@ unchanged specialist wins 61.9%.
 | --- | --- | --- | --- |
 | 2026-09-30 | Act 1 campaign PPO, 256 held-out starts | 56 clears (21.9%) at 250k, 23 for its initializer, 14 for the heuristic; formally inconclusive | [held-out test](AGENT_TRAINING.md#held-out-act-1-test-2026-09-30) |
 | 2026-10-02 | Combat models in Act 1, 32 new campaigns | 48.4% and 50.0% clears, against 37.5% for the campaign model alone; difference not established | [seven-hour research](AGENT_TRAINING.md#seven-hour-combat-research-2026-10-02) |
+| 2026-11-13 | Which fights end the 512 paired Act 1 campaigns of the search comparison | with search 238 of 371 lost campaigns end at the boss, 81 at an elite and 52 in a normal fight; bosses are entered at 74% HP against 84% on the benchmark | [fight breakdown](evidence/ACT1_SEARCH_2026_11_13.md#follow-up-same-day-which-fights-end-the-campaigns) |
+| 2026-11-13 | Who makes the noncombat choices, on the same 512 starts: the 500k campaign policy against the heuristic | +24.6 [+19.5, +29.5] clear points for the network and +23.0 [+17.6, +28.5] with search; boss entered at 88% HP against 74%, 25 campaigns lost at elites against 81 | [comparison](evidence/ACT1_SEARCH_2026_11_13.md#follow-up-same-day-the-campaign-policy-makes-the-noncombat-choices) |
 
 ## Fight panels
 
@@ -218,7 +279,7 @@ Results from different panels cannot be compared with each other.
 | Vantom panel | 42 openings of one boss | Vantom PPO, rewards, inputs, architectures, search training | Resolves only about 20 points; its reserved test was used by the feature study |
 | Authored developed-deck fights | 48–128 starts from 12 deck and encounter families | search studies of 2026-10-05 to 2026-10-07 | Hand-built decks, not campaign decks |
 | Combat corpus validation and locked test | 250 and 537 validation openings; 514 locked test fights with 35 bosses | combat PPO and the seven-hour pass | Mostly normal fights; the locked test is used up |
-| Act 1 campaigns | 64 development, 256 held-out and 32 fresh starts | Act 1 clear rate | The held-out starts are used up |
+| Act 1 campaigns | 64 development, 256 held-out and 32 fresh starts; 512 validation starts for the search comparison | Act 1 clear rate | The held-out starts are used up. Clear rates depend on who makes the noncombat choices: 18% to 28% with the heuristic and 43% to 51% with the 500k campaign policy on the same 512 starts |
 
 ## Keeping this page current
 

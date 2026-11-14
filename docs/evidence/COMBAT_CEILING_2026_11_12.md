@@ -193,7 +193,10 @@ Its non-blocking findings are reflected here:
   followers die with the Priest, so damage to followers looks like progress.
   Three targets also triple the branching. On fights some player won, it solved
   67 of 73 Kin fights against 342 of 343 for the other bosses. Elites with
-  several enemies share this.
+  several enemies share this. Whether the measure explains the weakness is not
+  established: for the public planner, leaving the followers out did not help
+  ([follow-up](COMBAT_PUBLIC_PLANNER_2026_11_12.md#follow-up-2026-11-13-the-kin-and-the-progress-measure)). The solver was
+  not rerun.
 - **Solver restrictions.** No potion discard, no undo, equal cards
   interchangeable even when a card is chosen from the draw pile, and a merge key
   that leaves out the record of cards in play. The review saw no wrong merge in

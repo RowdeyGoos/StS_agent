@@ -73,6 +73,14 @@ lever, with one result and verdict each.
 - Combat search on the boss and elite benchmark: [October 17, 1,728 paired openings](evidence/COMBAT_SEARCH_BENCHMARK_2026_10_17.md)
   finds +6.8 boss and +6.7 elite points from search over the same checkpoint. It
   also records the simulated work budget and the equal-card naming fix it required.
+  A November 13 follow-up measures 96 simulations on the bosses: 60.2%, 4.7
+  points above 24 simulations at four times the cost. A second one finds that
+  the leaf rollouts pay for themselves at equal search time.
+- Searched combat in Act 1: [November 13, 512 paired campaigns](evidence/ACT1_SEARCH_2026_11_13.md)
+  finds +9.4 Act 1 clear points from 24-simulation search with the fixed
+  noncombat heuristic; the registered gate stays inconclusive. Its follow-ups
+  show that the boss ends most lost campaigns, and that with the campaign
+  policy's noncombat choices the clear rate rises from 42.8% to 50.6%.
 - Hidden-state resampling for combat PPO: [October 17, six learners](evidence/COMBAT_HIDDEN_STATE_2026_10_17.md)
   finds no effect of redrawing training starts' hidden state, no boss gain from
   245,760 more PPO decisions and a small elite gain; it also records an engine fix
@@ -125,6 +133,14 @@ lever, with one result and verdict each.
 - Search throughput and encoding: [October 7 worker benchmark](evidence/SEARCH_WORKER_SCALING_2026_10_07.md)
   compares 4/8/12/16 workers with identical search work and records an exact-input
   compact-encoding prototype, latency, memory limits and optimization priorities.
+- Where search time goes: [November 13 profile](evidence/SEARCH_PROFILE_2026_11_13.md)
+  finds that 79% of the network search's time handles the public observation of
+  each simulated step, and that the network itself takes under a tenth. Three
+  contained changes then made search 1.35 times faster with identical decisions,
+  and reusing shared card descriptions another 1.28 times the next day.
+- Noncombat policy: [November 14 proposal](NONCOMBAT_POLICY_PROPOSAL.md), a
+  research plan that is not adopted. It recommends learning each noncombat
+  choice's value from paired forks with the combat agent frozen.
 - Production search inference: [October 8 optimization benchmark](evidence/SEARCH_INFERENCE_2026_10_08.md)
   records compact inference and sparse combat-channel extraction, exact input
   and search equivalence, and the combined effect with 16 workers.

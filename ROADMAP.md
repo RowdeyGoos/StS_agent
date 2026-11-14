@@ -51,7 +51,8 @@ Further work should start from a new concrete requirement:
    Where combat stands on the boss and elite benchmark:
    - Search during play is the only lever with a large, repeatable gain: 55.5%
      of bosses and 85.8% of elites at 24 simulations, against 48.7% and 79.1%
-     for the best network alone.
+     for the best network alone. At 96 simulations it wins 60.2% of bosses, at
+     four times the cost.
    - More PPO, architecture and feature changes, and distilling search into the
      network each moved bosses by a few points at most.
    - With perfect information at least 82.8% of the boss fights can be won: a
@@ -59,8 +60,8 @@ Further work should start from a new concrete requirement:
      the main limit.
    - A planner with no network, which samples the unknown draw order and plans
      with the solver's beam search, wins 59.6% of bosses: 4.1 points above the
-     network with search. It is an experiment on the headless engine, not a
-     deployable agent.
+     network with 24-simulation search and level with 96-simulation search. It
+     is an experiment on the headless engine, not a deployable agent.
 
    Sequence from the 2026-11-12 review. The user chose step 1, the ceiling
    measurement of step 2 and the planner test of step 4; the rest of the
@@ -69,21 +70,47 @@ Further work should start from a new concrete requirement:
    2. **Measure the ceiling.** Done for the ceiling itself: see the
       [ceiling record](docs/evidence/COMBAT_CEILING_2026_11_12.md). The solver
       is a labelled privileged diagnostic: never the agent and never a training
-      target. Still outstanding since 2026-11-01: 96-simulation search on the
-      benchmark, and searched play in Act 1 with the fixed noncombat heuristic.
+      target. The 96-simulation search benchmark, outstanding since
+      2026-11-01, is done for the bosses: see the
+      [follow-up](docs/evidence/COMBAT_SEARCH_BENCHMARK_2026_10_17.md#follow-up-2026-11-13-96-simulations-on-the-boss-fights).
+      Searched play in Act 1 with the fixed noncombat heuristic is measured
+      as well: 24 simulations lift the clear rate from 18.2% to 27.5% on 512
+      paired campaigns, +9.4 [+5.5, +13.3]; see the
+      [Act 1 record](docs/evidence/ACT1_SEARCH_2026_11_13.md). The registered
+      gate stays inconclusive, so search remains opt-in. With search the boss
+      ends 64% of the lost campaigns, and bosses entered below 70% HP are won
+      16% of the time against 49% above it. With the 500k campaign policy
+      making the noncombat choices on the same starts, the clear rate rises
+      from 42.8% to 50.6% and the bosses are won as often as on the benchmark.
+      The noncombat choices are worth about three times what search is there.
    3. **Let the gap decide.** The solver wins far more than search does (+27
-      points on bosses), so combat has room in principle and step 4 applies.
+      points on bosses at 24 simulations, +21 at 96), so combat has room in
+      principle and step 4 applies.
       Had it won little more, the next move would have been deck building
       around the frozen searched player.
-   4. **Make search cheaper before making anything smarter.** Projection and
-      network inference take 76% of search time. Then measure strength against
+   4. **Make search cheaper before making anything smarter.** A
+      [profile](docs/evidence/SEARCH_PROFILE_2026_11_13.md) located the time:
+      79% handles the public observation of each simulated step, the network
+      itself took 9.5% and the game rules 9.9%. Three contained changes are
+      done: search is 1.35 times faster with identical decisions. Reusing what
+      is derived from shared card descriptions added 1.28 times on 2026-11-14,
+      1.72 times together. A gain of
+      several times needs a redesign of that path, which is not started; four
+      times faster search is worth about 5 boss points at the measured rate.
+      The leaf rollouts, over half of the search time, stay: at equal time
+      search without them loses 3.8 boss points.
+      Then measure strength against
       simulation count on the benchmark, relative to the ceiling. Train on
-      search labels at scale only if that curve flattens early. The first
-      experiment is done: see the
+      search labels at scale only if that curve flattens early. Two points of
+      that curve are measured on the bosses, 55.5% at 24 simulations and 60.2%
+      at 96; it has not flattened, and cost per simulation is the limit. The
+      first experiment is done: see the
       [planner record](docs/evidence/COMBAT_PUBLIC_PLANNER_2026_11_12.md).
+      The first follow-up is done as well: counting only the enemies that
+      must die as progress did not help on The Kin (45 wins against 49 of 100),
+      so the cause of that weakness is open; see the
+      [follow-up](docs/evidence/COMBAT_PUBLIC_PLANNER_2026_11_12.md#follow-up-2026-11-13-the-kin-and-the-progress-measure).
       Proposed follow-ups for the planner, in order:
-      - count only the enemies that must die as progress, which is its weak spot
-        on The Kin;
       - measure strength against the number of worlds and lines;
       - try the network's value in place of its five hand-set numbers;
       - make it cheap, and build its worlds from the public belief path so that
@@ -95,7 +122,9 @@ Further work should start from a new concrete requirement:
 
    Standing constraints:
    - Keep the noncombat heuristic fixed in hybrid Act 1 checks. Production
-     defaults and parallel PPO remain in use.
+     defaults and parallel PPO remain in use. The user lifted this for one
+     check on 2026-11-13, which used the 500k campaign policy instead. Whether
+     that policy becomes the fixed noncombat controller awaits a decision.
    - Search stays opt-in until a paired Act 1 comparison clears its confidence
      gate. Native bridge receipts remain a separate gate.
    - Experimental results and generated presets do not change production
